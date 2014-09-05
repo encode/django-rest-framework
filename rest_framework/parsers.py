@@ -289,18 +289,22 @@ class FileUploadParser(BaseParser):
 
         try:
             meta = parser_context['request'].META
-            disposition = parse_header(meta['HTTP_CONTENT_DISPOSITION'].encode('utf-8'))
-
-            if 'filename*' in disposition[1]:
-                filename_encoded = force_text(disposition[1]['filename*'])
-                try:
-                    charset, filename_encoded = filename_encoded.split('\'\'', 1)
-                    filename = urlparse.unquote(filename_encoded)
-                except (ValueError, LookupError):
-                    filename = force_text(disposition[1]['filename'])
-            else:
-                filename = force_text(disposition[1]['filename'])
-
-            return filename
+            disposition = parse_header(meta['HTTP_CONTENT_DISPOSITION'].encode('utf-8'))[1]
+            if 'filename*' in disposition:
+                return self.get_encoded_filename(disposition)
+            return force_text(disposition['filename'])
         except (AttributeError, KeyError):
             pass
+
+    def get_encoded_filename(self, disposition):
+        """
+        Handle encoded filenames per RFC6266. See also:
+        http://tools.ietf.org/html/rfc2231#section-4
+        """
+        encoded_filename = force_text(disposition['filename*'])
+        try:
+            charset, filename = encoded_filename.split('\'\'', 1)
+            filename = urlparse.unquote(filename)
+        except (ValueError, LookupError):
+            filename = force_text(disposition['filename'])
+        return filename
