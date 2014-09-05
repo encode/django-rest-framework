@@ -5,14 +5,14 @@
 <html>
     <head>
         {% block head %}
-    
+
             {% block meta %}
                 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
                 <meta name="robots" content="NONE,NOARCHIVE" />
             {% endblock %}
-    
+
             <title>{% block title %}Django REST framework{% endblock %}</title>
-    
+
             {% block style %}
                 {% block bootstrap_theme %}
                     <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap.min.css" %}"/>
@@ -21,7 +21,7 @@
                 <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/prettify.css" %}"/>
                 <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/>
             {% endblock %}
-            
+
         {% endblock %}
     </head>
 
@@ -44,17 +44,9 @@
                             <ul class="nav pull-right">
                                 {% block userlinks %}
                                     {% if user.is_authenticated %}
-                                    <li class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                            {{ user }}
-                                            <b class="caret"></b>
-                                        </a>
-                                        <ul class="dropdown-menu">
-                                            <li>{% optional_logout request %}</li>
-                                        </ul>
-                                    </li>
+                                        {% optional_logout request user %}
                                     {% else %}
-                                        <li>{% optional_login request %}</li>
+                                        {% optional_login request %}
                                     {% endif %}
                                 {% endblock %}
                             </ul>
@@ -85,7 +77,7 @@
                             <div class="btn-group format-selection">
                                 <a class="btn btn-primary js-tooltip" href='{{ request.get_full_path }}'
                                      rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</a>
-        
+
                                 <button class="btn btn-primary dropdown-toggle js-tooltip" data-toggle="dropdown"
                                         title="Specify a format for the GET request">
                                     <span class="caret"></span>
@@ -144,7 +136,7 @@
                 </div>
 
                 {% if display_edit_forms %}
-    
+
                     {% if post_form or raw_data_post_form %}
                         <div {% if post_form %}class="tabbable"{% endif %}>
                             {% if post_form %}
@@ -190,7 +182,7 @@
                             </div>
                         </div>
                     {% endif %}
-    
+
                     {% if put_form or raw_data_put_form or raw_data_patch_form %}
                         <div {% if put_form %}class="tabbable"{% endif %}>
                             {% if put_form %}
@@ -246,7 +238,7 @@
                 {% endif %}
             </div>
             <!-- END Content -->
-            
+
             <footer>
                 {% block footer %}
                     <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</p>
