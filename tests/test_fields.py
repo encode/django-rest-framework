@@ -1012,7 +1012,6 @@ class ModelCharField(TestCase):
         class CharFieldSerializer(serializers.Serializer):
             char = serializers.CharField(allow_none=True, required=False)
         serializer = CharFieldSerializer(data={'char': None})
-        self.assertTrue(serializer.fields['char'].allow_none)
         self.assertTrue(serializer.is_valid())
         self.assertIsNone(serializer.object['char'])
 
