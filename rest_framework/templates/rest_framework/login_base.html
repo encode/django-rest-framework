@@ -17,21 +17,44 @@
         
                     <div class="row-fluid">
                         <div>
-                            <form action="{% url 'rest_framework:login' %}" class=" form-inline" method="post">
+                            <form action="{% url 'rest_framework:login' %}" role="form" method="post">
                                 {% csrf_token %}
-                                <div id="div_id_username" class="clearfix control-group">
+                                <div id="div_id_username"
+                                    class="clearfix control-group {% if form.username.errors %}error{% endif %}">
                                     <div class="controls">
                                         <Label class="span4">Username:</label>
-                                        <input style="height: 25px" type="text" name="username" maxlength="100" autocapitalize="off" autocorrect="off" class="textinput textInput" id="id_username">
+                                        <input style="height: 25px" type="text" name="username" maxlength="100"
+                                            autocapitalize="off"
+                                            autocorrect="off" class="span12 textinput textInput"
+                                            id="id_username" required
+                                            {% if form.username.value %}value="{{ form.username.value }}"{% endif %}>
+                                        {% if form.username.errors %}
+                                            <p class="text-error">
+                                                {{ form.username.errors|striptags }}
+                                            </p>
+                                        {% endif %}
                                     </div>
                                 </div>
-                                <div id="div_id_password" class="clearfix control-group">
-                                    <div class="controls">
+                                    <div id="div_id_password"
+                                        class="clearfix control-group {% if form.password.errors %}error{% endif %}">
+                                        <div class="controls">
                                         <Label class="span4">Password:</label>
-                                        <input style="height: 25px" type="password" name="password" maxlength="100" autocapitalize="off" autocorrect="off" class="textinput textInput" id="id_password">
+                                        <input style="height: 25px" type="password" name="password" maxlength="100"
+                                            autocapitalize="off" autocorrect="off" class="span12 textinput textInput"
+                                            id="id_password" required>
+                                        {% if form.password.errors %}
+                                            <p class="text-error">
+                                                {{ form.password.errors|striptags }}
+                                            </p>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <input type="hidden" name="next" value="{{ next }}" />
+                                {% if form.non_field_errors %}
+                                    {% for error in form.non_field_errors %}
+                                        <div class="well well-small text-error" style="border: none">{{ error }}</div>
+                                    {% endfor %}
+                                {% endif %}
                                 <div class="form-actions-no-box">
                                     <input type="submit" name="submit" value="Log in" class="btn btn-primary" id="submit-id-submit">
                                 </div>
