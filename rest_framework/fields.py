@@ -479,7 +479,8 @@ class CharField(WritableField):
             if not self.allow_none:
                 return ''
             else:
-                # return None implicity because smart_text(None) == 'None'
+                # return None explicitly because smart_text(None) == 'None'
+                # see #1834 for details
                 return None
 
         return smart_text(value)
