@@ -15,7 +15,7 @@ class APIException(Exception):
     Subclasses should provide `.status_code` and `.default_detail` properties.
     """
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    default_detail = ''
+    default_detail = 'A server error occured'
 
     def __init__(self, detail=None):
         self.detail = detail or self.default_detail
@@ -27,6 +27,11 @@ class APIException(Exception):
 class ParseError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = 'Malformed request.'
+
+
+class ValidationError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = 'Invalid data in request.'
 
 
 class AuthenticationFailed(APIException):
@@ -54,7 +59,7 @@ class MethodNotAllowed(APIException):
 
 class NotAcceptable(APIException):
     status_code = status.HTTP_406_NOT_ACCEPTABLE
-    default_detail = "Could not satisfy the request's Accept header"
+    default_detail = "Could not satisfy the request Accept header"
 
     def __init__(self, detail=None, available_renderers=None):
         self.detail = detail or self.default_detail

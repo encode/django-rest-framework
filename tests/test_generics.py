@@ -360,18 +360,15 @@ class TestInstanceView(TestCase):
 
     def test_put_to_deleted_instance(self):
         """
-        PUT requests to RetrieveUpdateDestroyAPIView should create an object
-        if it does not currently exist.
+        PUT requests to RetrieveUpdateDestroyAPIView should return 404 if
+        an object does not currently exist.
         """
         self.objects.get(id=1).delete()
         data = {'text': 'foobar'}
         request = factory.put('/1', data, format='json')
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(1):
             response = self.view(request, pk=1).render()
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
-        updated = self.objects.get(id=1)
-        self.assertEqual(updated.text, 'foobar')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_put_to_filtered_out_instance(self):
         """
@@ -382,35 +379,7 @@ class TestInstanceView(TestCase):
         filtered_out_pk = BasicModel.objects.filter(text='filtered out')[0].pk
         request = factory.put('/{0}'.format(filtered_out_pk), data, format='json')
         response = self.view(request, pk=filtered_out_pk).render()
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_put_as_create_on_id_based_url(self):
-        """
-        PUT requests to RetrieveUpdateDestroyAPIView should create an object
-        at the requested url if it doesn't exist.
-        """
-        data = {'text': 'foobar'}
-        # pk fields can not be created on demand, only the database can set the pk for a new object
-        request = factory.put('/5', data, format='json')
-        with self.assertNumQueries(2):
-            response = self.view(request, pk=5).render()
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        new_obj = self.objects.get(pk=5)
-        self.assertEqual(new_obj.text, 'foobar')
-
-    def test_put_as_create_on_slug_based_url(self):
-        """
-        PUT requests to RetrieveUpdateDestroyAPIView should create an object
-        at the requested url if possible, else return HTTP_403_FORBIDDEN error-response.
-        """
-        data = {'text': 'foobar'}
-        request = factory.put('/test_slug', data, format='json')
-        with self.assertNumQueries(2):
-            response = self.slug_based_view(request, slug='test_slug').render()
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, {'slug': 'test_slug', 'text': 'foobar'})
-        new_obj = SlugBasedModel.objects.get(slug='test_slug')
-        self.assertEqual(new_obj.text, 'foobar')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_patch_cannot_create_an_object(self):
         """

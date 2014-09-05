@@ -19,14 +19,10 @@ class CreateModelMixin(object):
     """
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA)
-
-        if serializer.is_valid():
-            self.object = serializer.save()
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED,
-                            headers=headers)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def get_success_headers(self, data):
         try:
@@ -40,15 +36,12 @@ class ListModelMixin(object):
     List a queryset.
     """
     def list(self, request, *args, **kwargs):
-        self.object_list = self.filter_queryset(self.get_queryset())
-
-        # Switch between paginated or standard style responses
-        page = self.paginate_queryset(self.object_list)
+        instance = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(instance)
         if page is not None:
             serializer = self.get_pagination_serializer(page)
         else:
-            serializer = self.get_serializer(self.object_list, many=True)
-
+            serializer = self.get_serializer(instance, many=True)
         return Response(serializer.data)
 
 
@@ -57,8 +50,8 @@ class RetrieveModelMixin(object):
     Retrieve a model instance.
     """
     def retrieve(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        serializer = self.get_serializer(self.object)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
 
@@ -68,22 +61,52 @@ class UpdateModelMixin(object):
     """
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
-        self.object = self.get_object_or_none()
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.DATA, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
-        serializer = self.get_serializer(self.object, data=request.DATA, partial=partial)
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
 
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        if self.object is None:
+class DestroyModelMixin(object):
+    """
+    Destroy a model instance.
+    """
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# The AllowPUTAsCreateMixin was previously the default behaviour
+# for PUT requests. This has now been removed and must be *explictly*
+# included if it is the behavior that you want.
+# For more info see: ...
+
+class AllowPUTAsCreateMixin(object):
+    """
+    The following mixin class may be used in order to support PUT-as-create
+    behavior for incoming requests.
+    """
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object_or_none()
+        serializer = self.get_serializer(instance, data=request.DATA, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        if instance is None:
             lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
             lookup_value = self.kwargs[lookup_url_kwarg]
             extras = {self.lookup_field: lookup_value}
-            self.object = serializer.save(extras=extras)
+            serializer.save(extras=extras)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        self.object = serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer.save()
+        return Response(serializer.data)
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
@@ -103,15 +126,3 @@ class UpdateModelMixin(object):
                 # PATCH requests where the object does not exist should still
                 # return a 404 response.
                 raise
-
-
-class DestroyModelMixin(object):
-    """
-    Destroy a model instance.
-    """
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        self.pre_delete(obj)
-        obj.delete()
-        self.post_delete(obj)
-        return Response(status=status.HTTP_204_NO_CONTENT)

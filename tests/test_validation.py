@@ -48,11 +48,10 @@ class ShouldValidateModel(models.Model):
 class ShouldValidateModelSerializer(serializers.ModelSerializer):
     renamed = serializers.CharField(source='should_validate_field', required=False)
 
-    def validate_renamed(self, attrs, source):
-        value = attrs[source]
+    def validate_renamed(self, value):
         if len(value) < 3:
             raise serializers.ValidationError('Minimum 3 characters.')
-        return attrs
+        return value
 
     class Meta:
         model = ShouldValidateModel

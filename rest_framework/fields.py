@@ -1,3 +1,4 @@
+from rest_framework.exceptions import ValidationError
 from rest_framework.utils import html
 import inspect
 
@@ -57,10 +58,6 @@ def set_value(dictionary, keys, value):
         dictionary = dictionary[key]
 
     dictionary[keys[-1]] = value
-
-
-class ValidationError(Exception):
-    pass
 
 
 class SkipField(Exception):
@@ -204,6 +201,22 @@ class Field(object):
             msg = self._MISSING_ERROR_MESSAGE.format(class_name=class_name, key=key)
             raise AssertionError(msg)
 
+    def __new__(cls, *args, **kwargs):
+        instance = super(Field, cls).__new__(cls)
+        instance._args = args
+        instance._kwargs = kwargs
+        return instance
+
+    def __repr__(self):
+        arg_string = ', '.join([repr(val) for val in self._args])
+        kwarg_string = ', '.join([
+            '%s=%s' % (key, repr(val)) for key, val in self._kwargs.items()
+        ])
+        if arg_string and kwarg_string:
+            arg_string += ', '
+        class_name = self.__class__.__name__
+        return "%s(%s%s)" % (class_name, arg_string, kwarg_string)
+
 
 class BooleanField(Field):
     MESSAGES = {
@@ -307,6 +320,11 @@ class IntegerField(Field):
         'required': 'This field is required.',
         'invalid_integer': 'A valid integer is required.'
     }
+
+    def __init__(self, **kwargs):
+        self.max_value = kwargs.pop('max_value')
+        self.min_value = kwargs.pop('min_value')
+        super(CharField, self).__init__(**kwargs)
 
     def to_native(self, data):
         try:

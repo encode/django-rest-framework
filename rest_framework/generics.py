@@ -27,7 +27,7 @@ def strict_positive_int(integer_string, cutoff=None):
 
 def get_object_or_404(queryset, *filter_args, **filter_kwargs):
     """
-    Same as Django's standard shortcut, but make sure to raise 404
+    Same as Django's standard shortcut, but make sure to also raise 404
     if the filter_kwargs don't match the required types.
     """
     try:
@@ -249,34 +249,6 @@ class GenericAPIView(views.APIView):
     #
     # The are not called by GenericAPIView directly,
     # but are used by the mixin methods.
-
-    def pre_save(self, obj):
-        """
-        Placeholder method for calling before saving an object.
-
-        May be used to set attributes on the object that are implicit
-        in either the request, or the url.
-        """
-        pass
-
-    def post_save(self, obj, created=False):
-        """
-        Placeholder method for calling after saving an object.
-        """
-        pass
-
-    def pre_delete(self, obj):
-        """
-        Placeholder method for calling before deleting an object.
-        """
-        pass
-
-    def post_delete(self, obj):
-        """
-        Placeholder method for calling after deleting an object.
-        """
-        pass
-
     def metadata(self, request):
         """
         Return a dictionary of metadata about the view.

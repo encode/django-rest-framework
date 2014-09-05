@@ -13,7 +13,8 @@ response content is handled by parsers and renderers.
 from django.db import models
 from django.utils import six
 from collections import namedtuple, OrderedDict
-from rest_framework.fields import empty, set_value, Field, SkipField, ValidationError
+from rest_framework.exceptions import ValidationError
+from rest_framework.fields import empty, set_value, Field, SkipField
 from rest_framework.settings import api_settings
 from rest_framework.utils import html
 import copy
@@ -34,43 +35,53 @@ FieldResult = namedtuple('FieldResult', ['field', 'value', 'error'])
 
 
 class BaseSerializer(Field):
+    """
+    The BaseSerializer class provides a minimal class which may be used
+    for writing custom serializer implementations.
+    """
+
     def __init__(self, instance=None, data=None, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
         self.instance = instance
         self._initial_data = data
 
     def to_native(self, data):
-        raise NotImplementedError()
+        raise NotImplementedError('`to_native()` must be implemented.')
 
     def to_primative(self, instance):
-        raise NotImplementedError()
+        raise NotImplementedError('`to_primative()` must be implemented.')
 
-    def update(self, instance):
-        raise NotImplementedError()
+    def update(self, instance, attrs):
+        raise NotImplementedError('`update()` must be implemented.')
 
-    def create(self):
-        raise NotImplementedError()
+    def create(self, attrs):
+        raise NotImplementedError('`create()` must be implemented.')
 
     def save(self, extras=None):
         if extras is not None:
-            self._validated_data.update(extras)
+            self.validated_data.update(extras)
 
         if self.instance is not None:
-            self.update(self.instance)
+            self.update(self.instance, self._validated_data)
         else:
-            self.instance = self.create()
+            self.instance = self.create(self._validated_data)
 
         return self.instance
 
-    def is_valid(self):
-        try:
-            self._validated_data = self.to_native(self._initial_data)
-        except ValidationError as exc:
-            self._validated_data = {}
-            self._errors = exc.args[0]
-            return False
-        self._errors = {}
-        return True
+    def is_valid(self, raise_exception=False):
+        if not hasattr(self, '_validated_data'):
+            try:
+                self._validated_data = self.to_native(self._initial_data)
+            except ValidationError as exc:
+                self._validated_data = {}
+                self._errors = exc.detail
+            else:
+                self._errors = {}
+
+        if self._errors and raise_exception:
+            raise ValidationError(self._errors)
+
+        return not bool(self._errors)
 
     @property
     def data(self):
@@ -184,14 +195,20 @@ class Serializer(BaseSerializer):
         """
         Dict of native values <- Dict of primitive datatypes.
         """
+        if not isinstance(data, dict):
+            raise ValidationError({'non_field_errors': ['Invalid data']})
+
         ret = {}
         errors = {}
         fields = [field for field in self.fields.values() if not field.read_only]
 
         for field in fields:
+            validate_method = getattr(self, 'validate_' + field.field_name, None)
             primitive_value = field.get_value(data)
             try:
                 validated_value = field.validate(primitive_value)
+                if validate_method is not None:
+                    validated_value = validate_method(validated_value)
             except ValidationError as exc:
                 errors[field.field_name] = str(exc)
             except SkipField:
@@ -202,6 +219,7 @@ class Serializer(BaseSerializer):
         if errors:
             raise ValidationError(errors)
 
+        # TODO: 'Non field errors'
         return self.validate(ret)
 
     def to_primative(self, instance):
@@ -340,12 +358,12 @@ class ModelSerializer(Serializer):
         self.opts = self._options_class(self.Meta)
         super(ModelSerializer, self).__init__(*args, **kwargs)
 
-    def create(self):
+    def create(self, attrs):
         ModelClass = self.opts.model
-        return ModelClass.objects.create(**self.validated_data)
+        return ModelClass.objects.create(**attrs)
 
-    def update(self, obj):
-        for attr, value in self.validated_data.items():
+    def update(self, obj, attrs):
+        for attr, value in attrs.items():
             setattr(obj, attr, value)
         obj.save()
 
