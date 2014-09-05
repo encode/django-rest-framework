@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
 from rest_framework.compat import StringIO
@@ -137,5 +137,3 @@ class TestFileUploadParser(TestCase):
 
     def __replace_content_disposition(self, disposition):
         self.parser_context['request'].META['HTTP_CONTENT_DISPOSITION'] = disposition
-
-
