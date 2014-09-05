@@ -475,8 +475,12 @@ class CharField(WritableField):
         if isinstance(value, six.string_types):
             return value
 
-        if value is None and not self.allow_none:
-            return ''
+        if value is None:
+            if not self.allow_none:
+                return ''
+            else:
+                # return None implicity because smart_text(None) == 'None'
+                return None
 
         return smart_text(value)
 
