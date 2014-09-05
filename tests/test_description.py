@@ -118,9 +118,9 @@ class TestViewNamesAndDescriptions(TestCase):
                 return self.s
 
         class MockView(APIView):
-            __doc__ = MockLazyStr(u"a gettext string")
+            __doc__ = MockLazyStr("a gettext string")
 
-        self.assertEqual(MockView().get_view_description(), u'a gettext string')
+        self.assertEqual(MockView().get_view_description(), 'a gettext string')
 
     def test_markdown(self):
         """
