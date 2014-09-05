@@ -1004,6 +1004,18 @@ class BooleanField(TestCase):
         self.assertFalse(BooleanRequiredSerializer(data={}).is_valid())
 
 
+class ModelCharField(TestCase):
+    """
+        Tests for CharField
+    """
+    def test_none_serializing(self):
+        class CharFieldSerializer(serializers.Serializer):
+            char = serializers.CharField(allow_none=True, required=False)
+        serializer = CharFieldSerializer(data={'char': None})
+        self.assertTrue(serializer.is_valid())
+        self.assertIsNone(serializer.object['char'])
+
+
 class SerializerMethodFieldTest(TestCase):
     """
         Tests for the SerializerMethodField field_to_native() behavior
