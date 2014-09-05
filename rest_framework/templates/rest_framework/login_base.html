@@ -20,7 +20,7 @@
                             <form action="{% url 'rest_framework:login' %}" role="form" method="post">
                                 {% csrf_token %}
                                 <div id="div_id_username"
-                                    class="clearfix control-group {% if form.username.errors %}warning{% endif %}">
+                                    class="clearfix control-group {% if form.username.errors %}error{% endif %}">
                                     <div class="controls">
                                         <Label class="span4">Username:</label>
                                         <input style="height: 25px" type="text" name="username" maxlength="100"
@@ -28,21 +28,21 @@
                                             id="id_username"
                                             {% if form.username.value %}value="{{ form.username.value }}"{% endif %}>
                                         {% if form.username.errors %}
-                                            <p class="text-warning" style="margin-top: 10px">
+                                            <p class="text-error">
                                                 {{ form.username.errors|striptags }}
                                             </p>
                                         {% endif %}
                                     </div>
                                 </div>
                                     <div id="div_id_password"
-                                        class="clearfix control-group {% if form.password.errors %}warning{% endif %}">
+                                        class="clearfix control-group {% if form.password.errors %}error{% endif %}">
                                         <div class="controls">
                                         <Label class="span4">Password:</label>
                                         <input style="height: 25px" type="password" name="password" maxlength="100"
                                             autocapitalize="off" autocorrect="off" class="textinput textInput"
                                             id="id_password">
                                         {% if form.password.errors %}
-                                            <p class="text-warning" style="margin-top: 10px">
+                                            <p class="text-error">
                                                 {{ form.password.errors|striptags }}
                                             </p>
                                         {% endif %}
@@ -51,7 +51,7 @@
                                 <input type="hidden" name="next" value="{{ next }}" />
                                 {% if form.non_field_errors %}
                                     {% for error in form.non_field_errors %}
-                                        <div class="text-warning" style="margin: 10px 0">{{ error }}</div>
+                                        <div class="text-error" style="margin: 10px 0">{{ error }}</div>
                                     {% endfor %}
                                 {% endif %}
                                 <div class="form-actions-no-box">
