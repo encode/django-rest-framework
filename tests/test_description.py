@@ -110,8 +110,10 @@ class TestViewNamesAndDescriptions(TestCase):
         class MockLazyStr(object):
             def __init__(self, string):
                 self.s = string
+
             def __str__(self):
                 return self.s
+
             def __unicode__(self):
                 return self.s
 
