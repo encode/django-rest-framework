@@ -16,5 +16,8 @@ include/
 lib/
 local/
 
+*.iml
+atlassian-ide-plugin.xml
+
 !.gitignore
 !.travis.yml

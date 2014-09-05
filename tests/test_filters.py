@@ -723,11 +723,13 @@ class Iso8601DateFilter(TestCase):
     def test_filter_isoformat_datetime_against_date_fails(self):
         view = FilterFieldsRootView.as_view()
         # Tests that the date filter fails with an ISO8601 datetime format.
-        search_date = datetime.datetime(2012, 9, 22, 12, 00, 00)
+        search_date = datetime.datetime(2012, 8, 12, 12, 00, 00)
         request = factory.get('/', {'date': '%s' % search_date.isoformat()}) # search_date str: '2012-09-22T12:00:00'
         response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected_data = [f for f in self.data if f['date'] == search_date]
+        # This should be [] because date != datetime
+        self.assertEqual(response.data, [])
         self.assertEqual(response.data, expected_data)
 
 
@@ -737,7 +739,7 @@ class Iso8601DateTimeFilter(TestCase):
     """
 
     def _serialize_object(self, obj):
-        return {'id': obj.id, 'text': obj.text, 'decimal': obj.decimal, 'date': obj.date}
+        return {'id': obj.id, 'text': obj.text, 'decimal': obj.decimal, 'date': obj.date.isoformat()}
 
     def setUp(self):
         """
@@ -759,9 +761,16 @@ class Iso8601DateTimeFilter(TestCase):
     def test_filter_isoformat_datetime(self):
         view = FilterFieldsRootView.as_view()
         # Tests that the date filter works with ISO8601 format.
-        search_date = datetime.datetime(2012, 9, 22, 12, 00, 00)
+        search_date = datetime.datetime(2012, 10, 8, 12, 00, 00)
         request = factory.get('/', {'date': '%s' % search_date.isoformat()})  # search_date str: '2012-09-22'
         response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected_data = [f for f in self.data if f['date'] == search_date]
-        self.assertEqual(response.data, expected_data)
+        expected_data = [f for f in self.data if f['date'] == search_date.isoformat()]
+        # This shows that the you cannot filter via an isoformatted datetime
+        self.assertNotEqual(response.data, expected_data)
+        # This shows that the issues is not Django filters itself but how the filters are built via iexact
+        should_find_something = FilterableISO8601Item.objects.filter(date__iexact=search_date.isoformat())
+        should_find_something_2 = FilterableISO8601Item.objects.filter(date=search_date.isoformat())
+        self.assertEqual(should_find_something.count(), 0)
+        # The issue is that dates are being filtered via an iexact filter which does date comparision
+        self.assertNotEqual(should_find_something.query.__str__(), should_find_something_2.query.__str__())
