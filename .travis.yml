@@ -21,6 +21,8 @@ env:
     - TOX_ENV=py2.7-django1.4
     - TOX_ENV=py2.6-django1.4
 
+install:
+  - "pip install tox --download-cache $HOME/.pip-cache"
+
 script:
-    - pip install tox
     - tox -e $TOX_ENV
