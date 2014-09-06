@@ -22,4 +22,5 @@ env:
     - TOX_ENV=py2.6-django1.4
 
 script:
+    - pip install tox
     - tox -e $TOX_ENV
