@@ -7,7 +7,7 @@ from django.db import models
 from django.test import TestCase
 from django.utils import unittest
 from rest_framework import serializers
-from tests.models import BlogPost
+from tests.models import BlogPost, LimitedChoicesModel, ForeignKeyTarget
 
 
 class NullModel(models.Model):
@@ -147,3 +147,163 @@ class RelatedFieldChoicesTests(TestCase):
         widget_count = len(field.widget.choices)
 
         self.assertEqual(widget_count, choice_count + 1, 'BLANK_CHOICE_DASH option should have been added')
+
+
+class LimitChoicesToTest(TestCase):
+    """
+    Test for #1811 "Support `limit_choices_to` on related fields."
+
+    1. Fully auto-generated relation field: should limit if model field has
+    limit_choices_to set
+    2. Declared relation field with neither queryset or limit_choices_to field
+    set: should limit if model field has limit_choices_to set
+    3. Declared relation field with queryset declared and without
+    limit_choices_to set where the model field has limit_choices_to set: The
+    user has explicitly declared a queryset so I don't think we should modify
+    it.
+    4. Declared relation field with limit_choices_to declared and no queryset
+    declared: Should limit choices based on the limit_choices_to that was
+    declared on the serializer field.
+    5. Declared relation field with both limit_choices_to and queryset
+    declared: I think that since both were declared, that it makes sense to go
+    ahead and apply the limit choices to filtering to the provided queryset.
+    """
+    def test_generated_field_with_limit_choices_set_on_model_field(self):
+        """
+        Ensure that for a fully auto-generated serializer field for a model
+        field which has the `limit_choices_to` value set that the queryset is
+        filtered correctly on the value from the model field.
+        """
+        # Generate one instance that will match the `limit_choices_to`
+        ForeignKeyTarget.objects.create(name='foo')
+        ForeignKeyTarget.objects.create(name='bar')
+
+        class LimitChoicesSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = LimitedChoicesModel
+                fields = ('rel',)
+
+        serializer = LimitChoicesSerializer()
+
+        field = serializer.fields['rel']
+        queryset = field.queryset
+
+        self.assertEqual(
+            set(queryset.all()),
+            set(ForeignKeyTarget.objects.filter(name='foo')),
+        )
+
+    def test_declared_related_field_with_limit_choices_set_on_model(self):
+        """
+        Test that a declared `RelatedField` will correctly filter on it's model
+        field's `limit_choices_to` when neither the queryset nor the local
+        `limit_choices_to` has been declared.
+
+        TODO: is this test necessary?
+        """
+        # Generate one instance that will match the `limit_choices_to`
+        ForeignKeyTarget.objects.create(name='foo')
+        ForeignKeyTarget.objects.create(name='bar')
+
+        class LimitChoicesSerializer(serializers.ModelSerializer):
+            rel = serializers.RelatedField(read_only=False)
+
+            class Meta:
+                model = LimitedChoicesModel
+                fields = ('rel',)
+
+        serializer = LimitChoicesSerializer()
+
+        field = serializer.fields['rel']
+        queryset = field.queryset
+
+        self.assertEqual(
+            set(queryset.all()),
+            set(ForeignKeyTarget.objects.filter(name='foo')),
+        )
+
+    def test_declared_queryset_on_related_field_is_not_effected_by_model_limit_choices_to(self):
+        """
+        Test that when the `queryset` kwarg is declared for a `RelatedField`
+        that it isn't further filtered when `limit_choices_to` has been
+        declared on the model field.
+        """
+        ForeignKeyTarget.objects.create(name='foo')
+        ForeignKeyTarget.objects.create(name='bar')
+
+        class LimitChoicesSerializer(serializers.ModelSerializer):
+            rel = serializers.RelatedField(
+                queryset=ForeignKeyTarget.objects.all(),
+                read_only=False,
+            )
+
+            class Meta:
+                model = LimitedChoicesModel
+                fields = ('rel',)
+
+        serializer = LimitChoicesSerializer()
+
+        field = serializer.fields['rel']
+        queryset = field.queryset
+
+        self.assertEqual(
+            set(queryset.all()),
+            set(ForeignKeyTarget.objects.all()),
+        )
+
+    def test_limit_choices_to_on_serializer_field_overrides_model_field(self):
+        """
+        Test that when `limit_choices_to` is declared on a serializer field
+        that it correctly overrides the value declared on the model field.
+        """
+        ForeignKeyTarget.objects.create(name='foo')
+        ForeignKeyTarget.objects.create(name='bar')
+
+        class LimitChoicesSerializer(serializers.ModelSerializer):
+            rel = serializers.RelatedField(limit_choices_to={'name': 'bar'}, read_only=False)
+
+            class Meta:
+                model = LimitedChoicesModel
+                fields = ('rel',)
+
+        serializer = LimitChoicesSerializer()
+
+        field = serializer.fields['rel']
+        queryset = field.queryset
+
+        self.assertEqual(
+            set(queryset.all()),
+            set(ForeignKeyTarget.objects.filter(name='bar')),
+        )
+
+    def test_serializer_field_with_both_limit_choices_to_and_queryset_is_filtered(self):
+        """
+        Test that when both the `limit_choices_to` and `queryset` are declared
+        for a serializer field that the provided queryset is subsequently
+        filtered using the provided `limit_choices_to`.
+        """
+        ForeignKeyTarget.objects.create(name='foo')
+        only_choice = ForeignKeyTarget.objects.create(name='bar')
+        ForeignKeyTarget.objects.create(name='baz')
+        to_exclude = ForeignKeyTarget.objects.create(name='bar')
+
+        class LimitChoicesSerializer(serializers.ModelSerializer):
+            rel = serializers.RelatedField(
+                limit_choices_to={'name': 'bar'},
+                queryset=ForeignKeyTarget.objects.exclude(pk=to_exclude.pk),
+                read_only=False,
+            )
+
+            class Meta:
+                model = LimitedChoicesModel
+                fields = ('rel',)
+
+        serializer = LimitChoicesSerializer()
+
+        field = serializer.fields['rel']
+        queryset = field.queryset
+
+        self.assertEqual(
+            set(queryset.all()),
+            set(ForeignKeyTarget.objects.filter(pk=only_choice.pk)),
+        )
