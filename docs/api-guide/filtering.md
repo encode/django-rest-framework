@@ -193,7 +193,7 @@ filters using `Manufacturer` name. For example:
     class ProductFilter(django_filters.FilterSet):
         class Meta:
             model = Product
-            fields = ['category', 'in_stock', 'manufacturer__name`]
+            fields = ['category', 'in_stock', 'manufacturer__name']
 
 This enables us to make queries like:
 
@@ -211,7 +211,7 @@ This is nice, but it exposes the Django's double underscore convention as part o
 
         class Meta:
             model = Product
-            fields = ['category', 'in_stock', 'manufacturer`]
+            fields = ['category', 'in_stock', 'manufacturer']
 
 And now you can execute:
 
