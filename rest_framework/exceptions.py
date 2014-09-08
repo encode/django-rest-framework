@@ -29,11 +29,6 @@ class ParseError(APIException):
     default_detail = 'Malformed request.'
 
 
-class ValidationError(APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
-    default_detail = 'Invalid data in request.'
-
-
 class AuthenticationFailed(APIException):
     status_code = status.HTTP_401_UNAUTHORIZED
     default_detail = 'Incorrect authentication credentials.'

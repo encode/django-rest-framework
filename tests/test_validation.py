@@ -26,19 +26,6 @@ class UpdateValidationModel(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ValidationModelSerializer
 
 
-class TestPreSaveValidationExclusions(TestCase):
-    def test_pre_save_validation_exclusions(self):
-        """
-        Somewhat weird test case to ensure that we don't perform model
-        validation on read only fields.
-        """
-        obj = ValidationModel.objects.create(blank_validated_field='')
-        request = factory.put('/', {}, format='json')
-        view = UpdateValidationModel().as_view()
-        response = view(request, pk=obj.pk).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-
 # Regression for #653
 
 class ShouldValidateModel(models.Model):

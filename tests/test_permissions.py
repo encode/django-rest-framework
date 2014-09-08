@@ -95,19 +95,6 @@ class ModelPermissionsIntegrationTests(TestCase):
         response = instance_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_has_put_as_create_permissions(self):
-        # User only has update permissions - should be able to update an entity.
-        request = factory.put('/1', {'text': 'foobar'}, format='json',
-                              HTTP_AUTHORIZATION=self.updateonly_credentials)
-        response = instance_view(request, pk='1')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # But if PUTing to a new entity, permission should be denied.
-        request = factory.put('/2', {'text': 'foobar'}, format='json',
-                              HTTP_AUTHORIZATION=self.updateonly_credentials)
-        response = instance_view(request, pk='2')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
     # def test_options_permitted(self):
     #     request = factory.options(
     #         '/',

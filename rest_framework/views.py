@@ -3,7 +3,7 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
 
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import Http404
 from django.utils.datastructures import SortedDict
 from django.views.decorators.csrf import csrf_exempt
@@ -51,7 +51,8 @@ def exception_handler(exc):
     Returns the response that should be used for any given exception.
 
     By default we handle the REST framework `APIException`, and also
-    Django's builtin `Http404` and `PermissionDenied` exceptions.
+    Django's built-in `ValidationError`, `Http404` and `PermissionDenied`
+    exceptions.
 
     Any unhandled exceptions may return `None`, which will cause a 500 error
     to be raised.
@@ -67,6 +68,10 @@ def exception_handler(exc):
         return Response({'detail': exc.detail},
                         status=exc.status_code,
                         headers=headers)
+
+    elif isinstance(exc, ValidationError):
+        return Response(exc.message_dict,
+                        status=status.HTTP_400_BAD_REQUEST)
 
     elif isinstance(exc, Http404):
         return Response({'detail': 'Not found'},

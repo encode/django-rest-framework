@@ -1,41 +1,31 @@
-# from django.db import models
-# from django.test import TestCase
-# from rest_framework import serializers
+from django.test import TestCase
+from rest_framework import serializers
 
 
-# class ExampleModel(models.Model):
-#     email = models.EmailField(max_length=100)
-#     password = models.CharField(max_length=100)
+class WriteOnlyFieldTests(TestCase):
+    def setUp(self):
+        class ExampleSerializer(serializers.Serializer):
+            email = serializers.EmailField()
+            password = serializers.CharField(write_only=True)
 
+            def create(self, attrs):
+                return attrs
 
-# class WriteOnlyFieldTests(TestCase):
-#     def test_write_only_fields(self):
-#         class ExampleSerializer(serializers.Serializer):
-#             email = serializers.EmailField()
-#             password = serializers.CharField(write_only=True)
+        self.Serializer = ExampleSerializer
 
-#         data = {
-#             'email': 'foo@example.com',
-#             'password': '123'
-#         }
-#         serializer = ExampleSerializer(data=data)
-#         self.assertTrue(serializer.is_valid())
-#         self.assertEquals(serializer.validated_data, data)
-#         self.assertEquals(serializer.data, {'email': 'foo@example.com'})
+    def write_only_fields_are_present_on_input(self):
+        data = {
+            'email': 'foo@example.com',
+            'password': '123'
+        }
+        serializer = self.Serializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        self.assertEquals(serializer.validated_data, data)
 
-#     def test_write_only_fields_meta(self):
-#         class ExampleSerializer(serializers.ModelSerializer):
-#             class Meta:
-#                 model = ExampleModel
-#                 fields = ('email', 'password')
-#                 write_only_fields = ('password',)
-
-#         data = {
-#             'email': 'foo@example.com',
-#             'password': '123'
-#         }
-#         serializer = ExampleSerializer(data=data)
-#         self.assertTrue(serializer.is_valid())
-#         self.assertTrue(isinstance(serializer.object, ExampleModel))
-#         self.assertEquals(serializer.validated_data, data)
-#         self.assertEquals(serializer.data, {'email': 'foo@example.com'})
+    def write_only_fields_are_not_present_on_output(self):
+        instance = {
+            'email': 'foo@example.com',
+            'password': '123'
+        }
+        serializer = self.Serializer(instance)
+        self.assertEquals(serializer.data, {'email': 'foo@example.com'})

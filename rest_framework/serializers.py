@@ -10,10 +10,10 @@ python primitives.
 2. The process of marshalling between python primitives and request and
 response content is handled by parsers and renderers.
 """
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import six
 from collections import namedtuple, OrderedDict
-from rest_framework.exceptions import ValidationError
 from rest_framework.fields import empty, set_value, Field, SkipField
 from rest_framework.settings import api_settings
 from rest_framework.utils import html
@@ -58,13 +58,14 @@ class BaseSerializer(Field):
         raise NotImplementedError('`create()` must be implemented.')
 
     def save(self, extras=None):
+        attrs = self.validated_data
         if extras is not None:
-            self.validated_data.update(extras)
+            attrs = dict(list(attrs.items()) + list(extras.items()))
 
         if self.instance is not None:
-            self.update(self.instance, self._validated_data)
+            self.update(self.instance, attrs)
         else:
-            self.instance = self.create(self._validated_data)
+            self.instance = self.create(attrs)
 
         return self.instance
 
@@ -74,7 +75,7 @@ class BaseSerializer(Field):
                 self._validated_data = self.to_native(self._initial_data)
             except ValidationError as exc:
                 self._validated_data = {}
-                self._errors = exc.detail
+                self._errors = exc.message_dict
             else:
                 self._errors = {}
 
@@ -210,7 +211,7 @@ class Serializer(BaseSerializer):
                 if validate_method is not None:
                     validated_value = validate_method(validated_value)
             except ValidationError as exc:
-                errors[field.field_name] = str(exc)
+                errors[field.field_name] = exc.messages
             except SkipField:
                 pass
             else:
@@ -219,8 +220,10 @@ class Serializer(BaseSerializer):
         if errors:
             raise ValidationError(errors)
 
-        # TODO: 'Non field errors'
-        return self.validate(ret)
+        try:
+            return self.validate(ret)
+        except ValidationError, exc:
+            raise ValidationError({'non_field_errors': exc.messages})
 
     def to_primative(self, instance):
         """
@@ -539,6 +542,9 @@ class ModelSerializer(Serializer):
         if model_field.verbose_name is not None:
             kwargs['label'] = model_field.verbose_name
 
+        if model_field.validators is not None:
+            kwargs['validators'] = model_field.validators
+
         # if model_field.help_text is not None:
         #     kwargs['help_text'] = model_field.help_text
 
@@ -577,8 +583,7 @@ class ModelSerializer(Serializer):
         try:
             return self.field_mapping[model_field.__class__](**kwargs)
         except KeyError:
-            # TODO: Change this to `return ModelField(model_field=model_field, **kwargs)`
-            return CharField(**kwargs)
+            return ModelField(model_field=model_field, **kwargs)
 
 
 class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
