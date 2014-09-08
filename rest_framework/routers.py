@@ -284,7 +284,7 @@ class DefaultRouter(SimpleRouter):
         class APIRoot(views.APIView):
             _ignore_model_permissions = True
 
-            def get(self, request, format=None):
+            def get(self, request, format=None, *args, **kwargs):
                 ret = {}
                 for key, url_name in api_root_dict.items():
                     ret[key] = reverse(url_name, request=request, format=format)
