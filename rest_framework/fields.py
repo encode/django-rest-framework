@@ -563,7 +563,7 @@ class ChoiceField(WritableField):
             if isinstance(v, (list, tuple)):
                 # This is an optgroup, so look inside the group for options
                 for k2, v2 in v:
-                    if value == smart_text(k2):
+                    if value == smart_text(k2) or value == k2:
                         return True
             else:
                 if value == smart_text(k) or value == k:

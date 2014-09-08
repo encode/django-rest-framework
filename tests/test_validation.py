@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from django.core.validators import MaxValueValidator
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.test import TestCase
 from rest_framework import generics, serializers, status
@@ -146,3 +147,42 @@ class TestMaxValueValidatorValidation(TestCase):
         response = view(request, pk=obj.pk).render()
         self.assertEqual(response.content, b'{"number_value": ["Ensure this value is less than or equal to 100."]}')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class TestChoiceFieldChoicesValidate(TestCase):
+    CHOICES = [
+        (0, 'Small'),
+        (1, 'Medium'),
+        (2, 'Large'),
+    ]
+
+    CHOICES_NESTED = [
+        ('Category', (
+            (1, 'First'),
+            (2, 'Second'),
+            (3, 'Third'),
+        )),
+        (4, 'Fourth'),
+    ]
+
+    def test_choices(self):
+        """
+        Make sure a value for choices works as expected.
+        """
+        f = serializers.ChoiceField(choices=self.CHOICES)
+        value = self.CHOICES[0][0]
+        try:
+            f.validate(value)
+        except ValidationError:
+            self.fail("Value %s does not validate" % str(value))
+
+    def test_nested_choices(self):
+        """
+        Make sure a nested value for choices works as expected.
+        """
+        f = serializers.ChoiceField(choices=self.CHOICES_NESTED)
+        value = self.CHOICES_NESTED[0][1][0][0]
+        try:
+            f.validate(value)
+        except ValidationError:
+            self.fail("Value %s does not validate" % str(value))
