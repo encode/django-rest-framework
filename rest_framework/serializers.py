@@ -10,15 +10,15 @@ python primitives.
 2. The process of marshalling between python primitives and request and
 response content is handled by parsers and renderers.
 """
+from django.core import validators
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import six
 from collections import namedtuple, OrderedDict
 from rest_framework.fields import empty, set_value, Field, SkipField
 from rest_framework.settings import api_settings
-from rest_framework.utils import html
+from rest_framework.utils import html, modelinfo, representation
 import copy
-import inspect
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -146,12 +146,10 @@ class SerializerMetaclass(type):
 class Serializer(BaseSerializer):
 
     def __new__(cls, *args, **kwargs):
-        many = kwargs.pop('many', False)
-        if many:
-            class DynamicListSerializer(ListSerializer):
-                child = cls()
-            return DynamicListSerializer(*args, **kwargs)
-        return super(Serializer, cls).__new__(cls)
+        if kwargs.pop('many', False):
+            kwargs['child'] = cls()
+            return ListSerializer(*args, **kwargs)
+        return super(Serializer, cls).__new__(cls, *args, **kwargs)
 
     def __init__(self, *args, **kwargs):
         self.context = kwargs.pop('context', {})
@@ -248,6 +246,9 @@ class Serializer(BaseSerializer):
             error = errors.get(field.field_name)
             yield FieldResult(field, value, error)
 
+    def __repr__(self):
+        return representation.serializer_repr(self, indent=1)
+
 
 class ListSerializer(BaseSerializer):
     child = None
@@ -299,26 +300,8 @@ class ListSerializer(BaseSerializer):
         self.instance = self.create(self.validated_data)
         return self.instance
 
-
-def _resolve_model(obj):
-    """
-    Resolve supplied `obj` to a Django model class.
-
-    `obj` must be a Django model class itself, or a string
-    representation of one.  Useful in situtations like GH #1225 where
-    Django may not have resolved a string-based reference to a model in
-    another model's foreign key definition.
-
-    String representations should have the format:
-        'appname.ModelName'
-    """
-    if isinstance(obj, six.string_types) and len(obj.split('.')) == 2:
-        app_name, model_name = obj.split('.')
-        return models.get_model(app_name, model_name)
-    elif inspect.isclass(obj) and issubclass(obj, models.Model):
-        return obj
-    else:
-        raise ValueError("{0} is not a Django model".format(obj))
+    def __repr__(self):
+        return representation.list_repr(self, indent=1)
 
 
 class ModelSerializerOptions(object):
@@ -334,24 +317,25 @@ class ModelSerializerOptions(object):
 class ModelSerializer(Serializer):
     field_mapping = {
         models.AutoField: IntegerField,
-        # models.FloatField: FloatField,
-        models.IntegerField: IntegerField,
-        models.PositiveIntegerField: IntegerField,
-        models.SmallIntegerField: IntegerField,
-        models.PositiveSmallIntegerField: IntegerField,
-        models.DateTimeField: DateTimeField,
-        models.DateField: DateField,
-        models.TimeField: TimeField,
-        # models.DecimalField: DecimalField,
-        models.EmailField: EmailField,
-        models.CharField: CharField,
-        models.URLField: URLField,
-        # models.SlugField: SlugField,
-        models.TextField: CharField,
-        models.CommaSeparatedIntegerField: CharField,
+        models.BigIntegerField: IntegerField,
         models.BooleanField: BooleanField,
-        models.NullBooleanField: BooleanField,
+        models.CharField: CharField,
+        models.CommaSeparatedIntegerField: CharField,
+        models.DateField: DateField,
+        models.DateTimeField: DateTimeField,
+        models.DecimalField: DecimalField,
+        models.EmailField: EmailField,
         models.FileField: FileField,
+        models.FloatField: FloatField,
+        models.IntegerField: IntegerField,
+        models.NullBooleanField: BooleanField,
+        models.PositiveIntegerField: IntegerField,
+        models.PositiveSmallIntegerField: IntegerField,
+        models.SlugField: SlugField,
+        models.SmallIntegerField: IntegerField,
+        models.TextField: CharField,
+        models.TimeField: TimeField,
+        models.URLField: URLField,
         # models.ImageField: ImageField,
     }
 
@@ -392,85 +376,31 @@ class ModelSerializer(Serializer):
         """
         Return all the fields that should be serialized for the model.
         """
-        cls = self.opts.model
-        opts = cls._meta.concrete_model._meta
+        info = modelinfo.get_field_info(self.opts.model)
         ret = OrderedDict()
-        nested = bool(self.opts.depth)
 
-        # Deal with adding the primary key field
-        pk_field = opts.pk
-        while pk_field.rel and pk_field.rel.parent_link:
-            # If model is a child via multitable inheritance, use parent's pk
-            pk_field = pk_field.rel.to._meta.pk
-
-        serializer_pk_field = self.get_pk_field(pk_field)
+        serializer_pk_field = self.get_pk_field(info.pk)
         if serializer_pk_field:
-            ret[pk_field.name] = serializer_pk_field
+            ret[info.pk.name] = serializer_pk_field
 
-        # Deal with forward relationships
-        forward_rels = [field for field in opts.fields if field.serialize]
-        forward_rels += [field for field in opts.many_to_many if field.serialize]
+        # Regular fields
+        for field_name, field in info.fields.items():
+            ret[field_name] = self.get_field(field)
 
-        for model_field in forward_rels:
-            has_through_model = False
-
-            if model_field.rel:
-                to_many = isinstance(model_field,
-                                     models.fields.related.ManyToManyField)
-                related_model = _resolve_model(model_field.rel.to)
-
-                if to_many and not model_field.rel.through._meta.auto_created:
-                    has_through_model = True
-
-            if model_field.rel and nested:
-                field = self.get_nested_field(model_field, related_model, to_many)
-            elif model_field.rel:
-                field = self.get_related_field(model_field, related_model, to_many)
+        # Forward relations
+        for field_name, relation_info in info.forward_relations.items():
+            if self.opts.depth:
+                ret[field_name] = self.get_nested_field(*relation_info)
             else:
-                field = self.get_field(model_field)
+                ret[field_name] = self.get_related_field(*relation_info)
 
-            if field:
-                if has_through_model:
-                    field.read_only = True
-
-                ret[model_field.name] = field
-
-        # Deal with reverse relationships
-        if not self.opts.fields:
-            reverse_rels = []
-        else:
-            # Reverse relationships are only included if they are explicitly
-            # present in the `fields` option on the serializer
-            reverse_rels = opts.get_all_related_objects()
-            reverse_rels += opts.get_all_related_many_to_many_objects()
-
-        for relation in reverse_rels:
-            accessor_name = relation.get_accessor_name()
-            if not self.opts.fields or accessor_name not in self.opts.fields:
-                continue
-            related_model = relation.model
-            to_many = relation.field.rel.multiple
-            has_through_model = False
-            is_m2m = isinstance(relation.field,
-                                models.fields.related.ManyToManyField)
-
-            if (
-                is_m2m and
-                hasattr(relation.field.rel, 'through') and
-                not relation.field.rel.through._meta.auto_created
-            ):
-                has_through_model = True
-
-            if nested:
-                field = self.get_nested_field(None, related_model, to_many)
-            else:
-                field = self.get_related_field(None, related_model, to_many)
-
-            if field:
-                if has_through_model:
-                    field.read_only = True
-
-                ret[accessor_name] = field
+        # Reverse relations
+        for accessor_name, relation_info in info.reverse_relations.items():
+            if accessor_name in self.opts.fields:
+                if self.opts.depth:
+                    ret[field_name] = self.get_nested_field(*relation_info)
+                else:
+                    ret[field_name] = self.get_related_field(*relation_info)
 
         return ret
 
@@ -480,7 +410,7 @@ class ModelSerializer(Serializer):
         """
         return self.get_field(model_field)
 
-    def get_nested_field(self, model_field, related_model, to_many):
+    def get_nested_field(self, model_field, related_model, to_many, has_through_model):
         """
         Creates a default instance of a nested relational field.
 
@@ -491,59 +421,148 @@ class ModelSerializer(Serializer):
                 model = related_model
                 depth = self.opts.depth - 1
 
-        return NestedModelSerializer(many=to_many)
+        kwargs = {'read_only': True}
+        if to_many:
+            kwargs['many'] = True
+        return NestedModelSerializer(**kwargs)
 
-    def get_related_field(self, model_field, related_model, to_many):
+    def get_related_field(self, model_field, related_model, to_many, has_through_model):
         """
         Creates a default instance of a flat relational field.
 
         Note that model_field will be `None` for reverse relationships.
         """
-        # TODO: filter queryset using:
-        # .using(db).complex_filter(self.rel.limit_choices_to)
+        kwargs = {
+            'queryset': related_model._default_manager,
+        }
 
-        kwargs = {}
-        #     'queryset': related_model._default_manager,
-        #     'many': to_many
-        # }
+        if to_many:
+            kwargs['many'] = True
+
+        if has_through_model:
+            kwargs['read_only'] = True
+            kwargs.pop('queryset', None)
 
         if model_field:
-            kwargs['required'] = not(model_field.null or model_field.blank)
+            if model_field.null or model_field.blank:
+                kwargs['required'] = False
             #  if model_field.help_text is not None:
             #      kwargs['help_text'] = model_field.help_text
             if model_field.verbose_name is not None:
                 kwargs['label'] = model_field.verbose_name
             if not model_field.editable:
                 kwargs['read_only'] = True
-            if model_field.verbose_name is not None:
-                kwargs['label'] = model_field.verbose_name
+                kwargs.pop('queryset', None)
 
-        return IntegerField(**kwargs)
-        # TODO: return PrimaryKeyRelatedField(**kwargs)
+        return PrimaryKeyRelatedField(**kwargs)
 
     def get_field(self, model_field):
         """
         Creates a default instance of a basic non-relational field.
         """
         kwargs = {}
+        validator_kwarg = model_field.validators
 
         if model_field.null or model_field.blank:
             kwargs['required'] = False
 
-        if isinstance(model_field, models.AutoField) or not model_field.editable:
-            kwargs['read_only'] = True
-
-        if model_field.has_default():
-            kwargs['default'] = model_field.get_default()
-
-        if issubclass(model_field.__class__, models.TextField):
-            kwargs['widget'] = widgets.Textarea
-
         if model_field.verbose_name is not None:
             kwargs['label'] = model_field.verbose_name
 
-        if model_field.validators is not None:
-            kwargs['validators'] = model_field.validators
+        if isinstance(model_field, models.AutoField) or not model_field.editable:
+            kwargs['read_only'] = True
+            # Read only implies that the field is not required.
+            # We have a cleaner repr on the instance if we don't set it.
+            kwargs.pop('required', None)
+
+        if model_field.has_default():
+            kwargs['default'] = model_field.get_default()
+            # Having a default implies that the field is not required.
+            # We have a cleaner repr on the instance if we don't set it.
+            kwargs.pop('required', None)
+
+        # Ensure that max_length is passed explicitly as a keyword arg,
+        # rather than as a validator.
+        max_length = getattr(model_field, 'max_length', None)
+        if max_length is not None:
+            kwargs['max_length'] = max_length
+            validator_kwarg = [
+                validator for validator in validator_kwarg
+                if not isinstance(validator, validators.MaxLengthValidator)
+            ]
+
+        # Ensure that min_length is passed explicitly as a keyword arg,
+        # rather than as a validator.
+        min_length = getattr(model_field, 'min_length', None)
+        if min_length is not None:
+            kwargs['min_length'] = min_length
+            validator_kwarg = [
+                validator for validator in validator_kwarg
+                if not isinstance(validator, validators.MinLengthValidator)
+            ]
+
+        # Ensure that max_value is passed explicitly as a keyword arg,
+        # rather than as a validator.
+        max_value = next((
+            validator.limit_value for validator in validator_kwarg
+            if isinstance(validator, validators.MaxValueValidator)
+        ), None)
+        if max_value is not None:
+            kwargs['max_value'] = max_value
+            validator_kwarg = [
+                validator for validator in validator_kwarg
+                if not isinstance(validator, validators.MaxValueValidator)
+            ]
+
+        # Ensure that max_value is passed explicitly as a keyword arg,
+        # rather than as a validator.
+        min_value = next((
+            validator.limit_value for validator in validator_kwarg
+            if isinstance(validator, validators.MinValueValidator)
+        ), None)
+        if min_value is not None:
+            kwargs['min_value'] = min_value
+            validator_kwarg = [
+                validator for validator in validator_kwarg
+                if not isinstance(validator, validators.MinValueValidator)
+            ]
+
+        # URLField does not need to include the URLValidator argument,
+        # as it is explicitly added in.
+        if isinstance(model_field, models.URLField):
+            validator_kwarg = [
+                validator for validator in validator_kwarg
+                if not isinstance(validator, validators.URLValidator)
+            ]
+
+        # EmailField does not need to include the validate_email argument,
+        # as it is explicitly added in.
+        if isinstance(model_field, models.EmailField):
+            validator_kwarg = [
+                validator for validator in validator_kwarg
+                if validator is not validators.validate_email
+            ]
+
+        # SlugField do not need to include the 'validate_slug' argument,
+        if isinstance(model_field, models.SlugField):
+            validator_kwarg = [
+                validator for validator in validator_kwarg
+                if validator is not validators.validate_slug
+            ]
+
+        max_digits = getattr(model_field, 'max_digits', None)
+        if max_digits is not None:
+            kwargs['max_digits'] = max_digits
+
+        decimal_places = getattr(model_field, 'decimal_places', None)
+        if decimal_places is not None:
+            kwargs['decimal_places'] = decimal_places
+
+        if validator_kwarg:
+            kwargs['validators'] = validator_kwarg
+
+        # if issubclass(model_field.__class__, models.TextField):
+        #     kwargs['widget'] = widgets.Textarea
 
         # if model_field.help_text is not None:
         #     kwargs['help_text'] = model_field.help_text
@@ -555,30 +574,9 @@ class ModelSerializer(Serializer):
                 kwargs['empty'] = None
             return ChoiceField(**kwargs)
 
-        # put this below the ChoiceField because min_value isn't a valid initializer
-        if issubclass(model_field.__class__, models.PositiveIntegerField) or \
-                issubclass(model_field.__class__, models.PositiveSmallIntegerField):
-            kwargs['min_value'] = 0
-
         if model_field.null and \
                 issubclass(model_field.__class__, (models.CharField, models.TextField)):
             kwargs['allow_none'] = True
-
-        # attribute_dict = {
-        #     models.CharField: ['max_length'],
-        #     models.CommaSeparatedIntegerField: ['max_length'],
-        #     models.DecimalField: ['max_digits', 'decimal_places'],
-        #     models.EmailField: ['max_length'],
-        #     models.FileField: ['max_length'],
-        #     models.ImageField: ['max_length'],
-        #     models.SlugField: ['max_length'],
-        #     models.URLField: ['max_length'],
-        # }
-
-        # if model_field.__class__ in attribute_dict:
-        #     attributes = attribute_dict[model_field.__class__]
-        #     for attribute in attributes:
-        #         kwargs.update({attribute: getattr(model_field, attribute)})
 
         try:
             return self.field_mapping[model_field.__class__](**kwargs)
@@ -594,28 +592,21 @@ class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
         super(HyperlinkedModelSerializerOptions, self).__init__(meta)
         self.view_name = getattr(meta, 'view_name', None)
         self.lookup_field = getattr(meta, 'lookup_field', None)
-        self.url_field_name = getattr(meta, 'url_field_name', api_settings.URL_FIELD_NAME)
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
     _options_class = HyperlinkedModelSerializerOptions
-    _default_view_name = '%(model_name)s-detail'
-    _hyperlink_field_class = HyperlinkedRelatedField
-    _hyperlink_identify_field_class = HyperlinkedIdentityField
 
     def get_default_fields(self):
         fields = super(HyperlinkedModelSerializer, self).get_default_fields()
 
         if self.opts.view_name is None:
-            self.opts.view_name = self._get_default_view_name(self.opts.model)
+            self.opts.view_name = self.get_default_view_name(self.opts.model)
 
-        if self.opts.url_field_name not in fields:
-            url_field = self._hyperlink_identify_field_class(
-                view_name=self.opts.view_name,
-                lookup_field=self.opts.lookup_field
-            )
+        url_field_name = api_settings.URL_FIELD_NAME
+        if url_field_name not in fields:
             ret = fields.__class__()
-            ret[self.opts.url_field_name] = url_field
+            ret[url_field_name] = self.get_url_field()
             ret.update(fields)
             fields = ret
 
@@ -625,39 +616,48 @@ class HyperlinkedModelSerializer(ModelSerializer):
         if self.opts.fields and model_field.name in self.opts.fields:
             return self.get_field(model_field)
 
-    def get_related_field(self, model_field, related_model, to_many):
+    def get_url_field(self):
+        kwargs = {
+            'view_name': self.get_default_view_name(self.opts.model)
+        }
+        if self.opts.lookup_field:
+            kwargs['lookup_field'] = self.opts.lookup_field
+        return HyperlinkedIdentityField(**kwargs)
+
+    def get_related_field(self, model_field, related_model, to_many, has_through_model):
         """
         Creates a default instance of a flat relational field.
         """
-        # TODO: filter queryset using:
-        # .using(db).complex_filter(self.rel.limit_choices_to)
-        # kwargs = {
-        #     'queryset': related_model._default_manager,
-        #     'view_name': self._get_default_view_name(related_model),
-        #     'many': to_many
-        # }
-        kwargs = {}
+        kwargs = {
+            'queryset': related_model._default_manager,
+            'view_name': self.get_default_view_name(related_model),
+        }
+
+        if to_many:
+            kwargs['many'] = True
+
+        if has_through_model:
+            kwargs['read_only'] = True
+            kwargs.pop('queryset', None)
 
         if model_field:
-            kwargs['required'] = not(model_field.null or model_field.blank)
+            if model_field.null or model_field.blank:
+                kwargs['required'] = False
             # if model_field.help_text is not None:
             #     kwargs['help_text'] = model_field.help_text
             if model_field.verbose_name is not None:
                 kwargs['label'] = model_field.verbose_name
+            if not model_field.editable:
+                kwargs['read_only'] = True
+                kwargs.pop('queryset', None)
 
-        return IntegerField(**kwargs)
-        # if self.opts.lookup_field:
-        #     kwargs['lookup_field'] = self.opts.lookup_field
+        return HyperlinkedRelatedField(**kwargs)
 
-        # return self._hyperlink_field_class(**kwargs)
-
-    def _get_default_view_name(self, model):
+    def get_default_view_name(self, model):
         """
-        Return the view name to use if 'view_name' is not specified in 'Meta'
+        Return the view name to use for related models.
         """
-        model_meta = model._meta
-        format_kwargs = {
-            'app_label': model_meta.app_label,
-            'model_name': model_meta.object_name.lower()
+        return '%(model_name)s-detail' % {
+            'app_label': model._meta.app_label,
+            'model_name': model._meta.object_name.lower()
         }
-        return self._default_view_name % format_kwargs

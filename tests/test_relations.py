@@ -22,18 +22,18 @@
 #         https://github.com/tomchristie/django-rest-framework/issues/446
 #         """
 #         field = serializers.PrimaryKeyRelatedField(queryset=NullModel.objects.all())
-#         self.assertRaises(serializers.ValidationError, field.from_native, '')
-#         self.assertRaises(serializers.ValidationError, field.from_native, [])
+#         self.assertRaises(serializers.ValidationError, field.to_primative, '')
+#         self.assertRaises(serializers.ValidationError, field.to_primative, [])
 
 #     def test_hyperlinked_related_field_with_empty_string(self):
 #         field = serializers.HyperlinkedRelatedField(queryset=NullModel.objects.all(), view_name='')
-#         self.assertRaises(serializers.ValidationError, field.from_native, '')
-#         self.assertRaises(serializers.ValidationError, field.from_native, [])
+#         self.assertRaises(serializers.ValidationError, field.to_primative, '')
+#         self.assertRaises(serializers.ValidationError, field.to_primative, [])
 
 #     def test_slug_related_field_with_empty_string(self):
 #         field = serializers.SlugRelatedField(queryset=NullModel.objects.all(), slug_field='pk')
-#         self.assertRaises(serializers.ValidationError, field.from_native, '')
-#         self.assertRaises(serializers.ValidationError, field.from_native, [])
+#         self.assertRaises(serializers.ValidationError, field.to_primative, '')
+#         self.assertRaises(serializers.ValidationError, field.to_primative, [])
 
 
 # class TestManyRelatedMixin(TestCase):

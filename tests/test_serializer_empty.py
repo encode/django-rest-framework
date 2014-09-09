@@ -6,7 +6,7 @@
 #     def test_empty_serializer(self):
 #         class FooBarSerializer(serializers.Serializer):
 #             foo = serializers.IntegerField()
-#             bar = serializers.SerializerMethodField('get_bar')
+#             bar = serializers.MethodField()
 
 #             def get_bar(self, obj):
 #                 return 'bar'
