@@ -205,7 +205,7 @@ class Serializer(BaseSerializer):
             validate_method = getattr(self, 'validate_' + field.field_name, None)
             primitive_value = field.get_value(data)
             try:
-                validated_value = field.validate(primitive_value)
+                validated_value = field.validate_value(primitive_value)
                 if validate_method is not None:
                     validated_value = validate_method(validated_value)
             except ValidationError as exc:
@@ -327,6 +327,7 @@ class ModelSerializer(Serializer):
         models.EmailField: EmailField,
         models.FileField: FileField,
         models.FloatField: FloatField,
+        models.ImageField: ImageField,
         models.IntegerField: IntegerField,
         models.NullBooleanField: BooleanField,
         models.PositiveIntegerField: IntegerField,
@@ -336,7 +337,6 @@ class ModelSerializer(Serializer):
         models.TextField: CharField,
         models.TimeField: TimeField,
         models.URLField: URLField,
-        # models.ImageField: ImageField,
     }
 
     _options_class = ModelSerializerOptions

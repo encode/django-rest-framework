@@ -190,7 +190,7 @@ class Field(object):
             raise SkipField()
         return self.default
 
-    def validate(self, data=empty):
+    def validate_value(self, data=empty):
         """
         Validate a simple representation and return the internal value.
 
@@ -506,6 +506,7 @@ class DateField(Field):
                 default_timezone = timezone.get_default_timezone()
                 value = timezone.make_naive(value, default_timezone)
             return value.date()
+
         if isinstance(value, datetime.date):
             return value
 
@@ -560,6 +561,7 @@ class DateTimeField(Field):
 
         if isinstance(value, datetime.datetime):
             return value
+
         if isinstance(value, datetime.date):
             value = datetime.datetime(value.year, value.month, value.day)
             if settings.USE_TZ:
@@ -675,7 +677,7 @@ class ChoiceField(Field):
             for item in choices
         ]
         if all(pairs):
-            self.choices = {key: val for key, val in choices}
+            self.choices = {key: display_value for key, display_value in choices}
         else:
             self.choices = {item: item for item in choices}
 
