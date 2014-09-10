@@ -14,7 +14,8 @@ from django.core import validators
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import six
-from collections import namedtuple, OrderedDict
+from django.utils.datastructures import SortedDict
+from collections import namedtuple
 from rest_framework.compat import clean_manytomany_helptext
 from rest_framework.fields import empty, set_value, Field, SkipField
 from rest_framework.settings import api_settings
@@ -91,10 +92,10 @@ class BaseSerializer(Field):
             if self.instance is not None:
                 self._data = self.to_primative(self.instance)
             elif self._initial_data is not None:
-                self._data = {
-                    field_name: field.get_value(self._initial_data)
+                self._data = dict([
+                    (field_name, field.get_value(self._initial_data))
                     for field_name, field in self.fields.items()
-                }
+                ])
             else:
                 self._data = self.get_initial()
         return self._data
@@ -137,7 +138,7 @@ class SerializerMetaclass(type):
             if hasattr(base, 'base_fields'):
                 fields = list(base.base_fields.items()) + fields
 
-        return OrderedDict(fields)
+        return SortedDict(fields)
 
     def __new__(cls, name, bases, attrs):
         attrs['base_fields'] = cls._get_fields(bases, attrs)
@@ -180,10 +181,10 @@ class Serializer(BaseSerializer):
             field.bind(field_name, self, root)
 
     def get_initial(self):
-        return {
-            field.field_name: field.get_initial()
+        return dict([
+            (field.field_name, field.get_initial())
             for field in self.fields.values()
-        }
+        ])
 
     def get_value(self, dictionary):
         # We override the default field access in order to support
@@ -222,14 +223,14 @@ class Serializer(BaseSerializer):
 
         try:
             return self.validate(ret)
-        except ValidationError, exc:
+        except ValidationError as exc:
             raise ValidationError({'non_field_errors': exc.messages})
 
     def to_primative(self, instance):
         """
         Object instance -> Dict of primitive datatypes.
         """
-        ret = OrderedDict()
+        ret = SortedDict()
         fields = [field for field in self.fields.values() if not field.write_only]
 
         for field in fields:
@@ -368,7 +369,7 @@ class ModelSerializer(Serializer):
         # If `fields` is set on the `Meta` class,
         # then use only those fields, and in that order.
         if self.opts.fields:
-            fields = OrderedDict([
+            fields = SortedDict([
                 (key, fields[key]) for key in self.opts.fields
             ])
 
@@ -379,7 +380,7 @@ class ModelSerializer(Serializer):
         Return all the fields that should be serialized for the model.
         """
         info = modelinfo.get_field_info(self.opts.model)
-        ret = OrderedDict()
+        ret = SortedDict()
 
         serializer_url_field = self.get_url_field()
         if serializer_url_field:

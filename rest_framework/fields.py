@@ -266,8 +266,8 @@ class BooleanField(Field):
     default_error_messages = {
         'invalid': _('`{input}` is not a valid boolean.')
     }
-    TRUE_VALUES = {'t', 'T', 'true', 'True', 'TRUE', '1', 1, True}
-    FALSE_VALUES = {'f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False}
+    TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
+    FALSE_VALUES = set(('f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False))
 
     def get_value(self, dictionary):
         if html.is_html_input(dictionary):
@@ -678,16 +678,16 @@ class ChoiceField(Field):
             for item in choices
         ]
         if all(pairs):
-            self.choices = {key: display_value for key, display_value in choices}
+            self.choices = dict([(key, display_value) for key, display_value in choices])
         else:
-            self.choices = {item: item for item in choices}
+            self.choices = dict([(item, item) for item in choices])
 
         # Map the string representation of choices to the underlying value.
         # Allows us to deal with eg. integer choices while supporting either
         # integer or string input, but still get the correct datatype out.
-        self.choice_strings_to_values = {
-            str(key): key for key in self.choices.keys()
-        }
+        self.choice_strings_to_values = dict([
+            (str(key), key) for key in self.choices.keys()
+        ])
 
         super(ChoiceField, self).__init__(**kwargs)
 

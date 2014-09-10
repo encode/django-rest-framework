@@ -2,9 +2,10 @@
 Helper functions for returning the field information that is associated
 with a model class.
 """
-from collections import namedtuple, OrderedDict
+from collections import namedtuple
 from django.db import models
 from django.utils import six
+from django.utils.datastructures import SortedDict
 import inspect
 
 FieldInfo = namedtuple('FieldResult', ['pk', 'fields', 'forward_relations', 'reverse_relations'])
@@ -45,12 +46,12 @@ def get_field_info(model):
         pk = pk.rel.to._meta.pk
 
     # Deal with regular fields.
-    fields = OrderedDict()
+    fields = SortedDict()
     for field in [field for field in opts.fields if field.serialize and not field.rel]:
         fields[field.name] = field
 
     # Deal with forward relationships.
-    forward_relations = OrderedDict()
+    forward_relations = SortedDict()
     for field in [field for field in opts.fields if field.serialize and field.rel]:
         forward_relations[field.name] = RelationInfo(
             field=field,
@@ -71,7 +72,7 @@ def get_field_info(model):
         )
 
     # Deal with reverse relationships.
-    reverse_relations = OrderedDict()
+    reverse_relations = SortedDict()
     for relation in opts.get_all_related_objects():
         accessor_name = relation.get_accessor_name()
         reverse_relations[accessor_name] = RelationInfo(

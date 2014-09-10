@@ -110,8 +110,18 @@ def get_concrete_model(model_cls):
         return model_cls
 
 
+# View._allowed_methods only present from 1.5 onwards
+if django.VERSION >= (1, 5):
+    from django.views.generic import View
+else:
+    from django.views.generic import View as DjangoView
+
+    class View(DjangoView):
+        def _allowed_methods(self):
+            return [m.upper() for m in self.http_method_names if hasattr(self, m)]
+
+
 # PATCH method is not implemented by Django
-from django.views.generic import View
 if 'patch' not in View.http_method_names:
     View.http_method_names = View.http_method_names + ['patch']
 
