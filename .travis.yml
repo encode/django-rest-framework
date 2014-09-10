@@ -22,7 +22,7 @@ env:
     - TOX_ENV=py2.6-django1.4
 
 install:
-  - "pip install tox --download-cache $HOME/.pip-cache"
+  - "travis_retry pip install tox --download-cache $HOME/.pip-cache"
 
 script:
     - tox -e $TOX_ENV
