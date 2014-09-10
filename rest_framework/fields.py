@@ -101,7 +101,8 @@ class Field(object):
 
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=None, source=None,
-                 label=None, style=None, error_messages=None, validators=[]):
+                 label=None, help_text=None, style=None,
+                 error_messages=None, validators=[]):
         self._creation_counter = Field._creation_counter
         Field._creation_counter += 1
 
@@ -122,6 +123,7 @@ class Field(object):
         self.source = source
         self.initial = initial
         self.label = label
+        self.help_text = help_text
         self.style = {} if style is None else style
         self.validators = validators or self.default_validators[:]
 
@@ -372,7 +374,6 @@ class IntegerField(Field):
             self.validators.append(validators.MaxValueValidator(max_value))
         if min_value is not None:
             self.validators.append(validators.MinValueValidator(min_value))
-        print self.__class__.__name__, self.validators
 
     def to_native(self, data):
         try:

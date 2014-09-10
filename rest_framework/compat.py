@@ -39,6 +39,17 @@ except ImportError:
     django_filters = None
 
 
+if django.VERSION >= (1, 6):
+    def clean_manytomany_helptext(text):
+        return text
+else:
+    # Up to version 1.5 many to many fields automatically suffix
+    # the `help_text` attribute with hardcoded text.
+    def clean_manytomany_helptext(text):
+        if text.endswith(' Hold down "Control", or "Command" on a Mac, to select more than one.'):
+            text = text[:-69]
+        return text
+
 # Django-guardian is optional. Import only if guardian is in INSTALLED_APPS
 # Fixes (#1712). We keep the try/except for the test suite.
 guardian = None
@@ -99,18 +110,8 @@ def get_concrete_model(model_cls):
         return model_cls
 
 
-# View._allowed_methods only present from 1.5 onwards
-if django.VERSION >= (1, 5):
-    from django.views.generic import View
-else:
-    from django.views.generic import View as DjangoView
-
-    class View(DjangoView):
-        def _allowed_methods(self):
-            return [m.upper() for m in self.http_method_names if hasattr(self, m)]
-
-
 # PATCH method is not implemented by Django
+from django.views.generic import View
 if 'patch' not in View.http_method_names:
     View.http_method_names = View.http_method_names + ['patch']
 

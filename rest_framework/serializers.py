@@ -15,6 +15,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import six
 from collections import namedtuple, OrderedDict
+from rest_framework.compat import clean_manytomany_helptext
 from rest_framework.fields import empty, set_value, Field, SkipField
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, modelinfo, representation
@@ -117,8 +118,9 @@ class SerializerMetaclass(type):
     """
     This metaclass sets a dictionary named `base_fields` on the class.
 
-    Any fields included as attributes on either the class or it's superclasses
-    will be include in the `base_fields` dictionary.
+    Any instances of `Field` included as attributes on either the class
+    or on any of its superclasses will be include in the
+    `base_fields` dictionary.
     """
 
     @classmethod
@@ -379,6 +381,10 @@ class ModelSerializer(Serializer):
         info = modelinfo.get_field_info(self.opts.model)
         ret = OrderedDict()
 
+        serializer_url_field = self.get_url_field()
+        if serializer_url_field:
+            ret[api_settings.URL_FIELD_NAME] = serializer_url_field
+
         serializer_pk_field = self.get_pk_field(info.pk)
         if serializer_pk_field:
             ret[info.pk.name] = serializer_pk_field
@@ -403,6 +409,9 @@ class ModelSerializer(Serializer):
                     ret[field_name] = self.get_related_field(*relation_info)
 
         return ret
+
+    def get_url_field(self):
+        return None
 
     def get_pk_field(self, model_field):
         """
@@ -446,13 +455,14 @@ class ModelSerializer(Serializer):
         if model_field:
             if model_field.null or model_field.blank:
                 kwargs['required'] = False
-            #  if model_field.help_text is not None:
-            #      kwargs['help_text'] = model_field.help_text
-            if model_field.verbose_name is not None:
+            if model_field.verbose_name:
                 kwargs['label'] = model_field.verbose_name
             if not model_field.editable:
                 kwargs['read_only'] = True
                 kwargs.pop('queryset', None)
+            help_text = clean_manytomany_helptext(model_field.help_text)
+            if help_text:
+                kwargs['help_text'] = help_text
 
         return PrimaryKeyRelatedField(**kwargs)
 
@@ -469,6 +479,9 @@ class ModelSerializer(Serializer):
         if model_field.verbose_name is not None:
             kwargs['label'] = model_field.verbose_name
 
+        if model_field.help_text:
+            kwargs['help_text'] = model_field.help_text
+
         if isinstance(model_field, models.AutoField) or not model_field.editable:
             kwargs['read_only'] = True
             # Read only implies that the field is not required.
@@ -480,6 +493,14 @@ class ModelSerializer(Serializer):
             # Having a default implies that the field is not required.
             # We have a cleaner repr on the instance if we don't set it.
             kwargs.pop('required', None)
+
+        if model_field.flatchoices:
+            # If this model field contains choices, then use a ChoiceField,
+            # rather than the standard serializer field for this type.
+            # Note that we return this prior to setting any validation type
+            # keyword arguments, as those are not valid initializers.
+            kwargs['choices'] = model_field.flatchoices
+            return ChoiceField(**kwargs)
 
         # Ensure that max_length is passed explicitly as a keyword arg,
         # rather than as a validator.
@@ -561,23 +582,6 @@ class ModelSerializer(Serializer):
         if validator_kwarg:
             kwargs['validators'] = validator_kwarg
 
-        # if issubclass(model_field.__class__, models.TextField):
-        #     kwargs['widget'] = widgets.Textarea
-
-        # if model_field.help_text is not None:
-        #     kwargs['help_text'] = model_field.help_text
-
-        # TODO: TypedChoiceField?
-        if model_field.flatchoices:  # This ModelField contains choices
-            kwargs['choices'] = model_field.flatchoices
-            if model_field.null:
-                kwargs['empty'] = None
-            return ChoiceField(**kwargs)
-
-        if model_field.null and \
-                issubclass(model_field.__class__, (models.CharField, models.TextField)):
-            kwargs['allow_none'] = True
-
         try:
             return self.field_mapping[model_field.__class__](**kwargs)
         except KeyError:
@@ -597,32 +601,23 @@ class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
 class HyperlinkedModelSerializer(ModelSerializer):
     _options_class = HyperlinkedModelSerializerOptions
 
-    def get_default_fields(self):
-        fields = super(HyperlinkedModelSerializer, self).get_default_fields()
+    def get_url_field(self):
+        if self.opts.view_name is not None:
+            view_name = self.opts.view_name
+        else:
+            view_name = self.get_default_view_name(self.opts.model)
 
-        if self.opts.view_name is None:
-            self.opts.view_name = self.get_default_view_name(self.opts.model)
+        kwargs = {
+            'view_name': view_name
+        }
+        if self.opts.lookup_field:
+            kwargs['lookup_field'] = self.opts.lookup_field
 
-        url_field_name = api_settings.URL_FIELD_NAME
-        if url_field_name not in fields:
-            ret = fields.__class__()
-            ret[url_field_name] = self.get_url_field()
-            ret.update(fields)
-            fields = ret
-
-        return fields
+        return HyperlinkedIdentityField(**kwargs)
 
     def get_pk_field(self, model_field):
         if self.opts.fields and model_field.name in self.opts.fields:
             return self.get_field(model_field)
-
-    def get_url_field(self):
-        kwargs = {
-            'view_name': self.get_default_view_name(self.opts.model)
-        }
-        if self.opts.lookup_field:
-            kwargs['lookup_field'] = self.opts.lookup_field
-        return HyperlinkedIdentityField(**kwargs)
 
     def get_related_field(self, model_field, related_model, to_many, has_through_model):
         """
@@ -643,13 +638,14 @@ class HyperlinkedModelSerializer(ModelSerializer):
         if model_field:
             if model_field.null or model_field.blank:
                 kwargs['required'] = False
-            # if model_field.help_text is not None:
-            #     kwargs['help_text'] = model_field.help_text
-            if model_field.verbose_name is not None:
+            if model_field.verbose_name:
                 kwargs['label'] = model_field.verbose_name
             if not model_field.editable:
                 kwargs['read_only'] = True
                 kwargs.pop('queryset', None)
+            help_text = clean_manytomany_helptext(model_field.help_text)
+            if help_text:
+                kwargs['help_text'] = help_text
 
         return HyperlinkedRelatedField(**kwargs)
 
