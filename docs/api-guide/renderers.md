@@ -444,6 +444,11 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [djangorestframework-camel-case] provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by [Vitaly Babiy][vbabiy].
 
 
+## Pandas (CSV, Excel, PNG)
+
+[Django REST Pandas] provides a serializer and renderers that support additional data processing and output via the [Pandas] DataFrame API.  Django REST Pandas includes renderers for Pandas-style CSV files, Excel workbooks (both `.xls` and `.xlsx`), and a number of [other formats]. It is maintained by [S. Andrew Sheppard][sheppard] as part of the [wq Project][wq].
+
+
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
@@ -467,3 +472,8 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [hzy]: https://github.com/hzy
 [drf-ujson-renderer]: https://github.com/gizmag/drf-ujson-renderer
 [djangorestframework-camel-case]: https://github.com/vbabiy/djangorestframework-camel-case
+[Django REST Pandas]: https://github.com/wq/django-rest-pandas
+[Pandas]: http://pandas.pydata.org/
+[other formats]: https://github.com/wq/django-rest-pandas#supported-formats
+[sheppard]: https://github.com/sheppard
+[wq]: https://github.com/wq
