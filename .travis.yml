@@ -26,3 +26,6 @@ install:
 
 script:
     - tox -e $TOX_ENV
+    
+matrix:
+    fast_finish: true
