@@ -109,7 +109,7 @@ class ThrottlingTests(TestCase):
 
     def ensure_response_header_contains_proper_throttle_field(self, view, expected_headers):
         """
-        Ensure the response returns an X-Throttle field with status and next attributes
+        Ensure the response returns an Retry-After field with status and next attributes
         set properly.
         """
         request = self.factory.get('/')
@@ -117,10 +117,8 @@ class ThrottlingTests(TestCase):
             self.set_throttle_timer(view, timer)
             response = view.as_view()(request)
             if expect is not None:
-                self.assertEqual(response['X-Throttle-Wait-Seconds'], expect)
                 self.assertEqual(response['Retry-After'], expect)
             else:
-                self.assertFalse('X-Throttle-Wait-Seconds' in response)
                 self.assertFalse('Retry-After' in response)
 
     def test_seconds_fields(self):
@@ -173,13 +171,11 @@ class ThrottlingTests(TestCase):
         self.assertFalse(hasattr(MockView_NonTimeThrottling.throttle_classes[0], 'called'))
 
         response = MockView_NonTimeThrottling.as_view()(request)
-        self.assertFalse('X-Throttle-Wait-Seconds' in response)
         self.assertFalse('Retry-After' in response)
 
         self.assertTrue(MockView_NonTimeThrottling.throttle_classes[0].called)
 
         response = MockView_NonTimeThrottling.as_view()(request)
-        self.assertFalse('X-Throttle-Wait-Seconds' in response)
         self.assertFalse('Retry-After' in response)
 
 
