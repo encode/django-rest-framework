@@ -22,7 +22,7 @@ class AuthTokenSerializer(serializers.Serializer):
                 attrs['user'] = user
                 return attrs
             else:
-                msg = _('Unable to login with provided credentials.')
+                msg = _('Unable to log in with provided credentials.')
                 raise serializers.ValidationError(msg)
         else:
             msg = _('Must include "username" and "password"')
