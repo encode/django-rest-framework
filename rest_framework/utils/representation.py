@@ -2,10 +2,23 @@
 Helper functions for creating user-friendly representations
 of serializer classes and serializer fields.
 """
+from django.db import models
 import re
 
 
+def manager_repr(value):
+    model = value.model
+    opts = model._meta
+    for _, name, manager in opts.concrete_managers + opts.abstract_managers:
+        if manager == value:
+            return '%s.%s.all()' % (model._meta.object_name, name)
+    return repr(value)
+
+
 def smart_repr(value):
+    if isinstance(value, models.Manager):
+        return manager_repr(value)
+
     value = repr(value)
 
     # Representations like u'help text'

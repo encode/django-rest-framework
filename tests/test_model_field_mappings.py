@@ -81,9 +81,9 @@ class RelationalModel(models.Model):
 RELATIONAL_FLAT_REPR = """
 TestSerializer():
     id = IntegerField(label='ID', read_only=True)
-    foreign_key = PrimaryKeyRelatedField(label='foreign key', queryset=<django.db.models.manager.Manager object>)
-    one_to_one = PrimaryKeyRelatedField(label='one to one', queryset=<django.db.models.manager.Manager object>)
-    many_to_many = PrimaryKeyRelatedField(label='many to many', many=True, queryset=<django.db.models.manager.Manager object>)
+    foreign_key = PrimaryKeyRelatedField(label='foreign key', queryset=ForeignKeyTargetModel.objects.all())
+    one_to_one = PrimaryKeyRelatedField(label='one to one', queryset=OneToOneTargetModel.objects.all())
+    many_to_many = PrimaryKeyRelatedField(label='many to many', many=True, queryset=ManyToManyTargetModel.objects.all())
 """.strip()
 
 
@@ -105,9 +105,9 @@ TestSerializer():
 HYPERLINKED_FLAT_REPR = """
 TestSerializer():
     url = HyperlinkedIdentityField(view_name='relationalmodel-detail')
-    foreign_key = HyperlinkedRelatedField(label='foreign key', queryset=<django.db.models.manager.Manager object>, view_name='foreignkeytargetmodel-detail')
-    one_to_one = HyperlinkedRelatedField(label='one to one', queryset=<django.db.models.manager.Manager object>, view_name='onetoonetargetmodel-detail')
-    many_to_many = HyperlinkedRelatedField(label='many to many', many=True, queryset=<django.db.models.manager.Manager object>, view_name='manytomanytargetmodel-detail')
+    foreign_key = HyperlinkedRelatedField(label='foreign key', queryset=ForeignKeyTargetModel.objects.all(), view_name='foreignkeytargetmodel-detail')
+    one_to_one = HyperlinkedRelatedField(label='one to one', queryset=OneToOneTargetModel.objects.all(), view_name='onetoonetargetmodel-detail')
+    many_to_many = HyperlinkedRelatedField(label='many to many', many=True, queryset=ManyToManyTargetModel.objects.all(), view_name='manytomanytargetmodel-detail')
 """.strip()
 
 
