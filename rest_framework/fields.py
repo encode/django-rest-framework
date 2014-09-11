@@ -229,13 +229,13 @@ class Field(object):
         """
         Transform the *incoming* primative data into a native value.
         """
-        return data
+        raise NotImplementedError('to_native() must be implemented.')
 
     def to_primative(self, value):
         """
         Transform the *outgoing* native value into primative data.
         """
-        return value
+        raise NotImplementedError('to_primative() must be implemented.')
 
     def fail(self, key, **kwargs):
         """
@@ -429,9 +429,10 @@ class DecimalField(Field):
         'max_whole_digits': _('Ensure that there are no more than {max_whole_digits} digits before the decimal point.')
     }
 
-    def __init__(self, max_value=None, min_value=None, max_digits=None, decimal_places=None, **kwargs):
-        self.max_value, self.min_value = max_value, min_value
-        self.max_digits, self.max_decimal_places = max_digits, decimal_places
+    def __init__(self, max_digits, decimal_places, coerce_to_string=True, max_value=None, min_value=None, **kwargs):
+        self.max_digits = max_digits
+        self.decimal_places = decimal_places
+        self.coerce_to_string = coerce_to_string
         super(DecimalField, self).__init__(**kwargs)
         if max_value is not None:
             self.validators.append(validators.MaxValueValidator(max_value))
@@ -478,11 +479,25 @@ class DecimalField(Field):
         if self.max_digits is not None and digits > self.max_digits:
             self.fail('max_digits', max_digits=self.max_digits)
         if self.decimal_places is not None and decimals > self.decimal_places:
-            self.fail('max_decimal_places', max_decimal_places=self.max_decimal_places)
+            self.fail('max_decimal_places', max_decimal_places=self.decimal_places)
         if self.max_digits is not None and self.decimal_places is not None and whole_digits > (self.max_digits - self.decimal_places):
             self.fail('max_whole_digits', max_while_digits=self.max_digits - self.decimal_places)
 
         return value
+
+    def to_primative(self, value):
+        if not self.coerce_to_string:
+            return value
+
+        if isinstance(value, decimal.Decimal):
+            context = decimal.getcontext().copy()
+            context.prec = self.max_digits
+            quantized = value.quantize(
+                decimal.Decimal('.1') ** self.decimal_places,
+                context=context
+            )
+            return '{0:f}'.format(quantized)
+        return '%.*f' % (self.max_decimal_places, value)
 
 
 # Date & time fields...

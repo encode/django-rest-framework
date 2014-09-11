@@ -135,7 +135,7 @@ class IntegrationTestPaginationAndFiltering(TestCase):
 
         self.objects = FilterableItem.objects
         self.data = [
-            {'id': obj.id, 'text': obj.text, 'decimal': obj.decimal, 'date': obj.date}
+            {'id': obj.id, 'text': obj.text, 'decimal': str(obj.decimal), 'date': obj.date}
             for obj in self.objects.all()
         ]
 
@@ -381,7 +381,7 @@ class TestMaxPaginateByParam(TestCase):
 
 # Tests for context in pagination serializers
 
-class CustomField(serializers.Field):
+class CustomField(serializers.ReadOnlyField):
     def to_native(self, value):
         if 'view' not in self.context:
             raise RuntimeError("context isn't getting passed into custom field")

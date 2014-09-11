@@ -37,7 +37,7 @@ class PreviousPageField(serializers.Field):
         return replace_query_param(url, self.page_field, page)
 
 
-class DefaultObjectSerializer(serializers.Field):
+class DefaultObjectSerializer(serializers.ReadOnlyField):
     """
     If no object serializer is specified, then this serializer will be applied
     as the default.
@@ -79,6 +79,6 @@ class PaginationSerializer(BasePaginationSerializer):
     """
     A default implementation of a pagination serializer.
     """
-    count = serializers.Field(source='paginator.count')
+    count = serializers.ReadOnlyField(source='paginator.count')
     next = NextPageField(source='*')
     previous = PreviousPageField(source='*')

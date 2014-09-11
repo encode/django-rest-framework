@@ -102,7 +102,7 @@ if django_filters:
 
 class CommonFilteringTestCase(TestCase):
     def _serialize_object(self, obj):
-        return {'id': obj.id, 'text': obj.text, 'decimal': obj.decimal, 'date': obj.date}
+        return {'id': obj.id, 'text': obj.text, 'decimal': str(obj.decimal), 'date': obj.date}
 
     def setUp(self):
         """
@@ -145,7 +145,7 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         request = factory.get('/', {'decimal': '%s' % search_decimal})
         response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected_data = [f for f in self.data if f['decimal'] == search_decimal]
+        expected_data = [f for f in self.data if Decimal(f['decimal']) == search_decimal]
         self.assertEqual(response.data, expected_data)
 
         # Tests that the date filter works.
@@ -168,7 +168,7 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         request = factory.get('/', {'decimal': '%s' % search_decimal})
         response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected_data = [f for f in self.data if f['decimal'] == search_decimal]
+        expected_data = [f for f in self.data if Decimal(f['decimal']) == search_decimal]
         self.assertEqual(response.data, expected_data)
 
     @unittest.skipUnless(django_filters, 'django-filter not installed')
@@ -201,7 +201,7 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         request = factory.get('/', {'decimal': '%s' % search_decimal})
         response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected_data = [f for f in self.data if f['decimal'] < search_decimal]
+        expected_data = [f for f in self.data if Decimal(f['decimal']) < search_decimal]
         self.assertEqual(response.data, expected_data)
 
         # Tests that the date filter set with 'gt' in the filter class works.
@@ -230,7 +230,7 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected_data = [f for f in self.data if f['date'] > search_date and
-                         f['decimal'] < search_decimal]
+                         Decimal(f['decimal']) < search_decimal]
         self.assertEqual(response.data, expected_data)
 
     @unittest.skipUnless(django_filters, 'django-filter not installed')
