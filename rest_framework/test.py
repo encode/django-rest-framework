@@ -36,7 +36,7 @@ class APIRequestFactory(DjangoRequestFactory):
         Encode the data returning a two tuple of (bytes, content_type)
         """
 
-        if not data:
+        if data is None:
             return ('', content_type)
 
         assert format is None or content_type is None, (

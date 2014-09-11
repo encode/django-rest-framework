@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+import django
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
@@ -176,6 +177,9 @@ class TestRootView(TestCase):
         self.assertEqual(created.text, 'foobar')
 
 
+EXPECTED_QUERYS_FOR_PUT = 3 if django.VERSION < (1, 6) else 2
+
+
 class TestInstanceView(TestCase):
     def setUp(self):
         """
@@ -219,7 +223,7 @@ class TestInstanceView(TestCase):
         """
         data = {'text': 'foobar'}
         request = factory.put('/1', data, format='json')
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(EXPECTED_QUERYS_FOR_PUT):
             response = self.view(request, pk='1').render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(dict(response.data), {'id': 1, 'text': 'foobar'})
@@ -233,7 +237,7 @@ class TestInstanceView(TestCase):
         data = {'text': 'foobar'}
         request = factory.patch('/1', data, format='json')
 
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(EXPECTED_QUERYS_FOR_PUT):
             response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
@@ -351,7 +355,7 @@ class TestInstanceView(TestCase):
         """
         data = {'id': 999, 'text': 'foobar'}
         request = factory.put('/1', data, format='json')
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(EXPECTED_QUERYS_FOR_PUT):
             response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})

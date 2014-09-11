@@ -15,7 +15,7 @@ from rest_framework import serializers
 class RegularFieldsModel(models.Model):
     auto_field = models.AutoField(primary_key=True)
     big_integer_field = models.BigIntegerField()
-    boolean_field = models.BooleanField()
+    boolean_field = models.BooleanField(default=False)
     char_field = models.CharField(max_length=100)
     comma_seperated_integer_field = models.CommaSeparatedIntegerField(max_length=100)
     date_field = models.DateField()
@@ -60,22 +60,22 @@ TestSerializer():
 
 # Model for testing relational field mapping
 
-class ForeignKeyTarget(models.Model):
-    char_field = models.CharField(max_length=100)
+class ForeignKeyTargetModel(models.Model):
+    name = models.CharField(max_length=100)
 
 
-class ManyToManyTarget(models.Model):
-    char_field = models.CharField(max_length=100)
+class ManyToManyTargetModel(models.Model):
+    name = models.CharField(max_length=100)
 
 
-class OneToOneTarget(models.Model):
-    char_field = models.CharField(max_length=100)
+class OneToOneTargetModel(models.Model):
+    name = models.CharField(max_length=100)
 
 
 class RelationalModel(models.Model):
-    foreign_key = models.ForeignKey(ForeignKeyTarget)
-    many_to_many = models.ManyToManyField(ManyToManyTarget)
-    one_to_one = models.OneToOneField(OneToOneTarget)
+    foreign_key = models.ForeignKey(ForeignKeyTargetModel)
+    many_to_many = models.ManyToManyField(ManyToManyTargetModel)
+    one_to_one = models.OneToOneField(OneToOneTargetModel)
 
 
 RELATIONAL_FLAT_REPR = """
@@ -105,9 +105,9 @@ TestSerializer():
 HYPERLINKED_FLAT_REPR = """
 TestSerializer():
     url = HyperlinkedIdentityField(view_name='relationalmodel-detail')
-    foreign_key = HyperlinkedRelatedField(label='foreign key', queryset=<django.db.models.manager.Manager object>, view_name='foreignkeytarget-detail')
-    one_to_one = HyperlinkedRelatedField(label='one to one', queryset=<django.db.models.manager.Manager object>, view_name='onetoonetarget-detail')
-    many_to_many = HyperlinkedRelatedField(label='many to many', many=True, queryset=<django.db.models.manager.Manager object>, view_name='manytomanytarget-detail')
+    foreign_key = HyperlinkedRelatedField(label='foreign key', queryset=<django.db.models.manager.Manager object>, view_name='foreignkeytargetmodel-detail')
+    one_to_one = HyperlinkedRelatedField(label='one to one', queryset=<django.db.models.manager.Manager object>, view_name='onetoonetargetmodel-detail')
+    many_to_many = HyperlinkedRelatedField(label='many to many', many=True, queryset=<django.db.models.manager.Manager object>, view_name='manytomanytargetmodel-detail')
 """.strip()
 
 
@@ -127,6 +127,8 @@ TestSerializer():
 
 
 class TestSerializerMappings(TestCase):
+    maxDiff = 10000
+
     def test_regular_fields(self):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:

@@ -422,19 +422,70 @@ class SearchFilterTests(TestCase):
             )
 
 
-class OrdringFilterModel(models.Model):
+class OrderingFilterModel(models.Model):
     title = models.CharField(max_length=20)
     text = models.CharField(max_length=100)
 
 
 class OrderingFilterRelatedModel(models.Model):
-    related_object = models.ForeignKey(OrdringFilterModel,
+    related_object = models.ForeignKey(OrderingFilterModel,
                                        related_name="relateds")
 
 
 class OrderingFilterSerializer(serializers.ModelSerializer):
     class Meta:
-        model = OrdringFilterModel
+        model = OrderingFilterModel
+
+
+class DjangoFilterOrderingModel(models.Model):
+    date = models.DateField()
+    text = models.CharField(max_length=10)
+
+    class Meta:
+        ordering = ['-date']
+
+
+class DjangoFilterOrderingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DjangoFilterOrderingModel
+
+
+class DjangoFilterOrderingTests(TestCase):
+    def setUp(self):
+        data = [{
+            'date': datetime.date(2012, 10, 8),
+            'text': 'abc'
+        }, {
+            'date': datetime.date(2013, 10, 8),
+            'text': 'bcd'
+        }, {
+            'date': datetime.date(2014, 10, 8),
+            'text': 'cde'
+        }]
+
+        for d in data:
+            DjangoFilterOrderingModel.objects.create(**d)
+
+    def test_default_ordering(self):
+        class DjangoFilterOrderingView(generics.ListAPIView):
+            serializer_class = DjangoFilterOrderingSerializer
+            queryset = DjangoFilterOrderingModel.objects.all()
+            filter_backends = (filters.DjangoFilterBackend,)
+            filter_fields = ['text']
+            ordering = ('-date',)
+
+        view = DjangoFilterOrderingView.as_view()
+        request = factory.get('/')
+        response = view(request)
+
+        self.assertEqual(
+            response.data,
+            [
+                {'id': 3, 'date': datetime.date(2014, 10, 8), 'text': 'cde'},
+                {'id': 2, 'date': datetime.date(2013, 10, 8), 'text': 'bcd'},
+                {'id': 1, 'date': datetime.date(2012, 10, 8), 'text': 'abc'}
+            ]
+        )
 
 
 class OrderingFilterTests(TestCase):
@@ -455,11 +506,11 @@ class OrderingFilterTests(TestCase):
                 chr(idx + ord('b')) +
                 chr(idx + ord('c'))
             )
-            OrdringFilterModel(title=title, text=text).save()
+            OrderingFilterModel(title=title, text=text).save()
 
     def test_ordering(self):
         class OrderingListView(generics.ListAPIView):
-            queryset = OrdringFilterModel.objects.all()
+            queryset = OrderingFilterModel.objects.all()
             serializer_class = OrderingFilterSerializer
             filter_backends = (filters.OrderingFilter,)
             ordering = ('title',)
@@ -479,7 +530,7 @@ class OrderingFilterTests(TestCase):
 
     def test_reverse_ordering(self):
         class OrderingListView(generics.ListAPIView):
-            queryset = OrdringFilterModel.objects.all()
+            queryset = OrderingFilterModel.objects.all()
             serializer_class = OrderingFilterSerializer
             filter_backends = (filters.OrderingFilter,)
             ordering = ('title',)
@@ -499,7 +550,7 @@ class OrderingFilterTests(TestCase):
 
     def test_incorrectfield_ordering(self):
         class OrderingListView(generics.ListAPIView):
-            queryset = OrdringFilterModel.objects.all()
+            queryset = OrderingFilterModel.objects.all()
             serializer_class = OrderingFilterSerializer
             filter_backends = (filters.OrderingFilter,)
             ordering = ('title',)
@@ -519,7 +570,7 @@ class OrderingFilterTests(TestCase):
 
     def test_default_ordering(self):
         class OrderingListView(generics.ListAPIView):
-            queryset = OrdringFilterModel.objects.all()
+            queryset = OrderingFilterModel.objects.all()
             serializer_class = OrderingFilterSerializer
             filter_backends = (filters.OrderingFilter,)
             ordering = ('title',)
@@ -539,7 +590,7 @@ class OrderingFilterTests(TestCase):
 
     def test_default_ordering_using_string(self):
         class OrderingListView(generics.ListAPIView):
-            queryset = OrdringFilterModel.objects.all()
+            queryset = OrderingFilterModel.objects.all()
             serializer_class = OrderingFilterSerializer
             filter_backends = (filters.OrderingFilter,)
             ordering = 'title'
@@ -560,7 +611,7 @@ class OrderingFilterTests(TestCase):
     def test_ordering_by_aggregate_field(self):
         # create some related models to aggregate order by
         num_objs = [2, 5, 3]
-        for obj, num_relateds in zip(OrdringFilterModel.objects.all(),
+        for obj, num_relateds in zip(OrderingFilterModel.objects.all(),
                                      num_objs):
             for _ in range(num_relateds):
                 new_related = OrderingFilterRelatedModel(
@@ -573,7 +624,7 @@ class OrderingFilterTests(TestCase):
             filter_backends = (filters.OrderingFilter,)
             ordering = 'title'
             ordering_fields = '__all__'
-            queryset = OrdringFilterModel.objects.all().annotate(
+            queryset = OrderingFilterModel.objects.all().annotate(
                 models.Count("relateds"))
 
         view = OrderingListView.as_view()
@@ -591,7 +642,7 @@ class OrderingFilterTests(TestCase):
     def test_ordering_with_nonstandard_ordering_param(self):
         with temporary_setting('ORDERING_PARAM', 'order', filters):
             class OrderingListView(generics.ListAPIView):
-                queryset = OrdringFilterModel.objects.all()
+                queryset = OrderingFilterModel.objects.all()
                 serializer_class = OrderingFilterSerializer
                 filter_backends = (filters.OrderingFilter,)
                 ordering = ('title',)

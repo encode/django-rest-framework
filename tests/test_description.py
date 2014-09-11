@@ -98,6 +98,30 @@ class TestViewNamesAndDescriptions(TestCase):
             pass
         self.assertEqual(MockView().get_view_description(), '')
 
+    def test_view_description_can_be_promise(self):
+        """
+        Ensure a view may have a docstring that is actually a lazily evaluated
+        class that can be converted to a string.
+
+        See: https://github.com/tomchristie/django-rest-framework/issues/1708
+        """
+        # use a mock object instead of gettext_lazy to ensure that we can't end
+        # up with a test case string in our l10n catalog
+        class MockLazyStr(object):
+            def __init__(self, string):
+                self.s = string
+
+            def __str__(self):
+                return self.s
+
+            def __unicode__(self):
+                return self.s
+
+        class MockView(APIView):
+            __doc__ = MockLazyStr("a gettext string")
+
+        self.assertEqual(MockView().get_view_description(), 'a gettext string')
+
     def test_markdown(self):
         """
         Ensure markdown to HTML works as expected.

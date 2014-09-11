@@ -428,6 +428,15 @@ class CustomPaginationSerializer(pagination.BasePaginationSerializer):
     results_field = 'objects'
 
 
+class CustomFooSerializer(serializers.Serializer):
+    foo = serializers.CharField()
+
+
+class CustomFooPaginationSerializer(pagination.PaginationSerializer):
+    class Meta:
+        object_serializer_class = CustomFooSerializer
+
+
 class TestCustomPaginationSerializer(TestCase):
     def setUp(self):
         objects = ['john', 'paul', 'george', 'ringo']
@@ -449,6 +458,16 @@ class TestCustomPaginationSerializer(TestCase):
             'objects': ['john', 'paul']
         }
         self.assertEqual(serializer.data, expected)
+
+    def test_custom_pagination_serializer_with_custom_object_serializer(self):
+        objects = [
+            {'foo': 'bar'},
+            {'foo': 'spam'}
+        ]
+        paginator = Paginator(objects, 1)
+        page = paginator.page(1)
+        serializer = CustomFooPaginationSerializer(page)
+        serializer.data
 
 
 class NonIntegerPage(object):

@@ -51,8 +51,11 @@ def get_attribute(instance, attrs):
     for attr in attrs:
         try:
             instance = getattr(instance, attr)
-        except AttributeError:
-            return instance[attr]
+        except AttributeError as exc:
+            try:
+                return instance[attr]
+            except (KeyError, TypeError):
+                raise exc
     return instance
 
 

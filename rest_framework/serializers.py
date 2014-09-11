@@ -317,6 +317,19 @@ class ModelSerializerOptions(object):
         self.depth = getattr(meta, 'depth', 0)
 
 
+def lookup_class(mapping, obj):
+    """
+    Takes a dictionary with classes as keys, and an object.
+    Traverses the object's inheritance hierarchy in method
+    resolution order, and returns the first matching value
+    from the dictionary or None.
+    """
+    return next(
+        (mapping[cls] for cls in inspect.getmro(obj.__class__) if cls in mapping),
+        None
+    )
+
+
 class ModelSerializer(Serializer):
     field_mapping = {
         models.AutoField: IntegerField,
@@ -580,13 +593,20 @@ class ModelSerializer(Serializer):
         if decimal_places is not None:
             kwargs['decimal_places'] = decimal_places
 
+        if isinstance(model_field, models.BooleanField):
+            # models.BooleanField has `blank=True`, but *is* actually
+            # required *unless* a default is provided.
+            # Also note that <1.6 `default=False`, >=1.6 `default=None`.
+            kwargs.pop('required', None)
+
         if validator_kwarg:
             kwargs['validators'] = validator_kwarg
 
-        try:
-            return self.field_mapping[model_field.__class__](**kwargs)
-        except KeyError:
-            return ModelField(model_field=model_field, **kwargs)
+        cls = lookup_class(self.field_mapping, model_field)
+        if cls is None:
+            cls = ModelField
+            kwargs['model_field'] = model_field
+        return cls(**kwargs)
 
 
 class HyperlinkedModelSerializerOptions(ModelSerializerOptions):

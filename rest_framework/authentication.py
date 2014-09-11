@@ -344,7 +344,7 @@ class OAuth2Authentication(BaseAuthentication):
         user = token.user
 
         if not user.is_active:
-            msg = 'User inactive or deleted: %s' % user.username
+            msg = 'User inactive or deleted: %s' % user.get_username()
             raise exceptions.AuthenticationFailed(msg)
 
         return (user, token)

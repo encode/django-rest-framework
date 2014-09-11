@@ -1012,6 +1012,26 @@
 #         def get_my_test(self, obj):
 #             return obj.my_test[0:5]
 
+# class ModelCharField(TestCase):
+#     """
+#         Tests for CharField
+#     """
+#     def test_none_serializing(self):
+#         class CharFieldSerializer(serializers.Serializer):
+#             char = serializers.CharField(allow_none=True, required=False)
+#         serializer = CharFieldSerializer(data={'char': None})
+#         self.assertTrue(serializer.is_valid())
+#         self.assertIsNone(serializer.object['char'])
+
+
+# class SerializerMethodFieldTest(TestCase):
+#     """
+#         Tests for the SerializerMethodField field_to_native() behavior
+#     """
+#     class SerializerTest(serializers.Serializer):
+#         def get_my_test(self, obj):
+#             return obj.my_test[0:5]
+
 #     class Example():
 #         my_test = 'Hey, this is a test !'
 
