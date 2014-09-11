@@ -486,9 +486,6 @@ class DecimalField(Field):
         return value
 
     def to_primative(self, value):
-        if not self.coerce_to_string:
-            return value
-
         if isinstance(value, decimal.Decimal):
             context = decimal.getcontext().copy()
             context.prec = self.max_digits
@@ -496,7 +493,12 @@ class DecimalField(Field):
                 decimal.Decimal('.1') ** self.decimal_places,
                 context=context
             )
+            if not self.coerce_to_string:
+                return quantized
             return '{0:f}'.format(quantized)
+
+        if not self.coerce_to_string:
+            return value
         return '%.*f' % (self.max_decimal_places, value)
 
 
