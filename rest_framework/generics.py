@@ -215,9 +215,11 @@ class GenericAPIView(views.APIView):
             % self.__class__.__name__
         )
 
+        queryset = self.queryset
         if isinstance(self.queryset, QuerySet):
-            return self.queryset.all()
-        return self.queryset
+            # Ensure queryset is re-evaluated on each request.
+            queryset = queryset.all()
+        return queryset
 
     def get_object(self):
         """
