@@ -3,6 +3,7 @@ Generic views that provide commonly needed behaviour.
 """
 from __future__ import unicode_literals
 
+from django.db.models.query import QuerySet
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
@@ -214,7 +215,9 @@ class GenericAPIView(views.APIView):
             % self.__class__.__name__
         )
 
-        return self.queryset._clone()
+        if isinstance(self.queryset, QuerySet):
+            return self.queryset.all()
+        return self.queryset
 
     def get_object(self):
         """
