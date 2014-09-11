@@ -17,7 +17,7 @@ def smart_repr(value):
     # <django.core.validators.RegexValidator object at 0x1047af050>
     # Should be presented as
     # <django.core.validators.RegexValidator object>
-    value = re.sub(' at 0x[0-9a-f]{8,10}>', '>', value)
+    value = re.sub(' at 0x[0-9a-f]{8,32}>', '>', value)
 
     return value
 
