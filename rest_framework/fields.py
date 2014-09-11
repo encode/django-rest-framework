@@ -454,7 +454,7 @@ class BooleanField(WritableField):
             return True
         if value in ('false', 'f', 'False', '0'):
             return False
-        return bool(value)
+        raise ValidationError(self.error_messages['invalid'] % _(value))
 
 
 class CharField(WritableField):
