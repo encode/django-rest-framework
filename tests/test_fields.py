@@ -1002,6 +1002,7 @@ class BooleanField(TestCase):
             bool_field = serializers.BooleanField(required=True)
 
         self.assertFalse(BooleanRequiredSerializer(data={}).is_valid())
+        self.assertFalse(BooleanRequiredSerializer(data={'bool_field': 'I\'m a string!'}).is_valid())
 
 
 class ModelCharField(TestCase):
