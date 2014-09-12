@@ -223,7 +223,7 @@ class Field(object):
         return value
 
     def run_validators(self, value):
-        if value in validators.EMPTY_VALUES:
+        if value in (None, '', [], (), {}):
             return
 
         errors = []
@@ -450,7 +450,7 @@ class DecimalField(Field):
         than max_digits in the number, and no more than decimal_places digits
         after the decimal point.
         """
-        if value in validators.EMPTY_VALUES:
+        if value in (None, ''):
             return None
 
         value = smart_text(value).strip()
@@ -521,7 +521,7 @@ class DateField(Field):
         super(DateField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, value):
-        if value in validators.EMPTY_VALUES:
+        if value in (None, ''):
             return None
 
         if isinstance(value, datetime.datetime):
@@ -580,7 +580,7 @@ class DateTimeField(Field):
         super(DateTimeField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, value):
-        if value in validators.EMPTY_VALUES:
+        if value in (None, ''):
             return None
 
         if isinstance(value, datetime.datetime):
@@ -645,7 +645,7 @@ class TimeField(Field):
         super(TimeField, self).__init__(*args, **kwargs)
 
     def from_native(self, value):
-        if value in validators.EMPTY_VALUES:
+        if value in (None, ''):
             return None
 
         if isinstance(value, datetime.time):
