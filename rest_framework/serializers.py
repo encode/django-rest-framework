@@ -157,7 +157,7 @@ class Serializer(BaseSerializer):
     def __init__(self, *args, **kwargs):
         self.context = kwargs.pop('context', {})
         kwargs.pop('partial', None)
-        kwargs.pop('many', False)
+        kwargs.pop('many', None)
 
         super(Serializer, self).__init__(*args, **kwargs)
 
@@ -423,9 +423,9 @@ class ModelSerializer(Serializer):
         for accessor_name, relation_info in info.reverse_relations.items():
             if accessor_name in self.opts.fields:
                 if self.opts.depth:
-                    ret[field_name] = self.get_nested_field(*relation_info)
+                    ret[accessor_name] = self.get_nested_field(*relation_info)
                 else:
-                    ret[field_name] = self.get_related_field(*relation_info)
+                    ret[accessor_name] = self.get_related_field(*relation_info)
 
         return ret
 
@@ -444,7 +444,7 @@ class ModelSerializer(Serializer):
 
         Note that model_field will be `None` for reverse relationships.
         """
-        class NestedModelSerializer(ModelSerializer):
+        class NestedModelSerializer(ModelSerializer):  # Not right!
             class Meta:
                 model = related_model
                 depth = self.opts.depth - 1

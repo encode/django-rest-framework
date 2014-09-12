@@ -73,9 +73,9 @@ class OneToOneTargetModel(models.Model):
 
 
 class RelationalModel(models.Model):
-    foreign_key = models.ForeignKey(ForeignKeyTargetModel)
-    many_to_many = models.ManyToManyField(ManyToManyTargetModel)
-    one_to_one = models.OneToOneField(OneToOneTargetModel)
+    foreign_key = models.ForeignKey(ForeignKeyTargetModel, related_name='reverse_foreign_key')
+    many_to_many = models.ManyToManyField(ManyToManyTargetModel, related_name='reverse_many_to_many')
+    one_to_one = models.OneToOneField(OneToOneTargetModel, related_name='reverse_one_to_one')
 
 
 RELATIONAL_FLAT_REPR = """
@@ -160,3 +160,24 @@ class TestSerializerMappings(TestCase):
                 model = RelationalModel
                 depth = 1
         self.assertEqual(repr(TestSerializer()), HYPERLINKED_NESTED_REPR)
+
+    # def test_flat_reverse_foreign_key(self):
+    #     class TestSerializer(serializers.ModelSerializer):
+    #         class Meta:
+    #             model = ForeignKeyTargetModel
+    #             fields = ('id', 'name', 'reverse_foreign_key')
+    #     print repr(TestSerializer())
+
+    # def test_flat_reverse_one_to_one(self):
+    #     class TestSerializer(serializers.ModelSerializer):
+    #         class Meta:
+    #             model = OneToOneTargetModel
+    #             fields = ('id', 'name', 'reverse_one_to_one')
+    #     print repr(TestSerializer())
+
+    # def test_flat_reverse_many_to_many(self):
+    #     class TestSerializer(serializers.ModelSerializer):
+    #         class Meta:
+    #             model = ManyToManyTargetModel
+    #             fields = ('id', 'name', 'reverse_many_to_many')
+    #     print repr(TestSerializer())
