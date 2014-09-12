@@ -1,6 +1,7 @@
 """
 Helper functions for returning the field information that is associated
-with a model class.
+with a model class. This includes returning all the forward and reverse
+relationships and their associated metadata.
 """
 from collections import namedtuple
 from django.db import models

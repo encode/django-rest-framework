@@ -768,16 +768,13 @@ class ReadOnlyField(Field):
         kwargs['read_only'] = True
         super(ReadOnlyField, self).__init__(**kwargs)
 
-    def to_native(self, data):
-        raise NotImplemented('.to_native() not supported.')
-
     def to_primative(self, value):
         if is_simple_callable(value):
             return value()
         return value
 
 
-class MethodField(Field):
+class SerializerMethodField(Field):
     """
     A read-only field that get its representation from calling a method on the
     parent serializer class. The method called will be of the form
@@ -787,22 +784,22 @@ class MethodField(Field):
     For example:
 
     class ExampleSerializer(self):
-        extra_info = MethodField()
+        extra_info = SerializerMethodField()
 
         def get_extra_info(self, obj):
             return ...  # Calculate some data to return.
     """
-    def __init__(self, **kwargs):
+    def __init__(self, method_attr=None, **kwargs):
+        self.method_attr = method_attr
         kwargs['source'] = '*'
         kwargs['read_only'] = True
-        super(MethodField, self).__init__(**kwargs)
-
-    def to_native(self, data):
-        raise NotImplemented('.to_native() not supported.')
+        super(SerializerMethodField, self).__init__(**kwargs)
 
     def to_primative(self, value):
-        attr = 'get_{field_name}'.format(field_name=self.field_name)
-        method = getattr(self.parent, attr)
+        method_attr = self.method_attr
+        if method_attr is None:
+            method_attr = 'get_{field_name}'.format(field_name=self.field_name)
+        method = getattr(self.parent, method_attr)
         return method(value)
 
 

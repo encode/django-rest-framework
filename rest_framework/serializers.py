@@ -598,7 +598,8 @@ class ModelSerializer(Serializer):
         if isinstance(model_field, models.BooleanField):
             # models.BooleanField has `blank=True`, but *is* actually
             # required *unless* a default is provided.
-            # Also note that <1.6 `default=False`, >=1.6 `default=None`.
+            # Also note that Django<1.6 uses `default=False` for
+            # models.BooleanField, but Django>=1.6 uses `default=None`.
             kwargs.pop('required', None)
 
         if validator_kwarg:
