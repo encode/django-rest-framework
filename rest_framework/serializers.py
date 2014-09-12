@@ -198,7 +198,9 @@ class Serializer(BaseSerializer):
         Dict of native values <- Dict of primitive datatypes.
         """
         if not isinstance(data, dict):
-            raise ValidationError({'non_field_errors': ['Invalid data']})
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: ['Invalid data']
+            })
 
         ret = {}
         errors = {}
@@ -224,7 +226,9 @@ class Serializer(BaseSerializer):
         try:
             return self.validate(ret)
         except ValidationError as exc:
-            raise ValidationError({'non_field_errors': exc.messages})
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: exc.messages
+            })
 
     def to_representation(self, instance):
         """

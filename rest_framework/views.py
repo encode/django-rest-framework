@@ -3,7 +3,7 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
 
-from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError, NON_FIELD_ERRORS
 from django.http import Http404
 from django.utils.datastructures import SortedDict
 from django.views.decorators.csrf import csrf_exempt
@@ -69,6 +69,12 @@ def exception_handler(exc):
                         headers=headers)
 
     elif isinstance(exc, ValidationError):
+        # ValidationErrors may include the non-field key named '__all__'.
+        # When returning a response we map this to a key name that can be
+        # modified in settings.
+        if NON_FIELD_ERRORS in exc.message_dict:
+            errors = exc.message_dict.pop(NON_FIELD_ERRORS)
+            exc.message_dict[api_settings.NON_FIELD_ERRORS_KEY] = errors
         return Response(exc.message_dict,
                         status=status.HTTP_400_BAD_REQUEST)
 
