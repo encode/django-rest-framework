@@ -431,10 +431,12 @@ class DecimalField(Field):
         'max_whole_digits': _('Ensure that there are no more than {max_whole_digits} digits before the decimal point.')
     }
 
-    def __init__(self, max_digits, decimal_places, coerce_to_string=True, max_value=None, min_value=None, **kwargs):
+    coerce_to_string = api_settings.COERCE_DECIMAL_TO_STRING
+
+    def __init__(self, max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None, **kwargs):
         self.max_digits = max_digits
         self.decimal_places = decimal_places
-        self.coerce_to_string = coerce_to_string
+        self.coerce_to_string = coerce_to_string if (coerce_to_string is not None) else self.coerce_to_string
         super(DecimalField, self).__init__(**kwargs)
         if max_value is not None:
             self.validators.append(validators.MaxValueValidator(max_value))
@@ -510,12 +512,12 @@ class DateField(Field):
     default_error_messages = {
         'invalid': _('Date has wrong format. Use one of these formats instead: {format}'),
     }
-    input_formats = api_settings.DATE_INPUT_FORMATS
     format = api_settings.DATE_FORMAT
+    input_formats = api_settings.DATE_INPUT_FORMATS
 
-    def __init__(self, input_formats=None, format=None, *args, **kwargs):
-        self.input_formats = input_formats if input_formats is not None else self.input_formats
+    def __init__(self, format=None, input_formats=None, *args, **kwargs):
         self.format = format if format is not None else self.format
+        self.input_formats = input_formats if input_formats is not None else self.input_formats
         super(DateField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, value):
@@ -569,12 +571,12 @@ class DateTimeField(Field):
     default_error_messages = {
         'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}'),
     }
-    input_formats = api_settings.DATETIME_INPUT_FORMATS
     format = api_settings.DATETIME_FORMAT
+    input_formats = api_settings.DATETIME_INPUT_FORMATS
 
-    def __init__(self, input_formats=None, format=None, *args, **kwargs):
-        self.input_formats = input_formats if input_formats is not None else self.input_formats
+    def __init__(self, format=None, input_formats=None, *args, **kwargs):
         self.format = format if format is not None else self.format
+        self.input_formats = input_formats if input_formats is not None else self.input_formats
         super(DateTimeField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, value):
@@ -634,12 +636,12 @@ class TimeField(Field):
     default_error_messages = {
         'invalid': _('Time has wrong format. Use one of these formats instead: {format}'),
     }
-    input_formats = api_settings.TIME_INPUT_FORMATS
     format = api_settings.TIME_FORMAT
+    input_formats = api_settings.TIME_INPUT_FORMATS
 
-    def __init__(self, input_formats=None, format=None, *args, **kwargs):
-        self.input_formats = input_formats if input_formats is not None else self.input_formats
+    def __init__(self, format=None, input_formats=None, *args, **kwargs):
         self.format = format if format is not None else self.format
+        self.input_formats = input_formats if input_formats is not None else self.input_formats
         super(TimeField, self).__init__(*args, **kwargs)
 
     def from_native(self, value):

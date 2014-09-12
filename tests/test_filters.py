@@ -2,10 +2,11 @@ from __future__ import unicode_literals
 import datetime
 from decimal import Decimal
 from django.db import models
+from django.conf.urls import patterns, url
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import unittest
-from django.conf.urls import patterns, url
+from django.utils.dateparse import parse_date
 from rest_framework import generics, serializers, status, filters
 from rest_framework.compat import django_filters
 from rest_framework.test import APIRequestFactory
@@ -102,7 +103,7 @@ if django_filters:
 
 class CommonFilteringTestCase(TestCase):
     def _serialize_object(self, obj):
-        return {'id': obj.id, 'text': obj.text, 'decimal': str(obj.decimal), 'date': obj.date}
+        return {'id': obj.id, 'text': obj.text, 'decimal': str(obj.decimal), 'date': obj.date.isoformat()}
 
     def setUp(self):
         """
@@ -153,7 +154,7 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         request = factory.get('/', {'date': '%s' % search_date})  # search_date str: '2012-09-22'
         response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected_data = [f for f in self.data if f['date'] == search_date]
+        expected_data = [f for f in self.data if parse_date(f['date']) == search_date]
         self.assertEqual(response.data, expected_data)
 
     @unittest.skipUnless(django_filters, 'django-filter not installed')
@@ -209,7 +210,7 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         request = factory.get('/', {'date': '%s' % search_date})  # search_date str: '2012-10-02'
         response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected_data = [f for f in self.data if f['date'] > search_date]
+        expected_data = [f for f in self.data if parse_date(f['date']) > search_date]
         self.assertEqual(response.data, expected_data)
 
         # Tests that the text filter set with 'icontains' in the filter class works.
@@ -229,7 +230,7 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         })
         response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected_data = [f for f in self.data if f['date'] > search_date and
+        expected_data = [f for f in self.data if parse_date(f['date']) > search_date and
                          Decimal(f['decimal']) < search_decimal]
         self.assertEqual(response.data, expected_data)
 
@@ -481,9 +482,9 @@ class DjangoFilterOrderingTests(TestCase):
         self.assertEqual(
             response.data,
             [
-                {'id': 3, 'date': datetime.date(2014, 10, 8), 'text': 'cde'},
-                {'id': 2, 'date': datetime.date(2013, 10, 8), 'text': 'bcd'},
-                {'id': 1, 'date': datetime.date(2012, 10, 8), 'text': 'abc'}
+                {'id': 3, 'date': '2014-10-08', 'text': 'cde'},
+                {'id': 2, 'date': '2013-10-08', 'text': 'bcd'},
+                {'id': 1, 'date': '2012-10-08', 'text': 'abc'}
             ]
         )
 

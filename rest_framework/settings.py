@@ -97,24 +97,19 @@ DEFAULTS = {
     'URL_FIELD_NAME': 'url',
 
     # Input and output formats
-    'DATE_INPUT_FORMATS': (
-        ISO_8601,
-    ),
-    'DATE_FORMAT': None,
+    'DATE_FORMAT': ISO_8601,
+    'DATE_INPUT_FORMATS': (ISO_8601,),
 
-    'DATETIME_INPUT_FORMATS': (
-        ISO_8601,
-    ),
-    'DATETIME_FORMAT': None,
+    'DATETIME_FORMAT': ISO_8601,
+    'DATETIME_INPUT_FORMATS': (ISO_8601,),
 
-    'TIME_INPUT_FORMATS': (
-        ISO_8601,
-    ),
-    'TIME_FORMAT': None,
+    'TIME_FORMAT': ISO_8601,
+    'TIME_INPUT_FORMATS': (ISO_8601,),
 
     # Encoding
     'UNICODE_JSON': True,
-    'COMPACT_JSON': True
+    'COMPACT_JSON': True,
+    'COERCE_DECIMAL_TO_STRING': True
 }
 
 

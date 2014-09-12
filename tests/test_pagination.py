@@ -135,7 +135,7 @@ class IntegrationTestPaginationAndFiltering(TestCase):
 
         self.objects = FilterableItem.objects
         self.data = [
-            {'id': obj.id, 'text': obj.text, 'decimal': str(obj.decimal), 'date': obj.date}
+            {'id': obj.id, 'text': obj.text, 'decimal': str(obj.decimal), 'date': obj.date.isoformat()}
             for obj in self.objects.all()
         ]
 
