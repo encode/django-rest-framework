@@ -131,7 +131,7 @@ class TestMaxValueValidatorValidation(TestCase):
         request = factory.patch('/{0}'.format(obj.pk), {'number_value': 101}, format='json')
         view = UpdateMaxValueValidationModel().as_view()
         response = view(request, pk=obj.pk).render()
-        self.assertEqual(response.content, b'{"number_value": ["Ensure this value is less than or equal to 100."]}')
+        self.assertEqual(response.content, b'{"number_value":["Ensure this value is less than or equal to 100."]}')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 

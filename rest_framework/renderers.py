@@ -26,6 +26,10 @@ from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework import exceptions, status, VERSION
 
 
+def zero_as_none(value):
+    return None if value == 0 else value
+
+
 class BaseRenderer(object):
     """
     All renderers should extend this class, setting the `media_type`
@@ -44,13 +48,13 @@ class BaseRenderer(object):
 class JSONRenderer(BaseRenderer):
     """
     Renderer which serializes to JSON.
-    Applies JSON's backslash-u character escaping for non-ascii characters.
     """
 
     media_type = 'application/json'
     format = 'json'
     encoder_class = encoders.JSONEncoder
-    ensure_ascii = True
+    ensure_ascii = not api_settings.UNICODE_JSON
+    compact = api_settings.COMPACT_JSON
 
     # We don't set a charset because JSON is a binary encoding,
     # that can be encoded as utf-8, utf-16 or utf-32.
@@ -62,9 +66,10 @@ class JSONRenderer(BaseRenderer):
         if accepted_media_type:
             # If the media type looks like 'application/json; indent=4',
             # then pretty print the result.
+            # Note that we coerce `indent=0` into `indent=None`.
             base_media_type, params = parse_header(accepted_media_type.encode('ascii'))
             try:
-                return max(min(int(params['indent']), 8), 0)
+                return zero_as_none(max(min(int(params['indent']), 8), 0))
             except (KeyError, ValueError, TypeError):
                 pass
 
@@ -81,10 +86,12 @@ class JSONRenderer(BaseRenderer):
 
         renderer_context = renderer_context or {}
         indent = self.get_indent(accepted_media_type, renderer_context)
+        separators = (',', ':') if (indent is None and self.compact) else (', ', ': ')
 
         ret = json.dumps(
             data, cls=self.encoder_class,
-            indent=indent, ensure_ascii=self.ensure_ascii
+            indent=indent, ensure_ascii=self.ensure_ascii,
+            separators=separators
         )
 
         # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,
@@ -94,14 +101,6 @@ class JSONRenderer(BaseRenderer):
         if isinstance(ret, six.text_type):
             return bytes(ret.encode('utf-8'))
         return ret
-
-
-class UnicodeJSONRenderer(JSONRenderer):
-    ensure_ascii = False
-    """
-    Renderer which serializes to JSON.
-    Does *not* apply JSON's character escaping for non-ascii characters.
-    """
 
 
 class JSONPRenderer(JSONRenderer):
@@ -196,7 +195,7 @@ class YAMLRenderer(BaseRenderer):
     format = 'yaml'
     encoder = encoders.SafeDumper
     charset = 'utf-8'
-    ensure_ascii = True
+    ensure_ascii = False
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -208,14 +207,6 @@ class YAMLRenderer(BaseRenderer):
             return ''
 
         return yaml.dump(data, stream=None, encoding=self.charset, Dumper=self.encoder, allow_unicode=not self.ensure_ascii)
-
-
-class UnicodeYAMLRenderer(YAMLRenderer):
-    """
-    Renderer which serializes to YAML.
-    Does *not* apply character escaping for non-ascii characters.
-    """
-    ensure_ascii = False
 
 
 class TemplateHTMLRenderer(BaseRenderer):

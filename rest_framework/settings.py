@@ -112,6 +112,9 @@ DEFAULTS = {
     ),
     'TIME_FORMAT': None,
 
+    # Encoding
+    'UNICODE_JSON': True,
+    'COMPACT_JSON': True
 }
 
 

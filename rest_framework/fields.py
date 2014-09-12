@@ -137,6 +137,16 @@ class Field(object):
         messages.update(error_messages or {})
         self.error_messages = messages
 
+    def __new__(cls, *args, **kwargs):
+        """
+        When a field is instantiated, we store the arguments that were used,
+        so that we can present a helpful representation of the object.
+        """
+        instance = super(Field, cls).__new__(cls)
+        instance._args = args
+        instance._kwargs = kwargs
+        return instance
+
     def bind(self, field_name, parent, root):
         """
         Setup the context for the field instance.
@@ -248,16 +258,6 @@ class Field(object):
             msg = MISSING_ERROR_MESSAGE.format(class_name=class_name, key=key)
             raise AssertionError(msg)
         raise ValidationError(msg.format(**kwargs))
-
-    def __new__(cls, *args, **kwargs):
-        """
-        When a field is instantiated, we store the arguments that were used,
-        so that we can present a helpful representation of the object.
-        """
-        instance = super(Field, cls).__new__(cls)
-        instance._args = args
-        instance._kwargs = kwargs
-        return instance
 
     def __repr__(self):
         return representation.field_repr(self)
