@@ -508,7 +508,7 @@ class DecimalField(Field):
 
 class DateField(Field):
     default_error_messages = {
-        'invalid': _("Date has wrong format. Use one of these formats instead: %s"),
+        'invalid': _('Date has wrong format. Use one of these formats instead: {format}'),
     }
     input_formats = api_settings.DATE_INPUT_FORMATS
     format = api_settings.DATE_FORMAT
@@ -551,8 +551,7 @@ class DateField(Field):
                     return parsed.date()
 
         humanized_format = humanize_datetime.date_formats(self.input_formats)
-        msg = self.error_messages['invalid'] % humanized_format
-        raise ValidationError(msg)
+        self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
         if value is None or self.format is None:
@@ -568,7 +567,7 @@ class DateField(Field):
 
 class DateTimeField(Field):
     default_error_messages = {
-        'invalid': _("Datetime has wrong format. Use one of these formats instead: %s"),
+        'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}'),
     }
     input_formats = api_settings.DATETIME_INPUT_FORMATS
     format = api_settings.DATETIME_FORMAT
@@ -617,8 +616,7 @@ class DateTimeField(Field):
                     return parsed
 
         humanized_format = humanize_datetime.datetime_formats(self.input_formats)
-        msg = self.error_messages['invalid'] % humanized_format
-        raise ValidationError(msg)
+        self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
         if value is None or self.format is None:
@@ -634,7 +632,7 @@ class DateTimeField(Field):
 
 class TimeField(Field):
     default_error_messages = {
-        'invalid': _("Time has wrong format. Use one of these formats instead: %s"),
+        'invalid': _('Time has wrong format. Use one of these formats instead: {format}'),
     }
     input_formats = api_settings.TIME_INPUT_FORMATS
     format = api_settings.TIME_FORMAT
@@ -669,8 +667,7 @@ class TimeField(Field):
                     return parsed.time()
 
         humanized_format = humanize_datetime.time_formats(self.input_formats)
-        msg = self.error_messages['invalid'] % humanized_format
-        raise ValidationError(msg)
+        self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
         if value is None or self.format is None:

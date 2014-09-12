@@ -547,7 +547,9 @@ class ClassA(models.Model):
 
 
 class ClassASerializer(serializers.ModelSerializer):
-    childs = serializers.PrimaryKeyRelatedField(many=True, source='childs')
+    childs = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=ClassB.objects.all()
+    )
 
     class Meta:
         model = ClassA
