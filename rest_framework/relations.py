@@ -1,18 +1,23 @@
+from rest_framework.compat import smart_text, urlparse
 from rest_framework.fields import Field
 from rest_framework.reverse import reverse
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch
 from django.db.models.query import QuerySet
-from rest_framework.compat import urlparse
+from django.utils.translation import ugettext_lazy as _
 
 
 class RelatedField(Field):
     def __init__(self, **kwargs):
         self.queryset = kwargs.pop('queryset', None)
         self.many = kwargs.pop('many', False)
-        assert self.queryset is not None or kwargs.get('read_only', False), (
+        assert self.queryset is not None or kwargs.get('read_only', None), (
             'Relational field must provide a `queryset` argument, '
             'or set read_only=`True`.'
+        )
+        assert not (self.queryset is not None and kwargs.get('read_only', None)), (
+            'Relational fields should not provide a `queryset` argument, '
+            'when setting read_only=`True`.'
         )
         super(RelatedField, self).__init__(**kwargs)
 
@@ -25,6 +30,11 @@ class RelatedField(Field):
 
 
 class StringRelatedField(Field):
+    """
+    A read only field that represents its targets using their
+    plain string representation.
+    """
+
     def __init__(self, **kwargs):
         kwargs['read_only'] = True
         super(StringRelatedField, self).__init__(**kwargs)
@@ -34,10 +44,10 @@ class StringRelatedField(Field):
 
 
 class PrimaryKeyRelatedField(RelatedField):
-    MESSAGES = {
+    default_error_messages = {
         'required': 'This field is required.',
         'does_not_exist': "Invalid pk '{pk_value}' - object does not exist.",
-        'incorrect_type': 'Incorrect type.  Expected pk value, received {data_type}.',
+        'incorrect_type': 'Incorrect type. Expected pk value, received {data_type}.',
     }
 
     def to_internal_value(self, data):
@@ -48,22 +58,33 @@ class PrimaryKeyRelatedField(RelatedField):
         except (TypeError, ValueError):
             self.fail('incorrect_type', data_type=type(data).__name__)
 
+    def to_representation(self, value):
+        return value.pk
+
 
 class HyperlinkedRelatedField(RelatedField):
     lookup_field = 'pk'
 
-    MESSAGES = {
+    default_error_messages = {
         'required': 'This field is required.',
         'no_match': 'Invalid hyperlink - No URL match',
         'incorrect_match': 'Invalid hyperlink - Incorrect URL match.',
-        'does_not_exist': "Invalid hyperlink - Object does not exist.",
-        'incorrect_type': 'Incorrect type.  Expected URL string, received {data_type}.',
+        'does_not_exist': 'Invalid hyperlink - Object does not exist.',
+        'incorrect_type': 'Incorrect type. Expected URL string, received {data_type}.',
     }
 
-    def __init__(self, **kwargs):
-        self.view_name = kwargs.pop('view_name')
+    def __init__(self, view_name, **kwargs):
+        self.view_name = view_name
         self.lookup_field = kwargs.pop('lookup_field', self.lookup_field)
         self.lookup_url_kwarg = kwargs.pop('lookup_url_kwarg', self.lookup_field)
+        self.format = kwargs.pop('format', None)
+
+        # We include these simply for dependancy injection in tests.
+        # We can't add them as class attributes or they would expect an
+        # implict `self` argument to be passed.
+        self.reverse = reverse
+        self.resolve = resolve
+
         super(HyperlinkedRelatedField, self).__init__(**kwargs)
 
     def get_object(self, view_name, view_args, view_kwargs):
@@ -76,44 +97,6 @@ class HyperlinkedRelatedField(RelatedField):
         lookup_value = view_kwargs[self.lookup_url_kwarg]
         lookup_kwargs = {self.lookup_field: lookup_value}
         return self.get_queryset().get(**lookup_kwargs)
-
-    def to_internal_value(self, value):
-        try:
-            http_prefix = value.startswith(('http:', 'https:'))
-        except AttributeError:
-            self.fail('incorrect_type', data_type=type(value).__name__)
-
-        if http_prefix:
-            # If needed convert absolute URLs to relative path
-            value = urlparse.urlparse(value).path
-            prefix = get_script_prefix()
-            if value.startswith(prefix):
-                value = '/' + value[len(prefix):]
-
-        try:
-            match = resolve(value)
-        except Exception:
-            self.fail('no_match')
-
-        if match.view_name != self.view_name:
-            self.fail('incorrect_match')
-
-        try:
-            return self.get_object(match.view_name, match.args, match.kwargs)
-        except (ObjectDoesNotExist, TypeError, ValueError):
-            self.fail('does_not_exist')
-
-
-class HyperlinkedIdentityField(RelatedField):
-    lookup_field = 'pk'
-
-    def __init__(self, **kwargs):
-        kwargs['read_only'] = True
-        kwargs['source'] = '*'
-        self.view_name = kwargs.pop('view_name')
-        self.lookup_field = kwargs.pop('lookup_field', self.lookup_field)
-        self.lookup_url_kwarg = kwargs.pop('lookup_url_kwarg', self.lookup_field)
-        super(HyperlinkedIdentityField, self).__init__(**kwargs)
 
     def get_url(self, obj, view_name, request, format):
         """
@@ -128,16 +111,42 @@ class HyperlinkedIdentityField(RelatedField):
 
         lookup_value = getattr(obj, self.lookup_field)
         kwargs = {self.lookup_url_kwarg: lookup_value}
-        return reverse(view_name, kwargs=kwargs, request=request, format=format)
+        return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
+
+    def to_internal_value(self, data):
+        try:
+            http_prefix = data.startswith(('http:', 'https:'))
+        except AttributeError:
+            self.fail('incorrect_type', data_type=type(data).__name__)
+
+        if http_prefix:
+            # If needed convert absolute URLs to relative path
+            data = urlparse.urlparse(data).path
+            prefix = get_script_prefix()
+            if data.startswith(prefix):
+                data = '/' + data[len(prefix):]
+
+        try:
+            match = self.resolve(data)
+        except Exception:
+            self.fail('no_match')
+
+        if match.view_name != self.view_name:
+            self.fail('incorrect_match')
+
+        try:
+            return self.get_object(match.view_name, match.args, match.kwargs)
+        except (ObjectDoesNotExist, TypeError, ValueError):
+            self.fail('does_not_exist')
 
     def to_representation(self, value):
         request = self.context.get('request', None)
         format = self.context.get('format', None)
 
         assert request is not None, (
-            "`HyperlinkedIdentityField` requires the request in the serializer"
+            "`%s` requires the request in the serializer"
             " context. Add `context={'request': request}` when instantiating "
-            "the serializer."
+            "the serializer." % self.__class__.__name__
         )
 
         # By default use whatever format is given for the current context
@@ -162,9 +171,45 @@ class HyperlinkedIdentityField(RelatedField):
                 'model in your API, or incorrectly configured the '
                 '`lookup_field` attribute on this field.'
             )
-            raise Exception(msg % self.view_name)
+            raise ImproperlyConfigured(msg % self.view_name)
+
+
+class HyperlinkedIdentityField(HyperlinkedRelatedField):
+    """
+    A read-only field that represents the identity URL for an object, itself.
+
+    This is in contrast to `HyperlinkedRelatedField` which represents the
+    URL of relationships to other objects.
+    """
+
+    def __init__(self, view_name, **kwargs):
+        kwargs['read_only'] = True
+        kwargs['source'] = '*'
+        super(HyperlinkedIdentityField, self).__init__(view_name, **kwargs)
 
 
 class SlugRelatedField(RelatedField):
-    def __init__(self, **kwargs):
-        self.slug_field = kwargs.pop('slug_field', None)
+    """
+    A read-write field the represents the target of the relationship
+    by a unique 'slug' attribute.
+    """
+
+    default_error_messages = {
+        'does_not_exist': _("Object with {slug_name}={value} does not exist."),
+        'invalid': _('Invalid value.'),
+    }
+
+    def __init__(self, slug_field, **kwargs):
+        self.slug_field = slug_field
+        super(SlugRelatedField, self).__init__(**kwargs)
+
+    def to_internal_value(self, data):
+        try:
+            return self.get_queryset().get(**{self.slug_field: data})
+        except ObjectDoesNotExist:
+            self.fail('does_not_exist', slug_name=self.slug_field, value=smart_text(data))
+        except (TypeError, ValueError):
+            self.fail('invalid')
+
+    def to_representation(self, obj):
+        return getattr(obj, self.slug_field)
