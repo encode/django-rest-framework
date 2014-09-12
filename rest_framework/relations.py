@@ -2,7 +2,7 @@ from rest_framework.compat import smart_text, urlparse
 from rest_framework.fields import Field
 from rest_framework.reverse import reverse
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
-from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch
+from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch, Resolver404
 from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
 
@@ -128,7 +128,7 @@ class HyperlinkedRelatedField(RelatedField):
 
         try:
             match = self.resolve(data)
-        except Exception:
+        except Resolver404:
             self.fail('no_match')
 
         if match.view_name != self.view_name:
