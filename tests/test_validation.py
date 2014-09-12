@@ -158,7 +158,7 @@ class TestChoiceFieldChoicesValidate(TestCase):
         f = serializers.ChoiceField(choices=self.CHOICES)
         value = self.CHOICES[0][0]
         try:
-            f.to_native(value)
+            f.to_internal_value(value)
         except ValidationError:
             self.fail("Value %s does not validate" % str(value))
 

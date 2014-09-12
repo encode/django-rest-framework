@@ -47,11 +47,11 @@ class BaseSerializer(Field):
         self.instance = instance
         self._initial_data = data
 
-    def to_native(self, data):
-        raise NotImplementedError('`to_native()` must be implemented.')
+    def to_internal_value(self, data):
+        raise NotImplementedError('`to_internal_value()` must be implemented.')
 
-    def to_primative(self, instance):
-        raise NotImplementedError('`to_primative()` must be implemented.')
+    def to_representation(self, instance):
+        raise NotImplementedError('`to_representation()` must be implemented.')
 
     def update(self, instance, attrs):
         raise NotImplementedError('`update()` must be implemented.')
@@ -74,7 +74,7 @@ class BaseSerializer(Field):
     def is_valid(self, raise_exception=False):
         if not hasattr(self, '_validated_data'):
             try:
-                self._validated_data = self.to_native(self._initial_data)
+                self._validated_data = self.to_internal_value(self._initial_data)
             except ValidationError as exc:
                 self._validated_data = {}
                 self._errors = exc.message_dict
@@ -90,7 +90,7 @@ class BaseSerializer(Field):
     def data(self):
         if not hasattr(self, '_data'):
             if self.instance is not None:
-                self._data = self.to_primative(self.instance)
+                self._data = self.to_representation(self.instance)
             elif self._initial_data is not None:
                 self._data = dict([
                     (field_name, field.get_value(self._initial_data))
@@ -193,7 +193,7 @@ class Serializer(BaseSerializer):
             return html.parse_html_dict(dictionary, prefix=self.field_name)
         return dictionary.get(self.field_name, empty)
 
-    def to_native(self, data):
+    def to_internal_value(self, data):
         """
         Dict of native values <- Dict of primitive datatypes.
         """
@@ -208,7 +208,7 @@ class Serializer(BaseSerializer):
             validate_method = getattr(self, 'validate_' + field.field_name, None)
             primitive_value = field.get_value(data)
             try:
-                validated_value = field.validate_value(primitive_value)
+                validated_value = field.run_validation(primitive_value)
                 if validate_method is not None:
                     validated_value = validate_method(validated_value)
             except ValidationError as exc:
@@ -226,7 +226,7 @@ class Serializer(BaseSerializer):
         except ValidationError as exc:
             raise ValidationError({'non_field_errors': exc.messages})
 
-    def to_primative(self, instance):
+    def to_representation(self, instance):
         """
         Object instance -> Dict of primitive datatypes.
         """
@@ -235,7 +235,7 @@ class Serializer(BaseSerializer):
 
         for field in fields:
             native_value = field.get_attribute(instance)
-            ret[field.field_name] = field.to_primative(native_value)
+            ret[field.field_name] = field.to_representation(native_value)
 
         return ret
 
@@ -279,20 +279,20 @@ class ListSerializer(BaseSerializer):
             return html.parse_html_list(dictionary, prefix=self.field_name)
         return dictionary.get(self.field_name, empty)
 
-    def to_native(self, data):
+    def to_internal_value(self, data):
         """
         List of dicts of native values <- List of dicts of primitive datatypes.
         """
         if html.is_html_input(data):
             data = html.parse_html_list(data)
 
-        return [self.child.validate(item) for item in data]
+        return [self.child.run_validation(item) for item in data]
 
-    def to_primative(self, data):
+    def to_representation(self, data):
         """
         List of object instances -> List of dicts of primitive datatypes.
         """
-        return [self.child.to_primative(item) for item in data]
+        return [self.child.to_representation(item) for item in data]
 
     def create(self, attrs_list):
         return [self.child.create(attrs) for attrs in attrs_list]

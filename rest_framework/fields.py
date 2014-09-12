@@ -195,7 +195,7 @@ class Field(object):
             raise SkipField()
         return self.default
 
-    def validate_value(self, data=empty):
+    def run_validation(self, data=empty):
         """
         Validate a simple representation and return the internal value.
 
@@ -208,7 +208,7 @@ class Field(object):
                 self.fail('required')
             return self.get_default()
 
-        value = self.to_native(data)
+        value = self.to_internal_value(data)
         self.run_validators(value)
         return value
 
@@ -225,17 +225,17 @@ class Field(object):
         if errors:
             raise ValidationError(errors)
 
-    def to_native(self, data):
+    def to_internal_value(self, data):
         """
         Transform the *incoming* primative data into a native value.
         """
-        raise NotImplementedError('to_native() must be implemented.')
+        raise NotImplementedError('to_internal_value() must be implemented.')
 
-    def to_primative(self, value):
+    def to_representation(self, value):
         """
         Transform the *outgoing* native value into primative data.
         """
-        raise NotImplementedError('to_primative() must be implemented.')
+        raise NotImplementedError('to_representation() must be implemented.')
 
     def fail(self, key, **kwargs):
         """
@@ -279,14 +279,14 @@ class BooleanField(Field):
             return dictionary.get(self.field_name, False)
         return dictionary.get(self.field_name, empty)
 
-    def to_native(self, data):
+    def to_internal_value(self, data):
         if data in self.TRUE_VALUES:
             return True
         elif data in self.FALSE_VALUES:
             return False
         self.fail('invalid', input=data)
 
-    def to_primative(self, value):
+    def to_representation(self, value):
         if value is None:
             return None
         if value in self.TRUE_VALUES:
@@ -309,12 +309,14 @@ class CharField(Field):
         self.min_length = kwargs.pop('min_length', None)
         super(CharField, self).__init__(**kwargs)
 
-    def to_native(self, data):
+    def to_internal_value(self, data):
         if data == '' and not self.allow_blank:
             self.fail('blank')
+        if data is None:
+            return None
         return str(data)
 
-    def to_primative(self, value):
+    def to_representation(self, value):
         if value is None:
             return None
         return str(value)
@@ -326,17 +328,17 @@ class EmailField(CharField):
     }
     default_validators = [validators.validate_email]
 
-    def to_native(self, data):
-        ret = super(EmailField, self).to_native(data)
-        if ret is None:
+    def to_internal_value(self, data):
+        if data == '' and not self.allow_blank:
+            self.fail('blank')
+        if data is None:
             return None
-        return ret.strip()
+        return str(data).strip()
 
-    def to_primative(self, value):
-        ret = super(EmailField, self).to_primative(value)
-        if ret is None:
+    def to_representation(self, value):
+        if value is None:
             return None
-        return ret.strip()
+        return str(value).strip()
 
 
 class RegexField(CharField):
@@ -378,14 +380,14 @@ class IntegerField(Field):
         if min_value is not None:
             self.validators.append(validators.MinValueValidator(min_value))
 
-    def to_native(self, data):
+    def to_internal_value(self, data):
         try:
             data = int(str(data))
         except (ValueError, TypeError):
             self.fail('invalid')
         return data
 
-    def to_primative(self, value):
+    def to_representation(self, value):
         if value is None:
             return None
         return int(value)
@@ -405,18 +407,18 @@ class FloatField(Field):
         if min_value is not None:
             self.validators.append(validators.MinValueValidator(min_value))
 
-    def to_primative(self, value):
+    def to_internal_value(self, value):
+        if value is None:
+            return None
+        return float(value)
+
+    def to_representation(self, value):
         if value is None:
             return None
         try:
             return float(value)
         except (TypeError, ValueError):
             self.fail('invalid', value=value)
-
-    def to_native(self, value):
-        if value is None:
-            return None
-        return float(value)
 
 
 class DecimalField(Field):
@@ -439,7 +441,7 @@ class DecimalField(Field):
         if min_value is not None:
             self.validators.append(validators.MinValueValidator(min_value))
 
-    def from_native(self, value):
+    def to_internal_value(self, value):
         """
         Validates that the input is a decimal number. Returns a Decimal
         instance. Returns None for empty values. Ensures that there are no more
@@ -485,7 +487,7 @@ class DecimalField(Field):
 
         return value
 
-    def to_primative(self, value):
+    def to_representation(self, value):
         if isinstance(value, decimal.Decimal):
             context = decimal.getcontext().copy()
             context.prec = self.max_digits
@@ -516,7 +518,7 @@ class DateField(Field):
         self.format = format if format is not None else self.format
         super(DateField, self).__init__(*args, **kwargs)
 
-    def from_native(self, value):
+    def to_internal_value(self, value):
         if value in validators.EMPTY_VALUES:
             return None
 
@@ -552,7 +554,7 @@ class DateField(Field):
         msg = self.error_messages['invalid'] % humanized_format
         raise ValidationError(msg)
 
-    def to_primative(self, value):
+    def to_representation(self, value):
         if value is None or self.format is None:
             return value
 
@@ -576,7 +578,7 @@ class DateTimeField(Field):
         self.format = format if format is not None else self.format
         super(DateTimeField, self).__init__(*args, **kwargs)
 
-    def from_native(self, value):
+    def to_internal_value(self, value):
         if value in validators.EMPTY_VALUES:
             return None
 
@@ -618,7 +620,7 @@ class DateTimeField(Field):
         msg = self.error_messages['invalid'] % humanized_format
         raise ValidationError(msg)
 
-    def to_primative(self, value):
+    def to_representation(self, value):
         if value is None or self.format is None:
             return value
 
@@ -670,7 +672,7 @@ class TimeField(Field):
         msg = self.error_messages['invalid'] % humanized_format
         raise ValidationError(msg)
 
-    def to_primative(self, value):
+    def to_representation(self, value):
         if value is None or self.format is None:
             return value
 
@@ -711,13 +713,13 @@ class ChoiceField(Field):
 
         super(ChoiceField, self).__init__(**kwargs)
 
-    def to_native(self, data):
+    def to_internal_value(self, data):
         try:
             return self.choice_strings_to_values[str(data)]
         except KeyError:
             self.fail('invalid_choice', input=data)
 
-    def to_primative(self, value):
+    def to_representation(self, value):
         return value
 
 
@@ -727,15 +729,15 @@ class MultipleChoiceField(ChoiceField):
         'not_a_list': _('Expected a list of items but got type `{input_type}`')
     }
 
-    def to_native(self, data):
+    def to_internal_value(self, data):
         if not hasattr(data, '__iter__'):
             self.fail('not_a_list', input_type=type(data).__name__)
         return set([
-            super(MultipleChoiceField, self).to_native(item)
+            super(MultipleChoiceField, self).to_internal_value(item)
             for item in data
         ])
 
-    def to_primative(self, value):
+    def to_representation(self, value):
         return value
 
 
@@ -768,7 +770,7 @@ class ReadOnlyField(Field):
         kwargs['read_only'] = True
         super(ReadOnlyField, self).__init__(**kwargs)
 
-    def to_primative(self, value):
+    def to_representation(self, value):
         if is_simple_callable(value):
             return value()
         return value
@@ -795,7 +797,7 @@ class SerializerMethodField(Field):
         kwargs['read_only'] = True
         super(SerializerMethodField, self).__init__(**kwargs)
 
-    def to_primative(self, value):
+    def to_representation(self, value):
         method_attr = self.method_attr
         if method_attr is None:
             method_attr = 'get_{field_name}'.format(field_name=self.field_name)
@@ -815,13 +817,13 @@ class ModelField(Field):
         kwargs['source'] = '*'
         super(ModelField, self).__init__(**kwargs)
 
-    def to_native(self, data):
+    def to_internal_value(self, data):
         rel = getattr(self.model_field, 'rel', None)
         if rel is not None:
             return rel.to._meta.get_field(rel.field_name).to_python(data)
         return self.model_field.to_python(data)
 
-    def to_primative(self, obj):
+    def to_representation(self, obj):
         value = self.model_field._get_val_from_obj(obj)
         if is_protected_type(value):
             return value

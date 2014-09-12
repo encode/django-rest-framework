@@ -110,7 +110,7 @@ class HyperlinkedIdentityField(RelatedField):
     def get_attribute(self, instance):
         return instance
 
-    def to_primative(self, value):
+    def to_representation(self, value):
         request = self.context.get('request', None)
         format = self.context.get('format', None)
 
