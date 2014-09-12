@@ -32,13 +32,13 @@ class TestPrimaryKeyRelatedField(APISimpleTestCase):
     def test_pk_related_lookup_does_not_exist(self):
         with pytest.raises(ValidationError) as excinfo:
             self.field.to_internal_value(4)
-        msg = excinfo.value.message
+        msg = excinfo.value.messages[0]
         assert msg == "Invalid pk '4' - object does not exist."
 
     def test_pk_related_lookup_invalid_type(self):
         with pytest.raises(ValidationError) as excinfo:
             self.field.to_internal_value(BadType())
-        msg = excinfo.value.message
+        msg = excinfo.value.messages[0]
         assert msg == 'Incorrect type. Expected pk value, received BadType.'
 
     def test_pk_representation(self):
@@ -122,13 +122,13 @@ class TestSlugRelatedField(APISimpleTestCase):
     def test_slug_related_lookup_does_not_exist(self):
         with pytest.raises(ValidationError) as excinfo:
             self.field.to_internal_value('doesnotexist')
-        msg = excinfo.value.message
+        msg = excinfo.value.messages[0]
         assert msg == 'Object with name=doesnotexist does not exist.'
 
     def test_slug_related_lookup_invalid_type(self):
         with pytest.raises(ValidationError) as excinfo:
             self.field.to_internal_value(BadType())
-        msg = excinfo.value.message
+        msg = excinfo.value.messages[0]
         assert msg == 'Invalid value.'
 
     def test_representation(self):
