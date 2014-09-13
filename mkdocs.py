@@ -76,6 +76,7 @@ path_list = [
     'topics/browser-enhancements.md',
     'topics/browsable-api.md',
     'topics/rest-hypermedia-hateoas.md',
+    'topics/third-party-resources.md',
     'topics/contributing.md',
     'topics/rest-framework-2-announcement.md',
     'topics/2.2-announcement.md',
