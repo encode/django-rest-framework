@@ -4,6 +4,8 @@ Django REST Framework has a growing community of developers, packages, and resou
 
 Check out a grid detailing all the packages and ecosystem around Django REST Framework at [Django Packages](https://www.djangopackages.com/grids/g/django-rest-framework/).
 
+To submit new content, [open an issue](https://github.com/tomchristie/django-rest-framework/issues/new) or [create a pull request](https://github.com/tomchristie/django-rest-framework/). Pull requests will be given higher priority since they are easier to include.
+
 ## Libraries and Extensions
 
 ### Authentication
