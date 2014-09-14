@@ -7,62 +7,39 @@
     <body class="container">
 
         <div class="container-fluid" style="margin-top: 30px">
-            <div class="row-fluid">
+            <div class="row">
                 <div class="well" style="width: 320px; margin-left: auto; margin-right: auto">
-                    <div class="row-fluid">
+                    <div class="row">
                         <div>
                             {% block branding %}<h3 style="margin: 0 0 20px;">Django REST framework</h3>{% endblock %}
                         </div>
                     </div><!-- /row fluid -->
         
-                    <div class="row-fluid">
+                    <div class="row">
                         <div>
-                            <form action="{% url 'rest_framework:login' %}" role="form" method="post">
+                            <form action="{% url 'rest_framework:login' %}" class=" form-inline" method="post">
                                 {% csrf_token %}
-                                <div id="div_id_username"
-                                    class="clearfix control-group {% if form.username.errors %}error{% endif %}">
+                                <div id="div_id_username" class="clearfix form-group">
                                     <div class="controls">
-                                        <Label class="span4">Username:</label>
-                                        <input style="height: 25px" type="text" name="username" maxlength="100"
-                                            autocapitalize="off"
-                                            autocorrect="off" class="span12 textinput textInput"
-                                            id="id_username" required
-                                            {% if form.username.value %}value="{{ form.username.value }}"{% endif %}>
-                                        {% if form.username.errors %}
-                                            <p class="text-error">
-                                                {{ form.username.errors|striptags }}
-                                            </p>
-                                        {% endif %}
+                                        <Label class="col-md-4">Username:</label>
+                                        <input style="height: 25px" type="text" name="username" maxlength="100" autocapitalize="off" autocorrect="off" class="textinput textInput" id="id_username">
                                     </div>
                                 </div>
-                                    <div id="div_id_password"
-                                        class="clearfix control-group {% if form.password.errors %}error{% endif %}">
-                                        <div class="controls">
-                                        <Label class="span4">Password:</label>
-                                        <input style="height: 25px" type="password" name="password" maxlength="100"
-                                            autocapitalize="off" autocorrect="off" class="span12 textinput textInput"
-                                            id="id_password" required>
-                                        {% if form.password.errors %}
-                                            <p class="text-error">
-                                                {{ form.password.errors|striptags }}
-                                            </p>
-                                        {% endif %}
+                                <div id="div_id_password" class="clearfix form-group">
+                                    <div class="controls">
+                                        <Label class="col-md-4">Password:</label>
+                                        <input style="height: 25px" type="password" name="password" maxlength="100" autocapitalize="off" autocorrect="off" class="textinput textInput" id="id_password">
                                     </div>
                                 </div>
                                 <input type="hidden" name="next" value="{{ next }}" />
-                                {% if form.non_field_errors %}
-                                    {% for error in form.non_field_errors %}
-                                        <div class="well well-small text-error" style="border: none">{{ error }}</div>
-                                    {% endfor %}
-                                {% endif %}
                                 <div class="form-actions-no-box">
                                     <input type="submit" name="submit" value="Log in" class="btn btn-primary" id="submit-id-submit">
                                 </div>
                             </form>
                         </div>
-                    </div><!-- /.row-fluid -->
+                    </div><!-- /.row -->
                 </div><!--/.well-->
-            </div><!-- /.row-fluid -->
+            </div><!-- /.row -->
         </div><!-- /.container-fluid -->
     </body>
     {% endblock %}

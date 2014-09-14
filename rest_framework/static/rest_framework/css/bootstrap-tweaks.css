@@ -12,10 +12,10 @@ a single block in the template.
   padding-top: 0;
 }
 
-.navbar-inverse .brand a {
+.navbar-inverse .navbar-brand a {
   color: #999999;
 }
-.navbar-inverse .brand:hover a {
+.navbar-inverse .navbar-brand:hover a {
   color: white;
   text-decoration: none;
 }
@@ -37,7 +37,7 @@ a single block in the template.
   border-radius: 0px;
 }
 
-.navbar .navbar-inner .nav li, .navbar .navbar-inner .nav li a, .navbar .navbar-inner .brand:hover {
+.navbar .navbar-inner .nav li, .navbar .navbar-inner .nav li a, .navbar .navbar-inner .navbar-brand:hover {
   color: white;
 }
 
