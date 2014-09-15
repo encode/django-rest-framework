@@ -26,7 +26,7 @@
     </head>
 
     {% block body %}
-    <body class="{% block bodyclass %}{% endblock %} container">
+    <body class="{% block bodyclass %}{% endblock %}">
 
         <div class="wrapper">
 
@@ -53,6 +53,7 @@
                 </div>
             {% endblock %}
 
+            <div class="container">
             {% block breadcrumbs %}
                 <ul class="breadcrumb">
                     {% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
@@ -239,6 +240,7 @@
                 {% endif %}
             </div>
             <!-- END Content -->
+        </div><!-- /.container -->
             
             <footer>
                 {% block footer %}
