@@ -10,6 +10,7 @@ a single block in the template.
   background: transparent;
   border-top-color: transparent;
   padding-top: 0;
+  text-align: right;
 }
 
 .navbar-inverse .navbar-brand a {
