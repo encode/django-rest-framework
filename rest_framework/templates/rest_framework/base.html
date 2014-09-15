@@ -56,12 +56,15 @@
             {% block breadcrumbs %}
                 <ul class="breadcrumb">
                     {% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
+                        {% if forloop.last %}
+                        <li class="active">{{ breadcrumb_name }}</li>
+                        {% else %}
                         <li>
-                            <a href="{{ breadcrumb_url }}" {% if forloop.last %}class="active"{% endif %}>
+                            <a href="{{ breadcrumb_url }}">
                                 {{ breadcrumb_name }}
                             </a>
-                            {% if not forloop.last %}<span class="divider">&rsaquo;</span>{% endif %}
                         </li>
+                        {% endif %}
                     {% endfor %}
                 </ul>
             {% endblock %}
