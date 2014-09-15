@@ -162,7 +162,7 @@ class Field(object):
         attrs = {}
         if 'id' not in self.widget.attrs:
             attrs['id'] = self._name
-        if not 'class' in self.widget.attrs:
+        if 'class' not in self.widget.attrs:
             attrs['class'] = 'form-control'
         elif attrs['class'].find('form-control') == -1:
             attrs['class'] += ' form-control'
