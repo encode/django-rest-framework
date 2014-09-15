@@ -39,20 +39,12 @@
                                 </a>
                             {% endblock %}
                         </span>
-                        <ul class="navbar-nav nav pull-right">
+                        <ul class="nav navbar-nav pull-right">
                             {% block userlinks %}
                                 {% if user.is_authenticated %}
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                        {{ user }}
-                                        <b class="caret"></b>
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <li>{% optional_logout request user %}</li>
-                                    </ul>
-                                </li>
+                                    {% optional_logout request user %}
                                 {% else %}
-                                    <li>{% optional_login request %}</li>
+                                    {% optional_login request %}
                                 {% endif %}
                             {% endblock %}
                         </ul>
