@@ -368,6 +368,7 @@ class ModelSerializer(Serializer):
         models.TimeField: TimeField,
         models.URLField: URLField,
     }
+    nested_class = None  # We fill this in at the end of this module.
 
     _options_class = ModelSerializerOptions
 
@@ -454,7 +455,7 @@ class ModelSerializer(Serializer):
 
         Note that model_field will be `None` for reverse relationships.
         """
-        class NestedModelSerializer(ModelSerializer):
+        class NestedModelSerializer(self.nested_class):
             class Meta:
                 model = related_model
                 depth = self.opts.depth - 1
@@ -694,3 +695,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
             'app_label': model._meta.app_label,
             'model_name': model._meta.object_name.lower()
         }
+
+
+ModelSerializer.nested_class = ModelSerializer
+HyperlinkedModelSerializer.nested_class = HyperlinkedModelSerializer
