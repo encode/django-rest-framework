@@ -29,7 +29,7 @@ a single block in the template.
   z-index: 3;
 }
 
-.navbar .navbar-inner {
+.navbar-inverse {
   background: #2C2C2C;
   color: white;
   border: none;
@@ -37,7 +37,7 @@ a single block in the template.
   border-radius: 0px;
 }
 
-.navbar .navbar-inner .nav li, .navbar .navbar-inner .nav li a, .navbar .navbar-inner .navbar-brand:hover {
+.navbar .navbar-nav li, .navbar .navbar-nav li a, .navbar .navbar-brand:hover {
   color: white;
 }
 
@@ -45,11 +45,11 @@ a single block in the template.
   background: #2C2C2C;
 }
 
-.navbar .navbar-inner .dropdown-menu li a, .navbar .navbar-inner .dropdown-menu li {
+.navbar .dropdown-menu li a, .navbar .dropdown-menu li {
   color: #A30000;
 }
 
-.navbar .navbar-inner .dropdown-menu li a:hover {
+.navbar .dropdown-menu li a:hover {
   background: #EEEEEE;
   color: #C20000;
 }
@@ -59,11 +59,6 @@ a single block in the template.
 html {
   width:100%;
   background: none;
-}
-
-body, .navbar .navbar-inner .container-fluid {
-  max-width: 1150px;
-  margin: 0 auto;
 }
 
 body {
