@@ -158,26 +158,47 @@ class TestRelationalFieldMappings(TestCase):
                 many_to_many = NestedModelSerializer(many=True, read_only=True):
                     id = IntegerField(label='ID', read_only=True)
                     name = CharField(max_length=100)
-            """)
+        """)
         self.assertEqual(repr(TestSerializer()), expected)
 
-    # def test_flat_reverse_foreign_key(self):
-    #     class TestSerializer(serializers.ModelSerializer):
-    #         class Meta:
-    #             model = ForeignKeyTargetModel
-    #             fields = ('id', 'name', 'reverse_foreign_key')
-    #     print repr(TestSerializer())
+    def test_flat_reverse_foreign_key(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ForeignKeyTargetModel
+                fields = ('id', 'name', 'reverse_foreign_key')
 
-    # def test_flat_reverse_one_to_one(self):
-    #     class TestSerializer(serializers.ModelSerializer):
-    #         class Meta:
-    #             model = OneToOneTargetModel
-    #             fields = ('id', 'name', 'reverse_one_to_one')
-    #     print repr(TestSerializer())
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                name = CharField(max_length=100)
+                reverse_foreign_key = PrimaryKeyRelatedField(many=True, queryset=RelationalModel.objects.all())
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
 
-    # def test_flat_reverse_many_to_many(self):
-    #     class TestSerializer(serializers.ModelSerializer):
-    #         class Meta:
-    #             model = ManyToManyTargetModel
-    #             fields = ('id', 'name', 'reverse_many_to_many')
-    #     print repr(TestSerializer())
+    def test_flat_reverse_one_to_one(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = OneToOneTargetModel
+                fields = ('id', 'name', 'reverse_one_to_one')
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                name = CharField(max_length=100)
+                reverse_one_to_one = PrimaryKeyRelatedField(queryset=RelationalModel.objects.all())
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+    def test_flat_reverse_many_to_many(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ManyToManyTargetModel
+                fields = ('id', 'name', 'reverse_many_to_many')
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                name = CharField(max_length=100)
+                reverse_many_to_many = PrimaryKeyRelatedField(many=True, queryset=RelationalModel.objects.all())
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
