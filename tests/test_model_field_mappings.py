@@ -10,6 +10,10 @@ from django.test import TestCase
 from rest_framework import serializers
 
 
+def dedent(blocktext):
+    return '\n'.join([line[12:] for line in blocktext.splitlines()[1:-1]])
+
+
 # Models for testing regular field mapping
 
 class RegularFieldsModel(models.Model):
@@ -34,28 +38,36 @@ class RegularFieldsModel(models.Model):
     url_field = models.URLField(max_length=100)
 
 
-REGULAR_FIELDS_REPR = """
-TestSerializer():
-    auto_field = IntegerField(read_only=True)
-    big_integer_field = IntegerField()
-    boolean_field = BooleanField(default=False)
-    char_field = CharField(max_length=100)
-    comma_seperated_integer_field = CharField(max_length=100, validators=[<django.core.validators.RegexValidator object>])
-    date_field = DateField()
-    datetime_field = DateTimeField()
-    decimal_field = DecimalField(decimal_places=1, max_digits=3)
-    email_field = EmailField(max_length=100)
-    float_field = FloatField()
-    integer_field = IntegerField()
-    null_boolean_field = BooleanField(required=False)
-    positive_integer_field = IntegerField()
-    positive_small_integer_field = IntegerField()
-    slug_field = SlugField(max_length=100)
-    small_integer_field = IntegerField()
-    text_field = CharField()
-    time_field = TimeField()
-    url_field = URLField(max_length=100)
-""".strip()
+class TestRegularFieldMappings(TestCase):
+    def test_regular_fields(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+
+        expected = dedent("""
+            TestSerializer():
+                auto_field = IntegerField(read_only=True)
+                big_integer_field = IntegerField()
+                boolean_field = BooleanField(default=False)
+                char_field = CharField(max_length=100)
+                comma_seperated_integer_field = CharField(max_length=100, validators=[<django.core.validators.RegexValidator object>])
+                date_field = DateField()
+                datetime_field = DateTimeField()
+                decimal_field = DecimalField(decimal_places=1, max_digits=3)
+                email_field = EmailField(max_length=100)
+                float_field = FloatField()
+                integer_field = IntegerField()
+                null_boolean_field = BooleanField(required=False)
+                positive_integer_field = IntegerField()
+                positive_small_integer_field = IntegerField()
+                slug_field = SlugField(max_length=100)
+                small_integer_field = IntegerField()
+                text_field = CharField()
+                time_field = TimeField()
+                url_field = URLField(max_length=100)
+        """)
+
+        self.assertEqual(repr(TestSerializer()), expected)
 
 
 # Model for testing relational field mapping
@@ -78,88 +90,76 @@ class RelationalModel(models.Model):
     one_to_one = models.OneToOneField(OneToOneTargetModel, related_name='reverse_one_to_one')
 
 
-RELATIONAL_FLAT_REPR = """
-TestSerializer():
-    id = IntegerField(label='ID', read_only=True)
-    foreign_key = PrimaryKeyRelatedField(queryset=ForeignKeyTargetModel.objects.all())
-    one_to_one = PrimaryKeyRelatedField(queryset=OneToOneTargetModel.objects.all())
-    many_to_many = PrimaryKeyRelatedField(many=True, queryset=ManyToManyTargetModel.objects.all())
-""".strip()
-
-
-RELATIONAL_NESTED_REPR = """
-TestSerializer():
-    id = IntegerField(label='ID', read_only=True)
-    foreign_key = NestedModelSerializer(read_only=True):
-        id = IntegerField(label='ID', read_only=True)
-        name = CharField(max_length=100)
-    one_to_one = NestedModelSerializer(read_only=True):
-        id = IntegerField(label='ID', read_only=True)
-        name = CharField(max_length=100)
-    many_to_many = NestedModelSerializer(many=True, read_only=True):
-        id = IntegerField(label='ID', read_only=True)
-        name = CharField(max_length=100)
-""".strip()
-
-
-HYPERLINKED_FLAT_REPR = """
-TestSerializer():
-    url = HyperlinkedIdentityField(view_name='relationalmodel-detail')
-    foreign_key = HyperlinkedRelatedField(queryset=ForeignKeyTargetModel.objects.all(), view_name='foreignkeytargetmodel-detail')
-    one_to_one = HyperlinkedRelatedField(queryset=OneToOneTargetModel.objects.all(), view_name='onetoonetargetmodel-detail')
-    many_to_many = HyperlinkedRelatedField(many=True, queryset=ManyToManyTargetModel.objects.all(), view_name='manytomanytargetmodel-detail')
-""".strip()
-
-
-HYPERLINKED_NESTED_REPR = """
-TestSerializer():
-    url = HyperlinkedIdentityField(view_name='relationalmodel-detail')
-    foreign_key = NestedModelSerializer(read_only=True):
-        id = IntegerField(label='ID', read_only=True)
-        name = CharField(max_length=100)
-    one_to_one = NestedModelSerializer(read_only=True):
-        id = IntegerField(label='ID', read_only=True)
-        name = CharField(max_length=100)
-    many_to_many = NestedModelSerializer(many=True, read_only=True):
-        id = IntegerField(label='ID', read_only=True)
-        name = CharField(max_length=100)
-""".strip()
-
-
-class TestSerializerMappings(TestCase):
-    maxDiff = 10000
-
-    def test_regular_fields(self):
-        class TestSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = RegularFieldsModel
-        self.assertEqual(repr(TestSerializer()), REGULAR_FIELDS_REPR)
-
+class TestRelationalFieldMappings(TestCase):
     def test_flat_relational_fields(self):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RelationalModel
-        self.assertEqual(repr(TestSerializer()), RELATIONAL_FLAT_REPR)
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                foreign_key = PrimaryKeyRelatedField(queryset=ForeignKeyTargetModel.objects.all())
+                one_to_one = PrimaryKeyRelatedField(queryset=OneToOneTargetModel.objects.all())
+                many_to_many = PrimaryKeyRelatedField(many=True, queryset=ManyToManyTargetModel.objects.all())
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
 
     def test_nested_relational_fields(self):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RelationalModel
                 depth = 1
-        self.assertEqual(repr(TestSerializer()), RELATIONAL_NESTED_REPR)
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                foreign_key = NestedModelSerializer(read_only=True):
+                    id = IntegerField(label='ID', read_only=True)
+                    name = CharField(max_length=100)
+                one_to_one = NestedModelSerializer(read_only=True):
+                    id = IntegerField(label='ID', read_only=True)
+                    name = CharField(max_length=100)
+                many_to_many = NestedModelSerializer(many=True, read_only=True):
+                    id = IntegerField(label='ID', read_only=True)
+                    name = CharField(max_length=100)
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
 
     def test_flat_hyperlinked_fields(self):
         class TestSerializer(serializers.HyperlinkedModelSerializer):
             class Meta:
                 model = RelationalModel
-        self.assertEqual(repr(TestSerializer()), HYPERLINKED_FLAT_REPR)
+
+        expected = dedent("""
+            TestSerializer():
+                url = HyperlinkedIdentityField(view_name='relationalmodel-detail')
+                foreign_key = HyperlinkedRelatedField(queryset=ForeignKeyTargetModel.objects.all(), view_name='foreignkeytargetmodel-detail')
+                one_to_one = HyperlinkedRelatedField(queryset=OneToOneTargetModel.objects.all(), view_name='onetoonetargetmodel-detail')
+                many_to_many = HyperlinkedRelatedField(many=True, queryset=ManyToManyTargetModel.objects.all(), view_name='manytomanytargetmodel-detail')
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
 
     def test_nested_hyperlinked_fields(self):
         class TestSerializer(serializers.HyperlinkedModelSerializer):
             class Meta:
                 model = RelationalModel
                 depth = 1
-        self.assertEqual(repr(TestSerializer()), HYPERLINKED_NESTED_REPR)
+
+        expected = dedent("""
+            TestSerializer():
+                url = HyperlinkedIdentityField(view_name='relationalmodel-detail')
+                foreign_key = NestedModelSerializer(read_only=True):
+                    id = IntegerField(label='ID', read_only=True)
+                    name = CharField(max_length=100)
+                one_to_one = NestedModelSerializer(read_only=True):
+                    id = IntegerField(label='ID', read_only=True)
+                    name = CharField(max_length=100)
+                many_to_many = NestedModelSerializer(many=True, read_only=True):
+                    id = IntegerField(label='ID', read_only=True)
+                    name = CharField(max_length=100)
+            """)
+        self.assertEqual(repr(TestSerializer()), expected)
 
     # def test_flat_reverse_foreign_key(self):
     #     class TestSerializer(serializers.ModelSerializer):
