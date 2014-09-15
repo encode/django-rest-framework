@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.utils import six
-from rest_framework.utils.modelinfo import _resolve_model
+from rest_framework.utils.model_meta import _resolve_model
 from tests.models import BasicModel
 
 
