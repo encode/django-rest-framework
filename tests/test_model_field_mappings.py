@@ -84,10 +84,21 @@ class OneToOneTargetModel(models.Model):
     name = models.CharField(max_length=100)
 
 
+class ThroughTargetModel(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class Supplementary(models.Model):
+    extra = models.IntegerField()
+    forwards = models.ForeignKey('ThroughTargetModel')
+    backwards = models.ForeignKey('RelationalModel')
+
+
 class RelationalModel(models.Model):
     foreign_key = models.ForeignKey(ForeignKeyTargetModel, related_name='reverse_foreign_key')
     many_to_many = models.ManyToManyField(ManyToManyTargetModel, related_name='reverse_many_to_many')
     one_to_one = models.OneToOneField(OneToOneTargetModel, related_name='reverse_one_to_one')
+    through = models.ManyToManyField(ThroughTargetModel, through=Supplementary, related_name='reverse_through')
 
 
 class TestRelationalFieldMappings(TestCase):
@@ -102,6 +113,7 @@ class TestRelationalFieldMappings(TestCase):
                 foreign_key = PrimaryKeyRelatedField(queryset=ForeignKeyTargetModel.objects.all())
                 one_to_one = PrimaryKeyRelatedField(queryset=OneToOneTargetModel.objects.all())
                 many_to_many = PrimaryKeyRelatedField(many=True, queryset=ManyToManyTargetModel.objects.all())
+                through = PrimaryKeyRelatedField(many=True, read_only=True)
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
@@ -123,6 +135,9 @@ class TestRelationalFieldMappings(TestCase):
                 many_to_many = NestedModelSerializer(many=True, read_only=True):
                     id = IntegerField(label='ID', read_only=True)
                     name = CharField(max_length=100)
+                through = NestedModelSerializer(many=True, read_only=True):
+                    id = IntegerField(label='ID', read_only=True)
+                    name = CharField(max_length=100)
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
@@ -137,6 +152,7 @@ class TestRelationalFieldMappings(TestCase):
                 foreign_key = HyperlinkedRelatedField(queryset=ForeignKeyTargetModel.objects.all(), view_name='foreignkeytargetmodel-detail')
                 one_to_one = HyperlinkedRelatedField(queryset=OneToOneTargetModel.objects.all(), view_name='onetoonetargetmodel-detail')
                 many_to_many = HyperlinkedRelatedField(many=True, queryset=ManyToManyTargetModel.objects.all(), view_name='manytomanytargetmodel-detail')
+                through = HyperlinkedRelatedField(many=True, read_only=True, view_name='throughtargetmodel-detail')
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
@@ -157,6 +173,9 @@ class TestRelationalFieldMappings(TestCase):
                     name = CharField(max_length=100)
                 many_to_many = NestedModelSerializer(many=True, read_only=True):
                     url = HyperlinkedIdentityField(view_name='manytomanytargetmodel-detail')
+                    name = CharField(max_length=100)
+                through = NestedModelSerializer(many=True, read_only=True):
+                    url = HyperlinkedIdentityField(view_name='throughtargetmodel-detail')
                     name = CharField(max_length=100)
         """)
         self.assertEqual(repr(TestSerializer()), expected)
@@ -200,5 +219,19 @@ class TestRelationalFieldMappings(TestCase):
                 id = IntegerField(label='ID', read_only=True)
                 name = CharField(max_length=100)
                 reverse_many_to_many = PrimaryKeyRelatedField(many=True, queryset=RelationalModel.objects.all())
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+    def test_flat_reverse_through(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ThroughTargetModel
+                fields = ('id', 'name', 'reverse_through')
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                name = CharField(max_length=100)
+                reverse_through = PrimaryKeyRelatedField(many=True, read_only=True)
         """)
         self.assertEqual(repr(TestSerializer()), expected)
