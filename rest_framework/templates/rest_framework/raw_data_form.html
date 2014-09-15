@@ -3,8 +3,8 @@
 {{ form.non_field_errors }}
 {% for field in form %}
     <div class="form-group">
-        {{ field.label_tag|add_class:"control-label" }}
-        <div class="controls">
+        {{ field.label_tag|add_class:"control-label col-md-3" }}
+        <div class="controls col-md-9">
             {{ field }}
             <span class="help-block">{{ field.help_text }}</span>
         </div>

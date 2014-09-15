@@ -4,8 +4,8 @@
 {% for field in form.fields.values %}
     {% if not field.read_only %}
     <div class="form-group {% if field.errors %}has-error{% endif %}">
-        {{ field.label_tag|add_class:"control-label" }}
-        <div class="controls">
+        {{ field.label_tag|add_class:"control-label col-md-3" }}
+        <div class="controls col-md-9">
             {{ field.widget_html }}
             {% if field.help_text %}<span class="help-block">{{ field.help_text }}</span>{% endif %}
             {% for error in field.errors %}<span class="help-block">{{ error }}</span>{% endfor %}
