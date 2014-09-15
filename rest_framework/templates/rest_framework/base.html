@@ -52,7 +52,7 @@
                                     </ul>
                                 </li>
                                 {% else %}
-                                    <li>{% optional_login request %}</li>
+                                    <li>{% optional_login request user %}</li>
                                 {% endif %}
                             {% endblock %}
                         </ul>
