@@ -36,25 +36,25 @@ class RegularFieldsModel(models.Model):
 
 REGULAR_FIELDS_REPR = """
 TestSerializer():
-    auto_field = IntegerField(label='auto field', read_only=True)
-    big_integer_field = IntegerField(label='big integer field')
-    boolean_field = BooleanField(default=False, label='boolean field')
-    char_field = CharField(label='char field', max_length=100)
-    comma_seperated_integer_field = CharField(label='comma seperated integer field', max_length=100, validators=[<django.core.validators.RegexValidator object>])
-    date_field = DateField(label='date field')
-    datetime_field = DateTimeField(label='datetime field')
-    decimal_field = DecimalField(decimal_places=1, label='decimal field', max_digits=3)
-    email_field = EmailField(label='email field', max_length=100)
-    float_field = FloatField(label='float field')
-    integer_field = IntegerField(label='integer field')
-    null_boolean_field = BooleanField(label='null boolean field', required=False)
-    positive_integer_field = IntegerField(label='positive integer field')
-    positive_small_integer_field = IntegerField(label='positive small integer field')
-    slug_field = SlugField(label='slug field', max_length=100)
-    small_integer_field = IntegerField(label='small integer field')
-    text_field = CharField(label='text field')
-    time_field = TimeField(label='time field')
-    url_field = URLField(label='url field', max_length=100)
+    auto_field = IntegerField(read_only=True)
+    big_integer_field = IntegerField()
+    boolean_field = BooleanField(default=False)
+    char_field = CharField(max_length=100)
+    comma_seperated_integer_field = CharField(max_length=100, validators=[<django.core.validators.RegexValidator object>])
+    date_field = DateField()
+    datetime_field = DateTimeField()
+    decimal_field = DecimalField(decimal_places=1, max_digits=3)
+    email_field = EmailField(max_length=100)
+    float_field = FloatField()
+    integer_field = IntegerField()
+    null_boolean_field = BooleanField(required=False)
+    positive_integer_field = IntegerField()
+    positive_small_integer_field = IntegerField()
+    slug_field = SlugField(max_length=100)
+    small_integer_field = IntegerField()
+    text_field = CharField()
+    time_field = TimeField()
+    url_field = URLField(max_length=100)
 """.strip()
 
 
@@ -81,9 +81,9 @@ class RelationalModel(models.Model):
 RELATIONAL_FLAT_REPR = """
 TestSerializer():
     id = IntegerField(label='ID', read_only=True)
-    foreign_key = PrimaryKeyRelatedField(label='foreign key', queryset=ForeignKeyTargetModel.objects.all())
-    one_to_one = PrimaryKeyRelatedField(label='one to one', queryset=OneToOneTargetModel.objects.all())
-    many_to_many = PrimaryKeyRelatedField(label='many to many', many=True, queryset=ManyToManyTargetModel.objects.all())
+    foreign_key = PrimaryKeyRelatedField(queryset=ForeignKeyTargetModel.objects.all())
+    one_to_one = PrimaryKeyRelatedField(queryset=OneToOneTargetModel.objects.all())
+    many_to_many = PrimaryKeyRelatedField(many=True, queryset=ManyToManyTargetModel.objects.all())
 """.strip()
 
 
@@ -92,22 +92,22 @@ TestSerializer():
     id = IntegerField(label='ID', read_only=True)
     foreign_key = NestedModelSerializer(read_only=True):
         id = IntegerField(label='ID', read_only=True)
-        name = CharField(label='name', max_length=100)
+        name = CharField(max_length=100)
     one_to_one = NestedModelSerializer(read_only=True):
         id = IntegerField(label='ID', read_only=True)
-        name = CharField(label='name', max_length=100)
+        name = CharField(max_length=100)
     many_to_many = NestedModelSerializer(many=True, read_only=True):
         id = IntegerField(label='ID', read_only=True)
-        name = CharField(label='name', max_length=100)
+        name = CharField(max_length=100)
 """.strip()
 
 
 HYPERLINKED_FLAT_REPR = """
 TestSerializer():
     url = HyperlinkedIdentityField(view_name='relationalmodel-detail')
-    foreign_key = HyperlinkedRelatedField(label='foreign key', queryset=ForeignKeyTargetModel.objects.all(), view_name='foreignkeytargetmodel-detail')
-    one_to_one = HyperlinkedRelatedField(label='one to one', queryset=OneToOneTargetModel.objects.all(), view_name='onetoonetargetmodel-detail')
-    many_to_many = HyperlinkedRelatedField(label='many to many', many=True, queryset=ManyToManyTargetModel.objects.all(), view_name='manytomanytargetmodel-detail')
+    foreign_key = HyperlinkedRelatedField(queryset=ForeignKeyTargetModel.objects.all(), view_name='foreignkeytargetmodel-detail')
+    one_to_one = HyperlinkedRelatedField(queryset=OneToOneTargetModel.objects.all(), view_name='onetoonetargetmodel-detail')
+    many_to_many = HyperlinkedRelatedField(many=True, queryset=ManyToManyTargetModel.objects.all(), view_name='manytomanytargetmodel-detail')
 """.strip()
 
 
@@ -116,13 +116,13 @@ TestSerializer():
     url = HyperlinkedIdentityField(view_name='relationalmodel-detail')
     foreign_key = NestedModelSerializer(read_only=True):
         id = IntegerField(label='ID', read_only=True)
-        name = CharField(label='name', max_length=100)
+        name = CharField(max_length=100)
     one_to_one = NestedModelSerializer(read_only=True):
         id = IntegerField(label='ID', read_only=True)
-        name = CharField(label='name', max_length=100)
+        name = CharField(max_length=100)
     many_to_many = NestedModelSerializer(many=True, read_only=True):
         id = IntegerField(label='ID', read_only=True)
-        name = CharField(label='name', max_length=100)
+        name = CharField(max_length=100)
 """.strip()
 
 

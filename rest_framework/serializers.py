@@ -15,11 +15,12 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import six
 from django.utils.datastructures import SortedDict
+from django.utils.text import capfirst
 from collections import namedtuple
 from rest_framework.compat import clean_manytomany_helptext
 from rest_framework.fields import empty, set_value, Field, SkipField
 from rest_framework.settings import api_settings
-from rest_framework.utils import html, modelinfo, representation
+from rest_framework.utils import html, model_meta, representation
 import copy
 
 # Note: We do the following so that users of the framework can use this style:
@@ -334,6 +335,14 @@ def lookup_class(mapping, instance):
     raise KeyError('Class %s not found in lookup.', cls.__name__)
 
 
+def needs_label(model_field, field_name):
+    """
+    Returns `True` if the label based on the model's verbose name
+    is not equal to the default label it would have based on it's field name.
+    """
+    return capfirst(model_field.verbose_name) != field_name_to_label(field_name)
+
+
 class ModelSerializer(Serializer):
     field_mapping = {
         models.AutoField: IntegerField,
@@ -397,54 +406,55 @@ class ModelSerializer(Serializer):
         """
         Return all the fields that should be serialized for the model.
         """
-        info = modelinfo.get_field_info(self.opts.model)
+        info = model_meta.get_field_info(self.opts.model)
         ret = SortedDict()
 
         serializer_url_field = self.get_url_field()
         if serializer_url_field:
             ret[api_settings.URL_FIELD_NAME] = serializer_url_field
 
-        serializer_pk_field = self.get_pk_field(info.pk)
+        field_name = info.pk.name
+        serializer_pk_field = self.get_pk_field(field_name, info.pk)
         if serializer_pk_field:
-            ret[info.pk.name] = serializer_pk_field
+            ret[field_name] = serializer_pk_field
 
         # Regular fields
         for field_name, field in info.fields.items():
-            ret[field_name] = self.get_field(field)
+            ret[field_name] = self.get_field(field_name, field)
 
         # Forward relations
         for field_name, relation_info in info.forward_relations.items():
             if self.opts.depth:
-                ret[field_name] = self.get_nested_field(*relation_info)
+                ret[field_name] = self.get_nested_field(field_name, *relation_info)
             else:
-                ret[field_name] = self.get_related_field(*relation_info)
+                ret[field_name] = self.get_related_field(field_name, *relation_info)
 
         # Reverse relations
         for accessor_name, relation_info in info.reverse_relations.items():
             if accessor_name in self.opts.fields:
                 if self.opts.depth:
-                    ret[accessor_name] = self.get_nested_field(*relation_info)
+                    ret[accessor_name] = self.get_nested_field(accessor_name, *relation_info)
                 else:
-                    ret[accessor_name] = self.get_related_field(*relation_info)
+                    ret[accessor_name] = self.get_related_field(accessor_name, *relation_info)
 
         return ret
 
     def get_url_field(self):
         return None
 
-    def get_pk_field(self, model_field):
+    def get_pk_field(self, field_name, model_field):
         """
         Returns a default instance of the pk field.
         """
-        return self.get_field(model_field)
+        return self.get_field(field_name, model_field)
 
-    def get_nested_field(self, model_field, related_model, to_many, has_through_model):
+    def get_nested_field(self, field_name, model_field, related_model, to_many, has_through_model):
         """
         Creates a default instance of a nested relational field.
 
         Note that model_field will be `None` for reverse relationships.
         """
-        class NestedModelSerializer(ModelSerializer):  # Not right!
+        class NestedModelSerializer(ModelSerializer):
             class Meta:
                 model = related_model
                 depth = self.opts.depth - 1
@@ -454,7 +464,7 @@ class ModelSerializer(Serializer):
             kwargs['many'] = True
         return NestedModelSerializer(**kwargs)
 
-    def get_related_field(self, model_field, related_model, to_many, has_through_model):
+    def get_related_field(self, field_name, model_field, related_model, to_many, has_through_model):
         """
         Creates a default instance of a flat relational field.
 
@@ -474,8 +484,8 @@ class ModelSerializer(Serializer):
         if model_field:
             if model_field.null or model_field.blank:
                 kwargs['required'] = False
-            if model_field.verbose_name:
-                kwargs['label'] = model_field.verbose_name
+            if model_field.verbose_name and needs_label(model_field, field_name):
+                kwargs['label'] = capfirst(model_field.verbose_name)
             if not model_field.editable:
                 kwargs['read_only'] = True
                 kwargs.pop('queryset', None)
@@ -485,7 +495,7 @@ class ModelSerializer(Serializer):
 
         return PrimaryKeyRelatedField(**kwargs)
 
-    def get_field(self, model_field):
+    def get_field(self, field_name, model_field):
         """
         Creates a default instance of a basic non-relational field.
         """
@@ -496,8 +506,8 @@ class ModelSerializer(Serializer):
         if model_field.null or model_field.blank:
             kwargs['required'] = False
 
-        if model_field.verbose_name is not None:
-            kwargs['label'] = model_field.verbose_name
+        if model_field.verbose_name and needs_label(model_field, field_name):
+            kwargs['label'] = capfirst(model_field.verbose_name)
 
         if model_field.help_text:
             kwargs['help_text'] = model_field.help_text
@@ -642,11 +652,11 @@ class HyperlinkedModelSerializer(ModelSerializer):
 
         return HyperlinkedIdentityField(**kwargs)
 
-    def get_pk_field(self, model_field):
+    def get_pk_field(self, field_name, model_field):
         if self.opts.fields and model_field.name in self.opts.fields:
             return self.get_field(model_field)
 
-    def get_related_field(self, model_field, related_model, to_many, has_through_model):
+    def get_related_field(self, field_name, model_field, related_model, to_many, has_through_model):
         """
         Creates a default instance of a flat relational field.
         """
@@ -665,8 +675,8 @@ class HyperlinkedModelSerializer(ModelSerializer):
         if model_field:
             if model_field.null or model_field.blank:
                 kwargs['required'] = False
-            if model_field.verbose_name:
-                kwargs['label'] = model_field.verbose_name
+            if model_field.verbose_name and needs_label(model_field, field_name):
+                kwargs['label'] = capfirst(model_field.verbose_name)
             if not model_field.editable:
                 kwargs['read_only'] = True
                 kwargs.pop('queryset', None)
