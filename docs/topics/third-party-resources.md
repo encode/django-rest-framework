@@ -41,6 +41,7 @@ To submit new content, [open an issue](https://github.com/tomchristie/django-res
 ### Routers
 
 * [drf-nested-routers](https://github.com/alanjds/drf-nested-routers) - Provides routers and relationship fields for working with nested resources.
+* [wq.db.rest](http://wq.io/docs/about-rest) - Provides an admin-style model registration API with reasonable default URLs and viewsets.
 
 ### Parsers
 
@@ -51,6 +52,7 @@ To submit new content, [open an issue](https://github.com/tomchristie/django-res
 
 * [djangorestframework-csv](https://github.com/mjumbewu/django-rest-framework-csv) - Provides CSV renderer support.
 * [drf_ujson](https://github.com/gizmag/drf-ujson-renderer) - Implements JSON rendering using the UJSON package.
+* [Django REST Pandas](https://github.com/wq/django-rest-pandas) - Pandas DataFrame-powered renderers including Excel, CSV, and SVG formats.
 
 ### Filtering
 
