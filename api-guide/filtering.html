@@ -117,6 +117,7 @@ a.fusion-poweredby {
                   <li><a href="http://www.django-rest-framework.org/topics/browser-enhancements">Browser enhancements</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/browsable-api">The Browsable API</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
+                  <li><a href="http://www.django-rest-framework.org/topics/third-party-resources">Third Party Resources</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/rest-framework-2-announcement">2.0 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/2.2-announcement">2.2 Announcement</a></li>
@@ -365,7 +366,7 @@ from rest_framework import generics
 class ProductFilter(django_filters.FilterSet):
     class Meta:
         model = Product
-        fields = ['category', 'in_stock', 'manufacturer__name`]
+        fields = ['category', 'in_stock', 'manufacturer__name']
 </code></pre>
 <p>This enables us to make queries like:</p>
 <pre class="prettyprint lang-py"><code>http://example.com/api/products?manufacturer__name=foo
@@ -381,7 +382,7 @@ class ProductFilter(django_filters.FilterSet):
 
     class Meta:
         model = Product
-        fields = ['category', 'in_stock', 'manufacturer`]
+        fields = ['category', 'in_stock', 'manufacturer']
 </code></pre>
 <p>And now you can execute:</p>
 <pre class="prettyprint lang-py"><code>http://example.com/api/products?manufacturer=foo

@@ -2,11 +2,11 @@
 <html lang="en">
 <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>Quickstart - Django REST framework</title>
+    <title>Third Party Resources - Django REST framework</title>
     <link href="http://www.django-rest-framework.org/img/favicon.ico" rel="icon" type="image/x-icon">
-    <link rel="canonical" href="http://www.django-rest-framework.org/tutorial/quickstart"/>
+    <link rel="canonical" href="http://www.django-rest-framework.org/topics/third-party-resources"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Django, API, REST, Quickstart">
+    <meta name="description" content="Django, API, REST, Third Party Resources">
     <meta name="author" content="Tom Christie">
 
     <!-- Le styles -->
@@ -49,7 +49,7 @@ a.fusion-poweredby {
 }
 </style>
   </head>
-  <body onload="prettyPrint()" class="quickstart-page">
+  <body onload="prettyPrint()" class="third-party-resources-page">
 
   <div class="wrapper">
 
@@ -57,8 +57,8 @@ a.fusion-poweredby {
       <div class="navbar-inner">
         <div class="container-fluid">
             <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-            <a class="repo-link btn btn-inverse btn-small " href="../tutorial/1-serialization">Next <i class="icon-arrow-right icon-white"></i></a>
-            <a class="repo-link btn btn-inverse btn-small " href="/"><i class="icon-arrow-left icon-white"></i> Previous</a>
+            <a class="repo-link btn btn-inverse btn-small " href="../topics/contributing">Next <i class="icon-arrow-right icon-white"></i></a>
+            <a class="repo-link btn btn-inverse btn-small " href="../topics/rest-hypermedia-hateoas"><i class="icon-arrow-left icon-white"></i> Previous</a>
             <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
@@ -186,13 +186,11 @@ a.fusion-poweredby {
           -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                <li class="main"><a href="#quickstart">Quickstart</a></li>
-<li><a href="#project-setup">Project setup</a></li>
-<li><a href="#serializers">Serializers</a></li>
-<li><a href="#views">Views</a></li>
-<li><a href="#urls">URLs</a></li>
-<li><a href="#settings">Settings</a></li>
-<li><a href="#testing-our-api">Testing our API</a></li>
+                <li class="main"><a href="#third-party-resources">Third Party Resources</a></li>
+<li><a href="#libraries-and-extensions">Libraries and Extensions</a></li>
+<li><a href="#tutorials">Tutorials</a></li>
+<li><a href="#videos">Videos</a></li>
+<li><a href="#articles">Articles</a></li>
 
               <div class="promo">
               
@@ -203,142 +201,93 @@ a.fusion-poweredby {
           </div>
 
           <div id="main-content" class="span9">
-            <h1 id="quickstart">Quickstart</h1>
-<p>We're going to create a simple API to allow admin users to view and edit the users and groups in the system.</p>
-<h2 id="project-setup">Project setup</h2>
-<p>Create a new Django project named <code>tutorial</code>, then start a new app called <code>quickstart</code>.</p>
-<pre class="prettyprint lang-py"><code># Create the project directory
-mkdir tutorial
-cd tutorial
-
-# Create a virtualenv to isolate our package dependencies locally
-virtualenv env
-source env/bin/activate  # On Windows use `env\Scripts\activate`
-
-# Install Django and Django REST framework into the virtualenv
-pip install django
-pip install djangorestframework
-
-# Set up a new project with a single application
-django-admin.py startproject tutorial .
-cd tutorial
-django-admin.py startapp quickstart
-cd ..
-</code></pre>
-<p>Now sync your database for the first time:</p>
-<pre class="prettyprint lang-py"><code>python manage.py syncdb
-</code></pre>
-<p>Make sure to create an initial user named <code>admin</code> with a password of <code>password</code>. We'll authenticate as that user later in our example.</p>
-<p>Once you've set up a database and got everything synced and ready to go, open up the app's directory and we'll get coding...</p>
-<h2 id="serializers">Serializers</h2>
-<p>First up we're going to define some serializers. Let's create a new module named <code>tutorial/quickstart/serializers.py</code> that we'll use for our data representations.</p>
-<pre class="prettyprint lang-py"><code>from django.contrib.auth.models import User, Group
-from rest_framework import serializers
-
-
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ('url', 'username', 'email', 'groups')
-
-
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Group
-        fields = ('url', 'name')
-</code></pre>
-<p>Notice that we're using hyperlinked relations in this case, with <code>HyperlinkedModelSerializer</code>.  You can also use primary key and various other relationships, but hyperlinking is good RESTful design.</p>
-<h2 id="views">Views</h2>
-<p>Right, we'd better write some views then.  Open <code>tutorial/quickstart/views.py</code> and get typing.</p>
-<pre class="prettyprint lang-py"><code>from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
-from tutorial.quickstart.serializers import UserSerializer, GroupSerializer
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-</code></pre>
-<p>Rather than write multiple views we're grouping together all the common behavior into classes called <code>ViewSets</code>.</p>
-<p>We can easily break these down into individual views if we need to, but using viewsets keeps the view logic nicely organized as well as being very concise.</p>
-<p>Notice that our viewset classes here are a little different from those in the <a href="../#example">frontpage example</a>, as they include <code>queryset</code> and <code>serializer_class</code> attributes, instead of a <code>model</code> attribute.</p>
-<p>For trivial cases you can simply set a <code>model</code> attribute on the <code>ViewSet</code> class and the serializer and queryset will be automatically generated for you.  Setting the <code>queryset</code> and/or <code>serializer_class</code> attributes gives you more explicit control of the API behaviour, and is the recommended style for most applications.</p>
-<h2 id="urls">URLs</h2>
-<p>Okay, now let's wire up the API URLs.  On to <code>tutorial/urls.py</code>...</p>
-<pre class="prettyprint lang-py"><code>from django.conf.urls import url, include
-from rest_framework import routers
-from tutorial.quickstart import views
-
-router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'groups', views.GroupViewSet)
-
-# Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browseable API.
-urlpatterns = [
-    url(r'^', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-]
-</code></pre>
-<p>Because we're using viewsets instead of views, we can automatically generate the URL conf for our API, by simply registering the viewsets with a router class.</p>
-<p>Again, if we need more control over the API URLs we can simply drop down to using regular class based views, and writing the URL conf explicitly.</p>
-<p>Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browsable API.</p>
-<h2 id="settings">Settings</h2>
-<p>We'd also like to set a few global settings.  We'd like to turn on pagination, and we want our API to only be accessible to admin users.  The settings module will be in <code>tutorial/settings.py</code></p>
-<pre class="prettyprint lang-py"><code>INSTALLED_APPS = (
-    ...
-    'rest_framework',
-)
-
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
-    'PAGINATE_BY': 10
-}
-</code></pre>
-<p>Okay, we're done.</p>
-<hr />
-<h2 id="testing-our-api">Testing our API</h2>
-<p>We're now ready to test the API we've built.  Let's fire up the server from the command line.</p>
-<pre class="prettyprint lang-py"><code>python ./manage.py runserver
-</code></pre>
-<p>We can now access our API, both from the command-line, using tools like <code>curl</code>...</p>
-<pre class="prettyprint lang-py"><code>bash: curl -H 'Accept: application/json; indent=4' -u admin:password http://127.0.0.1:8000/users/
-{
-    "count": 2,
-    "next": null,
-    "previous": null,
-    "results": [
-        {
-            "email": "admin@example.com",
-            "groups": [],
-            "url": "http://127.0.0.1:8000/users/1/",
-            "username": "admin"
-        },
-        {
-            "email": "tom@example.com",
-            "groups": [                ],
-            "url": "http://127.0.0.1:8000/users/2/",
-            "username": "tom"
-        }
-    ]
-}
-</code></pre>
-<p>Or directly through the browser...</p>
-<p><img alt="Quick start image" src="../img/quickstart.png" /></p>
-<p>If you're working through the browser, make sure to login using the control in the top right corner.</p>
-<p>Great, that was easy!</p>
-<p>If you want to get a more in depth understanding of how REST framework fits together head on over to <a href="1-serialization">the tutorial</a>, or start browsing the <a href="../#api-guide">API guide</a>.</p>
+            <h1 id="third-party-resources">Third Party Resources</h1>
+<p>Django REST Framework has a growing community of developers, packages, and resources.</p>
+<p>Check out a grid detailing all the packages and ecosystem around Django REST Framework at <a href="https://www.djangopackages.com/grids/g/django-rest-framework/">Django Packages</a>.</p>
+<p>To submit new content, <a href="https://github.com/tomchristie/django-rest-framework/issues/new">open an issue</a> or <a href="https://github.com/tomchristie/django-rest-framework/">create a pull request</a>.</p>
+<h2 id="libraries-and-extensions">Libraries and Extensions</h2>
+<h3 id="authentication">Authentication</h3>
+<ul>
+<li><a href="https://github.com/juanriaza/django-rest-framework-digestauth">djangorestframework-digestauth</a> - Provides Digest Access Authentication support.</li>
+<li><a href="https://github.com/evonove/django-oauth-toolkit">django-oauth-toolkit</a> - Provides OAuth 2.0 support.</li>
+<li><a href="https://github.com/Rediker-Software/doac">doac</a> - Provides OAuth 2.0 support.</li>
+<li><a href="https://github.com/GetBlimp/django-rest-framework-jwt">djangorestframework-jwt</a> - Provides JSON Web Token Authentication support.</li>
+<li><a href="https://github.com/kumar303/hawkrest">hawkrest</a> - Provides Hawk HTTP Authorization.</li>
+<li><a href="https://github.com/etoccalino/django-rest-framework-httpsignature">djangorestframework-httpsignature</a> - Provides an easy to use HTTP Signature Authentication mechanism.</li>
+</ul>
+<h3 id="permissions">Permissions</h3>
+<ul>
+<li><a href="https://github.com/kevin-brown/drf-any-permissions">drf-any-permissions</a> - Provides alternative permission handling.</li>
+<li><a href="https://github.com/niwibe/djangorestframework-composed-permissions">djangorestframework-composed-permissions</a> - Provides a simple way to define complex permissions.</li>
+<li><a href="https://github.com/caxap/rest_condition">rest_condition</a> - Another extension for building complex permissions in a simple and convenient way.</li>
+</ul>
+<h3 id="serializers">Serializers</h3>
+<ul>
+<li><a href="https://github.com/umutbozkurt/django-rest-framework-mongoengine">django-rest-framework-mongoengine</a> - Serializer class that supports using MongoDB as the storage layer for Django REST framework.</li>
+<li><a href="https://github.com/djangonauts/django-rest-framework-gis">djangorestframework-gis</a> - Geographic add-ons</li>
+<li><a href="https://github.com/djangonauts/django-rest-framework-hstore">djangorestframework-hstore</a> - Serializer class to support django-hstore DictionaryField model field and its schema-mode feature.</li>
+</ul>
+<h3 id="serializer-fields">Serializer fields</h3>
+<ul>
+<li><a href="https://github.com/estebistec/drf-compound-fields">drf-compound-fields</a> - Provides "compound" serializer fields, such as lists of simple values.</li>
+<li><a href="https://github.com/Hipo/drf-extra-fields">django-extra-fields</a> - Provides extra serializer fields.</li>
+</ul>
+<h3 id="views">Views</h3>
+<ul>
+<li><a href="https://github.com/miki725/django-rest-framework-bulk">djangorestframework-bulk</a> - Implements generic view mixins as well as some common concrete generic views to allow to apply bulk operations via API requests.</li>
+</ul>
+<h3 id="routers">Routers</h3>
+<ul>
+<li><a href="https://github.com/alanjds/drf-nested-routers">drf-nested-routers</a> - Provides routers and relationship fields for working with nested resources.</li>
+<li><a href="http://wq.io/docs/about-rest">wq.db.rest</a> - Provides an admin-style model registration API with reasonable default URLs and viewsets.</li>
+</ul>
+<h3 id="parsers">Parsers</h3>
+<ul>
+<li><a href="https://github.com/juanriaza/django-rest-framework-msgpack">djangorestframework-msgpack</a> - Provides MessagePack renderer and parser support.</li>
+<li><a href="https://github.com/vbabiy/djangorestframework-camel-case">djangorestframework-camel-case</a> - Provides camel case JSON renderers and parsers.</li>
+</ul>
+<h3 id="renderers">Renderers</h3>
+<ul>
+<li><a href="https://github.com/mjumbewu/django-rest-framework-csv">djangorestframework-csv</a> - Provides CSV renderer support.</li>
+<li><a href="https://github.com/gizmag/drf-ujson-renderer">drf_ujson</a> - Implements JSON rendering using the UJSON package.</li>
+<li><a href="https://github.com/wq/django-rest-pandas">Django REST Pandas</a> - Pandas DataFrame-powered renderers including Excel, CSV, and SVG formats.</li>
+</ul>
+<h3 id="filtering">Filtering</h3>
+<ul>
+<li><a href="https://github.com/philipn/django-rest-framework-chain">djangorestframework-chain</a> - Allows arbitrary chaining of both relations and lookup filters.</li>
+</ul>
+<h3 id="misc">Misc</h3>
+<ul>
+<li><a href="https://github.com/fredkingham/django_rest_model_hyperlink_serializers_project">djangorestrelationalhyperlink</a> - A hyperlinked serialiser that can can be used to alter relationships via hyperlinks, but otherwise like a hyperlink model serializer.</li>
+<li><a href="https://github.com/marcgibbons/django-rest-swagger">django-rest-swagger</a> - An API documentation generator for Swagger UI.</li>
+<li><a href="https://github.com/eofs/django-rest-framework-proxy">django-rest-framework-proxy </a> - Proxy to redirect incoming request to another API server.</li>
+<li><a href="https://github.com/AppsFuel/gaiarestframework">gaiarestframework</a> - Utils for django-rest-framewok</li>
+<li><a href="https://github.com/chibisov/drf-extensions">drf-extensions</a> - A collection of custom extensions</li>
+<li><a href="https://github.com/toranb/ember-data-django-rest-adapter">ember-data-django-rest-adapter</a> - An ember-data adapter</li>
+</ul>
+<h2 id="tutorials">Tutorials</h2>
+<ul>
+<li><a href="http://code.tutsplus.com/tutorials/beginners-guide-to-the-django-rest-framework--cms-19786">Beginner's Guide to the Django Rest Framework</a></li>
+<li><a href="http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html">Getting Started with Django Rest Framework and AngularJS</a></li>
+<li><a href="http://blog.mourafiq.com/post/55034504632/end-to-end-web-app-with-django-rest-framework">End to end web app with Django-Rest-Framework &amp; AngularJS</a></li>
+<li><a href="https://godjango.com/41-start-your-api-django-rest-framework-part-1/">Start Your API - django-rest-framework part 1</a></li>
+<li><a href="https://godjango.com/43-permissions-authentication-django-rest-framework-part-2/">Permissions &amp; Authentication - django-rest-framework part 2</a></li>
+<li><a href="https://godjango.com/45-viewsets-and-routers-django-rest-framework-part-3/">ViewSets and Routers - django-rest-framework part 3</a></li>
+<li><a href="http://richardtier.com/2014/02/25/django-rest-framework-user-endpoint/">Django Rest Framework User Endpoint</a></li>
+<li><a href="http://richardtier.com/2014/03/06/110/">Check credentials using Django Rest Framework</a></li>
+</ul>
+<h2 id="videos">Videos</h2>
+<ul>
+<li><a href="http://www.neckbeardrepublic.com/screencasts/ember-and-django-part-1">Ember and Django Part 1 (Video)</a></li>
+<li><a href="http://www.neckbeardrepublic.com/screencasts/django-rest-framework-part-1">Django Rest Framework Part 1 (Video)</a></li>
+<li><a href="http://www.youtube.com/watch?v=E1ZrehVxpBo">Pyowa July 2013 - Django Rest Framework (Video)</a></li>
+<li><a href="http://www.youtube.com/watch?v=Q8FRBGTJ020">django-rest-framework and angularjs (Video)</a></li>
+</ul>
+<h2 id="articles">Articles</h2>
+<ul>
+<li><a href="http://dabapps.com/blog/api-performance-profiling-django-rest-framework/">Web API performance: profiling Django REST framework</a></li>
+<li><a href="https://bnotions.com/api-development-with-django-and-django-rest-framework/">API Development with Django and Django REST Framework</a></li>
+</ul>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->

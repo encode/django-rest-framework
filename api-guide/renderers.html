@@ -117,6 +117,7 @@ a.fusion-poweredby {
                   <li><a href="http://www.django-rest-framework.org/topics/browser-enhancements">Browser enhancements</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/browsable-api">The Browsable API</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
+                  <li><a href="http://www.django-rest-framework.org/topics/third-party-resources">Third Party Resources</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/rest-framework-2-announcement">2.0 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/2.2-announcement">2.2 Announcement</a></li>
@@ -214,6 +215,7 @@ a.fusion-poweredby {
 <li><a href="#csv">CSV</a></li>
 <li><a href="#ultrajson">UltraJSON</a></li>
 <li><a href="#camelcase-json">CamelCase JSON</a></li>
+<li><a href="#pandas-(csv,-excel,-png)">Pandas (CSV, Excel, PNG)</a></li>
 
               <div class="promo">
               
@@ -520,6 +522,8 @@ In this case you can underspecify the media types it should respond to, by using
 <p><a href="https://github.com/esnme/ultrajson">UltraJSON</a> is an optimized C JSON encoder which can give significantly faster JSON rendering. <a href="https://github.com/hzy">Jacob Haslehurst</a> maintains the <a href="https://github.com/gizmag/drf-ujson-renderer">drf-ujson-renderer</a> package which implements JSON rendering using the UJSON package.</p>
 <h2 id="camelcase-json">CamelCase JSON</h2>
 <p><a href="https://github.com/vbabiy/djangorestframework-camel-case">djangorestframework-camel-case</a> provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by <a href="https://github.com/vbabiy">Vitaly Babiy</a>.</p>
+<h2 id="pandas-csv-excel-png">Pandas (CSV, Excel, PNG)</h2>
+<p><a href="https://github.com/wq/django-rest-pandas">Django REST Pandas</a> provides a serializer and renderers that support additional data processing and output via the <a href="http://pandas.pydata.org/">Pandas</a> DataFrame API.  Django REST Pandas includes renderers for Pandas-style CSV files, Excel workbooks (both <code>.xls</code> and <code>.xlsx</code>), and a number of <a href="https://github.com/wq/django-rest-pandas#supported-formats">other formats</a>. It is maintained by <a href="https://github.com/sheppard">S. Andrew Sheppard</a> as part of the <a href="https://github.com/wq">wq Project</a>.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->
