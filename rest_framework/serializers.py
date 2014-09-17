@@ -410,10 +410,12 @@ class ModelSerializer(Serializer):
         info = model_meta.get_field_info(self.opts.model)
         ret = SortedDict()
 
+        # URL field
         serializer_url_field = self.get_url_field()
         if serializer_url_field:
             ret[api_settings.URL_FIELD_NAME] = serializer_url_field
 
+        # Primary key field
         field_name = info.pk.name
         serializer_pk_field = self.get_pk_field(field_name, info.pk)
         if serializer_pk_field:

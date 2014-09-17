@@ -14,7 +14,7 @@ def dedent(blocktext):
     return '\n'.join([line[12:] for line in blocktext.splitlines()[1:-1]])
 
 
-# Models for testing regular field mapping
+# Testing regular field mappings
 
 class RegularFieldsModel(models.Model):
     auto_field = models.AutoField(primary_key=True)
@@ -70,7 +70,7 @@ class TestRegularFieldMappings(TestCase):
         self.assertEqual(repr(TestSerializer()), expected)
 
 
-# Model for testing relational field mapping
+# Testing relational field mappings
 
 class ForeignKeyTargetModel(models.Model):
     name = models.CharField(max_length=100)
