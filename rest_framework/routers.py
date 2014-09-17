@@ -295,6 +295,7 @@ class DefaultRouter(SimpleRouter):
                             format=kwargs.get('format', None)
                         )
                     except NoReverseMatch:
+                        # Don't bail out if eg. no list routes exist, only detail routes.
                         continue
 
                 return Response(ret)
