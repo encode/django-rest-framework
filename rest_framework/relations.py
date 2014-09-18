@@ -73,7 +73,8 @@ class HyperlinkedRelatedField(RelatedField):
         'incorrect_type': 'Incorrect type. Expected URL string, received {data_type}.',
     }
 
-    def __init__(self, view_name, **kwargs):
+    def __init__(self, view_name=None, **kwargs):
+        assert view_name is not None, 'The `view_name` argument is required.'
         self.view_name = view_name
         self.lookup_field = kwargs.pop('lookup_field', self.lookup_field)
         self.lookup_url_kwarg = kwargs.pop('lookup_url_kwarg', self.lookup_field)
@@ -182,7 +183,8 @@ class HyperlinkedIdentityField(HyperlinkedRelatedField):
     URL of relationships to other objects.
     """
 
-    def __init__(self, view_name, **kwargs):
+    def __init__(self, view_name=None, **kwargs):
+        assert view_name is not None, 'The `view_name` argument is required.'
         kwargs['read_only'] = True
         kwargs['source'] = '*'
         super(HyperlinkedIdentityField, self).__init__(view_name, **kwargs)
@@ -199,7 +201,8 @@ class SlugRelatedField(RelatedField):
         'invalid': _('Invalid value.'),
     }
 
-    def __init__(self, slug_field, **kwargs):
+    def __init__(self, slug_field=None, **kwargs):
+        assert slug_field is not None, 'The `slug_field` argument is required.'
         self.slug_field = slug_field
         super(SlugRelatedField, self).__init__(**kwargs)
 

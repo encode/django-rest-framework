@@ -126,16 +126,16 @@ class TestRelationalFieldMappings(TestCase):
         expected = dedent("""
             TestSerializer():
                 id = IntegerField(label='ID', read_only=True)
-                foreign_key = NestedModelSerializer(read_only=True):
+                foreign_key = NestedSerializer(read_only=True):
                     id = IntegerField(label='ID', read_only=True)
                     name = CharField(max_length=100)
-                one_to_one = NestedModelSerializer(read_only=True):
+                one_to_one = NestedSerializer(read_only=True):
                     id = IntegerField(label='ID', read_only=True)
                     name = CharField(max_length=100)
-                many_to_many = NestedModelSerializer(many=True, read_only=True):
+                many_to_many = NestedSerializer(many=True, read_only=True):
                     id = IntegerField(label='ID', read_only=True)
                     name = CharField(max_length=100)
-                through = NestedModelSerializer(many=True, read_only=True):
+                through = NestedSerializer(many=True, read_only=True):
                     id = IntegerField(label='ID', read_only=True)
                     name = CharField(max_length=100)
         """)
@@ -165,16 +165,16 @@ class TestRelationalFieldMappings(TestCase):
         expected = dedent("""
             TestSerializer():
                 url = HyperlinkedIdentityField(view_name='relationalmodel-detail')
-                foreign_key = NestedModelSerializer(read_only=True):
+                foreign_key = NestedSerializer(read_only=True):
                     url = HyperlinkedIdentityField(view_name='foreignkeytargetmodel-detail')
                     name = CharField(max_length=100)
-                one_to_one = NestedModelSerializer(read_only=True):
+                one_to_one = NestedSerializer(read_only=True):
                     url = HyperlinkedIdentityField(view_name='onetoonetargetmodel-detail')
                     name = CharField(max_length=100)
-                many_to_many = NestedModelSerializer(many=True, read_only=True):
+                many_to_many = NestedSerializer(many=True, read_only=True):
                     url = HyperlinkedIdentityField(view_name='manytomanytargetmodel-detail')
                     name = CharField(max_length=100)
-                through = NestedModelSerializer(many=True, read_only=True):
+                through = NestedSerializer(many=True, read_only=True):
                     url = HyperlinkedIdentityField(view_name='throughtargetmodel-detail')
                     name = CharField(max_length=100)
         """)

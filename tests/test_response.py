@@ -2,11 +2,12 @@ from __future__ import unicode_literals
 from django.conf.urls import patterns, url, include
 from django.test import TestCase
 from django.utils import six
-from tests.models import BasicModel, BasicModelSerializer
+from tests.models import BasicModel
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import routers
+from rest_framework import serializers
 from rest_framework import status
 from rest_framework.renderers import (
     BaseRenderer,
@@ -15,6 +16,12 @@ from rest_framework.renderers import (
 )
 from rest_framework import viewsets
 from rest_framework.settings import api_settings
+
+
+# Serializer used to test BasicModel
+class BasicModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BasicModel
 
 
 class MockPickleRenderer(BaseRenderer):

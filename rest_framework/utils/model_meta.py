@@ -1,7 +1,9 @@
 """
-Helper functions for returning the field information that is associated
+Helper function for returning the field information that is associated
 with a model class. This includes returning all the forward and reverse
 relationships and their associated metadata.
+
+Usage: `get_field_info(model)` returns a `FieldInfo` instance.
 """
 from collections import namedtuple
 from django.db import models
@@ -9,8 +11,22 @@ from django.utils import six
 from django.utils.datastructures import SortedDict
 import inspect
 
-FieldInfo = namedtuple('FieldResult', ['pk', 'fields', 'forward_relations', 'reverse_relations'])
-RelationInfo = namedtuple('RelationInfo', ['field', 'related', 'to_many', 'has_through_model'])
+
+FieldInfo = namedtuple('FieldResult', [
+    'pk',  # Model field instance
+    'fields',  # Dict of field name -> model field instance
+    'forward_relations',  # Dict of field name -> RelationInfo
+    'reverse_relations',  # Dict of field name -> RelationInfo
+    'fields_and_pk',  # Shortcut for 'pk' + 'fields'
+    'relations'  # Shortcut for 'forward_relations' + 'reverse_relations'
+])
+
+RelationInfo = namedtuple('RelationInfo', [
+    'model_field',
+    'related',
+    'to_many',
+    'has_through_model'
+])
 
 
 def _resolve_model(obj):
@@ -55,7 +71,7 @@ def get_field_info(model):
     forward_relations = SortedDict()
     for field in [field for field in opts.fields if field.serialize and field.rel]:
         forward_relations[field.name] = RelationInfo(
-            field=field,
+            model_field=field,
             related=_resolve_model(field.rel.to),
             to_many=False,
             has_through_model=False
@@ -64,7 +80,7 @@ def get_field_info(model):
     # Deal with forward many-to-many relationships.
     for field in [field for field in opts.many_to_many if field.serialize]:
         forward_relations[field.name] = RelationInfo(
-            field=field,
+            model_field=field,
             related=_resolve_model(field.rel.to),
             to_many=True,
             has_through_model=(
@@ -77,7 +93,7 @@ def get_field_info(model):
     for relation in opts.get_all_related_objects():
         accessor_name = relation.get_accessor_name()
         reverse_relations[accessor_name] = RelationInfo(
-            field=None,
+            model_field=None,
             related=relation.model,
             to_many=relation.field.rel.multiple,
             has_through_model=False
@@ -87,7 +103,7 @@ def get_field_info(model):
     for relation in opts.get_all_related_many_to_many_objects():
         accessor_name = relation.get_accessor_name()
         reverse_relations[accessor_name] = RelationInfo(
-            field=None,
+            model_field=None,
             related=relation.model,
             to_many=True,
             has_through_model=(
@@ -96,4 +112,18 @@ def get_field_info(model):
             )
         )
 
-    return FieldInfo(pk, fields, forward_relations, reverse_relations)
+    # Shortcut that merges both regular fields and the pk,
+    # for simplifying regular field lookup.
+    fields_and_pk = SortedDict()
+    fields_and_pk['pk'] = pk
+    fields_and_pk[pk.name] = pk
+    fields_and_pk.update(fields)
+
+    # Shortcut that merges both forward and reverse relationships
+
+    relations = SortedDict(
+        list(forward_relations.items()) +
+        list(reverse_relations.items())
+    )
+
+    return FieldInfo(pk, fields, forward_relations, reverse_relations, fields_and_pk, relations)

@@ -80,10 +80,6 @@ def set_value(dictionary, keys, value):
     dictionary[keys[-1]] = value
 
 
-def field_name_to_label(field_name):
-    return field_name.replace('_', ' ').capitalize()
-
-
 class SkipField(Exception):
     pass
 
@@ -162,7 +158,7 @@ class Field(object):
 
         # `self.label` should deafult to being based on the field name.
         if self.label is None:
-            self.label = field_name_to_label(self.field_name)
+            self.label = field_name.replace('_', ' ').capitalize()
 
         # self.source should default to being the same as the field name.
         if self.source is None:
