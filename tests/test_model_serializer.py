@@ -17,6 +17,10 @@ def dedent(blocktext):
 
 # Testing regular field mappings
 
+class CustomField(models.Field):
+    pass
+
+
 class RegularFieldsModel(models.Model):
     auto_field = models.AutoField(primary_key=True)
     big_integer_field = models.BigIntegerField()
@@ -37,6 +41,7 @@ class RegularFieldsModel(models.Model):
     text_field = models.TextField()
     time_field = models.TimeField()
     url_field = models.URLField(max_length=100)
+    custom_field = CustomField()
 
     def method(self):
         return 'method'
@@ -44,6 +49,9 @@ class RegularFieldsModel(models.Model):
 
 class TestRegularFieldMappings(TestCase):
     def test_regular_fields(self):
+        """
+        Model fields should map to their equivelent serializer fields.
+        """
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RegularFieldsModel
@@ -69,8 +77,8 @@ class TestRegularFieldMappings(TestCase):
                 text_field = CharField()
                 time_field = TimeField()
                 url_field = URLField(max_length=100)
+                custom_field = ModelField(model_field=<tests.test_model_serializer.CustomField: custom_field>)
         """)
-
         self.assertEqual(repr(TestSerializer()), expected)
 
     def test_method_field(self):
@@ -139,6 +147,10 @@ class TestRegularFieldMappings(TestCase):
         assert str(excinfo.exception) == expected
 
     def test_missing_field(self):
+        """
+        Fields that have been declared on the serializer class must be included
+        in the `Meta.fields` if it exists.
+        """
         class TestSerializer(serializers.ModelSerializer):
             missing = serializers.ReadOnlyField()
 
