@@ -303,6 +303,14 @@ Finally we need to wire these views up.  Create the `snippets/urls.py` file:
         url(r'^snippets/(?P<pk>[0-9]+)/$', 'snippet_detail'),
     )
 
+Then edit tutorial/urls.py and add:
+
+    import snippets.urls
+    
+    urlpatterns = patterns('',
+        url(r'', include('snippets.urls')),
+    )
+
 It's worth noting that there are a couple of edge cases we're not dealing with properly at the moment.  If we send malformed `json`, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.
 
 ## Testing our first attempt at a Web API
