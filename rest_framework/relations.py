@@ -24,7 +24,10 @@ class RelatedField(Field):
         # We override this method in order to automagically create
         # `ManyRelation` classes instead when `many=True` is set.
         if kwargs.pop('many', False):
-            return ManyRelation(child_relation=cls(*args, **kwargs))
+            return ManyRelation(
+                child_relation=cls(*args, **kwargs),
+                read_only=kwargs.get('read_only', False)
+            )
         return super(RelatedField, cls).__new__(cls, *args, **kwargs)
 
     def get_queryset(self):

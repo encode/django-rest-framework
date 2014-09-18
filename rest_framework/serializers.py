@@ -344,7 +344,25 @@ class ModelSerializer(Serializer):
 
     def create(self, attrs):
         ModelClass = self.Meta.model
-        return ModelClass.objects.create(**attrs)
+
+        # Remove many-to-many relationships from attrs.
+        # They are not valid arguments to the default `.create()` method,
+        # as they require that the instance has already been saved.
+        info = model_meta.get_field_info(ModelClass)
+        many_to_many = {}
+        for key, relation_info in info.relations.items():
+            if relation_info.to_many and (key in attrs):
+                many_to_many[key] = attrs.pop(key)
+
+        instance = ModelClass.objects.create(**attrs)
+
+        # Save many to many relationships after the instance is created.
+        if many_to_many:
+            for key, value in many_to_many.items():
+                setattr(instance, key, value)
+            instance.save()
+
+        return instance
 
     def update(self, obj, attrs):
         for attr, value in attrs.items():
