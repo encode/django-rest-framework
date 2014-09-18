@@ -413,3 +413,46 @@ class TestIntegration(TestCase):
             'through': []
         }
         self.assertEqual(serializer.data, expected)
+
+    def test_pk_update(self):
+        new_foreign_key = ForeignKeyTargetModel.objects.create(
+            name='foreign_key'
+        )
+        new_one_to_one = OneToOneTargetModel.objects.create(
+            name='one_to_one'
+        )
+        new_many_to_many = [
+            ManyToManyTargetModel.objects.create(
+                name='new many_to_many (%d)' % idx
+            ) for idx in range(3)
+        ]
+        data = {
+            'foreign_key': new_foreign_key.pk,
+            'one_to_one': new_one_to_one.pk,
+            'many_to_many': [item.pk for item in new_many_to_many],
+        }
+
+        # Serializer should validate okay.
+        serializer = self.serializer_cls(self.instance, data=data)
+        assert serializer.is_valid()
+
+        # Creating the instance, relationship attributes should be set.
+        instance = serializer.save()
+        assert instance.foreign_key.pk == new_foreign_key.pk
+        assert instance.one_to_one.pk == new_one_to_one.pk
+        assert [
+            item.pk for item in instance.many_to_many.all()
+        ] == [
+            item.pk for item in new_many_to_many
+        ]
+        assert list(instance.through.all()) == []
+
+        # Representation should be correct.
+        expected = {
+            'id': self.instance.pk,
+            'foreign_key': new_foreign_key.pk,
+            'one_to_one': new_one_to_one.pk,
+            'many_to_many': [item.pk for item in new_many_to_many],
+            'through': []
+        }
+        self.assertEqual(serializer.data, expected)

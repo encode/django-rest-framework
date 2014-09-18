@@ -350,17 +350,16 @@ class ModelSerializer(Serializer):
         # as they require that the instance has already been saved.
         info = model_meta.get_field_info(ModelClass)
         many_to_many = {}
-        for key, relation_info in info.relations.items():
-            if relation_info.to_many and (key in attrs):
-                many_to_many[key] = attrs.pop(key)
+        for field_name, relation_info in info.relations.items():
+            if relation_info.to_many and (field_name in attrs):
+                many_to_many[field_name] = attrs.pop(field_name)
 
         instance = ModelClass.objects.create(**attrs)
 
-        # Save many to many relationships after the instance is created.
+        # Save many-to-many relationships after the instance is created.
         if many_to_many:
-            for key, value in many_to_many.items():
-                setattr(instance, key, value)
-            instance.save()
+            for field_name, value in many_to_many.items():
+                setattr(instance, field_name, value)
 
         return instance
 
