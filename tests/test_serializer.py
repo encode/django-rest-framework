@@ -11,7 +11,7 @@ from tests.models import (
     HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel,
     DefaultValueModel, ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo,
-    RESTFrameworkModel, ForeignKeySource
+    RESTFrameworkModel, ForeignKeySource, PartialUpdateModel
 )
 from tests.models import BasicModelSerializer
 import datetime
@@ -192,6 +192,12 @@ class HyperlinkedForeignKeySourceSerializer(serializers.HyperlinkedModelSerializ
         model = ForeignKeySource
 
 
+class PartialUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PartialUpdateModel
+        fields = ['text', 'extra', 'textra', 'text_extra']
+
+
 class BasicTests(TestCase):
     def setUp(self):
         self.comment = Comment(
@@ -348,6 +354,15 @@ class BasicTests(TestCase):
         serializer = ActionItemSerializerOptionalFields(self.actionitem)
         exclusions = serializer.get_validation_exclusions()
         self.assertTrue('title' in exclusions, '`title` field was marked `required=False` and should be excluded')
+
+    def test_a_partial_update(self):
+        serializer = PartialUpdateSerializer(data={'text': 'blah', 'extra': 'blah blah', 'textra': 'blargh',
+                                                   'text_extra': 'blarghal'})
+        if serializer.is_valid():
+            serializer.save()
+        entry = PartialUpdateModel.objects.get(text='blah')
+        second_serializer = PartialUpdateSerializer(entry, data={'textra': 'something different'}, partial=True)
+        self.assertEquals(True, second_serializer.is_valid())
 
 
 class DictStyleSerializer(serializers.Serializer):
