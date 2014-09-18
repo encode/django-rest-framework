@@ -73,6 +73,8 @@ def serializer_repr(serializer, indent, force_many=None):
             ret += serializer_repr(field, indent + 1)
         elif hasattr(field, 'child'):
             ret += list_repr(field, indent + 1)
+        elif hasattr(field, 'child_relation'):
+            ret += field_repr(field.child_relation, force_many=field.child_relation)
         else:
             ret += field_repr(field)
     return ret

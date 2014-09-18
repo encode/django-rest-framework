@@ -199,7 +199,7 @@ class RelationalModel(models.Model):
 
 
 class TestRelationalFieldMappings(TestCase):
-    def test_flat_relational_fields(self):
+    def test_pk_relations(self):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RelationalModel
@@ -214,7 +214,7 @@ class TestRelationalFieldMappings(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
-    def test_nested_relational_fields(self):
+    def test_nested_relations(self):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RelationalModel
@@ -238,7 +238,7 @@ class TestRelationalFieldMappings(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
-    def test_flat_hyperlinked_fields(self):
+    def test_hyperlinked_relations(self):
         class TestSerializer(serializers.HyperlinkedModelSerializer):
             class Meta:
                 model = RelationalModel
@@ -253,7 +253,7 @@ class TestRelationalFieldMappings(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
-    def test_nested_hyperlinked_fields(self):
+    def test_nested_hyperlinked_relations(self):
         class TestSerializer(serializers.HyperlinkedModelSerializer):
             class Meta:
                 model = RelationalModel
@@ -277,7 +277,7 @@ class TestRelationalFieldMappings(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
-    def test_flat_reverse_foreign_key(self):
+    def test_pk_reverse_foreign_key(self):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = ForeignKeyTargetModel
@@ -291,7 +291,7 @@ class TestRelationalFieldMappings(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
-    def test_flat_reverse_one_to_one(self):
+    def test_pk_reverse_one_to_one(self):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = OneToOneTargetModel
@@ -305,7 +305,7 @@ class TestRelationalFieldMappings(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
-    def test_flat_reverse_many_to_many(self):
+    def test_pk_reverse_many_to_many(self):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = ManyToManyTargetModel
@@ -319,7 +319,7 @@ class TestRelationalFieldMappings(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
-    def test_flat_reverse_through(self):
+    def test_pk_reverse_through(self):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = ThroughTargetModel
@@ -332,3 +332,41 @@ class TestRelationalFieldMappings(TestCase):
                 reverse_through = PrimaryKeyRelatedField(many=True, read_only=True)
         """)
         self.assertEqual(repr(TestSerializer()), expected)
+
+
+class TestIntegration(TestCase):
+    def setUp(self):
+        self.foreign_key_target = ForeignKeyTargetModel.objects.create(
+            name='foreign_key'
+        )
+        self.one_to_one_target = OneToOneTargetModel.objects.create(
+            name='one_to_one'
+        )
+        self.many_to_many_targets = [
+            ManyToManyTargetModel.objects.create(
+                name='many_to_many (%d)' % idx
+            ) for idx in range(3)
+        ]
+        self.instance = RelationalModel.objects.create(
+            foreign_key=self.foreign_key_target,
+            one_to_one=self.one_to_one_target,
+        )
+        self.instance.many_to_many = self.many_to_many_targets
+        self.instance.save()
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RelationalModel
+
+        self.serializer_cls = TestSerializer
+
+    def test_pk_relationship_representations(self):
+        serializer = self.serializer_cls(self.instance)
+        expected = {
+            'id': self.instance.pk,
+            'foreign_key': self.foreign_key_target.pk,
+            'one_to_one': self.one_to_one_target.pk,
+            'many_to_many': [item.pk for item in self.many_to_many_targets],
+            'through': []
+        }
+        self.assertEqual(serializer.data, expected)

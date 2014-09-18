@@ -10,7 +10,6 @@ from django.utils.translation import ugettext_lazy as _
 class RelatedField(Field):
     def __init__(self, **kwargs):
         self.queryset = kwargs.pop('queryset', None)
-        self.many = kwargs.pop('many', False)
         assert self.queryset is not None or kwargs.get('read_only', None), (
             'Relational field must provide a `queryset` argument, '
             'or set read_only=`True`.'
@@ -20,6 +19,13 @@ class RelatedField(Field):
             'when setting read_only=`True`.'
         )
         super(RelatedField, self).__init__(**kwargs)
+
+    def __new__(cls, *args, **kwargs):
+        # We override this method in order to automagically create
+        # `ManyRelation` classes instead when `many=True` is set.
+        if kwargs.pop('many', False):
+            return ManyRelation(child_relation=cls(*args, **kwargs))
+        return super(RelatedField, cls).__new__(cls, *args, **kwargs)
 
     def get_queryset(self):
         queryset = self.queryset
@@ -216,3 +222,37 @@ class SlugRelatedField(RelatedField):
 
     def to_representation(self, obj):
         return getattr(obj, self.slug_field)
+
+
+class ManyRelation(Field):
+    """
+    Relationships with `many=True` transparently get coerced into instead being
+    a ManyRelation with a child relationship.
+
+    The `ManyRelation` class is responsible for handling iterating through
+    the values and passing each one to the child relationship.
+
+    You shouldn't need to be using this class directly yourself.
+    """
+
+    def __init__(self, child_relation=None, *args, **kwargs):
+        self.child_relation = child_relation
+        assert child_relation is not None, '`child_relation` is a required argument.'
+        super(ManyRelation, self).__init__(*args, **kwargs)
+
+    def bind(self, field_name, parent, root):
+        # ManyRelation needs to provide the current context to the child relation.
+        super(ManyRelation, self).bind(field_name, parent, root)
+        self.child_relation.bind(field_name, parent, root)
+
+    def to_internal_value(self, data):
+        return [
+            self.child_relation.to_internal_value(item)
+            for item in data
+        ]
+
+    def to_representation(self, obj):
+        return [
+            self.child_relation.to_representation(value)
+            for value in obj.all()
+        ]
