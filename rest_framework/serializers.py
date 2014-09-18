@@ -10,7 +10,7 @@ python primitives.
 2. The process of marshalling between python primitives and request and
 response content is handled by parsers and renderers.
 """
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db import models
 from django.utils import six
 from django.utils.datastructures import SortedDict
@@ -358,6 +358,7 @@ class ModelSerializer(Serializer):
         model = getattr(self.Meta, 'model')
         fields = getattr(self.Meta, 'fields', None)
         depth = getattr(self.Meta, 'depth', 0)
+        extra_kwargs = getattr(self.Meta, 'extra_kwargs', {})
 
         # Retrieve metadata about fields & relationships on the model class.
         info = model_meta.get_field_info(model)
@@ -405,9 +406,32 @@ class ModelSerializer(Serializer):
                     if not issubclass(field_cls, HyperlinkedRelatedField):
                         kwargs.pop('view_name', None)
 
-            else:
-                assert False, 'Field name `%s` is not valid.' % field_name
+            elif hasattr(model, field_name):
+                # Create a read only field for model methods and properties.
+                field_cls = ReadOnlyField
+                kwargs = {}
 
+            else:
+                raise ImproperlyConfigured(
+                    'Field name `%s` is not valid for model `%s`.' %
+                    (field_name, model.__class__.__name__)
+                )
+
+            # Check that any fields declared on the class are
+            # also explicity included in `Meta.fields`.
+            missing_fields = set(declared_fields.keys()) - set(fields)
+            if missing_fields:
+                missing_field = list(missing_fields)[0]
+                raise ImproperlyConfigured(
+                    'Field `%s` has been declared on serializer `%s`, but '
+                    'is missing from `Meta.fields`.' %
+                    (missing_field, self.__class__.__name__)
+                )
+
+            # Populate any kwargs defined in `Meta.extra_kwargs`
+            kwargs.update(extra_kwargs.get(field_name, {}))
+
+            # Create the serializer field.
             ret[field_name] = field_cls(**kwargs)
 
         return ret

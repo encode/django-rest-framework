@@ -5,6 +5,7 @@ shortcuts for automatically creating serializers based on a given model class.
 These tests deal with ensuring that we correctly map the model fields onto
 an appropriate set of serializer fields for each case.
 """
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
@@ -37,6 +38,9 @@ class RegularFieldsModel(models.Model):
     time_field = models.TimeField()
     url_field = models.URLField(max_length=100)
 
+    def method(self):
+        return 'method'
+
 
 class TestRegularFieldMappings(TestCase):
     def test_regular_fields(self):
@@ -68,6 +72,87 @@ class TestRegularFieldMappings(TestCase):
         """)
 
         self.assertEqual(repr(TestSerializer()), expected)
+
+    def test_method_field(self):
+        """
+        Properties and methods on the model should be allowed as `Meta.fields`
+        values, and should map to `ReadOnlyField`.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+                fields = ('auto_field', 'method')
+
+        expected = dedent("""
+            TestSerializer():
+                auto_field = IntegerField(read_only=True)
+                method = ReadOnlyField()
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+    def test_pk_fields(self):
+        """
+        Both `pk` and the actual primary key name are valid in `Meta.fields`.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+                fields = ('pk', 'auto_field')
+
+        expected = dedent("""
+            TestSerializer():
+                pk = IntegerField(label='Auto field', read_only=True)
+                auto_field = IntegerField(read_only=True)
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+    def test_extra_field_kwargs(self):
+        """
+        Ensure `extra_kwargs` are passed to generated fields.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+                fields = ('pk', 'char_field')
+                extra_kwargs = {'char_field': {'default': 'extra'}}
+
+        expected = dedent("""
+            TestSerializer():
+                pk = IntegerField(label='Auto field', read_only=True)
+                char_field = CharField(default='extra', max_length=100)
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+    def test_invalid_field(self):
+        """
+        Field names that do not map to a model field or relationship should
+        raise a configuration errror.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+                fields = ('auto_field', 'invalid')
+
+        with self.assertRaises(ImproperlyConfigured) as excinfo:
+            TestSerializer()
+        expected = 'Field name `invalid` is not valid for model `ModelBase`.'
+        assert str(excinfo.exception) == expected
+
+    def test_missing_field(self):
+        class TestSerializer(serializers.ModelSerializer):
+            missing = serializers.ReadOnlyField()
+
+            class Meta:
+                model = RegularFieldsModel
+                fields = ('auto_field',)
+
+        with self.assertRaises(ImproperlyConfigured) as excinfo:
+            TestSerializer()
+        expected = (
+            'Field `missing` has been declared on serializer '
+            '`TestSerializer`, but is missing from `Meta.fields`.'
+        )
+        assert str(excinfo.exception) == expected
 
 
 # Testing relational field mappings
