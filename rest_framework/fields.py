@@ -988,7 +988,7 @@ class ImageField(FileField):
         'invalid_image': _("Upload a valid image. The file you uploaded was "
                            "either not an image or a corrupted image."),
     }
-    
+
     def __init__(self, *args, **kwargs):
         self.show_url = kwargs.pop('show_url', False)
         super(ImageField, self).__init__(*args, **kwargs)
