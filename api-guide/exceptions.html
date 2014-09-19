@@ -274,7 +274,7 @@ def custom_exception_handler(exc):
 <h1 id="api-reference">API Reference</h1>
 <h2 id="apiexception">APIException</h2>
 <p><strong>Signature:</strong> <code>APIException()</code></p>
-<p>The <strong>base class</strong> for all exceptions raised inside REST framework.</p>
+<p>The <strong>base class</strong> for all exceptions raised inside an <code>APIView</code> class or <code>@api_view</code>.</p>
 <p>To provide a custom exception, subclass <code>APIException</code> and set the <code>.status_code</code> and <code>.default_detail</code> properties on the class.</p>
 <p>For example, if your API relies on a third party service that may sometimes be unreachable, you might want to implement an exception for the "503 Service Unavailable" HTTP response code.  You could do this like so:</p>
 <pre class="prettyprint lang-py"><code>from rest_framework.exceptions import APIException

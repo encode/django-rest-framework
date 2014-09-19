@@ -242,18 +242,33 @@ a.fusion-poweredby {
 </code></pre>
 <hr />
 <h2 id="24x-series">2.4.x series</h2>
+<h3 id="243">2.4.3</h3>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%222.4.3+Release%22+">19th September 2014</a>.</p>
+<ul>
+<li>Support translatable view docstrings being displayed in the browsable API.</li>
+<li>Support <a href="http://tools.ietf.org/html/rfc6266#section-4.3">encoded <code>filename*</code></a> in raw file uploads with <code>FileUploadParser</code>.</li>
+<li>Allow routers to support viewsets that don't include any list routes or that don't include any detail routes.</li>
+<li>Don't render an empty login control in browsable API if <code>login</code> view is not included.</li>
+<li>CSRF exemption performed in <code>.as_view()</code> to prevent accidental omission if overriding <code>.dispatch()</code>.</li>
+<li>Login on browsable API now displays validation errors.</li>
+<li>Bugfix: Fix migration in <code>authtoken</code> application.</li>
+<li>Bugfix: Allow selection of integer keys in nested choices.</li>
+<li>Bugfix: Return <code>None</code> instead of <code>'None'</code> in <code>CharField</code> with <code>allow_none=True</code>.</li>
+<li>Bugfix: Ensure custom model fields map to equivelent serializer fields more reliably. </li>
+<li>Bugfix: <code>DjangoFilterBackend</code> no longer quietly changes queryset ordering.</li>
+</ul>
 <h3 id="242">2.4.2</h3>
-<p><strong>Date</strong>: 3rd September 2014</p>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%222.4.2+Release%22+">3rd September 2014</a>.</p>
 <ul>
 <li>Bugfix: Fix broken pagination for 2.4.x series.</li>
 </ul>
 <h3 id="241">2.4.1</h3>
-<p><strong>Date</strong>: 1st September 2014</p>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%222.4.1+Release%22+">1st September 2014</a>.</p>
 <ul>
 <li>Bugfix: Fix broken login template for browsable API.</li>
 </ul>
 <h3 id="240">2.4.0</h3>
-<p><strong>Date</strong>: 29th August 2014</p>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%222.4.0+Release%22+">29th August 2014</a>.</p>
 <p><strong>Django version requirements</strong>: The lowest supported version of Django is now 1.4.2.</p>
 <p><strong>South version requirements</strong>: This note applies to any users using the optional <code>authtoken</code> application, which includes an associated database migration. You must now <em>either</em> upgrade your <code>south</code> package to version 1.0, <em>or</em> instead use the built-in migration support available with Django 1.7.</p>
 <ul>
