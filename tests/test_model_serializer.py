@@ -24,6 +24,9 @@ class CustomField(models.Field):
     pass
 
 
+COLOR_CHOICES = (('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'))
+
+
 class RegularFieldsModel(models.Model):
     """
     A model class for testing regular flat fields.
@@ -32,6 +35,7 @@ class RegularFieldsModel(models.Model):
     big_integer_field = models.BigIntegerField()
     boolean_field = models.BooleanField(default=False)
     char_field = models.CharField(max_length=100)
+    choices_field = models.CharField(max_length=100, choices=COLOR_CHOICES)
     comma_seperated_integer_field = models.CommaSeparatedIntegerField(max_length=100)
     date_field = models.DateField()
     datetime_field = models.DateTimeField()
@@ -68,6 +72,7 @@ class TestRegularFieldMappings(TestCase):
                 big_integer_field = IntegerField()
                 boolean_field = BooleanField(default=False)
                 char_field = CharField(max_length=100)
+                choices_field = ChoiceField(choices=[('red', 'Red'), ('blue', 'Blue'), ('green', 'Green')])
                 comma_seperated_integer_field = CharField(max_length=100, validators=[<django.core.validators.RegexValidator object>])
                 date_field = DateField()
                 datetime_field = DateTimeField()
