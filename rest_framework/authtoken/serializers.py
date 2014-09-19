@@ -20,7 +20,7 @@ class AuthTokenSerializer(serializers.Serializer):
                     msg = _('User account is disabled.')
                     raise serializers.ValidationError(msg)
             else:
-                msg = _('Unable to login with provided credentials.')
+                msg = _('Unable to log in with provided credentials.')
                 raise serializers.ValidationError(msg)
         else:
             msg = _('Must include "username" and "password"')

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from functools import update_wrapper
 from django.utils.decorators import classonlymethod
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import views, generics, mixins
 
 
@@ -89,7 +90,7 @@ class ViewSetMixin(object):
         # resolved URL.
         view.cls = cls
         view.suffix = initkwargs.get('suffix', None)
-        return view
+        return csrf_exempt(view)
 
     def initialize_request(self, request, *args, **kargs):
         """
