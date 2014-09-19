@@ -473,3 +473,36 @@ class TestIntegration(TestCase):
             'through': []
         }
         self.assertEqual(serializer.data, expected)
+
+
+# Tests for bulk create using `ListSerializer`.
+
+class BulkCreateModel(models.Model):
+    name = models.CharField(max_length=10)
+
+
+class TestBulkCreate(TestCase):
+    def test_bulk_create(self):
+        class BasicModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BulkCreateModel
+                fields = ('name',)
+
+        class BulkCreateSerializer(serializers.ListSerializer):
+            child = BasicModelSerializer()
+
+        data = [{'name': 'a'}, {'name': 'b'}, {'name': 'c'}]
+        serializer = BulkCreateSerializer(data=data)
+        assert serializer.is_valid()
+
+        # Objects are returned by save().
+        instances = serializer.save()
+        assert len(instances) == 3
+        assert [item.name for item in instances] == ['a', 'b', 'c']
+
+        # Objects have been created in the database.
+        assert BulkCreateModel.objects.count() == 3
+        assert list(BulkCreateModel.objects.values_list('name', flat=True)) == ['a', 'b', 'c']
+
+        # Serializer returns correct data.
+        assert serializer.data == data

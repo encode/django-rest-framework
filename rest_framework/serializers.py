@@ -24,6 +24,7 @@ from rest_framework.utils.field_mapping import (
     lookup_class
 )
 import copy
+import inspect
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -268,6 +269,7 @@ class ListSerializer(BaseSerializer):
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         assert self.child is not None, '`child` is a required argument.'
+        assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         self.context = kwargs.pop('context', {})
         kwargs.pop('partial', None)
 
