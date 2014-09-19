@@ -18,10 +18,16 @@ def dedent(blocktext):
 # Testing regular field mappings
 
 class CustomField(models.Field):
+    """
+    A custom model field simply for testing purposes.
+    """
     pass
 
 
 class RegularFieldsModel(models.Model):
+    """
+    A model class for testing regular flat fields.
+    """
     auto_field = models.AutoField(primary_key=True)
     big_integer_field = models.BigIntegerField()
     boolean_field = models.BooleanField(default=False)
@@ -121,12 +127,12 @@ class TestRegularFieldMappings(TestCase):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RegularFieldsModel
-                fields = ('pk', 'char_field')
+                fields = ('auto_field', 'char_field')
                 extra_kwargs = {'char_field': {'default': 'extra'}}
 
         expected = dedent("""
             TestSerializer():
-                pk = IntegerField(label='Auto field', read_only=True)
+                auto_field = IntegerField(read_only=True)
                 char_field = CharField(default='extra', max_length=100)
         """)
         self.assertEqual(repr(TestSerializer()), expected)
@@ -354,14 +360,12 @@ class TestIntegration(TestCase):
         self.instance.many_to_many = self.many_to_many_targets
         self.instance.save()
 
+    def test_pk_retrival(self):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RelationalModel
 
-        self.serializer_cls = TestSerializer
-
-    def test_pk_retrival(self):
-        serializer = self.serializer_cls(self.instance)
+        serializer = TestSerializer(self.instance)
         expected = {
             'id': self.instance.pk,
             'foreign_key': self.foreign_key_target.pk,
@@ -372,6 +376,10 @@ class TestIntegration(TestCase):
         self.assertEqual(serializer.data, expected)
 
     def test_pk_create(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RelationalModel
+
         new_foreign_key = ForeignKeyTargetModel.objects.create(
             name='foreign_key'
         )
@@ -390,7 +398,7 @@ class TestIntegration(TestCase):
         }
 
         # Serializer should validate okay.
-        serializer = self.serializer_cls(data=data)
+        serializer = TestSerializer(data=data)
         assert serializer.is_valid()
 
         # Creating the instance, relationship attributes should be set.
@@ -415,6 +423,10 @@ class TestIntegration(TestCase):
         self.assertEqual(serializer.data, expected)
 
     def test_pk_update(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RelationalModel
+
         new_foreign_key = ForeignKeyTargetModel.objects.create(
             name='foreign_key'
         )
@@ -433,7 +445,7 @@ class TestIntegration(TestCase):
         }
 
         # Serializer should validate okay.
-        serializer = self.serializer_cls(self.instance, data=data)
+        serializer = TestSerializer(self.instance, data=data)
         assert serializer.is_valid()
 
         # Creating the instance, relationship attributes should be set.
