@@ -40,21 +40,37 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.4.x series
 
+### 2.4.3
+
+**Date**: [19th September 2014](https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%222.4.3+Release%22+).
+
+* Support translatable view docstrings being displayed in the browsable API.
+* Support [encoded `filename*`][rfc-6266] in raw file uploads with `FileUploadParser`.
+* Allow routers to support viewsets that don't include any list routes or that don't include any detail routes.
+* Don't render an empty login control in browsable API if `login` view is not included.
+* CSRF exemption performed in `.as_view()` to prevent accidental omission if overriding `.dispatch()`.
+* Login on browsable API now displays validation errors.
+* Bugfix: Fix migration in `authtoken` application.
+* Bugfix: Allow selection of integer keys in nested choices.
+* Bugfix: Return `None` instead of `'None'` in `CharField` with `allow_none=True`.
+* Bugfix: Ensure custom model fields map to equivelent serializer fields more reliably. 
+* Bugfix: `DjangoFilterBackend` no longer quietly changes queryset ordering.
+
 ### 2.4.2
 
-**Date**: 3rd September 2014
+**Date**: [3rd September 2014](https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%222.4.2+Release%22+).
 
 * Bugfix: Fix broken pagination for 2.4.x series.
 
 ### 2.4.1
 
-**Date**: 1st September 2014
+**Date**: [1st September 2014](https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%222.4.1+Release%22+).
 
 * Bugfix: Fix broken login template for browsable API.
 
 ### 2.4.0
 
-**Date**: 29th August 2014
+**Date**: [29th August 2014](https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%222.4.0+Release%22+).
 
 **Django version requirements**: The lowest supported version of Django is now 1.4.2.
 
@@ -717,3 +733,4 @@ This change will not affect user code, so long as it's following the recommended
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
 [announcement]: rest-framework-2-announcement.md
 [#582]: https://github.com/tomchristie/django-rest-framework/issues/582
+[rfc-6266]: http://tools.ietf.org/html/rfc6266#section-4.3
