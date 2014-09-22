@@ -121,6 +121,25 @@ else:
             return [m.upper() for m in self.http_method_names if hasattr(self, m)]
 
 
+
+# MinValueValidator and MaxValueValidator only accept `message` in 1.8+
+if django.VERSION >= (1, 8):
+    from django.core.validators import MinValueValidator, MaxValueValidator
+else:
+    from django.core.validators import MinValueValidator as DjangoMinValueValidator
+    from django.core.validators import MaxValueValidator as DjangoMaxValueValidator
+
+    class MinValueValidator(DjangoMinValueValidator):
+        def __init__(self, *args, **kwargs):
+            self.message = kwargs.pop('message', self.message)
+            super(MinValueValidator, self).__init__(*args, **kwargs)
+
+    class MaxValueValidator(DjangoMaxValueValidator):
+        def __init__(self, *args, **kwargs):
+            self.message = kwargs.pop('message', self.message)
+            super(MaxValueValidator, self).__init__(*args, **kwargs)
+
+
 # PATCH method is not implemented by Django
 if 'patch' not in View.http_method_names:
     View.http_method_names = View.http_method_names + ['patch']

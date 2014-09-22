@@ -6,7 +6,7 @@ from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import ISO_8601
-from rest_framework.compat import smart_text
+from rest_framework.compat import smart_text, MinValueValidator, MaxValueValidator
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, representation, humanize_datetime
 import datetime
@@ -330,7 +330,7 @@ class EmailField(CharField):
     def __init__(self, **kwargs):
         super(EmailField, self).__init__(**kwargs)
         validator = validators.EmailValidator(message=self.error_messages['invalid'])
-        self.validators = [validator] + self.validators
+        self.validators.append(validator)
 
     def to_internal_value(self, data):
         if data == '' and not self.allow_blank:
@@ -353,7 +353,7 @@ class RegexField(CharField):
     def __init__(self, regex, **kwargs):
         super(RegexField, self).__init__(**kwargs)
         validator = validators.RegexValidator(regex, message=self.error_messages['invalid'])
-        self.validators = [validator] + self.validators
+        self.validators.append(validator)
 
 
 class SlugField(CharField):
@@ -365,7 +365,7 @@ class SlugField(CharField):
         super(SlugField, self).__init__(**kwargs)
         slug_regex = re.compile(r'^[-a-zA-Z0-9_]+$')
         validator = validators.RegexValidator(slug_regex, message=self.error_messages['invalid'])
-        self.validators = [validator] + self.validators
+        self.validators.append(validator)
 
 
 class URLField(CharField):
@@ -376,14 +376,16 @@ class URLField(CharField):
     def __init__(self, **kwargs):
         super(URLField, self).__init__(**kwargs)
         validator = validators.URLValidator(message=self.error_messages['invalid'])
-        self.validators = [validator] + self.validators
+        self.validators.append(validator)
 
 
 # Number types...
 
 class IntegerField(Field):
     default_error_messages = {
-        'invalid': _('A valid integer is required.')
+        'invalid': _('A valid integer is required.'),
+        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
+        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
     }
 
     def __init__(self, **kwargs):
@@ -391,9 +393,11 @@ class IntegerField(Field):
         min_value = kwargs.pop('min_value', None)
         super(IntegerField, self).__init__(**kwargs)
         if max_value is not None:
-            self.validators.append(validators.MaxValueValidator(max_value))
+            message = self.error_messages['max_value'].format(max_value=max_value)
+            self.validators.append(MaxValueValidator(max_value, message=message))
         if min_value is not None:
-            self.validators.append(validators.MinValueValidator(min_value))
+            message = self.error_messages['min_value'].format(min_value=min_value)
+            self.validators.append(MinValueValidator(min_value, message=message))
 
     def to_internal_value(self, data):
         try:
@@ -411,6 +415,8 @@ class IntegerField(Field):
 class FloatField(Field):
     default_error_messages = {
         'invalid': _("A valid number is required."),
+        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
+        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
     }
 
     def __init__(self, **kwargs):
@@ -418,9 +424,11 @@ class FloatField(Field):
         min_value = kwargs.pop('min_value', None)
         super(FloatField, self).__init__(**kwargs)
         if max_value is not None:
-            self.validators.append(validators.MaxValueValidator(max_value))
+            message = self.error_messages['max_value'].format(max_value=max_value)
+            self.validators.append(MaxValueValidator(max_value, message=message))
         if min_value is not None:
-            self.validators.append(validators.MinValueValidator(min_value))
+            message = self.error_messages['min_value'].format(min_value=min_value)
+            self.validators.append(MinValueValidator(min_value, message=message))
 
     def to_internal_value(self, value):
         if value is None:
@@ -454,9 +462,11 @@ class DecimalField(Field):
         self.coerce_to_string = coerce_to_string if (coerce_to_string is not None) else self.coerce_to_string
         super(DecimalField, self).__init__(**kwargs)
         if max_value is not None:
-            self.validators.append(validators.MaxValueValidator(max_value))
+            message = self.error_messages['max_value'].format(max_value=max_value)
+            self.validators.append(MaxValueValidator(max_value, message=message))
         if min_value is not None:
-            self.validators.append(validators.MinValueValidator(min_value))
+            message = self.error_messages['min_value'].format(min_value=min_value)
+            self.validators.append(MinValueValidator(min_value, message=message))
 
     def to_internal_value(self, value):
         """
