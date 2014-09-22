@@ -209,8 +209,10 @@ class Field(object):
         """
         Validate a simple representation and return the internal value.
 
-        The provided data may be `empty` if no representation was included.
-        May return `empty` if the field should not be included in the
+        The provided data may be `empty` if no representation was included
+        in the input.
+
+        May raise `SkipField` if the field should not be included in the
         validated data.
         """
         if data is empty:
@@ -223,6 +225,10 @@ class Field(object):
         return value
 
     def run_validators(self, value):
+        """
+        Test the given value against all the validators on the field,
+        and either raise a `ValidationError` or simply return.
+        """
         if value in (None, '', [], (), {}):
             return
 
@@ -753,8 +759,9 @@ class MultipleChoiceField(ChoiceField):
     }
 
     def to_internal_value(self, data):
-        if not hasattr(data, '__iter__'):
+        if isinstance(data, type('')) or not hasattr(data, '__iter__'):
             self.fail('not_a_list', input_type=type(data).__name__)
+
         return set([
             super(MultipleChoiceField, self).to_internal_value(item)
             for item in data

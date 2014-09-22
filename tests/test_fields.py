@@ -5,22 +5,31 @@ import datetime
 import pytest
 
 
+def get_items(mapping_or_list_of_two_tuples):
+    # Tests accept either lists of two tuples, or dictionaries.
+    if isinstance(mapping_or_list_of_two_tuples, dict):
+        # {value: expected}
+        return mapping_or_list_of_two_tuples.items()
+    # [(value, expected), ...]
+    return mapping_or_list_of_two_tuples
+
+
 class ValidAndInvalidValues:
     """
-    Base class for testing valid and invalid field values.
+    Base class for testing valid and invalid input values.
     """
     def test_valid_values(self):
         """
         Ensure that valid values return the expected validated data.
         """
-        for input_value, expected_output in self.valid_mappings.items():
+        for input_value, expected_output in get_items(self.valid_mappings):
             assert self.field.run_validation(input_value) == expected_output
 
     def test_invalid_values(self):
         """
         Ensure that invalid values raise the expected validation error.
         """
-        for input_value, expected_failure in self.invalid_mappings.items():
+        for input_value, expected_failure in get_items(self.invalid_mappings):
             with pytest.raises(fields.ValidationError) as exc_info:
                 self.field.run_validation(input_value)
             assert exc_info.value.messages == expected_failure
@@ -189,14 +198,14 @@ class TestDecimalField(ValidAndInvalidValues):
         12.3: Decimal('12.3'),
         0.1: Decimal('0.1'),
     }
-    invalid_mappings = {
-        'abc': ["A valid number is required."],
-        Decimal('Nan'): ["A valid number is required."],
-        Decimal('Inf'): ["A valid number is required."],
-        '12.345': ["Ensure that there are no more than 3 digits in total."],
-        '0.01': ["Ensure that there are no more than 1 decimal places."],
-        123: ["Ensure that there are no more than 2 digits before the decimal point."]
-    }
+    invalid_mappings = (
+        ('abc', ["A valid number is required."]),
+        (Decimal('Nan'), ["A valid number is required."]),
+        (Decimal('Inf'), ["A valid number is required."]),
+        ('12.345', ["Ensure that there are no more than 3 digits in total."]),
+        ('0.01', ["Ensure that there are no more than 1 decimal places."]),
+        (123, ["Ensure that there are no more than 2 digits before the decimal point."])
+    )
     field = fields.DecimalField(max_digits=3, decimal_places=1)
 
 
