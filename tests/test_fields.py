@@ -505,9 +505,11 @@ class TestChoiceField(FieldValues):
         'good': 'good',
     }
     invalid_inputs = {
-        'awful': ['`awful` is not a valid choice.']
+        'amazing': ['`amazing` is not a valid choice.']
     }
-    outputs = {}
+    outputs = {
+        'good': 'good'
+    }
     field = fields.ChoiceField(
         choices=[
             ('poor', 'Poor quality'),
@@ -530,7 +532,10 @@ class TestChoiceFieldWithType(FieldValues):
         5: ['`5` is not a valid choice.'],
         'abc': ['`abc` is not a valid choice.']
     }
-    outputs = {}
+    outputs = {
+        '1': 1,
+        1: 1
+    }
     field = fields.ChoiceField(
         choices=[
             (1, 'Poor quality'),
@@ -553,7 +558,9 @@ class TestChoiceFieldWithListChoices(FieldValues):
     invalid_inputs = {
         'awful': ['`awful` is not a valid choice.']
     }
-    outputs = {}
+    outputs = {
+        'good': 'good'
+    }
     field = fields.ChoiceField(choices=('poor', 'medium', 'good'))
 
 

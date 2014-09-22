@@ -750,7 +750,7 @@ class ChoiceField(Field):
             self.fail('invalid_choice', input=data)
 
     def to_representation(self, value):
-        return value
+        return self.choice_strings_to_values[str(value)]
 
 
 class MultipleChoiceField(ChoiceField):
@@ -769,7 +769,7 @@ class MultipleChoiceField(ChoiceField):
         ])
 
     def to_representation(self, value):
-        return value
+        return [self.choice_strings_to_values[str(item)] for item in value]
 
 
 # File types...
