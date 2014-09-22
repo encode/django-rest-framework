@@ -769,7 +769,9 @@ class MultipleChoiceField(ChoiceField):
         ])
 
     def to_representation(self, value):
-        return [self.choice_strings_to_values[str(item)] for item in value]
+        return set([
+            self.choice_strings_to_values[str(item)] for item in value
+        ])
 
 
 # File types...

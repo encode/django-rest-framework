@@ -577,7 +577,9 @@ class TestMultipleChoiceField(FieldValues):
         'abc': ['Expected a list of items but got type `str`'],
         ('aircon', 'incorrect'): ['`incorrect` is not a valid choice.']
     }
-    outputs = {}
+    outputs = [
+        (['aircon', 'manual'], set(['aircon', 'manual']))
+    ]
     field = fields.MultipleChoiceField(
         choices=[
             ('aircon', 'AirCon'),
