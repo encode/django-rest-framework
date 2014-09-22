@@ -316,7 +316,9 @@ class TestDateField(FieldValues):
         '2001-99-99': ['Date has wrong format. Use one of these formats instead: YYYY[-MM[-DD]]'],
         datetime.datetime(2001, 1, 1, 12, 00): ['Expected a date but got a datetime.'],
     }
-    outputs = {}
+    outputs = {
+        datetime.date(2001, 1, 1): '2001-01-01',
+    }
     field = fields.DateField()
 
 
@@ -332,6 +334,30 @@ class TestCustomInputFormatDateField(FieldValues):
     }
     outputs = {}
     field = fields.DateField(input_formats=['%d %b %Y'])
+
+
+class TestCustomOutputFormatDateField(FieldValues):
+    """
+    Values for `DateField` with a custom output format.
+    """
+    valid_inputs = {}
+    invalid_inputs = {}
+    outputs = {
+        datetime.date(2001, 1, 1): '01 Jan 2001'
+    }
+    field = fields.DateField(format='%d %b %Y')
+
+
+class TestNoOutputFormatDateField(FieldValues):
+    """
+    Values for `DateField` with no output format.
+    """
+    valid_inputs = {}
+    invalid_inputs = {}
+    outputs = {
+        datetime.date(2001, 1, 1): datetime.date(2001, 1, 1)
+    }
+    field = fields.DateField(format=None)
 
 
 class TestDateTimeField(FieldValues):
@@ -351,7 +377,10 @@ class TestDateTimeField(FieldValues):
         '2001-99-99T99:00': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]'],
         datetime.date(2001, 1, 1): ['Expected a datetime but got a date.'],
     }
-    outputs = {}
+    outputs = {
+        datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00',
+        datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): '2001-01-01T13:00:00Z',
+    }
     field = fields.DateTimeField(default_timezone=timezone.UTC())
 
 
@@ -367,6 +396,30 @@ class TestCustomInputFormatDateTimeField(FieldValues):
     }
     outputs = {}
     field = fields.DateTimeField(default_timezone=timezone.UTC(), input_formats=['%I:%M%p, %d %b %Y'])
+
+
+class TestCustomOutputFormatDateTimeField(FieldValues):
+    """
+    Values for `DateTimeField` with a custom output format.
+    """
+    valid_inputs = {}
+    invalid_inputs = {}
+    outputs = {
+        datetime.datetime(2001, 1, 1, 13, 00): '01:00PM, 01 Jan 2001',
+    }
+    field = fields.DateTimeField(format='%I:%M%p, %d %b %Y')
+
+
+class TestNoOutputFormatDateTimeField(FieldValues):
+    """
+    Values for `DateTimeField` with no output format.
+    """
+    valid_inputs = {}
+    invalid_inputs = {}
+    outputs = {
+        datetime.datetime(2001, 1, 1, 13, 00): datetime.datetime(2001, 1, 1, 13, 00),
+    }
+    field = fields.DateTimeField(format=None)
 
 
 class TestNaiveDateTimeField(FieldValues):
@@ -394,7 +447,9 @@ class TestTimeField(FieldValues):
         'abc': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss[.uuuuuu]]'],
         '99:99': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss[.uuuuuu]]'],
     }
-    outputs = {}
+    outputs = {
+        datetime.time(13, 00): '13:00:00'
+    }
     field = fields.TimeField()
 
 
@@ -410,6 +465,30 @@ class TestCustomInputFormatTimeField(FieldValues):
     }
     outputs = {}
     field = fields.TimeField(input_formats=['%I:%M%p'])
+
+
+class TestCustomOutputFormatTimeField(FieldValues):
+    """
+    Values for `TimeField` with a custom output format.
+    """
+    valid_inputs = {}
+    invalid_inputs = {}
+    outputs = {
+        datetime.time(13, 00): '01:00PM'
+    }
+    field = fields.TimeField(format='%I:%M%p')
+
+
+class TestNoOutputFormatTimeField(FieldValues):
+    """
+    Values for `TimeField` with a no output format.
+    """
+    valid_inputs = {}
+    invalid_inputs = {}
+    outputs = {
+        datetime.time(13, 00): datetime.time(13, 00)
+    }
+    field = fields.TimeField(format=None)
 
 
 # Choice types...
