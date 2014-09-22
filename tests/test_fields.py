@@ -2,6 +2,7 @@ from decimal import Decimal
 from django.utils import timezone
 from rest_framework import fields
 import datetime
+import django
 import pytest
 
 
@@ -92,7 +93,7 @@ class TestEmailField(FieldValues):
         ' example@example.com ': 'example@example.com',
     }
     invalid_inputs = {
-        'example.com': ['Enter a valid email address.']
+        'examplecom': ['Enter a valid email address.']
     }
     outputs = {}
     field = fields.EmailField()
@@ -267,8 +268,8 @@ class TestMinMaxDecimalField(FieldValues):
     Valid and invalid values for `DecimalField` with min and max limits.
     """
     valid_inputs = {
-        '10.0': 10.0,
-        '20.0': 20.0,
+        '10.0': Decimal('10.0'),
+        '20.0': Decimal('20.0'),
     }
     invalid_inputs = {
         '9.9': ['Ensure this value is greater than or equal to 10.'],
@@ -368,9 +369,10 @@ class TestDateTimeField(FieldValues):
         '2001-01-01 13:00': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
         '2001-01-01T13:00': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
         '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
-        '2001-01-01T14:00+0100': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
         datetime.datetime(2001, 1, 1, 13, 00): datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        # Note that 1.4 does not support timezone string parsing.
+        '2001-01-01T14:00+01:00' if (django.VERSION > (1, 4)) else '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC())
     }
     invalid_inputs = {
         'abc': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]'],

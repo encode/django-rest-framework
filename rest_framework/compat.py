@@ -139,6 +139,29 @@ else:
             self.message = kwargs.pop('message', self.message)
             super(MaxValueValidator, self).__init__(*args, **kwargs)
 
+# URLValidator only accept `message` in 1.6+
+if django.VERSION >= (1, 6):
+    from django.core.validators import URLValidator
+else:
+    from django.core.validators import URLValidator as DjangoURLValidator
+
+    class URLValidator(DjangoURLValidator):
+        def __init__(self, *args, **kwargs):
+            self.message = kwargs.pop('message', self.message)
+            super(URLValidator, self).__init__(*args, **kwargs)
+
+
+# EmailValidator requires explicit regex prior to 1.6+
+if django.VERSION >= (1, 6):
+    from django.core.validators import EmailValidator
+else:
+    from django.core.validators import EmailValidator as DjangoEmailValidator
+    from django.core.validators import email_re
+
+    class EmailValidator(DjangoEmailValidator):
+        def __init__(self, *args, **kwargs):
+            super(EmailValidator, self).__init__(email_re, *args, **kwargs)
+
 
 # PATCH method is not implemented by Django
 if 'patch' not in View.http_method_names:

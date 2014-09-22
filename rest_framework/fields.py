@@ -6,7 +6,7 @@ from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import ISO_8601
-from rest_framework.compat import smart_text, MinValueValidator, MaxValueValidator
+from rest_framework.compat import smart_text, EmailValidator, MinValueValidator, MaxValueValidator, URLValidator
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, representation, humanize_datetime
 import datetime
@@ -335,7 +335,7 @@ class EmailField(CharField):
 
     def __init__(self, **kwargs):
         super(EmailField, self).__init__(**kwargs)
-        validator = validators.EmailValidator(message=self.error_messages['invalid'])
+        validator = EmailValidator(message=self.error_messages['invalid'])
         self.validators.append(validator)
 
     def to_internal_value(self, data):
@@ -381,7 +381,7 @@ class URLField(CharField):
 
     def __init__(self, **kwargs):
         super(URLField, self).__init__(**kwargs)
-        validator = validators.URLValidator(message=self.error_messages['invalid'])
+        validator = URLValidator(message=self.error_messages['invalid'])
         self.validators.append(validator)
 
 
@@ -525,7 +525,7 @@ class DecimalField(Field):
             return None
 
         if not isinstance(value, decimal.Decimal):
-            value = decimal.Decimal(value)
+            value = decimal.Decimal(str(value).strip())
 
         context = decimal.getcontext().copy()
         context.prec = self.max_digits
