@@ -12,7 +12,6 @@ from rest_framework.utils import html, representation, humanize_datetime
 import datetime
 import decimal
 import inspect
-import warnings
 
 
 class empty:
@@ -395,7 +394,7 @@ class IntegerField(Field):
 
 class FloatField(Field):
     default_error_messages = {
-        'invalid': _("'%s' value must be a float."),
+        'invalid': _("A valid number is required."),
     }
 
     def __init__(self, **kwargs):
@@ -410,20 +409,20 @@ class FloatField(Field):
     def to_internal_value(self, value):
         if value is None:
             return None
-        return float(value)
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            self.fail('invalid')
 
     def to_representation(self, value):
         if value is None:
             return None
-        try:
-            return float(value)
-        except (TypeError, ValueError):
-            self.fail('invalid', value=value)
+        return float(value)
 
 
 class DecimalField(Field):
     default_error_messages = {
-        'invalid': _('Enter a number.'),
+        'invalid': _('A valid number is required.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
         'max_digits': _('Ensure that there are no more than {max_digits} digits in total.'),
@@ -485,7 +484,7 @@ class DecimalField(Field):
         if self.decimal_places is not None and decimals > self.decimal_places:
             self.fail('max_decimal_places', max_decimal_places=self.decimal_places)
         if self.max_digits is not None and self.decimal_places is not None and whole_digits > (self.max_digits - self.decimal_places):
-            self.fail('max_whole_digits', max_while_digits=self.max_digits - self.decimal_places)
+            self.fail('max_whole_digits', max_whole_digits=self.max_digits - self.decimal_places)
 
         return value
 
@@ -511,6 +510,7 @@ class DecimalField(Field):
 class DateField(Field):
     default_error_messages = {
         'invalid': _('Date has wrong format. Use one of these formats instead: {format}'),
+        'datetime': _('Expected a date but got a datetime.'),
     }
     format = api_settings.DATE_FORMAT
     input_formats = api_settings.DATE_INPUT_FORMATS
@@ -525,12 +525,7 @@ class DateField(Field):
             return None
 
         if isinstance(value, datetime.datetime):
-            if timezone and settings.USE_TZ and timezone.is_aware(value):
-                # Convert aware datetimes to the default time zone
-                # before casting them to dates (#17742).
-                default_timezone = timezone.get_default_timezone()
-                value = timezone.make_naive(value, default_timezone)
-            return value.date()
+            self.fail('datetime')
 
         if isinstance(value, datetime.date):
             return value
@@ -570,35 +565,38 @@ class DateField(Field):
 class DateTimeField(Field):
     default_error_messages = {
         'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}'),
+        'date': _('Expected a datetime but got a date.'),
     }
     format = api_settings.DATETIME_FORMAT
     input_formats = api_settings.DATETIME_INPUT_FORMATS
+    default_timezone = timezone.get_default_timezone() if settings.USE_TZ else None
 
-    def __init__(self, format=None, input_formats=None, *args, **kwargs):
+    def __init__(self, format=None, input_formats=None, default_timezone=None, *args, **kwargs):
         self.format = format if format is not None else self.format
         self.input_formats = input_formats if input_formats is not None else self.input_formats
+        self.default_timezone = default_timezone if default_timezone is not None else self.default_timezone
         super(DateTimeField, self).__init__(*args, **kwargs)
+
+    def enforce_timezone(self, value):
+        """
+        When `self.default_timezone` is `None`, always return naive datetimes.
+        When `self.default_timezone` is not `None`, always return aware datetimes.
+        """
+        if (self.default_timezone is not None) and not timezone.is_aware(value):
+            return timezone.make_aware(value, self.default_timezone)
+        elif (self.default_timezone is None) and timezone.is_aware(value):
+            return timezone.make_naive(value, timezone.UTC())
+        return value
 
     def to_internal_value(self, value):
         if value in (None, ''):
             return None
 
-        if isinstance(value, datetime.datetime):
-            return value
+        if isinstance(value, datetime.date) and not isinstance(value, datetime.datetime):
+            self.fail('date')
 
-        if isinstance(value, datetime.date):
-            value = datetime.datetime(value.year, value.month, value.day)
-            if settings.USE_TZ:
-                # For backwards compatibility, interpret naive datetimes in
-                # local time. This won't work during DST change, but we can't
-                # do much about it, so we let the exceptions percolate up the
-                # call stack.
-                warnings.warn("DateTimeField received a naive datetime (%s)"
-                              " while time zone support is active." % value,
-                              RuntimeWarning)
-                default_timezone = timezone.get_default_timezone()
-                value = timezone.make_aware(value, default_timezone)
-            return value
+        if isinstance(value, datetime.datetime):
+            return self.enforce_timezone(value)
 
         for format in self.input_formats:
             if format.lower() == ISO_8601:
@@ -608,14 +606,14 @@ class DateTimeField(Field):
                     pass
                 else:
                     if parsed is not None:
-                        return parsed
+                        return self.enforce_timezone(parsed)
             else:
                 try:
                     parsed = datetime.datetime.strptime(value, format)
                 except (ValueError, TypeError):
                     pass
                 else:
-                    return parsed
+                    return self.enforce_timezone(parsed)
 
         humanized_format = humanize_datetime.datetime_formats(self.input_formats)
         self.fail('invalid', format=humanized_format)

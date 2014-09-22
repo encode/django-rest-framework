@@ -1,3 +1,337 @@
+from decimal import Decimal
+from django.utils import timezone
+from rest_framework import fields
+import datetime
+import pytest
+
+
+class ValidAndInvalidValues:
+    """
+    Base class for testing valid and invalid field values.
+    """
+    def test_valid_values(self):
+        """
+        Ensure that valid values return the expected validated data.
+        """
+        for input_value, expected_output in self.valid_mappings.items():
+            assert self.field.run_validation(input_value) == expected_output
+
+    def test_invalid_values(self):
+        """
+        Ensure that invalid values raise the expected validation error.
+        """
+        for input_value, expected_failure in self.invalid_mappings.items():
+            with pytest.raises(fields.ValidationError) as exc_info:
+                self.field.run_validation(input_value)
+            assert exc_info.value.messages == expected_failure
+
+
+class TestCharField(ValidAndInvalidValues):
+    valid_mappings = {
+        1: '1',
+        'abc': 'abc'
+    }
+    invalid_mappings = {
+        '': ['This field may not be blank.']
+    }
+    field = fields.CharField()
+
+
+class TestBooleanField(ValidAndInvalidValues):
+    valid_mappings = {
+        'true': True,
+        'false': False,
+        '1': True,
+        '0': False,
+        1: True,
+        0: False,
+        True: True,
+        False: False,
+    }
+    invalid_mappings = {
+        'foo': ['`foo` is not a valid boolean.']
+    }
+    field = fields.BooleanField()
+
+
+# Number types...
+
+class TestIntegerField(ValidAndInvalidValues):
+    """
+    Valid and invalid values for `IntegerField`.
+    """
+    valid_mappings = {
+        '1': 1,
+        '0': 0,
+        1: 1,
+        0: 0,
+        1.0: 1,
+        0.0: 0
+    }
+    invalid_mappings = {
+        'abc': ['A valid integer is required.']
+    }
+    field = fields.IntegerField()
+
+
+class TestMinMaxIntegerField(ValidAndInvalidValues):
+    """
+    Valid and invalid values for `IntegerField` with min and max limits.
+    """
+    valid_mappings = {
+        '1': 1,
+        '3': 3,
+        1: 1,
+        3: 3,
+    }
+    invalid_mappings = {
+        0: ['Ensure this value is greater than or equal to 1.'],
+        4: ['Ensure this value is less than or equal to 3.'],
+        '0': ['Ensure this value is greater than or equal to 1.'],
+        '4': ['Ensure this value is less than or equal to 3.'],
+    }
+    field = fields.IntegerField(min_value=1, max_value=3)
+
+
+class TestFloatField(ValidAndInvalidValues):
+    """
+    Valid and invalid values for `FloatField`.
+    """
+    valid_mappings = {
+        '1': 1.0,
+        '0': 0.0,
+        1: 1.0,
+        0: 0.0,
+        1.0: 1.0,
+        0.0: 0.0,
+    }
+    invalid_mappings = {
+        'abc': ["A valid number is required."]
+    }
+    field = fields.FloatField()
+
+
+class TestMinMaxFloatField(ValidAndInvalidValues):
+    """
+    Valid and invalid values for `FloatField` with min and max limits.
+    """
+    valid_mappings = {
+        '1': 1,
+        '3': 3,
+        1: 1,
+        3: 3,
+        1.0: 1.0,
+        3.0: 3.0,
+    }
+    invalid_mappings = {
+        0.9: ['Ensure this value is greater than or equal to 1.'],
+        3.1: ['Ensure this value is less than or equal to 3.'],
+        '0.0': ['Ensure this value is greater than or equal to 1.'],
+        '3.1': ['Ensure this value is less than or equal to 3.'],
+    }
+    field = fields.FloatField(min_value=1, max_value=3)
+
+
+class TestDecimalField(ValidAndInvalidValues):
+    """
+    Valid and invalid values for `DecimalField`.
+    """
+    valid_mappings = {
+        '12.3': Decimal('12.3'),
+        '0.1': Decimal('0.1'),
+        10: Decimal('10'),
+        0: Decimal('0'),
+        12.3: Decimal('12.3'),
+        0.1: Decimal('0.1'),
+    }
+    invalid_mappings = {
+        'abc': ["A valid number is required."],
+        Decimal('Nan'): ["A valid number is required."],
+        Decimal('Inf'): ["A valid number is required."],
+        '12.345': ["Ensure that there are no more than 3 digits in total."],
+        '0.01': ["Ensure that there are no more than 1 decimal places."],
+        123: ["Ensure that there are no more than 2 digits before the decimal point."]
+    }
+    field = fields.DecimalField(max_digits=3, decimal_places=1)
+
+
+class TestMinMaxDecimalField(ValidAndInvalidValues):
+    """
+    Valid and invalid values for `DecimalField` with min and max limits.
+    """
+    valid_mappings = {
+        '10.0': 10.0,
+        '20.0': 20.0,
+    }
+    invalid_mappings = {
+        '9.9': ['Ensure this value is greater than or equal to 10.'],
+        '20.1': ['Ensure this value is less than or equal to 20.'],
+    }
+    field = fields.DecimalField(
+        max_digits=3, decimal_places=1,
+        min_value=10, max_value=20
+    )
+
+
+# Date & time fields...
+
+class TestDateField(ValidAndInvalidValues):
+    """
+    Valid and invalid values for `DateField`.
+    """
+    valid_mappings = {
+        '2001-01-01': datetime.date(2001, 1, 1),
+        datetime.date(2001, 1, 1): datetime.date(2001, 1, 1),
+    }
+    invalid_mappings = {
+        'abc': ['Date has wrong format. Use one of these formats instead: YYYY[-MM[-DD]]'],
+        '2001-99-99': ['Date has wrong format. Use one of these formats instead: YYYY[-MM[-DD]]'],
+        datetime.datetime(2001, 1, 1, 12, 00): ['Expected a date but got a datetime.'],
+    }
+    field = fields.DateField()
+
+
+class TestCustomInputFormatDateField(ValidAndInvalidValues):
+    """
+    Valid and invalid values for `DateField` with a cutom input format.
+    """
+    valid_mappings = {
+        '1 Jan 2001': datetime.date(2001, 1, 1),
+    }
+    invalid_mappings = {
+        '2001-01-01': ['Date has wrong format. Use one of these formats instead: DD [Jan-Dec] YYYY']
+    }
+    field = fields.DateField(input_formats=['%d %b %Y'])
+
+
+class TestDateTimeField(ValidAndInvalidValues):
+    """
+    Valid and invalid values for `DateTimeField`.
+    """
+    valid_mappings = {
+        '2001-01-01 13:00': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        '2001-01-01T13:00': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        '2001-01-01T14:00+0100': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        datetime.datetime(2001, 1, 1, 13, 00): datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+    }
+    invalid_mappings = {
+        'abc': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]'],
+        '2001-99-99T99:00': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]'],
+        datetime.date(2001, 1, 1): ['Expected a datetime but got a date.'],
+    }
+    field = fields.DateTimeField(default_timezone=timezone.UTC())
+
+
+class TestCustomInputFormatDateTimeField(ValidAndInvalidValues):
+    """
+    Valid and invalid values for `DateTimeField` with a cutom input format.
+    """
+    valid_mappings = {
+        '1:35pm, 1 Jan 2001': datetime.datetime(2001, 1, 1, 13, 35, tzinfo=timezone.UTC()),
+    }
+    invalid_mappings = {
+        '2001-01-01T20:50': ['Datetime has wrong format. Use one of these formats instead: hh:mm[AM|PM], DD [Jan-Dec] YYYY']
+    }
+    field = fields.DateTimeField(default_timezone=timezone.UTC(), input_formats=['%I:%M%p, %d %b %Y'])
+
+
+class TestNaiveDateTimeField(ValidAndInvalidValues):
+    """
+    Valid and invalid values for `DateTimeField` with naive datetimes.
+    """
+    valid_mappings = {
+        datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): datetime.datetime(2001, 1, 1, 13, 00),
+        '2001-01-01 13:00': datetime.datetime(2001, 1, 1, 13, 00),
+    }
+    invalid_mappings = {}
+    field = fields.DateTimeField(default_timezone=None)
+
+
+# Choice types...
+
+class TestChoiceField(ValidAndInvalidValues):
+    """
+    Valid and invalid values for `ChoiceField`.
+    """
+    valid_mappings = {
+        'poor': 'poor',
+        'medium': 'medium',
+        'good': 'good',
+    }
+    invalid_mappings = {
+        'awful': ['`awful` is not a valid choice.']
+    }
+    field = fields.ChoiceField(
+        choices=[
+            ('poor', 'Poor quality'),
+            ('medium', 'Medium quality'),
+            ('good', 'Good quality'),
+        ]
+    )
+
+
+class TestChoiceFieldWithType(ValidAndInvalidValues):
+    """
+    Valid and invalid values for a `Choice` field that uses an integer type,
+    instead of a char type.
+    """
+    valid_mappings = {
+        '1': 1,
+        3: 3,
+    }
+    invalid_mappings = {
+        5: ['`5` is not a valid choice.'],
+        'abc': ['`abc` is not a valid choice.']
+    }
+    field = fields.ChoiceField(
+        choices=[
+            (1, 'Poor quality'),
+            (2, 'Medium quality'),
+            (3, 'Good quality'),
+        ]
+    )
+
+
+class TestChoiceFieldWithListChoices(ValidAndInvalidValues):
+    """
+    Valid and invalid values for a `Choice` field that uses a flat list for the
+    choices, rather than a list of pairs of (`value`, `description`).
+    """
+    valid_mappings = {
+        'poor': 'poor',
+        'medium': 'medium',
+        'good': 'good',
+    }
+    invalid_mappings = {
+        'awful': ['`awful` is not a valid choice.']
+    }
+    field = fields.ChoiceField(choices=('poor', 'medium', 'good'))
+
+
+class TestMultipleChoiceField(ValidAndInvalidValues):
+    """
+    Valid and invalid values for `MultipleChoiceField`.
+    """
+    valid_mappings = {
+        (): set(),
+        ('aircon',): set(['aircon']),
+        ('aircon', 'manual'): set(['aircon', 'manual']),
+    }
+    invalid_mappings = {
+        'abc': ['Expected a list of items but got type `str`'],
+        ('aircon', 'incorrect'): ['`incorrect` is not a valid choice.']
+    }
+    field = fields.MultipleChoiceField(
+        choices=[
+            ('aircon', 'AirCon'),
+            ('manual', 'Manual drive'),
+            ('diesel', 'Diesel'),
+        ]
+    )
+
+
 # """
 # General serializer field tests.
 # """
