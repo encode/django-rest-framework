@@ -98,14 +98,15 @@ class Field(object):
     _creation_counter = 0
 
     default_error_messages = {
-        'required': _('This field is required.')
+        'required': _('This field is required.'),
+        'null': _('This field may not be null.')
     }
     default_validators = []
 
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=None, source=None,
                  label=None, help_text=None, style=None,
-                 error_messages=None, validators=[]):
+                 error_messages=None, validators=[], allow_null=False):
         self._creation_counter = Field._creation_counter
         Field._creation_counter += 1
 
@@ -129,6 +130,7 @@ class Field(object):
         self.help_text = help_text
         self.style = {} if style is None else style
         self.validators = validators or self.default_validators[:]
+        self.allow_null = allow_null
 
         # Collect default error message from self and parent classes
         messages = {}
@@ -219,6 +221,11 @@ class Field(object):
             if self.required:
                 self.fail('required')
             return self.get_default()
+
+        if data is None:
+            if not self.allow_null:
+                self.fail('null')
+            return None
 
         value = self.to_internal_value(data)
         self.run_validators(value)
@@ -315,11 +322,14 @@ class CharField(Field):
         self.min_length = kwargs.pop('min_length', None)
         super(CharField, self).__init__(**kwargs)
 
+    def run_validation(self, data=empty):
+        if data == '':
+            if not self.allow_blank:
+                self.fail('blank')
+            return ''
+        return super(CharField, self).run_validation(data)
+
     def to_internal_value(self, data):
-        if data == '' and not self.allow_blank:
-            self.fail('blank')
-        if data is None:
-            return None
         return str(data)
 
     def to_representation(self, value):
@@ -339,10 +349,6 @@ class EmailField(CharField):
         self.validators.append(validator)
 
     def to_internal_value(self, data):
-        if data == '' and not self.allow_blank:
-            self.fail('blank')
-        if data is None:
-            return None
         return str(data).strip()
 
     def to_representation(self, value):
@@ -437,8 +443,6 @@ class FloatField(Field):
             self.validators.append(MinValueValidator(min_value, message=message))
 
     def to_internal_value(self, value):
-        if value is None:
-            return None
         try:
             return float(value)
         except (TypeError, ValueError):
@@ -481,9 +485,6 @@ class DecimalField(Field):
         than max_digits in the number, and no more than decimal_places digits
         after the decimal point.
         """
-        if value in (None, ''):
-            return None
-
         value = smart_text(value).strip()
         try:
             value = decimal.Decimal(value)
@@ -554,9 +555,6 @@ class DateField(Field):
         super(DateField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, value):
-        if value in (None, ''):
-            return None
-
         if isinstance(value, datetime.datetime):
             self.fail('datetime')
 
@@ -622,9 +620,6 @@ class DateTimeField(Field):
         return value
 
     def to_internal_value(self, value):
-        if value in (None, ''):
-            return None
-
         if isinstance(value, datetime.date) and not isinstance(value, datetime.datetime):
             self.fail('date')
 
@@ -676,9 +671,6 @@ class TimeField(Field):
         super(TimeField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, value):
-        if value in (None, ''):
-            return None
-
         if isinstance(value, datetime.time):
             return value
 
