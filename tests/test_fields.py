@@ -26,16 +26,7 @@ class ValidAndInvalidValues:
             assert exc_info.value.messages == expected_failure
 
 
-class TestCharField(ValidAndInvalidValues):
-    valid_mappings = {
-        1: '1',
-        'abc': 'abc'
-    }
-    invalid_mappings = {
-        '': ['This field may not be blank.']
-    }
-    field = fields.CharField()
-
+# Boolean types...
 
 class TestBooleanField(ValidAndInvalidValues):
     valid_mappings = {
@@ -52,6 +43,60 @@ class TestBooleanField(ValidAndInvalidValues):
         'foo': ['`foo` is not a valid boolean.']
     }
     field = fields.BooleanField()
+
+
+# String types...
+
+class TestCharField(ValidAndInvalidValues):
+    valid_mappings = {
+        1: '1',
+        'abc': 'abc'
+    }
+    invalid_mappings = {
+        '': ['This field may not be blank.']
+    }
+    field = fields.CharField()
+
+
+class TestEmailField(ValidAndInvalidValues):
+    valid_mappings = {
+        'example@example.com': 'example@example.com',
+        ' example@example.com ': 'example@example.com',
+    }
+    invalid_mappings = {
+        'example.com': ['Enter a valid email address.']
+    }
+    field = fields.EmailField()
+
+
+class TestRegexField(ValidAndInvalidValues):
+    valid_mappings = {
+        'a9': 'a9',
+    }
+    invalid_mappings = {
+        'A9': ["This value does not match the required pattern."]
+    }
+    field = fields.RegexField(regex='[a-z][0-9]')
+
+
+class TestSlugField(ValidAndInvalidValues):
+    valid_mappings = {
+        'slug-99': 'slug-99',
+    }
+    invalid_mappings = {
+        'slug 99': ["Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."]
+    }
+    field = fields.SlugField()
+
+
+class TestURLField(ValidAndInvalidValues):
+    valid_mappings = {
+        'http://example.com': 'http://example.com',
+    }
+    invalid_mappings = {
+        'example.com': ['Enter a valid URL.']
+    }
+    field = fields.URLField()
 
 
 # Number types...
@@ -247,6 +292,34 @@ class TestNaiveDateTimeField(ValidAndInvalidValues):
     }
     invalid_mappings = {}
     field = fields.DateTimeField(default_timezone=None)
+
+
+class TestTimeField(ValidAndInvalidValues):
+    """
+    Valid and invalid values for `TimeField`.
+    """
+    valid_mappings = {
+        '13:00': datetime.time(13, 00),
+        datetime.time(13, 00): datetime.time(13, 00),
+    }
+    invalid_mappings = {
+        'abc': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss[.uuuuuu]]'],
+        '99:99': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss[.uuuuuu]]'],
+    }
+    field = fields.TimeField()
+
+
+class TestCustomInputFormatTimeField(ValidAndInvalidValues):
+    """
+    Valid and invalid values for `TimeField` with a custom input format.
+    """
+    valid_mappings = {
+        '1:00pm': datetime.time(13, 00),
+    }
+    invalid_mappings = {
+        '13:00': ['Time has wrong format. Use one of these formats instead: hh:mm[AM|PM]'],
+    }
+    field = fields.TimeField(input_formats=['%I:%M%p'])
 
 
 # Choice types...

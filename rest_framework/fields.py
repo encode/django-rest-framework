@@ -12,6 +12,7 @@ from rest_framework.utils import html, representation, humanize_datetime
 import datetime
 import decimal
 import inspect
+import re
 
 
 class empty:
@@ -325,7 +326,11 @@ class EmailField(CharField):
     default_error_messages = {
         'invalid': _('Enter a valid email address.')
     }
-    default_validators = [validators.validate_email]
+
+    def __init__(self, **kwargs):
+        super(EmailField, self).__init__(**kwargs)
+        validator = validators.EmailValidator(message=self.error_messages['invalid'])
+        self.validators = [validator] + self.validators
 
     def to_internal_value(self, data):
         if data == '' and not self.allow_blank:
@@ -341,26 +346,37 @@ class EmailField(CharField):
 
 
 class RegexField(CharField):
+    default_error_messages = {
+        'invalid': _('This value does not match the required pattern.')
+    }
+
     def __init__(self, regex, **kwargs):
-        kwargs['validators'] = (
-            [validators.RegexValidator(regex)] +
-            kwargs.get('validators', [])
-        )
         super(RegexField, self).__init__(**kwargs)
+        validator = validators.RegexValidator(regex, message=self.error_messages['invalid'])
+        self.validators = [validator] + self.validators
 
 
 class SlugField(CharField):
     default_error_messages = {
         'invalid': _("Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens.")
     }
-    default_validators = [validators.validate_slug]
+
+    def __init__(self, **kwargs):
+        super(SlugField, self).__init__(**kwargs)
+        slug_regex = re.compile(r'^[-a-zA-Z0-9_]+$')
+        validator = validators.RegexValidator(slug_regex, message=self.error_messages['invalid'])
+        self.validators = [validator] + self.validators
 
 
 class URLField(CharField):
     default_error_messages = {
         'invalid': _("Enter a valid URL.")
     }
-    default_validators = [validators.URLValidator()]
+
+    def __init__(self, **kwargs):
+        super(URLField, self).__init__(**kwargs)
+        validator = validators.URLValidator(message=self.error_messages['invalid'])
+        self.validators = [validator] + self.validators
 
 
 # Number types...
@@ -642,7 +658,7 @@ class TimeField(Field):
         self.input_formats = input_formats if input_formats is not None else self.input_formats
         super(TimeField, self).__init__(*args, **kwargs)
 
-    def from_native(self, value):
+    def to_internal_value(self, value):
         if value in (None, ''):
             return None
 
