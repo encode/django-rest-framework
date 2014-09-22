@@ -521,20 +521,21 @@ class DecimalField(Field):
         return value
 
     def to_representation(self, value):
-        if isinstance(value, decimal.Decimal):
-            context = decimal.getcontext().copy()
-            context.prec = self.max_digits
-            quantized = value.quantize(
-                decimal.Decimal('.1') ** self.decimal_places,
-                context=context
-            )
-            if not self.coerce_to_string:
-                return quantized
-            return '{0:f}'.format(quantized)
+        if value in (None, ''):
+            return None
 
+        if not isinstance(value, decimal.Decimal):
+            value = decimal.Decimal(value)
+
+        context = decimal.getcontext().copy()
+        context.prec = self.max_digits
+        quantized = value.quantize(
+            decimal.Decimal('.1') ** self.decimal_places,
+            context=context
+        )
         if not self.coerce_to_string:
-            return value
-        return '%.*f' % (self.max_decimal_places, value)
+            return quantized
+        return '{0:f}'.format(quantized)
 
 
 # Date & time fields...
