@@ -411,6 +411,9 @@ class ModelSerializer(Serializer):
                     # `ModelField`, which is used when no other typed field
                     # matched to the model field.
                     kwargs.pop('model_field', None)
+                if not issubclass(field_cls, CharField):
+                    # `allow_blank` is only valid for textual fields.
+                    kwargs.pop('allow_blank', None)
 
             elif field_name in info.relations:
                 # Create forward and reverse relationships.

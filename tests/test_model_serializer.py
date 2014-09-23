@@ -6,6 +6,7 @@ These tests deal with ensuring that we correctly map the model fields onto
 an appropriate set of serializer fields for each case.
 """
 from django.core.exceptions import ImproperlyConfigured
+from django.core.validators import MaxValueValidator, MinValueValidator, MinLengthValidator
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
@@ -15,16 +16,14 @@ def dedent(blocktext):
     return '\n'.join([line[12:] for line in blocktext.splitlines()[1:-1]])
 
 
-# Testing regular field mappings
+# Tests for regular field mappings.
+# ---------------------------------
 
 class CustomField(models.Field):
     """
     A custom model field simply for testing purposes.
     """
     pass
-
-
-COLOR_CHOICES = (('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'))
 
 
 class RegularFieldsModel(models.Model):
@@ -35,7 +34,6 @@ class RegularFieldsModel(models.Model):
     big_integer_field = models.BigIntegerField()
     boolean_field = models.BooleanField(default=False)
     char_field = models.CharField(max_length=100)
-    choices_field = models.CharField(max_length=100, choices=COLOR_CHOICES)
     comma_seperated_integer_field = models.CommaSeparatedIntegerField(max_length=100)
     date_field = models.DateField()
     datetime_field = models.DateTimeField()
@@ -57,6 +55,19 @@ class RegularFieldsModel(models.Model):
         return 'method'
 
 
+COLOR_CHOICES = (('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'))
+
+
+class FieldOptionsModel(models.Model):
+    value_limit_field = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
+    length_limit_field = models.CharField(validators=[MinLengthValidator(3)], max_length=12)
+    blank_field = models.CharField(blank=True, max_length=10)
+    null_field = models.IntegerField(null=True)
+    default_field = models.IntegerField(default=0)
+    descriptive_field = models.IntegerField(help_text='Some help text', verbose_name='A label')
+    choices_field = models.CharField(max_length=100, choices=COLOR_CHOICES)
+
+
 class TestRegularFieldMappings(TestCase):
     def test_regular_fields(self):
         """
@@ -70,9 +81,8 @@ class TestRegularFieldMappings(TestCase):
             TestSerializer():
                 auto_field = IntegerField(read_only=True)
                 big_integer_field = IntegerField()
-                boolean_field = BooleanField(default=False)
+                boolean_field = BooleanField(required=False)
                 char_field = CharField(max_length=100)
-                choices_field = ChoiceField(choices=[('red', 'Red'), ('blue', 'Blue'), ('green', 'Green')])
                 comma_seperated_integer_field = CharField(max_length=100, validators=[<django.core.validators.RegexValidator object>])
                 date_field = DateField()
                 datetime_field = DateTimeField()
@@ -80,7 +90,7 @@ class TestRegularFieldMappings(TestCase):
                 email_field = EmailField(max_length=100)
                 float_field = FloatField()
                 integer_field = IntegerField()
-                null_boolean_field = BooleanField(required=False)
+                null_boolean_field = BooleanField(allow_null=True)
                 positive_integer_field = IntegerField()
                 positive_small_integer_field = IntegerField()
                 slug_field = SlugField(max_length=100)
@@ -89,6 +99,24 @@ class TestRegularFieldMappings(TestCase):
                 time_field = TimeField()
                 url_field = URLField(max_length=100)
                 custom_field = ModelField(model_field=<tests.test_model_serializer.CustomField: custom_field>)
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+    def test_field_options(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = FieldOptionsModel
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                value_limit_field = IntegerField(max_value=10, min_value=1)
+                length_limit_field = CharField(max_length=12, min_length=3)
+                blank_field = CharField(allow_blank=True, max_length=10)
+                null_field = IntegerField(allow_null=True)
+                default_field = IntegerField(required=False)
+                descriptive_field = IntegerField(help_text='Some help text', label='A label')
+                choices_field = ChoiceField(choices=[('red', 'Red'), ('blue', 'Blue'), ('green', 'Green')])
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
@@ -178,7 +206,8 @@ class TestRegularFieldMappings(TestCase):
         assert str(excinfo.exception) == expected
 
 
-# Testing relational field mappings
+# Tests for relational field mappings.
+# ------------------------------------
 
 class ForeignKeyTargetModel(models.Model):
     name = models.CharField(max_length=100)

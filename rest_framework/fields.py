@@ -102,6 +102,7 @@ class Field(object):
         'null': _('This field may not be null.')
     }
     default_validators = []
+    default_empty_html = None
 
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=None, source=None,
@@ -185,6 +186,11 @@ class Field(object):
         Given the *incoming* primative data, return the value for this field
         that should be validated and transformed to a native value.
         """
+        if html.is_html_input(dictionary):
+            # HTML forms will represent empty fields as '', and cannot
+            # represent None or False values directly.
+            ret = dictionary.get(self.field_name, '')
+            return self.default_empty_html if (ret == '') else ret
         return dictionary.get(self.field_name, empty)
 
     def get_attribute(self, instance):
@@ -236,9 +242,6 @@ class Field(object):
         Test the given value against all the validators on the field,
         and either raise a `ValidationError` or simply return.
         """
-        if value in (None, '', [], (), {}):
-            return
-
         errors = []
         for validator in self.validators:
             try:
@@ -282,15 +285,9 @@ class BooleanField(Field):
     default_error_messages = {
         'invalid': _('`{input}` is not a valid boolean.')
     }
+    default_empty_html = False
     TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
     FALSE_VALUES = set(('f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False))
-
-    def get_value(self, dictionary):
-        if html.is_html_input(dictionary):
-            # HTML forms do not send a `False` value on an empty checkbox,
-            # so we override the default empty value to be False.
-            return dictionary.get(self.field_name, False)
-        return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
         if data in self.TRUE_VALUES:
@@ -315,6 +312,7 @@ class CharField(Field):
     default_error_messages = {
         'blank': _('This field may not be blank.')
     }
+    default_empty_html = ''
 
     def __init__(self, **kwargs):
         self.allow_blank = kwargs.pop('allow_blank', False)
@@ -323,6 +321,9 @@ class CharField(Field):
         super(CharField, self).__init__(**kwargs)
 
     def run_validation(self, data=empty):
+        # Test for the empty string here so that it does not get validated,
+        # and so that subclasses do not need to handle it explicitly
+        # inside the `to_internal_value()` method.
         if data == '':
             if not self.allow_blank:
                 self.fail('blank')
