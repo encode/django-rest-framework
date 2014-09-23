@@ -190,9 +190,10 @@ If you've already created some users, you can generate tokens for all existing u
 
 When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behavior.  To use it, add the `obtain_auth_token` view to your URLconf:
 
-    urlpatterns += patterns('',
-        url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token')
-    )
+    from rest_framework.authtoken import views
+    urlpatterns += [
+        url(r'^api-token-auth/', views.obtain_auth_token)
+    ]
 
 Note that the URL part of the pattern can be whatever you want to use.
 
