@@ -289,6 +289,10 @@ class BooleanField(Field):
     TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
     FALSE_VALUES = set(('f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False))
 
+    def __init__(self, **kwargs):
+        assert 'allow_null' not in kwargs, '`allow_null` is not a valid option. Use `NullBooleanField` instead.'
+        super(BooleanField, self).__init__(**kwargs)
+
     def to_internal_value(self, data):
         if data in self.TRUE_VALUES:
             return True
@@ -297,7 +301,38 @@ class BooleanField(Field):
         self.fail('invalid', input=data)
 
     def to_representation(self, value):
-        if value is None:
+        if value in self.TRUE_VALUES:
+            return True
+        elif value in self.FALSE_VALUES:
+            return False
+        return bool(value)
+
+
+class NullBooleanField(Field):
+    default_error_messages = {
+        'invalid': _('`{input}` is not a valid boolean.')
+    }
+    default_empty_html = None
+    TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
+    FALSE_VALUES = set(('f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False))
+    NULL_VALUES = set(('n', 'N', 'null', 'Null', 'NULL', '', None))
+
+    def __init__(self, **kwargs):
+        assert 'allow_null' not in kwargs, '`allow_null` is not a valid option.'
+        kwargs['allow_null'] = True
+        super(NullBooleanField, self).__init__(**kwargs)
+
+    def to_internal_value(self, data):
+        if data in self.TRUE_VALUES:
+            return True
+        elif data in self.FALSE_VALUES:
+            return False
+        elif data in self.NULL_VALUES:
+            return None
+        self.fail('invalid', input=data)
+
+    def to_representation(self, value):
+        if value in self.NULL_VALUES:
             return None
         if value in self.TRUE_VALUES:
             return True

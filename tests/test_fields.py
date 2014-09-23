@@ -124,7 +124,8 @@ class TestBooleanField(FieldValues):
         False: False,
     }
     invalid_inputs = {
-        'foo': ['`foo` is not a valid boolean.']
+        'foo': ['`foo` is not a valid boolean.'],
+        None: ['This field may not be null.']
     }
     outputs = {
         'true': True,
@@ -138,6 +139,32 @@ class TestBooleanField(FieldValues):
         'other': True
     }
     field = fields.BooleanField()
+
+
+class TestNullBooleanField(FieldValues):
+    """
+    Valid and invalid values for `BooleanField`.
+    """
+    valid_inputs = {
+        'true': True,
+        'false': False,
+        'null': None,
+        True: True,
+        False: False,
+        None: None
+    }
+    invalid_inputs = {
+        'foo': ['`foo` is not a valid boolean.'],
+    }
+    outputs = {
+        'true': True,
+        'false': False,
+        'null': None,
+        True: True,
+        False: False,
+        None: None
+    }
+    field = fields.NullBooleanField()
 
 
 # String types...
