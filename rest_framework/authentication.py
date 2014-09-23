@@ -129,7 +129,7 @@ class SessionAuthentication(BaseAuthentication):
         reason = CSRFCheck().process_view(request, None, (), {})
         if reason:
             # CSRF failed, bail with explicit error message
-            raise exceptions.AuthenticationFailed('CSRF Failed: %s' % reason)
+            raise exceptions.PermissionDenied('CSRF Failed: %s' % reason)
 
 
 class TokenAuthentication(BaseAuthentication):
