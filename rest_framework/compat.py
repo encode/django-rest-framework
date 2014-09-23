@@ -39,6 +39,17 @@ except ImportError:
     django_filters = None
 
 
+if django.VERSION >= (1, 6):
+    def clean_manytomany_helptext(text):
+        return text
+else:
+    # Up to version 1.5 many to many fields automatically suffix
+    # the `help_text` attribute with hardcoded text.
+    def clean_manytomany_helptext(text):
+        if text.endswith(' Hold down "Control", or "Command" on a Mac, to select more than one.'):
+            text = text[:-69]
+        return text
+
 # Django-guardian is optional. Import only if guardian is in INSTALLED_APPS
 # Fixes (#1712). We keep the try/except for the test suite.
 guardian = None
@@ -108,6 +119,48 @@ else:
     class View(DjangoView):
         def _allowed_methods(self):
             return [m.upper() for m in self.http_method_names if hasattr(self, m)]
+
+
+
+# MinValueValidator and MaxValueValidator only accept `message` in 1.8+
+if django.VERSION >= (1, 8):
+    from django.core.validators import MinValueValidator, MaxValueValidator
+else:
+    from django.core.validators import MinValueValidator as DjangoMinValueValidator
+    from django.core.validators import MaxValueValidator as DjangoMaxValueValidator
+
+    class MinValueValidator(DjangoMinValueValidator):
+        def __init__(self, *args, **kwargs):
+            self.message = kwargs.pop('message', self.message)
+            super(MinValueValidator, self).__init__(*args, **kwargs)
+
+    class MaxValueValidator(DjangoMaxValueValidator):
+        def __init__(self, *args, **kwargs):
+            self.message = kwargs.pop('message', self.message)
+            super(MaxValueValidator, self).__init__(*args, **kwargs)
+
+# URLValidator only accept `message` in 1.6+
+if django.VERSION >= (1, 6):
+    from django.core.validators import URLValidator
+else:
+    from django.core.validators import URLValidator as DjangoURLValidator
+
+    class URLValidator(DjangoURLValidator):
+        def __init__(self, *args, **kwargs):
+            self.message = kwargs.pop('message', self.message)
+            super(URLValidator, self).__init__(*args, **kwargs)
+
+
+# EmailValidator requires explicit regex prior to 1.6+
+if django.VERSION >= (1, 6):
+    from django.core.validators import EmailValidator
+else:
+    from django.core.validators import EmailValidator as DjangoEmailValidator
+    from django.core.validators import email_re
+
+    class EmailValidator(DjangoEmailValidator):
+        def __init__(self, *args, **kwargs):
+            super(EmailValidator, self).__init__(email_re, *args, **kwargs)
 
 
 # PATCH method is not implemented by Django

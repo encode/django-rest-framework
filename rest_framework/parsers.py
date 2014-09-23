@@ -48,7 +48,7 @@ class JSONParser(BaseParser):
     """
 
     media_type = 'application/json'
-    renderer_class = renderers.UnicodeJSONRenderer
+    renderer_class = renderers.JSONRenderer
 
     def parse(self, stream, media_type=None, parser_context=None):
         """

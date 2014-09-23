@@ -1,8 +1,11 @@
 from __future__ import unicode_literals
 from django.conf.urls import patterns, url
 from django.test import TestCase
+from django.utils import six
+from rest_framework.utils.model_meta import _resolve_model
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework.views import APIView
+from tests.models import BasicModel
 
 
 class Root(APIView):
@@ -24,6 +27,7 @@ class NestedResourceRoot(APIView):
 class NestedResourceInstance(APIView):
     pass
 
+
 urlpatterns = patterns(
     '',
     url(r'^$', Root.as_view()),
@@ -35,9 +39,10 @@ urlpatterns = patterns(
 
 
 class BreadcrumbTests(TestCase):
-    """Tests the breadcrumb functionality used by the HTML renderer."""
-
-    urls = 'tests.test_breadcrumbs'
+    """
+    Tests the breadcrumb functionality used by the HTML renderer.
+    """
+    urls = 'tests.test_utils'
 
     def test_root_breadcrumbs(self):
         url = '/'
@@ -98,3 +103,30 @@ class BreadcrumbTests(TestCase):
             get_breadcrumbs(url),
             [('Root', '/')]
         )
+
+
+class ResolveModelTests(TestCase):
+    """
+    `_resolve_model` should return a Django model class given the
+    provided argument is a Django model class itself, or a properly
+    formatted string representation of one.
+    """
+    def test_resolve_django_model(self):
+        resolved_model = _resolve_model(BasicModel)
+        self.assertEqual(resolved_model, BasicModel)
+
+    def test_resolve_string_representation(self):
+        resolved_model = _resolve_model('tests.BasicModel')
+        self.assertEqual(resolved_model, BasicModel)
+
+    def test_resolve_unicode_representation(self):
+        resolved_model = _resolve_model(six.text_type('tests.BasicModel'))
+        self.assertEqual(resolved_model, BasicModel)
+
+    def test_resolve_non_django_model(self):
+        with self.assertRaises(ValueError):
+            _resolve_model(TestCase)
+
+    def test_resolve_improper_string_representation(self):
+        with self.assertRaises(ValueError):
+            _resolve_model('BasicModel')
