@@ -708,10 +708,10 @@ class TestFilterBackendAppliedToViews(TestCase):
             'actions': {
                 'POST': {
                     'field_b': {
-                        'type': u'string',
+                        'type': 'string',
                         'required': True,
                         'read_only': False,
-                        'label': u'field b',
+                        'label': 'field b',
                         'max_length': 100
                     }
                 }
