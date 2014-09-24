@@ -1448,7 +1448,7 @@ class DepthTest(TestCase):
     def test_implicit_nesting(self):
 
         writer = Person.objects.create(name="django", age=1)
-        post = BlogPost.objects.create(title="Test blog post", writer=writer)
+        post = BlogPost.objects.create(title="Test blog post", writer=writer, created=datetime.datetime(1970, 1, 1))
         comment = BlogPostComment.objects.create(text="Test blog post comment", blog_post=post)
 
         class BlogPostCommentSerializer(serializers.ModelSerializer):
@@ -1458,7 +1458,7 @@ class DepthTest(TestCase):
 
         serializer = BlogPostCommentSerializer(instance=comment)
         expected = {'id': 1, 'text': 'Test blog post comment', 'blog_post': {'id': 1, 'title': 'Test blog post',
-                    'writer': {'id': 1, 'name': 'django', 'age': 1}}}
+                    'created': datetime.datetime(1970, 1, 1), 'writer': {'id': 1, 'name': 'django', 'age': 1}}}
 
         self.assertEqual(serializer.data, expected)
 
@@ -1476,6 +1476,7 @@ class DepthTest(TestCase):
 
             class Meta:
                 model = BlogPost
+                exclude = ('created',)
 
         class BlogPostCommentSerializer(serializers.ModelSerializer):
             blog_post = BlogPostSerializer()

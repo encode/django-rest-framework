@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 
@@ -103,6 +104,10 @@ class Person(RESTFrameworkModel):
 class BlogPost(RESTFrameworkModel):
     title = models.CharField(max_length=100)
     writer = models.ForeignKey(Person, null=True, blank=True)
+    created = models.DateTimeField(default=now)
+
+    class Meta:
+        unique_together = [('writer', 'title')]
 
     def get_first_comment(self):
         return self.blogpostcomment_set.all()[0]

@@ -347,3 +347,45 @@ class NestedModelSerializerUpdateTests(TestCase):
         result = deserialize.object
         result.save()
         self.assertEqual(result.id, john.id)
+
+    def test_remove_nested_before_adding(self):
+        john = models.Person.objects.create(name="john")
+
+        post = john.blogpost_set.create(title="Test blog post")
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+
+        class BlogPostCommentSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = models.BlogPostComment
+                exclude = ('blog_post',)
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            comments = BlogPostCommentSerializer(many=True, source='blogpostcomment_set')
+
+            class Meta:
+                model = models.BlogPost
+                fields = ('id', 'title', 'comments')
+
+        class PersonSerializer(serializers.ModelSerializer):
+            posts = BlogPostSerializer(many=True, source='blogpost_set', allow_add_remove=True)
+
+            class Meta:
+                model = models.Person
+                fields = ('id', 'name', 'age', 'posts')
+
+        serialize = PersonSerializer(instance=john)
+
+        # Remove the ID from John's post so that it is no longer the same post.
+        john_data = serialize.data
+        self.assertEqual(len(john_data['posts']), 1)
+        del john_data['posts'][0]['id']
+
+        deserialize = PersonSerializer(data=john_data, instance=john)
+        self.assertTrue(deserialize.is_valid(), deserialize.errors)
+
+        deserialize.save()
+        result = deserialize.object
+        self.assertEqual(result.id, john.id)
+        self.assertEqual(result.blogpost_set.count(), 1)
+        self.assertNotEqual(result.blogpost_set.all()[0].created, post.created)
