@@ -26,12 +26,13 @@ Arguments:
 Example:
 
     from rest_framework.urlpatterns import format_suffix_patterns
-    
-    urlpatterns = patterns('blog.views',
-        url(r'^/$', 'api_root'),
-        url(r'^comments/$', 'comment_list'),
-        url(r'^comments/(?P<pk>[0-9]+)/$', 'comment_detail')
-    )
+    from blog import views
+
+    urlpatterns = [
+        url(r'^/$', views.apt_root),
+        url(r'^comments/$', views.comment_list),
+        url(r'^comments/(?P<pk>[0-9]+)/$', views.comment_detail)
+    ]
     
     urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])
 

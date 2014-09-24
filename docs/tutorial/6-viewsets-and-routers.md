@@ -87,14 +87,14 @@ Notice how we're creating multiple views from each `ViewSet` class, by binding t
 
 Now that we've bound our resources into concrete views, we can register the views with the URL conf as usual.
 
-    urlpatterns = format_suffix_patterns(patterns('snippets.views',
-        url(r'^$', 'api_root'),
+    urlpatterns = format_suffix_patterns([
+        url(r'^$', api_root),
         url(r'^snippets/$', snippet_list, name='snippet-list'),
         url(r'^snippets/(?P<pk>[0-9]+)/$', snippet_detail, name='snippet-detail'),
         url(r'^snippets/(?P<pk>[0-9]+)/highlight/$', snippet_highlight, name='snippet-highlight'),
         url(r'^users/$', user_list, name='user-list'),
         url(r'^users/(?P<pk>[0-9]+)/$', user_detail, name='user-detail')
-    ))
+    ])
 
 ## Using Routers
 
@@ -102,7 +102,7 @@ Because we're using `ViewSet` classes rather than `View` classes, we actually do
 
 Here's our re-wired `urls.py` file.
 
-    from django.conf.urls import patterns, url, include
+    from django.conf.urls import url, include
     from snippets import views
     from rest_framework.routers import DefaultRouter
 
@@ -113,10 +113,10 @@ Here's our re-wired `urls.py` file.
 
     # The API URLs are now determined automatically by the router.
     # Additionally, we include the login URLs for the browseable API.
-    urlpatterns = patterns('',
+    urlpatterns = [
         url(r'^', include(router.urls)),
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-    )
+    ]
 
 Registering the viewsets with the router is similar to providing a urlpattern.  We include two arguments - the URL prefix for the views, and the viewset itself.
 
