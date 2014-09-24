@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 
 from django.core.exceptions import PermissionDenied, ValidationError, NON_FIELD_ERRORS
 from django.http import Http404
-from django.utils.datastructures import SortedDict
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, exceptions
 from rest_framework.compat import smart_text, HttpResponseBase, View
@@ -99,6 +98,7 @@ class APIView(View):
     throttle_classes = api_settings.DEFAULT_THROTTLE_CLASSES
     permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
     content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS
+    metadata_class = api_settings.DEFAULT_METADATA_CLASS
 
     # Allow dependancy injection of other settings to make testing easier.
     settings = api_settings
@@ -418,22 +418,8 @@ class APIView(View):
     def options(self, request, *args, **kwargs):
         """
         Handler method for HTTP 'OPTIONS' request.
-        We may as well implement this as Django will otherwise provide
-        a less useful default implementation.
         """
-        return Response(self.metadata(request), status=status.HTTP_200_OK)
-
-    def metadata(self, request):
-        """
-        Return a dictionary of metadata about the view.
-        Used to return responses for OPTIONS requests.
-        """
-        # By default we can't provide any form-like information, however the
-        # generic views override this implementation and add additional
-        # information for POST and PUT methods, based on the serializer.
-        ret = SortedDict()
-        ret['name'] = self.get_view_name()
-        ret['description'] = self.get_view_description()
-        ret['renders'] = [renderer.media_type for renderer in self.renderer_classes]
-        ret['parses'] = [parser.media_type for parser in self.parser_classes]
-        return ret
+        if self.metadata_class is None:
+            return self.http_method_not_allowed(request, *args, **kwargs)
+        data = self.metadata_class().determine_metadata(request, self)
+        return Response(data, status=status.HTTP_200_OK)

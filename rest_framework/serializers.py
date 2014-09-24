@@ -21,7 +21,7 @@ from rest_framework.utils import html, model_meta, representation
 from rest_framework.utils.field_mapping import (
     get_url_kwargs, get_field_kwargs,
     get_relation_kwargs, get_nested_relation_kwargs,
-    lookup_class
+    ClassLookupDict
 )
 import copy
 import inspect
@@ -318,7 +318,7 @@ class ListSerializer(BaseSerializer):
 
 
 class ModelSerializer(Serializer):
-    _field_mapping = {
+    _field_mapping = ClassLookupDict({
         models.AutoField: IntegerField,
         models.BigIntegerField: IntegerField,
         models.BooleanField: BooleanField,
@@ -341,7 +341,7 @@ class ModelSerializer(Serializer):
         models.TextField: CharField,
         models.TimeField: TimeField,
         models.URLField: URLField,
-    }
+    })
     _related_class = PrimaryKeyRelatedField
 
     def create(self, attrs):
@@ -400,7 +400,7 @@ class ModelSerializer(Serializer):
             elif field_name in info.fields_and_pk:
                 # Create regular model fields.
                 model_field = info.fields_and_pk[field_name]
-                field_cls = lookup_class(self._field_mapping, model_field)
+                field_cls = self._field_mapping[model_field]
                 kwargs = get_field_kwargs(field_name, model_field)
                 if 'choices' in kwargs:
                     # Fields with choices get coerced into `ChoiceField`

@@ -9,17 +9,21 @@ from rest_framework.compat import clean_manytomany_helptext
 import inspect
 
 
-def lookup_class(mapping, instance):
+class ClassLookupDict(object):
     """
-    Takes a dictionary with classes as keys, and an object.
-    Traverses the object's inheritance hierarchy in method
-    resolution order, and returns the first matching value
+    Takes a dictionary with classes as keys.
+    Lookups against this object will traverses the object's inheritance
+    hierarchy in method resolution order, and returns the first matching value
     from the dictionary or raises a KeyError if nothing matches.
     """
-    for cls in inspect.getmro(instance.__class__):
-        if cls in mapping:
-            return mapping[cls]
-    raise KeyError('Class %s not found in lookup.', cls.__name__)
+    def __init__(self, mapping):
+        self.mapping = mapping
+
+    def __getitem__(self, key):
+        for cls in inspect.getmro(key.__class__):
+            if cls in self.mapping:
+                return self.mapping[cls]
+        raise KeyError('Class %s not found in lookup.', cls.__name__)
 
 
 def needs_label(model_field, field_name):
