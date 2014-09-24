@@ -9,6 +9,7 @@ from rest_framework import ISO_8601
 from rest_framework.compat import smart_text, EmailValidator, MinValueValidator, MaxValueValidator, URLValidator
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, representation, humanize_datetime
+import copy
 import datetime
 import decimal
 import inspect
@@ -149,6 +150,11 @@ class Field(object):
         instance._args = args
         instance._kwargs = kwargs
         return instance
+
+    def __deepcopy__(self, memo):
+        args = copy.deepcopy(self._args)
+        kwargs = copy.deepcopy(self._kwargs)
+        return self.__class__(*args, **kwargs)
 
     def bind(self, field_name, parent, root):
         """
