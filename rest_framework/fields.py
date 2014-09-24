@@ -160,6 +160,17 @@ class Field(object):
         """
         Setup the context for the field instance.
         """
+
+        # In order to enforce a consistent style, we error if a redundant
+        # 'source' argument has been used. For example:
+        # my_field = serializer.CharField(source='my_field')
+        assert self._kwargs.get('source') != field_name, (
+            "It is redundant to specify `source='%s'` on field '%s' in "
+            "serializer '%s', as it is the same the field name. "
+            "Remove the `source` keyword argument." %
+            (field_name, self.__class__.__name__, parent.__class__.__name__)
+        )
+
         self.field_name = field_name
         self.parent = parent
         self.root = root

@@ -1,6 +1,6 @@
 from decimal import Decimal
 from django.utils import timezone
-from rest_framework import fields
+from rest_framework import fields, serializers
 import datetime
 import django
 import pytest
@@ -68,6 +68,17 @@ class TestFieldOptions:
         field = fields.IntegerField(default=123)
         output = field.run_validation()
         assert output is 123
+
+    def test_redundant_source(self):
+        class ExampleSerializer(serializers.Serializer):
+            example_field = serializers.CharField(source='example_field')
+        with pytest.raises(AssertionError) as exc_info:
+            ExampleSerializer()
+        assert str(exc_info.value) == (
+            "It is redundant to specify `source='example_field'` on field "
+            "'CharField' in serializer 'ExampleSerializer', as it is the "
+            "same the field name. Remove the `source` keyword argument."
+        )
 
 
 # Tests for field input and output values.
