@@ -84,9 +84,9 @@ class TestMetadata:
                         'read_only': False,
                         'label': 'Choice field',
                         'choices': [
-                            {'display_name': 'blue', 'value': 'blue'},
+                            {'display_name': 'red', 'value': 'red'},
                             {'display_name': 'green', 'value': 'green'},
-                            {'display_name': 'red', 'value': 'red'}
+                            {'display_name': 'blue', 'value': 'blue'}
                         ]
                     },
                     'integer_field': {

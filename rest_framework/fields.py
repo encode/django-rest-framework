@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.utils.datastructures import SortedDict
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
@@ -166,7 +167,7 @@ class Field(object):
         # my_field = serializer.CharField(source='my_field')
         assert self._kwargs.get('source') != field_name, (
             "It is redundant to specify `source='%s'` on field '%s' in "
-            "serializer '%s', as it is the same the field name. "
+            "serializer '%s', because it is the same as the field name. "
             "Remove the `source` keyword argument." %
             (field_name, self.__class__.__name__, parent.__class__.__name__)
         )
@@ -303,6 +304,7 @@ class BooleanField(Field):
         'invalid': _('`{input}` is not a valid boolean.')
     }
     default_empty_html = False
+    initial = False
     TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
     FALSE_VALUES = set(('f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False))
 
@@ -365,6 +367,7 @@ class CharField(Field):
         'blank': _('This field may not be blank.')
     }
     default_empty_html = ''
+    initial = ''
 
     def __init__(self, **kwargs):
         self.allow_blank = kwargs.pop('allow_blank', False)
@@ -775,9 +778,9 @@ class ChoiceField(Field):
             for item in choices
         ]
         if all(pairs):
-            self.choices = dict([(key, display_value) for key, display_value in choices])
+            self.choices = SortedDict([(key, display_value) for key, display_value in choices])
         else:
-            self.choices = dict([(item, item) for item in choices])
+            self.choices = SortedDict([(item, item) for item in choices])
 
         # Map the string representation of choices to the underlying value.
         # Allows us to deal with eg. integer choices while supporting either

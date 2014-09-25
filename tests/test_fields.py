@@ -76,8 +76,8 @@ class TestFieldOptions:
             ExampleSerializer()
         assert str(exc_info.value) == (
             "It is redundant to specify `source='example_field'` on field "
-            "'CharField' in serializer 'ExampleSerializer', as it is the "
-            "same the field name. Remove the `source` keyword argument."
+            "'CharField' in serializer 'ExampleSerializer', because it is the "
+            "same as the field name. Remove the `source` keyword argument."
         )
 
 
