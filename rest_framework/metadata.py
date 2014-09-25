@@ -10,7 +10,6 @@ from __future__ import unicode_literals
 
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from django.utils import six
 from django.utils.datastructures import SortedDict
 from rest_framework import exceptions, serializers
 from rest_framework.compat import force_text
@@ -100,7 +99,7 @@ class SimpleMetadata(BaseMetadata):
         """
         return SortedDict([
             (field_name, self.get_field_info(field))
-            for field_name, field in six.iteritems(serializer.fields)
+            for field_name, field in serializer.fields.items()
         ])
 
     def get_field_info(self, field):

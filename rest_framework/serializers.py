@@ -149,6 +149,28 @@ class SerializerMetaclass(type):
         return super(SerializerMetaclass, cls).__new__(cls, name, bases, attrs)
 
 
+class BindingDict(object):
+    def __init__(self, serializer):
+        self.serializer = serializer
+        self.fields = SortedDict()
+
+    def __setitem__(self, key, field):
+        self.fields[key] = field
+        field.bind(field_name=key, parent=self.serializer, root=self.serializer)
+
+    def __getitem__(self, key):
+        return self.fields[key]
+
+    def __delitem__(self, key):
+        del self.fields[key]
+
+    def items(self):
+        return self.fields.items()
+
+    def values(self):
+        return self.fields.values()
+
+
 @six.add_metaclass(SerializerMetaclass)
 class Serializer(BaseSerializer):
     def __init__(self, *args, **kwargs):
@@ -161,11 +183,9 @@ class Serializer(BaseSerializer):
         # Every new serializer is created with a clone of the field instances.
         # This allows users to dynamically modify the fields on a serializer
         # instance without affecting every other serializer class.
-        self.fields = self._get_base_fields()
-
-        # Setup all the child fields, to provide them with the current context.
-        for field_name, field in self.fields.items():
-            field.bind(field_name, self, self)
+        self.fields = BindingDict(self)
+        for key, value in self._get_base_fields().items():
+            self.fields[key] = value
 
     def __new__(cls, *args, **kwargs):
         # We override this method in order to automagically create
