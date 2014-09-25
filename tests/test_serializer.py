@@ -1,3 +1,35 @@
+from rest_framework import serializers
+
+
+# Tests for core functionality.
+# -----------------------------
+
+class TestSerializer:
+    def setup(self):
+        class ExampleSerializer(serializers.Serializer):
+            char = serializers.CharField()
+            integer = serializers.IntegerField()
+        self.Serializer = ExampleSerializer
+
+    def test_valid_serializer(self):
+        serializer = self.Serializer(data={'char': 'abc', 'integer': 123})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'char': 'abc', 'integer': 123}
+        assert serializer.errors == {}
+
+    def test_invalid_serializer(self):
+        serializer = self.Serializer(data={'char': 'abc'})
+        assert not serializer.is_valid()
+        assert serializer.validated_data == {}
+        assert serializer.errors == {'integer': ['This field is required.']}
+
+    def test_partial_validation(self):
+        serializer = self.Serializer(data={'char': 'abc'}, partial=True)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'char': 'abc'}
+        assert serializer.errors == {}
+
+
 # # -*- coding: utf-8 -*-
 # from __future__ import unicode_literals
 # from django.db import models
@@ -334,7 +366,6 @@
 #         Check _data attribute is cleared on `save()`
 
 #         Regression test for #1116
-#             — id field is not populated if `data` is accessed prior to `save()`
 #         """
 #         serializer = ActionItemSerializer(self.actionitem)
 #         self.assertIsNone(serializer.data.get('id', None), 'New instance. `id` should not be set.')

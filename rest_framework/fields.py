@@ -109,8 +109,7 @@ class Field(object):
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=None, source=None,
                  label=None, help_text=None, style=None,
-                 error_messages=None, validators=[], allow_null=False,
-                 context=None):
+                 error_messages=None, validators=[], allow_null=False):
         self._creation_counter = Field._creation_counter
         Field._creation_counter += 1
 
@@ -139,7 +138,6 @@ class Field(object):
         # These are set up by `.bind()` when the field is added to a serializer.
         self.field_name = None
         self.parent = None
-        self._context = {} if (context is None) else context
 
         # Collect default error message from self and parent classes
         messages = {}
@@ -162,13 +160,6 @@ class Field(object):
         args = copy.deepcopy(self._args)
         kwargs = copy.deepcopy(self._kwargs)
         return self.__class__(*args, **kwargs)
-
-    @property
-    def context(self):
-        root = self
-        while root.parent is not None:
-            root = root.parent
-        return root._context
 
     def bind(self, field_name, parent):
         """
@@ -254,6 +245,8 @@ class Field(object):
         """
         if data is empty:
             if self.required:
+                if getattr(self.root, 'partial', False):
+                    raise SkipField()
                 self.fail('required')
             return self.get_default()
 
@@ -304,7 +297,29 @@ class Field(object):
             raise AssertionError(msg)
         raise ValidationError(msg.format(**kwargs))
 
+    @property
+    def root(self):
+        """
+        Returns the top-level serializer for this field.
+        """
+        root = self
+        while root.parent is not None:
+            root = root.parent
+        return root
+
+    @property
+    def context(self):
+        """
+        Returns the context as passed to the root serializer on initialization.
+        """
+        return getattr(self.root, '_context', {})
+
     def __repr__(self):
+        """
+        Fields are represented using their initial calling arguments.
+        This allows us to create descriptive representations for serializer
+        instances that show all the declared fields on the serializer.
+        """
         return representation.field_repr(self)
 
 

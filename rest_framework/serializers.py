@@ -181,8 +181,9 @@ class BindingDict(object):
 @six.add_metaclass(SerializerMetaclass)
 class Serializer(BaseSerializer):
     def __init__(self, *args, **kwargs):
-        kwargs.pop('partial', None)
         kwargs.pop('many', None)
+        self.partial = kwargs.pop('partial', False)
+        self._context = kwargs.pop('context', {})
 
         super(Serializer, self).__init__(*args, **kwargs)
 
@@ -289,7 +290,8 @@ class ListSerializer(BaseSerializer):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
-        kwargs.pop('partial', None)
+        self.partial = kwargs.pop('partial', False)
+        self._context = kwargs.pop('context', {})
 
         super(ListSerializer, self).__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
