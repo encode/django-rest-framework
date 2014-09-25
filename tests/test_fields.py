@@ -173,7 +173,8 @@ class TestNullBooleanField(FieldValues):
         'null': None,
         True: True,
         False: False,
-        None: None
+        None: None,
+        'other': True
     }
     field = fields.NullBooleanField()
 
