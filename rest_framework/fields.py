@@ -635,7 +635,7 @@ class DateTimeField(Field):
         return value
 
     def to_internal_value(self, value):
-        if (isinstance(value, datetime.date) and not isinstance(value, datetime.datetime):
+        if isinstance(value, datetime.date) and not isinstance(value, datetime.datetime):
             self.fail('date')
 
         if isinstance(value, datetime.datetime):
