@@ -51,7 +51,7 @@ class TestHyperlinkedIdentityField(APISimpleTestCase):
         self.instance = MockObject(pk=1, name='foo')
         self.field = serializers.HyperlinkedIdentityField(view_name='example')
         self.field.reverse = mock_reverse
-        self.field.context = {'request': True}
+        self.field._context = {'request': True}
 
     def test_representation(self):
         representation = self.field.to_representation(self.instance)
@@ -62,7 +62,7 @@ class TestHyperlinkedIdentityField(APISimpleTestCase):
         assert representation is None
 
     def test_representation_with_format(self):
-        self.field.context['format'] = 'xml'
+        self.field._context['format'] = 'xml'
         representation = self.field.to_representation(self.instance)
         assert representation == 'http://example.org/example/1.xml/'
 
@@ -91,14 +91,14 @@ class TestHyperlinkedIdentityFieldWithFormat(APISimpleTestCase):
         self.instance = MockObject(pk=1, name='foo')
         self.field = serializers.HyperlinkedIdentityField(view_name='example', format='json')
         self.field.reverse = mock_reverse
-        self.field.context = {'request': True}
+        self.field._context = {'request': True}
 
     def test_representation(self):
         representation = self.field.to_representation(self.instance)
         assert representation == 'http://example.org/example/1/'
 
     def test_representation_with_format(self):
-        self.field.context['format'] = 'xml'
+        self.field._context['format'] = 'xml'
         representation = self.field.to_representation(self.instance)
         assert representation == 'http://example.org/example/1.json/'
 

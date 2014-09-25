@@ -109,7 +109,8 @@ class Field(object):
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=None, source=None,
                  label=None, help_text=None, style=None,
-                 error_messages=None, validators=[], allow_null=False):
+                 error_messages=None, validators=[], allow_null=False,
+                 context=None):
         self._creation_counter = Field._creation_counter
         Field._creation_counter += 1
 
@@ -135,6 +136,11 @@ class Field(object):
         self.validators = validators or self.default_validators[:]
         self.allow_null = allow_null
 
+        # These are set up by `.bind()` when the field is added to a serializer.
+        self.field_name = None
+        self.parent = None
+        self._context = {} if (context is None) else context
+
         # Collect default error message from self and parent classes
         messages = {}
         for cls in reversed(self.__class__.__mro__):
@@ -157,7 +163,14 @@ class Field(object):
         kwargs = copy.deepcopy(self._kwargs)
         return self.__class__(*args, **kwargs)
 
-    def bind(self, field_name, parent, root):
+    @property
+    def context(self):
+        root = self
+        while root.parent is not None:
+            root = root.parent
+        return root._context
+
+    def bind(self, field_name, parent):
         """
         Setup the context for the field instance.
         """
@@ -174,10 +187,8 @@ class Field(object):
 
         self.field_name = field_name
         self.parent = parent
-        self.root = root
-        self.context = parent.context
 
-        # `self.label` should deafult to being based on the field name.
+        # `self.label` should default to being based on the field name.
         if self.label is None:
             self.label = field_name.replace('_', ' ').capitalize()
 

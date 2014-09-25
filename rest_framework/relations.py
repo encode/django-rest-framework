@@ -243,11 +243,6 @@ class ManyRelation(Field):
         assert child_relation is not None, '`child_relation` is a required argument.'
         super(ManyRelation, self).__init__(*args, **kwargs)
 
-    def bind(self, field_name, parent, root):
-        # ManyRelation needs to provide the current context to the child relation.
-        super(ManyRelation, self).bind(field_name, parent, root)
-        self.child_relation.bind(field_name, parent, root)
-
     def to_internal_value(self, data):
         return [
             self.child_relation.to_internal_value(item)

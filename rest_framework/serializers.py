@@ -150,13 +150,20 @@ class SerializerMetaclass(type):
 
 
 class BindingDict(object):
+    """
+    This dict-like object is used to store fields on a serializer.
+
+    This ensures that whenever fields are added to the serializer we call
+    `field.bind()` so that the `field_name` and `parent` attributes
+    can be set correctly.
+    """
     def __init__(self, serializer):
         self.serializer = serializer
         self.fields = SortedDict()
 
     def __setitem__(self, key, field):
         self.fields[key] = field
-        field.bind(field_name=key, parent=self.serializer, root=self.serializer)
+        field.bind(field_name=key, parent=self.serializer)
 
     def __getitem__(self, key):
         return self.fields[key]
@@ -174,7 +181,6 @@ class BindingDict(object):
 @six.add_metaclass(SerializerMetaclass)
 class Serializer(BaseSerializer):
     def __init__(self, *args, **kwargs):
-        self.context = kwargs.pop('context', {})
         kwargs.pop('partial', None)
         kwargs.pop('many', None)
 
@@ -197,13 +203,6 @@ class Serializer(BaseSerializer):
 
     def _get_base_fields(self):
         return copy.deepcopy(self._declared_fields)
-
-    def bind(self, field_name, parent, root):
-        # If the serializer is used as a field then when it becomes bound
-        # it also needs to bind all its child fields.
-        super(Serializer, self).bind(field_name, parent, root)
-        for field_name, field in self.fields.items():
-            field.bind(field_name, self, root)
 
     def get_initial(self):
         return dict([
@@ -290,17 +289,10 @@ class ListSerializer(BaseSerializer):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
-        self.context = kwargs.pop('context', {})
         kwargs.pop('partial', None)
 
         super(ListSerializer, self).__init__(*args, **kwargs)
-        self.child.bind('', self, self)
-
-    def bind(self, field_name, parent, root):
-        # If the list is used as a field then it needs to provide
-        # the current context to the child serializer.
-        super(ListSerializer, self).bind(field_name, parent, root)
-        self.child.bind(field_name, self, root)
+        self.child.bind(field_name='', parent=self)
 
     def get_value(self, dictionary):
         # We override the default field access in order to support
