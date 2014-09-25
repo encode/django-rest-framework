@@ -965,6 +965,53 @@ class FieldCallableDefault(TestCase):
         self.assertEqual(into, {'field': 'foo bar'})
 
 
+class CanHangOnHugeNumbers(TestCase):
+    """
+        Test that number fields will not hang on a very large input.  The
+        test and one approach to handling it is not intended as a final solution
+        but a starting point for a discussion.
+
+        The main concern is when using a serializer in the context of the rest
+        framework.  A malicious user could send a large number as a string
+        representation (here we use a small example, str(2**256), that is big
+        enough for demonstration).  Since the number is converted to an integer
+        in fields.IntegerField.from_native function without checking the length
+        of the input, the system can hang.  One solution is to use a length
+        validation before converting, however this seems a little messy.
+        Similar concerns exist in FloatField and DecimalField where a similar
+        solution could be used be used.
+    """
+    def test_huge_numbers_do_not_cause_a_hang(self):
+
+        class NumberModel(models.Model):
+            integer = models.IntegerField(
+                validators=[validators.MaxValueValidator(2 ** 32)])
+            decimal = models.DecimalField(max_digits=17)
+            double = models.FloatField()
+
+        class NumberSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = NumberModel
+
+        number = NumberModel(integer=1, decimal=3.14, double=2.7182818284)
+
+        serializer = NumberSerializer(
+            number, data={"integer": 2, "decimal": 3.0, "double": 2.7})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = NumberSerializer(
+            number, data={"integer": str(2 ** 256)}, partial=True)
+        self.assertFalse(serializer.is_valid())
+
+        serializer = NumberSerializer(
+            number, data={"decimal": '3.14159265358979323846264'}, partial=True)
+        self.assertFalse(serializer.is_valid())
+
+        serializer = NumberSerializer(
+            number, data={"double": '2.718281828459045235360287'}, partial=True)
+        self.assertFalse(serializer.is_valid())
+
+
 class CustomIntegerField(TestCase):
     """
         Test that custom fields apply min_value and max_value constraints

@@ -814,6 +814,7 @@ class IntegerField(WritableField):
     type_label = 'integer'
     form_field_class = forms.IntegerField
     empty = 0
+    max_digits = 39  # len(str(2**128))
 
     default_error_messages = {
         'invalid': _('Enter a whole number.'),
@@ -835,7 +836,9 @@ class IntegerField(WritableField):
             return None
 
         try:
-            value = int(str(value))
+            str_value = str(value)
+            validators.MaxLengthValidator(self.max_digits)(str_value)
+            value = int(str_value)
         except (ValueError, TypeError):
             raise ValidationError(self.error_messages['invalid'])
         return value
@@ -846,6 +849,7 @@ class FloatField(WritableField):
     type_label = 'float'
     form_field_class = forms.FloatField
     empty = 0
+    max_digits = 17   # IEEE-754 double can get at most 17 significant digits.
 
     default_error_messages = {
         'invalid': _("'%s' value must be a float."),
@@ -856,6 +860,7 @@ class FloatField(WritableField):
             return None
 
         try:
+            validators.MaxLengthValidator(self.max_digits)(str(value))
             return float(value)
         except (TypeError, ValueError):
             msg = self.error_messages['invalid'] % value
@@ -898,6 +903,9 @@ class DecimalField(WritableField):
             return None
         value = smart_text(value).strip()
         try:
+            # to not change behavior something similar to
+            # .validate(self, value) should be run
+            # validators.MaxLengthValidator(self.max_digits)(str(value))
             value = Decimal(value)
         except DecimalException:
             raise ValidationError(self.error_messages['invalid'])
