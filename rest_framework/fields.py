@@ -881,6 +881,44 @@ class ImageField(Field):
 
 # Advanced field types...
 
+class ListField(Field):
+    child = None
+    initial = []
+    default_error_messages = {
+        'not_a_list': _('Expected a list of items but got type `{input_type}`')
+    }
+
+    def __init__(self, *args, **kwargs):
+        self.child = kwargs.pop('child', copy.deepcopy(self.child))
+        assert self.child is not None, '`child` is a required argument.'
+        assert not inspect.isclass(self.child), '`child` has not been instantiated.'
+        super(ListField, self).__init__(*args, **kwargs)
+        self.child.bind(field_name='', parent=self)
+
+    def get_value(self, dictionary):
+        # We override the default field access in order to support
+        # lists in HTML forms.
+        if html.is_html_input(dictionary):
+            return html.parse_html_list(dictionary, prefix=self.field_name)
+        return dictionary.get(self.field_name, empty)
+
+    def to_internal_value(self, data):
+        """
+        List of dicts of native values <- List of dicts of primitive datatypes.
+        """
+        if html.is_html_input(data):
+            data = html.parse_html_list(data)
+        if isinstance(data, type('')) or not hasattr(data, '__iter__'):
+            self.fail('not_a_list', input_type=type(data).__name__)
+        return [self.child.run_validation(item) for item in data]
+
+    def to_representation(self, data):
+        """
+        List of object instances -> List of dicts of primitive datatypes.
+        """
+        return [self.child.to_representation(item) for item in data]
+
+
 class ReadOnlyField(Field):
     """
     A read-only field that simply returns the field value.

@@ -287,6 +287,9 @@ class Serializer(BaseSerializer):
         return representation.serializer_repr(self, indent=1)
 
 
+# There's some replication of `ListField` here,
+# but that's probably better than obfuscating the call hierarchy.
+
 class ListSerializer(BaseSerializer):
     child = None
     initial = []
@@ -301,7 +304,7 @@ class ListSerializer(BaseSerializer):
     def get_value(self, dictionary):
         # We override the default field access in order to support
         # lists in HTML forms.
-        if is_html_input(dictionary):
+        if html.is_html_input(dictionary):
             return html.parse_html_list(dictionary, prefix=self.field_name)
         return dictionary.get(self.field_name, empty)
 
@@ -311,7 +314,6 @@ class ListSerializer(BaseSerializer):
         """
         if html.is_html_input(data):
             data = html.parse_html_list(data)
-
         return [self.child.run_validation(item) for item in data]
 
     def to_representation(self, data):

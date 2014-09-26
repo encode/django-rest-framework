@@ -849,6 +849,25 @@ class TestMultipleChoiceField(FieldValues):
     )
 
 
+class TestListField(FieldValues):
+    """
+    Values for `ListField`.
+    """
+    valid_inputs = [
+        ([1, 2, 3], [1, 2, 3]),
+        (['1', '2', '3'], [1, 2, 3])
+    ]
+    invalid_inputs = [
+        ('not a list', ['Expected a list of items but got type `str`']),
+        ([1, 2, 'error'], ['A valid integer is required.'])
+    ]
+    outputs = [
+        ([1, 2, 3], [1, 2, 3]),
+        (['1', '2', '3'], [1, 2, 3])
+    ]
+    field = fields.ListField(child=fields.IntegerField())
+
+
 # Tests for SerializerMethodField.
 # --------------------------------
 
