@@ -78,8 +78,6 @@ class TestSource:
         class ExampleSerializer(serializers.Serializer):
             example_field = serializers.CharField(source='other')
         serializer = ExampleSerializer(data={'example_field': 'abc'})
-        print serializer.is_valid()
-        print serializer.data
         assert serializer.is_valid()
         assert serializer.validated_data == {'other': 'abc'}
 
