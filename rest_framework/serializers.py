@@ -268,8 +268,7 @@ class Serializer(BaseSerializer):
         fields = [field for field in self.fields.values() if not field.write_only]
 
         for field in fields:
-            native_value = field.get_attribute(instance)
-            ret[field.field_name] = field.to_representation(native_value)
+            ret[field.field_name] = field.get_field_representation(instance)
 
         return ret
 
