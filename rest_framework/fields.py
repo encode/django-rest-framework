@@ -1,3 +1,4 @@
+from django import forms
 from django.conf import settings
 from django.core import validators
 from django.core.exceptions import ValidationError
@@ -427,8 +428,6 @@ class CharField(Field):
         return str(data)
 
     def to_representation(self, value):
-        if value is None:
-            return None
         return str(value)
 
 
@@ -446,8 +445,6 @@ class EmailField(CharField):
         return str(data).strip()
 
     def to_representation(self, value):
-        if value is None:
-            return None
         return str(value).strip()
 
 
@@ -513,8 +510,6 @@ class IntegerField(Field):
         return data
 
     def to_representation(self, value):
-        if value is None:
-            return None
         return int(value)
 
 
@@ -543,8 +538,6 @@ class FloatField(Field):
             self.fail('invalid')
 
     def to_representation(self, value):
-        if value is None:
-            return None
         return float(value)
 
 
@@ -616,9 +609,6 @@ class DecimalField(Field):
         return value
 
     def to_representation(self, value):
-        if value in (None, ''):
-            return None
-
         if not isinstance(value, decimal.Decimal):
             value = decimal.Decimal(str(value).strip())
 
@@ -689,7 +679,7 @@ class DateTimeField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
-        if value is None or self.format is None:
+        if self.format is None:
             return value
 
         if self.format.lower() == ISO_8601:
@@ -741,7 +731,7 @@ class DateField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
-        if value is None or self.format is None:
+        if self.format is None:
             return value
 
         # Applying a `DateField` to a datetime value is almost always
@@ -795,7 +785,7 @@ class TimeField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
-        if value is None or self.format is None:
+        if self.format is None:
             return value
 
         # Applying a `TimeField` to a datetime value is almost always
@@ -875,14 +865,68 @@ class MultipleChoiceField(ChoiceField):
 # File types...
 
 class FileField(Field):
-    pass  # TODO
+    default_error_messages = {
+        'required': _("No file was submitted."),
+        'invalid': _("The submitted data was not a file. Check the encoding type on the form."),
+        'no_name': _("No filename could be determined."),
+        'empty': _("The submitted file is empty."),
+        'max_length': _('Ensure this filename has at most {max_length} characters (it has {length}).'),
+    }
+    use_url = api_settings.UPLOADED_FILES_USE_URL
+
+    def __init__(self, *args, **kwargs):
+        self.max_length = kwargs.pop('max_length', None)
+        self.allow_empty_file = kwargs.pop('allow_empty_file', False)
+        self.use_url = kwargs.pop('use_url', self.use_url)
+        super(FileField, self).__init__(*args, **kwargs)
+
+    def to_internal_value(self, data):
+        try:
+            # `UploadedFile` objects should have name and size attributes.
+            file_name = data.name
+            file_size = data.size
+        except AttributeError:
+            self.fail('invalid')
+
+        if not file_name:
+            self.fail('no_name')
+        if not self.allow_empty_file and not file_size:
+            self.fail('empty')
+        if self.max_length and len(file_name) > self.max_length:
+            self.fail('max_length', max_length=self.max_length, length=len(file_name))
+
+        return data
+
+    def to_representation(self, value):
+        if self.use_url:
+            return settings.MEDIA_URL + value.url
+        return value.name
 
 
-class ImageField(Field):
-    pass  # TODO
+class ImageField(FileField):
+    default_error_messages = {
+        'invalid_image': _(
+            'Upload a valid image. The file you uploaded was either not an '
+            'image or a corrupted image.'
+        ),
+    }
+
+    def __init__(self, *args, **kwargs):
+        self._DjangoImageField = kwargs.pop('_DjangoImageField', forms.ImageField)
+        super(ImageField, self).__init__(*args, **kwargs)
+
+    def to_internal_value(self, data):
+        # Image validation is a bit grungy, so we'll just outright
+        # defer to Django's implementation so we don't need to
+        # consider it, or treat PIL as a test dependancy.
+        file_object = super(ImageField, self).to_internal_value(data)
+        django_field = self._DjangoImageField()
+        django_field.error_messages = self.error_messages
+        django_field.to_python(file_object)
+        return file_object
 
 
-# Advanced field types...
+# Composite field types...
 
 class ListField(Field):
     child = None
@@ -921,6 +965,8 @@ class ListField(Field):
         """
         return [self.child.to_representation(item) for item in data]
 
+
+# Miscellaneous field types...
 
 class ReadOnlyField(Field):
     """

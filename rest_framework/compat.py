@@ -84,15 +84,6 @@ except ImportError:
     from collections import UserDict
     from collections import MutableMapping as DictMixin
 
-# Try to import PIL in either of the two ways it can end up installed.
-try:
-    from PIL import Image
-except ImportError:
-    try:
-        import Image
-    except ImportError:
-        Image = None
-
 
 def get_model_name(model_cls):
     try:

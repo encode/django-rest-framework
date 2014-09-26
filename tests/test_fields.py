@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from rest_framework import fields, serializers
 import datetime
@@ -516,7 +517,7 @@ class TestDecimalField(FieldValues):
         Decimal('1.0'): '1.0',
         Decimal('0.0'): '0.0',
         Decimal('1.09'): '1.1',
-        Decimal('0.04'): '0.0',
+        Decimal('0.04'): '0.0'
     }
     field = fields.DecimalField(max_digits=3, decimal_places=1)
 
@@ -576,7 +577,7 @@ class TestDateField(FieldValues):
         datetime.datetime(2001, 1, 1, 12, 00): ['Expected a date but got a datetime.'],
     }
     outputs = {
-        datetime.date(2001, 1, 1): '2001-01-01',
+        datetime.date(2001, 1, 1): '2001-01-01'
     }
     field = fields.DateField()
 
@@ -639,7 +640,7 @@ class TestDateTimeField(FieldValues):
     }
     outputs = {
         datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00',
-        datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): '2001-01-01T13:00:00Z',
+        datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): '2001-01-01T13:00:00Z'
     }
     field = fields.DateTimeField(default_timezone=timezone.UTC())
 
@@ -846,6 +847,92 @@ class TestMultipleChoiceField(FieldValues):
         ]
     )
 
+
+# File fields...
+
+class MockFile:
+    def __init__(self, name='', size=0, url=''):
+        self.name = name
+        self.size = size
+        self.url = url
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, MockFile) and
+            self.name == other.name and
+            self.size == other.size and
+            self.url == other.url
+        )
+
+
+class TestFileField(FieldValues):
+    """
+    Values for `FileField`.
+    """
+    valid_inputs = [
+        (MockFile(name='example', size=10), MockFile(name='example', size=10))
+    ]
+    invalid_inputs = [
+        ('invalid', ['The submitted data was not a file. Check the encoding type on the form.']),
+        (MockFile(name='example.txt', size=0), ['The submitted file is empty.']),
+        (MockFile(name='', size=10), ['No filename could be determined.']),
+        (MockFile(name='x' * 100, size=10), ['Ensure this filename has at most 10 characters (it has 100).'])
+    ]
+    outputs = [
+        (MockFile(name='example.txt', url='/example.txt'), '/example.txt')
+    ]
+    field = fields.FileField(max_length=10)
+
+
+class TestFieldFieldWithName(FieldValues):
+    """
+    Values for `FileField` with a filename output instead of URLs.
+    """
+    valid_inputs = {}
+    invalid_inputs = {}
+    outputs = [
+        (MockFile(name='example.txt', url='/example.txt'), 'example.txt')
+    ]
+    field = fields.FileField(use_url=False)
+
+
+# Stub out mock Django `forms.ImageField` class so we don't *actually*
+# call into it's regular validation, or require PIL for testing.
+class FailImageValidation(object):
+    def to_python(self, value):
+        raise ValidationError(self.error_messages['invalid_image'])
+
+
+class PassImageValidation(object):
+    def to_python(self, value):
+        return value
+
+
+class TestInvalidImageField(FieldValues):
+    """
+    Values for an invalid `ImageField`.
+    """
+    valid_inputs = {}
+    invalid_inputs = [
+        (MockFile(name='example.txt', size=10), ['Upload a valid image. The file you uploaded was either not an image or a corrupted image.'])
+    ]
+    outputs = {}
+    field = fields.ImageField(_DjangoImageField=FailImageValidation)
+
+
+class TestValidImageField(FieldValues):
+    """
+    Values for an valid `ImageField`.
+    """
+    valid_inputs = [
+        (MockFile(name='example.txt', size=10), MockFile(name='example.txt', size=10))
+    ]
+    invalid_inputs = {}
+    outputs = {}
+    field = fields.ImageField(_DjangoImageField=PassImageValidation)
+
+
+# Composite fields...
 
 class TestListField(FieldValues):
     """
