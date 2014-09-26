@@ -75,6 +75,9 @@ class BaseSerializer(Field):
             self.update(self.instance, validated_data)
         else:
             self.instance = self.create(validated_data)
+            assert self.instance is not None, (
+                '`create()` did not return an object instance.'
+            )
 
         return self.instance
 
