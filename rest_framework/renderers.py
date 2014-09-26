@@ -120,7 +120,7 @@ class JSONPRenderer(JSONRenderer):
         Determine the name of the callback to wrap around the json output.
         """
         request = renderer_context.get('request', None)
-        params = request and request.QUERY_PARAMS or {}
+        params = request and request.query_params or {}
         return params.get(self.callback_parameter, self.default_callback)
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
@@ -426,7 +426,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         """
         if request.method == method:
             try:
-                data = request.DATA
+                data = request.data
                 # files = request.FILES
             except ParseError:
                 data = None

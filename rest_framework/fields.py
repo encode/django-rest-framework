@@ -56,7 +56,7 @@ def get_attribute(instance, attrs):
         except AttributeError as exc:
             try:
                 return instance[attr]
-            except (KeyError, TypeError):
+            except (KeyError, TypeError, AttributeError):
                 raise exc
     return instance
 
@@ -90,6 +90,7 @@ NOT_READ_ONLY_WRITE_ONLY = 'May not set both `read_only` and `write_only`'
 NOT_READ_ONLY_REQUIRED = 'May not set both `read_only` and `required`'
 NOT_READ_ONLY_DEFAULT = 'May not set both `read_only` and `default`'
 NOT_REQUIRED_DEFAULT = 'May not set both `required` and `default`'
+USE_READONLYFIELD = 'Field(read_only=True) should be ReadOnlyField'
 MISSING_ERROR_MESSAGE = (
     'ValidationError raised by `{class_name}`, but error key `{key}` does '
     'not exist in the `error_messages` dictionary.'
@@ -105,9 +106,10 @@ class Field(object):
     }
     default_validators = []
     default_empty_html = None
+    initial = None
 
     def __init__(self, read_only=False, write_only=False,
-                 required=None, default=empty, initial=None, source=None,
+                 required=None, default=empty, initial=empty, source=None,
                  label=None, help_text=None, style=None,
                  error_messages=None, validators=[], allow_null=False):
         self._creation_counter = Field._creation_counter
@@ -122,13 +124,14 @@ class Field(object):
         assert not (read_only and required), NOT_READ_ONLY_REQUIRED
         assert not (read_only and default is not empty), NOT_READ_ONLY_DEFAULT
         assert not (required and default is not empty), NOT_REQUIRED_DEFAULT
+        assert not (read_only and self.__class__ == Field), USE_READONLYFIELD
 
         self.read_only = read_only
         self.write_only = write_only
         self.required = required
         self.default = default
         self.source = source
-        self.initial = initial
+        self.initial = self.initial if (initial is empty) else initial
         self.label = label
         self.help_text = help_text
         self.style = {} if style is None else style
@@ -146,24 +149,10 @@ class Field(object):
         messages.update(error_messages or {})
         self.error_messages = messages
 
-    def __new__(cls, *args, **kwargs):
-        """
-        When a field is instantiated, we store the arguments that were used,
-        so that we can present a helpful representation of the object.
-        """
-        instance = super(Field, cls).__new__(cls)
-        instance._args = args
-        instance._kwargs = kwargs
-        return instance
-
-    def __deepcopy__(self, memo):
-        args = copy.deepcopy(self._args)
-        kwargs = copy.deepcopy(self._kwargs)
-        return self.__class__(*args, **kwargs)
-
     def bind(self, field_name, parent):
         """
-        Setup the context for the field instance.
+        Initializes the field name and parent for the field instance.
+        Called when a field is added to the parent serializer instance.
         """
 
         # In order to enforce a consistent style, we error if a redundant
@@ -244,9 +233,9 @@ class Field(object):
         validated data.
         """
         if data is empty:
+            if getattr(self.root, 'partial', False):
+                raise SkipField()
             if self.required:
-                if getattr(self.root, 'partial', False):
-                    raise SkipField()
                 self.fail('required')
             return self.get_default()
 
@@ -314,6 +303,25 @@ class Field(object):
         """
         return getattr(self.root, '_context', {})
 
+    def __new__(cls, *args, **kwargs):
+        """
+        When a field is instantiated, we store the arguments that were used,
+        so that we can present a helpful representation of the object.
+        """
+        instance = super(Field, cls).__new__(cls)
+        instance._args = args
+        instance._kwargs = kwargs
+        return instance
+
+    def __deepcopy__(self, memo):
+        """
+        When cloning fields we instantiate using the arguments it was
+        originally created with, rather than copying the complete state.
+        """
+        args = copy.deepcopy(self._args)
+        kwargs = copy.deepcopy(self._kwargs)
+        return self.__class__(*args, **kwargs)
+
     def __repr__(self):
         """
         Fields are represented using their initial calling arguments.
@@ -358,6 +366,7 @@ class NullBooleanField(Field):
         'invalid': _('`{input}` is not a valid boolean.')
     }
     default_empty_html = None
+    initial = None
     TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
     FALSE_VALUES = set(('f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False))
     NULL_VALUES = set(('n', 'N', 'null', 'Null', 'NULL', '', None))

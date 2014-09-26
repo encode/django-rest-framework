@@ -57,21 +57,24 @@ class BaseSerializer(Field):
     def to_representation(self, instance):
         raise NotImplementedError('`to_representation()` must be implemented.')
 
-    def update(self, instance, attrs):
+    def update(self, instance, validated_data):
         raise NotImplementedError('`update()` must be implemented.')
 
-    def create(self, attrs):
+    def create(self, validated_data):
         raise NotImplementedError('`create()` must be implemented.')
 
     def save(self, extras=None):
-        attrs = self.validated_data
+        validated_data = self.validated_data
         if extras is not None:
-            attrs = dict(list(attrs.items()) + list(extras.items()))
+            validated_data = dict(
+                list(validated_data.items()) +
+                list(extras.items())
+            )
 
         if self.instance is not None:
-            self.update(self.instance, attrs)
+            self.update(self.instance, validated_data)
         else:
-            self.instance = self.create(attrs)
+            self.instance = self.create(validated_data)
 
         return self.instance
 
@@ -320,12 +323,6 @@ class ListSerializer(BaseSerializer):
 
     def create(self, attrs_list):
         return [self.child.create(attrs) for attrs in attrs_list]
-
-    def save(self):
-        if self.instance is not None:
-            self.update(self.instance, self.validated_data)
-        self.instance = self.create(self.validated_data)
-        return self.instance
 
     def __repr__(self):
         return representation.list_repr(self, indent=1)

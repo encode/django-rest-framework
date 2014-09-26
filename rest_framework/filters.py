@@ -64,7 +64,7 @@ class DjangoFilterBackend(BaseFilterBackend):
         filter_class = self.get_filter_class(view, queryset)
 
         if filter_class:
-            return filter_class(request.QUERY_PARAMS, queryset=queryset).qs
+            return filter_class(request.query_params, queryset=queryset).qs
 
         return queryset
 
@@ -78,7 +78,7 @@ class SearchFilter(BaseFilterBackend):
         Search terms are set by a ?search=... query parameter,
         and may be comma and/or whitespace delimited.
         """
-        params = request.QUERY_PARAMS.get(self.search_param, '')
+        params = request.query_params.get(self.search_param, '')
         return params.replace(',', ' ').split()
 
     def construct_search(self, field_name):
@@ -121,7 +121,7 @@ class OrderingFilter(BaseFilterBackend):
         the `ordering_param` value on the OrderingFilter or by
         specifying an `ORDERING_PARAM` value in the API settings.
         """
-        params = request.QUERY_PARAMS.get(self.ordering_param)
+        params = request.query_params.get(self.ordering_param)
         if params:
             return [param.strip() for param in params.split(',')]
 

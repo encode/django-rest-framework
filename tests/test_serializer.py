@@ -1,4 +1,5 @@
 from rest_framework import serializers
+import pytest
 
 
 # Tests for core functionality.
@@ -29,6 +30,67 @@ class TestSerializer:
         assert serializer.validated_data == {'char': 'abc'}
         assert serializer.errors == {}
 
+    def test_empty_serializer(self):
+        serializer = self.Serializer()
+        assert serializer.data == {'char': '', 'integer': None}
+
+    def test_missing_attribute_during_serialization(self):
+        class MissingAttributes:
+            pass
+        instance = MissingAttributes()
+        serializer = self.Serializer(instance)
+        with pytest.raises(AttributeError):
+            serializer.data
+
+
+class TestStarredSource:
+    """
+    Tests for `source='*'` argument, which is used for nested representations.
+
+    For example:
+
+        nested_field = NestedField(source='*')
+    """
+    data = {
+        'nested1': {'a': 1, 'b': 2},
+        'nested2': {'c': 3, 'd': 4}
+    }
+
+    def setup(self):
+        class NestedSerializer1(serializers.Serializer):
+            a = serializers.IntegerField()
+            b = serializers.IntegerField()
+
+        class NestedSerializer2(serializers.Serializer):
+            c = serializers.IntegerField()
+            d = serializers.IntegerField()
+
+        class TestSerializer(serializers.Serializer):
+            nested1 = NestedSerializer1(source='*')
+            nested2 = NestedSerializer2(source='*')
+
+        self.Serializer = TestSerializer
+
+    def test_nested_validate(self):
+        """
+        A nested representation is validated into a flat internal object.
+        """
+        serializer = self.Serializer(data=self.data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'a': 1,
+            'b': 2,
+            'c': 3,
+            'd': 4
+        }
+
+    def test_nested_serialize(self):
+        """
+        An object can be serialized into a nested representation.
+        """
+        instance = {'a': 1, 'b': 2, 'c': 3, 'd': 4}
+        serializer = self.Serializer(instance)
+        assert serializer.data == self.data
 
 # # -*- coding: utf-8 -*-
 # from __future__ import unicode_literals

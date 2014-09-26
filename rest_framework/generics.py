@@ -112,7 +112,7 @@ class GenericAPIView(views.APIView):
 
         paginator = self.paginator_class(queryset, page_size)
         page_kwarg = self.kwargs.get(self.page_kwarg)
-        page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
+        page_query_param = self.request.query_params.get(self.page_kwarg)
         page = page_kwarg or page_query_param or 1
         try:
             page_number = paginator.validate_number(page)
@@ -166,7 +166,7 @@ class GenericAPIView(views.APIView):
         if self.paginate_by_param:
             try:
                 return strict_positive_int(
-                    self.request.QUERY_PARAMS[self.paginate_by_param],
+                    self.request.query_params[self.paginate_by_param],
                     cutoff=self.max_paginate_by
                 )
             except (KeyError, ValueError):

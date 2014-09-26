@@ -9,7 +9,10 @@ import pytest
 # Tests for field keyword arguments and core functionality.
 # ---------------------------------------------------------
 
-class TestFieldOptions:
+class TestEmpty:
+    """
+    Tests for `required`, `allow_null`, `allow_blank`, `default`.
+    """
     def test_required(self):
         """
         By default a field must be included in the input.
@@ -69,6 +72,17 @@ class TestFieldOptions:
         output = field.run_validation()
         assert output is 123
 
+
+class TestSource:
+    def test_source(self):
+        class ExampleSerializer(serializers.Serializer):
+            example_field = serializers.CharField(source='other')
+        serializer = ExampleSerializer(data={'example_field': 'abc'})
+        print serializer.is_valid()
+        print serializer.data
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'other': 'abc'}
+
     def test_redundant_source(self):
         class ExampleSerializer(serializers.Serializer):
             example_field = serializers.CharField(source='example_field')
@@ -79,6 +93,128 @@ class TestFieldOptions:
             "'CharField' in serializer 'ExampleSerializer', because it is the "
             "same as the field name. Remove the `source` keyword argument."
         )
+
+
+class TestReadOnly:
+    def setup(self):
+        class TestSerializer(serializers.Serializer):
+            read_only = fields.ReadOnlyField()
+            writable = fields.IntegerField()
+        self.Serializer = TestSerializer
+
+    def test_validate_read_only(self):
+        """
+        Read-only fields should not be included in validation.
+        """
+        data = {'read_only': 123, 'writable': 456}
+        serializer = self.Serializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'writable': 456}
+
+    def test_serialize_read_only(self):
+        """
+        Read-only fields should be serialized.
+        """
+        instance = {'read_only': 123, 'writable': 456}
+        serializer = self.Serializer(instance)
+        assert serializer.data == {'read_only': 123, 'writable': 456}
+
+
+class TestWriteOnly:
+    def setup(self):
+        class TestSerializer(serializers.Serializer):
+            write_only = fields.IntegerField(write_only=True)
+            readable = fields.IntegerField()
+        self.Serializer = TestSerializer
+
+    def test_validate_write_only(self):
+        """
+        Write-only fields should be included in validation.
+        """
+        data = {'write_only': 123, 'readable': 456}
+        serializer = self.Serializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'write_only': 123, 'readable': 456}
+
+    def test_serialize_write_only(self):
+        """
+        Write-only fields should not be serialized.
+        """
+        instance = {'write_only': 123, 'readable': 456}
+        serializer = self.Serializer(instance)
+        assert serializer.data == {'readable': 456}
+
+
+class TestInitial:
+    def setup(self):
+        class TestSerializer(serializers.Serializer):
+            initial_field = fields.IntegerField(initial=123)
+            blank_field = fields.IntegerField()
+        self.serializer = TestSerializer()
+
+    def test_initial(self):
+        """
+        Initial values should be included when serializing a new representation.
+        """
+        assert self.serializer.data == {
+            'initial_field': 123,
+            'blank_field': None
+        }
+
+
+class TestLabel:
+    def setup(self):
+        class TestSerializer(serializers.Serializer):
+            labeled = fields.IntegerField(label='My label')
+        self.serializer = TestSerializer()
+
+    def test_label(self):
+        """
+        A field's label may be set with the `label` argument.
+        """
+        fields = self.serializer.fields
+        assert fields['labeled'].label == 'My label'
+
+
+class TestInvalidErrorKey:
+    def setup(self):
+        class ExampleField(serializers.Field):
+            def to_native(self, data):
+                self.fail('incorrect')
+        self.field = ExampleField()
+
+    def test_invalid_error_key(self):
+        """
+        If a field raises a validation error, but does not have a corresponding
+        error message, then raise an appropriate assertion error.
+        """
+        with pytest.raises(AssertionError) as exc_info:
+            self.field.to_native(123)
+        expected = (
+            'ValidationError raised by `ExampleField`, but error key '
+            '`incorrect` does not exist in the `error_messages` dictionary.'
+        )
+        assert str(exc_info.value) == expected
+
+
+class TestBooleanHTMLInput:
+    def setup(self):
+        class TestSerializer(serializers.Serializer):
+            archived = fields.BooleanField()
+        self.Serializer = TestSerializer
+
+    def test_empty_html_checkbox(self):
+        """
+        HTML checkboxes do not send any value, but should be treated
+        as `False` by BooleanField.
+        """
+        # This class mocks up a dictionary like object, that behaves
+        # as if it was returned for multipart or urlencoded data.
+        class MockHTMLDict(dict):
+            getlist = None
+        serializer = self.Serializer(data=MockHTMLDict())
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'archived': False}
 
 
 # Tests for field input and output values.
@@ -495,7 +631,7 @@ class TestDateTimeField(FieldValues):
         '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
         datetime.datetime(2001, 1, 1, 13, 00): datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
-        # Note that 1.4 does not support timezone string parsing.
+        # Django 1.4 does not support timezone string parsing.
         '2001-01-01T14:00+01:00' if (django.VERSION > (1, 4)) else '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC())
     }
     invalid_inputs = {

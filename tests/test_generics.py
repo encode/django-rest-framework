@@ -38,7 +38,7 @@ class FKInstanceView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class SlugSerializer(serializers.ModelSerializer):
-    slug = serializers.Field(read_only=True)
+    slug = serializers.ReadOnlyField()
 
     class Meta:
         model = SlugBasedModel
