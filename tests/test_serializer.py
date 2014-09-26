@@ -43,6 +43,64 @@ class TestSerializer:
             serializer.data
 
 
+class TestBaseSerializer:
+    def setup(self):
+        class ExampleSerializer(serializers.BaseSerializer):
+            def to_representation(self, obj):
+                return {
+                    'id': obj['id'],
+                    'email': obj['name'] + '@' + obj['domain']
+                }
+
+            def to_internal_value(self, data):
+                name, domain = str(data['email']).split('@')
+                return {
+                    'id': int(data['id']),
+                    'name': name,
+                    'domain': domain,
+                }
+
+        self.Serializer = ExampleSerializer
+
+    def test_serialize_instance(self):
+        instance = {'id': 1, 'name': 'tom', 'domain': 'example.com'}
+        serializer = self.Serializer(instance)
+        assert serializer.data == {'id': 1, 'email': 'tom@example.com'}
+
+    def test_serialize_list(self):
+        instances = [
+            {'id': 1, 'name': 'tom', 'domain': 'example.com'},
+            {'id': 2, 'name': 'ann', 'domain': 'example.com'},
+        ]
+        serializer = self.Serializer(instances, many=True)
+        assert serializer.data == [
+            {'id': 1, 'email': 'tom@example.com'},
+            {'id': 2, 'email': 'ann@example.com'}
+        ]
+
+    def test_validate_data(self):
+        data = {'id': 1, 'email': 'tom@example.com'}
+        serializer = self.Serializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'id': 1,
+            'name': 'tom',
+            'domain': 'example.com'
+        }
+
+    def test_validate_list(self):
+        data = [
+            {'id': 1, 'email': 'tom@example.com'},
+            {'id': 2, 'email': 'ann@example.com'},
+        ]
+        serializer = self.Serializer(data=data, many=True)
+        assert serializer.is_valid()
+        assert serializer.validated_data == [
+            {'id': 1, 'name': 'tom', 'domain': 'example.com'},
+            {'id': 2, 'name': 'ann', 'domain': 'example.com'}
+        ]
+
+
 class TestStarredSource:
     """
     Tests for `source='*'` argument, which is used for nested representations.

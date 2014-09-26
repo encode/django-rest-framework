@@ -47,9 +47,20 @@ class BaseSerializer(Field):
     """
 
     def __init__(self, instance=None, data=None, **kwargs):
-        super(BaseSerializer, self).__init__(**kwargs)
         self.instance = instance
         self._initial_data = data
+        self.partial = kwargs.pop('partial', False)
+        self._context = kwargs.pop('context', {})
+        kwargs.pop('many', None)
+        super(BaseSerializer, self).__init__(**kwargs)
+
+    def __new__(cls, *args, **kwargs):
+        # We override this method in order to automagically create
+        # `ListSerializer` classes instead when `many=True` is set.
+        if kwargs.pop('many', False):
+            kwargs['child'] = cls()
+            return ListSerializer(*args, **kwargs)
+        return super(BaseSerializer, cls).__new__(cls, *args, **kwargs)
 
     def to_internal_value(self, data):
         raise NotImplementedError('`to_internal_value()` must be implemented.')
@@ -187,10 +198,6 @@ class BindingDict(object):
 @six.add_metaclass(SerializerMetaclass)
 class Serializer(BaseSerializer):
     def __init__(self, *args, **kwargs):
-        kwargs.pop('many', None)
-        self.partial = kwargs.pop('partial', False)
-        self._context = kwargs.pop('context', {})
-
         super(Serializer, self).__init__(*args, **kwargs)
 
         # Every new serializer is created with a clone of the field instances.
@@ -199,14 +206,6 @@ class Serializer(BaseSerializer):
         self.fields = BindingDict(self)
         for key, value in self._get_base_fields().items():
             self.fields[key] = value
-
-    def __new__(cls, *args, **kwargs):
-        # We override this method in order to automagically create
-        # `ListSerializer` classes instead when `many=True` is set.
-        if kwargs.pop('many', False):
-            kwargs['child'] = cls()
-            return ListSerializer(*args, **kwargs)
-        return super(Serializer, cls).__new__(cls, *args, **kwargs)
 
     def _get_base_fields(self):
         return copy.deepcopy(self._declared_fields)
@@ -296,9 +295,6 @@ class ListSerializer(BaseSerializer):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
-        self.partial = kwargs.pop('partial', False)
-        self._context = kwargs.pop('context', {})
-
         super(ListSerializer, self).__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
 
