@@ -1,17 +1,25 @@
+"""
+We perform uniqueness checks explicitly on the serializer class, rather
+the using Django's `.full_clean()`.
+
+This gives us better seperation of concerns, allows us to use single-step
+object creation, and makes it possible to switch between using the implicit
+`ModelSerializer` class and an equivelent explicit `Serializer` class.
+"""
 from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
+from rest_framework.utils.representation import smart_repr
 
 
 class UniqueValidator:
     # Validators with `requires_context` will have the field instance
     # passed to them when the field is instantiated.
     requires_context = True
+    message = _('This field must be unique.')
 
     def __init__(self, queryset):
         self.queryset = queryset
         self.serializer_field = None
-
-    def get_queryset(self):
-        return self.queryset.all()
 
     def __call__(self, value):
         field = self.serializer_field
@@ -24,15 +32,22 @@ class UniqueValidator:
 
         # Ensure uniqueness.
         filter_kwargs = {field_name: value}
-        queryset = self.get_queryset().filter(**filter_kwargs)
+        queryset = self.queryset.filter(**filter_kwargs)
         if instance:
             queryset = queryset.exclude(pk=instance.pk)
         if queryset.exists():
-            raise ValidationError('This field must be unique.')
+            raise ValidationError(self.message)
+
+    def __repr__(self):
+        return '<%s(queryset=%s)>' % (
+            self.__class__.__name__,
+            smart_repr(self.queryset)
+        )
 
 
 class UniqueTogetherValidator:
     requires_context = True
+    message = _('The fields {field_names} must make a unique set.')
 
     def __init__(self, queryset, fields):
         self.queryset = queryset
@@ -49,9 +64,16 @@ class UniqueTogetherValidator:
         filter_kwargs = dict([
             (field_name, value[field_name]) for field_name in self.fields
         ])
-        queryset = self.get_queryset().filter(**filter_kwargs)
+        queryset = self.queryset.filter(**filter_kwargs)
         if instance:
             queryset = queryset.exclude(pk=instance.pk)
         if queryset.exists():
-            field_names = ' and '.join(self.fields)
-            raise ValidationError('The fields %s must make a unique set.' % field_names)
+            field_names = ', '.join(self.fields)
+            raise ValidationError(self.message.format(field_names=field_names))
+
+    def __repr__(self):
+        return '<%s(queryset=%s, fields=%s)>' % (
+            self.__class__.__name__,
+            smart_repr(self.queryset),
+            smart_repr(self.fields)
+        )

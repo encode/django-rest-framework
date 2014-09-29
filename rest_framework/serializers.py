@@ -23,6 +23,7 @@ from rest_framework.utils.field_mapping import (
     get_relation_kwargs, get_nested_relation_kwargs,
     ClassLookupDict
 )
+from rest_framework.validators import UniqueTogetherValidator
 import copy
 import inspect
 
@@ -95,7 +96,7 @@ class BaseSerializer(Field):
     def is_valid(self, raise_exception=False):
         if not hasattr(self, '_validated_data'):
             try:
-                self._validated_data = self.to_internal_value(self._initial_data)
+                self._validated_data = self.run_validation(self._initial_data)
             except ValidationError as exc:
                 self._validated_data = {}
                 self._errors = exc.message_dict
@@ -223,15 +224,43 @@ class Serializer(BaseSerializer):
             return html.parse_html_dict(dictionary, prefix=self.field_name)
         return dictionary.get(self.field_name, empty)
 
-    def to_internal_value(self, data):
+    def run_validation(self, data=empty):
         """
-        Dict of native values <- Dict of primitive datatypes.
+        We override the default `run_validation`, because the validation
+        performed by validators and the `.validate()` method should
+        be coerced into an error dictionary with a 'non_fields_error' key.
         """
+        if data is empty:
+            if getattr(self.root, 'partial', False):
+                raise SkipField()
+            if self.required:
+                self.fail('required')
+            return self.get_default()
+
+        if data is None:
+            if not self.allow_null:
+                self.fail('null')
+            return None
+
         if not isinstance(data, dict):
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: ['Invalid data']
             })
 
+        value = self.to_internal_value(data)
+        try:
+            self.run_validators(value)
+            self.validate(value)
+        except ValidationError as exc:
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: exc.messages
+            })
+        return value
+
+    def to_internal_value(self, data):
+        """
+        Dict of native values <- Dict of primitive datatypes.
+        """
         ret = {}
         errors = {}
         fields = [field for field in self.fields.values() if not field.read_only]
@@ -253,12 +282,7 @@ class Serializer(BaseSerializer):
         if errors:
             raise ValidationError(errors)
 
-        try:
-            return self.validate(ret)
-        except ValidationError as exc:
-            raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: exc.messages
-            })
+        return ret
 
     def to_representation(self, instance):
         """
@@ -355,6 +379,14 @@ class ModelSerializer(Serializer):
     })
     _related_class = PrimaryKeyRelatedField
 
+    def __init__(self, *args, **kwargs):
+        super(ModelSerializer, self).__init__(*args, **kwargs)
+        if 'validators' not in kwargs:
+            validators = self.get_unique_together_validators()
+            if validators:
+                self.validators.extend(validators)
+                self._kwargs['validators'] = validators
+
     def create(self, attrs):
         ModelClass = self.Meta.model
 
@@ -380,6 +412,36 @@ class ModelSerializer(Serializer):
         for attr, value in attrs.items():
             setattr(obj, attr, value)
         obj.save()
+
+    def get_unique_together_validators(self):
+        field_names = set([
+            field.source for field in self.fields.values()
+            if (field.source != '*') and ('.' not in field.source)
+        ])
+
+        validators = []
+        model_class = self.Meta.model
+
+        for unique_together in model_class._meta.unique_together:
+            if field_names.issuperset(set(unique_together)):
+                validator = UniqueTogetherValidator(
+                    queryset=model_class._default_manager,
+                    fields=unique_together
+                )
+                validator.serializer_field = self
+                validators.append(validator)
+
+        for parent_class in model_class._meta.parents.keys():
+            for unique_together in parent_class._meta.unique_together:
+                if field_names.issuperset(set(unique_together)):
+                    validator = UniqueTogetherValidator(
+                        queryset=parent_class._default_manager,
+                        fields=unique_together
+                    )
+                    validator.serializer_field = self
+                    validators.append(validator)
+
+        return validators
 
     def _get_base_fields(self):
         declared_fields = copy.deepcopy(self._declared_fields)
