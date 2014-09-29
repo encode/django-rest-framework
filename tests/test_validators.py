@@ -98,7 +98,6 @@ class TestUniquenessTogetherValidation(TestCase):
         """
         data = {'race_name': 'example', 'position': 2}
         serializer = UniquenessTogetherSerializer(data=data)
-        print serializer.validators
         assert not serializer.is_valid()
         assert serializer.errors == {
             'non_field_errors': [
