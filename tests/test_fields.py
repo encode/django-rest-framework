@@ -953,6 +953,23 @@ class TestListField(FieldValues):
     field = fields.ListField(child=fields.IntegerField())
 
 
+# Tests for FieldField.
+# ---------------------
+
+class MockRequest:
+    def build_absolute_uri(self, value):
+        return 'http://example.com' + value
+
+
+class TestFileFieldContext:
+    def test_fully_qualified_when_request_in_context(self):
+        field = fields.FileField(max_length=10)
+        field._context = {'request': MockRequest()}
+        obj = MockFile(name='example.txt', url='/example.txt')
+        value = field.to_representation(obj)
+        assert value == 'http://example.com/example.txt'
+
+
 # Tests for SerializerMethodField.
 # --------------------------------
 

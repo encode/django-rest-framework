@@ -150,10 +150,6 @@ class Field(object):
         messages.update(error_messages or {})
         self.error_messages = messages
 
-        for validator in validators:
-            if getattr(validator, 'requires_context', False):
-                validator.serializer_field = self
-
     def bind(self, field_name, parent):
         """
         Initializes the field name and parent for the field instance.
@@ -264,6 +260,8 @@ class Field(object):
         """
         errors = []
         for validator in self.validators:
+            if getattr(validator, 'requires_context', False):
+                validator.serializer_field = self
             try:
                 validator(value)
             except ValidationError as exc:
@@ -907,7 +905,11 @@ class FileField(Field):
 
     def to_representation(self, value):
         if self.use_url:
-            return settings.MEDIA_URL + value.url
+            url = settings.MEDIA_URL + value.url
+            request = self.context.get('request', None)
+            if request is not None:
+                return request.build_absolute_uri(url)
+            return url
         return value.name
 
 

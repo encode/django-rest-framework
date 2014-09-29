@@ -428,7 +428,6 @@ class ModelSerializer(Serializer):
                     queryset=model_class._default_manager,
                     fields=unique_together
                 )
-                validator.serializer_field = self
                 validators.append(validator)
 
         for parent_class in model_class._meta.parents.keys():
@@ -438,7 +437,6 @@ class ModelSerializer(Serializer):
                         queryset=parent_class._default_manager,
                         fields=unique_together
                     )
-                    validator.serializer_field = self
                     validators.append(validator)
 
         return validators
