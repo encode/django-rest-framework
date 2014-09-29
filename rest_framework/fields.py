@@ -150,6 +150,10 @@ class Field(object):
         messages.update(error_messages or {})
         self.error_messages = messages
 
+        for validator in validators:
+            if getattr(validator, 'requires_context', False):
+                validator.serializer_field = self
+
     def bind(self, field_name, parent):
         """
         Initializes the field name and parent for the field instance.

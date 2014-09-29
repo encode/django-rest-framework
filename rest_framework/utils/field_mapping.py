@@ -6,6 +6,7 @@ from django.core import validators
 from django.db import models
 from django.utils.text import capfirst
 from rest_framework.compat import clean_manytomany_helptext
+from rest_framework.validators import UniqueValidator
 import inspect
 
 
@@ -155,6 +156,10 @@ def get_field_kwargs(field_name, model_field):
             validator for validator in validator_kwarg
             if validator is not validators.validate_slug
         ]
+
+    if getattr(model_field, 'unique', False):
+        validator = UniqueValidator(queryset=model_field.model._default_manager)
+        validator_kwarg.append(validator)
 
     max_digits = getattr(model_field, 'max_digits', None)
     if max_digits is not None:
