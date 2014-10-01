@@ -1,0 +1,5 @@
+<div class="form-group">
+    {% include "rest_framework/fields/vertical/label.html" %}
+    <input type="{{ input_type }}" class="form-control" {% include "rest_framework/fields/attrs.html" %} {% if value %}value="{{ value }}"{% endif %}>
+    {% if field.help_text %}<p class="help-block">{{ field.help_text }}</p>{% endif %}
+</div>

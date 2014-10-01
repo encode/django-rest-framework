@@ -1,0 +1,3 @@
+{% for field_item in value.field_items.values() %}
+    {{ renderer.render_field(field_item, layout=layout) }}
+{% endfor %}

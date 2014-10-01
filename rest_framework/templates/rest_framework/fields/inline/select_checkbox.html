@@ -1,0 +1,11 @@
+<div class="form-group">
+    {% include "rest_framework/fields/inline/label.html" %}
+    {% for key, text in field.choices.items %}
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" name="{{ rest_framework/field.field_name }}" value="{{ key }}" {% if key in value %}checked{% endif %}>
+            {{ text }}
+        </label>
+    </div>
+    {% endfor %}
+</div>

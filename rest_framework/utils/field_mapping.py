@@ -79,6 +79,9 @@ def get_field_kwargs(field_name, model_field):
         kwargs['choices'] = model_field.flatchoices
         return kwargs
 
+    if isinstance(model_field, models.TextField):
+        kwargs['style'] = {'type': 'textarea'}
+
     if model_field.null and not isinstance(model_field, models.NullBooleanField):
         kwargs['allow_null'] = True
 

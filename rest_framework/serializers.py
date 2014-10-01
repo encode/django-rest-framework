@@ -302,6 +302,8 @@ class Serializer(BaseSerializer):
     def __iter__(self):
         errors = self.errors if hasattr(self, '_errors') else {}
         for field in self.fields.values():
+            if field.read_only:
+                continue
             value = self.data.get(field.field_name) if self.data else None
             error = errors.get(field.field_name)
             yield FieldResult(field, value, error)

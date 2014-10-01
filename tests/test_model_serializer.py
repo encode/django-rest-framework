@@ -95,7 +95,7 @@ class TestRegularFieldMappings(TestCase):
                 positive_small_integer_field = IntegerField()
                 slug_field = SlugField(max_length=100)
                 small_integer_field = IntegerField()
-                text_field = CharField()
+                text_field = CharField(style={'type': 'textarea'})
                 time_field = TimeField()
                 url_field = URLField(max_length=100)
                 custom_field = ModelField(model_field=<tests.test_model_serializer.CustomField: custom_field>)

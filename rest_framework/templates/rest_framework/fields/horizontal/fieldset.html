@@ -1,0 +1,10 @@
+<fieldset>
+    {% if field.label %}
+        <div class="form-group" style="border-bottom: 1px solid #e5e5e5">
+            <legend class="control-label col-sm-2 {% if field.style.hide_label %}sr-only{% endif %}" style="border-bottom: 0">{{ field.label }}</legend>
+        </div>
+    {% endif %}
+    {% for field_item in value.field_items.values() %}
+        {{ renderer.render_field(field_item, layout=layout) }}
+    {% endfor %}
+</fieldset>

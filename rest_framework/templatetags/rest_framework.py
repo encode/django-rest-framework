@@ -31,6 +31,14 @@ class_re = re.compile(r'(?<=class=["\'])(.*)(?=["\'])')
 
 # And the template tags themselves...
 
+# @register.simple_tag
+# def render_field(field, value, errors, renderer):
+#     return renderer.render_field(field, value, errors)
+@register.simple_tag
+def render_field(field, value, errors, layout=None, renderer=None):
+    return renderer.render_field(field, value, errors, layout)
+
+
 @register.simple_tag
 def optional_login(request):
     """

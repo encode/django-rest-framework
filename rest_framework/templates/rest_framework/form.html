@@ -1,15 +1,31 @@
+<html>
+<head>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+
+<h1>User update</h1>
+<div class="well">
+
 {% load rest_framework %}
-{% csrf_token %}
-{{ form.non_field_errors }}
-{% for field in form.fields.values %}
-    {% if not field.read_only %}
-    <div class="control-group {% if field.errors %}error{% endif %}">
-        {{ field.label_tag|add_class:"control-label" }}
-        <div class="controls">
-            {{ field.widget_html }}
-            {% if field.help_text %}<span class="help-block">{{ field.help_text }}</span>{% endif %}
-            {% for error in field.errors %}<span class="help-block">{{ error }}</span>{% endfor %}
+<form {% if layout == "inline" %}class="form-inline"{% elif layout == "horizontal" %}class="form-horizontal"{% endif %} role="form" action="" method="POST">
+    {% csrf_token %}
+    {% for field, value, errors in form %}
+        {% render_field field value errors layout=layout renderer=renderer %}
+    {% endfor %}
+    <!-- form.non_field_errors -->
+    {% if layout == "horizontal" %}
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-default">Submit</button>
+            </div>
         </div>
-    </div>
+    {% else %}
+        <button type="submit" class="btn btn-default">Submit</button>
     {% endif %}
-{% endfor %}
+</form>
+
+</div>
+</div></body>
+</html>

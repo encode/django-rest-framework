@@ -13,17 +13,18 @@ import django
 from django import forms
 from django.core.exceptions import ImproperlyConfigured
 from django.http.multipartparser import parse_header
-from django.template import RequestContext, loader, Template
+from django.template import Context, RequestContext, loader, Template
 from django.test.client import encode_multipart
 from django.utils import six
 from django.utils.xmlutils import SimplerXMLGenerator
+from rest_framework import exceptions, serializers, status, VERSION
 from rest_framework.compat import StringIO, smart_text, yaml
 from rest_framework.exceptions import ParseError
 from rest_framework.settings import api_settings
 from rest_framework.request import is_form_media_type, override_method
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
-from rest_framework import exceptions, status, VERSION
+from rest_framework.utils.field_mapping import ClassLookupDict
 
 
 def zero_as_none(value):
@@ -341,6 +342,42 @@ class HTMLFormRenderer(BaseRenderer):
     template = 'rest_framework/form.html'
     charset = 'utf-8'
 
+    field_templates = ClassLookupDict({
+        serializers.Field: {
+            'default': 'input.html'
+        },
+        serializers.BooleanField: {
+            'default': 'checkbox.html'
+        },
+        serializers.CharField: {
+            'default': 'input.html',
+            'textarea': 'textarea.html'
+        },
+        serializers.ChoiceField: {
+            'default': 'select.html',
+            'radio': 'select_radio.html'
+        },
+        serializers.MultipleChoiceField: {
+            'default': 'select_multiple.html',
+            'checkbox': 'select_checkbox.html'
+        }
+    })
+
+    def render_field(self, field, value, errors, layout=None):
+        layout = layout or 'vertical'
+        style_type = field.style.get('type', 'default')
+        if style_type == 'textarea' and layout == 'inline':
+            style_type = 'default'
+        base = self.field_templates[field][style_type]
+        template_name = 'rest_framework/fields/' + layout + '/' + base
+        template = loader.get_template(template_name)
+        context = Context({
+            'field': field,
+            'value': value,
+            'errors': errors
+        })
+        return template.render(context)
+
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Render serializer data and return an HTML form, as a string.
@@ -349,7 +386,11 @@ class HTMLFormRenderer(BaseRenderer):
         request = renderer_context['request']
 
         template = loader.get_template(self.template)
-        context = RequestContext(request, {'form': data})
+        context = RequestContext(request, {
+            'form': data,
+            'layout': getattr(getattr(data, 'Meta', None), 'layout', 'vertical'),
+            'renderer': self
+        })
         return template.render(context)
 
 
