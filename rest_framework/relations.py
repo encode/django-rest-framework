@@ -38,6 +38,16 @@ class RelatedField(Field):
             queryset = queryset.all()
         return queryset
 
+    @property
+    def choices(self):
+        return dict([
+            (
+                str(self.to_representation(item)),
+                str(item)
+            )
+            for item in self.queryset.all()
+        ])
+
 
 class StringRelatedField(Field):
     """
@@ -255,3 +265,13 @@ class ManyRelation(Field):
             self.child_relation.to_representation(value)
             for value in obj.all()
         ]
+
+    @property
+    def choices(self):
+        return dict([
+            (
+                str(self.child_relation.to_representation(item)),
+                str(item)
+            )
+            for item in self.child_relation.queryset.all()
+        ])

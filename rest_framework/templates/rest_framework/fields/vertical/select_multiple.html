@@ -1,7 +1,7 @@
 <div class="form-group">
     {% include "rest_framework/fields/vertical/label.html" %}
     <select multiple class="form-control" name="{{ field.field_name }}">
-        {% for key, text in field.choices.items() %}
+        {% for key, text in field.choices.items %}
         <option value="{{ key }}" {% if key in value %}selected{% endif %}>{{ text }}</option>
         {% endfor %}
     </select>

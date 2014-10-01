@@ -9,7 +9,7 @@
 <div class="well">
 
 {% load rest_framework %}
-<form {% if layout == "inline" %}class="form-inline"{% elif layout == "horizontal" %}class="form-horizontal"{% endif %} role="form" action="" method="POST">
+<form {% if layout == "inline" %}class="form-inline"{% elif layout == "horizontal" %}class="form-horizontal"{% endif %} role="form" action="." method="POST">
     {% csrf_token %}
     {% for field, value, errors in form %}
         {% render_field field value errors layout=layout renderer=renderer %}

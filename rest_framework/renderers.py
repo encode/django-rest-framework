@@ -360,7 +360,21 @@ class HTMLFormRenderer(BaseRenderer):
         serializers.MultipleChoiceField: {
             'default': 'select_multiple.html',
             'checkbox': 'select_checkbox.html'
+        },
+        serializers.ManyRelation: {
+            'default': 'select_multiple.html',
+            'checkbox': 'select_checkbox.html'
         }
+    })
+
+    input_type = ClassLookupDict({
+        serializers.Field: 'text',
+        serializers.EmailField: 'email',
+        serializers.URLField: 'url',
+        serializers.IntegerField: 'number',
+        serializers.DateTimeField: 'datetime-local',
+        serializers.DateField: 'date',
+        serializers.TimeField: 'time',
     })
 
     def render_field(self, field, value, errors, layout=None):
@@ -368,14 +382,21 @@ class HTMLFormRenderer(BaseRenderer):
         style_type = field.style.get('type', 'default')
         if style_type == 'textarea' and layout == 'inline':
             style_type = 'default'
+
+        input_type = self.input_type[field]
+        if input_type == 'datetime-local':
+            value = value.rstrip('Z')
+
         base = self.field_templates[field][style_type]
         template_name = 'rest_framework/fields/' + layout + '/' + base
         template = loader.get_template(template_name)
         context = Context({
             'field': field,
             'value': value,
-            'errors': errors
+            'errors': errors,
+            'input_type': input_type
         })
+
         return template.render(context)
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
@@ -388,7 +409,7 @@ class HTMLFormRenderer(BaseRenderer):
         template = loader.get_template(self.template)
         context = RequestContext(request, {
             'form': data,
-            'layout': getattr(getattr(data, 'Meta', None), 'layout', 'vertical'),
+            'layout': getattr(getattr(data, 'Meta', None), 'layout', 'horizontal'),
             'renderer': self
         })
         return template.render(context)
