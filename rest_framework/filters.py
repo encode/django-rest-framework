@@ -3,6 +3,7 @@ Provides generic filtering backends that can be used to filter the results
 returned by list views.
 """
 from __future__ import unicode_literals
+
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import six
@@ -97,7 +98,7 @@ class SearchFilter(BaseFilterBackend):
         if not search_fields:
             return queryset
 
-        orm_lookups = [self.construct_search(str(search_field))
+        orm_lookups = [self.construct_search(six.text_type(search_field))
                        for search_field in search_fields]
 
         for search_term in self.get_search_terms(request):

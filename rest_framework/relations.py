@@ -4,6 +4,7 @@ from rest_framework.reverse import reverse
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch, Resolver404
 from django.db.models.query import QuerySet
+from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -49,7 +50,7 @@ class StringRelatedField(Field):
         super(StringRelatedField, self).__init__(**kwargs)
 
     def to_representation(self, value):
-        return str(value)
+        return six.text_type(value)
 
 
 class PrimaryKeyRelatedField(RelatedField):

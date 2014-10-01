@@ -3,10 +3,11 @@ Generic views that provide commonly needed behaviour.
 """
 from __future__ import unicode_literals
 
-from django.db.models.query import QuerySet
 from django.core.paginator import Paginator, InvalidPage
+from django.db.models.query import QuerySet
 from django.http import Http404
 from django.shortcuts import get_object_or_404 as _get_object_or_404
+from django.utils import six
 from django.utils.translation import ugettext as _
 from rest_framework import views, mixins
 from rest_framework.settings import api_settings
@@ -127,7 +128,7 @@ class GenericAPIView(views.APIView):
             error_format = _('Invalid page (%(page_number)s): %(message)s')
             raise Http404(error_format % {
                 'page_number': page_number,
-                'message': str(exc)
+                'message': six.text_type(exc)
             })
 
         return page

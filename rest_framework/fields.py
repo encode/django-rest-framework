@@ -2,7 +2,7 @@ from django import forms
 from django.conf import settings
 from django.core import validators
 from django.core.exceptions import ValidationError
-from django.utils import timezone
+from django.utils import six, timezone
 from django.utils.datastructures import SortedDict
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import is_protected_type
@@ -431,10 +431,10 @@ class CharField(Field):
         return super(CharField, self).run_validation(data)
 
     def to_internal_value(self, data):
-        return str(data)
+        return six.text_type(data)
 
     def to_representation(self, value):
-        return str(value)
+        return six.text_type(value)
 
 
 class EmailField(CharField):
@@ -448,10 +448,10 @@ class EmailField(CharField):
         self.validators.append(validator)
 
     def to_internal_value(self, data):
-        return str(data).strip()
+        return six.text_type(data).strip()
 
     def to_representation(self, value):
-        return str(value).strip()
+        return six.text_type(value).strip()
 
 
 class RegexField(CharField):
@@ -510,7 +510,7 @@ class IntegerField(Field):
 
     def to_internal_value(self, data):
         try:
-            data = int(str(data))
+            data = int(six.text_type(data))
         except (ValueError, TypeError):
             self.fail('invalid')
         return data
@@ -616,7 +616,7 @@ class DecimalField(Field):
 
     def to_representation(self, value):
         if not isinstance(value, decimal.Decimal):
-            value = decimal.Decimal(str(value).strip())
+            value = decimal.Decimal(six.text_type(value).strip())
 
         context = decimal.getcontext().copy()
         context.prec = self.max_digits
@@ -832,19 +832,19 @@ class ChoiceField(Field):
         # Allows us to deal with eg. integer choices while supporting either
         # integer or string input, but still get the correct datatype out.
         self.choice_strings_to_values = dict([
-            (str(key), key) for key in self.choices.keys()
+            (six.text_type(key), key) for key in self.choices.keys()
         ])
 
         super(ChoiceField, self).__init__(**kwargs)
 
     def to_internal_value(self, data):
         try:
-            return self.choice_strings_to_values[str(data)]
+            return self.choice_strings_to_values[six.text_type(data)]
         except KeyError:
             self.fail('invalid_choice', input=data)
 
     def to_representation(self, value):
-        return self.choice_strings_to_values[str(value)]
+        return self.choice_strings_to_values[six.text_type(value)]
 
 
 class MultipleChoiceField(ChoiceField):
@@ -864,7 +864,7 @@ class MultipleChoiceField(ChoiceField):
 
     def to_representation(self, value):
         return set([
-            self.choice_strings_to_values[str(item)] for item in value
+            self.choice_strings_to_values[six.text_type(item)] for item in value
         ])
 
 

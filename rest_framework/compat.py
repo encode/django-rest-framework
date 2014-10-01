@@ -5,11 +5,12 @@ versions of django/python, and compatibility wrappers around optional packages.
 
 # flake8: noqa
 from __future__ import unicode_literals
-import django
-import inspect
+
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
 from django.utils import six
+import django
+import inspect
 
 
 # Handle django.utils.encoding rename in 1.5 onwards.
@@ -177,12 +178,12 @@ class RequestFactory(DjangoRequestFactory):
         r = {
             'PATH_INFO':      self._get_path(parsed),
             'QUERY_STRING':   force_text(parsed[4]),
-            'REQUEST_METHOD': str(method),
+            'REQUEST_METHOD': six.text_type(method),
         }
         if data:
             r.update({
                 'CONTENT_LENGTH': len(data),
-                'CONTENT_TYPE':   str(content_type),
+                'CONTENT_TYPE':   six.text_type(content_type),
                 'wsgi.input':     FakePayload(data),
             })
         elif django.VERSION <= (1, 4):

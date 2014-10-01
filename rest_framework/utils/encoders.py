@@ -2,8 +2,8 @@
 Helper classes for parsers.
 """
 from __future__ import unicode_literals
-from django.utils import timezone
 from django.db.models.query import QuerySet
+from django.utils import six, timezone
 from django.utils.datastructures import SortedDict
 from django.utils.functional import Promise
 from rest_framework.compat import force_text
@@ -40,7 +40,7 @@ class JSONEncoder(json.JSONEncoder):
                 representation = representation[:12]
             return representation
         elif isinstance(obj, datetime.timedelta):
-            return str(obj.total_seconds())
+            return six.text_type(obj.total_seconds())
         elif isinstance(obj, decimal.Decimal):
             # Serializers will coerce decimals to strings by default.
             return float(obj)
@@ -72,7 +72,7 @@ else:
         than the usual behaviour of sorting the keys.
         """
         def represent_decimal(self, data):
-            return self.represent_scalar('tag:yaml.org,2002:str', str(data))
+            return self.represent_scalar('tag:yaml.org,2002:str', six.text_type(data))
 
         def represent_mapping(self, tag, mapping, flow_style=None):
             value = []
