@@ -994,7 +994,7 @@ class ImageField(FileField):
         super(ImageField, self).__init__(*args, **kwargs)
 
     def to_native(self, value):
-        if self.show_url:
+        if value and self.show_url:
             return value.url
         return value.name
 
