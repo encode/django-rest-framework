@@ -45,7 +45,7 @@ class JSONEncoder(json.JSONEncoder):
             # Serializers will coerce decimals to strings by default.
             return float(obj)
         elif isinstance(obj, QuerySet):
-            return list(obj)
+            return tuple(obj)
         elif hasattr(obj, 'tolist'):
             # Numpy arrays and array scalars.
             return obj.tolist()
@@ -55,7 +55,7 @@ class JSONEncoder(json.JSONEncoder):
             except:
                 pass
         elif hasattr(obj, '__iter__'):
-            return [item for item in obj]
+            return tuple(item for item in obj)
         return super(JSONEncoder, self).default(obj)
 
 
