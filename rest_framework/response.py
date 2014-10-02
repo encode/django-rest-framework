@@ -9,6 +9,7 @@ import django
 from django.core.handlers.wsgi import STATUS_CODE_TEXT
 from django.template.response import SimpleTemplateResponse
 from django.utils import six
+from django.utils.functional import cached_property
 
 
 class Response(SimpleTemplateResponse):
@@ -40,7 +41,7 @@ class Response(SimpleTemplateResponse):
             for name, value in six.iteritems(headers):
                 self[name] = value
 
-    @property
+    @cached_property
     def rendered_content(self):
         renderer = getattr(self, 'accepted_renderer', None)
         media_type = getattr(self, 'accepted_media_type', None)
@@ -73,7 +74,7 @@ class Response(SimpleTemplateResponse):
 
         return ret
 
-    @property
+    @cached_property
     def status_text(self):
         """
         Returns reason text corresponding to our HTTP response status code.

@@ -9,11 +9,14 @@ The wrapped request then offers a richer API, in particular :
     - form overloading of HTTP method, content type and content
 """
 from __future__ import unicode_literals
+
 from django.conf import settings
 from django.http import QueryDict
 from django.http.multipartparser import parse_header
 from django.utils.datastructures import MultiValueDict
 from django.utils.datastructures import MergeDict as DjangoMergeDict
+from django.utils.functional import cached_property
+
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
 from rest_framework.compat import BytesIO
@@ -163,7 +166,7 @@ class Request(object):
     def _default_negotiator(self):
         return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()
 
-    @property
+    @cached_property
     def method(self):
         """
         Returns the HTTP method.
@@ -175,7 +178,7 @@ class Request(object):
             self._load_method_and_content_type()
         return self._method
 
-    @property
+    @cached_property
     def content_type(self):
         """
         Returns the content type header.
@@ -188,7 +191,7 @@ class Request(object):
             self._load_method_and_content_type()
         return self._content_type
 
-    @property
+    @cached_property
     def stream(self):
         """
         Returns an object that may be used to stream the request content.
@@ -211,13 +214,13 @@ class Request(object):
         """
         return self._request.GET
 
-    @property
+    @cached_property
     def data(self):
         if not _hasattr(self, '_full_data'):
             self._load_data_and_files()
         return self._full_data
 
-    @property
+    @cached_property
     def DATA(self):
         """
         Parses the request body and returns the data.
@@ -229,7 +232,7 @@ class Request(object):
             self._load_data_and_files()
         return self._data
 
-    @property
+    @cached_property
     def FILES(self):
         """
         Parses the request body and returns any files uploaded in the request.
@@ -278,7 +281,7 @@ class Request(object):
         """
         self._auth = value
 
-    @property
+    @cached_property
     def successful_authenticator(self):
         """
         Return the instance of the authentication instance class that was used
