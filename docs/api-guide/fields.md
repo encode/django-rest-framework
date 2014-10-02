@@ -286,7 +286,7 @@ For example, to validate numbers up to 999 with a resolution of 2 decimal places
 
     serializers.DecimalField(max_digits=5, decimal_places=2)
 
-And to validate numbers up to anything lesss than one billion with a resolution of 10 decimal places:
+And to validate numbers up to anything less than one billion with a resolution of 10 decimal places:
 
     serializers.DecimalField(max_digits=19, decimal_places=10)
 

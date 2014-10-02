@@ -100,7 +100,7 @@ class HyperlinkedRelatedField(RelatedField):
         self.lookup_url_kwarg = kwargs.pop('lookup_url_kwarg', self.lookup_field)
         self.format = kwargs.pop('format', None)
 
-        # We include these simply for dependancy injection in tests.
+        # We include these simply for dependency injection in tests.
         # We can't add them as class attributes or they would expect an
         # implict `self` argument to be passed.
         self.reverse = reverse

@@ -131,7 +131,7 @@ else:
             self.message = kwargs.pop('message', self.message)
             super(MaxValueValidator, self).__init__(*args, **kwargs)
 
-# URLValidator only accept `message` in 1.6+
+# URLValidator only accepts `message` in 1.6+
 if django.VERSION >= (1, 6):
     from django.core.validators import URLValidator
 else:
