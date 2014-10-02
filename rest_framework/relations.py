@@ -127,7 +127,7 @@ class HyperlinkedRelatedField(RelatedField):
         attributes are not configured to correctly match the URL conf.
         """
         # Unsaved objects will not yet have a valid URL.
-        if obj.pk is None:
+        if obj.pk:
             return None
 
         lookup_value = getattr(obj, self.lookup_field)
@@ -248,11 +248,13 @@ class ManyRelation(Field):
 
     You shouldn't need to be using this class directly yourself.
     """
+    initial = []
 
     def __init__(self, child_relation=None, *args, **kwargs):
         self.child_relation = child_relation
         assert child_relation is not None, '`child_relation` is a required argument.'
         super(ManyRelation, self).__init__(*args, **kwargs)
+        self.child_relation.bind(field_name='', parent=self)
 
     def to_internal_value(self, data):
         return [

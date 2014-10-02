@@ -1,7 +1,7 @@
 <div class="form-group">
     {% include "rest_framework/fields/horizontal/label.html" %}
     <div class="col-sm-10">
-        <textarea class="form-control" {% include "rest_framework/fields/attrs.html" %}>{% if value %}{{ value }}{% endif %}</textarea>
+        <textarea class="form-control" {% include "rest_framework/fields/attrs.html" %}>{% if field.value %}{{ field.value }}{% endif %}</textarea>
         {% if field.help_text %}<p class="help-block">{{ field.help_text }}</p>{% endif %}
     </div>
 </div>

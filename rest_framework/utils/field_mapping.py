@@ -21,7 +21,14 @@ class ClassLookupDict(object):
         self.mapping = mapping
 
     def __getitem__(self, key):
-        for cls in inspect.getmro(key.__class__):
+        if hasattr(key, '_proxy_class'):
+            # Deal with proxy classes. Ie. BoundField behaves as if it
+            # is a Field instance when using ClassLookupDict.
+            base_class = key._proxy_class
+        else:
+            base_class = key.__class__
+
+        for cls in inspect.getmro(base_class):
             if cls in self.mapping:
                 return self.mapping[cls]
         raise KeyError('Class %s not found in lookup.', cls.__name__)

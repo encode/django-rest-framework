@@ -4,7 +4,7 @@
             <legend class="control-label col-sm-2 {% if field.style.hide_label %}sr-only{% endif %}" style="border-bottom: 0">{{ field.label }}</legend>
         </div>
     {% endif %}
-    {% for field_item in value.field_items.values() %}
+    {% for field_item in field.value.field_items.values() %}
         {{ renderer.render_field(field_item, layout=layout) }}
     {% endfor %}
 </fieldset>

@@ -689,10 +689,10 @@ class DateTimeField(Field):
             return value
 
         if self.format.lower() == ISO_8601:
-            ret = value.isoformat()
-            if ret.endswith('+00:00'):
-                ret = ret[:-6] + 'Z'
-            return ret
+            value = value.isoformat()
+            if value.endswith('+00:00'):
+                value = value[:-6] + 'Z'
+            return value
         return value.strftime(self.format)
 
 

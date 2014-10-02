@@ -377,23 +377,21 @@ class HTMLFormRenderer(BaseRenderer):
         serializers.TimeField: 'time',
     })
 
-    def render_field(self, field, value, errors, layout=None):
+    def render_field(self, field, layout=None):
         layout = layout or 'vertical'
         style_type = field.style.get('type', 'default')
         if style_type == 'textarea' and layout == 'inline':
             style_type = 'default'
 
         input_type = self.input_type[field]
-        if input_type == 'datetime-local':
-            value = value.rstrip('Z')
+        if input_type == 'datetime-local' and isinstance(field.value, six.text_type):
+            field.value = field.value.rstrip('Z')
 
         base = self.field_templates[field][style_type]
         template_name = 'rest_framework/fields/' + layout + '/' + base
         template = loader.get_template(template_name)
         context = Context({
             'field': field,
-            'value': value,
-            'errors': errors,
             'input_type': input_type
         })
 
@@ -408,7 +406,7 @@ class HTMLFormRenderer(BaseRenderer):
 
         template = loader.get_template(self.template)
         context = RequestContext(request, {
-            'form': data,
+            'form': data.serializer,
             'layout': getattr(getattr(data, 'Meta', None), 'layout', 'horizontal'),
             'renderer': self
         })
@@ -479,27 +477,29 @@ class BrowsableAPIRenderer(BaseRenderer):
             return False  # Doesn't have permissions
         return True
 
-    def get_rendered_html_form(self, view, method, request):
+    def get_rendered_html_form(self, data, view, method, request):
         """
         Return a string representing a rendered HTML form, possibly bound to
         either the input or output data.
 
         In the absence of the View having an associated form then return None.
         """
+        serializer = getattr(data, 'serializer', None)
+        if serializer and not getattr(serializer, 'many', False):
+            instance = getattr(serializer, 'instance', None)
+        else:
+            instance = None
+
         if request.method == method:
             try:
                 data = request.data
-                # files = request.FILES
             except ParseError:
                 data = None
-                # files = None
         else:
             data = None
-            # files = None
 
         with override_method(view, request, method) as request:
-            obj = getattr(view, 'object', None)
-            if not self.show_form_for_method(view, method, request, obj):
+            if not self.show_form_for_method(view, method, request, instance):
                 return
 
             if method in ('DELETE', 'OPTIONS'):
@@ -511,19 +511,24 @@ class BrowsableAPIRenderer(BaseRenderer):
             ):
                 return
 
-            serializer = view.get_serializer(instance=obj, data=data)
-            serializer.is_valid()
-            data = serializer.data
-
+            serializer = view.get_serializer(instance=instance, data=data)
+            if data is not None:
+                serializer.is_valid()
             form_renderer = self.form_renderer_class()
-            return form_renderer.render(data, self.accepted_media_type, self.renderer_context)
+            return form_renderer.render(serializer.data, self.accepted_media_type, self.renderer_context)
 
-    def get_raw_data_form(self, view, method, request):
+    def get_raw_data_form(self, data, view, method, request):
         """
         Returns a form that allows for arbitrary content types to be tunneled
         via standard HTML forms.
         (Which are typically application/x-www-form-urlencoded)
         """
+        serializer = getattr(data, 'serializer', None)
+        if serializer and not getattr(serializer, 'many', False):
+            instance = getattr(serializer, 'instance', None)
+        else:
+            instance = None
+
         with override_method(view, request, method) as request:
             # If we're not using content overloading there's no point in
             # supplying a generic form, as the view won't treat the form's
@@ -533,8 +538,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                 return None
 
             # Check permissions
-            obj = getattr(view, 'object', None)
-            if not self.show_form_for_method(view, method, request, obj):
+            if not self.show_form_for_method(view, method, request, instance):
                 return
 
             # If possible, serialize the initial content for the generic form
@@ -545,8 +549,8 @@ class BrowsableAPIRenderer(BaseRenderer):
                 # corresponding renderer that can be used to render the data.
 
                 # Get a read-only version of the serializer
-                serializer = view.get_serializer(instance=obj)
-                if obj is None:
+                serializer = view.get_serializer(instance=instance)
+                if instance is None:
                     for name, field in serializer.fields.items():
                         if getattr(field, 'read_only', None):
                             del serializer.fields[name]
@@ -606,9 +610,9 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         renderer = self.get_default_renderer(view)
 
-        raw_data_post_form = self.get_raw_data_form(view, 'POST', request)
-        raw_data_put_form = self.get_raw_data_form(view, 'PUT', request)
-        raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request)
+        raw_data_post_form = self.get_raw_data_form(data, view, 'POST', request)
+        raw_data_put_form = self.get_raw_data_form(data, view, 'PUT', request)
+        raw_data_patch_form = self.get_raw_data_form(data, view, 'PATCH', request)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
         response_headers = dict(response.items())
@@ -632,10 +636,10 @@ class BrowsableAPIRenderer(BaseRenderer):
             'available_formats': [renderer_cls.format for renderer_cls in view.renderer_classes],
             'response_headers': response_headers,
 
-            # 'put_form': self.get_rendered_html_form(view, 'PUT', request),
-            # 'post_form': self.get_rendered_html_form(view, 'POST', request),
-            # 'delete_form': self.get_rendered_html_form(view, 'DELETE', request),
-            # 'options_form': self.get_rendered_html_form(view, 'OPTIONS', request),
+            'put_form': self.get_rendered_html_form(data, view, 'PUT', request),
+            'post_form': self.get_rendered_html_form(data, view, 'POST', request),
+            'delete_form': self.get_rendered_html_form(data, view, 'DELETE', request),
+            'options_form': self.get_rendered_html_form(data, view, 'OPTIONS', request),
 
             'raw_data_put_form': raw_data_put_form,
             'raw_data_post_form': raw_data_post_form,

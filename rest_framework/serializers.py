@@ -14,7 +14,6 @@ from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db import models
 from django.utils import six
 from django.utils.datastructures import SortedDict
-from collections import namedtuple
 from rest_framework.fields import empty, set_value, Field, SkipField
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, model_meta, representation
@@ -38,8 +37,8 @@ from rest_framework.relations import *  # NOQA
 from rest_framework.fields import *  # NOQA
 
 
-FieldResult = namedtuple('FieldResult', ['field', 'value', 'error'])
-
+# BaseSerializer
+# --------------
 
 class BaseSerializer(Field):
     """
@@ -113,11 +112,6 @@ class BaseSerializer(Field):
         if not hasattr(self, '_data'):
             if self.instance is not None:
                 self._data = self.to_representation(self.instance)
-            elif self._initial_data is not None:
-                self._data = dict([
-                    (field_name, field.get_value(self._initial_data))
-                    for field_name, field in self.fields.items()
-                ])
             else:
                 self._data = self.get_initial()
         return self._data
@@ -135,6 +129,79 @@ class BaseSerializer(Field):
             msg = 'You must call `.is_valid()` before accessing `.validated_data`.'
             raise AssertionError(msg)
         return self._validated_data
+
+
+# Serializer & ListSerializer classes
+# -----------------------------------
+
+class ReturnDict(SortedDict):
+    """
+    Return object from `serialier.data` for the `Serializer` class.
+    Includes a backlink to the serializer instance for renderers
+    to use if they need richer field information.
+    """
+    def __init__(self, *args, **kwargs):
+        self.serializer = kwargs.pop('serializer')
+        super(ReturnDict, self).__init__(*args, **kwargs)
+
+
+class ReturnList(list):
+    """
+    Return object from `serialier.data` for the `SerializerList` class.
+    Includes a backlink to the serializer instance for renderers
+    to use if they need richer field information.
+    """
+    def __init__(self, *args, **kwargs):
+        self.serializer = kwargs.pop('serializer')
+        super(ReturnList, self).__init__(*args, **kwargs)
+
+
+class BoundField(object):
+    """
+    A field object that also includes `.value` and `.error` properties.
+    Returned when iterating over a serializer instance,
+    providing an API similar to Django forms and form fields.
+    """
+    def __init__(self, field, value, errors):
+        self._field = field
+        self.value = value
+        self.errors = errors
+
+    def __getattr__(self, attr_name):
+        return getattr(self._field, attr_name)
+
+    @property
+    def _proxy_class(self):
+        return self._field.__class__
+
+
+class BindingDict(object):
+    """
+    This dict-like object is used to store fields on a serializer.
+
+    This ensures that whenever fields are added to the serializer we call
+    `field.bind()` so that the `field_name` and `parent` attributes
+    can be set correctly.
+    """
+    def __init__(self, serializer):
+        self.serializer = serializer
+        self.fields = SortedDict()
+
+    def __setitem__(self, key, field):
+        self.fields[key] = field
+        field.bind(field_name=key, parent=self.serializer)
+
+    def __getitem__(self, key):
+        return self.fields[key]
+
+    def __delitem__(self, key):
+        del self.fields[key]
+
+    def items(self):
+        return self.fields.items()
+
+    def values(self):
+        return self.fields.values()
 
 
 class SerializerMetaclass(type):
@@ -167,35 +234,6 @@ class SerializerMetaclass(type):
         return super(SerializerMetaclass, cls).__new__(cls, name, bases, attrs)
 
 
-class BindingDict(object):
-    """
-    This dict-like object is used to store fields on a serializer.
-
-    This ensures that whenever fields are added to the serializer we call
-    `field.bind()` so that the `field_name` and `parent` attributes
-    can be set correctly.
-    """
-    def __init__(self, serializer):
-        self.serializer = serializer
-        self.fields = SortedDict()
-
-    def __setitem__(self, key, field):
-        self.fields[key] = field
-        field.bind(field_name=key, parent=self.serializer)
-
-    def __getitem__(self, key):
-        return self.fields[key]
-
-    def __delitem__(self, key):
-        del self.fields[key]
-
-    def items(self):
-        return self.fields.items()
-
-    def values(self):
-        return self.fields.values()
-
-
 @six.add_metaclass(SerializerMetaclass)
 class Serializer(BaseSerializer):
     def __init__(self, *args, **kwargs):
@@ -212,10 +250,18 @@ class Serializer(BaseSerializer):
         return copy.deepcopy(self._declared_fields)
 
     def get_initial(self):
-        return dict([
+        if self._initial_data is not None:
+            return ReturnDict([
+                 (field_name, field.get_value(self._initial_data))
+                 for field_name, field in self.fields.items()
+             ], serializer=self)
+            #return self.to_representation(self._initial_data)
+
+        return ReturnDict([
             (field.field_name, field.get_initial())
             for field in self.fields.values()
-        ])
+            if not field.write_only
+        ], serializer=self)
 
     def get_value(self, dictionary):
         # We override the default field access in order to support
@@ -288,7 +334,7 @@ class Serializer(BaseSerializer):
         """
         Object instance -> Dict of primitive datatypes.
         """
-        ret = SortedDict()
+        ret = ReturnDict(serializer=self)
         fields = [field for field in self.fields.values() if not field.write_only]
 
         for field in fields:
@@ -302,11 +348,9 @@ class Serializer(BaseSerializer):
     def __iter__(self):
         errors = self.errors if hasattr(self, '_errors') else {}
         for field in self.fields.values():
-            if field.read_only:
-                continue
             value = self.data.get(field.field_name) if self.data else None
             error = errors.get(field.field_name)
-            yield FieldResult(field, value, error)
+            yield BoundField(field, value, error)
 
     def __repr__(self):
         return representation.serializer_repr(self, indent=1)
@@ -317,7 +361,7 @@ class Serializer(BaseSerializer):
 
 class ListSerializer(BaseSerializer):
     child = None
-    initial = []
+    many = True
 
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
@@ -325,6 +369,11 @@ class ListSerializer(BaseSerializer):
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         super(ListSerializer, self).__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
+
+    def get_initial(self):
+        if self._initial_data is not None:
+            return self.to_representation(self._initial_data)
+        return ReturnList(serializer=self)
 
     def get_value(self, dictionary):
         # We override the default field access in order to support
@@ -345,7 +394,10 @@ class ListSerializer(BaseSerializer):
         """
         List of object instances -> List of dicts of primitive datatypes.
         """
-        return [self.child.to_representation(item) for item in data]
+        return ReturnList(
+            [self.child.to_representation(item) for item in data],
+            serializer=self
+        )
 
     def create(self, attrs_list):
         return [self.child.create(attrs) for attrs in attrs_list]
@@ -353,6 +405,9 @@ class ListSerializer(BaseSerializer):
     def __repr__(self):
         return representation.list_repr(self, indent=1)
 
+
+# ModelSerializer & HyperlinkedModelSerializer
+# --------------------------------------------
 
 class ModelSerializer(Serializer):
     _field_mapping = ClassLookupDict({

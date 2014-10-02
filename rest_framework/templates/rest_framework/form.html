@@ -1,4 +1,4 @@
-<html>
+<!-- <html>
 <head>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -6,13 +6,15 @@
 <div class="container">
 
 <h1>User update</h1>
-<div class="well">
+<div class="well"> -->
 
 {% load rest_framework %}
 <form {% if layout == "inline" %}class="form-inline"{% elif layout == "horizontal" %}class="form-horizontal"{% endif %} role="form" action="." method="POST">
     {% csrf_token %}
-    {% for field, value, errors in form %}
-        {% render_field field value errors layout=layout renderer=renderer %}
+    {% for field in form %}
+        {% if not field.read_only %}
+            {% render_field field layout=layout renderer=renderer %}
+        {% endif %}
     {% endfor %}
     <!-- form.non_field_errors -->
     {% if layout == "horizontal" %}
@@ -25,7 +27,7 @@
         <button type="submit" class="btn btn-default">Submit</button>
     {% endif %}
 </form>
-
+<!-- 
 </div>
 </div></body>
-</html>
+</html> -->

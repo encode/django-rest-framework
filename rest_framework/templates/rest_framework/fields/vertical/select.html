@@ -2,7 +2,7 @@
     {% include "rest_framework/fields/vertical/label.html" %}
     <select class="form-control" name="{{ field.field_name }}">
         {% for key, text in field.choices.items %}
-        <option value="{{ key }}" {% if key == value %}selected{% endif %}>{{ text }}</option>
+        <option value="{{ key }}" {% if key == field.value %}selected{% endif %}>{{ text }}</option>
         {% endfor %}
     </select>
 </div>

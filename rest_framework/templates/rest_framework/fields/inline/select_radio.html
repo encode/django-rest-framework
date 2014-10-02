@@ -3,7 +3,7 @@
     {% for key, text in field.choices.items %}
         <div class="radio">
             <label>
-                <input type="radio" name="{{ field.field_name }}" value="{{ key }}" {% if key == value %}checked{% endif %}>
+                <input type="radio" name="{{ field.field_name }}" value="{{ key }}" {% if key == field.value %}checked{% endif %}>
                 {{ text }}
             </label>
         </div>
