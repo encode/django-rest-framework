@@ -106,7 +106,7 @@ class Field(object):
         'null': _('This field may not be null.')
     }
     default_validators = []
-    default_empty_html = None
+    default_empty_html = empty
     initial = None
 
     def __init__(self, read_only=False, write_only=False,
@@ -375,7 +375,6 @@ class NullBooleanField(Field):
     default_error_messages = {
         'invalid': _('`{input}` is not a valid boolean.')
     }
-    default_empty_html = None
     initial = None
     TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
     FALSE_VALUES = set(('f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False))
@@ -411,7 +410,6 @@ class CharField(Field):
     default_error_messages = {
         'blank': _('This field may not be blank.')
     }
-    default_empty_html = ''
     initial = ''
 
     def __init__(self, **kwargs):
@@ -852,6 +850,7 @@ class MultipleChoiceField(ChoiceField):
         'invalid_choice': _('`{input}` is not a valid choice.'),
         'not_a_list': _('Expected a list of items but got type `{input_type}`')
     }
+    default_empty_html = []
 
     def to_internal_value(self, data):
         if isinstance(data, type('')) or not hasattr(data, '__iter__'):

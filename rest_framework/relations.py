@@ -249,6 +249,7 @@ class ManyRelation(Field):
     You shouldn't need to be using this class directly yourself.
     """
     initial = []
+    default_empty_html = []
 
     def __init__(self, child_relation=None, *args, **kwargs):
         self.child_relation = child_relation

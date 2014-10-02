@@ -33,7 +33,7 @@ h2, h3 {
 }
 
 ul.breadcrumb {
-  margin: 80px 0 0 0;
+  margin: 70px 0 0 0;
 }
 
 form select, form input, form textarea {
@@ -67,5 +67,4 @@ pre {
 .page-header {
   border-bottom: none;
   padding-bottom: 0px;
-  margin-bottom: 20px;
 }
