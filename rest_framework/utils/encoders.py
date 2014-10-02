@@ -2,15 +2,18 @@
 Helper classes for parsers.
 """
 from __future__ import unicode_literals
-from django.db.models.query import QuerySet
-from django.utils import six, timezone
-from django.utils.datastructures import SortedDict
-from django.utils.functional import Promise
-from rest_framework.compat import force_text
 import datetime
 import decimal
 import types
 import json
+
+from django.db.models.query import QuerySet
+from django.utils import six, timezone
+from django.utils.datastructures import SortedDict
+from django.utils.functional import Promise
+
+from rest_framework.compat import force_text, lru_cache
+from rest_framework.settings import api_settings
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -19,11 +22,28 @@ class JSONEncoder(json.JSONEncoder):
     decimal types, generators and other basic python objects.
     """
     def default(self, obj):
-        # For Date Time string spec, see ECMA 262
-        # http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
         if isinstance(obj, Promise):
             return force_text(obj)
-        elif isinstance(obj, datetime.datetime):
+        elif isinstance(obj, QuerySet):
+            return tuple(obj)
+        elif hasattr(obj, '__getitem__'):
+            try:
+                return dict(obj)
+            except:
+                pass
+        elif hasattr(obj, 'tolist'):
+            # Numpy arrays and array scalars.
+            return obj.tolist()
+        elif hasattr(obj, '__iter__'):
+            return tuple(item for item in obj)
+
+        return self._default(obj)
+
+    @lru_cache(typed=True, maxsize=api_settings.ENCODER_LRU_CACHE_SIZE)
+    def _default(self, obj):
+        # For Date Time string spec, see ECMA 262
+        # http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
+        if isinstance(obj, datetime.datetime):
             representation = obj.isoformat()
             if obj.microsecond:
                 representation = representation[:23] + representation[26:]
@@ -44,18 +64,7 @@ class JSONEncoder(json.JSONEncoder):
         elif isinstance(obj, decimal.Decimal):
             # Serializers will coerce decimals to strings by default.
             return float(obj)
-        elif isinstance(obj, QuerySet):
-            return list(obj)
-        elif hasattr(obj, 'tolist'):
-            # Numpy arrays and array scalars.
-            return obj.tolist()
-        elif hasattr(obj, '__getitem__'):
-            try:
-                return dict(obj)
-            except:
-                pass
-        elif hasattr(obj, '__iter__'):
-            return [item for item in obj]
+
         return super(JSONEncoder, self).default(obj)
 
 
