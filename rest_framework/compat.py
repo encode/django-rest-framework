@@ -311,9 +311,11 @@ except ImportError:
         klass.__str__ = lambda self: self.__unicode__().encode('utf-8')
         return klass
 
-try:
+
+import sys
+if sys.version_info >= (3, 3):
     from functools import lru_cache
-except ImportError:
+else:
     try:
         from backports.functools_lru_cache import lru_cache
     except ImportError:
