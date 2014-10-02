@@ -102,7 +102,7 @@ class HyperlinkedRelatedField(RelatedField):
 
         # We include these simply for dependency injection in tests.
         # We can't add them as class attributes or they would expect an
-        # implict `self` argument to be passed.
+        # implicit `self` argument to be passed.
         self.reverse = reverse
         self.resolve = resolve
 
