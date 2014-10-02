@@ -15,6 +15,7 @@ from django.db import models
 from django.utils import six
 from django.utils.datastructures import SortedDict
 from collections import namedtuple
+from django.utils.functional import cached_property
 from rest_framework.fields import empty, set_value, Field, SkipField
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, model_meta, representation
@@ -108,28 +109,26 @@ class BaseSerializer(Field):
 
         return not bool(self._errors)
 
-    @property
+    @cached_property
     def data(self):
-        if not hasattr(self, '_data'):
-            if self.instance is not None:
-                self._data = self.to_representation(self.instance)
-            elif self._initial_data is not None:
-                self._data = dict([
-                    (field_name, field.get_value(self._initial_data))
-                    for field_name, field in self.fields.items()
-                ])
-            else:
-                self._data = self.get_initial()
-        return self._data
+        if self.instance is not None:
+            return self.to_representation(self.instance)
+        elif self._initial_data is not None:
+            return dict([
+                (field_name, field.get_value(self._initial_data))
+                for field_name, field in self.fields.items()
+            ])
+        else:
+            return self.get_initial()
 
-    @property
+    @cached_property
     def errors(self):
         if not hasattr(self, '_errors'):
             msg = 'You must call `.is_valid()` before accessing `.errors`.'
             raise AssertionError(msg)
         return self._errors
 
-    @property
+    @cached_property
     def validated_data(self):
         if not hasattr(self, '_validated_data'):
             msg = 'You must call `.is_valid()` before accessing `.validated_data`.'

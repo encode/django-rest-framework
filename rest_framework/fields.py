@@ -6,6 +6,7 @@ from django.utils import six, timezone
 from django.utils.datastructures import SortedDict
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import is_protected_type
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import ISO_8601
 from rest_framework.compat import smart_text, EmailValidator, MinValueValidator, MaxValueValidator, URLValidator
@@ -296,7 +297,7 @@ class Field(object):
             raise AssertionError(msg)
         raise ValidationError(msg.format(**kwargs))
 
-    @property
+    @cached_property
     def root(self):
         """
         Returns the top-level serializer for this field.
@@ -306,7 +307,7 @@ class Field(object):
             root = root.parent
         return root
 
-    @property
+    @cached_property
     def context(self):
         """
         Returns the context as passed to the root serializer on initialization.
