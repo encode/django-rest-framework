@@ -100,7 +100,7 @@ class APIView(View):
     content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS
     metadata_class = api_settings.DEFAULT_METADATA_CLASS
 
-    # Allow dependancy injection of other settings to make testing easier.
+    # Allow dependency injection of other settings to make testing easier.
     settings = api_settings
 
     @classmethod

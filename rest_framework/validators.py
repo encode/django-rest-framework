@@ -2,7 +2,7 @@
 We perform uniqueness checks explicitly on the serializer class, rather
 the using Django's `.full_clean()`.
 
-This gives us better seperation of concerns, allows us to use single-step
+This gives us better separation of concerns, allows us to use single-step
 object creation, and makes it possible to switch between using the implicit
 `ModelSerializer` class and an equivelent explicit `Serializer` class.
 """

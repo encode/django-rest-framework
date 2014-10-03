@@ -186,14 +186,14 @@ class Field(object):
 
     def get_initial(self):
         """
-        Return a value to use when the field is being returned as a primative
+        Return a value to use when the field is being returned as a primitive
         value, without any object instance.
         """
         return self.initial
 
     def get_value(self, dictionary):
         """
-        Given the *incoming* primative data, return the value for this field
+        Given the *incoming* primitive data, return the value for this field
         that should be validated and transformed to a native value.
         """
         if html.is_html_input(dictionary):
@@ -205,7 +205,7 @@ class Field(object):
 
     def get_field_representation(self, instance):
         """
-        Given the outgoing object instance, return the primative value
+        Given the outgoing object instance, return the primitive value
         that should be used for this field.
         """
         attribute = get_attribute(instance, self.source_attrs)
@@ -274,13 +274,13 @@ class Field(object):
 
     def to_internal_value(self, data):
         """
-        Transform the *incoming* primative data into a native value.
+        Transform the *incoming* primitive data into a native value.
         """
         raise NotImplementedError('to_internal_value() must be implemented.')
 
     def to_representation(self, value):
         """
-        Transform the *outgoing* native value into primative data.
+        Transform the *outgoing* native value into primitive data.
         """
         raise NotImplementedError('to_representation() must be implemented.')
 
@@ -927,7 +927,7 @@ class ImageField(FileField):
     def to_internal_value(self, data):
         # Image validation is a bit grungy, so we'll just outright
         # defer to Django's implementation so we don't need to
-        # consider it, or treat PIL as a test dependancy.
+        # consider it, or treat PIL as a test dependency.
         file_object = super(ImageField, self).to_internal_value(data)
         django_field = self._DjangoImageField()
         django_field.error_messages = self.error_messages

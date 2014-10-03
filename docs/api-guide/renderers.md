@@ -74,7 +74,7 @@ If your API includes views that can serve both regular webpages and API response
 
 Renders the request data into `JSON`, using utf-8 encoding.
 
-Note that the default style is to include unicode characters, and render the response using a compact style with no uneccessary whitespace:
+Note that the default style is to include unicode characters, and render the response using a compact style with no unnecessary whitespace:
 
     {"unicode black star":"★","value":999}
 

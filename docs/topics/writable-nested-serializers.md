@@ -6,7 +6,7 @@
 
 Although flat data structures serve to properly delineate between the individual entities in your service, there are cases where it may be more appropriate or convenient to use nested data structures.
 
-Nested data structures are easy enough to work with if they're read-only - simply nest your serializer classes and you're good to go.  However, there are a few more subtleties to using writable nested serializers, due to the dependancies between the various model instances, and the need to save or delete multiple instances in a single action.
+Nested data structures are easy enough to work with if they're read-only - simply nest your serializer classes and you're good to go.  However, there are a few more subtleties to using writable nested serializers, due to the dependencies between the various model instances, and the need to save or delete multiple instances in a single action.
 
 ## One-to-many data structures 
 
