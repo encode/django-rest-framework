@@ -101,8 +101,8 @@ class AllowPUTAsCreateMixin(object):
         if instance is None:
             lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
             lookup_value = self.kwargs[lookup_url_kwarg]
-            extras = {self.lookup_field: lookup_value}
-            serializer.save(extras=extras)
+            extra_kwargs = {self.lookup_field: lookup_value}
+            serializer.save(**extra_kwargs)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         serializer.save()

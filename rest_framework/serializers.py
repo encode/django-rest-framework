@@ -74,12 +74,12 @@ class BaseSerializer(Field):
     def create(self, validated_data):
         raise NotImplementedError('`create()` must be implemented.')
 
-    def save(self, extras=None):
+    def save(self, **kwargs):
         validated_data = self.validated_data
-        if extras is not None:
+        if kwargs:
             validated_data = dict(
                 list(validated_data.items()) +
-                list(extras.items())
+                list(kwargs.items())
             )
 
         if self.instance is not None:
@@ -256,7 +256,6 @@ class Serializer(BaseSerializer):
                 for field_name, field in self.fields.items()
                 if field.get_value(self._initial_data) is not empty
             ], serializer=self)
-            #return self.to_representation(self._initial_data)
 
         return ReturnDict([
             (field.field_name, field.get_initial())
