@@ -148,7 +148,7 @@ class OrderingFilter(BaseFilterBackend):
                 if not getattr(field, 'write_only', False)
             ]
         elif valid_fields == '__all__':
-            # View explictly allows filtering on any model field
+            # View explicitly allows filtering on any model field
             valid_fields = [field.name for field in queryset.model._meta.fields]
             valid_fields += queryset.query.aggregates.keys()
 

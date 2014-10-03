@@ -83,7 +83,7 @@ class DestroyModelMixin(object):
 
 
 # The AllowPUTAsCreateMixin was previously the default behaviour
-# for PUT requests. This has now been removed and must be *explictly*
+# for PUT requests. This has now been removed and must be *explicitly*
 # included if it is the behavior that you want.
 # For more info see: ...
 

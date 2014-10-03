@@ -262,9 +262,9 @@ class Issue807Tests(TestCase):
         expected = "{0}; charset={1}".format(RendererC.media_type, RendererC.charset)
         self.assertEqual(expected, resp['Content-Type'])
 
-    def test_content_type_set_explictly_on_response(self):
+    def test_content_type_set_explicitly_on_response(self):
         """
-        The content type may be set explictly on the response.
+        The content type may be set explicitly on the response.
         """
         headers = {"HTTP_ACCEPT": RendererC.media_type}
         resp = self.client.get('/setbyview', **headers)
