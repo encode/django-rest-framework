@@ -127,7 +127,7 @@ class HyperlinkedRelatedField(RelatedField):
         attributes are not configured to correctly match the URL conf.
         """
         # Unsaved objects will not yet have a valid URL.
-        if obj.pk:
+        if obj.pk is None:
             return None
 
         lookup_value = getattr(obj, self.lookup_field)
