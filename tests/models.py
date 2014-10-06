@@ -134,6 +134,14 @@ class OptionalRelationModel(RESTFrameworkModel):
     other = models.ForeignKey('OptionalRelationModel', blank=True, null=True)
 
 
+# Model for issue #1811
+class LimitedChoicesModel(RESTFrameworkModel):
+    rel = models.ForeignKey(
+        'ForeignKeyTarget',
+        limit_choices_to={'name': 'foo'},
+    )
+
+
 # Model for RegexField
 class Book(RESTFrameworkModel):
     isbn = models.CharField(max_length=13)

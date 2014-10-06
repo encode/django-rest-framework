@@ -836,9 +836,6 @@ class ModelSerializer(Serializer):
 
         Note that model_field will be `None` for reverse relationships.
         """
-        # TODO: filter queryset using:
-        # .using(db).complex_filter(self.rel.limit_choices_to)
-
         kwargs = {
             'queryset': related_model._default_manager,
             'many': to_many
@@ -859,6 +856,9 @@ class ModelSerializer(Serializer):
 
             if model_field.help_text is not None:
                 kwargs['help_text'] = model_field.help_text
+
+            if model_field.rel.limit_choices_to:
+                kwargs['limit_choices_to'] = model_field.rel.limit_choices_to
 
         return PrimaryKeyRelatedField(**kwargs)
 
@@ -1117,8 +1117,6 @@ class HyperlinkedModelSerializer(ModelSerializer):
         """
         Creates a default instance of a flat relational field.
         """
-        # TODO: filter queryset using:
-        # .using(db).complex_filter(self.rel.limit_choices_to)
         kwargs = {
             'queryset': related_model._default_manager,
             'view_name': self._get_default_view_name(related_model),
@@ -1131,6 +1129,8 @@ class HyperlinkedModelSerializer(ModelSerializer):
                 kwargs['help_text'] = model_field.help_text
             if model_field.verbose_name is not None:
                 kwargs['label'] = model_field.verbose_name
+            if model_field.rel.limit_choices_to:
+                kwargs['limit_choices_to'] = model_field.rel.limit_choices_to
 
         if self.opts.lookup_field:
             kwargs['lookup_field'] = self.opts.lookup_field

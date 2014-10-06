@@ -41,6 +41,8 @@ class RelatedField(WritableField):
 
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
+        self.limit_choices_to = kwargs.pop('limit_choices_to', {})
+
         self.many = kwargs.pop('many', self.many)
         if self.many:
             self.widget = self.many_widget
@@ -58,12 +60,38 @@ class RelatedField(WritableField):
 
     def initialize(self, parent, field_name):
         super(RelatedField, self).initialize(parent, field_name)
+
+        if self.queryset is None and not self.limit_choices_to:
+            manager = getattr(self.parent.opts.model, self.source or field_name)
+            try:
+                self.limit_choices_to = manager.field.rel.limit_choices_to
+            except AttributeError:
+                # GenericForeignKey and their reverse relationships don't have
+                # a `field` property.
+                pass
+
         if self.queryset is None and not self.read_only:
             manager = getattr(self.parent.opts.model, self.source or field_name)
             if hasattr(manager, 'related'):  # Forward
                 self.queryset = manager.related.model._default_manager.all()
             else:  # Reverse
                 self.queryset = manager.field.rel.to._default_manager.all()
+
+        if self.queryset is not None:
+            self.queryset = self.queryset.complex_filter(self.get_limit_choices_to())
+
+    def get_limit_choices_to(self):
+        """
+        source: `django.db.models.fields.related.RelatedField.get_limit_choices_to`
+
+        Returns 'limit_choices_to' for this serializer field.
+
+        If it is a callable, it will be invoked and the result will be
+        returned.
+        """
+        if callable(self.limit_choices_to):
+            return self.limit_choices_to()
+        return self.limit_choices_to
 
     # We need this stuff to make form choices work...
 

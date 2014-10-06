@@ -102,6 +102,7 @@ By default this field is read-write, although you can change this behavior using
 * `many` - If applied to a to-many relationship, you should set this argument to `True`.
 * `required` - If set to `False`, the field will accept values of `None` or the empty-string for nullable relationships.
 * `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
+* `limit_choices_to` - Used to filter the `queryset` to a limited set of choices. Either a dictionary, a Q object, or a callable returning a dictionary or Q object can be used.
 
 ## HyperlinkedRelatedField
 
