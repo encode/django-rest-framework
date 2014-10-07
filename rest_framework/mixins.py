@@ -20,9 +20,12 @@ class CreateModelMixin(object):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        self.create_valid(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def create_valid(self, serializer):
+        serializer.save()
 
     def get_success_headers(self, data):
         try:
@@ -64,8 +67,11 @@ class UpdateModelMixin(object):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        self.update_valid(serializer)
         return Response(serializer.data)
+
+    def update_valid(self, serializer):
+        serializer.save()
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
