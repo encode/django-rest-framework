@@ -224,6 +224,8 @@ class Field(object):
         """
         if self.default is empty:
             raise SkipField()
+        if is_simple_callable(self.default):
+            return self.default()
         return self.default
 
     def run_validation(self, data=empty):

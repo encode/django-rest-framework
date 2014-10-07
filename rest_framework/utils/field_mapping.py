@@ -219,6 +219,9 @@ def get_relation_kwargs(field_name, relation_info):
             kwargs['required'] = False
         if model_field.null:
             kwargs['allow_null'] = True
+        if getattr(model_field, 'unique', False):
+            validator = UniqueValidator(queryset=model_field.model._default_manager)
+            kwargs['validators'] = [validator]
 
     return kwargs
 
