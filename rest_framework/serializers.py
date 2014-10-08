@@ -83,7 +83,10 @@ class BaseSerializer(Field):
             )
 
         if self.instance is not None:
-            self.update(self.instance, validated_data)
+            self.instance = self.update(self.instance, validated_data)
+            assert self.instance is not None, (
+                '`update()` did not return an object instance.'
+            )
         else:
             self.instance = self.create(validated_data)
             assert self.instance is not None, (
@@ -444,19 +447,19 @@ class ModelSerializer(Serializer):
                 self.validators.extend(validators)
                 self._kwargs['validators'] = validators
 
-    def create(self, attrs):
+    def create(self, validated_attrs):
         ModelClass = self.Meta.model
 
-        # Remove many-to-many relationships from attrs.
+        # Remove many-to-many relationships from validated_attrs.
         # They are not valid arguments to the default `.create()` method,
         # as they require that the instance has already been saved.
         info = model_meta.get_field_info(ModelClass)
         many_to_many = {}
         for field_name, relation_info in info.relations.items():
-            if relation_info.to_many and (field_name in attrs):
-                many_to_many[field_name] = attrs.pop(field_name)
+            if relation_info.to_many and (field_name in validated_attrs):
+                many_to_many[field_name] = validated_attrs.pop(field_name)
 
-        instance = ModelClass.objects.create(**attrs)
+        instance = ModelClass.objects.create(**validated_attrs)
 
         # Save many-to-many relationships after the instance is created.
         if many_to_many:
@@ -465,10 +468,11 @@ class ModelSerializer(Serializer):
 
         return instance
 
-    def update(self, obj, attrs):
-        for attr, value in attrs.items():
-            setattr(obj, attr, value)
-        obj.save()
+    def update(self, instance, validated_attrs):
+        for attr, value in validated_attrs.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 
     def get_unique_together_validators(self):
         field_names = set([
