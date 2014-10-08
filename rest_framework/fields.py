@@ -913,6 +913,8 @@ class FileField(Field):
 
     def to_representation(self, value):
         if self.use_url:
+            if not value:
+                return None
             url = settings.MEDIA_URL + value.url
             request = self.context.get('request', None)
             if request is not None:

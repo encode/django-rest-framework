@@ -879,7 +879,8 @@ class TestFileField(FieldValues):
         (MockFile(name='x' * 100, size=10), ['Ensure this filename has at most 10 characters (it has 100).'])
     ]
     outputs = [
-        (MockFile(name='example.txt', url='/example.txt'), '/example.txt')
+        (MockFile(name='example.txt', url='/example.txt'), '/example.txt'),
+        ('', None)
     ]
     field = fields.FileField(max_length=10)
 
