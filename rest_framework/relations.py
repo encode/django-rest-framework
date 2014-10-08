@@ -264,9 +264,10 @@ class ManyRelation(Field):
         ]
 
     def to_representation(self, obj):
+        iterable = obj.all() if (hasattr(obj, 'all')) else obj
         return [
             self.child_relation.to_representation(value)
-            for value in obj.all()
+            for value in iterable
         ]
 
     @property
