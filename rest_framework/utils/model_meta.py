@@ -107,8 +107,8 @@ def get_field_info(model):
             related=relation.model,
             to_many=True,
             has_through_model=(
-                hasattr(relation.field.rel, 'through') and
-                not relation.field.rel.through._meta.auto_created
+                (getattr(relation.field.rel, 'through', None) is not None)
+                and not relation.field.rel.through._meta.auto_created
             )
         )
 

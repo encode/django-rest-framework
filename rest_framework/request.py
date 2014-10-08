@@ -18,6 +18,7 @@ from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
 from rest_framework.compat import BytesIO
 from rest_framework.settings import api_settings
+import warnings
 
 
 def is_form_media_type(media_type):
@@ -209,6 +210,11 @@ class Request(object):
         """
         Synonym for `.query_params`, for backwards compatibility.
         """
+        warnings.warn(
+            "`request.QUERY_PARAMS` is pending deprecation. Use `request.query_params` instead.",
+            PendingDeprecationWarning,
+            stacklevel=1
+        )
         return self._request.GET
 
     @property
@@ -225,6 +231,11 @@ class Request(object):
         Similar to usual behaviour of `request.POST`, except that it handles
         arbitrary parsers, and also works on methods other than POST (eg PUT).
         """
+        warnings.warn(
+            "`request.DATA` is pending deprecation. Use `request.data` instead.",
+            PendingDeprecationWarning,
+            stacklevel=1
+        )
         if not _hasattr(self, '_data'):
             self._load_data_and_files()
         return self._data
@@ -237,6 +248,11 @@ class Request(object):
         Similar to usual behaviour of `request.FILES`, except that it handles
         arbitrary parsers, and also works on methods other than POST (eg PUT).
         """
+        warnings.warn(
+            "`request.FILES` is pending deprecation. Use `request.data` instead.",
+            PendingDeprecationWarning,
+            stacklevel=1
+        )
         if not _hasattr(self, '_files'):
             self._load_data_and_files()
         return self._files

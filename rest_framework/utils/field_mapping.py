@@ -71,6 +71,17 @@ def get_field_kwargs(field_name, model_field):
     if model_field.help_text:
         kwargs['help_text'] = model_field.help_text
 
+    max_digits = getattr(model_field, 'max_digits', None)
+    if max_digits is not None:
+        kwargs['max_digits'] = max_digits
+
+    decimal_places = getattr(model_field, 'decimal_places', None)
+    if decimal_places is not None:
+        kwargs['decimal_places'] = decimal_places
+
+    if isinstance(model_field, models.TextField):
+        kwargs['style'] = {'type': 'textarea'}
+
     if isinstance(model_field, models.AutoField) or not model_field.editable:
         # If this field is read-only, then return early.
         # Further keyword arguments are not valid.
@@ -85,9 +96,6 @@ def get_field_kwargs(field_name, model_field):
         # Further keyword arguments are not valid.
         kwargs['choices'] = model_field.flatchoices
         return kwargs
-
-    if isinstance(model_field, models.TextField):
-        kwargs['style'] = {'type': 'textarea'}
 
     if model_field.null and not isinstance(model_field, models.NullBooleanField):
         kwargs['allow_null'] = True
@@ -170,14 +178,6 @@ def get_field_kwargs(field_name, model_field):
     if getattr(model_field, 'unique', False):
         validator = UniqueValidator(queryset=model_field.model._default_manager)
         validator_kwarg.append(validator)
-
-    max_digits = getattr(model_field, 'max_digits', None)
-    if max_digits is not None:
-        kwargs['max_digits'] = max_digits
-
-    decimal_places = getattr(model_field, 'decimal_places', None)
-    if decimal_places is not None:
-        kwargs['decimal_places'] = decimal_places
 
     if validator_kwarg:
         kwargs['validators'] = validator_kwarg

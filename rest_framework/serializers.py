@@ -25,6 +25,7 @@ from rest_framework.utils.field_mapping import (
 from rest_framework.validators import UniqueTogetherValidator
 import copy
 import inspect
+import warnings
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -517,12 +518,24 @@ class ModelSerializer(Serializer):
         depth = getattr(self.Meta, 'depth', 0)
         extra_kwargs = getattr(self.Meta, 'extra_kwargs', {})
 
+        extra_kwargs = self._include_additional_options(extra_kwargs)
+
         # Retrieve metadata about fields & relationships on the model class.
         info = model_meta.get_field_info(model)
 
         # Use the default set of fields if none is supplied explicitly.
         if fields is None:
             fields = self._get_default_field_names(declared_fields, info)
+            exclude = getattr(self.Meta, 'exclude', None)
+            if exclude is not None:
+                warnings.warn(
+                    "The `Meta.exclude` option is pending deprecation. "
+                    "Use the explicit `Meta.fields` instead.",
+                    PendingDeprecationWarning,
+                    stacklevel=3
+                )
+                for field_name in exclude:
+                    fields.remove(field_name)
 
         for field_name in fields:
             if field_name in declared_fields:
@@ -589,12 +602,68 @@ class ModelSerializer(Serializer):
                 )
 
             # Populate any kwargs defined in `Meta.extra_kwargs`
-            kwargs.update(extra_kwargs.get(field_name, {}))
+            extras = extra_kwargs.get(field_name, {})
+            if extras.get('read_only', False):
+                for attr in [
+                    'required', 'default', 'allow_blank', 'allow_null',
+                    'min_length', 'max_length', 'min_value', 'max_value',
+                    'validators'
+                ]:
+                    kwargs.pop(attr, None)
+            kwargs.update(extras)
 
             # Create the serializer field.
             ret[field_name] = field_cls(**kwargs)
 
         return ret
+
+    def _include_additional_options(self, extra_kwargs):
+        read_only_fields = getattr(self.Meta, 'read_only_fields', None)
+        if read_only_fields is not None:
+            for field_name in read_only_fields:
+                kwargs = extra_kwargs.get(field_name, {})
+                kwargs['read_only'] = True
+                extra_kwargs[field_name] = kwargs
+
+        # These are all pending deprecation.
+        write_only_fields = getattr(self.Meta, 'write_only_fields', None)
+        if write_only_fields is not None:
+            warnings.warn(
+                "The `Meta.write_only_fields` option is pending deprecation. "
+                "Use `Meta.extra_kwargs={<field_name>: {'write_only': True}}` instead.",
+                PendingDeprecationWarning,
+                stacklevel=3
+            )
+            for field_name in write_only_fields:
+                kwargs = extra_kwargs.get(field_name, {})
+                kwargs['write_only'] = True
+                extra_kwargs[field_name] = kwargs
+
+        view_name = getattr(self.Meta, 'view_name', None)
+        if view_name is not None:
+            warnings.warn(
+                "The `Meta.view_name` option is pending deprecation. "
+                "Use `Meta.extra_kwargs={'url': {'view_name': ...}}` instead.",
+                PendingDeprecationWarning,
+                stacklevel=3
+            )
+            kwargs = extra_kwargs.get(field_name, {})
+            kwargs['view_name'] = view_name
+            extra_kwargs[api_settings.URL_FIELD_NAME] = kwargs
+
+        lookup_field = getattr(self.Meta, 'lookup_field', None)
+        if lookup_field is not None:
+            warnings.warn(
+                "The `Meta.lookup_field` option is pending deprecation. "
+                "Use `Meta.extra_kwargs={'url': {'lookup_field': ...}}` instead.",
+                PendingDeprecationWarning,
+                stacklevel=3
+            )
+            kwargs = extra_kwargs.get(field_name, {})
+            kwargs['lookup_field'] = lookup_field
+            extra_kwargs[api_settings.URL_FIELD_NAME] = kwargs
+
+        return extra_kwargs
 
     def _get_default_field_names(self, declared_fields, model_info):
         return (
