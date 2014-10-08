@@ -49,7 +49,7 @@ class RelatedField(Field):
         ])
 
 
-class StringRelatedField(Field):
+class StringRelatedField(RelatedField):
     """
     A read only field that represents its targets using their
     plain string representation.

@@ -520,11 +520,6 @@ class ModelSerializer(Serializer):
                 ret[field_name] = declared_fields[field_name]
                 continue
 
-            elif field_name == api_settings.URL_FIELD_NAME:
-                # Create the URL field.
-                field_cls = HyperlinkedIdentityField
-                kwargs = get_url_kwargs(model)
-
             elif field_name in info.fields_and_pk:
                 # Create regular model fields.
                 model_field = info.fields_and_pk[field_name]
@@ -560,6 +555,11 @@ class ModelSerializer(Serializer):
                 # Create a read only field for model methods and properties.
                 field_cls = ReadOnlyField
                 kwargs = {}
+
+            elif field_name == api_settings.URL_FIELD_NAME:
+                # Create the URL field.
+                field_cls = HyperlinkedIdentityField
+                kwargs = get_url_kwargs(model)
 
             else:
                 raise ImproperlyConfigured(
