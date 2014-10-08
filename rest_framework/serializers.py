@@ -299,7 +299,8 @@ class Serializer(BaseSerializer):
         value = self.to_internal_value(data)
         try:
             self.run_validators(value)
-            self.validate(value)
+            value = self.validate(value)
+            assert value is not None, '.validate() should return the validated data'
         except ValidationError as exc:
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: exc.messages
@@ -341,7 +342,12 @@ class Serializer(BaseSerializer):
         fields = [field for field in self.fields.values() if not field.write_only]
 
         for field in fields:
-            ret[field.field_name] = field.get_field_representation(instance)
+            value = field.get_field_representation(instance)
+            transform_method = getattr(self, 'transform_' + field.field_name, None)
+            if transform_method is not None:
+                value = transform_method(value)
+
+            ret[field.field_name] = value
 
         return ret
 
