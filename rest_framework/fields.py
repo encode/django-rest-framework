@@ -110,7 +110,6 @@ class Field(object):
     default_validators = []
     default_empty_html = empty
     initial = None
-    coerce_blank_to_null = True
 
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=empty, source=None,
@@ -247,9 +246,6 @@ class Field(object):
             if self.required:
                 self.fail('required')
             return self.get_default()
-
-        if data == '' and self.coerce_blank_to_null:
-            data = None
 
         if data is None:
             if not self.allow_null:

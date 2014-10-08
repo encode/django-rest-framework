@@ -1,5 +1,5 @@
 from rest_framework.compat import smart_text, urlparse
-from rest_framework.fields import Field
+from rest_framework.fields import empty, Field
 from rest_framework.reverse import reverse
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch, Resolver404
@@ -30,6 +30,12 @@ class RelatedField(Field):
                 read_only=kwargs.get('read_only', False)
             )
         return super(RelatedField, cls).__new__(cls, *args, **kwargs)
+
+    def run_validation(self, data=empty):
+        # We force empty strings to None values for relational fields.
+        if data == '':
+            data = None
+        return super(RelatedField, self).run_validation(data)
 
     def get_queryset(self):
         queryset = self.queryset
