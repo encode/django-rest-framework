@@ -1,7 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.core import validators
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils import six, timezone
 from django.utils.datastructures import SortedDict
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
@@ -54,6 +54,8 @@ def get_attribute(instance, attrs):
     for attr in attrs:
         try:
             instance = getattr(instance, attr)
+        except ObjectDoesNotExist:
+            return None
         except AttributeError as exc:
             try:
                 return instance[attr]
@@ -108,6 +110,7 @@ class Field(object):
     default_validators = []
     default_empty_html = empty
     initial = None
+    coerce_blank_to_null = True
 
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=empty, source=None,
@@ -244,6 +247,9 @@ class Field(object):
             if self.required:
                 self.fail('required')
             return self.get_default()
+
+        if data == '' and self.coerce_blank_to_null:
+            data = None
 
         if data is None:
             if not self.allow_null:
@@ -413,6 +419,7 @@ class CharField(Field):
         'blank': _('This field may not be blank.')
     }
     initial = ''
+    coerce_blank_to_null = False
 
     def __init__(self, **kwargs):
         self.allow_blank = kwargs.pop('allow_blank', False)
