@@ -114,12 +114,15 @@ else:
 
 
 
-# MinValueValidator and MaxValueValidator only accept `message` in 1.8+
+# MinValueValidator, MaxValueValidator et al. only accept `message` in 1.8+
 if django.VERSION >= (1, 8):
     from django.core.validators import MinValueValidator, MaxValueValidator
+    from django.core.validators import MinLengthValidator, MaxLengthValidator
 else:
     from django.core.validators import MinValueValidator as DjangoMinValueValidator
     from django.core.validators import MaxValueValidator as DjangoMaxValueValidator
+    from django.core.validators import MinLengthValidator as DjangoMinLengthValidator
+    from django.core.validators import MaxLengthValidator as DjangoMaxLengthValidator
 
     class MinValueValidator(DjangoMinValueValidator):
         def __init__(self, *args, **kwargs):
@@ -130,6 +133,17 @@ else:
         def __init__(self, *args, **kwargs):
             self.message = kwargs.pop('message', self.message)
             super(MaxValueValidator, self).__init__(*args, **kwargs)
+
+    class MinLengthValidator(DjangoMinLengthValidator):
+        def __init__(self, *args, **kwargs):
+            self.message = kwargs.pop('message', self.message)
+            super(MinLengthValidator, self).__init__(*args, **kwargs)
+
+    class MaxLengthValidator(DjangoMaxLengthValidator):
+        def __init__(self, *args, **kwargs):
+            self.message = kwargs.pop('message', self.message)
+            super(MaxLengthValidator, self).__init__(*args, **kwargs)
+
 
 # URLValidator only accepts `message` in 1.6+
 if django.VERSION >= (1, 6):

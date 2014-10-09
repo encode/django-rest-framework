@@ -1,6 +1,7 @@
 from rest_framework.compat import smart_text, urlparse
 from rest_framework.fields import empty, Field
 from rest_framework.reverse import reverse
+from rest_framework.utils import html
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch, Resolver404
 from django.db.models.query import QuerySet
@@ -263,6 +264,13 @@ class ManyRelation(Field):
         super(ManyRelation, self).__init__(*args, **kwargs)
         self.child_relation.bind(field_name='', parent=self)
 
+    def get_value(self, dictionary):
+        # We override the default field access in order to support
+        # lists in HTML forms.
+        if html.is_html_input(dictionary):
+            return dictionary.getlist(self.field_name)
+        return dictionary.get(self.field_name, empty)
+
     def to_internal_value(self, data):
         return [
             self.child_relation.to_internal_value(item)
@@ -278,10 +286,16 @@ class ManyRelation(Field):
 
     @property
     def choices(self):
+        queryset = self.child_relation.queryset
+        iterable = queryset.all() if (hasattr(queryset, 'all')) else queryset
+        items_and_representations = [
+            (item, self.child_relation.to_representation(item))
+            for item in iterable
+        ]
         return dict([
             (
-                str(self.child_relation.to_representation(item)),
-                str(item)
+                str(item_representation),
+                str(item) + ' - ' + str(item_representation)
             )
-            for item in self.child_relation.queryset.all()
+            for item, item_representation in items_and_representations
         ])

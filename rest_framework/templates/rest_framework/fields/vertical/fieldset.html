@@ -1,6 +1,7 @@
+{% load rest_framework %}
 <fieldset>
     {% if field.label %}<legend {% if field.style.hide_label %}class="sr-only"{% endif %}>{{ field.label }}</legend>{% endif %}
-    {% for field_item in field.value.field_items.values() %}
-        {{ renderer.render_field(field_item, layout=layout) }}
+    {% for nested_field in field %}
+        {% render_field nested_field layout=layout renderer=renderer %}
     {% endfor %}
 </fieldset>

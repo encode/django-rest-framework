@@ -8,7 +8,10 @@ from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import ISO_8601
-from rest_framework.compat import smart_text, EmailValidator, MinValueValidator, MaxValueValidator, URLValidator
+from rest_framework.compat import (
+    smart_text, EmailValidator, MinValueValidator, MaxValueValidator,
+    MinLengthValidator, MaxLengthValidator, URLValidator
+)
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, representation, humanize_datetime
 import copy
@@ -138,7 +141,7 @@ class Field(object):
         self.label = label
         self.help_text = help_text
         self.style = {} if style is None else style
-        self.validators = validators or self.default_validators[:]
+        self.validators = validators[:] or self.default_validators[:]
         self.allow_null = allow_null
 
         # These are set up by `.bind()` when the field is added to a serializer.
@@ -412,16 +415,24 @@ class NullBooleanField(Field):
 
 class CharField(Field):
     default_error_messages = {
-        'blank': _('This field may not be blank.')
+        'blank': _('This field may not be blank.'),
+        'max_length': _('Ensure this field has no more than {max_length} characters.'),
+        'min_length': _('Ensure this field has no more than {min_length} characters.')
     }
     initial = ''
     coerce_blank_to_null = False
 
     def __init__(self, **kwargs):
         self.allow_blank = kwargs.pop('allow_blank', False)
-        self.max_length = kwargs.pop('max_length', None)
-        self.min_length = kwargs.pop('min_length', None)
+        max_length = kwargs.pop('max_length', None)
+        min_length = kwargs.pop('min_length', None)
         super(CharField, self).__init__(**kwargs)
+        if max_length is not None:
+            message = self.error_messages['max_length'].format(max_length=max_length)
+            self.validators.append(MaxLengthValidator(max_length, message=message))
+        if min_length is not None:
+            message = self.error_messages['min_length'].format(min_length=min_length)
+            self.validators.append(MinLengthValidator(min_length, message=message))
 
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,
@@ -856,6 +867,13 @@ class MultipleChoiceField(ChoiceField):
         'not_a_list': _('Expected a list of items but got type `{input_type}`')
     }
     default_empty_html = []
+
+    def get_value(self, dictionary):
+        # We override the default field access in order to support
+        # lists in HTML forms.
+        if html.is_html_input(dictionary):
+            return dictionary.getlist(self.field_name)
+        return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
         if isinstance(data, type('')) or not hasattr(data, '__iter__'):

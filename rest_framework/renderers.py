@@ -364,6 +364,12 @@ class HTMLFormRenderer(BaseRenderer):
         serializers.ManyRelation: {
             'default': 'select_multiple.html',
             'checkbox': 'select_checkbox.html'
+        },
+        serializers.Serializer: {
+            'default': 'fieldset.html'
+        },
+        serializers.ListSerializer: {
+            'default': 'list_fieldset.html'
         }
     })
 
@@ -392,7 +398,9 @@ class HTMLFormRenderer(BaseRenderer):
         template = loader.get_template(template_name)
         context = Context({
             'field': field,
-            'input_type': input_type
+            'input_type': input_type,
+            'renderer': self,
+            'layout': layout
         })
 
         return template.render(context)

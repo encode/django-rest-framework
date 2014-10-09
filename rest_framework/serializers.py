@@ -166,13 +166,24 @@ class BoundField(object):
     Returned when iterating over a serializer instance,
     providing an API similar to Django forms and form fields.
     """
-    def __init__(self, field, value, errors):
+    def __init__(self, field, value, errors, prefix=''):
         self._field = field
         self.value = value
         self.errors = errors
+        self.name = prefix + self.field_name
 
     def __getattr__(self, attr_name):
         return getattr(self._field, attr_name)
+
+    def __iter__(self):
+        for field in self.fields.values():
+            yield self[field.field_name]
+
+    def __getitem__(self, key):
+        field = self.fields[key]
+        value = self.value.get(key) if self.value else None
+        error = self.errors.get(key) if self.errors else None
+        return BoundField(field, value, error, prefix=self.name + '.')
 
     @property
     def _proxy_class(self):
@@ -355,15 +366,22 @@ class Serializer(BaseSerializer):
     def validate(self, attrs):
         return attrs
 
-    def __iter__(self):
-        errors = self.errors if hasattr(self, '_errors') else {}
-        for field in self.fields.values():
-            value = self.data.get(field.field_name) if self.data else None
-            error = errors.get(field.field_name)
-            yield BoundField(field, value, error)
-
     def __repr__(self):
         return representation.serializer_repr(self, indent=1)
+
+    # The following are used for accessing `BoundField` instances on the
+    # serializer, for the purposes of presenting a form-like API onto the
+    # field values and field errors.
+
+    def __iter__(self):
+        for field in self.fields.values():
+            yield self[field.field_name]
+
+    def __getitem__(self, key):
+        field = self.fields[key]
+        value = self.data.get(key)
+        error = self.errors.get(key) if hasattr(self, '_errors') else None
+        return BoundField(field, value, error)
 
 
 # There's some replication of `ListField` here,
@@ -404,8 +422,9 @@ class ListSerializer(BaseSerializer):
         """
         List of object instances -> List of dicts of primitive datatypes.
         """
+        iterable = data.all() if (hasattr(data, 'all')) else data
         return ReturnList(
-            [self.child.to_representation(item) for item in data],
+            [self.child.to_representation(item) for item in iterable],
             serializer=self
         )
 

@@ -5,7 +5,9 @@
             <legend class="control-label col-sm-2 {% if field.style.hide_label %}sr-only{% endif %}" style="border-bottom: 0">{{ field.label }}</legend>
         </div>
     {% endif %}
-    {% for nested_field in field %}
-        {% render_field nested_field layout=layout renderer=renderer %}
+    <ul>
+    {% for child in field.value %}
+        <li>TODO</li>
     {% endfor %}
+    </ul>
 </fieldset>
