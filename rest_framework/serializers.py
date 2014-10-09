@@ -180,6 +180,7 @@ class BoundField(object):
             yield self[field.field_name]
 
     def __getitem__(self, key):
+        assert hasattr(self, 'fields'), '"%s" is not a nested field. Cannot perform indexing.' % self.name
         field = self.fields[key]
         value = self.value.get(key) if self.value else None
         error = self.errors.get(key) if self.errors else None
@@ -188,6 +189,9 @@ class BoundField(object):
     @property
     def _proxy_class(self):
         return self._field.__class__
+
+    def __repr__(self):
+        return '<%s value=%s errors=%s>' % (self.__class__.__name__, self.value, self.errors)
 
 
 class BindingDict(object):
