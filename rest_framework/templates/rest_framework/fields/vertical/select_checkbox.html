@@ -4,7 +4,7 @@
         <div>
         {% for key, text in field.choices.items %}
             <label class="checkbox-inline">
-                <input type="checkbox" name="{{ field.field_name }}" value="{{ key }}" {% if key in field.value %}checked{% endif %}>
+                <input type="checkbox" name="{{ field.name }}" value="{{ key }}" {% if key in field.value %}checked{% endif %}>
                 {{ text }}
             </label>
         {% endfor %}
@@ -13,7 +13,7 @@
         {% for key, text in field.choices.items %}
         <div class="checkbox">
             <label>
-                <input type="checkbox" name="{{ field.field_name }}" value="{{ key }}" {% if key in field.value %}checked{% endif %}>
+                <input type="checkbox" name="{{ field.name }}" value="{{ key }}" {% if key in field.value %}checked{% endif %}>
                 {{ text }}
             </label>
         </div>

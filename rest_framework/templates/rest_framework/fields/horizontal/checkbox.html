@@ -2,7 +2,7 @@
     <div class="col-sm-offset-2 col-sm-10">
         <div class="checkbox">
             <label>
-                <input type="checkbox" name="{{ field.field_name }}" value="true" {% if field.value %}checked{% endif %}>
+                <input type="checkbox" name="{{ field.name }}" value="true" {% if field.value %}checked{% endif %}>
                 {% if field.label %}{{ field.label }}{% endif %}
             </label>
         </div>
