@@ -12,6 +12,9 @@ from rest_framework.utils.representation import smart_repr
 
 
 class UniqueValidator:
+    """
+    Validator that corresponds to `unique=True` on a model field.
+    """
     # Validators with `requires_context` will have the field instance
     # passed to them when the field is instantiated.
     requires_context = True
@@ -46,6 +49,9 @@ class UniqueValidator:
 
 
 class UniqueTogetherValidator:
+    """
+    Validator that corresponds to `unique_together = (...)` on a model class.
+    """
     requires_context = True
     message = _('The fields {field_names} must make a unique set.')
 
