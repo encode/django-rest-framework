@@ -1,0 +1,55 @@
+site_name: Django REST frameowkr
+site_url: http://www.django-rest-framework.org/
+site_description: Django REST framework - Web APIs for DjangoProject documentation with Markdown.
+
+repo_url: https://github.com/tomchristie/django-rest-framework
+
+pages:
+ - ['index.md', ]
+ - ['tutorial/quickstart.md', ]
+ - ['tutorial/1-serialization.md', ]
+ - ['tutorial/2-requests-and-responses.md', ]
+ - ['tutorial/3-class-based-views.md', ]
+ - ['tutorial/4-authentication-and-permissions.md', ]
+ - ['tutorial/5-relationships-and-hyperlinked-apis.md', ]
+ - ['tutorial/6-viewsets-and-routers.md', ]
+ - ['api-guide/requests.md', ]
+ - ['api-guide/responses.md', ]
+ - ['api-guide/views.md', ]
+ - ['api-guide/generic-views.md', ]
+ - ['api-guide/viewsets.md', ]
+ - ['api-guide/routers.md', ]
+ - ['api-guide/parsers.md', ]
+ - ['api-guide/renderers.md', ]
+ - ['api-guide/serializers.md', ]
+ - ['api-guide/fields.md', ]
+ - ['api-guide/relations.md', ]
+ - ['api-guide/authentication.md', ]
+ - ['api-guide/permissions.md', ]
+ - ['api-guide/throttling.md', ]
+ - ['api-guide/filtering.md', ]
+ - ['api-guide/pagination.md', ]
+ - ['api-guide/content-negotiation.md', ]
+ - ['api-guide/format-suffixes.md', ]
+ - ['api-guide/reverse.md', ]
+ - ['api-guide/exceptions.md', ]
+ - ['api-guide/status-codes.md', ]
+ - ['api-guide/testing.md', ]
+ - ['api-guide/settings.md', ]
+ - ['topics/documenting-your-api.md', ]
+ - ['topics/ajax-csrf-cors.md', ]
+ - ['topics/browser-enhancements.md', ]
+ - ['topics/browsable-api.md', ]
+ - ['topics/rest-hypermedia-hateoas.md', ]
+ - ['topics/third-party-resources.md', ]
+ - ['topics/contributing.md', ]
+ - ['topics/rest-framework-2-announcement.md', ]
+ - ['topics/2.2-announcement.md', ]
+ - ['topics/2.3-announcement.md', ]
+ - ['topics/2.4-announcement.md', ]
+ - ['topics/release-notes.md', ]
+ - ['topics/credits.md', ]
+
+theme_dir: docs/theme
+copyright: Copyright &copy; 2014, <a href="https://twitter.com/_tomchristie">Tom Christie</a>.
+google_analytics: ['UA-27795084-5', 'mkdocs.org']
