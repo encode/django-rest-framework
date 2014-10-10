@@ -10,10 +10,11 @@ python primitives.
 2. The process of marshalling between python primitives and request and
 response content is handled by parsers and renderers.
 """
-from django.core.exceptions import ImproperlyConfigured, ValidationError
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import six
 from django.utils.datastructures import SortedDict
+from rest_framework.exceptions import ValidationFailed
 from rest_framework.fields import empty, set_value, Field, SkipField
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, model_meta, representation
@@ -100,14 +101,14 @@ class BaseSerializer(Field):
         if not hasattr(self, '_validated_data'):
             try:
                 self._validated_data = self.run_validation(self._initial_data)
-            except ValidationError as exc:
+            except ValidationFailed as exc:
                 self._validated_data = {}
-                self._errors = exc.message_dict
+                self._errors = exc.detail
             else:
                 self._errors = {}
 
         if self._errors and raise_exception:
-            raise ValidationError(self._errors)
+            raise ValidationFailed(self._errors)
 
         return not bool(self._errors)
 
@@ -175,23 +176,33 @@ class BoundField(object):
     def __getattr__(self, attr_name):
         return getattr(self._field, attr_name)
 
-    def __iter__(self):
-        for field in self.fields.values():
-            yield self[field.field_name]
-
-    def __getitem__(self, key):
-        assert hasattr(self, 'fields'), '"%s" is not a nested field. Cannot perform indexing.' % self.name
-        field = self.fields[key]
-        value = self.value.get(key) if self.value else None
-        error = self.errors.get(key) if self.errors else None
-        return BoundField(field, value, error, prefix=self.name + '.')
-
     @property
     def _proxy_class(self):
         return self._field.__class__
 
     def __repr__(self):
-        return '<%s value=%s errors=%s>' % (self.__class__.__name__, self.value, self.errors)
+        return '<%s value=%s errors=%s>' % (
+            self.__class__.__name__, self.value, self.errors
+        )
+
+
+class NestedBoundField(BoundField):
+    """
+    This BoundField additionally implements __iter__ and __getitem__
+    in order to support nested bound fields. This class is the type of
+    BoundField that is used for serializer fields.
+    """
+    def __iter__(self):
+        for field in self.fields.values():
+            yield self[field.field_name]
+
+    def __getitem__(self, key):
+        field = self.fields[key]
+        value = self.value.get(key) if self.value else None
+        error = self.errors.get(key) if self.errors else None
+        if isinstance(field, Serializer):
+            return NestedBoundField(field, value, error, prefix=self.name + '.')
+        return BoundField(field, value, error, prefix=self.name + '.')
 
 
 class BindingDict(object):
@@ -308,7 +319,7 @@ class Serializer(BaseSerializer):
             return None
 
         if not isinstance(data, dict):
-            raise ValidationError({
+            raise ValidationFailed({
                 api_settings.NON_FIELD_ERRORS_KEY: ['Invalid data']
             })
 
@@ -317,9 +328,9 @@ class Serializer(BaseSerializer):
             self.run_validators(value)
             value = self.validate(value)
             assert value is not None, '.validate() should return the validated data'
-        except ValidationError as exc:
-            raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: exc.messages
+        except ValidationFailed as exc:
+            raise ValidationFailed({
+                api_settings.NON_FIELD_ERRORS_KEY: exc.detail
             })
         return value
 
@@ -338,15 +349,15 @@ class Serializer(BaseSerializer):
                 validated_value = field.run_validation(primitive_value)
                 if validate_method is not None:
                     validated_value = validate_method(validated_value)
-            except ValidationError as exc:
-                errors[field.field_name] = exc.messages
+            except ValidationFailed as exc:
+                errors[field.field_name] = exc.detail
             except SkipField:
                 pass
             else:
                 set_value(ret, field.source_attrs, validated_value)
 
         if errors:
-            raise ValidationError(errors)
+            raise ValidationFailed(errors)
 
         return ret
 
@@ -385,6 +396,8 @@ class Serializer(BaseSerializer):
         field = self.fields[key]
         value = self.data.get(key)
         error = self.errors.get(key) if hasattr(self, '_errors') else None
+        if isinstance(field, Serializer):
+            return NestedBoundField(field, value, error)
         return BoundField(field, value, error)
 
 
@@ -538,8 +551,11 @@ class ModelSerializer(Serializer):
         ret = SortedDict()
         model = getattr(self.Meta, 'model')
         fields = getattr(self.Meta, 'fields', None)
+        exclude = getattr(self.Meta, 'exclude', None)
         depth = getattr(self.Meta, 'depth', 0)
         extra_kwargs = getattr(self.Meta, 'extra_kwargs', {})
+
+        assert not fields and exclude,  "Cannot set both 'fields' and 'exclude'."
 
         extra_kwargs = self._include_additional_options(extra_kwargs)
 
@@ -551,12 +567,6 @@ class ModelSerializer(Serializer):
             fields = self._get_default_field_names(declared_fields, info)
             exclude = getattr(self.Meta, 'exclude', None)
             if exclude is not None:
-                warnings.warn(
-                    "The `Meta.exclude` option is pending deprecation. "
-                    "Use the explicit `Meta.fields` instead.",
-                    PendingDeprecationWarning,
-                    stacklevel=3
-                )
                 for field_name in exclude:
                     fields.remove(field_name)
 

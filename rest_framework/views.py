@@ -3,7 +3,7 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
 
-from django.core.exceptions import PermissionDenied, ValidationError, NON_FIELD_ERRORS
+from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, exceptions
@@ -63,27 +63,20 @@ def exception_handler(exc):
         if getattr(exc, 'wait', None):
             headers['Retry-After'] = '%d' % exc.wait
 
-        return Response({'detail': exc.detail},
-                        status=exc.status_code,
-                        headers=headers)
+        if isinstance(exc.detail, (list, dict)):
+            data = exc.detail
+        else:
+            data = {'detail': exc.detail}
 
-    elif isinstance(exc, ValidationError):
-        # ValidationErrors may include the non-field key named '__all__'.
-        # When returning a response we map this to a key name that can be
-        # modified in settings.
-        if NON_FIELD_ERRORS in exc.message_dict:
-            errors = exc.message_dict.pop(NON_FIELD_ERRORS)
-            exc.message_dict[api_settings.NON_FIELD_ERRORS_KEY] = errors
-        return Response(exc.message_dict,
-                        status=status.HTTP_400_BAD_REQUEST)
+        return Response(data, status=exc.status_code, headers=headers)
 
     elif isinstance(exc, Http404):
-        return Response({'detail': 'Not found'},
-                        status=status.HTTP_404_NOT_FOUND)
+        data = {'detail': 'Not found'}
+        return Response(data, status=status.HTTP_404_NOT_FOUND)
 
     elif isinstance(exc, PermissionDenied):
-        return Response({'detail': 'Permission denied'},
-                        status=status.HTTP_403_FORBIDDEN)
+        data = {'detail': 'Permission denied'}
+        return Response(data, status=status.HTTP_403_FORBIDDEN)
 
     # Note: Unhandled exceptions will raise a 500 error.
     return None

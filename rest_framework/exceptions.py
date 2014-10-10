@@ -24,6 +24,20 @@ class APIException(Exception):
         return self.detail
 
 
+class ValidationFailed(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+
+    def __init__(self, detail):
+        # For validation errors the 'detail' key is always required.
+        # The details should always be coerced to a list if not already.
+        if not isinstance(detail, dict) and not isinstance(detail, list):
+            detail = [detail]
+        self.detail = detail
+
+    def __str__(self):
+        return str(self.detail)
+
+
 class ParseError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = 'Malformed request.'

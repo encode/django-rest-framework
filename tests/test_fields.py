@@ -1,7 +1,6 @@
 from decimal import Decimal
-from django.core.exceptions import ValidationError
 from django.utils import timezone
-from rest_framework import fields, serializers
+from rest_framework import exceptions, fields, serializers
 import datetime
 import django
 import pytest
@@ -19,9 +18,9 @@ class TestEmpty:
         By default a field must be included in the input.
         """
         field = fields.IntegerField()
-        with pytest.raises(fields.ValidationError) as exc_info:
+        with pytest.raises(exceptions.ValidationFailed) as exc_info:
             field.run_validation()
-        assert exc_info.value.messages == ['This field is required.']
+        assert exc_info.value.detail == ['This field is required.']
 
     def test_not_required(self):
         """
@@ -36,9 +35,9 @@ class TestEmpty:
         By default `None` is not a valid input.
         """
         field = fields.IntegerField()
-        with pytest.raises(fields.ValidationError) as exc_info:
+        with pytest.raises(exceptions.ValidationFailed) as exc_info:
             field.run_validation(None)
-        assert exc_info.value.messages == ['This field may not be null.']
+        assert exc_info.value.detail == ['This field may not be null.']
 
     def test_allow_null(self):
         """
@@ -53,9 +52,9 @@ class TestEmpty:
         By default '' is not a valid input.
         """
         field = fields.CharField()
-        with pytest.raises(fields.ValidationError) as exc_info:
+        with pytest.raises(exceptions.ValidationFailed) as exc_info:
             field.run_validation('')
-        assert exc_info.value.messages == ['This field may not be blank.']
+        assert exc_info.value.detail == ['This field may not be blank.']
 
     def test_allow_blank(self):
         """
@@ -190,7 +189,7 @@ class TestInvalidErrorKey:
         with pytest.raises(AssertionError) as exc_info:
             self.field.to_native(123)
         expected = (
-            'ValidationError raised by `ExampleField`, but error key '
+            'ValidationFailed raised by `ExampleField`, but error key '
             '`incorrect` does not exist in the `error_messages` dictionary.'
         )
         assert str(exc_info.value) == expected
@@ -244,9 +243,9 @@ class FieldValues:
         Ensure that invalid values raise the expected validation error.
         """
         for input_value, expected_failure in get_items(self.invalid_inputs):
-            with pytest.raises(fields.ValidationError) as exc_info:
+            with pytest.raises(exceptions.ValidationFailed) as exc_info:
                 self.field.run_validation(input_value)
-            assert exc_info.value.messages == expected_failure
+            assert exc_info.value.detail == expected_failure
 
     def test_outputs(self):
         for output_value, expected_output in get_items(self.outputs):
@@ -901,7 +900,7 @@ class TestFieldFieldWithName(FieldValues):
 # call into it's regular validation, or require PIL for testing.
 class FailImageValidation(object):
     def to_python(self, value):
-        raise ValidationError(self.error_messages['invalid_image'])
+        raise exceptions.ValidationFailed(self.error_messages['invalid_image'])
 
 
 class PassImageValidation(object):

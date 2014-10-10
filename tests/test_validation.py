@@ -1,9 +1,8 @@
 from __future__ import unicode_literals
 from django.core.validators import MaxValueValidator
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.test import TestCase
-from rest_framework import generics, serializers, status
+from rest_framework import exceptions, generics, serializers, status
 from rest_framework.test import APIRequestFactory
 
 factory = APIRequestFactory()
@@ -38,7 +37,7 @@ class ShouldValidateModelSerializer(serializers.ModelSerializer):
 
     def validate_renamed(self, value):
         if len(value) < 3:
-            raise serializers.ValidationError('Minimum 3 characters.')
+            raise exceptions.ValidationFailed('Minimum 3 characters.')
         return value
 
     class Meta:
@@ -74,10 +73,10 @@ class ValidationSerializer(serializers.Serializer):
     foo = serializers.CharField()
 
     def validate_foo(self, attrs, source):
-        raise serializers.ValidationError("foo invalid")
+        raise exceptions.ValidationFailed("foo invalid")
 
     def validate(self, attrs):
-        raise serializers.ValidationError("serializer invalid")
+        raise exceptions.ValidationFailed("serializer invalid")
 
 
 class TestAvoidValidation(TestCase):
@@ -159,7 +158,7 @@ class TestChoiceFieldChoicesValidate(TestCase):
         value = self.CHOICES[0][0]
         try:
             f.to_internal_value(value)
-        except ValidationError:
+        except exceptions.ValidationFailed:
             self.fail("Value %s does not validate" % str(value))
 
     # def test_nested_choices(self):

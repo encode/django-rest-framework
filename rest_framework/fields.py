@@ -1,7 +1,8 @@
-from django import forms
 from django.conf import settings
 from django.core import validators
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
 from django.utils.datastructures import SortedDict
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
@@ -12,6 +13,7 @@ from rest_framework.compat import (
     smart_text, EmailValidator, MinValueValidator, MaxValueValidator,
     MinLengthValidator, MaxLengthValidator, URLValidator
 )
+from rest_framework.exceptions import ValidationFailed
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, representation, humanize_datetime
 import copy
@@ -98,7 +100,7 @@ NOT_READ_ONLY_DEFAULT = 'May not set both `read_only` and `default`'
 NOT_REQUIRED_DEFAULT = 'May not set both `required` and `default`'
 USE_READONLYFIELD = 'Field(read_only=True) should be ReadOnlyField'
 MISSING_ERROR_MESSAGE = (
-    'ValidationError raised by `{class_name}`, but error key `{key}` does '
+    'ValidationFailed raised by `{class_name}`, but error key `{key}` does '
     'not exist in the `error_messages` dictionary.'
 )
 
@@ -263,7 +265,7 @@ class Field(object):
     def run_validators(self, value):
         """
         Test the given value against all the validators on the field,
-        and either raise a `ValidationError` or simply return.
+        and either raise a `ValidationFailed` or simply return.
         """
         errors = []
         for validator in self.validators:
@@ -271,10 +273,12 @@ class Field(object):
                 validator.serializer_field = self
             try:
                 validator(value)
-            except ValidationError as exc:
+            except ValidationFailed as exc:
+                errors.extend(exc.detail)
+            except DjangoValidationError as exc:
                 errors.extend(exc.messages)
         if errors:
-            raise ValidationError(errors)
+            raise ValidationFailed(errors)
 
     def validate(self, value):
         pass
@@ -301,7 +305,8 @@ class Field(object):
             class_name = self.__class__.__name__
             msg = MISSING_ERROR_MESSAGE.format(class_name=class_name, key=key)
             raise AssertionError(msg)
-        raise ValidationError(msg.format(**kwargs))
+        message_string = msg.format(**kwargs)
+        raise ValidationFailed(message_string)
 
     @property
     def root(self):
@@ -946,7 +951,7 @@ class ImageField(FileField):
     }
 
     def __init__(self, *args, **kwargs):
-        self._DjangoImageField = kwargs.pop('_DjangoImageField', forms.ImageField)
+        self._DjangoImageField = kwargs.pop('_DjangoImageField', DjangoImageField)
         super(ImageField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, data):
