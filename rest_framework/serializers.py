@@ -640,7 +640,7 @@ class ModelSerializer(Serializer):
                 for attr in [
                     'required', 'default', 'allow_blank', 'allow_null',
                     'min_length', 'max_length', 'min_value', 'max_value',
-                    'validators'
+                    'validators', 'queryset'
                 ]:
                     kwargs.pop(attr, None)
             kwargs.update(extras)
