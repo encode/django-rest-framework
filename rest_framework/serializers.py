@@ -555,7 +555,7 @@ class ModelSerializer(Serializer):
         depth = getattr(self.Meta, 'depth', 0)
         extra_kwargs = getattr(self.Meta, 'extra_kwargs', {})
 
-        assert not fields and exclude,  "Cannot set both 'fields' and 'exclude'."
+        assert not (fields and exclude),  "Cannot set both 'fields' and 'exclude'."
 
         extra_kwargs = self._include_additional_options(extra_kwargs)
 
