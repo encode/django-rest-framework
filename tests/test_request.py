@@ -333,6 +333,25 @@ class TestUserSetter(TestCase):
         login(self.request, self.user)
         self.assertEqual(self.request.user, self.user)
 
+    def test_calling_user_fails_when_exception_is_raised(self):
+        class AuthRaisesError(object):
+            def authenticate(self, request):
+                raise AttributeError('We should see this error!')
+                # import rest_framework
+                # rest_framework.MISSPELLED_NAME_THAT_DOESNT_EXIST
+
+        self.request = Request(factory.get('/'), authenticators=(AuthRaisesError(),))
+        SessionMiddleware().process_request(self.request)
+
+        login(self.request, self.user)
+        error_seen = None
+        try:
+            self.request.user
+        except AttributeError as error:
+            error_seen = error
+
+        self.assertEqual('We should see this error!', error_seen.message)
+
     def test_user_can_logout(self):
         self.request.user = self.user
         self.assertFalse(self.request.user.is_anonymous())
