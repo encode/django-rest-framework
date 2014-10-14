@@ -51,6 +51,7 @@ class JSONRenderer(BaseRenderer):
     format = 'json'
     encoder_class = encoders.JSONEncoder
     ensure_ascii = True
+    sort_keys = False
 
     # We don't set a charset because JSON is a binary encoding,
     # that can be encoded as utf-8, utf-16 or utf-32.
@@ -84,7 +85,8 @@ class JSONRenderer(BaseRenderer):
 
         ret = json.dumps(
             data, cls=self.encoder_class,
-            indent=indent, ensure_ascii=self.ensure_ascii
+            indent=indent, ensure_ascii=self.ensure_ascii,
+            sort_keys=self.sort_keys
         )
 
         # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,
