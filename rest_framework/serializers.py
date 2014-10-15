@@ -680,7 +680,7 @@ class ModelSerializer(Serializer):
                 PendingDeprecationWarning,
                 stacklevel=3
             )
-            kwargs = extra_kwargs.get(field_name, {})
+            kwargs = extra_kwargs.get(api_settings.URL_FIELD_NAME, {})
             kwargs['view_name'] = view_name
             extra_kwargs[api_settings.URL_FIELD_NAME] = kwargs
 
@@ -692,7 +692,7 @@ class ModelSerializer(Serializer):
                 PendingDeprecationWarning,
                 stacklevel=3
             )
-            kwargs = extra_kwargs.get(field_name, {})
+            kwargs = extra_kwargs.get(api_settings.URL_FIELD_NAME, {})
             kwargs['lookup_field'] = lookup_field
             extra_kwargs[api_settings.URL_FIELD_NAME] = kwargs
 
