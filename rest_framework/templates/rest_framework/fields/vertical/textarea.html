@@ -1,5 +1,7 @@
 <div class="form-group">
-    {% include "rest_framework/fields/vertical/label.html" %}
-    <textarea class="form-control" {% include "rest_framework/fields/attrs.html" %}>{% if field.value %}{{ field.value }}{% endif %}</textarea>
+    {% if field.label %}
+        <label {% if field.style.hide_label %}class="sr-only"{% endif %}>{{ field.label }}</label>
+    {% endif %}
+    <textarea name="{{ field.name }}" class="form-control" {% if field.style.placeholder %}placeholder="{{ field.style.placeholder }}"{% endif %} {% if field.style.rows %}rows="{{ field.style.rows }}"{% endif %}>{% if field.value %}{{ field.value }}{% endif %}</textarea>
     {% if field.help_text %}<p class="help-block">{{ field.help_text }}</p>{% endif %}
 </div>

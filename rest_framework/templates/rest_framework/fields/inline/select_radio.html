@@ -1,5 +1,7 @@
 <div class="form-group">
-    {% include "rest_framework/fields/inline/label.html" %}
+    {% if field.label %}
+        <label class="sr-only">{{ field.label }}</label>
+    {% endif %}
     {% for key, text in field.choices.items %}
         <div class="radio">
             <label>
