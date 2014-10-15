@@ -66,6 +66,8 @@ def get_attribute(instance, attrs):
                 return instance[attr]
             except (KeyError, TypeError, AttributeError):
                 raise exc
+    if is_simple_callable(instance):
+        return instance()
     return instance
 
 
@@ -1025,8 +1027,6 @@ class ReadOnlyField(Field):
         super(ReadOnlyField, self).__init__(**kwargs)
 
     def to_representation(self, value):
-        if is_simple_callable(value):
-            return value()
         return value
 
 

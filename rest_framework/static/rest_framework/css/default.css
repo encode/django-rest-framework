@@ -36,6 +36,10 @@ ul.breadcrumb {
   margin: 70px 0 0 0;
 }
 
+.breadcrumb li.active a {
+  color: #777;
+}
+
 form select, form input, form textarea {
   width: 90%;
 }

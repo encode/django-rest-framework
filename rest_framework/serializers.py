@@ -115,7 +115,7 @@ class BaseSerializer(Field):
     @property
     def data(self):
         if not hasattr(self, '_data'):
-            if self.instance is not None:
+            if self.instance is not None and not getattr(self, '_errors', None):
                 self._data = self.to_representation(self.instance)
             else:
                 self._data = self.get_initial()
@@ -339,7 +339,7 @@ class Serializer(BaseSerializer):
         Dict of native values <- Dict of primitive datatypes.
         """
         ret = {}
-        errors = {}
+        errors = ReturnDict(serializer=self)
         fields = [field for field in self.fields.values() if not field.read_only]
 
         for field in fields:

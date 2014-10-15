@@ -340,76 +340,101 @@ class HTMLFormRenderer(BaseRenderer):
     media_type = 'text/html'
     format = 'form'
     charset = 'utf-8'
+    template_pack = 'rest_framework/horizontal/'
+    base_template = 'form.html'
 
-    field_templates = ClassLookupDict({
+    default_style = ClassLookupDict({
         serializers.Field: {
-            'default': 'input.html'
+            'base_template': 'input.html',
+            'input_type': 'text'
+        },
+        serializers.EmailField: {
+            'base_template': 'input.html',
+            'input_type': 'email'
+        },
+        serializers.URLField: {
+            'base_template': 'input.html',
+            'input_type': 'url'
+        },
+        serializers.IntegerField: {
+            'base_template': 'input.html',
+            'input_type': 'number'
+        },
+        serializers.DateTimeField: {
+            'base_template': 'input.html',
+            'input_type': 'datetime-local'
+        },
+        serializers.DateField: {
+            'base_template': 'input.html',
+            'input_type': 'date'
+        },
+        serializers.TimeField: {
+            'base_template': 'input.html',
+            'input_type': 'time'
         },
         serializers.BooleanField: {
-            'default': 'checkbox.html'
-        },
-        serializers.CharField: {
-            'default': 'input.html',
-            'textarea': 'textarea.html'
+            'base_template': 'checkbox.html'
         },
         serializers.ChoiceField: {
-            'default': 'select.html',
-            'radio': 'select_radio.html'
+            'base_template': 'select.html',  # Also valid: 'radio.html'
         },
         serializers.MultipleChoiceField: {
-            'default': 'select_multiple.html',
-            'checkbox': 'select_checkbox.html'
+            'base_template': 'select_multiple.html',  # Also valid: 'checkbox_multiple.html'
         },
         serializers.ManyRelation: {
-            'default': 'select_multiple.html',
-            'checkbox': 'select_checkbox.html'
+            'base_template': 'select_multiple.html',  # Also valid: 'checkbox_multiple.html'
         },
         serializers.Serializer: {
-            'default': 'fieldset.html'
+            'base_template': 'fieldset.html'
         },
         serializers.ListSerializer: {
-            'default': 'list_fieldset.html'
+            'base_template': 'list_fieldset.html'
         }
     })
 
-    input_type = ClassLookupDict({
-        serializers.Field: 'text',
-        serializers.EmailField: 'email',
-        serializers.URLField: 'url',
-        serializers.IntegerField: 'number',
-        serializers.DateTimeField: 'datetime-local',
-        serializers.DateField: 'date',
-        serializers.TimeField: 'time',
-    })
+    def render_field(self, field, parent_style):
+        style = dict(self.default_style[field])
+        style.update(field.style)
+        if 'template_pack' not in style:
+            style['template_pack'] = parent_style['template_pack']
+        style['renderer'] = self
 
-    def render_field(self, field, template_pack=None):
-        style_type = field.style.get('type', 'default')
-
-        input_type = self.input_type[field]
-        if input_type == 'datetime-local' and isinstance(field.value, six.text_type):
+        if style.get('input_type') == 'datetime-local' and isinstance(field.value, six.text_type):
             field.value = field.value.rstrip('Z')
 
-        base = self.field_templates[field][style_type]
-        template_name = template_pack + '/fields/' + base
+        if 'template' in style:
+            template_name = style['template']
+        else:
+            template_name = style['template_pack'].strip('/') + '/' + style['base_template']
+
         template = loader.get_template(template_name)
-        context = Context({
-            'field': field,
-            'input_type': input_type,
-            'renderer': self,
-        })
+        context = Context({'field': field, 'style': style})
         return template.render(context)
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Render serializer data and return an HTML form, as a string.
         """
+        form = data.serializer
+        meta = getattr(form, 'Meta', None)
+        style = getattr(meta, 'style', {})
+        if 'template_pack' not in style:
+            style['template_pack'] = self.template_pack
+        if 'base_template' not in style:
+            style['base_template'] = self.base_template
+        style['renderer'] = self
+
+        if 'template' in style:
+            template_name = style['template']
+        else:
+            template_name = style['template_pack'].strip('/') + '/' + style['base_template']
+
         renderer_context = renderer_context or {}
         request = renderer_context['request']
-        template = loader.get_template('rest_framework/horizontal/form.html')
+        template = loader.get_template(template_name)
         context = RequestContext(request, {
-            'form': data.serializer,
-            'template_pack': 'rest_framework/horizontal',
-            'renderer': self
+            'form': form,
+            'style': style
         })
         return template.render(context)
 
