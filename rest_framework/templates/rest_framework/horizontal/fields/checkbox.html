@@ -1,4 +1,4 @@
-<div class="form-group">
+<div class="form-group {% if field.errors %}has-error{% endif %}">
     <div class="col-sm-offset-2 col-sm-10">
         <div class="checkbox">
             <label>
@@ -6,5 +6,11 @@
                 {% if field.label %}{{ field.label }}{% endif %}
             </label>
         </div>
+        {% if field.errors %}
+            {% for error in field.errors %}<span class="help-block">{{ error }}</span>{% endfor %}
+        {% endif %}
+        {% if field.help_text %}
+            <span class="help-block">{{ field.help_text }}</span>
+        {% endif %}
     </div>
 </div>

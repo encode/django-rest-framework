@@ -59,7 +59,7 @@
                 <ul class="breadcrumb">
                     {% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
                         {% if forloop.last %}
-                            <li class="active">{{ breadcrumb_name }}</li>
+                            <li class="active"><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
                         {% else %}
                             <li><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
                         {% endif %}

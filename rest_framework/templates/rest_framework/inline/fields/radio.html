@@ -1,4 +1,4 @@
-<div class="form-group">
+<div class="form-group {% if field.errors %}has-error{% endif %}">
     {% if field.label %}
         <label class="sr-only">{{ field.label }}</label>
     {% endif %}
