@@ -1,6 +1,0 @@
-<div class="form-group {% if field.errors %}has-error{% endif %}">
-    {% if field.label %}
-        <label class="sr-only">{{ field.label }}</label>
-    {% endif %}
-    <input name="{{ field.name }}" class="form-control" type="{{ style.input_type }}" novalidate {% if style.placeholder %}placeholder="{{ style.placeholder }}"{% endif %} {% if field.value %}value="{{ field.value }}"{% endif %}>
-</div>
