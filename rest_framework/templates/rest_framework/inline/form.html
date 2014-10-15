@@ -1,0 +1,11 @@
+{% load rest_framework %}
+<form class="form-inline" role="form" action="." method="POST">
+    {% csrf_token %}
+    {% for field in form %}
+        {% if not field.read_only %}
+            {% render_field field template_pack=template_pack renderer=renderer %}
+        {% endif %}
+    {% endfor %}
+    <!-- form.non_field_errors -->
+    <button type="submit" class="btn btn-default">Submit</button>
+</form>

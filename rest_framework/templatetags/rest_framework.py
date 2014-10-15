@@ -32,8 +32,8 @@ class_re = re.compile(r'(?<=class=["\'])(.*)(?=["\'])')
 # And the template tags themselves...
 
 @register.simple_tag
-def render_field(field, layout=None, renderer=None):
-    return renderer.render_field(field, layout)
+def render_field(field, template_pack=None, renderer=None):
+    return renderer.render_field(field, template_pack)
 
 
 @register.simple_tag

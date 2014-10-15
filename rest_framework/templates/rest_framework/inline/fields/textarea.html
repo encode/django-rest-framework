@@ -1,0 +1,6 @@
+<div class="form-group">
+    {% if field.label %}
+        <label class="sr-only">{{ field.label }}</label>
+    {% endif %}
+    <input name="{{ field.name }}" type="{{ input_type }}" class="form-control" {% if field.style.placeholder %}placeholder="{{ field.style.placeholder }}"{% endif %} {% if field.value %}value="{{ field.value }}"{% endif %}>
+</div>

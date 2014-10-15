@@ -1,6 +1,0 @@
-<div class="form-group">
-    {% if field.label %}
-        <label class="sr-only">{{ field.label }}</label>
-    {% endif %}
-    <textarea name="{{ field.name }}" class="form-control" {% if field.style.placeholder %}placeholder="{{ field.style.placeholder }}"{% endif %} {% if field.style.rows %}rows="{{ field.style.rows }}"{% endif %}>{% if field.value %}{{ field.value }}{% endif %}</textarea>
-</div>

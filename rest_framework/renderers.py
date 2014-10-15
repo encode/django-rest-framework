@@ -339,7 +339,6 @@ class HTMLFormRenderer(BaseRenderer):
     """
     media_type = 'text/html'
     format = 'form'
-    template = 'rest_framework/form.html'
     charset = 'utf-8'
 
     field_templates = ClassLookupDict({
@@ -383,26 +382,21 @@ class HTMLFormRenderer(BaseRenderer):
         serializers.TimeField: 'time',
     })
 
-    def render_field(self, field, layout=None):
-        layout = layout or 'vertical'
+    def render_field(self, field, template_pack=None):
         style_type = field.style.get('type', 'default')
-        if style_type == 'textarea' and layout == 'inline':
-            style_type = 'default'
 
         input_type = self.input_type[field]
         if input_type == 'datetime-local' and isinstance(field.value, six.text_type):
             field.value = field.value.rstrip('Z')
 
         base = self.field_templates[field][style_type]
-        template_name = 'rest_framework/fields/' + layout + '/' + base
+        template_name = template_pack + '/fields/' + base
         template = loader.get_template(template_name)
         context = Context({
             'field': field,
             'input_type': input_type,
             'renderer': self,
-            'layout': layout
         })
-
         return template.render(context)
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
@@ -411,11 +405,10 @@ class HTMLFormRenderer(BaseRenderer):
         """
         renderer_context = renderer_context or {}
         request = renderer_context['request']
-
-        template = loader.get_template(self.template)
+        template = loader.get_template('rest_framework/horizontal/form.html')
         context = RequestContext(request, {
             'form': data.serializer,
-            'layout': getattr(getattr(data, 'Meta', None), 'layout', 'horizontal'),
+            'template_pack': 'rest_framework/horizontal',
             'renderer': self
         })
         return template.render(context)
