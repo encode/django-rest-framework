@@ -415,6 +415,10 @@ The [HawkREST][hawkrest] library builds on the [Mohawk][mohawk] library to let y
 
 HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a way to achieve origin authentication and message integrity for HTTP messages. Similar to [Amazon's HTTP Signature scheme][amazon-http-signature], used by many of its services, it permits stateless, per-request authentication. [Elvio Toccalino][etoccalino] maintains the [djangorestframework-httpsignature][djangorestframework-httpsignature] package which provides an easy to use HTTP Signature Authentication mechanism.
 
+## Djoser
+
+[Djoser][djoser] library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and it uses token based authentication. This is a ready to use REST implementation of Django authentication system.
+
 [cite]: http://jacobian.org/writing/rest-worst-practices/
 [http401]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
 [http403]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
@@ -449,3 +453,4 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [hawk]: https://github.com/hueniverse/hawk
 [mohawk]: http://mohawk.readthedocs.org/en/latest/
 [mac]: http://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05
+[djoser]: https://github.com/sunscrapers/djoser
