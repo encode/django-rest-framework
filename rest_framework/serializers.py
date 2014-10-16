@@ -22,6 +22,7 @@ from django.db import models
 from django.forms import widgets
 from django.utils import six
 from django.utils.datastructures import SortedDict
+from django.utils.functional import cached_property
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.settings import api_settings
 
@@ -197,7 +198,6 @@ class BaseSerializer(WritableField):
         self.init_data = data
         self.init_files = files
         self.object = instance
-        self.fields = self.get_fields()
 
         self._data = None
         self._files = None
@@ -211,6 +211,10 @@ class BaseSerializer(WritableField):
 
     #####
     # Methods to determine which fields to use when (de)serializing objects.
+
+    @cached_property
+    def fields(self):
+        return self.get_fields()
 
     def get_default_fields(self):
         """
