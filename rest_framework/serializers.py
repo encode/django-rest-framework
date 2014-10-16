@@ -77,6 +77,13 @@ class BaseSerializer(Field):
         raise NotImplementedError('`create()` must be implemented.')
 
     def save(self, **kwargs):
+        assert not hasattr(self, 'restore_object'), (
+            'Serializer %s has old-style version 2 `.restore_object()` '
+            'that is no longer compatible with REST framework 3. '
+            'Use the new-style `.create()` and `.update()` methods instead.' %
+            self.__class__.__name__
+        )
+
         validated_data = self.validated_data
         if kwargs:
             validated_data = dict(
@@ -494,6 +501,16 @@ class ModelSerializer(Serializer):
                 self._kwargs['validators'] = validators
 
     def create(self, validated_attrs):
+        assert not any(
+            isinstance(field, BaseSerializer) and not field.read_only
+            for field in self.fields.values()
+        ), (
+            'The `.create()` method does not suport nested writable fields '
+            'by default. Write an explicit `.create()` method for serializer '
+            '%s, or set `read_only=True` on nested serializer fields.' %
+            self.__class__.__name__
+        )
+
         ModelClass = self.Meta.model
 
         # Remove many-to-many relationships from validated_attrs.
@@ -515,6 +532,16 @@ class ModelSerializer(Serializer):
         return instance
 
     def update(self, instance, validated_attrs):
+        assert not any(
+            isinstance(field, BaseSerializer) and not field.read_only
+            for field in self.fields.values()
+        ), (
+            'The `.update()` method does not suport nested writable fields '
+            'by default. Write an explicit `.update()` method for serializer '
+            '%s, or set `read_only=True` on nested serializer fields.' %
+            self.__class__.__name__
+        )
+
         for attr, value in validated_attrs.items():
             setattr(instance, attr, value)
         instance.save()
