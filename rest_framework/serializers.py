@@ -379,7 +379,11 @@ class Serializer(BaseSerializer):
         fields = [field for field in self.fields.values() if not field.write_only]
 
         for field in fields:
-            value = field.get_field_representation(instance)
+            attribute = field.get_attribute(instance)
+            if attribute is None:
+                value = None
+            else:
+                value = field.to_representation(attribute)
             transform_method = getattr(self, 'transform_' + field.field_name, None)
             if transform_method is not None:
                 value = transform_method(value)

@@ -212,15 +212,12 @@ class Field(object):
             return self.default_empty_html if (ret == '') else ret
         return dictionary.get(self.field_name, empty)
 
-    def get_field_representation(self, instance):
+    def get_attribute(self, instance):
         """
-        Given the outgoing object instance, return the primitive value
+        Given the *outgoing* object instance, return the primitive value
         that should be used for this field.
         """
-        attribute = get_attribute(instance, self.source_attrs)
-        if attribute is None:
-            return None
-        return self.to_representation(attribute)
+        return get_attribute(instance, self.source_attrs)
 
     def get_default(self):
         """
