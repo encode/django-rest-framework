@@ -230,6 +230,9 @@ class BindingDict(object):
     def items(self):
         return self.fields.items()
 
+    def keys(self):
+        return self.fields.keys()
+
     def values(self):
         return self.fields.values()
 
