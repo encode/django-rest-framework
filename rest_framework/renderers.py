@@ -396,7 +396,7 @@ class HTMLFormRenderer(BaseRenderer):
         style = dict(self.default_style[field])
         style.update(field.style)
         if 'template_pack' not in style:
-            style['template_pack'] = parent_style['template_pack']
+            style['template_pack'] = parent_style.get('template_pack', self.template_pack)
         style['renderer'] = self
 
         if style.get('input_type') == 'datetime-local' and isinstance(field.value, six.text_type):
