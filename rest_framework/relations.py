@@ -1,5 +1,5 @@
 from rest_framework.compat import smart_text, urlparse
-from rest_framework.fields import empty, Field
+from rest_framework.fields import get_attribute, empty, Field
 from rest_framework.reverse import reverse
 from rest_framework.utils import html
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
@@ -7,6 +7,11 @@ from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch,
 from django.db.models.query import QuerySet
 from django.utils import six
 from django.utils.translation import ugettext_lazy as _
+
+
+class PKOnlyObject(object):
+    def __init__(self, pk):
+        self.pk = pk
 
 
 class RelatedField(Field):
@@ -44,6 +49,10 @@ class RelatedField(Field):
             # Ensure queryset is re-evaluated whenever used.
             queryset = queryset.all()
         return queryset
+
+    def get_iterable(self, instance, source):
+        relationship = get_attribute(instance, [source])
+        return relationship.all() if (hasattr(relationship, 'all')) else relationship
 
     @property
     def choices(self):
@@ -84,6 +93,31 @@ class PrimaryKeyRelatedField(RelatedField):
             self.fail('does_not_exist', pk_value=data)
         except (TypeError, ValueError):
             self.fail('incorrect_type', data_type=type(data).__name__)
+
+    def get_attribute(self, instance):
+        # We customize `get_attribute` here for performance reasons.
+        # For relationships the instance will already have the pk of
+        # the related object. We return this directly instead of returning the
+        # object itself, which would require a database lookup.
+        try:
+            return PKOnlyObject(pk=instance.serializable_value(self.source))
+        except AttributeError:
+            return get_attribute(instance, [self.source])
+
+    def get_iterable(self, instance, source):
+        # For consistency with `get_attribute` we're using `serializable_value()`
+        # here. Typically there won't be any difference, but some custom field
+        # types might return a non-primative value for the pk otherwise.
+        #
+        # We could try to get smart with `values_list('pk', flat=True)`, which
+        # would be better in some case, but would actually end up with *more*
+        # queries if the developer is using `prefetch_related` across the
+        # relationship.
+        relationship = super(PrimaryKeyRelatedField, self).get_iterable(instance, source)
+        return [
+            PKOnlyObject(pk=item.serializable_value('pk'))
+            for item in relationship
+        ]
 
     def to_representation(self, value):
         return value.pk
@@ -277,8 +311,10 @@ class ManyRelation(Field):
             for item in data
         ]
 
-    def to_representation(self, obj):
-        iterable = obj.all() if (hasattr(obj, 'all')) else obj
+    def get_attribute(self, instance):
+        return self.child_relation.get_iterable(instance, self.source)
+
+    def to_representation(self, iterable):
         return [
             self.child_relation.to_representation(value)
             for value in iterable

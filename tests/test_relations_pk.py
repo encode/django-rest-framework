@@ -68,7 +68,8 @@ class PKManyToManyTests(TestCase):
             {'id': 2, 'name': 'source-2', 'targets': [1, 2]},
             {'id': 3, 'name': 'source-3', 'targets': [1, 2, 3]}
         ]
-        self.assertEqual(serializer.data, expected)
+        with self.assertNumQueries(4):
+            self.assertEqual(serializer.data, expected)
 
     def test_reverse_many_to_many_retrieve(self):
         queryset = ManyToManyTarget.objects.all()
@@ -78,7 +79,8 @@ class PKManyToManyTests(TestCase):
             {'id': 2, 'name': 'target-2', 'sources': [2, 3]},
             {'id': 3, 'name': 'target-3', 'sources': [3]}
         ]
-        self.assertEqual(serializer.data, expected)
+        with self.assertNumQueries(4):
+            self.assertEqual(serializer.data, expected)
 
     def test_many_to_many_update(self):
         data = {'id': 1, 'name': 'source-1', 'targets': [1, 2, 3]}
@@ -173,7 +175,8 @@ class PKForeignKeyTests(TestCase):
             {'id': 2, 'name': 'source-2', 'target': 1},
             {'id': 3, 'name': 'source-3', 'target': 1}
         ]
-        self.assertEqual(serializer.data, expected)
+        with self.assertNumQueries(1):
+            self.assertEqual(serializer.data, expected)
 
     def test_reverse_foreign_key_retrieve(self):
         queryset = ForeignKeyTarget.objects.all()
@@ -182,7 +185,8 @@ class PKForeignKeyTests(TestCase):
             {'id': 1, 'name': 'target-1', 'sources': [1, 2, 3]},
             {'id': 2, 'name': 'target-2', 'sources': []},
         ]
-        self.assertEqual(serializer.data, expected)
+        with self.assertNumQueries(3):
+            self.assertEqual(serializer.data, expected)
 
     def test_foreign_key_update(self):
         data = {'id': 1, 'name': 'source-1', 'target': 2}
