@@ -1,6 +1,6 @@
 from decimal import Decimal
 from django.utils import timezone
-from rest_framework import exceptions, fields, serializers
+from rest_framework import serializers
 import datetime
 import django
 import pytest
@@ -17,8 +17,8 @@ class TestEmpty:
         """
         By default a field must be included in the input.
         """
-        field = fields.IntegerField()
-        with pytest.raises(exceptions.ValidationFailed) as exc_info:
+        field = serializers.IntegerField()
+        with pytest.raises(serializers.ValidationError) as exc_info:
             field.run_validation()
         assert exc_info.value.detail == ['This field is required.']
 
@@ -26,16 +26,16 @@ class TestEmpty:
         """
         If `required=False` then a field may be omitted from the input.
         """
-        field = fields.IntegerField(required=False)
-        with pytest.raises(fields.SkipField):
+        field = serializers.IntegerField(required=False)
+        with pytest.raises(serializers.SkipField):
             field.run_validation()
 
     def test_disallow_null(self):
         """
         By default `None` is not a valid input.
         """
-        field = fields.IntegerField()
-        with pytest.raises(exceptions.ValidationFailed) as exc_info:
+        field = serializers.IntegerField()
+        with pytest.raises(serializers.ValidationError) as exc_info:
             field.run_validation(None)
         assert exc_info.value.detail == ['This field may not be null.']
 
@@ -43,7 +43,7 @@ class TestEmpty:
         """
         If `allow_null=True` then `None` is a valid input.
         """
-        field = fields.IntegerField(allow_null=True)
+        field = serializers.IntegerField(allow_null=True)
         output = field.run_validation(None)
         assert output is None
 
@@ -51,8 +51,8 @@ class TestEmpty:
         """
         By default '' is not a valid input.
         """
-        field = fields.CharField()
-        with pytest.raises(exceptions.ValidationFailed) as exc_info:
+        field = serializers.CharField()
+        with pytest.raises(serializers.ValidationError) as exc_info:
             field.run_validation('')
         assert exc_info.value.detail == ['This field may not be blank.']
 
@@ -60,7 +60,7 @@ class TestEmpty:
         """
         If `allow_blank=True` then '' is a valid input.
         """
-        field = fields.CharField(allow_blank=True)
+        field = serializers.CharField(allow_blank=True)
         output = field.run_validation('')
         assert output is ''
 
@@ -68,7 +68,7 @@ class TestEmpty:
         """
         If `default` is set, then omitted values get the default input.
         """
-        field = fields.IntegerField(default=123)
+        field = serializers.IntegerField(default=123)
         output = field.run_validation()
         assert output is 123
 
@@ -96,13 +96,13 @@ class TestSource:
 class TestReadOnly:
     def setup(self):
         class TestSerializer(serializers.Serializer):
-            read_only = fields.ReadOnlyField()
-            writable = fields.IntegerField()
+            read_only = serializers.ReadOnlyField()
+            writable = serializers.IntegerField()
         self.Serializer = TestSerializer
 
     def test_validate_read_only(self):
         """
-        Read-only fields should not be included in validation.
+        Read-only serializers.should not be included in validation.
         """
         data = {'read_only': 123, 'writable': 456}
         serializer = self.Serializer(data=data)
@@ -111,7 +111,7 @@ class TestReadOnly:
 
     def test_serialize_read_only(self):
         """
-        Read-only fields should be serialized.
+        Read-only serializers.should be serialized.
         """
         instance = {'read_only': 123, 'writable': 456}
         serializer = self.Serializer(instance)
@@ -121,13 +121,13 @@ class TestReadOnly:
 class TestWriteOnly:
     def setup(self):
         class TestSerializer(serializers.Serializer):
-            write_only = fields.IntegerField(write_only=True)
-            readable = fields.IntegerField()
+            write_only = serializers.IntegerField(write_only=True)
+            readable = serializers.IntegerField()
         self.Serializer = TestSerializer
 
     def test_validate_write_only(self):
         """
-        Write-only fields should be included in validation.
+        Write-only serializers.should be included in validation.
         """
         data = {'write_only': 123, 'readable': 456}
         serializer = self.Serializer(data=data)
@@ -136,7 +136,7 @@ class TestWriteOnly:
 
     def test_serialize_write_only(self):
         """
-        Write-only fields should not be serialized.
+        Write-only serializers.should not be serialized.
         """
         instance = {'write_only': 123, 'readable': 456}
         serializer = self.Serializer(instance)
@@ -146,8 +146,8 @@ class TestWriteOnly:
 class TestInitial:
     def setup(self):
         class TestSerializer(serializers.Serializer):
-            initial_field = fields.IntegerField(initial=123)
-            blank_field = fields.IntegerField()
+            initial_field = serializers.IntegerField(initial=123)
+            blank_field = serializers.IntegerField()
         self.serializer = TestSerializer()
 
     def test_initial(self):
@@ -163,7 +163,7 @@ class TestInitial:
 class TestLabel:
     def setup(self):
         class TestSerializer(serializers.Serializer):
-            labeled = fields.IntegerField(label='My label')
+            labeled = serializers.IntegerField(label='My label')
         self.serializer = TestSerializer()
 
     def test_label(self):
@@ -189,7 +189,7 @@ class TestInvalidErrorKey:
         with pytest.raises(AssertionError) as exc_info:
             self.field.to_native(123)
         expected = (
-            'ValidationFailed raised by `ExampleField`, but error key '
+            'ValidationError raised by `ExampleField`, but error key '
             '`incorrect` does not exist in the `error_messages` dictionary.'
         )
         assert str(exc_info.value) == expected
@@ -198,7 +198,7 @@ class TestInvalidErrorKey:
 class TestBooleanHTMLInput:
     def setup(self):
         class TestSerializer(serializers.Serializer):
-            archived = fields.BooleanField()
+            archived = serializers.BooleanField()
         self.Serializer = TestSerializer
 
     def test_empty_html_checkbox(self):
@@ -243,7 +243,7 @@ class FieldValues:
         Ensure that invalid values raise the expected validation error.
         """
         for input_value, expected_failure in get_items(self.invalid_inputs):
-            with pytest.raises(exceptions.ValidationFailed) as exc_info:
+            with pytest.raises(serializers.ValidationError) as exc_info:
                 self.field.run_validation(input_value)
             assert exc_info.value.detail == expected_failure
 
@@ -283,7 +283,7 @@ class TestBooleanField(FieldValues):
         False: False,
         'other': True
     }
-    field = fields.BooleanField()
+    field = serializers.BooleanField()
 
 
 class TestNullBooleanField(FieldValues):
@@ -310,7 +310,7 @@ class TestNullBooleanField(FieldValues):
         None: None,
         'other': True
     }
-    field = fields.NullBooleanField()
+    field = serializers.NullBooleanField()
 
 
 # String types...
@@ -330,7 +330,7 @@ class TestCharField(FieldValues):
         1: '1',
         'abc': 'abc'
     }
-    field = fields.CharField()
+    field = serializers.CharField()
 
 
 class TestEmailField(FieldValues):
@@ -345,7 +345,7 @@ class TestEmailField(FieldValues):
         'examplecom': ['Enter a valid email address.']
     }
     outputs = {}
-    field = fields.EmailField()
+    field = serializers.EmailField()
 
 
 class TestRegexField(FieldValues):
@@ -359,7 +359,7 @@ class TestRegexField(FieldValues):
         'A9': ["This value does not match the required pattern."]
     }
     outputs = {}
-    field = fields.RegexField(regex='[a-z][0-9]')
+    field = serializers.RegexField(regex='[a-z][0-9]')
 
 
 class TestSlugField(FieldValues):
@@ -373,7 +373,7 @@ class TestSlugField(FieldValues):
         'slug 99': ["Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."]
     }
     outputs = {}
-    field = fields.SlugField()
+    field = serializers.SlugField()
 
 
 class TestURLField(FieldValues):
@@ -387,7 +387,7 @@ class TestURLField(FieldValues):
         'example.com': ['Enter a valid URL.']
     }
     outputs = {}
-    field = fields.URLField()
+    field = serializers.URLField()
 
 
 # Number types...
@@ -415,7 +415,7 @@ class TestIntegerField(FieldValues):
         1.0: 1,
         0.0: 0
     }
-    field = fields.IntegerField()
+    field = serializers.IntegerField()
 
 
 class TestMinMaxIntegerField(FieldValues):
@@ -435,7 +435,7 @@ class TestMinMaxIntegerField(FieldValues):
         '4': ['Ensure this value is less than or equal to 3.'],
     }
     outputs = {}
-    field = fields.IntegerField(min_value=1, max_value=3)
+    field = serializers.IntegerField(min_value=1, max_value=3)
 
 
 class TestFloatField(FieldValues):
@@ -461,7 +461,7 @@ class TestFloatField(FieldValues):
         1.0: 1.0,
         0.0: 0.0,
     }
-    field = fields.FloatField()
+    field = serializers.FloatField()
 
 
 class TestMinMaxFloatField(FieldValues):
@@ -483,7 +483,7 @@ class TestMinMaxFloatField(FieldValues):
         '3.1': ['Ensure this value is less than or equal to 3.'],
     }
     outputs = {}
-    field = fields.FloatField(min_value=1, max_value=3)
+    field = serializers.FloatField(min_value=1, max_value=3)
 
 
 class TestDecimalField(FieldValues):
@@ -518,7 +518,7 @@ class TestDecimalField(FieldValues):
         Decimal('1.09'): '1.1',
         Decimal('0.04'): '0.0'
     }
-    field = fields.DecimalField(max_digits=3, decimal_places=1)
+    field = serializers.DecimalField(max_digits=3, decimal_places=1)
 
 
 class TestMinMaxDecimalField(FieldValues):
@@ -534,7 +534,7 @@ class TestMinMaxDecimalField(FieldValues):
         '20.1': ['Ensure this value is less than or equal to 20.'],
     }
     outputs = {}
-    field = fields.DecimalField(
+    field = serializers.DecimalField(
         max_digits=3, decimal_places=1,
         min_value=10, max_value=20
     )
@@ -554,13 +554,13 @@ class TestNoStringCoercionDecimalField(FieldValues):
         Decimal('1.09'): Decimal('1.1'),
         Decimal('0.04'): Decimal('0.0'),
     }
-    field = fields.DecimalField(
+    field = serializers.DecimalField(
         max_digits=3, decimal_places=1,
         coerce_to_string=False
     )
 
 
-# Date & time fields...
+# Date & time serializers...
 
 class TestDateField(FieldValues):
     """
@@ -578,7 +578,7 @@ class TestDateField(FieldValues):
     outputs = {
         datetime.date(2001, 1, 1): '2001-01-01'
     }
-    field = fields.DateField()
+    field = serializers.DateField()
 
 
 class TestCustomInputFormatDateField(FieldValues):
@@ -592,7 +592,7 @@ class TestCustomInputFormatDateField(FieldValues):
         '2001-01-01': ['Date has wrong format. Use one of these formats instead: DD [Jan-Dec] YYYY']
     }
     outputs = {}
-    field = fields.DateField(input_formats=['%d %b %Y'])
+    field = serializers.DateField(input_formats=['%d %b %Y'])
 
 
 class TestCustomOutputFormatDateField(FieldValues):
@@ -604,7 +604,7 @@ class TestCustomOutputFormatDateField(FieldValues):
     outputs = {
         datetime.date(2001, 1, 1): '01 Jan 2001'
     }
-    field = fields.DateField(format='%d %b %Y')
+    field = serializers.DateField(format='%d %b %Y')
 
 
 class TestNoOutputFormatDateField(FieldValues):
@@ -616,7 +616,7 @@ class TestNoOutputFormatDateField(FieldValues):
     outputs = {
         datetime.date(2001, 1, 1): datetime.date(2001, 1, 1)
     }
-    field = fields.DateField(format=None)
+    field = serializers.DateField(format=None)
 
 
 class TestDateTimeField(FieldValues):
@@ -641,7 +641,7 @@ class TestDateTimeField(FieldValues):
         datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00',
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): '2001-01-01T13:00:00Z'
     }
-    field = fields.DateTimeField(default_timezone=timezone.UTC())
+    field = serializers.DateTimeField(default_timezone=timezone.UTC())
 
 
 class TestCustomInputFormatDateTimeField(FieldValues):
@@ -655,7 +655,7 @@ class TestCustomInputFormatDateTimeField(FieldValues):
         '2001-01-01T20:50': ['Datetime has wrong format. Use one of these formats instead: hh:mm[AM|PM], DD [Jan-Dec] YYYY']
     }
     outputs = {}
-    field = fields.DateTimeField(default_timezone=timezone.UTC(), input_formats=['%I:%M%p, %d %b %Y'])
+    field = serializers.DateTimeField(default_timezone=timezone.UTC(), input_formats=['%I:%M%p, %d %b %Y'])
 
 
 class TestCustomOutputFormatDateTimeField(FieldValues):
@@ -667,7 +667,7 @@ class TestCustomOutputFormatDateTimeField(FieldValues):
     outputs = {
         datetime.datetime(2001, 1, 1, 13, 00): '01:00PM, 01 Jan 2001',
     }
-    field = fields.DateTimeField(format='%I:%M%p, %d %b %Y')
+    field = serializers.DateTimeField(format='%I:%M%p, %d %b %Y')
 
 
 class TestNoOutputFormatDateTimeField(FieldValues):
@@ -679,7 +679,7 @@ class TestNoOutputFormatDateTimeField(FieldValues):
     outputs = {
         datetime.datetime(2001, 1, 1, 13, 00): datetime.datetime(2001, 1, 1, 13, 00),
     }
-    field = fields.DateTimeField(format=None)
+    field = serializers.DateTimeField(format=None)
 
 
 class TestNaiveDateTimeField(FieldValues):
@@ -692,7 +692,7 @@ class TestNaiveDateTimeField(FieldValues):
     }
     invalid_inputs = {}
     outputs = {}
-    field = fields.DateTimeField(default_timezone=None)
+    field = serializers.DateTimeField(default_timezone=None)
 
 
 class TestTimeField(FieldValues):
@@ -710,7 +710,7 @@ class TestTimeField(FieldValues):
     outputs = {
         datetime.time(13, 00): '13:00:00'
     }
-    field = fields.TimeField()
+    field = serializers.TimeField()
 
 
 class TestCustomInputFormatTimeField(FieldValues):
@@ -724,7 +724,7 @@ class TestCustomInputFormatTimeField(FieldValues):
         '13:00': ['Time has wrong format. Use one of these formats instead: hh:mm[AM|PM]'],
     }
     outputs = {}
-    field = fields.TimeField(input_formats=['%I:%M%p'])
+    field = serializers.TimeField(input_formats=['%I:%M%p'])
 
 
 class TestCustomOutputFormatTimeField(FieldValues):
@@ -736,7 +736,7 @@ class TestCustomOutputFormatTimeField(FieldValues):
     outputs = {
         datetime.time(13, 00): '01:00PM'
     }
-    field = fields.TimeField(format='%I:%M%p')
+    field = serializers.TimeField(format='%I:%M%p')
 
 
 class TestNoOutputFormatTimeField(FieldValues):
@@ -748,7 +748,7 @@ class TestNoOutputFormatTimeField(FieldValues):
     outputs = {
         datetime.time(13, 00): datetime.time(13, 00)
     }
-    field = fields.TimeField(format=None)
+    field = serializers.TimeField(format=None)
 
 
 # Choice types...
@@ -768,7 +768,7 @@ class TestChoiceField(FieldValues):
     outputs = {
         'good': 'good'
     }
-    field = fields.ChoiceField(
+    field = serializers.ChoiceField(
         choices=[
             ('poor', 'Poor quality'),
             ('medium', 'Medium quality'),
@@ -794,7 +794,7 @@ class TestChoiceFieldWithType(FieldValues):
         '1': 1,
         1: 1
     }
-    field = fields.ChoiceField(
+    field = serializers.ChoiceField(
         choices=[
             (1, 'Poor quality'),
             (2, 'Medium quality'),
@@ -819,7 +819,7 @@ class TestChoiceFieldWithListChoices(FieldValues):
     outputs = {
         'good': 'good'
     }
-    field = fields.ChoiceField(choices=('poor', 'medium', 'good'))
+    field = serializers.ChoiceField(choices=('poor', 'medium', 'good'))
 
 
 class TestMultipleChoiceField(FieldValues):
@@ -838,7 +838,7 @@ class TestMultipleChoiceField(FieldValues):
     outputs = [
         (['aircon', 'manual'], set(['aircon', 'manual']))
     ]
-    field = fields.MultipleChoiceField(
+    field = serializers.MultipleChoiceField(
         choices=[
             ('aircon', 'AirCon'),
             ('manual', 'Manual drive'),
@@ -847,7 +847,7 @@ class TestMultipleChoiceField(FieldValues):
     )
 
 
-# File fields...
+# File serializers...
 
 class MockFile:
     def __init__(self, name='', size=0, url=''):
@@ -881,7 +881,7 @@ class TestFileField(FieldValues):
         (MockFile(name='example.txt', url='/example.txt'), '/example.txt'),
         ('', None)
     ]
-    field = fields.FileField(max_length=10)
+    field = serializers.FileField(max_length=10)
 
 
 class TestFieldFieldWithName(FieldValues):
@@ -893,14 +893,14 @@ class TestFieldFieldWithName(FieldValues):
     outputs = [
         (MockFile(name='example.txt', url='/example.txt'), 'example.txt')
     ]
-    field = fields.FileField(use_url=False)
+    field = serializers.FileField(use_url=False)
 
 
 # Stub out mock Django `forms.ImageField` class so we don't *actually*
 # call into it's regular validation, or require PIL for testing.
 class FailImageValidation(object):
     def to_python(self, value):
-        raise exceptions.ValidationFailed(self.error_messages['invalid_image'])
+        raise serializers.ValidationError(self.error_messages['invalid_image'])
 
 
 class PassImageValidation(object):
@@ -917,7 +917,7 @@ class TestInvalidImageField(FieldValues):
         (MockFile(name='example.txt', size=10), ['Upload a valid image. The file you uploaded was either not an image or a corrupted image.'])
     ]
     outputs = {}
-    field = fields.ImageField(_DjangoImageField=FailImageValidation)
+    field = serializers.ImageField(_DjangoImageField=FailImageValidation)
 
 
 class TestValidImageField(FieldValues):
@@ -929,10 +929,10 @@ class TestValidImageField(FieldValues):
     ]
     invalid_inputs = {}
     outputs = {}
-    field = fields.ImageField(_DjangoImageField=PassImageValidation)
+    field = serializers.ImageField(_DjangoImageField=PassImageValidation)
 
 
-# Composite fields...
+# Composite serializers...
 
 class TestListField(FieldValues):
     """
@@ -950,7 +950,7 @@ class TestListField(FieldValues):
         ([1, 2, 3], [1, 2, 3]),
         (['1', '2', '3'], [1, 2, 3])
     ]
-    field = fields.ListField(child=fields.IntegerField())
+    field = serializers.ListField(child=serializers.IntegerField())
 
 
 # Tests for FieldField.
@@ -963,7 +963,7 @@ class MockRequest:
 
 class TestFileFieldContext:
     def test_fully_qualified_when_request_in_context(self):
-        field = fields.FileField(max_length=10)
+        field = serializers.FileField(max_length=10)
         field._context = {'request': MockRequest()}
         obj = MockFile(name='example.txt', url='/example.txt')
         value = field.to_representation(obj)

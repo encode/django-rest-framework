@@ -13,7 +13,7 @@ from rest_framework.compat import (
     smart_text, EmailValidator, MinValueValidator, MaxValueValidator,
     MinLengthValidator, MaxLengthValidator, URLValidator
 )
-from rest_framework.exceptions import ValidationFailed
+from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, representation, humanize_datetime
 import copy
@@ -102,7 +102,7 @@ NOT_READ_ONLY_DEFAULT = 'May not set both `read_only` and `default`'
 NOT_REQUIRED_DEFAULT = 'May not set both `required` and `default`'
 USE_READONLYFIELD = 'Field(read_only=True) should be ReadOnlyField'
 MISSING_ERROR_MESSAGE = (
-    'ValidationFailed raised by `{class_name}`, but error key `{key}` does '
+    'ValidationError raised by `{class_name}`, but error key `{key}` does '
     'not exist in the `error_messages` dictionary.'
 )
 
@@ -264,7 +264,7 @@ class Field(object):
     def run_validators(self, value):
         """
         Test the given value against all the validators on the field,
-        and either raise a `ValidationFailed` or simply return.
+        and either raise a `ValidationError` or simply return.
         """
         errors = []
         for validator in self.validators:
@@ -272,12 +272,12 @@ class Field(object):
                 validator.serializer_field = self
             try:
                 validator(value)
-            except ValidationFailed as exc:
+            except ValidationError as exc:
                 errors.extend(exc.detail)
             except DjangoValidationError as exc:
                 errors.extend(exc.messages)
         if errors:
-            raise ValidationFailed(errors)
+            raise ValidationError(errors)
 
     def validate(self, value):
         pass
@@ -305,7 +305,7 @@ class Field(object):
             msg = MISSING_ERROR_MESSAGE.format(class_name=class_name, key=key)
             raise AssertionError(msg)
         message_string = msg.format(**kwargs)
-        raise ValidationFailed(message_string)
+        raise ValidationError(message_string)
 
     @property
     def root(self):

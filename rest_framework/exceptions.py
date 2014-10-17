@@ -24,7 +24,14 @@ class APIException(Exception):
         return self.detail
 
 
-class ValidationFailed(APIException):
+# The recommended style for using `ValidationError` is to keep it namespaced
+# under `serializers`, in order to minimize potential confusion with Django's
+# built in `ValidationError`. For example:
+#
+# from rest_framework import serializers
+# raise serializers.ValidationError('Value was invalid')
+
+class ValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
 
     def __init__(self, detail):

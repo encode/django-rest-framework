@@ -1,6 +1,6 @@
 from .utils import mock_reverse, fail_reverse, BadType, MockObject, MockQueryset
 from django.core.exceptions import ImproperlyConfigured
-from rest_framework import exceptions, serializers
+from rest_framework import serializers
 from rest_framework.test import APISimpleTestCase
 import pytest
 
@@ -30,13 +30,13 @@ class TestPrimaryKeyRelatedField(APISimpleTestCase):
         assert instance is self.instance
 
     def test_pk_related_lookup_does_not_exist(self):
-        with pytest.raises(exceptions.ValidationFailed) as excinfo:
+        with pytest.raises(serializers.ValidationError) as excinfo:
             self.field.to_internal_value(4)
         msg = excinfo.value.detail[0]
         assert msg == "Invalid pk '4' - object does not exist."
 
     def test_pk_related_lookup_invalid_type(self):
-        with pytest.raises(exceptions.ValidationFailed) as excinfo:
+        with pytest.raises(serializers.ValidationError) as excinfo:
             self.field.to_internal_value(BadType())
         msg = excinfo.value.detail[0]
         assert msg == 'Incorrect type. Expected pk value, received BadType.'
@@ -120,13 +120,13 @@ class TestSlugRelatedField(APISimpleTestCase):
         assert instance is self.instance
 
     def test_slug_related_lookup_does_not_exist(self):
-        with pytest.raises(exceptions.ValidationFailed) as excinfo:
+        with pytest.raises(serializers.ValidationError) as excinfo:
             self.field.to_internal_value('doesnotexist')
         msg = excinfo.value.detail[0]
         assert msg == 'Object with name=doesnotexist does not exist.'
 
     def test_slug_related_lookup_invalid_type(self):
-        with pytest.raises(exceptions.ValidationFailed) as excinfo:
+        with pytest.raises(serializers.ValidationError) as excinfo:
             self.field.to_internal_value(BadType())
         msg = excinfo.value.detail[0]
         assert msg == 'Invalid value.'

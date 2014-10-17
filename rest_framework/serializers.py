@@ -14,7 +14,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import six
 from django.utils.datastructures import SortedDict
-from rest_framework.exceptions import ValidationFailed
+from rest_framework.exceptions import ValidationError
 from rest_framework.fields import empty, set_value, Field, SkipField
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, model_meta, representation
@@ -77,13 +77,6 @@ class BaseSerializer(Field):
         raise NotImplementedError('`create()` must be implemented.')
 
     def save(self, **kwargs):
-        assert not hasattr(self, 'restore_object'), (
-            'Serializer %s has old-style version 2 `.restore_object()` '
-            'that is no longer compatible with REST framework 3. '
-            'Use the new-style `.create()` and `.update()` methods instead.' %
-            self.__class__.__name__
-        )
-
         validated_data = self.validated_data
         if kwargs:
             validated_data = dict(
@@ -105,17 +98,24 @@ class BaseSerializer(Field):
         return self.instance
 
     def is_valid(self, raise_exception=False):
+        assert not hasattr(self, 'restore_object'), (
+            'Serializer %s has old-style version 2 `.restore_object()` '
+            'that is no longer compatible with REST framework 3. '
+            'Use the new-style `.create()` and `.update()` methods instead.' %
+            self.__class__.__name__
+        )
+
         if not hasattr(self, '_validated_data'):
             try:
                 self._validated_data = self.run_validation(self._initial_data)
-            except ValidationFailed as exc:
+            except ValidationError as exc:
                 self._validated_data = {}
                 self._errors = exc.detail
             else:
                 self._errors = {}
 
         if self._errors and raise_exception:
-            raise ValidationFailed(self._errors)
+            raise ValidationError(self._errors)
 
         return not bool(self._errors)
 
@@ -124,6 +124,8 @@ class BaseSerializer(Field):
         if not hasattr(self, '_data'):
             if self.instance is not None and not getattr(self, '_errors', None):
                 self._data = self.to_representation(self.instance)
+            elif hasattr(self, '_validated_data') and not getattr(self, '_errors', None):
+                self._data = self.to_representation(self.validated_data)
             else:
                 self._data = self.get_initial()
         return self._data
@@ -329,7 +331,7 @@ class Serializer(BaseSerializer):
             return None
 
         if not isinstance(data, dict):
-            raise ValidationFailed({
+            raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: ['Invalid data']
             })
 
@@ -338,8 +340,8 @@ class Serializer(BaseSerializer):
             self.run_validators(value)
             value = self.validate(value)
             assert value is not None, '.validate() should return the validated data'
-        except ValidationFailed as exc:
-            raise ValidationFailed({
+        except ValidationError as exc:
+            raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: exc.detail
             })
         return value
@@ -359,7 +361,7 @@ class Serializer(BaseSerializer):
                 validated_value = field.run_validation(primitive_value)
                 if validate_method is not None:
                     validated_value = validate_method(validated_value)
-            except ValidationFailed as exc:
+            except ValidationError as exc:
                 errors[field.field_name] = exc.detail
             except SkipField:
                 pass
@@ -367,7 +369,7 @@ class Serializer(BaseSerializer):
                 set_value(ret, field.source_attrs, validated_value)
 
         if errors:
-            raise ValidationFailed(errors)
+            raise ValidationError(errors)
 
         return ret
 
