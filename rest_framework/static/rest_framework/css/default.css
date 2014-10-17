@@ -36,6 +36,10 @@ ul.breadcrumb {
   margin: 80px 0 0 0;
 }
 
+.container ul.breadcrumb {
+    margin-top: 0;
+}
+
 form select, form input, form textarea {
   width: 90%;
 }
