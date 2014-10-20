@@ -1045,5 +1045,10 @@ class SerializerMethodField(Field):
         super(SerializerMethodField, self).__init__(*args, **kwargs)
 
     def field_to_native(self, obj, field_name):
-        value = getattr(self.parent, self.method_name)(obj)
+        if hasattr(self.parent, self.method_name):
+            method = getattr(self.parent, self.method_name)
+            value = method(obj)
+        else:
+            method = getattr(obj, self.method_name)
+            value = method()
         return self.to_native(value)
