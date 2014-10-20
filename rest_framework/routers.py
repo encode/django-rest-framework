@@ -16,10 +16,11 @@ For example, you might have a `urls.py` that looks something like this:
 from __future__ import unicode_literals
 
 import itertools
-from collections import namedtuple, OrderedDict
+from collections import namedtuple
 from django.conf.urls import patterns, url
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
+from django.utils.datastructures import SortedDict
 from rest_framework import views
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -277,7 +278,7 @@ class DefaultRouter(SimpleRouter):
         """
         Return a view to use as the API root.
         """
-        api_root_dict = OrderedDict()
+        api_root_dict = SortedDict()
         list_name = self.routes[0].name
         for prefix, viewset, basename in self.registry:
             api_root_dict[prefix] = list_name.format(basename=basename)
@@ -286,7 +287,7 @@ class DefaultRouter(SimpleRouter):
             _ignore_model_permissions = True
 
             def get(self, request, *args, **kwargs):
-                ret = OrderedDict()
+                ret = SortedDict()
                 for key, url_name in api_root_dict.items():
                     try:
                         ret[key] = reverse(
