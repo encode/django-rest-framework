@@ -62,7 +62,7 @@ To submit new content, [open an issue](https://github.com/tomchristie/django-res
 ### Misc
 
 * [djangorestrelationalhyperlink](https://github.com/fredkingham/django_rest_model_hyperlink_serializers_project) - A hyperlinked serialiser that can can be used to alter relationships via hyperlinks, but otherwise like a hyperlink model serializer.
-* [django-rest-swagger](https://github.com/marcgibbons/django-rest-swagger) - An API documentation generator for Swagger UI.
+* [django-rest-swagger](https://github.com/ariovistus/django-rest-swagger) - An API documentation generator for Swagger UI.
 * [django-rest-framework-proxy ](https://github.com/eofs/django-rest-framework-proxy) - Proxy to redirect incoming request to another API server.
 * [gaiarestframework](https://github.com/AppsFuel/gaiarestframework) - Utils for django-rest-framewok
 * [drf-extensions](https://github.com/chibisov/drf-extensions) - A collection of custom extensions
