@@ -976,7 +976,7 @@ class FileField(WritableField):
         return data
 
     def to_native(self, value):
-        if self.show_url:
+        if value and self.show_url:
             return value.url
         return value.name
 
@@ -993,7 +993,6 @@ class ImageField(FileField):
     }
 
     def __init__(self, *args, **kwargs):
-        self.show_url = kwargs.pop('show_url', False)
         super(ImageField, self).__init__(*args, **kwargs)
 
     def from_native(self, data):
