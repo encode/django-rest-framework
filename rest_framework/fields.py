@@ -951,6 +951,7 @@ class FileField(WritableField):
     def __init__(self, *args, **kwargs):
         self.max_length = kwargs.pop('max_length', None)
         self.allow_empty_file = kwargs.pop('allow_empty_file', False)
+        self.show_url = kwargs.pop('show_url', False)
         super(FileField, self).__init__(*args, **kwargs)
 
     def from_native(self, data):
@@ -975,6 +976,8 @@ class FileField(WritableField):
         return data
 
     def to_native(self, value):
+        if self.show_url:
+            return value.url
         return value.name
 
 
@@ -992,11 +995,6 @@ class ImageField(FileField):
     def __init__(self, *args, **kwargs):
         self.show_url = kwargs.pop('show_url', False)
         super(ImageField, self).__init__(*args, **kwargs)
-
-    def to_native(self, value):
-        if self.show_url:
-            return value.url
-        return value.name
 
     def from_native(self, data):
         """
