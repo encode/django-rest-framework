@@ -354,7 +354,14 @@ class WritableField(Field):
             else:
                 native = data[field_name]
         except KeyError:
-            if self.default is not None and not self.partial:
+            try:
+                allow_none = self.allow_none
+            except AttributeError:
+                allow_none = False
+            if (
+                (self.default is None and allow_none) or
+                (self.default is not None)
+            ) and not self.partial:
                 # Note: partial updates shouldn't set defaults
                 native = self.get_default_value()
             else:
