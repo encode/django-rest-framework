@@ -43,6 +43,32 @@ class TestSerializer:
             serializer.data
 
 
+class TestValidateMethod:
+    def test_non_field_error_validate_method(self):
+        class ExampleSerializer(serializers.Serializer):
+            char = serializers.CharField()
+            integer = serializers.IntegerField()
+
+            def validate(self, attrs):
+                raise serializers.ValidationError('Non field error')
+
+        serializer = ExampleSerializer(data={'char': 'abc', 'integer': 123})
+        assert not serializer.is_valid()
+        assert serializer.errors == {'non_field_errors': ['Non field error']}
+
+    def test_field_error_validate_method(self):
+        class ExampleSerializer(serializers.Serializer):
+            char = serializers.CharField()
+            integer = serializers.IntegerField()
+
+            def validate(self, attrs):
+                raise serializers.ValidationError({'char': 'Field error'})
+
+        serializer = ExampleSerializer(data={'char': 'abc', 'integer': 123})
+        assert not serializer.is_valid()
+        assert serializer.errors == {'char': ['Field error']}
+
+
 class TestBaseSerializer:
     def setup(self):
         class ExampleSerializer(serializers.BaseSerializer):

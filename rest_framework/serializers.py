@@ -99,10 +99,10 @@ class BaseSerializer(Field):
 
     def is_valid(self, raise_exception=False):
         assert not hasattr(self, 'restore_object'), (
-            'Serializer %s has old-style version 2 `.restore_object()` '
+            'Serializer `%s.%s` has old-style version 2 `.restore_object()` '
             'that is no longer compatible with REST framework 3. '
             'Use the new-style `.create()` and `.update()` methods instead.' %
-            self.__class__.__name__
+            (self.__class__.__module__, self.__class__.__name__)
         )
 
         if not hasattr(self, '_validated_data'):
@@ -341,9 +341,22 @@ class Serializer(BaseSerializer):
             value = self.validate(value)
             assert value is not None, '.validate() should return the validated data'
         except ValidationError as exc:
-            raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: exc.detail
-            })
+            if isinstance(exc.detail, dict):
+                # .validate() errors may be a dict, in which case, use
+                # standard {key: list of values} style.
+                raise ValidationError(dict([
+                    (key, value if isinstance(value, list) else [value])
+                    for key, value in exc.detail.items()
+                ]))
+            elif isinstance(exc.detail, list):
+                raise ValidationError({
+                    api_settings.NON_FIELD_ERRORS_KEY: exc.detail
+                })
+            else:
+                raise ValidationError({
+                    api_settings.NON_FIELD_ERRORS_KEY: [exc.detail]
+                })
+
         return value
 
     def to_internal_value(self, data):
@@ -507,14 +520,17 @@ class ModelSerializer(Serializer):
                 self._kwargs['validators'] = validators
 
     def create(self, validated_attrs):
+        # Check that the user isn't trying to handle a writable nested field.
+        # If we don't do this explicitly they'd likely get a confusing
+        # error at the point of calling `Model.objects.create()`.
         assert not any(
             isinstance(field, BaseSerializer) and not field.read_only
             for field in self.fields.values()
         ), (
             'The `.create()` method does not suport nested writable fields '
             'by default. Write an explicit `.create()` method for serializer '
-            '%s, or set `read_only=True` on nested serializer fields.' %
-            self.__class__.__name__
+            '`%s.%s`, or set `read_only=True` on nested serializer fields.' %
+            (self.__class__.__module__, self.__class__.__name__)
         )
 
         ModelClass = self.Meta.model
@@ -544,8 +560,8 @@ class ModelSerializer(Serializer):
         ), (
             'The `.update()` method does not suport nested writable fields '
             'by default. Write an explicit `.update()` method for serializer '
-            '%s, or set `read_only=True` on nested serializer fields.' %
-            self.__class__.__name__
+            '`%s.%s`, or set `read_only=True` on nested serializer fields.' %
+            (self.__class__.__module__, self.__class__.__name__)
         )
 
         for attr, value in validated_attrs.items():
