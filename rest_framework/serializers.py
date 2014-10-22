@@ -23,7 +23,9 @@ from rest_framework.utils.field_mapping import (
     get_relation_kwargs, get_nested_relation_kwargs,
     ClassLookupDict
 )
-from rest_framework.validators import UniqueTogetherValidator
+from rest_framework.validators import (
+    UniqueForDateValidator, UniqueTogetherValidator
+)
 import copy
 import inspect
 import warnings
@@ -578,15 +580,9 @@ class ModelSerializer(Serializer):
         validators = []
         model_class = self.Meta.model
 
-        for unique_together in model_class._meta.unique_together:
-            if field_names.issuperset(set(unique_together)):
-                validator = UniqueTogetherValidator(
-                    queryset=model_class._default_manager,
-                    fields=unique_together
-                )
-                validators.append(validator)
-
-        for parent_class in model_class._meta.parents.keys():
+        # Note that we make sure to check `unique_together` both on the
+        # base model class, but also on any parent classes.
+        for parent_class in [model_class] + list(model_class._meta.parents.keys()):
             for unique_together in parent_class._meta.unique_together:
                 if field_names.issuperset(set(unique_together)):
                     validator = UniqueTogetherValidator(
@@ -594,6 +590,16 @@ class ModelSerializer(Serializer):
                         fields=unique_together
                     )
                     validators.append(validator)
+
+        info = model_meta.get_field_info(model_class)
+        for field_name, field in info.fields_and_pk.items():
+            if field.unique_for_date and field_name in field_names:
+                validator = UniqueForDateValidator(
+                    queryset=model_class._default_manager,
+                    field=field_name,
+                    date_field=field.unique_for_date
+                )
+                validators.append(validator)
 
         return validators
 

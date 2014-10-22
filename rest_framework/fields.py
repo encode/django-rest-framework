@@ -268,11 +268,17 @@ class Field(object):
         """
         errors = []
         for validator in self.validators:
-            if getattr(validator, 'requires_context', False):
-                validator.serializer_field = self
+            if hasattr(validator, 'set_context'):
+                validator.set_context(self)
+
             try:
                 validator(value)
             except ValidationError as exc:
+                # If the validation error contains a mapping of fields to
+                # errors then simply raise it immediately rather than
+                # attempting to accumulate a list of errors.
+                if isinstance(exc.detail, dict):
+                    raise
                 errors.extend(exc.detail)
             except DjangoValidationError as exc:
                 errors.extend(exc.messages)

@@ -1,6 +1,7 @@
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
+import datetime
 
 
 def dedent(blocktext):
@@ -147,3 +148,70 @@ class TestUniquenessTogetherValidation(TestCase):
                 race_name = CharField(max_length=100)
         """)
         assert repr(serializer) == expected
+
+
+# Tests for `UniqueForDateValidator`
+# ----------------------------------
+
+class UniqueForDateModel(models.Model):
+    slug = models.CharField(max_length=100, unique_for_date='published')
+    published = models.DateField()
+
+
+class UniqueForDateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UniqueForDateModel
+
+
+class TestUniquenessForDateValidation(TestCase):
+    def setUp(self):
+        self.instance = UniqueForDateModel.objects.create(
+            slug='existing',
+            published='2000-01-01'
+        )
+
+    def test_repr(self):
+        serializer = UniqueForDateSerializer()
+        expected = dedent("""
+            UniqueForDateSerializer(validators=[<UniqueForDateValidator(queryset=UniqueForDateModel.objects.all(), field='slug', date_field='published')>]):
+                id = IntegerField(label='ID', read_only=True)
+                slug = CharField(max_length=100)
+                published = DateField()
+        """)
+        assert repr(serializer) == expected
+
+    def test_is_not_unique_for_date(self):
+        """
+        Failing unique for date validation should result in field error.
+        """
+        data = {'slug': 'existing', 'published': '2000-01-01'}
+        serializer = UniqueForDateSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'slug': ['This field must be unique for the "published" date.']
+        }
+
+    def test_is_unique_for_date(self):
+        """
+        Passing unique for date validation.
+        """
+        data = {'slug': 'existing', 'published': '2000-01-02'}
+        serializer = UniqueForDateSerializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'slug': 'existing',
+            'published': datetime.date(2000, 1, 2)
+        }
+
+    def test_updated_instance_excluded_from_unique_for_date(self):
+        """
+        When performing an update, the existing instance does not count
+        as a match against unique_for_date.
+        """
+        data = {'slug': 'existing', 'published': '2000-01-01'}
+        serializer = UniqueForDateSerializer(instance=self.instance, data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'slug': 'existing',
+            'published': datetime.date(2000, 1, 1)
+        }
