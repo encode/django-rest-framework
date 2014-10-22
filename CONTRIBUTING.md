@@ -101,15 +101,15 @@ There are many great markdown editors that make working with the documentation r
 
 ## Building the documentation
 
-To build the documentation, simply run the `mkdocs.py` script.
+To build the documentation, simply install MkDocs with `pip install mkdocs` and then run the following command.
 
-    ./mkdocs.py
+    mkdocs build
 
 This will build the html output into the `html` directory.
 
-You can build the documentation and open a preview in a browser window by using the `-p` flag.
+You can build the documentation and open a preview in a browser window by using the `serve` command.
 
-    ./mkdocs.py -p
+    mkdocs serve
 
 ## Language style
 
