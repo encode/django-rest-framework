@@ -24,7 +24,8 @@ from rest_framework.utils.field_mapping import (
     ClassLookupDict
 )
 from rest_framework.validators import (
-    UniqueForDateValidator, UniqueTogetherValidator
+    UniqueForDateValidator, UniqueForMonthValidator, UniqueForYearValidator,
+    UniqueTogetherValidator
 )
 import copy
 import inspect
@@ -598,6 +599,22 @@ class ModelSerializer(Serializer):
                     queryset=model_class._default_manager,
                     field=field_name,
                     date_field=field.unique_for_date
+                )
+                validators.append(validator)
+
+            if field.unique_for_month and field_name in field_names:
+                validator = UniqueForMonthValidator(
+                    queryset=model_class._default_manager,
+                    field=field_name,
+                    date_field=field.unique_for_month
+                )
+                validators.append(validator)
+
+            if field.unique_for_year and field_name in field_names:
+                validator = UniqueForYearValidator(
+                    queryset=model_class._default_manager,
+                    field=field_name,
+                    date_field=field.unique_for_year
                 )
                 validators.append(validator)
 
