@@ -71,6 +71,15 @@ You can also use the excellent [`tox`][tox] testing tool to run the tests agains
 
     tox
 
+---
+
+**Note**: If you run `tox` followed by `./runtests.py` you _may_ encounter a "bad marshall data" error as `pytest` attempts to read `.pyc` files from an incompatible Python version. To clear the offending `.pyc` files run:
+
+    $ find . -name '*.pyc' -delete
+
+---
+
+
 ## Pull requests
 
 It's a good idea to make pull requests early on.  A pull request represents the start of a discussion, and doesn't necessarily need to be the final, finished submission.
