@@ -1,4 +1,4 @@
-site_name: Django REST frameowkr
+site_name: Django REST framework
 site_url: http://www.django-rest-framework.org/
 site_description: Django REST framework - Web APIs for DjangoProject documentation with Markdown.
 
@@ -52,4 +52,4 @@ pages:
 
 theme_dir: docs/theme
 copyright: Copyright &copy; 2014, <a href="https://twitter.com/_tomchristie">Tom Christie</a>.
-google_analytics: ['UA-27795084-5', 'mkdocs.org']
+google_analytics: ['UA-18852272-2', 'django-rest-framework.org']
