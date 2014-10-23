@@ -18,5 +18,3 @@ local/
 
 !.gitignore
 !.travis.yml
-
-site/
