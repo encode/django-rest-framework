@@ -101,7 +101,7 @@ There are many great markdown editors that make working with the documentation r
 
 ## Building the documentation
 
-To build the documentation, simply install MkDocs with `pip install mkdocs` and then run the following command.
+To build the documentation, install MkDocs with `pip install mkdocs` and then run the following command.
 
     mkdocs build
 
