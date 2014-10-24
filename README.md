@@ -27,7 +27,7 @@ There is a live example API for testing purposes, [available here][sandbox].
 # Requirements
 
 * Python (2.6.5+, 2.7, 3.2, 3.3)
-* Django (1.4.2+, 1.5, 1.6, 1.7)
+* Django (1.4.11+, 1.5.5+, 1.6, 1.7)
 
 # Installation
 
