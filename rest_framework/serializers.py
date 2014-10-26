@@ -272,6 +272,7 @@ class BaseSerializer(WritableField):
         Converts a dictionary of data into a dictionary of deserialized fields.
         """
         reverted_data = {}
+        self._errors = self._errors or {}
 
         if data is not None and not isinstance(data, dict):
             self._errors['non_field_errors'] = ['Invalid data']
