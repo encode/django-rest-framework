@@ -92,13 +92,35 @@ def set_value(dictionary, keys, value):
     dictionary[keys[-1]] = value
 
 
+class CreateOnlyDefault:
+    """
+    This class may be used to provide default values that are only used
+    for create operations, but that do not return any value for update
+    operations.
+    """
+    def __init__(self, default):
+        self.default = default
+
+    def set_context(self, serializer_field):
+        self.is_update = serializer_field.parent.instance is not None
+
+    def __call__(self):
+        if self.is_update:
+            raise SkipField()
+        if callable(self.default):
+            return self.default()
+        return self.default
+
+    def __repr__(self):
+        return '%s(%s)' % (self.__class__.__name__, repr(self.default))
+
+
 class SkipField(Exception):
     pass
 
 
 NOT_READ_ONLY_WRITE_ONLY = 'May not set both `read_only` and `write_only`'
 NOT_READ_ONLY_REQUIRED = 'May not set both `read_only` and `required`'
-NOT_READ_ONLY_DEFAULT = 'May not set both `read_only` and `default`'
 NOT_REQUIRED_DEFAULT = 'May not set both `required` and `default`'
 USE_READONLYFIELD = 'Field(read_only=True) should be ReadOnlyField'
 MISSING_ERROR_MESSAGE = (
@@ -132,7 +154,6 @@ class Field(object):
         # Some combinations of keyword arguments do not make sense.
         assert not (read_only and write_only), NOT_READ_ONLY_WRITE_ONLY
         assert not (read_only and required), NOT_READ_ONLY_REQUIRED
-        assert not (read_only and default is not empty), NOT_READ_ONLY_DEFAULT
         assert not (required and default is not empty), NOT_REQUIRED_DEFAULT
         assert not (read_only and self.__class__ == Field), USE_READONLYFIELD
 
@@ -230,7 +251,9 @@ class Field(object):
         """
         if self.default is empty:
             raise SkipField()
-        if is_simple_callable(self.default):
+        if callable(self.default):
+            if hasattr(self.default, 'set_context'):
+                self.default.set_context(self)
             return self.default()
         return self.default
 
@@ -244,6 +267,9 @@ class Field(object):
         May raise `SkipField` if the field should not be included in the
         validated data.
         """
+        if self.read_only:
+            return self.get_default()
+
         if data is empty:
             if getattr(self.root, 'partial', False):
                 raise SkipField()
@@ -1031,6 +1057,28 @@ class ReadOnlyField(Field):
 
     def to_representation(self, value):
         return value
+
+
+class HiddenField(Field):
+    """
+    A hidden field does not take input from the user, or present any output,
+    but it does populate a field in `validated_data`, based on its default
+    value. This is particularly useful when we have a `unique_for_date`
+    constrain on a pair of fields, as we need some way to include the date in
+    the validated data.
+    """
+    def __init__(self, **kwargs):
+        assert 'default' in kwargs, 'default is a required argument.'
+        kwargs['write_only'] = True
+        super(HiddenField, self).__init__(**kwargs)
+
+    def get_value(self, dictionary):
+        # We always use the default value for `HiddenField`.
+        # User input is never provided or accepted.
+        return empty
+
+    def to_internal_value(self, data):
+        return data
 
 
 class SerializerMethodField(Field):

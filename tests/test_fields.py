@@ -215,6 +215,33 @@ class TestBooleanHTMLInput:
         assert serializer.validated_data == {'archived': False}
 
 
+class TestCreateOnlyDefault:
+    def setup(self):
+        default = serializers.CreateOnlyDefault('2001-01-01')
+
+        class TestSerializer(serializers.Serializer):
+            published = serializers.HiddenField(default=default)
+            text = serializers.CharField()
+        self.Serializer = TestSerializer
+
+    def test_create_only_default_is_provided(self):
+        serializer = self.Serializer(data={'text': 'example'})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'text': 'example', 'published': '2001-01-01'
+        }
+
+    def test_create_only_default_is_not_provided_on_update(self):
+        instance = {
+            'text': 'example', 'published': '2001-01-01'
+        }
+        serializer = self.Serializer(instance, data={'text': 'example'})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'text': 'example',
+        }
+
+
 # Tests for field input and output values.
 # ----------------------------------------
 

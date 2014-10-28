@@ -12,6 +12,7 @@ response content is handled by parsers and renderers.
 """
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
+from django.db.models.fields import FieldDoesNotExist
 from django.utils import six
 from django.utils.datastructures import SortedDict
 from rest_framework.exceptions import ValidationError
@@ -368,7 +369,10 @@ class Serializer(BaseSerializer):
         """
         ret = {}
         errors = ReturnDict(serializer=self)
-        fields = [field for field in self.fields.values() if not field.read_only]
+        fields = [
+            field for field in self.fields.values()
+            if (not field.read_only) or (field.default is not empty)
+        ]
 
         for field in fields:
             validate_method = getattr(self, 'validate_' + field.field_name, None)
@@ -517,7 +521,7 @@ class ModelSerializer(Serializer):
     def __init__(self, *args, **kwargs):
         super(ModelSerializer, self).__init__(*args, **kwargs)
         if 'validators' not in kwargs:
-            validators = self.get_unique_together_validators()
+            validators = self.get_default_validators()
             if validators:
                 self.validators.extend(validators)
                 self._kwargs['validators'] = validators
@@ -572,7 +576,7 @@ class ModelSerializer(Serializer):
         instance.save()
         return instance
 
-    def get_unique_together_validators(self):
+    def get_default_validators(self):
         field_names = set([
             field.source for field in self.fields.values()
             if (field.source != '*') and ('.' not in field.source)
@@ -592,6 +596,7 @@ class ModelSerializer(Serializer):
                     )
                     validators.append(validator)
 
+        # Add any unique_for_date/unique_for_month/unique_for_year constraints.
         info = model_meta.get_field_info(model_class)
         for field_name, field in info.fields_and_pk.items():
             if field.unique_for_date and field_name in field_names:
@@ -637,7 +642,7 @@ class ModelSerializer(Serializer):
         # Retrieve metadata about fields & relationships on the model class.
         info = model_meta.get_field_info(model)
 
-        # Use the default set of fields if none is supplied explicitly.
+        # Use the default set of field names if none is supplied explicitly.
         if fields is None:
             fields = self._get_default_field_names(declared_fields, info)
             exclude = getattr(self.Meta, 'exclude', None)
@@ -645,6 +650,72 @@ class ModelSerializer(Serializer):
                 for field_name in exclude:
                     fields.remove(field_name)
 
+        # Determine the set of model fields, and the fields that they map to.
+        # We actually only need this to deal with the slightly awkward case
+        # of supporting `unique_for_date`/`unique_for_month`/`unique_for_year`.
+        model_field_mapping = {}
+        for field_name in fields:
+            if field_name in declared_fields:
+                field = declared_fields[field_name]
+                source = field.source or field_name
+            else:
+                try:
+                    source = extra_kwargs[field_name]['source']
+                except KeyError:
+                    source = field_name
+            # Model fields will always have a simple source mapping,
+            # they can't be nested attribute lookups.
+            if '.' not in source and source != '*':
+                model_field_mapping[source] = field_name
+
+        # Determine if we need any additional `HiddenField` or extra keyword
+        # arguments to deal with `unique_for` dates that are required to
+        # be in the input data in order to validate it.
+        unique_fields = {}
+        for model_field_name, field_name in model_field_mapping.items():
+            try:
+                model_field = model._meta.get_field(model_field_name)
+            except FieldDoesNotExist:
+                continue
+
+            # Deal with each of the `unique_for_*` cases.
+            for date_field_name in (
+                model_field.unique_for_date,
+                model_field.unique_for_month,
+                model_field.unique_for_year
+            ):
+                if date_field_name is None:
+                    continue
+
+                # Get the model field that is refered too.
+                date_field = model._meta.get_field(date_field_name)
+
+                if date_field.auto_now_add:
+                    default = CreateOnlyDefault(timezone.now)
+                elif date_field.auto_now:
+                    default = timezone.now
+                elif date_field.has_default():
+                    default = model_field.default
+                else:
+                    default = empty
+
+                if date_field_name in model_field_mapping:
+                    # The corresponding date field is present in the serializer
+                    if date_field_name not in extra_kwargs:
+                        extra_kwargs[date_field_name] = {}
+                    if default is empty:
+                        if 'required' not in extra_kwargs[date_field_name]:
+                            extra_kwargs[date_field_name]['required'] = True
+                    else:
+                        if 'default' not in extra_kwargs[date_field_name]:
+                            extra_kwargs[date_field_name]['default'] = default
+                else:
+                    # The corresponding date field is not present in the,
+                    # serializer. We have a default to use for the date, so
+                    # add in a hidden field that populates it.
+                    unique_fields[date_field_name] = HiddenField(default=default)
+
+        # Now determine the fields that should be included on the serializer.
         for field_name in fields:
             if field_name in declared_fields:
                 # Field is explicitly declared on the class, use that.
@@ -722,6 +793,9 @@ class ModelSerializer(Serializer):
 
             # Create the serializer field.
             ret[field_name] = field_cls(**kwargs)
+
+        for field_name, field in unique_fields.items():
+            ret[field_name] = field
 
         return ret
 

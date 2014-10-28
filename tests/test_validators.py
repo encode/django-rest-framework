@@ -176,7 +176,7 @@ class TestUniquenessForDateValidation(TestCase):
             UniqueForDateSerializer(validators=[<UniqueForDateValidator(queryset=UniqueForDateModel.objects.all(), field='slug', date_field='published')>]):
                 id = IntegerField(label='ID', read_only=True)
                 slug = CharField(max_length=100)
-                published = DateField()
+                published = DateField(required=True)
         """)
         assert repr(serializer) == expected
 
@@ -215,3 +215,40 @@ class TestUniquenessForDateValidation(TestCase):
             'slug': 'existing',
             'published': datetime.date(2000, 1, 1)
         }
+
+
+class HiddenFieldUniqueForDateModel(models.Model):
+    slug = models.CharField(max_length=100, unique_for_date='published')
+    published = models.DateTimeField(auto_now_add=True)
+
+
+class TestHiddenFieldUniquenessForDateValidation(TestCase):
+    def test_repr_date_field_not_included(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = HiddenFieldUniqueForDateModel
+                fields = ('id', 'slug')
+
+        serializer = TestSerializer()
+        expected = dedent("""
+            TestSerializer(validators=[<UniqueForDateValidator(queryset=HiddenFieldUniqueForDateModel.objects.all(), field='slug', date_field='published')>]):
+                id = IntegerField(label='ID', read_only=True)
+                slug = CharField(max_length=100)
+                published = HiddenField(default=CreateOnlyDefault(<function now>))
+        """)
+        assert repr(serializer) == expected
+
+    def test_repr_date_field_included(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = HiddenFieldUniqueForDateModel
+                fields = ('id', 'slug', 'published')
+
+        serializer = TestSerializer()
+        expected = dedent("""
+            TestSerializer(validators=[<UniqueForDateValidator(queryset=HiddenFieldUniqueForDateModel.objects.all(), field='slug', date_field='published')>]):
+                id = IntegerField(label='ID', read_only=True)
+                slug = CharField(max_length=100)
+                published = DateTimeField(default=CreateOnlyDefault(<function now>), read_only=True)
+        """)
+        assert repr(serializer) == expected
