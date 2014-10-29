@@ -163,6 +163,12 @@ class ReturnDict(SortedDict):
         super(ReturnDict, self).__init__(*args, **kwargs)
 
 
+class NonSortedReturnDict(dict):
+    def __init__(self, *args, **kwargs):
+        self.serialier = kwargs.pop('serializer')
+        super(NonSortedReturnDict, self).__init__(*args, **kwargs)
+
+
 class ReturnList(list):
     """
     Return object from `serialier.data` for the `SerializerList` class.
@@ -277,11 +283,13 @@ class SerializerMetaclass(type):
 
     def __new__(cls, name, bases, attrs):
         attrs['_declared_fields'] = cls._get_declared_fields(bases, attrs)
+        attrs['dict_class'] = ReturnDict if attrs.get('sorted_output', True) else NonSortedReturnDict
         return super(SerializerMetaclass, cls).__new__(cls, name, bases, attrs)
 
 
 @six.add_metaclass(SerializerMetaclass)
 class Serializer(BaseSerializer):
+
     def __init__(self, *args, **kwargs):
         super(Serializer, self).__init__(*args, **kwargs)
 
@@ -297,13 +305,13 @@ class Serializer(BaseSerializer):
 
     def get_initial(self):
         if self._initial_data is not None:
-            return ReturnDict([
+            return self.dict_class([
                 (field_name, field.get_value(self._initial_data))
                 for field_name, field in self.fields.items()
                 if field.get_value(self._initial_data) is not empty
             ], serializer=self)
 
-        return ReturnDict([
+        return self.dict_class([
             (field.field_name, field.get_initial())
             for field in self.fields.values()
             if not field.write_only
@@ -368,7 +376,7 @@ class Serializer(BaseSerializer):
         Dict of native values <- Dict of primitive datatypes.
         """
         ret = {}
-        errors = ReturnDict(serializer=self)
+        errors = self.dict_class(serializer=self)
         fields = [
             field for field in self.fields.values()
             if (not field.read_only) or (field.default is not empty)
@@ -393,20 +401,33 @@ class Serializer(BaseSerializer):
 
         return ret
 
+    @cached_property
+    def repr_fields(self):
+        return [f for f in self.fields.values() if not f.write_only]
+
+    transform_map = {}
+
+    def init_transform_map(self, field):
+        transform = getattr(self, 'transform_' + field.field_name, None)
+        self.transform_map[field.field_name] = transform
+        return transform
+
     def to_representation(self, instance):
         """
         Object instance -> Dict of primitive datatypes.
         """
-        ret = ReturnDict(serializer=self)
-        fields = [field for field in self.fields.values() if not field.write_only]
+        ret = self.dict_class(serializer=self)
 
-        for field in fields:
+        for field in self.repr_fields:
             attribute = field.get_attribute(instance)
             if attribute is None:
                 value = None
             else:
                 value = field.to_representation(attribute)
-            transform_method = getattr(self, 'transform_' + field.field_name, None)
+            try:
+                transform_method = self.transform_map[field.field_name]
+            except KeyError:
+                transform_method = self.init_transform_map(field)
             if transform_method is not None:
                 value = transform_method(value)
 
