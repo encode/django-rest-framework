@@ -7,6 +7,7 @@ from django.utils import six, timezone
 from django.utils.datastructures import SortedDict
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import is_protected_type
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import ISO_8601
 from rest_framework.compat import (
@@ -233,12 +234,42 @@ class Field(object):
             return self.default_empty_html if (ret == '') else ret
         return dictionary.get(self.field_name, empty)
 
+    @cached_property
+    def single_source_attr(self):
+        return len(self.source_attrs) == 1
+
+    simple_getattr_map = {}
+
+    def init_simple_getattr(self, instance):
+        assert len(self.source_attrs) == 1
+        try:
+            val = getattr(instance, self.source_attrs[0])
+            if is_simple_callable(val):
+                self.simple_getattr_map[instance.__class__] = False
+            else:
+                self.simple_getattr_map[instance.__class__] = True
+        except Exception:
+            self.simple_getattr_map[instance.__class__] = False
+
     def get_attribute(self, instance):
         """
         Given the *outgoing* object instance, return the primitive value
         that should be used for this field.
         """
-        return get_attribute(instance, self.source_attrs)
+        simple_getattr = False
+        if self.single_source_attr:
+            try:
+                simple_getattr = self.simple_getattr_map[instance.__class__]
+            except KeyError:
+                self.init_simple_getattr(instance)
+                simple_getattr = self.simple_getattr_map[instance.__class__]
+        if simple_getattr:
+            try:
+                return getattr(instance, self.source_attrs[0])
+            except ObjectDoesNotExist:
+                return None
+        else:
+            return get_attribute(instance, self.source_attrs)
 
     def get_default(self):
         """
