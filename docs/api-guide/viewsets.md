@@ -220,6 +220,20 @@ As with `ModelViewSet`, you'll normally need to provide at least the `queryset` 
 
 Again, as with `ModelViewSet`, you can use any of the standard attributes and method overrides available to `GenericAPIView`.
 
+## MultiSerializerViewSet
+The `MultiSerializerViewSet` is an extension to the `ModelViewSet` which adds the possibility of using more than one serializer depending on the action currently taken. When the action is not found in the `serializers` dictionary, the provided default serializer will be used instead.
+
+#### Example
+    class UserGroupsViewSet(MultiSerializerViewSet):
+        model = models.Groups
+    
+        serializers = {
+            'list':     myserializers.GroupListSerializer,
+            'detail':   myserializers.GroupDetailSerializer,
+            'default':  serializers.HyperlinkedModelSerializer,
+        }
+
+
 # Custom ViewSet base classes
 
 You may need to provide custom `ViewSet` classes that do not have the full set of `ModelViewSet` actions, or that customize the behavior in some other way.
