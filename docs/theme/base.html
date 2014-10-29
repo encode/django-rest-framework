@@ -49,7 +49,8 @@ a.fusion-poweredby {
 }
 </style>
   </head>
-  <body onload="prettyPrint()" class="{{ page_id }}-page">
+  {# TODO: This is a bit of a hack. We don't want to refer to the file specifically. #}
+  <body onload="prettyPrint()" class="{% if current_page.input_path  == 'index.md' %}index{% endif %}-page">
 
   <div class="wrapper">
 
@@ -193,6 +194,15 @@ a.fusion-poweredby {
                     <li><a href="{{ toc_item.url }}">{{ toc_item.title }}</a></li>
                   {% endfor %}
                 {% endfor %}
+
+                {# TODO: This is a bit of a hack. We don't want to refer to the file specifically. #}
+                {% if current_page.input_path  == 'index.md' %}
+                  <div class="promo">
+                    <hr/>
+                    <script type="text/javascript" src="//cdn.fusionads.net/fusion.js?zoneid=1332&serve=C6SDP2Y&placement=djangorestframework" id="_fusionads_js"></script>
+                  </div>
+                {% endif %}
+
               </ul>
 
             </div>
