@@ -189,11 +189,10 @@ a.fusion-poweredby {
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
                 {% for toc_item in toc %}
                   <li class="{% if loop.first %}main{% endif %} {% if toc_item.active %}main{% endif %}"><a href="{{ toc_item.url }}">{{ toc_item.title }}</a></li>
+                  {% for toc_item in toc_item.children %}
+                    <li><a href="{{ toc_item.url }}">{{ toc_item.title }}</a></li>
+                  {% endfor %}
                 {% endfor %}
-              <div class="promo">
-                <hr/>
-                <script type="text/javascript" src="//cdn.fusionads.net/fusion.js?zoneid=1332&serve=C6SDP2Y&placement=djangorestframework" id="_fusionads_js"></script>
-              </div>
               </ul>
 
             </div>
