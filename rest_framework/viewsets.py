@@ -138,3 +138,16 @@ class ModelViewSet(mixins.CreateModelMixin,
     `partial_update()`, `destroy()` and `list()` actions.
     """
     pass
+
+class MultiSerializerViewSet(ModelViewSet):
+    """
+    A ModelViewSet which allows to use different serializers according to
+    the currently taken action.
+    """
+    serializers = { 
+        'default': None,
+    }
+
+    def get_serializer_class(self):
+        return self.serializers.get(self.action,
+            self.serializers['default'])
