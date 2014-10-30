@@ -274,21 +274,35 @@ class DefaultRouter(SimpleRouter):
     include_format_suffixes = True
     root_view_name = 'api-root'
 
-    def get_api_root_view(self):
-        """
-        Return a view to use as the API root.
-        """
+    def get_api_root_dict(self):
         api_root_dict = SortedDict()
         list_name = self.routes[0].name
         for prefix, viewset, basename in self.registry:
             api_root_dict[prefix] = list_name.format(basename=basename)
+        return api_root_dict
+
+    def get_api_root_view(self):
+        """
+        Return a view to use as the API root.
+        """
+        enclosing = self
 
         class APIRoot(views.APIView):
             _ignore_model_permissions = True
 
+            def __init__(self, *args, **kwargs):
+                super(APIRoot, self).__init__(*args, **kwargs)
+                self.api_root_dict = None
+
+            def get_api_root_dict(self):
+                # We do this to avoid repeatedly calling enclosing.get_api_root_dict
+                if self.api_root_dict is None:
+                    self.api_root_dict = enclosing.get_api_root_dict()
+                return self.api_root_dict
+
             def get(self, request, *args, **kwargs):
                 ret = SortedDict()
-                for key, url_name in api_root_dict.items():
+                for key, url_name in self.get_api_root_dict().items():
                     try:
                         ret[key] = reverse(
                             url_name,
