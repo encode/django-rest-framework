@@ -282,6 +282,8 @@ class SerializerMetaclass(type):
 
 @six.add_metaclass(SerializerMetaclass)
 class Serializer(BaseSerializer):
+    _dict_class = ReturnDict
+
     def __init__(self, *args, **kwargs):
         super(Serializer, self).__init__(*args, **kwargs)
 
@@ -297,13 +299,13 @@ class Serializer(BaseSerializer):
 
     def get_initial(self):
         if self._initial_data is not None:
-            return ReturnDict([
+            return self._dict_class([
                 (field_name, field.get_value(self._initial_data))
                 for field_name, field in self.fields.items()
                 if field.get_value(self._initial_data) is not empty
             ], serializer=self)
 
-        return ReturnDict([
+        return self._dict_class([
             (field.field_name, field.get_initial())
             for field in self.fields.values()
             if not field.write_only
@@ -368,7 +370,7 @@ class Serializer(BaseSerializer):
         Dict of native values <- Dict of primitive datatypes.
         """
         ret = {}
-        errors = ReturnDict(serializer=self)
+        errors = self._dict_class(serializer=self)
         fields = [
             field for field in self.fields.values()
             if (not field.read_only) or (field.default is not empty)
@@ -397,7 +399,7 @@ class Serializer(BaseSerializer):
         """
         Object instance -> Dict of primitive datatypes.
         """
-        ret = ReturnDict(serializer=self)
+        ret = self._dict_class(serializer=self)
         fields = [field for field in self.fields.values() if not field.write_only]
 
         for field in fields:
