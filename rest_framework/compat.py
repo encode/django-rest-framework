@@ -291,6 +291,15 @@ except ImportError:
     oauth2_constants = None
     provider_now = None
 
+# `seperators` argument to `json.dumps()` differs between 2.x and 3.x
+# See: http://bugs.python.org/issue22767
+if six.PY3:
+    SHORT_SEPARATORS = (',', ':')
+    LONG_SEPARATORS = (', ', ': ')
+else:
+    SHORT_SEPARATORS = (b',', b':')
+    LONG_SEPARATORS = (b', ', b': ')
+
 
 # Handle lazy strings across Py2/Py3
 from django.utils.functional import Promise

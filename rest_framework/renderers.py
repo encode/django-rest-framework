@@ -18,7 +18,9 @@ from django.test.client import encode_multipart
 from django.utils import six
 from django.utils.xmlutils import SimplerXMLGenerator
 from rest_framework import exceptions, serializers, status, VERSION
-from rest_framework.compat import StringIO, smart_text, yaml
+from rest_framework.compat import (
+    SHORT_SEPARATORS, LONG_SEPARATORS, StringIO, smart_text, yaml
+)
 from rest_framework.exceptions import ParseError
 from rest_framework.settings import api_settings
 from rest_framework.request import is_form_media_type, override_method
@@ -87,7 +89,7 @@ class JSONRenderer(BaseRenderer):
 
         renderer_context = renderer_context or {}
         indent = self.get_indent(accepted_media_type, renderer_context)
-        separators = (',', ':') if (indent is None and self.compact) else (', ', ': ')
+        separators = SHORT_SEPARATORS if (indent is None and self.compact) else LONG_SEPARATORS
 
         ret = json.dumps(
             data, cls=self.encoder_class,
