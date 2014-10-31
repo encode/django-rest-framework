@@ -1,4 +1,4 @@
-<a class="github" href="fields.py"></a>
+source: fields.py
 
 # Serializer fields
 
@@ -62,7 +62,7 @@ A dictionary of error codes to error messages.
 ### `widget`
 
 Used only if rendering the field to HTML.
-This argument sets the widget that should be used to render the field. For more details, and a list of available widgets, see [the Django documentation on form widgets][django-widgets]. 
+This argument sets the widget that should be used to render the field. For more details, and a list of available widgets, see [the Django documentation on form widgets][django-widgets].
 
 ### `label`
 

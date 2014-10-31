@@ -1,4 +1,4 @@
-<a class="github" href="permissions.py"></a>
+source: permissions.py
 
 # Permissions
 
@@ -12,7 +12,7 @@ Permission checks are always run at the very start of the view, before any other
 
 ## How permissions are determined
 
-Permissions in REST framework are always defined as a list of permission classes.  
+Permissions in REST framework are always defined as a list of permission classes.
 
 Before running the main body of the view each permission in the list is checked.
 If any permission check fails an `exceptions.PermissionDenied` exception will be raised, and the main body of the view will not run.
@@ -220,9 +220,9 @@ As well as global permissions, that are run against all incoming requests, you c
         def has_object_permission(self, request, view, obj):
             # Read permissions are allowed to any request,
             # so we'll always allow GET, HEAD or OPTIONS requests.
-            if request.method in permissions.SAFE_METHODS:            
+            if request.method in permissions.SAFE_METHODS:
                 return True
-    
+
             # Instance must have an attribute named `owner`.
             return obj.owner == request.user
 

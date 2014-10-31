@@ -1,4 +1,4 @@
-<a class="github" href="filters.py"></a>
+source: filters.py
 
 # Filtering
 
@@ -26,7 +26,7 @@ For example:
 
     class PurchaseList(generics.ListAPIView):
         serializer_class = PurchaseSerializer
- 
+
         def get_queryset(self):
             """
             This view should return a list of all the purchases
@@ -38,7 +38,7 @@ For example:
 
 ## Filtering against the URL
 
-Another style of filtering might involve restricting the queryset based on some part of the URL.  
+Another style of filtering might involve restricting the queryset based on some part of the URL.
 
 For example if your URL config contained an entry like this:
 
@@ -48,7 +48,7 @@ You could then write a view that returned a purchase queryset filtered by the us
 
     class PurchaseList(generics.ListAPIView):
         serializer_class = PurchaseSerializer
- 
+
         def get_queryset(self):
             """
             This view should return a list of all the purchases for
@@ -57,7 +57,7 @@ You could then write a view that returned a purchase queryset filtered by the us
             username = self.kwargs['username']
             return Purchase.objects.filter(purchaser__username=username)
 
-## Filtering against query parameters 
+## Filtering against query parameters
 
 A final example of filtering the initial queryset would be to determine the initial queryset based on query parameters in the url.
 
@@ -65,7 +65,7 @@ We can override `.get_queryset()` to deal with URLs such as `http://example.com/
 
     class PurchaseList(generics.ListAPIView):
         serializer_class = PurchaseSerializer
- 
+
         def get_queryset(self):
             """
             Optionally restricts the returned purchases to a given user,
@@ -113,7 +113,7 @@ For instance, given the previous example, and a product with an id of `4675`, th
     http://example.com/api/products/4675/?category=clothing&max_price=10.00
 
 ## Overriding the initial queryset
- 
+
 Note that you can use both an overridden `.get_queryset()` and generic filtering together, and everything will work as expected.  For example, if `Product` had a many-to-many relationship with `User`, named `purchase`, you might want to write a view like this:
 
     class PurchasedProductsList(generics.ListAPIView):
@@ -124,7 +124,7 @@ Note that you can use both an overridden `.get_queryset()` and generic filtering
         model = Product
         serializer_class = ProductSerializer
         filter_class = ProductFilter
-        
+
         def get_queryset(self):
             user = self.request.user
             return user.purchase_set.all()
@@ -135,7 +135,7 @@ Note that you can use both an overridden `.get_queryset()` and generic filtering
 
 ## DjangoFilterBackend
 
-The `DjangoFilterBackend` class supports highly customizable field filtering, using the [django-filter package][django-filter].  
+The `DjangoFilterBackend` class supports highly customizable field filtering, using the [django-filter package][django-filter].
 
 To use REST framework's `DjangoFilterBackend`, first install `django-filter`.
 
@@ -216,7 +216,7 @@ This is nice, but it exposes the Django's double underscore convention as part o
 And now you can execute:
 
     http://example.com/api/products?manufacturer=foo
-    
+
 For more details on using filter sets see the [django-filter documentation][django-filter-docs].
 
 ---
@@ -224,7 +224,7 @@ For more details on using filter sets see the [django-filter documentation][djan
 **Hints & Tips**
 
 * By default filtering is not enabled.  If you want to use `DjangoFilterBackend` remember to make sure it is installed by using the `'DEFAULT_FILTER_BACKENDS'` setting.
-* When using boolean fields, you should use the values `True` and `False` in the URL query parameters, rather than `0`, `1`, `true` or `false`.  (The allowed boolean values are currently hardwired in Django's [NullBooleanSelect implementation][nullbooleanselect].) 
+* When using boolean fields, you should use the values `True` and `False` in the URL query parameters, rather than `0`, `1`, `true` or `false`.  (The allowed boolean values are currently hardwired in Django's [NullBooleanSelect implementation][nullbooleanselect].)
 * `django-filter` supports filtering across relationships, using Django's double-underscore syntax.
 * For Django 1.3 support, make sure to install `django-filter` version 0.5.4, as later versions drop support for 1.3.
 
@@ -316,7 +316,7 @@ Typically you'd instead control this by setting `order_by` on the initial querys
         queryset = User.objects.all()
         serializer_class = UserSerializer
         filter_backends = (filters.OrderingFilter,)
-        ordering = ('username',) 
+        ordering = ('username',)
 
 The `ordering` attribute may be either a string or a list/tuple of strings.
 

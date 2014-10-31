@@ -1,4 +1,4 @@
-<a class="github" href="reverse.py"></a>
+source: reverse.py
 
 # Returning URLs
 
@@ -30,7 +30,7 @@ You should **include the request as a keyword argument** to the function, for ex
     from rest_framework.reverse import reverse
     from rest_framework.views import APIView
 	from django.utils.timezone import now
-   
+
 	class APIRootView(APIView):
 	    def get(self, request):
 	        year = now().year

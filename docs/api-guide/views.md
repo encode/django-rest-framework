@@ -1,4 +1,5 @@
-<a class="github" href="decorators.py"></a> <a class="github" href="views.py"></a>
+source: decorators.py
+        views.py
 
 # Class Based Views
 
@@ -26,7 +27,7 @@ For example:
     class ListUsers(APIView):
         """
         View to list all users in the system.
-        
+
         * Requires token authentication.
         * Only admin users are able to access this view.
         """
@@ -54,7 +55,7 @@ The following attributes control the pluggable aspects of API views.
 
 ### .permission_classes
 
-### .content_negotiation_class 
+### .content_negotiation_class
 
 ## API policy instantiation methods
 
