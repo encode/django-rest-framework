@@ -552,7 +552,7 @@ class ChoiceField(WritableField):
         Validates that the input is in self.choices.
         """
         super(ChoiceField, self).validate(value)
-        if value and not self.valid_value(value):
+        if value not in validators.EMPTY_VALUES and not self.valid_value(value):
             raise ValidationError(self.error_messages['invalid_choice'] % {'value': value})
 
     def valid_value(self, value):
