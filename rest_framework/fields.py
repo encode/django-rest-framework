@@ -11,6 +11,7 @@ import inspect
 import re
 import warnings
 from decimal import Decimal, DecimalException
+import django
 from django import forms
 from django.core import validators
 from django.core.exceptions import ValidationError
@@ -143,7 +144,10 @@ class Field(object):
             self.label = None
 
         if help_text is not None:
-            self.help_text = strip_multiple_choice_msg(smart_text(help_text))
+            help_text = smart_text(help_text)
+            if django.VERSION < (1, 6):
+                help_text = strip_multiple_choice_msg(help_text)
+            self.help_text = help_text
         else:
             self.help_text = None
 
