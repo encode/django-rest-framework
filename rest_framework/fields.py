@@ -260,6 +260,7 @@ class WritableField(Field):
     default_error_messages = {
         'required': _('This field is required.'),
         'invalid': _('Invalid value.'),
+        'invalid_data': _('Invalid data.'),
     }
     widget = widgets.TextInput
     default = None
