@@ -5,6 +5,7 @@ from django.conf.urls import patterns, url
 from io import BytesIO
 
 from django.contrib.auth.models import User
+from django.shortcuts import redirect
 from django.test import TestCase
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -28,10 +29,16 @@ def session_view(request):
     })
 
 
+@api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
+def redirect_view(request):
+    return redirect('/view/')
+
+
 urlpatterns = patterns(
     '',
     url(r'^view/$', view),
     url(r'^session-view/$', session_view),
+    url(r'^redirect-view/$', redirect_view),
 )
 
 
@@ -110,6 +117,46 @@ class TestAPITestClient(TestCase):
         self.client.logout()
         response = self.client.get('/view/')
         self.assertEqual(response.data['auth'], b'')
+
+    def test_follow_redirect(self):
+        """
+        Follow redirect by setting follow argument.
+        """
+        response = self.client.get('/redirect-view/')
+        self.assertEqual(response.status_code, 302)
+        response = self.client.get('/redirect-view/', follow=True)
+        self.assertIsNotNone(response.redirect_chain)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post('/redirect-view/')
+        self.assertEqual(response.status_code, 302)
+        response = self.client.post('/redirect-view/', follow=True)
+        self.assertIsNotNone(response.redirect_chain)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.put('/redirect-view/')
+        self.assertEqual(response.status_code, 302)
+        response = self.client.put('/redirect-view/', follow=True)
+        self.assertIsNotNone(response.redirect_chain)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.patch('/redirect-view/')
+        self.assertEqual(response.status_code, 302)
+        response = self.client.patch('/redirect-view/', follow=True)
+        self.assertIsNotNone(response.redirect_chain)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.delete('/redirect-view/')
+        self.assertEqual(response.status_code, 302)
+        response = self.client.delete('/redirect-view/', follow=True)
+        self.assertIsNotNone(response.redirect_chain)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.options('/redirect-view/')
+        self.assertEqual(response.status_code, 302)
+        response = self.client.options('/redirect-view/', follow=True)
+        self.assertIsNotNone(response.redirect_chain)
+        self.assertEqual(response.status_code, 200)
 
 
 class TestAPIRequestFactory(TestCase):

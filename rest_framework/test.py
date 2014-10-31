@@ -156,6 +156,52 @@ class APIClient(APIRequestFactory, DjangoClient):
         kwargs.update(self._credentials)
         return super(APIClient, self).request(**kwargs)
 
+    def get(self, path, data=None, follow=False, **extra):
+        response = super(APIClient, self).get(path, data=data, **extra)
+        if follow:
+            response = self._handle_redirects(response, **extra)
+        return response
+
+    def post(self, path, data=None, format=None, content_type=None,
+             follow=False, **extra):
+        response = super(APIClient, self).post(
+            path, data=data, format=format, content_type=content_type, **extra)
+        if follow:
+            response = self._handle_redirects(response, **extra)
+        return response
+
+    def put(self, path, data=None, format=None, content_type=None,
+            follow=False, **extra):
+        response = super(APIClient, self).put(
+            path, data=data, format=format, content_type=content_type, **extra)
+        if follow:
+            response = self._handle_redirects(response, **extra)
+        return response
+
+    def patch(self, path, data=None, format=None, content_type=None,
+              follow=False, **extra):
+        response = super(APIClient, self).patch(
+            path, data=data, format=format, content_type=content_type, **extra)
+        if follow:
+            response = self._handle_redirects(response, **extra)
+        return response
+
+    def delete(self, path, data=None, format=None, content_type=None,
+               follow=False, **extra):
+        response = super(APIClient, self).delete(
+            path, data=data, format=format, content_type=content_type, **extra)
+        if follow:
+            response = self._handle_redirects(response, **extra)
+        return response
+
+    def options(self, path, data=None, format=None, content_type=None,
+                follow=False, **extra):
+        response = super(APIClient, self).options(
+            path, data=data, format=format, content_type=content_type, **extra)
+        if follow:
+            response = self._handle_redirects(response, **extra)
+        return response
+
     def logout(self):
         self._credentials = {}
         return super(APIClient, self).logout()
