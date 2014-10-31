@@ -210,7 +210,9 @@ We recommend the [`django-reusable-app`][django-reusable-app] template as a good
 
 ## Linking to your package
 
-Once your package is decently documented and available on PyPI open a pull request or issue, and we'll add a link to it from the main REST framework documentation.
+Once your package is decently documented and available on PyPI open a pull request or issue, and we'll add a link to it from the main REST framework documentation. You can add your package under **Third party packages** of the API Guide section that best applies, like [Authentication][authentication] or [Permissions][permissions]. You can also link your package under the [Third Party Resources][third-party-resources] section.
+
+We also suggest adding it to the [REST Framework][rest-framework-grid] grid on Django Packages.
 
 [cite]: http://www.w3.org/People/Berners-Lee/FAQ.html
 [code-of-conduct]: https://www.djangoproject.com/conduct/
@@ -225,3 +227,7 @@ Once your package is decently documented and available on PyPI open a pull reque
 [docs]: https://github.com/tomchristie/django-rest-framework/tree/master/docs
 [mou]: http://mouapp.com/
 [django-reusable-app]: https://github.com/dabapps/django-reusable-app
+[authentication]: ../api-guide/authentication.md
+[permissions]: ../api-guide/permissions.md
+[third-party-resources]: third-party-resources.md
+[rest-framework-grid]: https://www.djangopackages.com/grids/g/django-rest-framework/

@@ -140,16 +140,16 @@
                             {% if post_form %}
                                 <ul class="nav nav-tabs form-switcher">
                                     <li>
-                                        <a name='html-tab' href="#object-form" data-toggle="tab">HTML form</a>
+                                        <a name='html-tab' href="#post-object-form" data-toggle="tab">HTML form</a>
                                     </li>
                                     <li>
-                                        <a name='raw-tab' href="#generic-content-form" data-toggle="tab">Raw data</a>
+                                        <a name='raw-tab' href="#post-generic-content-form" data-toggle="tab">Raw data</a>
                                     </li>
                                 </ul>
                             {% endif %}
                             <div class="well tab-content">
                                 {% if post_form %}
-                                    <div class="tab-pane" id="object-form">
+                                    <div class="tab-pane" id="post-object-form">
                                         {% with form=post_form %}
                                             <form action="{{ request.get_full_path }}"
                                                   method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
@@ -164,7 +164,7 @@
                                         {% endwith %}
                                     </div>
                                 {% endif %}
-                                <div {% if post_form %}class="tab-pane"{% endif %} id="generic-content-form">
+                                <div {% if post_form %}class="tab-pane"{% endif %} id="post-generic-content-form">
                                     {% with form=raw_data_post_form %}
                                         <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
                                             <fieldset>
@@ -186,16 +186,16 @@
                             {% if put_form %}
                                 <ul class="nav nav-tabs form-switcher">
                                     <li>
-                                        <a name='html-tab' href="#object-form" data-toggle="tab">HTML form</a>
+                                        <a name='html-tab' href="#put-object-form" data-toggle="tab">HTML form</a>
                                     </li>
                                     <li>
-                                        <a  name='raw-tab' href="#generic-content-form" data-toggle="tab">Raw data</a>
+                                        <a  name='raw-tab' href="#put-generic-content-form" data-toggle="tab">Raw data</a>
                                     </li>
                                 </ul>
                             {% endif %}
                             <div class="well tab-content">
                                 {% if put_form %}
-                                    <div class="tab-pane" id="object-form">
+                                    <div class="tab-pane" id="put-object-form">
                                         <form action="{{ request.get_full_path }}"
                                               method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
                                             <fieldset>
@@ -209,7 +209,7 @@
                                         </form>
                                     </div>
                                 {% endif %}
-                                <div {% if put_form %}class="tab-pane"{% endif %} id="generic-content-form">
+                                <div {% if put_form %}class="tab-pane"{% endif %} id="put-generic-content-form">
                                     {% with form=raw_data_put_or_patch_form %}
                                         <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
                                             <fieldset>

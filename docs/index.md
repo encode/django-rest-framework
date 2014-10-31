@@ -49,7 +49,7 @@ Some reasons you might want to use REST framework:
 
 REST framework requires the following:
 
-* Python (2.6.5+, 2.7, 3.2, 3.3)
+* Python (2.6.5+, 2.7, 3.2, 3.3, 3.4)
 * Django (1.4.11+, 1.5.5+, 1.6, 1.7)
 
 The following packages are optional:

@@ -16,6 +16,7 @@ To submit new content, [open an issue](https://github.com/tomchristie/django-res
 * [djangorestframework-jwt](https://github.com/GetBlimp/django-rest-framework-jwt) - Provides JSON Web Token Authentication support.
 * [hawkrest](https://github.com/kumar303/hawkrest) - Provides Hawk HTTP Authorization.
 * [djangorestframework-httpsignature](https://github.com/etoccalino/django-rest-framework-httpsignature) - Provides an easy to use HTTP Signature Authentication mechanism.
+* [djoser](https://github.com/sunscrapers/djoser) - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.
 
 ### Permissions
 
