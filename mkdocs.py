@@ -59,6 +59,7 @@ path_list = [
     'api-guide/serializers.md',
     'api-guide/fields.md',
     'api-guide/relations.md',
+    'api-guide/validation.md',
     'api-guide/authentication.md',
     'api-guide/permissions.md',
     'api-guide/throttling.md',

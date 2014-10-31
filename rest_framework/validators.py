@@ -19,9 +19,10 @@ class UniqueValidator:
     """
     message = _('This field must be unique.')
 
-    def __init__(self, queryset):
+    def __init__(self, queryset, message=None):
         self.queryset = queryset
         self.serializer_field = None
+        self.message = message or self.message
 
     def set_context(self, serializer_field):
         # Determine the underlying model field name. This may not be the
@@ -54,10 +55,11 @@ class UniqueTogetherValidator:
     """
     message = _('The fields {field_names} must make a unique set.')
 
-    def __init__(self, queryset, fields):
+    def __init__(self, queryset, fields, message=None):
         self.queryset = queryset
         self.fields = fields
         self.serializer_field = None
+        self.message = message or self.message
 
     def set_context(self, serializer):
         # Determine the existing instance, if this is an update operation.
@@ -86,10 +88,11 @@ class UniqueTogetherValidator:
 class BaseUniqueForValidator:
     message = None
 
-    def __init__(self, queryset, field, date_field):
+    def __init__(self, queryset, field, date_field, message=None):
         self.queryset = queryset
         self.field = field
         self.date_field = date_field
+        self.message = message or self.message
 
     def set_context(self, serializer):
         # Determine the underlying model field names. These may not be the

@@ -292,6 +292,8 @@ class Serializer(BaseSerializer):
         for key, value in self._get_base_fields().items():
             self.fields[key] = value
 
+        self.validators = getattr(getattr(self, 'Meta', None), 'validators', [])
+
     def _get_base_fields(self):
         return copy.deepcopy(self._declared_fields)
 

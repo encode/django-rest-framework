@@ -173,6 +173,7 @@ The API guide is your complete reference manual to all the functionality provide
 * [Serializers][serializers]
 * [Serializer fields][fields]
 * [Serializer relations][relations]
+* [Validation][validation]
 * [Authentication][authentication]
 * [Permissions][permissions]
 * [Throttling][throttling]
@@ -294,6 +295,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [serializers]: api-guide/serializers.md
 [fields]: api-guide/fields.md
 [relations]: api-guide/relations.md
+[validation]: api-guide/validation.md
 [authentication]: api-guide/authentication.md
 [permissions]: api-guide/permissions.md
 [throttling]: api-guide/throttling.md
