@@ -545,7 +545,9 @@ class IntegerField(Field):
         'invalid': _('A valid integer is required.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
+        'max_string_length': _('String value too large')
     }
+    MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
     def __init__(self, **kwargs):
         max_value = kwargs.pop('max_value', None)
@@ -559,8 +561,11 @@ class IntegerField(Field):
             self.validators.append(MinValueValidator(min_value, message=message))
 
     def to_internal_value(self, data):
+        if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
+            self.fail('max_string_length')
+
         try:
-            data = int(six.text_type(data))
+            data = int(data)
         except (ValueError, TypeError):
             self.fail('invalid')
         return data
@@ -574,7 +579,9 @@ class FloatField(Field):
         'invalid': _("A valid number is required."),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
+        'max_string_length': _('String value too large')
     }
+    MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
     def __init__(self, **kwargs):
         max_value = kwargs.pop('max_value', None)
@@ -587,9 +594,12 @@ class FloatField(Field):
             message = self.error_messages['min_value'].format(min_value=min_value)
             self.validators.append(MinValueValidator(min_value, message=message))
 
-    def to_internal_value(self, value):
+    def to_internal_value(self, data):
+        if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
+            self.fail('max_string_length')
+
         try:
-            return float(value)
+            return float(data)
         except (TypeError, ValueError):
             self.fail('invalid')
 
@@ -604,8 +614,10 @@ class DecimalField(Field):
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
         'max_digits': _('Ensure that there are no more than {max_digits} digits in total.'),
         'max_decimal_places': _('Ensure that there are no more than {max_decimal_places} decimal places.'),
-        'max_whole_digits': _('Ensure that there are no more than {max_whole_digits} digits before the decimal point.')
+        'max_whole_digits': _('Ensure that there are no more than {max_whole_digits} digits before the decimal point.'),
+        'max_string_length': _('String value too large')
     }
+    MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
     coerce_to_string = api_settings.COERCE_DECIMAL_TO_STRING
 
@@ -621,16 +633,19 @@ class DecimalField(Field):
             message = self.error_messages['min_value'].format(min_value=min_value)
             self.validators.append(MinValueValidator(min_value, message=message))
 
-    def to_internal_value(self, value):
+    def to_internal_value(self, data):
         """
         Validates that the input is a decimal number. Returns a Decimal
         instance. Returns None for empty values. Ensures that there are no more
         than max_digits in the number, and no more than decimal_places digits
         after the decimal point.
         """
-        value = smart_text(value).strip()
+        data = smart_text(data).strip()
+        if len(data) > self.MAX_STRING_LENGTH:
+            self.fail('max_string_length')
+
         try:
-            value = decimal.Decimal(value)
+            value = decimal.Decimal(data)
         except decimal.DecimalException:
             self.fail('invalid')
 
