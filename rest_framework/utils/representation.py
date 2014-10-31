@@ -82,6 +82,11 @@ def serializer_repr(serializer, indent, force_many=None):
             ret += field_repr(field.child_relation, force_many=field.child_relation)
         else:
             ret += field_repr(field)
+
+    if serializer.validators:
+        ret += '\n' + indent_str + 'class Meta:'
+        ret += '\n' + indent_str + '    validators = ' + smart_repr(serializer.validators)
+
     return ret
 
 

@@ -181,7 +181,7 @@ class TestRegularFieldMappings(TestCase):
                 fields = ('auto_field', 'invalid')
 
         with self.assertRaises(ImproperlyConfigured) as excinfo:
-            TestSerializer()
+            TestSerializer().fields
         expected = 'Field name `invalid` is not valid for model `ModelBase`.'
         assert str(excinfo.exception) == expected
 
@@ -198,7 +198,7 @@ class TestRegularFieldMappings(TestCase):
                 fields = ('auto_field',)
 
         with self.assertRaises(ImproperlyConfigured) as excinfo:
-            TestSerializer()
+            TestSerializer().fields
         expected = (
             'Field `missing` has been declared on serializer '
             '`TestSerializer`, but is missing from `Meta.fields`.'

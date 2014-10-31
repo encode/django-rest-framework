@@ -143,7 +143,7 @@ class Field(object):
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=empty, source=None,
                  label=None, help_text=None, style=None,
-                 error_messages=None, validators=[], allow_null=False):
+                 error_messages=None, validators=None, allow_null=False):
         self._creation_counter = Field._creation_counter
         Field._creation_counter += 1
 
@@ -166,8 +166,10 @@ class Field(object):
         self.label = label
         self.help_text = help_text
         self.style = {} if style is None else style
-        self.validators = validators[:] or self.default_validators[:]
         self.allow_null = allow_null
+
+        if validators is not None:
+            self.validators = validators[:]
 
         # These are set up by `.bind()` when the field is added to a serializer.
         self.field_name = None
@@ -213,6 +215,21 @@ class Field(object):
             self.source_attrs = []
         else:
             self.source_attrs = self.source.split('.')
+
+    # .validators is a lazily loaded property, that gets its default
+    # value from `get_validators`.
+    @property
+    def validators(self):
+        if not hasattr(self, '_validators'):
+            self._validators = self.get_validators()
+        return self._validators
+
+    @validators.setter
+    def validators(self, validators):
+        self._validators = validators
+
+    def get_validators(self):
+        return self.default_validators[:]
 
     def get_initial(self):
         """

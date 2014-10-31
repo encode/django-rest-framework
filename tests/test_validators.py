@@ -86,10 +86,12 @@ class TestUniquenessTogetherValidation(TestCase):
     def test_repr(self):
         serializer = UniquenessTogetherSerializer()
         expected = dedent("""
-            UniquenessTogetherSerializer(validators=[<UniqueTogetherValidator(queryset=UniquenessTogetherModel.objects.all(), fields=('race_name', 'position'))>]):
+            UniquenessTogetherSerializer():
                 id = IntegerField(label='ID', read_only=True)
                 race_name = CharField(max_length=100)
                 position = IntegerField()
+                class Meta:
+                    validators = [<UniqueTogetherValidator(queryset=UniquenessTogetherModel.objects.all(), fields=('race_name', 'position'))>]
         """)
         assert repr(serializer) == expected
 
@@ -173,10 +175,12 @@ class TestUniquenessForDateValidation(TestCase):
     def test_repr(self):
         serializer = UniqueForDateSerializer()
         expected = dedent("""
-            UniqueForDateSerializer(validators=[<UniqueForDateValidator(queryset=UniqueForDateModel.objects.all(), field='slug', date_field='published')>]):
+            UniqueForDateSerializer():
                 id = IntegerField(label='ID', read_only=True)
                 slug = CharField(max_length=100)
                 published = DateField(required=True)
+                class Meta:
+                    validators = [<UniqueForDateValidator(queryset=UniqueForDateModel.objects.all(), field='slug', date_field='published')>]
         """)
         assert repr(serializer) == expected
 
@@ -231,10 +235,12 @@ class TestHiddenFieldUniquenessForDateValidation(TestCase):
 
         serializer = TestSerializer()
         expected = dedent("""
-            TestSerializer(validators=[<UniqueForDateValidator(queryset=HiddenFieldUniqueForDateModel.objects.all(), field='slug', date_field='published')>]):
+            TestSerializer():
                 id = IntegerField(label='ID', read_only=True)
                 slug = CharField(max_length=100)
                 published = HiddenField(default=CreateOnlyDefault(<function now>))
+                class Meta:
+                    validators = [<UniqueForDateValidator(queryset=HiddenFieldUniqueForDateModel.objects.all(), field='slug', date_field='published')>]
         """)
         assert repr(serializer) == expected
 
@@ -246,9 +252,11 @@ class TestHiddenFieldUniquenessForDateValidation(TestCase):
 
         serializer = TestSerializer()
         expected = dedent("""
-            TestSerializer(validators=[<UniqueForDateValidator(queryset=HiddenFieldUniqueForDateModel.objects.all(), field='slug', date_field='published')>]):
+            TestSerializer():
                 id = IntegerField(label='ID', read_only=True)
                 slug = CharField(max_length=100)
                 published = DateTimeField(default=CreateOnlyDefault(<function now>), read_only=True)
+                class Meta:
+                    validators = [<UniqueForDateValidator(queryset=HiddenFieldUniqueForDateModel.objects.all(), field='slug', date_field='published')>]
         """)
         assert repr(serializer) == expected

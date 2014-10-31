@@ -282,20 +282,22 @@ class SerializerMetaclass(type):
 
 @six.add_metaclass(SerializerMetaclass)
 class Serializer(BaseSerializer):
-    def __init__(self, *args, **kwargs):
-        super(Serializer, self).__init__(*args, **kwargs)
+    @property
+    def fields(self):
+        if not hasattr(self, '_fields'):
+            self._fields = BindingDict(self)
+            for key, value in self.get_fields().items():
+                self._fields[key] = value
+        return self._fields
 
+    def get_fields(self):
         # Every new serializer is created with a clone of the field instances.
         # This allows users to dynamically modify the fields on a serializer
         # instance without affecting every other serializer class.
-        self.fields = BindingDict(self)
-        for key, value in self._get_base_fields().items():
-            self.fields[key] = value
-
-        self.validators = getattr(getattr(self, 'Meta', None), 'validators', [])
-
-    def _get_base_fields(self):
         return copy.deepcopy(self._declared_fields)
+
+    def get_validators(self):
+        return getattr(getattr(self, 'Meta', None), 'validators', [])
 
     def get_initial(self):
         if self._initial_data is not None:
@@ -520,14 +522,6 @@ class ModelSerializer(Serializer):
     })
     _related_class = PrimaryKeyRelatedField
 
-    def __init__(self, *args, **kwargs):
-        super(ModelSerializer, self).__init__(*args, **kwargs)
-        if 'validators' not in kwargs:
-            validators = self.get_default_validators()
-            if validators:
-                self.validators.extend(validators)
-                self._kwargs['validators'] = validators
-
     def create(self, validated_attrs):
         # Check that the user isn't trying to handle a writable nested field.
         # If we don't do this explicitly they'd likely get a confusing
@@ -578,13 +572,13 @@ class ModelSerializer(Serializer):
         instance.save()
         return instance
 
-    def get_default_validators(self):
+    def get_validators(self):
         field_names = set([
             field.source for field in self.fields.values()
             if (field.source != '*') and ('.' not in field.source)
         ])
 
-        validators = []
+        validators = getattr(getattr(self, 'Meta', None), 'validators', [])
         model_class = self.Meta.model
 
         # Note that we make sure to check `unique_together` both on the
@@ -627,7 +621,7 @@ class ModelSerializer(Serializer):
 
         return validators
 
-    def _get_base_fields(self):
+    def get_fields(self):
         declared_fields = copy.deepcopy(self._declared_fields)
 
         ret = SortedDict()
