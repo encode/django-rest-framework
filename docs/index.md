@@ -173,7 +173,7 @@ The API guide is your complete reference manual to all the functionality provide
 * [Serializers][serializers]
 * [Serializer fields][fields]
 * [Serializer relations][relations]
-* [Validation][validation]
+* [Validators][validators]
 * [Authentication][authentication]
 * [Permissions][permissions]
 * [Throttling][throttling]
