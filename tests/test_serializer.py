@@ -327,7 +327,9 @@ class BasicTests(TestCase):
         """
         Regression test for #652.
         """
-        self.assertRaises(AssertionError, PersonSerializerInvalidReadOnly, [])
+        serializer = PersonSerializerInvalidReadOnly()
+        with self.assertRaises(AssertionError):
+            serializer.fields
 
     def test_serializer_data_is_cleared_on_save(self):
         """

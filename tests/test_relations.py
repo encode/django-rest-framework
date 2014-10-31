@@ -102,7 +102,7 @@ class RelatedFieldSourceTests(TestCase):
         self.assertEqual(value, ['BlogPost object'])
 
     # Regression for #1129
-    def test_exception_for_incorect_fk(self):
+    def test_exception_for_incorrect_fk(self):
         """
         Check that the exception message are correct if the source field
         doesn't exist.
@@ -123,8 +123,9 @@ class RelatedFieldSourceTests(TestCase):
             (serializers.ModelSerializer,),
             attrs
         )
+        serializer = TestSerializer(data={'name': 'foo'})
         with self.assertRaises(AttributeError):
-            TestSerializer(data={'name': 'foo'})
+            serializer.fields
 
 
 @unittest.skipIf(get_version() < '1.6.0', 'Upstream behaviour changed in v1.6')
