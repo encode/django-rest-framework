@@ -260,6 +260,7 @@ class WritableField(Field):
     default_error_messages = {
         'required': _('This field is required.'),
         'invalid': _('Invalid value.'),
+        'invalid_data': _('Invalid data.'),
     }
     widget = widgets.TextInput
     default = None
@@ -951,6 +952,7 @@ class FileField(WritableField):
     def __init__(self, *args, **kwargs):
         self.max_length = kwargs.pop('max_length', None)
         self.allow_empty_file = kwargs.pop('allow_empty_file', False)
+        self.show_url = kwargs.pop('show_url', False)
         super(FileField, self).__init__(*args, **kwargs)
 
     def from_native(self, data):
@@ -975,6 +977,8 @@ class FileField(WritableField):
         return data
 
     def to_native(self, value):
+        if value and self.show_url:
+            return value.url
         return value.name
 
 
@@ -988,6 +992,9 @@ class ImageField(FileField):
         'invalid_image': _("Upload a valid image. The file you uploaded was "
                            "either not an image or a corrupted image."),
     }
+
+    def __init__(self, *args, **kwargs):
+        super(ImageField, self).__init__(*args, **kwargs)
 
     def from_native(self, data):
         """
@@ -1038,5 +1045,10 @@ class SerializerMethodField(Field):
         super(SerializerMethodField, self).__init__(*args, **kwargs)
 
     def field_to_native(self, obj, field_name):
-        value = getattr(self.parent, self.method_name)(obj)
+        if hasattr(self.parent, self.method_name):
+            method = getattr(self.parent, self.method_name)
+            value = method(obj)
+        else:
+            method = getattr(obj, self.method_name)
+            value = method()
         return self.to_native(value)
