@@ -52,6 +52,6 @@ pages:
  - ['topics/credits.md', ]
 
 site_dir: html
-theme_dir: docs/theme
+theme_dir: docs_theme
 copyright: Copyright &copy; 2014, <a href="https://twitter.com/_tomchristie">Tom Christie</a>.
 google_analytics: ['UA-18852272-2', 'django-rest-framework.org']
