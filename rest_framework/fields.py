@@ -130,6 +130,7 @@ class Field(object):
     widget = None
 
     def __init__(self, source=None, label=None, help_text=None):
+        super(Field, self).__init__()
         self.parent = None
 
         self.creation_counter = Field.creation_counter
@@ -267,9 +268,9 @@ class WritableField(Field):
     def __init__(self, source=None, label=None, help_text=None,
                  read_only=False, write_only=False, required=None,
                  validators=[], error_messages=None, widget=None,
-                 default=None, blank=None):
+                 default=None, blank=None, *args, **kwargs):
 
-        super(WritableField, self).__init__(source=source, label=label, help_text=help_text)
+        super(WritableField, self).__init__(source=source, label=label, help_text=help_text, *args, **kwargs)
 
         self.read_only = read_only
         self.write_only = write_only

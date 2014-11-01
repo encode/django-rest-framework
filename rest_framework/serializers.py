@@ -184,8 +184,8 @@ class BaseSerializer(WritableField):
 
     def __init__(self, instance=None, data=None, files=None,
                  context=None, partial=False, many=False,
-                 allow_add_remove=False, **kwargs):
-        super(BaseSerializer, self).__init__(**kwargs)
+                 allow_add_remove=False, *args, **kwargs):
+        super(BaseSerializer, self).__init__(*args, **kwargs)
         self.opts = self._options_class(self.Meta)
         self.parent = None
         self.root = None
