@@ -915,6 +915,8 @@ class ReadOnlyManyToManyTests(TestCase):
 class DefaultValueTests(TestCase):
     def setUp(self):
         class DefaultValueSerializer(serializers.ModelSerializer):
+            default_none_field = serializers.CharField(default=None, required=False, allow_none=True)
+
             class Meta:
                 model = DefaultValueModel
 
@@ -929,6 +931,15 @@ class DefaultValueTests(TestCase):
         self.assertEqual(len(self.objects.all()), 1)
         self.assertEqual(instance.pk, 1)
         self.assertEqual(instance.text, 'foobar')
+
+    def test_create_using_none_as_default(self):
+        data = {}
+        serializer = self.serializer_class(data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        instance = serializer.save()
+        self.assertEqual(len(self.objects.all()), 1)
+        self.assertEqual(instance.pk, 1)
+        self.assertEqual(instance.default_none_field, None)
 
     def test_create_overriding_default(self):
         data = {'text': 'overridden'}
