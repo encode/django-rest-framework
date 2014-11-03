@@ -1,0 +1,7 @@
+{% load rest_framework %}
+<fieldset>
+    {% if field.label %}<legend {% if style.hide_label %}class="sr-only"{% endif %}>{{ field.label }}</legend>{% endif %}
+    {% for nested_field in field %}
+        {% render_field nested_field template_pack=template_pack renderer=renderer %}
+    {% endfor %}
+</fieldset>

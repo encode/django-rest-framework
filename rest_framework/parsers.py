@@ -5,6 +5,7 @@ They give us a generic way of being able to handle various media types
 on the request, such as form content or json encoded data.
 """
 from __future__ import unicode_literals
+
 from django.conf import settings
 from django.core.files.uploadhandler import StopFutureHandlers
 from django.http import QueryDict
@@ -48,7 +49,7 @@ class JSONParser(BaseParser):
     """
 
     media_type = 'application/json'
-    renderer_class = renderers.UnicodeJSONRenderer
+    renderer_class = renderers.JSONRenderer
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
@@ -132,7 +133,7 @@ class MultiPartParser(BaseParser):
             data, files = parser.parse()
             return DataAndFiles(data, files)
         except MultiPartParserError as exc:
-            raise ParseError('Multipart form parse error - %s' % str(exc))
+            raise ParseError('Multipart form parse error - %s' % six.text_type(exc))
 
 
 class XMLParser(BaseParser):

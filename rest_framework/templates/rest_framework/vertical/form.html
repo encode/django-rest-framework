@@ -1,0 +1,11 @@
+{% load rest_framework %}
+<form role="form" action="." method="POST" novalidate>
+    {% csrf_token %}
+    {% for field in form %}
+        {% if not field.read_only %}
+            {% render_field field style=style %}
+        {% endif %}
+    {% endfor %}
+    <!-- form.non_field_errors -->
+    <button type="submit" class="btn btn-default">Submit</button>
+</form>

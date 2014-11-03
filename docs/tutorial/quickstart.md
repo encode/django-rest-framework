@@ -26,11 +26,13 @@ Create a new Django project named `tutorial`, then start a new app called `quick
 
 Now sync your database for the first time:
 
-    python manage.py syncdb
+    python manage.py migrate
 
-Make sure to create an initial user named `admin` with a password of `password`. We'll authenticate as that user later in our example.
+We'll also create an initial user named `admin` with a password of `password`. We'll authenticate as that user later in our example.
 
-Once you've set up a database and got everything synced and ready to go, open up the app's directory and we'll get coding...
+    python manage.py createsuperuser
+
+Once you've set up a database and initial user created and ready to go, open up the app's directory and we'll get coding...
 
 ## Serializers
 

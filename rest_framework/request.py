@@ -4,7 +4,7 @@ The Request class is used as a wrapper around the standard request object.
 The wrapped request then offers a richer API, in particular :
 
     - content automatically parsed according to `Content-Type` header,
-      and available as `request.DATA`
+      and available as `request.data`
     - full support of PUT method, including support for file uploads
     - form overloading of HTTP method, content type and content
 """
@@ -13,10 +13,12 @@ from django.conf import settings
 from django.http import QueryDict
 from django.http.multipartparser import parse_header
 from django.utils.datastructures import MultiValueDict
+from django.utils.datastructures import MergeDict as DjangoMergeDict
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
 from rest_framework.compat import BytesIO
 from rest_framework.settings import api_settings
+import warnings
 
 
 def is_form_media_type(media_type):
@@ -58,6 +60,15 @@ class override_method(object):
             self.view.action = self.action
 
 
+class MergeDict(DjangoMergeDict, dict):
+    """
+    Using this as a workaround until the parsers API is properly
+    addressed in 3.1.
+    """
+    def __init__(self, *dicts):
+        self.dicts = dicts
+
+
 class Empty(object):
     """
     Placeholder for unset attributes.
@@ -82,6 +93,7 @@ def clone_request(request, method):
                   parser_context=request.parser_context)
     ret._data = request._data
     ret._files = request._files
+    ret._full_data = request._full_data
     ret._content_type = request._content_type
     ret._stream = request._stream
     ret._method = method
@@ -133,6 +145,7 @@ class Request(object):
         self.parser_context = parser_context
         self._data = Empty
         self._files = Empty
+        self._full_data = Empty
         self._method = Empty
         self._content_type = Empty
         self._stream = Empty
@@ -186,11 +199,29 @@ class Request(object):
         return self._stream
 
     @property
-    def QUERY_PARAMS(self):
+    def query_params(self):
         """
         More semantically correct name for request.GET.
         """
         return self._request.GET
+
+    @property
+    def QUERY_PARAMS(self):
+        """
+        Synonym for `.query_params`, for backwards compatibility.
+        """
+        warnings.warn(
+            "`request.QUERY_PARAMS` is pending deprecation. Use `request.query_params` instead.",
+            PendingDeprecationWarning,
+            stacklevel=1
+        )
+        return self._request.GET
+
+    @property
+    def data(self):
+        if not _hasattr(self, '_full_data'):
+            self._load_data_and_files()
+        return self._full_data
 
     @property
     def DATA(self):
@@ -200,6 +231,11 @@ class Request(object):
         Similar to usual behaviour of `request.POST`, except that it handles
         arbitrary parsers, and also works on methods other than POST (eg PUT).
         """
+        warnings.warn(
+            "`request.DATA` is pending deprecation. Use `request.data` instead.",
+            PendingDeprecationWarning,
+            stacklevel=1
+        )
         if not _hasattr(self, '_data'):
             self._load_data_and_files()
         return self._data
@@ -212,6 +248,11 @@ class Request(object):
         Similar to usual behaviour of `request.FILES`, except that it handles
         arbitrary parsers, and also works on methods other than POST (eg PUT).
         """
+        warnings.warn(
+            "`request.FILES` is pending deprecation. Use `request.data` instead.",
+            PendingDeprecationWarning,
+            stacklevel=1
+        )
         if not _hasattr(self, '_files'):
             self._load_data_and_files()
         return self._files
@@ -272,6 +313,10 @@ class Request(object):
 
         if not _hasattr(self, '_data'):
             self._data, self._files = self._parse()
+            if self._files:
+                self._full_data = MergeDict(self._data, self._files)
+            else:
+                self._full_data = self._data
 
     def _load_method_and_content_type(self):
         """
@@ -333,6 +378,7 @@ class Request(object):
         # At this point we're committed to parsing the request as form data.
         self._data = self._request.POST
         self._files = self._request.FILES
+        self._full_data = MergeDict(self._data, self._files)
 
         # Method overloading - change the method and remove the param from the content.
         if (
@@ -350,7 +396,7 @@ class Request(object):
         ):
             self._content_type = self._data[self._CONTENTTYPE_PARAM]
             self._stream = BytesIO(self._data[self._CONTENT_PARAM].encode(self.parser_context['encoding']))
-            self._data, self._files = (Empty, Empty)
+            self._data, self._files, self._full_data = (Empty, Empty, Empty)
 
     def _parse(self):
         """
@@ -380,6 +426,7 @@ class Request(object):
             # logging the request or similar.
             self._data = QueryDict('', encoding=self._request._encoding)
             self._files = MultiValueDict()
+            self._full_data = self._data
             raise
 
         # Parser classes may return the raw data, or a

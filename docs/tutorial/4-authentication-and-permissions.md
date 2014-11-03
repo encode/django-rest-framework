@@ -92,24 +92,26 @@ Finally we need to add those views into the API, by referencing them from the UR
 
 Right now, if we created a code snippet, there'd be no way of associating the user that created the snippet, with the snippet instance.  The user isn't sent as part of the serialized representation, but is instead a property of the incoming request.
 
-The way we deal with that is by overriding a `.pre_save()` method on our snippet views, that allows us to handle any information that is implicit in the incoming request or requested URL.
+The way we deal with that is by overriding a `.perform_create()` method on our snippet views, that allows us to modify how the instance save is managed, and handle any information that is implicit in the incoming request or requested URL.
 
-On **both** the `SnippetList` and `SnippetDetail` view classes, add the following method:
+On the `SnippetList` view class, add the following method:
 
-    def pre_save(self, obj):
-        obj.owner = self.request.user
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+The `create()` method of our serializer will now be passed an additional `'owner'` field, along with the validated data from the request.
 
 ## Updating our serializer
 
 Now that snippets are associated with the user that created them, let's update our `SnippetSerializer` to reflect that.  Add the following field to the serializer definition in `serializers.py`:
 
-    owner = serializers.Field(source='owner.username')
+    owner = serializers.ReadOnlyField(source='owner.username')
 
 **Note**: Make sure you also add `'owner',` to the list of fields in the inner `Meta` class.
 
 This field is doing something quite interesting.  The `source` argument controls which attribute is used to populate a field, and can point at any attribute on the serialized instance.  It can also take the dotted notation shown above, in which case it will traverse the given attributes, in a similar way as it is used with Django's template language.
 
-The field we've added is the untyped `Field` class, in contrast to the other typed fields, such as `CharField`, `BooleanField` etc...  The untyped `Field` is always read-only, and will be used for serialized representations, but will not be used for updating model instances when they are deserialized.
+The field we've added is the untyped `ReadOnlyField` class, in contrast to the other typed fields, such as `CharField`, `BooleanField` etc...  The untyped `ReadOnlyField` is always read-only, and will be used for serialized representations, but will not be used for updating model instances when they are deserialized. We could have also used `CharField(read_only=True)` here.
 
 ## Adding required permissions to views
 

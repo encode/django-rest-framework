@@ -1,0 +1,4 @@
+{% load rest_framework %}
+{% for nested_field in field %}
+    {% render_field nested_field template_pack=template_pack renderer=renderer %}
+{% endfor %}

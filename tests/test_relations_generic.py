@@ -60,11 +60,11 @@ class TestGenericRelations(TestCase):
         """
 
         class BookmarkSerializer(serializers.ModelSerializer):
-            tags = serializers.RelatedField(many=True)
+            tags = serializers.StringRelatedField(many=True)
 
             class Meta:
                 model = Bookmark
-                exclude = ('id',)
+                fields = ('tags', 'url')
 
         serializer = BookmarkSerializer(self.bookmark)
         expected = {
@@ -73,35 +73,6 @@ class TestGenericRelations(TestCase):
         }
         self.assertEqual(serializer.data, expected)
 
-    def test_generic_nested_relation(self):
-        """
-        Test saving a GenericRelation field via a nested serializer.
-        """
-
-        class TagSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = Tag
-                exclude = ('content_type', 'object_id')
-
-        class BookmarkSerializer(serializers.ModelSerializer):
-            tags = TagSerializer(many=True)
-
-            class Meta:
-                model = Bookmark
-                exclude = ('id',)
-
-        data = {
-            'url': 'https://docs.djangoproject.com/',
-            'tags': [
-                {'tag': 'contenttypes'},
-                {'tag': 'genericrelations'},
-            ]
-        }
-        serializer = BookmarkSerializer(data=data)
-        self.assertTrue(serializer.is_valid())
-        serializer.save()
-        self.assertEqual(serializer.object.tags.count(), 2)
-
     def test_generic_fk(self):
         """
         Test a relationship that spans a GenericForeignKey field.
@@ -109,11 +80,11 @@ class TestGenericRelations(TestCase):
         """
 
         class TagSerializer(serializers.ModelSerializer):
-            tagged_item = serializers.RelatedField()
+            tagged_item = serializers.StringRelatedField()
 
             class Meta:
                 model = Tag
-                exclude = ('id', 'content_type', 'object_id')
+                fields = ('tag', 'tagged_item')
 
         serializer = TagSerializer(Tag.objects.all(), many=True)
         expected = [
@@ -131,21 +102,3 @@ class TestGenericRelations(TestCase):
             }
         ]
         self.assertEqual(serializer.data, expected)
-
-    def test_restore_object_generic_fk(self):
-        """
-        Ensure an object with a generic foreign key can be restored.
-        """
-
-        class TagSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = Tag
-                exclude = ('content_type', 'object_id')
-
-        serializer = TagSerializer()
-
-        bookmark = Bookmark(url='http://example.com')
-        attrs = {'tagged_item': bookmark, 'tag': 'example'}
-
-        tag = serializer.restore_object(attrs)
-        self.assertEqual(tag.tagged_item, bookmark)

@@ -1,0 +1,33 @@
+# From test_validation...
+
+class TestPreSaveValidationExclusions(TestCase):
+    def test_pre_save_validation_exclusions(self):
+        """
+        Somewhat weird test case to ensure that we don't perform model
+        validation on read only fields.
+        """
+        obj = ValidationModel.objects.create(blank_validated_field='')
+        request = factory.put('/', {}, format='json')
+        view = UpdateValidationModel().as_view()
+        response = view(request, pk=obj.pk).render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+# From test_permissions...
+
+class ModelPermissionsIntegrationTests(TestCase):
+    def setUp(...):
+        ...
+
+    def test_has_put_as_create_permissions(self):
+        # User only has update permissions - should be able to update an entity.
+        request = factory.put('/1', {'text': 'foobar'}, format='json',
+                              HTTP_AUTHORIZATION=self.updateonly_credentials)
+        response = instance_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # But if PUTing to a new entity, permission should be denied.
+        request = factory.put('/2', {'text': 'foobar'}, format='json',
+                              HTTP_AUTHORIZATION=self.updateonly_credentials)
+        response = instance_view(request, pk='2')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

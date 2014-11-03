@@ -19,8 +19,8 @@ Typically when using the generic views, you'll override the view, and set severa
 
     from django.contrib.auth.models import User
     from myapp.serializers import UserSerializer
-	from rest_framework import generics
-	from rest_framework.permissions import IsAdminUser
+    from rest_framework import generics
+    from rest_framework.permissions import IsAdminUser
 
     class UserList(generics.ListCreateAPIView):
         queryset = User.objects.all()
@@ -212,8 +212,6 @@ Provides a `.list(request, *args, **kwargs)` method, that implements listing a q
 
 If the queryset is populated, this returns a `200 OK` response, with a serialized representation of the queryset as the body of the response.  The response data may optionally be paginated.
 
-If the queryset is empty this returns a `200 OK` response, unless the `.allow_empty` attribute on the view is set to `False`, in which case it will return a `404 Not Found`.
-
 ## CreateModelMixin
 
 Provides a `.create(request, *args, **kwargs)` method, that implements creating and saving a new model instance.
@@ -369,6 +367,20 @@ If you are using a mixin across multiple views, you can take this a step further
         pass
 
 Using custom base classes is a good option if you have custom behavior that consistently needs to be repeated across a large number of views throughout your project.
+
+---
+
+# PUT as create
+
+Prior to version 3.0 the REST framework mixins treated `PUT` as either an update or a create operation, depending on if the object already existed or not.
+
+Allowing `PUT` as create operations is problematic, as it necessarily exposes information about the existence or non-existance of objects. It's also not obvious that transparently allowing re-creating of previously deleted instances is necessarily a better default behavior than simply returning `404` responses.
+
+Both styles "`PUT` as 404" and "`PUT` as create" can be valid in different circumstances, but from version 3.0 onwards we now use 404 behavior as the default, due to it being simpler and more obvious.
+
+If you need to generic PUT-as-create behavior you may want to include something like [this `AllowPUTAsCreateMixin` class](https://gist.github.com/tomchristie/a2ace4577eff2c603b1b) as a mixin to your views.
+
+---
 
 # Third party packages
 

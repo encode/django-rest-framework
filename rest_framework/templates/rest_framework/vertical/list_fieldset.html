@@ -1,0 +1,7 @@
+<fieldset>
+    {% if field.label %}<legend {% if style.hide_label %}class="sr-only"{% endif %}>{{ field.label }}</legend>{% endif %}
+<!--     {% if field.label %}<legend {% if style.hide_label %}class="sr-only"{% endif %}>{{ field.label }}</legend>{% endif %}
+    {% for field_item in field.value.field_items.values() %}
+        {{ renderer.render_field(field_item, layout=layout) }}
+    {% endfor %} -->
+</fieldset>
