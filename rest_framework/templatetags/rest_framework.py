@@ -23,7 +23,7 @@ def replace_query_param(url, key, val):
     query_dict = QueryDict(query).copy()
     query_dict[key] = val
     query = query_dict.urlencode()
-    return escape(urlparse.urlunsplit((scheme, netloc, path, query, fragment)))
+    return urlparse.urlunsplit((scheme, netloc, path, query, fragment))
 
 
 # Regex for adding classes to html snippets
@@ -83,7 +83,7 @@ def add_query_param(request, key, val):
     """
     iri = request.get_full_path()
     uri = iri_to_uri(iri)
-    return replace_query_param(uri, key, val)
+    return escape(replace_query_param(uri, key, val))
 
 
 @register.filter
