@@ -278,7 +278,7 @@ class BaseSerializer(WritableField):
         reverted_data = {}
 
         if data is not None and not isinstance(data, dict):
-            self._errors['non_field_errors'] = ['Invalid data']
+            self._errors['non_field_errors'] = [self.error_messages['invalid_data']]
             return None
 
         for field_name, field in self.fields.items():
