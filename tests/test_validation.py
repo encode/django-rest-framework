@@ -89,7 +89,7 @@ class TestAvoidValidation(TestCase):
         self.assertFalse(serializer.is_valid())
         self.assertDictEqual(serializer.errors, {
             'non_field_errors': [
-                'Invalid data. Expected a dictionary, but got unicode.'
+                'Invalid data. Expected a dictionary, but got %s.' % type('').__name__
             ]
         })
 
