@@ -198,7 +198,7 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
                 trimmed = trim_url(middle)
                 if autoescape and not safe_input:
                     lead, trail = escape(lead), escape(trail)
-                    url, trimmed = escape(url), escape(trimmed)
+                    trimmed = escape(trimmed)
                 middle = '<a href="%s"%s>%s</a>' % (url, nofollow_attr, trimmed)
                 words[i] = mark_safe('%s%s%s' % (lead, middle, trail))
             else:
