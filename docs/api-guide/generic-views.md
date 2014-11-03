@@ -368,6 +368,20 @@ If you are using a mixin across multiple views, you can take this a step further
 
 Using custom base classes is a good option if you have custom behavior that consistently needs to be repeated across a large number of views throughout your project.
 
+---
+
+# PUT as create
+
+Prior to version 3.0 the REST framework mixins treated `PUT` as either an update or a create operation, depending on if the object already existed or not.
+
+Allowing `PUT` as create operations is problematic, as it necessarily exposes information about the existence or non-existance of objects. It's also not obvious that transparently allowing re-creating of previously deleted instances is necessarily a better default behavior than simply returning `404` responses.
+
+Both styles "`PUT` as 404" and "`PUT` as create" can be valid in different circumstances, but from version 3.0 onwards we now use 404 behavior as the default, due to it being simpler and more obvious.
+
+If you need to generic PUT-as-create behavior you may want to include something like [this `AllowPUTAsCreateMixin` class](https://gist.github.com/tomchristie/a2ace4577eff2c603b1b) as a mixin to your views.
+
+---
+
 # Third party packages
 
 The following third party packages provide additional generic view implementations.
