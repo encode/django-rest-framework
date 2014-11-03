@@ -413,6 +413,16 @@ Alternative representations include serializing using hyperlinks, serializing co
 
 For full details see the [serializer relations][relations] documentation.
 
+## Inheritance of the 'Meta' class
+
+The inner `Meta` class on serializers is not inherited from parent classes by default. This is the same behaviour as with Django's `Model` and `ModelForm` classes. If you want the `Meta` class to inherit from a parent class you must do so explicitly. For example:
+
+    class AccountSerializer(MyBaseSerializer):
+        class Meta(MyBaseSerializer.Meta):
+            model = Account
+
+Typically we would recommend *not* using inheritance on inner Meta classes, but instead declaring all options explicitly.
+
 ---
 
 # HyperlinkedModelSerializer
