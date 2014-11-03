@@ -31,6 +31,14 @@ class PhotoSerializer(serializers.Serializer):
         return Photo(**attrs)
 
 
+class ManyToManyHyperlinkedModelSerializer(serializers.HyperlinkedModelSerializer):
+    rel = serializers.HyperlinkedRelatedField(
+        many=True,
+        view_name='anchor-detail',
+        queryset=Anchor.objects.filter(text='foo'),
+    )
+
+
 class AlbumSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='album-detail', lookup_field='title')
 
@@ -62,6 +70,16 @@ class ManyToManyList(generics.ListAPIView):
 class ManyToManyDetail(generics.RetrieveAPIView):
     model = ManyToManyModel
     model_serializer_class = serializers.HyperlinkedModelSerializer
+
+
+class FilteredManyToManyList(generics.ListAPIView):
+    model = ManyToManyModel
+    model_serializer_class = ManyToManyHyperlinkedModelSerializer
+
+
+class FilteredManyToManyDetail(generics.RetrieveAPIView):
+    model = ManyToManyModel
+    model_serializer_class = ManyToManyHyperlinkedModelSerializer
 
 
 class BlogPostCommentListCreate(generics.ListCreateAPIView):
@@ -101,6 +119,7 @@ urlpatterns = patterns(
     url(r'^anchor/(?P<pk>\d+)/$', AnchorDetail.as_view(), name='anchor-detail'),
     url(r'^manytomany/$', ManyToManyList.as_view(), name='manytomanymodel-list'),
     url(r'^manytomany/(?P<pk>\d+)/$', ManyToManyDetail.as_view(), name='manytomanymodel-detail'),
+    url(r'^filteredmanytomany/$', FilteredManyToManyList.as_view(), name='filtered-manytomanymodel-list'),
     url(r'^posts/(?P<pk>\d+)/$', BlogPostDetail.as_view(), name='blogpost-detail'),
     url(r'^comments/$', BlogPostCommentListCreate.as_view(), name='blogpostcomment-list'),
     url(r'^comments/(?P<pk>\d+)/$', BlogPostCommentDetail.as_view(), name='blogpostcomment-detail'),
@@ -190,6 +209,52 @@ class TestManyToManyHyperlinkedView(TestCase):
         GET requests to ListCreateAPIView should return list of objects.
         """
         request = factory.get('/manytomany/1/')
+        response = self.detail_view(request, pk=1)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, self.data[0])
+
+
+class TestFilteredManyToManyHyperlinkedView(TestCase):
+    urls = 'tests.test_hyperlinkedserializers'
+
+    def setUp(self):
+        """
+        Create 3 BasicModel instances.
+        """
+        items = ['foo', 'bar', 'baz']
+        anchors = []
+        for item in items:
+            anchor = Anchor(text=item)
+            anchor.save()
+            anchors.append(anchor)
+
+        manytomany = ManyToManyModel()
+        manytomany.save()
+        manytomany.rel.add(*anchors)
+
+        self.data = [{
+            'url': 'http://testserver/manytomany/1/',
+            'rel': [
+                'http://testserver/anchor/1/',
+            ]
+        }]
+        self.list_view = FilteredManyToManyList.as_view()
+        self.detail_view = FilteredManyToManyDetail.as_view()
+
+    def test_get_list_view(self):
+        """
+        GET requests to ListCreateAPIView should return list of objects.
+        """
+        request = factory.get('/filteredmanytomany/')
+        response = self.list_view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, self.data)
+
+    def test_get_detail_view(self):
+        """
+        GET requests to ListCreateAPIView should return list of objects.
+        """
+        request = factory.get('/filteredmanytomany/1/')
         response = self.detail_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, self.data[0])
