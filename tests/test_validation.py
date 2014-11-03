@@ -87,8 +87,11 @@ class TestAvoidValidation(TestCase):
     def test_serializer_errors_has_only_invalid_data_error(self):
         serializer = ValidationSerializer(data='invalid data')
         self.assertFalse(serializer.is_valid())
-        self.assertDictEqual(serializer.errors,
-                             {'non_field_errors': ['Invalid data']})
+        self.assertDictEqual(serializer.errors, {
+            'non_field_errors': [
+                'Invalid data. Expected a dictionary, but got unicode.'
+            ]
+        })
 
 
 # regression tests for issue: 1493

@@ -15,6 +15,7 @@ from django.db import models
 from django.db.models.fields import FieldDoesNotExist
 from django.utils import six
 from django.utils.datastructures import SortedDict
+from django.utils.translation import ugettext_lazy as _
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import empty, set_value, Field, SkipField
 from rest_framework.settings import api_settings
@@ -282,6 +283,10 @@ class SerializerMetaclass(type):
 
 @six.add_metaclass(SerializerMetaclass)
 class Serializer(BaseSerializer):
+    default_error_messages = {
+        'invalid': _('Invalid data. Expected a dictionary, but got {datatype}.')
+    }
+
     @property
     def fields(self):
         if not hasattr(self, '_fields'):
@@ -339,8 +344,11 @@ class Serializer(BaseSerializer):
             return None
 
         if not isinstance(data, dict):
+            message = self.error_messages['invalid'].format(
+                datatype=type(data).__name__
+            )
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: ['Invalid data']
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
             })
 
         value = self.to_internal_value(data)
