@@ -311,10 +311,10 @@ url(r'^users/(?P&lt;pk&gt;[0-9]+)/$', views.UserDetail.as_view()),
 <pre class="prettyprint lang-py"><code>from django.conf.urls import include
 </code></pre>
 <p>And, at the end of the file, add a pattern to include the login and logout views for the browsable API.</p>
-<pre class="prettyprint lang-py"><code>urlpatterns += patterns('',
+<pre class="prettyprint lang-py"><code>urlpatterns += [
     url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
-)
+]
 </code></pre>
 <p>The <code>r'^api-auth/'</code> part of pattern can actually be whatever URL you want to use.  The only restriction is that the included urls must use the <code>'rest_framework'</code> namespace.</p>
 <p>Now if you open up the browser again and refresh the page you'll see a 'Login' link in the top right of the page.  If you log in as one of the users you created earlier, you'll be able to create code snippets again.</p>

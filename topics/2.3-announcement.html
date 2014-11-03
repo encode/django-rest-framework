@@ -223,7 +223,7 @@ a.fusion-poweredby {
 <pre class="prettyprint lang-py"><code>"""
 A REST framework API for viewing and editing users and groups.
 """
-from django.conf.urls.defaults import url, patterns, include
+from django.conf.urls.defaults import url, include
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets, routers
 
@@ -244,10 +244,10 @@ router.register(r'groups', GroupViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browseable API.
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-)
+]
 </code></pre>
 <p>The best place to get started with ViewSets and Routers is to take a look at the <a href="../tutorial/6-viewsets-and-routers">newest section in the tutorial</a>, which demonstrates their usage.</p>
 <h2 id="simpler-views">Simpler views</h2>

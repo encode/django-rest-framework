@@ -295,8 +295,8 @@ The lowest supported version of Django is now 1.4.2.</p>
 </ul>
 <h2 id="other-features">Other features</h2>
 <p>There are also a number of other features and bugfixes as <a href="release-notes#240">listed in the release notes</a>. In particular these include:</p>
-<p><a href="../api-guide/settings/#view-names-and-descriptions">Customizable view name and description functions</a> for use with the browsable API, by using the <code>VIEW_NAME_FUNCTION</code> and <code>VIEW_DESCRIPTION_FUNCTION</code> settings.</p>
-<p>Smarter <a href="../api-guide/throttling/#how-clients-are-identified">client IP identification for throttling</a>, with the addition of the <code>NUM_PROXIES</code> setting.</p>
+<p><a href="../api-guide/settings#view-names-and-descriptions">Customizable view name and description functions</a> for use with the browsable API, by using the <code>VIEW_NAME_FUNCTION</code> and <code>VIEW_DESCRIPTION_FUNCTION</code> settings.</p>
+<p>Smarter <a href="../api-guide/throttling#how-clients-are-identified">client IP identification for throttling</a>, with the addition of the <code>NUM_PROXIES</code> setting.</p>
 <p>Added the standardized <code>Retry-After</code> header to throttled responses, as per <a href="http://tools.ietf.org/html/rfc6585">RFC 6585</a>. This should now be used in preference to the custom <code>X-Throttle-Wait-Seconds</code> header which will be fully deprecated in 3.0.</p>
 <h2 id="deprecations">Deprecations</h2>
 <p>All API changes in 2.3 that previously raised <code>PendingDeprecationWarning</code> will now raise a <code>DeprecationWarning</code>, which is loud by default.</p>

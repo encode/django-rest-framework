@@ -256,9 +256,9 @@ cd tutorial
 )
 </code></pre>
 <p>We also need to wire up the root urlconf, in the <code>tutorial/urls.py</code> file, to include our snippet app's URLs.</p>
-<pre class="prettyprint lang-py"><code>urlpatterns = patterns('',
+<pre class="prettyprint lang-py"><code>urlpatterns = [
     url(r'^', include('snippets.urls')),
-)
+]
 </code></pre>
 <p>Okay, we're ready to roll.</p>
 <h2 id="creating-a-model-to-work-with">Creating a model to work with</h2>
@@ -459,11 +459,12 @@ def snippet_detail(request, pk):
 </code></pre>
 <p>Finally we need to wire these views up.  Create the <code>snippets/urls.py</code> file:</p>
 <pre class="prettyprint lang-py"><code>from django.conf.urls import patterns, url
+from snippets import views
 
-urlpatterns = patterns('snippets.views',
-    url(r'^snippets/$', 'snippet_list'),
-    url(r'^snippets/(?P&lt;pk&gt;[0-9]+)/$', 'snippet_detail'),
-)
+urlpatterns = [
+    url(r'^snippets/$', views.snippet_list),
+    url(r'^snippets/(?P&lt;pk&gt;[0-9]+)/$', views.snippet_detail),
+]
 </code></pre>
 <p>It's worth noting that there are a couple of edge cases we're not dealing with properly at the moment.  If we send malformed <code>json</code>, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.</p>
 <h2 id="testing-our-first-attempt-at-a-web-api">Testing our first attempt at a Web API</h2>

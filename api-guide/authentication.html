@@ -206,6 +206,7 @@ a.fusion-poweredby {
 <li><a href="#json-web-token-authentication">JSON Web Token Authentication</a></li>
 <li><a href="#hawk-http-authentication">Hawk HTTP Authentication</a></li>
 <li><a href="#http-signature-authentication">HTTP Signature Authentication</a></li>
+<li><a href="#djoser">Djoser</a></li>
 
               <div class="promo">
               
@@ -337,12 +338,13 @@ print token.key
 <hr />
 <h4 id="generating-tokens">Generating Tokens</h4>
 <p>If you want every user to have an automatically generated Token, you can simply catch the User's <code>post_save</code> signal.</p>
-<pre class="prettyprint lang-py"><code>from django.contrib.auth import get_user_model
+<pre class="prettyprint lang-py"><code>from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
-@receiver(post_save, sender=get_user_model())
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
@@ -356,9 +358,10 @@ for user in User.objects.all():
     Token.objects.get_or_create(user=user)
 </code></pre>
 <p>When using <code>TokenAuthentication</code>, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behavior.  To use it, add the <code>obtain_auth_token</code> view to your URLconf:</p>
-<pre class="prettyprint lang-py"><code>urlpatterns += patterns('',
-    url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token')
-)
+<pre class="prettyprint lang-py"><code>from rest_framework.authtoken import views
+urlpatterns += [
+    url(r'^api-token-auth/', views.obtain_auth_token)
+]
 </code></pre>
 <p>Note that the URL part of the pattern can be whatever you want to use.</p>
 <p>The <code>obtain_auth_token</code> view will return a JSON response when valid <code>username</code> and <code>password</code> fields are POSTed to the view using form data or JSON:</p>
@@ -508,6 +511,8 @@ class ExampleAuthentication(authentication.BaseAuthentication):
 <p>The <a href="http://hawkrest.readthedocs.org/en/latest/">HawkREST</a> library builds on the <a href="http://mohawk.readthedocs.org/en/latest/">Mohawk</a> library to let you work with <a href="https://github.com/hueniverse/hawk">Hawk</a> signed requests and responses in your API. <a href="https://github.com/hueniverse/hawk">Hawk</a> lets two parties securely communicate with each other using messages signed by a shared key. It is based on <a href="http://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05">HTTP MAC access authentication</a> (which was based on parts of <a href="http://oauth.net/core/1.0a">OAuth 1.0</a>).</p>
 <h2 id="http-signature-authentication">HTTP Signature Authentication</h2>
 <p>HTTP Signature (currently a <a href="https://datatracker.ietf.org/doc/draft-cavage-http-signatures/">IETF draft</a>) provides a way to achieve origin authentication and message integrity for HTTP messages. Similar to <a href="http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html">Amazon's HTTP Signature scheme</a>, used by many of its services, it permits stateless, per-request authentication. <a href="https://github.com/etoccalino/">Elvio Toccalino</a> maintains the <a href="https://github.com/etoccalino/django-rest-framework-httpsignature">djangorestframework-httpsignature</a> package which provides an easy to use HTTP Signature Authentication mechanism.</p>
+<h2 id="djoser">Djoser</h2>
+<p><a href="https://github.com/sunscrapers/djoser">Djoser</a> library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and it uses token based authentication. This is a ready to use REST implementation of Django authentication system.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->

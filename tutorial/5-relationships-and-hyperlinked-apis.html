@@ -293,8 +293,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 </ul>
 <p>After adding all those names into our URLconf, our final <code>snippets/urls.py</code> file should look something like this:</p>
 <pre class="prettyprint lang-py"><code># API endpoints
-urlpatterns = format_suffix_patterns(patterns('snippets.views',
-    url(r'^$', 'api_root'),
+urlpatterns = format_suffix_patterns([
+    url(r'^$', views.api_root),
     url(r'^snippets/$',
         views.SnippetList.as_view(),
         name='snippet-list'),
@@ -310,13 +310,13 @@ urlpatterns = format_suffix_patterns(patterns('snippets.views',
     url(r'^users/(?P&lt;pk&gt;[0-9]+)/$',
         views.UserDetail.as_view(),
         name='user-detail')
-))
+])
 
 # Login and logout views for the browsable API
-urlpatterns += patterns('',
+urlpatterns += [
     url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
-)
+]
 </code></pre>
 <h2 id="adding-pagination">Adding pagination</h2>
 <p>The list views for users and code snippets could end up returning quite a lot of instances, so really we'd like to make sure we paginate the results, and allow the API client to step through each of the individual pages.</p>

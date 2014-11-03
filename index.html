@@ -253,7 +253,7 @@ a.fusion-poweredby {
 <h2 id="requirements">Requirements</h2>
 <p>REST framework requires the following:</p>
 <ul>
-<li>Python (2.6.5+, 2.7, 3.2, 3.3)</li>
+<li>Python (2.6.5+, 2.7, 3.2, 3.3, 3.4)</li>
 <li>Django (1.4.2+, 1.5, 1.6, 1.7)</li>
 </ul>
 <p>The following packages are optional:</p>
@@ -283,10 +283,10 @@ pip install django-filter  # Filtering support
 )
 </code></pre>
 <p>If you're intending to use the browsable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root <code>urls.py</code> file.</p>
-<pre class="prettyprint lang-py"><code>urlpatterns = patterns('',
+<pre class="prettyprint lang-py"><code>urlpatterns = [
     ...
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-)
+]
 </code></pre>
 <p>Note that the URL path can be whatever you want, but you must include <code>'rest_framework.urls'</code> with the <code>'rest_framework'</code> namespace.</p>
 <h2 id="example">Example</h2>
