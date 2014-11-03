@@ -63,3 +63,11 @@ class NoDropdownWithoutAuthTests(TestCase):
     def test_dropdown_not_shown_when_logged_out(self):
         response = self.client.get('/')
         self.assertNotContains(response, '<li class="dropdown">')
+
+
+class CreatOnlyModelTests(TestCase):
+    urls = 'tests.browsable_api.no_auth_urls'
+
+    def test_create_only_model(self):
+        with self.assertRaises(AssertionError):
+            self.client.post('/create/', {'text': 'creating'})
