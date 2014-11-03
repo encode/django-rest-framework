@@ -9,6 +9,10 @@
 
 ---
 
+**Note**: The incoming 3.0 version has now been merged to the `master` branch on GitHub. For the source of the currently available PyPI version, please see the `2.4.4` tag.
+
+---
+
 <p>
 <h1 style="position: absolute;
     width: 1px;
@@ -42,8 +46,6 @@ Some reasons you might want to use REST framework:
 ![Screenshot][image]
 
 **Above**: *Screenshot from the browsable API*
-
-----
 
 ## Requirements
 
