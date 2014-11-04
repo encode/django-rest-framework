@@ -519,6 +519,7 @@ class ModelSerializer(Serializer):
         models.FloatField: FloatField,
         models.ImageField: ImageField,
         models.IntegerField: IntegerField,
+        models.IPAddressField: CharField,
         models.NullBooleanField: NullBooleanField,
         models.PositiveIntegerField: IntegerField,
         models.PositiveSmallIntegerField: IntegerField,
