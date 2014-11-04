@@ -2,6 +2,7 @@ from rest_framework.compat import smart_text, urlparse
 from rest_framework.fields import get_attribute, empty, Field
 from rest_framework.reverse import reverse
 from rest_framework.utils import html
+from rest_framework.settings import api_settings
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch, Resolver404
 from django.db.models.query import QuerySet
@@ -176,6 +177,10 @@ class HyperlinkedRelatedField(RelatedField):
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
 
     def to_internal_value(self, data):
+        if isinstance(data, dict) and api_settings.URL_FIELD_NAME in data:
+            # Accomodate passing the full resource instead of just the URL
+            data = data[api_settings.URL_FIELD_NAME]
+
         try:
             http_prefix = data.startswith(('http:', 'https:'))
         except AttributeError:
