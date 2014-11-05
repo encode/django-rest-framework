@@ -20,7 +20,7 @@ Create a new Django project named `tutorial`, then start a new app called `quick
 
     # Set up a new project with a single application
     django-admin.py startproject tutorial .
-    cd tutorial
+    cd tutorial/tutorial
     django-admin.py startapp quickstart
 	cd ..
 
