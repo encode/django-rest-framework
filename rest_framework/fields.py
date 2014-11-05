@@ -1175,10 +1175,20 @@ class ModelField(Field):
     This is used by `ModelSerializer` when dealing with custom model fields,
     that do not have a serializer field to be mapped to.
     """
+    default_error_messages = {
+        'max_length': _('Ensure this field has no more than {max_length} characters.'),
+    }
+
     def __init__(self, model_field, **kwargs):
         self.model_field = model_field
         kwargs['source'] = '*'
+        # The `max_length` option is supported by Django's base `Field` class,
+        # so we'd better support it here.
+        max_length = kwargs.pop('max_length', None)
         super(ModelField, self).__init__(**kwargs)
+        if max_length is not None:
+            message = self.error_messages['max_length'].format(max_length=max_length)
+            self.validators.append(MaxLengthValidator(max_length, message=message))
 
     def to_internal_value(self, data):
         rel = getattr(self.model_field, 'rel', None)
