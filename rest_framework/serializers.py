@@ -592,7 +592,8 @@ class ModelSerializer(Serializer):
         # Note that we make sure to check `unique_together` both on the
         # base model class, but also on any parent classes.
         for parent_class in [model_class] + list(model_class._meta.parents.keys()):
-            if self.context.get('request').method != 'PATCH':
+            http_method = getattr(self.context.get('request'), 'method', None)
+            if http_method and http_method != 'PATCH':
                 for unique_together in parent_class._meta.unique_together:
                     if field_names.issuperset(set(unique_together)):
                         validator = UniqueTogetherValidator(
