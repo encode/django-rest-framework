@@ -13,7 +13,7 @@ The following fall into the "required reading" category.
 * Roy Fielding's dissertation - [Architectural Styles and
 the Design of Network-based Software Architectures][dissertation].
 * Roy Fielding's "[REST APIs must be hypertext-driven][hypertext-driven]" blog post.
-* Leonard Richardson & Sam Ruby's [RESTful Web Services][restful-web-services].
+* Leonard Richardson & Mike Amundsen's [RESTful Web APIs][restful-web-apis].
 * Mike Amundsen's [Building Hypermedia APIs with HTML5 and Node][building-hypermedia-apis].
 * Steve Klabnik's [Designing Hypermedia APIs][designing-hypermedia-apis].
 * The [Richardson Maturity Model][maturitymodel].
@@ -37,7 +37,7 @@ What REST framework doesn't do is give you is machine readable hypermedia format
 [cite]: http://vimeo.com/channels/restfest/page:2
 [dissertation]: http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm
 [hypertext-driven]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
-[restful-web-services]: http://www.amazon.com/Restful-Web-Services-Leonard-Richardson/dp/0596529260
+[restful-web-apis]: http://restfulwebapis.org/
 [building-hypermedia-apis]: http://www.amazon.com/Building-Hypermedia-APIs-HTML5-Node/dp/1449306578
 [designing-hypermedia-apis]: http://designinghypermediaapis.com/
 [restisover]: http://blog.steveklabnik.com/posts/2012-02-23-rest-is-over
