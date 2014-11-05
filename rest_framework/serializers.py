@@ -306,11 +306,7 @@ class Serializer(BaseSerializer):
 
     def get_initial(self):
         if self._initial_data is not None:
-            return ReturnDict([
-                (field_name, field.get_value(self._initial_data))
-                for field_name, field in self.fields.items()
-                if field.get_value(self._initial_data) is not empty
-            ], serializer=self)
+            return self.to_representation(self._initial_data)
 
         return ReturnDict([
             (field.field_name, field.get_initial())
