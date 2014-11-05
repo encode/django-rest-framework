@@ -43,6 +43,12 @@ import warnings
 from rest_framework.relations import *  # NOQA
 from rest_framework.fields import *  # NOQA
 
+LIST_SERIALIZER_KWARGS = (
+    'read_only', 'write_only', 'required', 'default', 'initial', 'source',
+    'label', 'help_text', 'style', 'error_messages',
+    'instance', 'data', 'partial', 'context'
+)
+
 
 # BaseSerializer
 # --------------
@@ -52,7 +58,6 @@ class BaseSerializer(Field):
     The BaseSerializer class provides a minimal class which may be used
     for writing custom serializer implementations.
     """
-
     def __init__(self, instance=None, data=None, **kwargs):
         self.instance = instance
         self._initial_data = data
@@ -65,8 +70,11 @@ class BaseSerializer(Field):
         # We override this method in order to automagically create
         # `ListSerializer` classes instead when `many=True` is set.
         if kwargs.pop('many', False):
-            kwargs['child'] = cls()
-            return ListSerializer(*args, **kwargs)
+            list_kwargs = {'child': cls(*args, **kwargs)}
+            for key in kwargs.keys():
+                if key in LIST_SERIALIZER_KWARGS:
+                    list_kwargs[key] = kwargs[key]
+            return ListSerializer(*args, **list_kwargs)
         return super(BaseSerializer, cls).__new__(cls, *args, **kwargs)
 
     def to_internal_value(self, data):

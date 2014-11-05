@@ -13,6 +13,11 @@ class PKOnlyObject(object):
     def __init__(self, pk):
         self.pk = pk
 
+MANY_RELATION_KWARGS = (
+    'read_only', 'write_only', 'required', 'default', 'initial', 'source',
+    'label', 'help_text', 'style', 'error_messages'
+)
+
 
 class RelatedField(Field):
     def __init__(self, **kwargs):
@@ -31,10 +36,11 @@ class RelatedField(Field):
         # We override this method in order to automagically create
         # `ManyRelation` classes instead when `many=True` is set.
         if kwargs.pop('many', False):
-            return ManyRelation(
-                child_relation=cls(*args, **kwargs),
-                read_only=kwargs.get('read_only', False)
-            )
+            list_kwargs = {'child_relation': cls(*args, **kwargs)}
+            for key in kwargs.keys():
+                if key in MANY_RELATION_KWARGS:
+                    list_kwargs[key] = kwargs[key]
+            return ManyRelation(**list_kwargs)
         return super(RelatedField, cls).__new__(cls, *args, **kwargs)
 
     def run_validation(self, data=empty):
