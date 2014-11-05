@@ -592,13 +592,14 @@ class ModelSerializer(Serializer):
         # Note that we make sure to check `unique_together` both on the
         # base model class, but also on any parent classes.
         for parent_class in [model_class] + list(model_class._meta.parents.keys()):
-            for unique_together in parent_class._meta.unique_together:
-                if field_names.issuperset(set(unique_together)):
-                    validator = UniqueTogetherValidator(
-                        queryset=parent_class._default_manager,
-                        fields=unique_together
-                    )
-                    validators.append(validator)
+            if self.context.get('request').method != 'PATCH':
+                for unique_together in parent_class._meta.unique_together:
+                    if field_names.issuperset(set(unique_together)):
+                        validator = UniqueTogetherValidator(
+                            queryset=parent_class._default_manager,
+                            fields=unique_together
+                        )
+                        validators.append(validator)
 
         # Add any unique_for_date/unique_for_month/unique_for_year constraints.
         info = model_meta.get_field_info(model_class)
