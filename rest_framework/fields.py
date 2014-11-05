@@ -1,7 +1,7 @@
 from django.conf import settings
-from django.core import validators
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.validators import RegexValidator
 from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
 from django.utils.datastructures import SortedDict
@@ -392,7 +392,15 @@ class Field(object):
         originally created with, rather than copying the complete state.
         """
         args = copy.deepcopy(self._args)
-        kwargs = copy.deepcopy(self._kwargs)
+        kwargs = dict(self._kwargs)
+        # Bit ugly, but we need to special case 'validators' as Django's
+        # RegexValidator does not support deepcopy.
+        # We treat validator callables as immutable objects.
+        # See https://github.com/tomchristie/django-rest-framework/issues/1954
+        validators = kwargs.pop('validators', None)
+        kwargs = copy.deepcopy(kwargs)
+        if validators is not None:
+            kwargs['validators'] = validators
         return self.__class__(*args, **kwargs)
 
     def __repr__(self):
@@ -531,7 +539,7 @@ class RegexField(CharField):
 
     def __init__(self, regex, **kwargs):
         super(RegexField, self).__init__(**kwargs)
-        validator = validators.RegexValidator(regex, message=self.error_messages['invalid'])
+        validator = RegexValidator(regex, message=self.error_messages['invalid'])
         self.validators.append(validator)
 
 
@@ -543,7 +551,7 @@ class SlugField(CharField):
     def __init__(self, **kwargs):
         super(SlugField, self).__init__(**kwargs)
         slug_regex = re.compile(r'^[-a-zA-Z0-9_]+$')
-        validator = validators.RegexValidator(slug_regex, message=self.error_messages['invalid'])
+        validator = RegexValidator(slug_regex, message=self.error_messages['invalid'])
         self.validators.append(validator)
 
 

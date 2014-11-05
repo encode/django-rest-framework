@@ -1,9 +1,10 @@
 from __future__ import unicode_literals
-from django.core.validators import MaxValueValidator
+from django.core.validators import RegexValidator, MaxValueValidator
 from django.db import models
 from django.test import TestCase
 from rest_framework import generics, serializers, status
 from rest_framework.test import APIRequestFactory
+import re
 
 factory = APIRequestFactory()
 
@@ -174,3 +175,20 @@ class TestChoiceFieldChoicesValidate(TestCase):
     #         f.to_native(value)
     #     except ValidationError:
     #         self.fail("Value %s does not validate" % str(value))
+
+
+class RegexSerializer(serializers.Serializer):
+    pin = serializers.CharField(
+        validators=[RegexValidator(regex=re.compile('^[0-9]{4,6}$'),
+                                   message='A PIN is 4-6 digits')])
+
+expected_repr = """
+RegexSerializer():
+    pin = CharField(validators=[<django.core.validators.RegexValidator object>])
+""".strip()
+
+
+class TestRegexSerializer(TestCase):
+    def test_regex_repr(self):
+        serializer_repr = repr(RegexSerializer())
+        assert serializer_repr == expected_repr
