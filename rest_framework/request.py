@@ -103,6 +103,10 @@ def clone_request(request, method):
         ret._auth = request._auth
     if hasattr(request, '_authenticator'):
         ret._authenticator = request._authenticator
+    if hasattr(request, 'accepted_renderer'):
+        ret.accepted_renderer = request.accepted_renderer
+    if hasattr(request, 'accepted_media_type'):
+        ret.accepted_media_type = request.accepted_media_type
     return ret
 
 
