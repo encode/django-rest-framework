@@ -1007,7 +1007,7 @@ class FileField(Field):
         if self.use_url:
             if not value:
                 return None
-            url = settings.MEDIA_URL + value.url
+            url = value.url
             request = self.context.get('request', None)
             if request is not None:
                 return request.build_absolute_uri(url)
