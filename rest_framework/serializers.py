@@ -502,7 +502,7 @@ class ListSerializer(BaseSerializer):
         for item in data:
             try:
                 validated = self.child.run_validation(item)
-            except ValidationError, exc:
+            except ValidationError as exc:
                 errors.append(exc.detail)
             else:
                 ret.append(validated)
