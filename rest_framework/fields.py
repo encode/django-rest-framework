@@ -4,14 +4,13 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import RegexValidator
 from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
-from django.utils.datastructures import SortedDict
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import ISO_8601
 from rest_framework.compat import (
     smart_text, EmailValidator, MinValueValidator, MaxValueValidator,
-    MinLengthValidator, MaxLengthValidator, URLValidator
+    MinLengthValidator, MaxLengthValidator, URLValidator, OrderedDict
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
@@ -917,9 +916,9 @@ class ChoiceField(Field):
             for item in choices
         ]
         if all(pairs):
-            self.choices = SortedDict([(key, display_value) for key, display_value in choices])
+            self.choices = OrderedDict([(key, display_value) for key, display_value in choices])
         else:
-            self.choices = SortedDict([(item, item) for item in choices])
+            self.choices = OrderedDict([(item, item) for item in choices])
 
         # Map the string representation of choices to the underlying value.
         # Allows us to deal with eg. integer choices while supporting either

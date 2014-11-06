@@ -14,8 +14,8 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.db.models.fields import FieldDoesNotExist
 from django.utils import six
-from django.utils.datastructures import SortedDict
 from django.utils.translation import ugettext_lazy as _
+from rest_framework.compat import OrderedDict
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import empty, set_value, Field, SkipField
 from rest_framework.settings import api_settings
@@ -159,7 +159,7 @@ class BaseSerializer(Field):
 # Serializer & ListSerializer classes
 # -----------------------------------
 
-class ReturnDict(SortedDict):
+class ReturnDict(OrderedDict):
     """
     Return object from `serialier.data` for the `Serializer` class.
     Includes a backlink to the serializer instance for renderers
@@ -235,7 +235,7 @@ class BindingDict(object):
     """
     def __init__(self, serializer):
         self.serializer = serializer
-        self.fields = SortedDict()
+        self.fields = OrderedDict()
 
     def __setitem__(self, key, field):
         self.fields[key] = field
@@ -280,7 +280,7 @@ class SerializerMetaclass(type):
             if hasattr(base, '_declared_fields'):
                 fields = list(base._declared_fields.items()) + fields
 
-        return SortedDict(fields)
+        return OrderedDict(fields)
 
     def __new__(cls, name, bases, attrs):
         attrs['_declared_fields'] = cls._get_declared_fields(bases, attrs)
@@ -679,7 +679,7 @@ class ModelSerializer(Serializer):
     def get_fields(self):
         declared_fields = copy.deepcopy(self._declared_fields)
 
-        ret = SortedDict()
+        ret = OrderedDict()
         model = getattr(self.Meta, 'model')
         fields = getattr(self.Meta, 'fields', None)
         exclude = getattr(self.Meta, 'exclude', None)

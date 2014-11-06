@@ -26,6 +26,16 @@ except ImportError:
     from django.utils.encoding import force_unicode as force_text
 
 
+# OrderedDict only available in Python 2.7.
+# This will always be the case in Django 1.7 and above, as these versions
+# no longer support Python 2.6.
+# For Django <= 1.6 and Python 2.6 fall back to OrderedDict.
+try:
+    from collections import OrderedDict
+except:
+    from django.utils.datastructures import SortedDict as OrderedDict
+
+
 # HttpResponseBase only exists from 1.5 onwards
 try:
     from django.http.response import HttpResponseBase

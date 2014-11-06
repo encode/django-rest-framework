@@ -8,7 +8,7 @@ Usage: `get_field_info(model)` returns a `FieldInfo` instance.
 from collections import namedtuple
 from django.db import models
 from django.utils import six
-from django.utils.datastructures import SortedDict
+from rest_framework.compat import OrderedDict
 import inspect
 
 
@@ -63,12 +63,12 @@ def get_field_info(model):
         pk = pk.rel.to._meta.pk
 
     # Deal with regular fields.
-    fields = SortedDict()
+    fields = OrderedDict()
     for field in [field for field in opts.fields if field.serialize and not field.rel]:
         fields[field.name] = field
 
     # Deal with forward relationships.
-    forward_relations = SortedDict()
+    forward_relations = OrderedDict()
     for field in [field for field in opts.fields if field.serialize and field.rel]:
         forward_relations[field.name] = RelationInfo(
             model_field=field,
@@ -89,7 +89,7 @@ def get_field_info(model):
         )
 
     # Deal with reverse relationships.
-    reverse_relations = SortedDict()
+    reverse_relations = OrderedDict()
     for relation in opts.get_all_related_objects():
         accessor_name = relation.get_accessor_name()
         reverse_relations[accessor_name] = RelationInfo(
@@ -114,14 +114,14 @@ def get_field_info(model):
 
     # Shortcut that merges both regular fields and the pk,
     # for simplifying regular field lookup.
-    fields_and_pk = SortedDict()
+    fields_and_pk = OrderedDict()
     fields_and_pk['pk'] = pk
     fields_and_pk[pk.name] = pk
     fields_and_pk.update(fields)
 
     # Shortcut that merges both forward and reverse relationships
 
-    relations = SortedDict(
+    relations = OrderedDict(
         list(forward_relations.items()) +
         list(reverse_relations.items())
     )
