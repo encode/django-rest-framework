@@ -525,11 +525,11 @@ class ListSerializer(BaseSerializer):
 
     def save(self, **kwargs):
         assert self.instance is None, (
-            "Serializers do not support multiple update by default, because "
-            "it would be unclear how to deal with insertions, updates and "
-            "deletions. If you need to support multiple update, use a "
-            "`ListSerializer` class and override `.save()` so you can specify "
-            "the behavior exactly."
+            "Serializers do not support multiple update by default, only "
+            "multiple create. For updates it is unclear how to deal with "
+            "insertions and deletions. If you need to support multiple update, "
+            "use a `ListSerializer` class and override `.save()` so you can "
+            "specify the behavior exactly."
         )
 
         validated_data = [
