@@ -2,6 +2,7 @@
 Helpers for dealing with HTML input.
 """
 import re
+from django.utils.datastructures import MultiValueDict
 
 
 def is_html_input(dictionary):
@@ -43,7 +44,6 @@ def parse_html_list(dictionary, prefix=''):
         {'foo': 'hij', 'bar': 'klm'}
     ]
     """
-    Dict = type(dictionary)
     ret = {}
     regex = re.compile(r'^%s\[([0-9]+)\](.*)$' % re.escape(prefix))
     for field, value in dictionary.items():
@@ -57,7 +57,7 @@ def parse_html_list(dictionary, prefix=''):
         elif isinstance(ret.get(index), dict):
             ret[index][key] = value
         else:
-            ret[index] = Dict({key: value})
+            ret[index] = MultiValueDict({key: [value]})
     return [ret[item] for item in sorted(ret.keys())]
 
 
