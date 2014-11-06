@@ -102,6 +102,18 @@ def get_concrete_model(model_cls):
         return model_cls
 
 
+def set_rollback(transaction):
+    if hasattr(transaction, 'set_rollback'):
+        # If running in >=1.6 then mark a rollback as required,
+        # and allow it to be handled by Django.
+        transaction.set_rollback(True)
+    elif transaction.is_managed():
+        # Otherwise handle it explicitly if in managed mode.
+        if transaction.is_dirty():
+            transaction.rollback()
+        transaction.leave_transaction_management()
+
+
 # View._allowed_methods only present from 1.5 onwards
 if django.VERSION >= (1, 5):
     from django.views.generic import View
