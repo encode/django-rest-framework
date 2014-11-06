@@ -859,7 +859,7 @@ class TestMultipleChoiceField(FieldValues):
         ('aircon', 'manual'): set(['aircon', 'manual']),
     }
     invalid_inputs = {
-        'abc': ['Expected a list of items but got type `str`'],
+        'abc': ['Expected a list of items but got type `str`.'],
         ('aircon', 'incorrect'): ['`incorrect` is not a valid choice.']
     }
     outputs = [

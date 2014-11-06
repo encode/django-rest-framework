@@ -943,7 +943,7 @@ class ChoiceField(Field):
 class MultipleChoiceField(ChoiceField):
     default_error_messages = {
         'invalid_choice': _('`{input}` is not a valid choice.'),
-        'not_a_list': _('Expected a list of items but got type `{input_type}`')
+        'not_a_list': _('Expected a list of items but got type `{input_type}`.')
     }
     default_empty_html = []
 

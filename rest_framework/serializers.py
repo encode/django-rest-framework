@@ -90,12 +90,10 @@ class BaseSerializer(Field):
         raise NotImplementedError('`create()` must be implemented.')
 
     def save(self, **kwargs):
-        validated_data = self.validated_data
-        if kwargs:
-            validated_data = dict(
-                list(validated_data.items()) +
-                list(kwargs.items())
-            )
+        validated_data = dict(
+            list(self.validated_data.items()) +
+            list(kwargs.items())
+        )
 
         if self.instance is not None:
             self.instance = self.update(self.instance, validated_data)
@@ -210,9 +208,9 @@ class BoundField(object):
 
 class NestedBoundField(BoundField):
     """
-    This BoundField additionally implements __iter__ and __getitem__
+    This `BoundField` additionally implements __iter__ and __getitem__
     in order to support nested bound fields. This class is the type of
-    BoundField that is used for serializer fields.
+    `BoundField` that is used for serializer fields.
     """
     def __iter__(self):
         for field in self.fields.values():
@@ -460,6 +458,10 @@ class ListSerializer(BaseSerializer):
     child = None
     many = True
 
+    default_error_messages = {
+        'not_a_list': _('Expected a list of items but got type `{input_type}`.')
+    }
+
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         assert self.child is not None, '`child` is a required argument.'
@@ -485,7 +487,31 @@ class ListSerializer(BaseSerializer):
         """
         if html.is_html_input(data):
             data = html.parse_html_list(data)
-        return [self.child.run_validation(item) for item in data]
+
+        if not isinstance(data, list):
+            message = self.error_messages['not_a_list'].format(
+                input_type=type(data).__name__
+            )
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
+            })
+
+        ret = []
+        errors = ReturnList(serializer=self)
+
+        for item in data:
+            try:
+                validated = self.child.run_validation(item)
+            except ValidationError, exc:
+                errors.append(exc.detail)
+            else:
+                ret.append(validated)
+                errors.append({})
+
+        if any(errors):
+            raise ValidationError(errors)
+
+        return ret
 
     def to_representation(self, data):
         """
@@ -497,8 +523,25 @@ class ListSerializer(BaseSerializer):
             serializer=self
         )
 
-    def create(self, attrs_list):
-        return [self.child.create(attrs) for attrs in attrs_list]
+    def save(self, **kwargs):
+        assert self.instance is None, (
+            "Serializers do not support multiple update by default, because "
+            "it would be unclear how to deal with insertions, updates and "
+            "deletions. If you need to support multiple update, use a "
+            "`ListSerializer` class and override `.save()` so you can specify "
+            "the behavior exactly."
+        )
+
+        validated_data = [
+            dict(list(attrs.items()) + list(kwargs.items()))
+            for attrs in self.validated_data
+        ]
+
+        self.instance = [
+            self.child.create(attrs) for attrs in validated_data
+        ]
+
+        return self.instance
 
     def __repr__(self):
         return representation.list_repr(self, indent=1)
