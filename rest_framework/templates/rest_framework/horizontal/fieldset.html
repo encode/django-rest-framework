@@ -6,6 +6,8 @@
         </div>
     {% endif %}
     {% for nested_field in field %}
-        {% render_field nested_field template_pack=template_pack renderer=renderer %}
+        {% if not nested_field.read_only %}
+            {% render_field nested_field style=style %}
+        {% endif %}
     {% endfor %}
 </fieldset>
