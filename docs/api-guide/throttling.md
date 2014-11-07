@@ -74,7 +74,7 @@ If you need to strictly identify unique client IP addresses, you'll need to firs
 
 It is important to understand that if you configure the `NUM_PROXIES` setting, then all clients behind a unique [NAT'd](http://en.wikipedia.org/wiki/Network_address_translation) gateway will be treated as a single client.
 
-Further context on how the `X-Forwarded-For` header works, and identifing a remote client IP can be [found here][identifing-clients].
+Further context on how the `X-Forwarded-For` header works, and identifying a remote client IP can be [found here][identifing-clients].
 
 ## Setting up the cache
 
@@ -85,7 +85,7 @@ If you need to use a cache other than `'default'`, you can do so by creating a c
     class CustomAnonRateThrottle(AnonRateThrottle):
         cache = get_cache('alternate') 
 
-You'll need to rememeber to also set your custom throttle class in the `'DEFAULT_THROTTLE_CLASSES'` settings key, or using the `throttle_classes` view attribute.
+You'll need to remember to also set your custom throttle class in the `'DEFAULT_THROTTLE_CLASSES'` settings key, or using the `throttle_classes` view attribute.
 
 ---
 
