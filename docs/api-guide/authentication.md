@@ -398,7 +398,7 @@ HTTP digest authentication is a widely implemented scheme that was intended to r
 
 ## Django OAuth Toolkit
 
-The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support, and works with Python 2.7 and Python 3.3+.  The package is maintained by [Evonove][evonove] and uses the excelllent [OAuthLib][oauthlib].  The package is well documented, and comes as a recommended alternative for OAuth 2.0 support.
+The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support, and works with Python 2.7 and Python 3.3+.  The package is maintained by [Evonove][evonove] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and comes as a recommended alternative for OAuth 2.0 support.
 
 ## Django OAuth2 Consumer
 
