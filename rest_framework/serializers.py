@@ -234,12 +234,13 @@ class Serializer(BaseSerializer):
                 (field_name, field.get_value(self._initial_data))
                 for field_name, field in self.fields.items()
                 if field.get_value(self._initial_data) is not empty
+                and not field.read_only
             ], serializer=self)
 
         return ReturnDict([
             (field.field_name, field.get_initial())
             for field in self.fields.values()
-            if not field.write_only
+            if not field.read_only
         ], serializer=self)
 
     def get_value(self, dictionary):

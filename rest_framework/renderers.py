@@ -581,12 +581,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                 # View has a serializer defined and parser class has a
                 # corresponding renderer that can be used to render the data.
 
-                # Get a read-only version of the serializer
                 serializer = view.get_serializer(instance=instance)
-                if instance is None:
-                    for name, field in serializer.fields.items():
-                        if getattr(field, 'read_only', None):
-                            del serializer.fields[name]
 
                 # Render the raw data content
                 renderer = renderer_class()
