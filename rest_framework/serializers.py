@@ -25,6 +25,9 @@ from rest_framework.utils.field_mapping import (
     get_relation_kwargs, get_nested_relation_kwargs,
     ClassLookupDict
 )
+from rest_framework.utils.serializer_helpers import (
+    ReturnDict, ReturnList, BoundField, NestedBoundField, BindingDict
+)
 from rest_framework.validators import (
     UniqueForDateValidator, UniqueForMonthValidator, UniqueForYearValidator,
     UniqueTogetherValidator
@@ -159,104 +162,6 @@ class BaseSerializer(Field):
 # Serializer & ListSerializer classes
 # -----------------------------------
 
-class ReturnDict(OrderedDict):
-    """
-    Return object from `serialier.data` for the `Serializer` class.
-    Includes a backlink to the serializer instance for renderers
-    to use if they need richer field information.
-    """
-    def __init__(self, *args, **kwargs):
-        self.serializer = kwargs.pop('serializer')
-        super(ReturnDict, self).__init__(*args, **kwargs)
-
-
-class ReturnList(list):
-    """
-    Return object from `serialier.data` for the `SerializerList` class.
-    Includes a backlink to the serializer instance for renderers
-    to use if they need richer field information.
-    """
-    def __init__(self, *args, **kwargs):
-        self.serializer = kwargs.pop('serializer')
-        super(ReturnList, self).__init__(*args, **kwargs)
-
-
-class BoundField(object):
-    """
-    A field object that also includes `.value` and `.error` properties.
-    Returned when iterating over a serializer instance,
-    providing an API similar to Django forms and form fields.
-    """
-    def __init__(self, field, value, errors, prefix=''):
-        self._field = field
-        self.value = value
-        self.errors = errors
-        self.name = prefix + self.field_name
-
-    def __getattr__(self, attr_name):
-        return getattr(self._field, attr_name)
-
-    @property
-    def _proxy_class(self):
-        return self._field.__class__
-
-    def __repr__(self):
-        return '<%s value=%s errors=%s>' % (
-            self.__class__.__name__, self.value, self.errors
-        )
-
-
-class NestedBoundField(BoundField):
-    """
-    This `BoundField` additionally implements __iter__ and __getitem__
-    in order to support nested bound fields. This class is the type of
-    `BoundField` that is used for serializer fields.
-    """
-    def __iter__(self):
-        for field in self.fields.values():
-            yield self[field.field_name]
-
-    def __getitem__(self, key):
-        field = self.fields[key]
-        value = self.value.get(key) if self.value else None
-        error = self.errors.get(key) if self.errors else None
-        if isinstance(field, Serializer):
-            return NestedBoundField(field, value, error, prefix=self.name + '.')
-        return BoundField(field, value, error, prefix=self.name + '.')
-
-
-class BindingDict(object):
-    """
-    This dict-like object is used to store fields on a serializer.
-
-    This ensures that whenever fields are added to the serializer we call
-    `field.bind()` so that the `field_name` and `parent` attributes
-    can be set correctly.
-    """
-    def __init__(self, serializer):
-        self.serializer = serializer
-        self.fields = OrderedDict()
-
-    def __setitem__(self, key, field):
-        self.fields[key] = field
-        field.bind(field_name=key, parent=self.serializer)
-
-    def __getitem__(self, key):
-        return self.fields[key]
-
-    def __delitem__(self, key):
-        del self.fields[key]
-
-    def items(self):
-        return self.fields.items()
-
-    def keys(self):
-        return self.fields.keys()
-
-    def values(self):
-        return self.fields.values()
-
-
 class SerializerMetaclass(type):
     """
     This metaclass sets a dictionary named `base_fields` on the class.
@@ -295,6 +200,12 @@ class Serializer(BaseSerializer):
 
     @property
     def fields(self):
+        """
+        A dictionary of {field_name: field_instance}.
+        """
+        # `fields` is evalutated lazily. We do this to ensure that we don't
+        # have issues importing modules that use ModelSerializers as fields,
+        # even if Django's app-loading stage has not yet run.
         if not hasattr(self, '_fields'):
             self._fields = BindingDict(self)
             for key, value in self.get_fields().items():
@@ -302,12 +213,19 @@ class Serializer(BaseSerializer):
         return self._fields
 
     def get_fields(self):
+        """
+        Returns a dictionary of {field_name: field_instance}.
+        """
         # Every new serializer is created with a clone of the field instances.
         # This allows users to dynamically modify the fields on a serializer
         # instance without affecting every other serializer class.
         return copy.deepcopy(self._declared_fields)
 
     def get_validators(self):
+        """
+        Returns a list of validator callables.
+        """
+        # Used by the lazily-evaluated `validators` property.
         return getattr(getattr(self, 'Meta', None), 'validators', [])
 
     def get_initial(self):
@@ -551,6 +469,13 @@ class ListSerializer(BaseSerializer):
 # --------------------------------------------
 
 class ModelSerializer(Serializer):
+    """
+    A `ModelSerializer` is just a regular `Serializer`, except that:
+
+    * A set of default fields are automatically populated.
+    * A set of default validators are automatically populated.
+    * Default `.create()` and `.update()` implementations are provided.
+    """
     _field_mapping = ClassLookupDict({
         models.AutoField: IntegerField,
         models.BigIntegerField: IntegerField,
@@ -915,6 +840,13 @@ class ModelSerializer(Serializer):
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
+    """
+    A type of `ModelSerializer` that uses hyperlinked relationships instead
+    of primary key relationships. Specifically:
+
+    * A 'url' field is included instead of the 'id' field.
+    * Relationships to other instances are hyperlinks, instead of primary keys.
+    """
     _related_class = HyperlinkedRelatedField
 
     def _get_default_field_names(self, declared_fields, model_info):
