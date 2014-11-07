@@ -393,6 +393,9 @@ class ListSerializer(BaseSerializer):
         return ReturnList(serializer=self)
 
     def get_value(self, dictionary):
+        """
+        Given the input dictionary, return the field value.
+        """
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
@@ -442,6 +445,9 @@ class ListSerializer(BaseSerializer):
         )
 
     def save(self, **kwargs):
+        """
+        Save and return a list of object instances.
+        """
         assert self.instance is None, (
             "Serializers do not support multiple update by default, only "
             "multiple create. For updates it is unclear how to deal with "
