@@ -523,8 +523,10 @@ class BrowsableAPIRenderer(BaseRenderer):
                 data = request.data
             except ParseError:
                 data = None
+            existing_serializer = serializer
         else:
             data = None
+            existing_serializer = None
 
         with override_method(view, request, method) as request:
             if not self.show_form_for_method(view, method, request, instance):
@@ -539,9 +541,12 @@ class BrowsableAPIRenderer(BaseRenderer):
             ):
                 return
 
-            serializer = view.get_serializer(instance=instance, data=data)
-            if data is not None:
-                serializer.is_valid()
+            if existing_serializer is not None:
+                serializer = existing_serializer
+            else:
+                serializer = view.get_serializer(instance=instance, data=data)
+                if data is not None:
+                    serializer.is_valid()
             form_renderer = self.form_renderer_class()
             return form_renderer.render(serializer.data, self.accepted_media_type, self.renderer_context)
 
