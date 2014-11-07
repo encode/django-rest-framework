@@ -374,7 +374,7 @@ Using custom base classes is a good option if you have custom behavior that cons
 
 Prior to version 3.0 the REST framework mixins treated `PUT` as either an update or a create operation, depending on if the object already existed or not.
 
-Allowing `PUT` as create operations is problematic, as it necessarily exposes information about the existence or non-existance of objects. It's also not obvious that transparently allowing re-creating of previously deleted instances is necessarily a better default behavior than simply returning `404` responses.
+Allowing `PUT` as create operations is problematic, as it necessarily exposes information about the existence or non-existence of objects. It's also not obvious that transparently allowing re-creating of previously deleted instances is necessarily a better default behavior than simply returning `404` responses.
 
 Both styles "`PUT` as 404" and "`PUT` as create" can be valid in different circumstances, but from version 3.0 onwards we now use 404 behavior as the default, due to it being simpler and more obvious.
 

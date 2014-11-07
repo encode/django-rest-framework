@@ -154,13 +154,13 @@ Default: `None`
 
 ### SEARCH_PARAM
 
-The name of a query paramater, which can be used to specify the search term used by `SearchFilter`.
+The name of a query parameter, which can be used to specify the search term used by `SearchFilter`.
 
 Default: `search`
 
 #### ORDERING_PARAM
 
-The name of a query paramater, which can be used to specify the ordering of results returned by `OrderingFilter`.
+The name of a query parameter, which can be used to specify the ordering of results returned by `OrderingFilter`.
 
 Default: `ordering`
 
@@ -321,7 +321,7 @@ When set to `False`, JSON responses will escape non-ascii characters, like so:
 
     {"unicode black star":"\u2605"}
 
-Both styles conform to [RFC 4627][rfc4627], and are syntactically valid JSON. The unicode style is prefered as being more user-friendly when inspecting API responses.
+Both styles conform to [RFC 4627][rfc4627], and are syntactically valid JSON. The unicode style is preferred as being more user-friendly when inspecting API responses.
 
 Default: `True`
 
