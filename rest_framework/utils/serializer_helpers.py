@@ -11,6 +11,9 @@ class ReturnDict(OrderedDict):
         self.serializer = kwargs.pop('serializer')
         super(ReturnDict, self).__init__(*args, **kwargs)
 
+    def copy(self):
+        return ReturnDict(self, serializer=self.serializer)
+
 
 class ReturnList(list):
     """
