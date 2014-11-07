@@ -1180,7 +1180,6 @@ class ModelField(Field):
 
     def __init__(self, model_field, **kwargs):
         self.model_field = model_field
-        kwargs['source'] = '*'
         # The `max_length` option is supported by Django's base `Field` class,
         # so we'd better support it here.
         max_length = kwargs.pop('max_length', None)
@@ -1194,6 +1193,11 @@ class ModelField(Field):
         if rel is not None:
             return rel.to._meta.get_field(rel.field_name).to_python(data)
         return self.model_field.to_python(data)
+
+    def get_attribute(self, obj):
+        # We pass the object instance onto `to_representation`,
+        # not just the field attribute.
+        return obj
 
     def to_representation(self, obj):
         value = self.model_field._get_val_from_obj(obj)
