@@ -56,8 +56,8 @@ class RelatedField(Field):
             queryset = queryset.all()
         return queryset
 
-    def get_iterable(self, instance, source):
-        relationship = get_attribute(instance, [source])
+    def get_iterable(self, instance, source_attrs):
+        relationship = get_attribute(instance, source_attrs)
         return relationship.all() if (hasattr(relationship, 'all')) else relationship
 
     @property
@@ -106,11 +106,12 @@ class PrimaryKeyRelatedField(RelatedField):
         # the related object. We return this directly instead of returning the
         # object itself, which would require a database lookup.
         try:
-            return PKOnlyObject(pk=instance.serializable_value(self.source))
+            instance = get_attribute(instance, self.source_attrs[:-1])
+            return PKOnlyObject(pk=instance.serializable_value(self.source_attrs[-1]))
         except AttributeError:
-            return get_attribute(instance, [self.source])
+            return get_attribute(instance, self.source_attrs)
 
-    def get_iterable(self, instance, source):
+    def get_iterable(self, instance, source_attrs):
         # For consistency with `get_attribute` we're using `serializable_value()`
         # here. Typically there won't be any difference, but some custom field
         # types might return a non-primative value for the pk otherwise.
@@ -119,7 +120,7 @@ class PrimaryKeyRelatedField(RelatedField):
         # would be better in some case, but would actually end up with *more*
         # queries if the developer is using `prefetch_related` across the
         # relationship.
-        relationship = super(PrimaryKeyRelatedField, self).get_iterable(instance, source)
+        relationship = super(PrimaryKeyRelatedField, self).get_iterable(instance, source_attrs)
         return [
             PKOnlyObject(pk=item.serializable_value('pk'))
             for item in relationship
@@ -318,7 +319,7 @@ class ManyRelation(Field):
         ]
 
     def get_attribute(self, instance):
-        return self.child_relation.get_iterable(instance, self.source)
+        return self.child_relation.get_iterable(instance, self.source_attrs)
 
     def to_representation(self, iterable):
         return [
