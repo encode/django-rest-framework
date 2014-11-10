@@ -1106,7 +1106,7 @@ class HiddenField(Field):
     A hidden field does not take input from the user, or present any output,
     but it does populate a field in `validated_data`, based on its default
     value. This is particularly useful when we have a `unique_for_date`
-    constrain on a pair of fields, as we need some way to include the date in
+    constraint on a pair of fields, as we need some way to include the date in
     the validated data.
     """
     def __init__(self, **kwargs):
