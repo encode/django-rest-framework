@@ -93,6 +93,12 @@ The validator should be applied to *serializer classes*, like so:
                 )
             ]
 
+---
+
+**Note**: The `UniqueTogetherValidation` class always imposes an implicit constraint that all the fields it applies to are always treated as required. Fields with `default` values are an exception to this as they always supply a value even when omitted from user input.
+
+---
+
 ## UniqueForDateValidator
 
 ## UniqueForMonthValidator
@@ -143,6 +149,10 @@ The field will not be writable to the user, but the default value will still be 
 If you want the date field to be entirely hidden from the user, then use `HiddenField`. This field type does not accept user input, but instead always returns it's default value to the `validated_data` in the serializer.
 
     published = serializers.HiddenField(default=timezone.now)
+
+---
+
+**Note**: The `UniqueFor<Range>Validation` classes always imposes an implicit constraint that the fields they are applied to are always treated as required. Fields with `default` values are an exception to this as they always supply a value even when omitted from user input.
 
 ---
 

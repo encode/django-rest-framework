@@ -134,6 +134,17 @@ class TestUniquenessTogetherValidation(TestCase):
             'position': 1
         }
 
+    def test_unique_together_is_required(self):
+        """
+        In a unique together validation, all fields are required.
+        """
+        data = {'position': 2}
+        serializer = UniquenessTogetherSerializer(data=data, partial=True)
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'race_name': ['This field is required.']
+        }
+
     def test_ignore_excluded_fields(self):
         """
         When model fields are not included in a serializer, then uniqueness
