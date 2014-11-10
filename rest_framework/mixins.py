@@ -6,11 +6,18 @@ which allows mixin classes to be composed in interesting ways.
 """
 from __future__ import unicode_literals
 
+import warnings
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
 class CreateOrUpdateHooksMixin(object):
+    def __init__(self, *args, **kwargs):
+        warnings.warn('The pre_save and post_save hooks are deprecated. Use perform_create and perform_update instead.',
+                      PendingDeprecationWarning, stacklevel=2)
+        super(CreateOrUpdateHooksMixin, self).__init__(*args, **kwargs)
+    
     def pre_save(obj):
         pass
     
@@ -28,6 +35,11 @@ class CreateOrUpdateHooksMixin(object):
         pass
     
 class DeleteHooksMixin(object):
+    def __init__(self, *args, **kwargs):
+        warnings.warn('The pre_delete and post_delete hooks are deprecated. Use perform_delete instead.',
+                      PendingDeprecationWarning, stacklevel=2)
+        super(DeleteHooksMixin, self).__init__(*args, **kwargs)
+    
     def pre_delete(obj):
         pass
     
