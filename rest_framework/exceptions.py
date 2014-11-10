@@ -70,7 +70,7 @@ class MethodNotAllowed(APIException):
     default_detail = "Method '%s' not allowed."
 
     def __init__(self, method, detail=None):
-        self.detail = (detail or self.default_detail) % method
+        self.detail = detail or (self.default_detail % method)
 
 
 class NotAcceptable(APIException):
@@ -87,7 +87,7 @@ class UnsupportedMediaType(APIException):
     default_detail = "Unsupported media type '%s' in request."
 
     def __init__(self, media_type, detail=None):
-        self.detail = (detail or self.default_detail) % media_type
+        self.detail = detail or (self.default_detail % media_type)
 
 
 class Throttled(APIException):
