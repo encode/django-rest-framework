@@ -10,6 +10,35 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
+class CreateOrUpdateHooksMixin(object):
+    def pre_save(obj):
+        pass
+    
+    def perform_create(self, serializer):
+        self.pre_save(serializer.instance)
+        serializer.save() 
+        self.post_save(serializer.instance, created=True)
+        
+    def perform_update(self, serializer):
+        self.pre_save(serializer.instance)
+        serializer.save() 
+        self.post_save(serializer.instance, created=True)
+    
+    def post_save(obj, created=False):
+        pass
+    
+class DeleteHooksMixin(object):
+    def pre_delete(obj):
+        pass
+    
+    def perform_delete(self, instance):
+        self.pre_delete(instance)
+        instance.delete()
+        self.post_delete(instance)
+        
+    def post_delete(obj):
+        pass
+        
 
 class CreateModelMixin(object):
     """
