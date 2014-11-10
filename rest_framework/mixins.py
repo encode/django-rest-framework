@@ -16,13 +16,13 @@ class CreateOrUpdateHooksMixin(object):
     
     def perform_create(self, serializer):
         self.pre_save(serializer.instance)
-        serializer.save() 
-        self.post_save(serializer.instance, created=True)
+        instance = serializer.save() 
+        self.post_save(instance, created=True)
         
     def perform_update(self, serializer):
         self.pre_save(serializer.instance)
-        serializer.save() 
-        self.post_save(serializer.instance, created=True)
+        instance = serializer.save() 
+        self.post_save(instance, created=False)
     
     def post_save(obj, created=False):
         pass
