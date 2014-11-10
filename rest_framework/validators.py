@@ -35,12 +35,26 @@ class UniqueValidator:
         # Determine the existing instance, if this is an update operation.
         self.instance = getattr(serializer_field.parent, 'instance', None)
 
-    def __call__(self, value):
-        # Ensure uniqueness.
+    def filter_queryset(self, value, queryset):
+        """
+        Filter the queryset to all instances matching the given attribute.
+        """
         filter_kwargs = {self.field_name: value}
-        queryset = self.queryset.filter(**filter_kwargs)
+        return queryset.filter(**filter_kwargs)
+
+    def exclude_current_instance(self, queryset):
+        """
+        If an instance is being updated, then do not include
+        that instance itself as a uniqueness conflict.
+        """
         if self.instance is not None:
-            queryset = queryset.exclude(pk=self.instance.pk)
+            return queryset.exclude(pk=self.instance.pk)
+        return queryset
+
+    def __call__(self, value):
+        queryset = self.queryset
+        queryset = self.filter_queryset(value, queryset)
+        queryset = self.exclude_current_instance(queryset)
         if queryset.exists():
             raise ValidationError(self.message)
 
