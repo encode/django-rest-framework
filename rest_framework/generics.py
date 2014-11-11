@@ -69,15 +69,17 @@ class GenericAPIView(views.APIView):
     # and should be considered private API.
     paginator_class = Paginator
 
-    def get_serializer_context(self):
+    def get_serializer_context(self, **kwargs):
         """
         Extra context provided to the serializer class.
         """
-        return {
+        context = {
             'request': self.request,
             'format': self.format_kwarg,
             'view': self
         }
+        context.update(**kwargs)
+        return context
 
     def get_serializer(self, instance=None, data=None, many=False, partial=False):
         """
