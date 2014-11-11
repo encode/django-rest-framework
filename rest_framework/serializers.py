@@ -521,7 +521,7 @@ class ModelSerializer(Serializer):
             isinstance(field, BaseSerializer) and not field.read_only
             for field in self.fields.values()
         ), (
-            'The `.create()` method does not suport nested writable fields '
+            'The `.create()` method does not support nested writable fields '
             'by default. Write an explicit `.create()` method for serializer '
             '`%s.%s`, or set `read_only=True` on nested serializer fields.' %
             (self.__class__.__module__, self.__class__.__name__)
@@ -552,7 +552,7 @@ class ModelSerializer(Serializer):
             isinstance(field, BaseSerializer) and not field.read_only
             for field in self.fields.values()
         ), (
-            'The `.update()` method does not suport nested writable fields '
+            'The `.update()` method does not support nested writable fields '
             'by default. Write an explicit `.update()` method for serializer '
             '`%s.%s`, or set `read_only=True` on nested serializer fields.' %
             (self.__class__.__module__, self.__class__.__name__)
@@ -572,9 +572,22 @@ class ModelSerializer(Serializer):
         validators = getattr(getattr(self, 'Meta', None), 'validators', [])
         model_class = self.Meta.model
 
-        # Note that we make sure to check `unique_together` both on the
-        # base model class, but also on any parent classes.
-        for parent_class in [model_class] + list(model_class._meta.parents.keys()):
+        self._add_unique_together_validators(validators, model_class, field_names)
+        self._add_unique_date_validators(validators, model_class, field_names)
+
+        return validators
+
+    def _add_unique_together_validators(self, validators, model_class, field_names):
+        """
+        Append any `UniqueTogetherValidators` to the existing list of validators
+
+        Note that we make sure to check `unique_together` both on the
+        base model class, but also on any parent classes.
+
+        :type validators: list
+        """
+        for parent_class in [model_class] + list(
+                model_class._meta.parents.keys()):
             for unique_together in parent_class._meta.unique_together:
                 if field_names.issuperset(set(unique_together)):
                     validator = UniqueTogetherValidator(
@@ -583,7 +596,13 @@ class ModelSerializer(Serializer):
                     )
                     validators.append(validator)
 
-        # Add any unique_for_date/unique_for_month/unique_for_year constraints.
+    def _add_unique_date_validators(self, validators, model_class, field_names):
+        """
+        Append any unique_for_date/unique_for_month/unique_for_year constraints
+        to the existing list of validators
+
+        :type validators: list
+        """
         info = model_meta.get_field_info(model_class)
         for field_name, field in info.fields_and_pk.items():
             if field.unique_for_date and field_name in field_names:
@@ -609,8 +628,6 @@ class ModelSerializer(Serializer):
                     date_field=field.unique_for_year
                 )
                 validators.append(validator)
-
-        return validators
 
     def get_fields(self):
         declared_fields = copy.deepcopy(self._declared_fields)
