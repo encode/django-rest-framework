@@ -36,7 +36,7 @@ def parse_html_list(dictionary, prefix=''):
         '[0]foo': 'abc',
         '[0]bar': 'def',
         '[1]foo': 'hij',
-        '[2]bar': 'klm',
+        '[1]bar': 'klm',
     }
         -->
     [
