@@ -374,6 +374,10 @@ class HTMLFormRenderer(BaseRenderer):
             'base_template': 'input.html',
             'input_type': 'time'
         },
+        serializers.FileField: {
+            'base_template': 'input.html',
+            'input_type': 'file'
+        },
         serializers.BooleanField: {
             'base_template': 'checkbox.html'
         },
