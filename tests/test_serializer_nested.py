@@ -10,6 +10,7 @@ class TestNestedSerializer:
         class TestSerializer(serializers.Serializer):
             nested = NestedSerializer()
 
+        self.NestedSerializer = NestedSerializer
         self.Serializer = TestSerializer
 
     def test_nested_validate(self):
@@ -28,6 +29,16 @@ class TestNestedSerializer:
         serializer = self.Serializer(data=input_data)
         assert serializer.is_valid()
         assert serializer.validated_data == expected_data
+
+    def test_nested_invalid_data(self):
+        class TestSerializer(serializers.Serializer):
+            items = self.NestedSerializer(many=True)
+
+        from django.http import QueryDict
+        q = QueryDict("items={'one': '1','two': '2'}")
+
+        serializer = TestSerializer(data=q)
+        assert not serializer.is_valid()
 
     def test_nested_serialize_empty(self):
         expected_data = {
