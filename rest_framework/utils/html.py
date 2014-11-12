@@ -72,7 +72,7 @@ def parse_html_dict(dictionary, prefix):
         -->
     {
         'profile': {
-            'username': 'example,
+            'username': 'example',
             'email': 'example@example.com'
         }
     }
