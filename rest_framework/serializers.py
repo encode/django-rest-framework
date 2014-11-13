@@ -449,26 +449,39 @@ class ListSerializer(BaseSerializer):
             serializer=self
         )
 
+    def update(self, instance, validated_data):
+        raise NotImplementedError(
+            "Serializers with many=True do not support multiple update by "
+            "default, only multiple create. For updates it is unclear how to "
+            "deal with insertions and deletions. If you need to support "
+            "multiple update, use a `ListSerializer` class and override "
+            "`.update()` so you can specify the behavior exactly."
+        )
+
+    def create(self, validated_data):
+        return [
+            self.child.create(attrs) for attrs in validated_data
+        ]
+
     def save(self, **kwargs):
         """
         Save and return a list of object instances.
         """
-        assert self.instance is None, (
-            "Serializers do not support multiple update by default, only "
-            "multiple create. For updates it is unclear how to deal with "
-            "insertions and deletions. If you need to support multiple update, "
-            "use a `ListSerializer` class and override `.save()` so you can "
-            "specify the behavior exactly."
-        )
-
         validated_data = [
             dict(list(attrs.items()) + list(kwargs.items()))
             for attrs in self.validated_data
         ]
 
-        self.instance = [
-            self.child.create(attrs) for attrs in validated_data
-        ]
+        if self.instance is not None:
+            self.instance = self.update(self.instance, validated_data)
+            assert self.instance is not None, (
+                '`update()` did not return an object instance.'
+            )
+        else:
+            self.instance = self.create(validated_data)
+            assert self.instance is not None, (
+                '`create()` did not return an object instance.'
+            )
 
         return self.instance
 
