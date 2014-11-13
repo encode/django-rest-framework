@@ -46,6 +46,9 @@ import warnings
 from rest_framework.relations import *  # NOQA
 from rest_framework.fields import *  # NOQA
 
+
+# We assume that 'validators' are intended for the child serializer,
+# rather than the parent serializer.
 LIST_SERIALIZER_KWARGS = (
     'read_only', 'write_only', 'required', 'default', 'initial', 'source',
     'label', 'help_text', 'style', 'error_messages',
@@ -73,12 +76,24 @@ class BaseSerializer(Field):
         # We override this method in order to automagically create
         # `ListSerializer` classes instead when `many=True` is set.
         if kwargs.pop('many', False):
-            list_kwargs = {'child': cls(*args, **kwargs)}
-            for key in kwargs.keys():
-                if key in LIST_SERIALIZER_KWARGS:
-                    list_kwargs[key] = kwargs[key]
-            return ListSerializer(*args, **list_kwargs)
+            return cls.many_init(*args, **kwargs)
         return super(BaseSerializer, cls).__new__(cls, *args, **kwargs)
+
+    @classmethod
+    def many_init(cls, *args, **kwargs):
+        """
+        This method implements the creation of a `ListSerializer` parent
+        class when `many=True` is used. You can customize it if you need to
+        control which keyword arguments are passed to the parent, and
+        which are passed to the child.
+        """
+        child_serializer = cls(*args, **kwargs)
+        list_kwargs = {'child': child_serializer}
+        list_kwargs.update(dict([
+            (key, value) for key, value in kwargs.items()
+            if key in LIST_SERIALIZER_KWARGS
+        ]))
+        return ListSerializer(*args, **list_kwargs)
 
     def to_internal_value(self, data):
         raise NotImplementedError('`to_internal_value()` must be implemented.')

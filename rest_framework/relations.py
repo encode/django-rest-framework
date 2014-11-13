@@ -10,9 +10,17 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class PKOnlyObject(object):
+    """
+    This is a mock object, used for when we only need the pk of the object
+    instance, but still want to return an object with a .pk attribute,
+    in order to keep the same interface as a regular model instance.
+    """
     def __init__(self, pk):
         self.pk = pk
 
+
+# We assume that 'validators' are intended for the child serializer,
+# rather than the parent serializer.
 MANY_RELATION_KWARGS = (
     'read_only', 'write_only', 'required', 'default', 'initial', 'source',
     'label', 'help_text', 'style', 'error_messages'
@@ -36,12 +44,16 @@ class RelatedField(Field):
         # We override this method in order to automagically create
         # `ManyRelatedField` classes instead when `many=True` is set.
         if kwargs.pop('many', False):
-            list_kwargs = {'child_relation': cls(*args, **kwargs)}
-            for key in kwargs.keys():
-                if key in MANY_RELATION_KWARGS:
-                    list_kwargs[key] = kwargs[key]
-            return ManyRelatedField(**list_kwargs)
+            return cls.many_init(*args, **kwargs)
         return super(RelatedField, cls).__new__(cls, *args, **kwargs)
+
+    @classmethod
+    def many_init(cls, *args, **kwargs):
+        list_kwargs = {'child_relation': cls(*args, **kwargs)}
+        for key in kwargs.keys():
+            if key in MANY_RELATION_KWARGS:
+                list_kwargs[key] = kwargs[key]
+        return ManyRelatedField(**list_kwargs)
 
     def run_validation(self, data=empty):
         # We force empty strings to None values for relational fields.
