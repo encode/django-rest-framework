@@ -96,9 +96,6 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'tests',
-    'tests.accounts',
-    'tests.records',
-    'tests.users',
 )
 
 # OAuth is optional and won't work if there is no oauth_provider & oauth2
