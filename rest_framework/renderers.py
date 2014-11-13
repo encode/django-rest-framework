@@ -383,7 +383,10 @@ class HTMLFormRenderer(BaseRenderer):
         serializers.MultipleChoiceField: {
             'base_template': 'select_multiple.html',  # Also valid: 'checkbox_multiple.html'
         },
-        serializers.ManyRelation: {
+        serializers.RelatedField: {
+            'base_template': 'select.html',  # Also valid: 'radio.html'
+        },
+        serializers.ManyRelatedField: {
             'base_template': 'select_multiple.html',  # Also valid: 'checkbox_multiple.html'
         },
         serializers.Serializer: {

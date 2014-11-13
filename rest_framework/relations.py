@@ -34,13 +34,13 @@ class RelatedField(Field):
 
     def __new__(cls, *args, **kwargs):
         # We override this method in order to automagically create
-        # `ManyRelation` classes instead when `many=True` is set.
+        # `ManyRelatedField` classes instead when `many=True` is set.
         if kwargs.pop('many', False):
             list_kwargs = {'child_relation': cls(*args, **kwargs)}
             for key in kwargs.keys():
                 if key in MANY_RELATION_KWARGS:
                     list_kwargs[key] = kwargs[key]
-            return ManyRelation(**list_kwargs)
+            return ManyRelatedField(**list_kwargs)
         return super(RelatedField, cls).__new__(cls, *args, **kwargs)
 
     def run_validation(self, data=empty):
@@ -286,12 +286,12 @@ class SlugRelatedField(RelatedField):
         return getattr(obj, self.slug_field)
 
 
-class ManyRelation(Field):
+class ManyRelatedField(Field):
     """
     Relationships with `many=True` transparently get coerced into instead being
-    a ManyRelation with a child relationship.
+    a ManyRelatedField with a child relationship.
 
-    The `ManyRelation` class is responsible for handling iterating through
+    The `ManyRelatedField` class is responsible for handling iterating through
     the values and passing each one to the child relationship.
 
     You shouldn't need to be using this class directly yourself.
@@ -302,7 +302,7 @@ class ManyRelation(Field):
     def __init__(self, child_relation=None, *args, **kwargs):
         self.child_relation = child_relation
         assert child_relation is not None, '`child_relation` is a required argument.'
-        super(ManyRelation, self).__init__(*args, **kwargs)
+        super(ManyRelatedField, self).__init__(*args, **kwargs)
         self.child_relation.bind(field_name='', parent=self)
 
     def get_value(self, dictionary):
