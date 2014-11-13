@@ -36,7 +36,7 @@ def parse_html_list(dictionary, prefix=''):
         '[0]foo': 'abc',
         '[0]bar': 'def',
         '[1]foo': 'hij',
-        '[2]bar': 'klm',
+        '[1]bar': 'klm',
     }
         -->
     [
@@ -72,7 +72,7 @@ def parse_html_dict(dictionary, prefix):
         -->
     {
         'profile': {
-            'username': 'example,
+            'username': 'example',
             'email': 'example@example.com'
         }
     }
