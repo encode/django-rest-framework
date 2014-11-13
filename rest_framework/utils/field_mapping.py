@@ -88,7 +88,7 @@ def get_field_kwargs(field_name, model_field):
         kwargs['read_only'] = True
         return kwargs
 
-    if model_field.has_default():
+    if model_field.has_default() or model_field.blank or model_field.null:
         kwargs['required'] = False
 
     if model_field.flatchoices:
