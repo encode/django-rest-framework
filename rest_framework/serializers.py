@@ -245,18 +245,18 @@ class Serializer(BaseSerializer):
 
     def get_initial(self):
         if self._initial_data is not None:
-            return ReturnDict([
+            return OrderedDict([
                 (field_name, field.get_value(self._initial_data))
                 for field_name, field in self.fields.items()
                 if field.get_value(self._initial_data) is not empty
                 and not field.read_only
-            ], serializer=self)
+            ])
 
-        return ReturnDict([
+        return OrderedDict([
             (field.field_name, field.get_initial())
             for field in self.fields.values()
             if not field.read_only
-        ], serializer=self)
+        ])
 
     def get_value(self, dictionary):
         # We override the default field access in order to support
@@ -319,8 +319,8 @@ class Serializer(BaseSerializer):
         """
         Dict of native values <- Dict of primitive datatypes.
         """
-        ret = {}
-        errors = ReturnDict(serializer=self)
+        ret = OrderedDict()
+        errors = OrderedDict()
         fields = [
             field for field in self.fields.values()
             if (not field.read_only) or (field.default is not empty)
@@ -349,7 +349,7 @@ class Serializer(BaseSerializer):
         """
         Object instance -> Dict of primitive datatypes.
         """
-        ret = ReturnDict(serializer=self)
+        ret = OrderedDict()
         fields = [field for field in self.fields.values() if not field.write_only]
 
         for field in fields:
@@ -388,6 +388,19 @@ class Serializer(BaseSerializer):
             return NestedBoundField(field, value, error)
         return BoundField(field, value, error)
 
+    # Include a backlink to the serializer class on return objects.
+    # Allows renderers such as HTMLFormRenderer to get the full field info.
+
+    @property
+    def data(self):
+        ret = super(Serializer, self).data
+        return ReturnDict(ret, serializer=self)
+
+    @property
+    def errors(self):
+        ret = super(Serializer, self).errors
+        return ReturnDict(ret, serializer=self)
+
 
 # There's some replication of `ListField` here,
 # but that's probably better than obfuscating the call hierarchy.
@@ -410,7 +423,7 @@ class ListSerializer(BaseSerializer):
     def get_initial(self):
         if self._initial_data is not None:
             return self.to_representation(self._initial_data)
-        return ReturnList(serializer=self)
+        return []
 
     def get_value(self, dictionary):
         """
@@ -438,7 +451,7 @@ class ListSerializer(BaseSerializer):
             })
 
         ret = []
-        errors = ReturnList(serializer=self)
+        errors = []
 
         for item in data:
             try:
@@ -459,10 +472,9 @@ class ListSerializer(BaseSerializer):
         List of object instances -> List of dicts of primitive datatypes.
         """
         iterable = data.all() if (hasattr(data, 'all')) else data
-        return ReturnList(
-            [self.child.to_representation(item) for item in iterable],
-            serializer=self
-        )
+        return [
+            self.child.to_representation(item) for item in iterable
+        ]
 
     def update(self, instance, validated_data):
         raise NotImplementedError(
@@ -502,6 +514,21 @@ class ListSerializer(BaseSerializer):
 
     def __repr__(self):
         return representation.list_repr(self, indent=1)
+
+    # Include a backlink to the serializer class on return objects.
+    # Allows renderers such as HTMLFormRenderer to get the full field info.
+
+    @property
+    def data(self):
+        ret = super(ListSerializer, self).data
+        return ReturnList(ret, serializer=self)
+
+    @property
+    def errors(self):
+        ret = super(ListSerializer, self).errors
+        if isinstance(ret, dict):
+            return ReturnDict(ret, serializer=self)
+        return ReturnList(ret, serializer=self)
 
 
 # ModelSerializer & HyperlinkedModelSerializer
