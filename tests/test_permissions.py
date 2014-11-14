@@ -95,59 +95,59 @@ class ModelPermissionsIntegrationTests(TestCase):
         response = instance_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    # def test_options_permitted(self):
-    #     request = factory.options(
-    #         '/',
-    #         HTTP_AUTHORIZATION=self.permitted_credentials
-    #     )
-    #     response = root_view(request, pk='1')
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertIn('actions', response.data)
-    #     self.assertEqual(list(response.data['actions'].keys()), ['POST'])
+    def test_options_permitted(self):
+        request = factory.options(
+            '/',
+            HTTP_AUTHORIZATION=self.permitted_credentials
+        )
+        response = root_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('actions', response.data)
+        self.assertEqual(list(response.data['actions'].keys()), ['POST'])
 
-    #     request = factory.options(
-    #         '/1',
-    #         HTTP_AUTHORIZATION=self.permitted_credentials
-    #     )
-    #     response = instance_view(request, pk='1')
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertIn('actions', response.data)
-    #     self.assertEqual(list(response.data['actions'].keys()), ['PUT'])
+        request = factory.options(
+            '/1',
+            HTTP_AUTHORIZATION=self.permitted_credentials
+        )
+        response = instance_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('actions', response.data)
+        self.assertEqual(list(response.data['actions'].keys()), ['PUT'])
 
-    # def test_options_disallowed(self):
-    #     request = factory.options(
-    #         '/',
-    #         HTTP_AUTHORIZATION=self.disallowed_credentials
-    #     )
-    #     response = root_view(request, pk='1')
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertNotIn('actions', response.data)
+    def test_options_disallowed(self):
+        request = factory.options(
+            '/',
+            HTTP_AUTHORIZATION=self.disallowed_credentials
+        )
+        response = root_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn('actions', response.data)
 
-    #     request = factory.options(
-    #         '/1',
-    #         HTTP_AUTHORIZATION=self.disallowed_credentials
-    #     )
-    #     response = instance_view(request, pk='1')
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertNotIn('actions', response.data)
+        request = factory.options(
+            '/1',
+            HTTP_AUTHORIZATION=self.disallowed_credentials
+        )
+        response = instance_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn('actions', response.data)
 
-    # def test_options_updateonly(self):
-    #     request = factory.options(
-    #         '/',
-    #         HTTP_AUTHORIZATION=self.updateonly_credentials
-    #     )
-    #     response = root_view(request, pk='1')
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertNotIn('actions', response.data)
+    def test_options_updateonly(self):
+        request = factory.options(
+            '/',
+            HTTP_AUTHORIZATION=self.updateonly_credentials
+        )
+        response = root_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn('actions', response.data)
 
-    #     request = factory.options(
-    #         '/1',
-    #         HTTP_AUTHORIZATION=self.updateonly_credentials
-    #     )
-    #     response = instance_view(request, pk='1')
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertIn('actions', response.data)
-    #     self.assertEqual(list(response.data['actions'].keys()), ['PUT'])
+        request = factory.options(
+            '/1',
+            HTTP_AUTHORIZATION=self.updateonly_credentials
+        )
+        response = instance_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('actions', response.data)
+        self.assertEqual(list(response.data['actions'].keys()), ['PUT'])
 
 
 class BasicPermModel(models.Model):

@@ -1,6 +1,7 @@
 # Django REST framework
 
 [![build-status-image]][travis]
+[![pypi-version]][pypi]
 
 **Awesome web-browseable Web APIs.**
 
@@ -181,6 +182,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master
 [travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
+[pypi-version]: https://pypip.in/version/djangorestframework/badge.svg
+[pypi]: https://pypi.python.org/pypi/djangorestframework
 [twitter]: https://twitter.com/_tomchristie
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X

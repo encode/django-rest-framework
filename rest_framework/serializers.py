@@ -46,6 +46,9 @@ import warnings
 from rest_framework.relations import *  # NOQA
 from rest_framework.fields import *  # NOQA
 
+
+# We assume that 'validators' are intended for the child serializer,
+# rather than the parent serializer.
 LIST_SERIALIZER_KWARGS = (
     'read_only', 'write_only', 'required', 'default', 'initial', 'source',
     'label', 'help_text', 'style', 'error_messages',
@@ -73,12 +76,24 @@ class BaseSerializer(Field):
         # We override this method in order to automagically create
         # `ListSerializer` classes instead when `many=True` is set.
         if kwargs.pop('many', False):
-            list_kwargs = {'child': cls(*args, **kwargs)}
-            for key in kwargs.keys():
-                if key in LIST_SERIALIZER_KWARGS:
-                    list_kwargs[key] = kwargs[key]
-            return ListSerializer(*args, **list_kwargs)
+            return cls.many_init(*args, **kwargs)
         return super(BaseSerializer, cls).__new__(cls, *args, **kwargs)
+
+    @classmethod
+    def many_init(cls, *args, **kwargs):
+        """
+        This method implements the creation of a `ListSerializer` parent
+        class when `many=True` is used. You can customize it if you need to
+        control which keyword arguments are passed to the parent, and
+        which are passed to the child.
+        """
+        child_serializer = cls(*args, **kwargs)
+        list_kwargs = {'child': child_serializer}
+        list_kwargs.update(dict([
+            (key, value) for key, value in kwargs.items()
+            if key in LIST_SERIALIZER_KWARGS
+        ]))
+        return ListSerializer(*args, **list_kwargs)
 
     def to_internal_value(self, data):
         raise NotImplementedError('`to_internal_value()` must be implemented.')
@@ -230,18 +245,18 @@ class Serializer(BaseSerializer):
 
     def get_initial(self):
         if self._initial_data is not None:
-            return ReturnDict([
+            return OrderedDict([
                 (field_name, field.get_value(self._initial_data))
                 for field_name, field in self.fields.items()
                 if field.get_value(self._initial_data) is not empty
                 and not field.read_only
-            ], serializer=self)
+            ])
 
-        return ReturnDict([
+        return OrderedDict([
             (field.field_name, field.get_initial())
             for field in self.fields.values()
             if not field.read_only
-        ], serializer=self)
+        ])
 
     def get_value(self, dictionary):
         # We override the default field access in order to support
@@ -304,8 +319,8 @@ class Serializer(BaseSerializer):
         """
         Dict of native values <- Dict of primitive datatypes.
         """
-        ret = {}
-        errors = ReturnDict(serializer=self)
+        ret = OrderedDict()
+        errors = OrderedDict()
         fields = [
             field for field in self.fields.values()
             if (not field.read_only) or (field.default is not empty)
@@ -334,7 +349,7 @@ class Serializer(BaseSerializer):
         """
         Object instance -> Dict of primitive datatypes.
         """
-        ret = ReturnDict(serializer=self)
+        ret = OrderedDict()
         fields = [field for field in self.fields.values() if not field.write_only]
 
         for field in fields:
@@ -373,6 +388,19 @@ class Serializer(BaseSerializer):
             return NestedBoundField(field, value, error)
         return BoundField(field, value, error)
 
+    # Include a backlink to the serializer class on return objects.
+    # Allows renderers such as HTMLFormRenderer to get the full field info.
+
+    @property
+    def data(self):
+        ret = super(Serializer, self).data
+        return ReturnDict(ret, serializer=self)
+
+    @property
+    def errors(self):
+        ret = super(Serializer, self).errors
+        return ReturnDict(ret, serializer=self)
+
 
 # There's some replication of `ListField` here,
 # but that's probably better than obfuscating the call hierarchy.
@@ -395,7 +423,7 @@ class ListSerializer(BaseSerializer):
     def get_initial(self):
         if self._initial_data is not None:
             return self.to_representation(self._initial_data)
-        return ReturnList(serializer=self)
+        return []
 
     def get_value(self, dictionary):
         """
@@ -423,7 +451,7 @@ class ListSerializer(BaseSerializer):
             })
 
         ret = []
-        errors = ReturnList(serializer=self)
+        errors = []
 
         for item in data:
             try:
@@ -444,36 +472,63 @@ class ListSerializer(BaseSerializer):
         List of object instances -> List of dicts of primitive datatypes.
         """
         iterable = data.all() if (hasattr(data, 'all')) else data
-        return ReturnList(
-            [self.child.to_representation(item) for item in iterable],
-            serializer=self
+        return [
+            self.child.to_representation(item) for item in iterable
+        ]
+
+    def update(self, instance, validated_data):
+        raise NotImplementedError(
+            "Serializers with many=True do not support multiple update by "
+            "default, only multiple create. For updates it is unclear how to "
+            "deal with insertions and deletions. If you need to support "
+            "multiple update, use a `ListSerializer` class and override "
+            "`.update()` so you can specify the behavior exactly."
         )
+
+    def create(self, validated_data):
+        return [
+            self.child.create(attrs) for attrs in validated_data
+        ]
 
     def save(self, **kwargs):
         """
         Save and return a list of object instances.
         """
-        assert self.instance is None, (
-            "Serializers do not support multiple update by default, only "
-            "multiple create. For updates it is unclear how to deal with "
-            "insertions and deletions. If you need to support multiple update, "
-            "use a `ListSerializer` class and override `.save()` so you can "
-            "specify the behavior exactly."
-        )
-
         validated_data = [
             dict(list(attrs.items()) + list(kwargs.items()))
             for attrs in self.validated_data
         ]
 
-        self.instance = [
-            self.child.create(attrs) for attrs in validated_data
-        ]
+        if self.instance is not None:
+            self.instance = self.update(self.instance, validated_data)
+            assert self.instance is not None, (
+                '`update()` did not return an object instance.'
+            )
+        else:
+            self.instance = self.create(validated_data)
+            assert self.instance is not None, (
+                '`create()` did not return an object instance.'
+            )
 
         return self.instance
 
     def __repr__(self):
         return representation.list_repr(self, indent=1)
+
+    # Include a backlink to the serializer class on return objects.
+    # Allows renderers such as HTMLFormRenderer to get the full field info.
+
+    @property
+    def data(self):
+        ret = super(ListSerializer, self).data
+        return ReturnList(ret, serializer=self)
+
+    @property
+    def errors(self):
+        ret = super(ListSerializer, self).errors
+        if isinstance(ret, dict):
+            return ReturnDict(ret, serializer=self)
+        return ReturnList(ret, serializer=self)
 
 
 # ModelSerializer & HyperlinkedModelSerializer
