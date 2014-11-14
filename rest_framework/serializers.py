@@ -218,7 +218,7 @@ class Serializer(BaseSerializer):
         """
         A dictionary of {field_name: field_instance}.
         """
-        # `fields` is evalutated lazily. We do this to ensure that we don't
+        # `fields` is evaluated lazily. We do this to ensure that we don't
         # have issues importing modules that use ModelSerializers as fields,
         # even if Django's app-loading stage has not yet run.
         if not hasattr(self, '_fields'):
@@ -576,7 +576,7 @@ class ModelSerializer(Serializer):
             isinstance(field, BaseSerializer) and not field.read_only
             for field in self.fields.values()
         ), (
-            'The `.create()` method does not suport nested writable fields '
+            'The `.create()` method does not support nested writable fields '
             'by default. Write an explicit `.create()` method for serializer '
             '`%s.%s`, or set `read_only=True` on nested serializer fields.' %
             (self.__class__.__module__, self.__class__.__name__)
@@ -607,7 +607,7 @@ class ModelSerializer(Serializer):
             isinstance(field, BaseSerializer) and not field.read_only
             for field in self.fields.values()
         ), (
-            'The `.update()` method does not suport nested writable fields '
+            'The `.update()` method does not support nested writable fields '
             'by default. Write an explicit `.update()` method for serializer '
             '`%s.%s`, or set `read_only=True` on nested serializer fields.' %
             (self.__class__.__module__, self.__class__.__name__)
@@ -627,9 +627,22 @@ class ModelSerializer(Serializer):
         validators = getattr(getattr(self, 'Meta', None), 'validators', [])
         model_class = self.Meta.model
 
-        # Note that we make sure to check `unique_together` both on the
-        # base model class, but also on any parent classes.
-        for parent_class in [model_class] + list(model_class._meta.parents.keys()):
+        self._add_unique_together_validators(validators, model_class, field_names)
+        self._add_unique_date_validators(validators, model_class, field_names)
+
+        return validators
+
+    def _add_unique_together_validators(self, validators, model_class, field_names):
+        """
+        Append any `UniqueTogetherValidators` to the existing list of validators
+
+        Note that we make sure to check `unique_together` both on the
+        base model class, but also on any parent classes.
+
+        :type validators: list
+        """
+        for parent_class in [model_class] + list(
+                model_class._meta.parents.keys()):
             for unique_together in parent_class._meta.unique_together:
                 if field_names.issuperset(set(unique_together)):
                     validator = UniqueTogetherValidator(
@@ -638,7 +651,13 @@ class ModelSerializer(Serializer):
                     )
                     validators.append(validator)
 
-        # Add any unique_for_date/unique_for_month/unique_for_year constraints.
+    def _add_unique_date_validators(self, validators, model_class, field_names):
+        """
+        Append any unique_for_date/unique_for_month/unique_for_year constraints
+        to the existing list of validators
+
+        :type validators: list
+        """
         info = model_meta.get_field_info(model_class)
         for field_name, field in info.fields_and_pk.items():
             if field.unique_for_date and field_name in field_names:
@@ -665,181 +684,57 @@ class ModelSerializer(Serializer):
                 )
                 validators.append(validator)
 
-        return validators
-
     def get_fields(self):
         declared_fields = copy.deepcopy(self._declared_fields)
+        meta_options = self._get_meta_options()
+        model = meta_options['model']
+        extra_kwargs = meta_options['extra_kwargs']
 
-        ret = OrderedDict()
-        model = getattr(self.Meta, 'model')
+        # Retrieve metadata about fields & relationships on the model class.
+        fields_info = model_meta.get_field_info(model)
+        fields = self._get_fields_to_serialize(declared_fields, fields_info, meta_options)
+
+        unique_fields = self._get_unique_fields(
+            model, fields, declared_fields, extra_kwargs)
+
+        serializer_fields = self._get_serializer_fields(
+            fields, declared_fields, fields_info, meta_options)
+
+        for field_name, field in unique_fields.items():
+            serializer_fields[field_name] = field
+
+        return serializer_fields
+
+    def _get_meta_options(self):
+        """This should only be called the one time from `get_fields`"""
         fields = getattr(self.Meta, 'fields', None)
         exclude = getattr(self.Meta, 'exclude', None)
-        depth = getattr(self.Meta, 'depth', 0)
         extra_kwargs = getattr(self.Meta, 'extra_kwargs', {})
 
         assert not (fields and exclude), "Cannot set both 'fields' and 'exclude'."
 
         extra_kwargs = self._include_additional_options(extra_kwargs)
 
-        # Retrieve metadata about fields & relationships on the model class.
-        info = model_meta.get_field_info(model)
+        return {
+            'model': getattr(self.Meta, 'model'),
+            'fields': fields,
+            'exclude': exclude,
+            'extra_kwargs': extra_kwargs,
+            'depth': getattr(self.Meta, 'depth', 0),
+        }
+
+    def _get_fields_to_serialize(self, declared_fields, fields_info, meta_options):
+        fields = meta_options['fields']
 
         # Use the default set of field names if none is supplied explicitly.
         if fields is None:
-            fields = self._get_default_field_names(declared_fields, info)
+            fields = self._get_default_field_names(declared_fields, fields_info)
             exclude = getattr(self.Meta, 'exclude', None)
             if exclude is not None:
                 for field_name in exclude:
                     fields.remove(field_name)
 
-        # Determine the set of model fields, and the fields that they map to.
-        # We actually only need this to deal with the slightly awkward case
-        # of supporting `unique_for_date`/`unique_for_month`/`unique_for_year`.
-        model_field_mapping = {}
-        for field_name in fields:
-            if field_name in declared_fields:
-                field = declared_fields[field_name]
-                source = field.source or field_name
-            else:
-                try:
-                    source = extra_kwargs[field_name]['source']
-                except KeyError:
-                    source = field_name
-            # Model fields will always have a simple source mapping,
-            # they can't be nested attribute lookups.
-            if '.' not in source and source != '*':
-                model_field_mapping[source] = field_name
-
-        # Determine if we need any additional `HiddenField` or extra keyword
-        # arguments to deal with `unique_for` dates that are required to
-        # be in the input data in order to validate it.
-        unique_fields = {}
-        for model_field_name, field_name in model_field_mapping.items():
-            try:
-                model_field = model._meta.get_field(model_field_name)
-            except FieldDoesNotExist:
-                continue
-
-            # Deal with each of the `unique_for_*` cases.
-            for date_field_name in (
-                model_field.unique_for_date,
-                model_field.unique_for_month,
-                model_field.unique_for_year
-            ):
-                if date_field_name is None:
-                    continue
-
-                # Get the model field that is refered too.
-                date_field = model._meta.get_field(date_field_name)
-
-                if date_field.auto_now_add:
-                    default = CreateOnlyDefault(timezone.now)
-                elif date_field.auto_now:
-                    default = timezone.now
-                elif date_field.has_default():
-                    default = model_field.default
-                else:
-                    default = empty
-
-                if date_field_name in model_field_mapping:
-                    # The corresponding date field is present in the serializer
-                    if date_field_name not in extra_kwargs:
-                        extra_kwargs[date_field_name] = {}
-                    if default is empty:
-                        if 'required' not in extra_kwargs[date_field_name]:
-                            extra_kwargs[date_field_name]['required'] = True
-                    else:
-                        if 'default' not in extra_kwargs[date_field_name]:
-                            extra_kwargs[date_field_name]['default'] = default
-                else:
-                    # The corresponding date field is not present in the,
-                    # serializer. We have a default to use for the date, so
-                    # add in a hidden field that populates it.
-                    unique_fields[date_field_name] = HiddenField(default=default)
-
-        # Now determine the fields that should be included on the serializer.
-        for field_name in fields:
-            if field_name in declared_fields:
-                # Field is explicitly declared on the class, use that.
-                ret[field_name] = declared_fields[field_name]
-                continue
-
-            elif field_name in info.fields_and_pk:
-                # Create regular model fields.
-                model_field = info.fields_and_pk[field_name]
-                field_cls = self._field_mapping[model_field]
-                kwargs = get_field_kwargs(field_name, model_field)
-                if 'choices' in kwargs:
-                    # Fields with choices get coerced into `ChoiceField`
-                    # instead of using their regular typed field.
-                    field_cls = ChoiceField
-                if not issubclass(field_cls, ModelField):
-                    # `model_field` is only valid for the fallback case of
-                    # `ModelField`, which is used when no other typed field
-                    # matched to the model field.
-                    kwargs.pop('model_field', None)
-                if not issubclass(field_cls, CharField):
-                    # `allow_blank` is only valid for textual fields.
-                    kwargs.pop('allow_blank', None)
-
-            elif field_name in info.relations:
-                # Create forward and reverse relationships.
-                relation_info = info.relations[field_name]
-                if depth:
-                    field_cls = self._get_nested_class(depth, relation_info)
-                    kwargs = get_nested_relation_kwargs(relation_info)
-                else:
-                    field_cls = self._related_class
-                    kwargs = get_relation_kwargs(field_name, relation_info)
-                    # `view_name` is only valid for hyperlinked relationships.
-                    if not issubclass(field_cls, HyperlinkedRelatedField):
-                        kwargs.pop('view_name', None)
-
-            elif hasattr(model, field_name):
-                # Create a read only field for model methods and properties.
-                field_cls = ReadOnlyField
-                kwargs = {}
-
-            elif field_name == api_settings.URL_FIELD_NAME:
-                # Create the URL field.
-                field_cls = HyperlinkedIdentityField
-                kwargs = get_url_kwargs(model)
-
-            else:
-                raise ImproperlyConfigured(
-                    'Field name `%s` is not valid for model `%s`.' %
-                    (field_name, model.__class__.__name__)
-                )
-
-            # Check that any fields declared on the class are
-            # also explicity included in `Meta.fields`.
-            missing_fields = set(declared_fields.keys()) - set(fields)
-            if missing_fields:
-                missing_field = list(missing_fields)[0]
-                raise ImproperlyConfigured(
-                    'Field `%s` has been declared on serializer `%s`, but '
-                    'is missing from `Meta.fields`.' %
-                    (missing_field, self.__class__.__name__)
-                )
-
-            # Populate any kwargs defined in `Meta.extra_kwargs`
-            extras = extra_kwargs.get(field_name, {})
-            if extras.get('read_only', False):
-                for attr in [
-                    'required', 'default', 'allow_blank', 'allow_null',
-                    'min_length', 'max_length', 'min_value', 'max_value',
-                    'validators', 'queryset'
-                ]:
-                    kwargs.pop(attr, None)
-            kwargs.update(extras)
-
-            # Create the serializer field.
-            ret[field_name] = field_cls(**kwargs)
-
-        for field_name, field in unique_fields.items():
-            ret[field_name] = field
-
-        return ret
+        return fields
 
     def _include_additional_options(self, extra_kwargs):
         read_only_fields = getattr(self.Meta, 'read_only_fields', None)
@@ -896,6 +791,172 @@ class ModelSerializer(Serializer):
             list(model_info.fields.keys()) +
             list(model_info.forward_relations.keys())
         )
+
+    def _get_unique_fields(self, model, fields, declared_fields, extra_kwargs):
+        """
+        Determine if we need any additional `HiddenField` or extra keyword
+        arguments to deal with `unique_for` dates that are required to
+        be in the input data in order to validate it.
+        """
+        model_field_mapping = self._get_model_field_mapping(
+            fields, declared_fields, extra_kwargs)
+
+        unique_fields = {}
+        for model_field_name, field_name in model_field_mapping.items():
+            try:
+                model_field = model._meta.get_field(model_field_name)
+            except FieldDoesNotExist:
+                continue
+
+            # Deal with each of the `unique_for_*` cases.
+            for date_field_name in (
+                model_field.unique_for_date,
+                model_field.unique_for_month,
+                model_field.unique_for_year
+            ):
+                if date_field_name is None:
+                    continue
+
+                # Get the model field that is referred to.
+                date_field = model._meta.get_field(date_field_name)
+
+                if date_field.auto_now_add:
+                    default = CreateOnlyDefault(timezone.now)
+                elif date_field.auto_now:
+                    default = timezone.now
+                elif date_field.has_default():
+                    default = model_field.default
+                else:
+                    default = empty
+
+                if date_field_name in model_field_mapping:
+                    # The corresponding date field is present in the serializer
+                    if date_field_name not in extra_kwargs:
+                        extra_kwargs[date_field_name] = {}
+                    if default is empty:
+                        if 'required' not in extra_kwargs[date_field_name]:
+                            extra_kwargs[date_field_name]['required'] = True
+                    else:
+                        if 'default' not in extra_kwargs[date_field_name]:
+                            extra_kwargs[date_field_name]['default'] = default
+                else:
+                    # The corresponding date field is not present in the,
+                    # serializer. We have a default to use for the date, so
+                    # add in a hidden field that populates it.
+                    unique_fields[date_field_name] = HiddenField(default=default)
+
+        return unique_fields
+
+    def _get_model_field_mapping(self, fields, declared_fields, extra_kwargs):
+        """
+        Determine the set of model fields, and the fields that they map to.
+        We actually only need this to deal with the slightly awkward case
+        of supporting `unique_for_date`/`unique_for_month`/`unique_for_year`.
+        """
+        model_field_mapping = {}
+        for field_name in fields:
+            if field_name in declared_fields:
+                field = declared_fields[field_name]
+                source = field.source or field_name
+            else:
+                try:
+                    source = extra_kwargs[field_name]['source']
+                except KeyError:
+                    source = field_name
+
+            # Model fields will always have a simple source mapping,
+            # they can't be nested attribute lookups.
+            if '.' not in source and source != '*':
+                model_field_mapping[source] = field_name
+
+        return model_field_mapping
+
+    def _get_serializer_fields(self, fields, declared_fields, fields_info, meta_options):
+        """Now determine the fields that should be included on the serializer"""
+        depth = meta_options['depth']
+        model = meta_options['model']
+        extra_kwargs = meta_options['extra_kwargs']
+
+        serializer_fields = OrderedDict()
+        for field_name in fields:
+            if field_name in declared_fields:
+                # Field is explicitly declared on the class, use that.
+                serializer_fields[field_name] = declared_fields[field_name]
+                continue
+
+            elif field_name in fields_info.fields_and_pk:
+                # Create regular model fields.
+                model_field = fields_info.fields_and_pk[field_name]
+                field_cls = self._field_mapping[model_field]
+                kwargs = get_field_kwargs(field_name, model_field)
+                if 'choices' in kwargs:
+                    # Fields with choices get coerced into `ChoiceField`
+                    # instead of using their regular typed field.
+                    field_cls = ChoiceField
+                if not issubclass(field_cls, ModelField):
+                    # `model_field` is only valid for the fallback case of
+                    # `ModelField`, which is used when no other typed field
+                    # matched to the model field.
+                    kwargs.pop('model_field', None)
+                if not issubclass(field_cls, CharField):
+                    # `allow_blank` is only valid for textual fields.
+                    kwargs.pop('allow_blank', None)
+
+            elif field_name in fields_info.relations:
+                # Create forward and reverse relationships.
+                relation_info = fields_info.relations[field_name]
+                if depth:
+                    field_cls = self._get_nested_class(depth, relation_info)
+                    kwargs = get_nested_relation_kwargs(relation_info)
+                else:
+                    field_cls = self._related_class
+                    kwargs = get_relation_kwargs(field_name, relation_info)
+                    # `view_name` is only valid for hyperlinked relationships.
+                    if not issubclass(field_cls, HyperlinkedRelatedField):
+                        kwargs.pop('view_name', None)
+
+            elif hasattr(model, field_name):
+                # Create a read only field for model methods and properties.
+                field_cls = ReadOnlyField
+                kwargs = {}
+
+            elif field_name == api_settings.URL_FIELD_NAME:
+                # Create the URL field.
+                field_cls = HyperlinkedIdentityField
+                kwargs = get_url_kwargs(model)
+
+            else:
+                raise ImproperlyConfigured(
+                    'Field name `%s` is not valid for model `%s`.' %
+                    (field_name, model.__class__.__name__)
+                )
+
+            # Check that any fields declared on the class are
+            # also explicitly included in `Meta.fields`.
+            missing_fields = set(declared_fields.keys()) - set(fields)
+            if missing_fields:
+                missing_field = list(missing_fields)[0]
+                raise ImproperlyConfigured(
+                    'Field `%s` has been declared on serializer `%s`, but '
+                    'is missing from `Meta.fields`.' %
+                    (missing_field, self.__class__.__name__)
+                )
+
+            # Populate any kwargs defined in `Meta.extra_kwargs`
+            extras = extra_kwargs.get(field_name, {})
+            if extras.get('read_only', False):
+                for attr in [
+                    'required', 'default', 'allow_blank', 'allow_null',
+                    'min_length', 'max_length', 'min_value', 'max_value',
+                    'validators', 'queryset'
+                ]:
+                    kwargs.pop(attr, None)
+            kwargs.update(extras)
+
+            # Create the serializer field.
+            serializer_fields[field_name] = field_cls(**kwargs)
+
+        return serializer_fields
 
     def _get_nested_class(self, nested_depth, relation_info):
         class NestedSerializer(ModelSerializer):
