@@ -88,7 +88,7 @@ def get_field_kwargs(field_name, model_field):
         kwargs['read_only'] = True
         return kwargs
 
-    if model_field.has_default():
+    if model_field.has_default() or model_field.blank or model_field.null:
         kwargs['required'] = False
 
     if model_field.flatchoices:
@@ -215,7 +215,7 @@ def get_relation_kwargs(field_name, relation_info):
             # If this field is read-only, then return early.
             # No further keyword arguments are valid.
             return kwargs
-        if model_field.has_default():
+        if model_field.has_default() or model_field.null:
             kwargs['required'] = False
         if model_field.null:
             kwargs['allow_null'] = True
