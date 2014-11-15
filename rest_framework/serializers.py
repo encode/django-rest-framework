@@ -34,6 +34,7 @@ from rest_framework.validators import (
 )
 import copy
 import inspect
+import sys
 import warnings
 
 # Note: We do the following so that users of the framework can use this style:
@@ -593,7 +594,18 @@ class ModelSerializer(Serializer):
             if relation_info.to_many and (field_name in validated_attrs):
                 many_to_many[field_name] = validated_attrs.pop(field_name)
 
-        instance = ModelClass.objects.create(**validated_attrs)
+        try:
+            instance = ModelClass.objects.create(**validated_attrs)
+        except TypeError as exc:
+            msg = (
+                'The mentioned argument might be a field on the serializer '
+                'that is not part of the model. You need to override the '
+                'create() method in your ModelSerializer subclass to support '
+                'this.')
+            six.reraise(
+                type(exc),
+                type(exc)(str(exc) + '. ' + msg),
+                sys.exc_info()[2])
 
         # Save many-to-many relationships after the instance is created.
         if many_to_many:
