@@ -1,3 +1,4 @@
+from django.db.models.query import QuerySet
 from rest_framework import serializers
 import pytest
 
@@ -41,6 +42,18 @@ class TestSerializer:
         serializer = self.Serializer(instance)
         with pytest.raises(AttributeError):
             serializer.data
+
+    def test_missing_many_kwarg(self):
+        self.Serializer([], many=True)
+        with pytest.raises(AssertionError):
+            self.Serializer([])
+        with pytest.raises(AssertionError):
+            self.Serializer(())
+        with pytest.raises(AssertionError):
+            self.Serializer(QuerySet())
+        self.Serializer(None)
+        self.Serializer(object())
+        self.Serializer({})
 
 
 class TestValidateMethod:
