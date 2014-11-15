@@ -3,7 +3,7 @@ from django.conf.urls import patterns, url, include
 from django.db import models
 from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
-from rest_framework import serializers, viewsets, permissions
+from rest_framework import serializers, viewsets, mixins, permissions
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.routers import SimpleRouter, DefaultRouter
@@ -76,17 +76,16 @@ class TestCustomLookupFields(TestCase):
 
     def setUp(self):
         class NoteSerializer(serializers.HyperlinkedModelSerializer):
+            url = serializers.HyperlinkedIdentityField(view_name='routertestmodel-detail', lookup_field='uuid')
+
             class Meta:
                 model = RouterTestModel
-                lookup_field = 'uuid'
                 fields = ('url', 'uuid', 'text')
 
         class NoteViewSet(viewsets.ModelViewSet):
             queryset = RouterTestModel.objects.all()
             serializer_class = NoteSerializer
             lookup_field = 'uuid'
-
-        RouterTestModel.objects.create(uuid='123', text='foo bar')
 
         self.router = SimpleRouter()
         self.router.register(r'notes', NoteViewSet)
@@ -97,6 +96,8 @@ class TestCustomLookupFields(TestCase):
             '',
             url(r'^', include(self.router.urls)),
         )
+
+        RouterTestModel.objects.create(uuid='123', text='foo bar')
 
     def test_custom_lookup_field_route(self):
         detail_route = self.router.urls[-1]
@@ -284,3 +285,19 @@ class TestDynamicListAndDetailRouter(TestCase):
             else:
                 method_map = 'get'
             self.assertEqual(route.mapping[method_map], endpoint)
+
+
+class TestRootWithAListlessViewset(TestCase):
+    def setUp(self):
+        class NoteViewSet(mixins.RetrieveModelMixin,
+                          viewsets.GenericViewSet):
+            model = RouterTestModel
+
+        self.router = DefaultRouter()
+        self.router.register(r'notes', NoteViewSet)
+        self.view = self.router.urls[0].callback
+
+    def test_api_root(self):
+        request = factory.get('/')
+        response = self.view(request)
+        self.assertEqual(response.data, {})

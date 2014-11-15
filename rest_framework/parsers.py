@@ -11,7 +11,7 @@ from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError, parse_header, ChunkIter
 from django.utils import six
-from rest_framework.compat import etree, yaml, force_text
+from rest_framework.compat import etree, yaml, force_text, urlparse
 from rest_framework.exceptions import ParseError
 from rest_framework import renderers
 import json
@@ -48,7 +48,7 @@ class JSONParser(BaseParser):
     """
 
     media_type = 'application/json'
-    renderer_class = renderers.UnicodeJSONRenderer
+    renderer_class = renderers.JSONRenderer
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
@@ -290,6 +290,22 @@ class FileUploadParser(BaseParser):
         try:
             meta = parser_context['request'].META
             disposition = parse_header(meta['HTTP_CONTENT_DISPOSITION'].encode('utf-8'))
-            return force_text(disposition[1]['filename'])
+            filename_parm = disposition[1]
+            if 'filename*' in filename_parm:
+                return self.get_encoded_filename(filename_parm)
+            return force_text(filename_parm['filename'])
         except (AttributeError, KeyError):
             pass
+
+    def get_encoded_filename(self, filename_parm):
+        """
+        Handle encoded filenames per RFC6266. See also:
+        http://tools.ietf.org/html/rfc2231#section-4
+        """
+        encoded_filename = force_text(filename_parm['filename*'])
+        try:
+            charset, lang, filename = encoded_filename.split('\'', 2)
+            filename = urlparse.unquote(filename)
+        except (ValueError, LookupError):
+            filename = force_text(filename_parm['filename'])
+        return filename

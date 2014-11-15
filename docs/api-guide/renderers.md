@@ -74,37 +74,18 @@ If your API includes views that can serve both regular webpages and API response
 
 Renders the request data into `JSON`, using utf-8 encoding.
 
-Note that non-ascii characters will be rendered using JSON's `\uXXXX` character escape.  For example:
+Note that the default style is to include unicode characters, and render the response using a compact style with no uneccessary whitespace:
 
-    {"unicode black star": "\u2605"}
-
-The client may additionally include an `'indent'` media type parameter, in which case the returned `JSON` will be indented.  For example `Accept: application/json; indent=4`.
-
-    {
-        "unicode black star": "\u2605"
-    }
-
-**.media_type**: `application/json`
-
-**.format**: `'.json'`
-
-**.charset**: `None`
-
-## UnicodeJSONRenderer
-
-Renders the request data into `JSON`, using utf-8 encoding.
-
-Note that non-ascii characters will not be character escaped.  For example:
-
-    {"unicode black star": "★"}
+    {"unicode black star":"★","value":999}
 
 The client may additionally include an `'indent'` media type parameter, in which case the returned `JSON` will be indented.  For example `Accept: application/json; indent=4`.
 
     {
-        "unicode black star": "★"
+        "unicode black star": "★",
+        "value": 999
     }
 
-Both the `JSONRenderer` and `UnicodeJSONRenderer` styles conform to [RFC 4627][rfc4627], and are syntactically valid JSON.
+The default JSON encoding style can be altered using the `UNICODE_JSON` and `COMPACT_JSON` settings keys.
 
 **.media_type**: `application/json`
 
@@ -444,6 +425,11 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [djangorestframework-camel-case] provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by [Vitaly Babiy][vbabiy].
 
 
+## Pandas (CSV, Excel, PNG)
+
+[Django REST Pandas] provides a serializer and renderers that support additional data processing and output via the [Pandas] DataFrame API.  Django REST Pandas includes renderers for Pandas-style CSV files, Excel workbooks (both `.xls` and `.xlsx`), and a number of [other formats]. It is maintained by [S. Andrew Sheppard][sheppard] as part of the [wq Project][wq].
+
+
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
@@ -467,3 +453,8 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [hzy]: https://github.com/hzy
 [drf-ujson-renderer]: https://github.com/gizmag/drf-ujson-renderer
 [djangorestframework-camel-case]: https://github.com/vbabiy/djangorestframework-camel-case
+[Django REST Pandas]: https://github.com/wq/django-rest-pandas
+[Pandas]: http://pandas.pydata.org/
+[other formats]: https://github.com/wq/django-rest-pandas#supported-formats
+[sheppard]: https://github.com/sheppard
+[wq]: https://github.com/wq

@@ -1,40 +1,28 @@
 language: python
 
-python:
-  - "2.6"
-  - "2.7"
-  - "3.2"
-  - "3.3"
-  - "3.4"
+python: 2.7
 
 env:
-  - DJANGO="django==1.7"
-  - DJANGO="django==1.6.5"
-  - DJANGO="django==1.5.8"
-  - DJANGO="django==1.4.13"
+    - TOX_ENV=flake8
+    - TOX_ENV=py3.4-django1.7
+    - TOX_ENV=py3.3-django1.7
+    - TOX_ENV=py3.2-django1.7
+    - TOX_ENV=py2.7-django1.7
+    - TOX_ENV=py3.4-django1.6
+    - TOX_ENV=py3.3-django1.6
+    - TOX_ENV=py3.2-django1.6
+    - TOX_ENV=py2.7-django1.6
+    - TOX_ENV=py2.6-django1.6
+    - TOX_ENV=py3.4-django1.5
+    - TOX_ENV=py3.3-django1.5
+    - TOX_ENV=py3.2-django1.5
+    - TOX_ENV=py2.7-django1.5
+    - TOX_ENV=py2.6-django1.5
+    - TOX_ENV=py2.7-django1.4
+    - TOX_ENV=py2.6-django1.4
 
 install:
-  - pip install $DJANGO
-  - pip install defusedxml==0.3
-  - pip install Pillow==2.3.0
-  - pip install django-guardian==1.2.3
-  - pip install pytest-django==2.6.1
-  - pip install flake8==2.2.2
-  - "if [[ ${DJANGO::11} == 'django==1.3' ]]; then pip install django-filter==0.5.4; fi"
-  - "if [[ ${DJANGO::11} != 'django==1.3' ]]; then pip install django-filter==0.7; fi"
-  - "if [[ ${DJANGO} == 'django==1.7' ]]; then pip install -e git+https://github.com/linovia/django-guardian.git@feature/django_1_7#egg=django-guardian-1.2.0; fi"
-  - export PYTHONPATH=.
+  - "pip install tox --download-cache $HOME/.pip-cache"
 
 script:
-  - ./runtests.py
-
-matrix:
-  exclude:
-    - python: "2.6"
-      env: DJANGO="django==1.7"
-    - python: "3.2"
-      env: DJANGO="django==1.4.13"
-    - python: "3.3"
-      env: DJANGO="django==1.4.13"
-    - python: "3.4"
-      env: DJANGO="django==1.4.13"
+    - tox -e $TOX_ENV

@@ -77,6 +77,7 @@ DEFAULTS = {
 
     # Exception handling
     'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+    'NON_FIELD_ERRORS_KEY': 'non_field_errors',
 
     # Testing
     'TEST_REQUEST_RENDERER_CLASSES': (
@@ -96,24 +97,19 @@ DEFAULTS = {
     'URL_FIELD_NAME': 'url',
 
     # Input and output formats
-    'DATE_INPUT_FORMATS': (
-        ISO_8601,
-    ),
-    'DATE_FORMAT': None,
+    'DATE_FORMAT': ISO_8601,
+    'DATE_INPUT_FORMATS': (ISO_8601,),
 
-    'DATETIME_INPUT_FORMATS': (
-        ISO_8601,
-    ),
-    'DATETIME_FORMAT': None,
+    'DATETIME_FORMAT': ISO_8601,
+    'DATETIME_INPUT_FORMATS': (ISO_8601,),
 
-    'TIME_INPUT_FORMATS': (
-        ISO_8601,
-    ),
-    'TIME_FORMAT': None,
+    'TIME_FORMAT': ISO_8601,
+    'TIME_INPUT_FORMATS': (ISO_8601,),
 
-    # Pending deprecation
-    'FILTER_BACKEND': None,
-
+    # Encoding
+    'UNICODE_JSON': True,
+    'COMPACT_JSON': True,
+    'COERCE_DECIMAL_TO_STRING': True
 }
 
 
@@ -129,7 +125,6 @@ IMPORT_STRINGS = (
     'DEFAULT_PAGINATION_SERIALIZER_CLASS',
     'DEFAULT_FILTER_BACKENDS',
     'EXCEPTION_HANDLER',
-    'FILTER_BACKEND',
     'TEST_REQUEST_RENDERER_CLASSES',
     'UNAUTHENTICATED_USER',
     'UNAUTHENTICATED_TOKEN',
@@ -196,15 +191,9 @@ class APISettings(object):
         if val and attr in self.import_strings:
             val = perform_import(val, attr)
 
-        self.validate_setting(attr, val)
-
         # Cache the result
         setattr(self, attr, val)
         return val
 
-    def validate_setting(self, attr, val):
-        if attr == 'FILTER_BACKEND' and val is not None:
-            # Make sure we can initialize the class
-            val()
 
 api_settings = APISettings(USER_SETTINGS, DEFAULTS, IMPORT_STRINGS)

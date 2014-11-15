@@ -3,7 +3,7 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
 
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError, NON_FIELD_ERRORS
 from django.http import Http404
 from django.utils.datastructures import SortedDict
 from django.views.decorators.csrf import csrf_exempt
@@ -51,7 +51,8 @@ def exception_handler(exc):
     Returns the response that should be used for any given exception.
 
     By default we handle the REST framework `APIException`, and also
-    Django's builtin `Http404` and `PermissionDenied` exceptions.
+    Django's built-in `ValidationError`, `Http404` and `PermissionDenied`
+    exceptions.
 
     Any unhandled exceptions may return `None`, which will cause a 500 error
     to be raised.
@@ -61,12 +62,21 @@ def exception_handler(exc):
         if getattr(exc, 'auth_header', None):
             headers['WWW-Authenticate'] = exc.auth_header
         if getattr(exc, 'wait', None):
-            headers['X-Throttle-Wait-Seconds'] = '%d' % exc.wait
             headers['Retry-After'] = '%d' % exc.wait
 
         return Response({'detail': exc.detail},
                         status=exc.status_code,
                         headers=headers)
+
+    elif isinstance(exc, ValidationError):
+        # ValidationErrors may include the non-field key named '__all__'.
+        # When returning a response we map this to a key name that can be
+        # modified in settings.
+        if NON_FIELD_ERRORS in exc.message_dict:
+            errors = exc.message_dict.pop(NON_FIELD_ERRORS)
+            exc.message_dict[api_settings.NON_FIELD_ERRORS_KEY] = errors
+        return Response(exc.message_dict,
+                        status=status.HTTP_400_BAD_REQUEST)
 
     elif isinstance(exc, Http404):
         return Response({'detail': 'Not found'},
