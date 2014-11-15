@@ -12,6 +12,7 @@ response content is handled by parsers and renderers.
 """
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
+from django.db.models.query import QuerySet
 from django.db.models.fields import FieldDoesNotExist
 from django.utils import six
 from django.utils.translation import ugettext_lazy as _
@@ -81,7 +82,7 @@ class BaseSerializer(Field):
         if not kwargs.pop('many_init', False):
             if not issubclass(cls, ListSerializer):
                 instance = kwargs.get('instance', args[0] if args else None)
-                if isinstance(instance, (list, tuple, models.QuerySet)):
+                if isinstance(instance, (list, tuple, QuerySet)):
                     msg = (
                         'You have passed a %s as `instance` argument but did '
                         'not set `many=True`.' % instance.__class__.__name__)
