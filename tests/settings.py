@@ -101,27 +101,6 @@ INSTALLED_APPS = (
     'tests.users',
 )
 
-# OAuth is optional and won't work if there is no oauth_provider & oauth2
-try:
-    import oauth_provider  # NOQA
-    import oauth2  # NOQA
-except ImportError:
-    pass
-else:
-    INSTALLED_APPS += (
-        'oauth_provider',
-    )
-
-try:
-    import provider  # NOQA
-except ImportError:
-    pass
-else:
-    INSTALLED_APPS += (
-        'provider',
-        'provider.oauth2',
-    )
-
 # guardian is optional
 try:
     import guardian  # NOQA
