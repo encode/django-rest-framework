@@ -35,6 +35,7 @@ from rest_framework.validators import (
 )
 import copy
 import inspect
+import sys
 import warnings
 
 # Note: We do the following so that users of the framework can use this style:
@@ -71,7 +72,6 @@ class BaseSerializer(Field):
         self.partial = kwargs.pop('partial', False)
         self._context = kwargs.pop('context', {})
         kwargs.pop('many', None)
-        kwargs.pop('many_init', None)
         super(BaseSerializer, self).__init__(**kwargs)
 
     def __new__(cls, *args, **kwargs):
@@ -79,14 +79,6 @@ class BaseSerializer(Field):
         # `ListSerializer` classes instead when `many=True` is set.
         if kwargs.pop('many', False):
             return cls.many_init(*args, **kwargs)
-        if not kwargs.pop('many_init', False):
-            if not issubclass(cls, ListSerializer):
-                instance = kwargs.get('instance', args[0] if args else None)
-                if isinstance(instance, (list, tuple, QuerySet)):
-                    msg = (
-                        'You have passed a %s as `instance` argument but did '
-                        'not set `many=True`.' % instance.__class__.__name__)
-                    raise AssertionError(msg)
         return super(BaseSerializer, cls).__new__(cls, *args, **kwargs)
 
     @classmethod
@@ -97,7 +89,7 @@ class BaseSerializer(Field):
         control which keyword arguments are passed to the parent, and
         which are passed to the child.
         """
-        child_serializer = cls(many_init=True, *args, **kwargs)
+        child_serializer = cls(*args, **kwargs)
         list_kwargs = {'child': child_serializer}
         list_kwargs.update(dict([
             (key, value) for key, value in kwargs.items()
@@ -169,7 +161,21 @@ class BaseSerializer(Field):
     def data(self):
         if not hasattr(self, '_data'):
             if self.instance is not None and not getattr(self, '_errors', None):
-                self._data = self.to_representation(self.instance)
+                try:
+                    self._data = self.to_representation(self.instance)
+                except Exception as exc:
+                    if isinstance(self.instance, (list, tuple, QuerySet)):
+                        msg = (
+                            'The reason for this exception might be that you '
+                            'have passed a %s as `instance` argument to the '
+                            'serializer but did not set `many=True`.'
+                            % type(self.instance).__name__)
+                        six.reraise(
+                            type(exc),
+                            type(exc)(str(exc) + '. ' + msg),
+                            sys.exc_info()[2])
+                    else:
+                        six.reraise(*sys.exc_info())
             elif hasattr(self, '_validated_data') and not getattr(self, '_errors', None):
                 self._data = self.to_representation(self.validated_data)
             else:
