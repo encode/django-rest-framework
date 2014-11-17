@@ -156,6 +156,38 @@ If you want the date field to be entirely hidden from the user, then use `Hidden
 
 ---
 
+# Advanced 'default' argument usage
+
+Validators that are applied across multiple fields in the serializer can sometimes require a field input that should not be provided by the API client, but that *is* available as input to the validator.
+
+Two patterns that you may want to use for this sort of validation include:
+
+* Using `HiddenField`. This field will be present in `validated_data` but *will not* be used in the serializer output representation.
+* Using a standard field with `read_only=True`, but that also includes a `default=…` argument. This field *will* be used in the serializer output representation, but cannot be set directly by the user.
+
+REST framework includes a couple of defaults that may be useful in this context.
+
+#### CurrentUserDefault
+
+A default class that can be used to represent the current user. In order to use this, the 'request' must have been provided as part of the context dictionary when instantiating the serializer.
+
+    owner = serializers.HiddenField(
+        default=CurrentUserDefault()
+    )
+
+#### CreateOnlyDefault
+
+A default class that can be used to *only set a default argument during create operations*. During updates the field is omitted.
+
+It takes a single argument, which is the default value or callable that should be used during create operations.
+
+    created_at = serializers.DateTimeField(
+        read_only=True,
+        default=CreateOnlyDefault(timezone.now)
+    )
+
+---
+
 # Writing custom validators
 
 You can use any of Django's existing validators, or write your own custom validators.

@@ -117,6 +117,17 @@ class CreateOnlyDefault:
         return '%s(%s)' % (self.__class__.__name__, repr(self.default))
 
 
+class CurrentUserDefault:
+    def set_context(self, serializer_field):
+        self.user = serializer_field.context['request'].user
+
+    def __call__(self):
+        return self.user
+
+    def __repr__(self):
+        return '%s()' % self.__class__.__name__
+
+
 class SkipField(Exception):
     pass
 
