@@ -1,0 +1,5 @@
+{% extends "rest_framework/horizontal/input.html" %}
+
+{% block input %}
+    <input name="{{ field.name }}" type="{{ style.input_type }}" {% if style.placeholder %}placeholder="{{ style.placeholder }}"{% endif %} {% if field.value %}value="{{ field.value }}"{% endif %}>
+{% endblock %}
