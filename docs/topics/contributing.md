@@ -71,31 +71,31 @@ To run the tests, clone the repository, and then:
 
 Run using a more concise output style.
 
-    ./runtests -q
+    ./runtests.py -q
 
 Run the tests using a more concise output style, no coverage, no flake8.
 
-    ./runtests --fast
+    ./runtests.py --fast
 
 Don't run the flake8 code linting.
 
-    ./runtests --nolint
+    ./runtests.py --nolint
 
 Only run the flake8 code linting, don't run the tests.
 
-    ./runtests --lintonly
+    ./runtests.py --lintonly
 
 Run the tests for a given test case.
 
-    ./runtests MyTestCase
+    ./runtests.py MyTestCase
 
 Run the tests for a given test method.
 
-    ./runtests MyTestCase.test_this_method
+    ./runtests.py MyTestCase.test_this_method
 
 Shorter form to run the tests for a given test method.
 
-    ./runtests test_this_method
+    ./runtests.py test_this_method
 
 Note: The test case and test method matching is fuzzy and will sometimes run other tests that contain a partial string match to the given  command line input.
 
