@@ -268,7 +268,10 @@ class Request(object):
         by the authentication classes provided to the request.
         """
         if not hasattr(self, '_user'):
-            self._authenticate()
+            try:
+                self._authenticate()
+            except AttributeError as error:
+                raise RuntimeError("AttributeError: " + error.message)
         return self._user
 
     @user.setter

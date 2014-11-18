@@ -333,6 +333,28 @@ class TestUserSetter(TestCase):
         login(self.request, self.user)
         self.assertEqual(self.request.user, self.user)
 
+    def test_calling_user_fails_when_attribute_error_is_raised(self):
+        """
+        This proves that when an AttributeError is raised inside of the request.user
+        property, that we can handle this and report the true, underlying error.
+        """
+        class AuthRaisesAttributeError(object):
+            def authenticate(self, request):
+                import rest_framework
+                rest_framework.MISSPELLED_NAME_THAT_DOESNT_EXIST
+
+        self.request = Request(factory.get('/'), authenticators=(AuthRaisesAttributeError(),))
+        SessionMiddleware().process_request(self.request)
+
+        login(self.request, self.user)
+        error_seen = None
+        try:
+            self.request.user
+        except RuntimeError as error:
+            error_seen = error
+
+        self.assertEqual("AttributeError: 'module' object has no attribute 'MISSPELLED_NAME_THAT_DOESNT_EXIST'", error_seen.message)
+
     def test_user_can_logout(self):
         self.request.user = self.user
         self.assertFalse(self.request.user.is_anonymous())
