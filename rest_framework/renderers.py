@@ -515,6 +515,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         In the absence of the View having an associated form then return None.
         """
+        # See issue #2089 for refactoring this.
         serializer = getattr(data, 'serializer', None)
         if serializer and not getattr(serializer, 'many', False):
             instance = getattr(serializer, 'instance', None)
@@ -562,6 +563,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         via standard HTML forms.
         (Which are typically application/x-www-form-urlencoded)
         """
+        # See issue #2089 for refactoring this.
         serializer = getattr(data, 'serializer', None)
         if serializer and not getattr(serializer, 'many', False):
             instance = getattr(serializer, 'instance', None)
