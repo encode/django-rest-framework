@@ -121,7 +121,10 @@ class SimpleMetadata(BaseMetadata):
 
         if hasattr(field, 'choices'):
             field_info['choices'] = [
-                {'value': choice_value, 'display_name': choice_name}
+                {
+                    'value': choice_value,
+                    'display_name': force_text(choice_name, strings_only=True)
+                }
                 for choice_value, choice_name in field.choices.items()
             ]
 
