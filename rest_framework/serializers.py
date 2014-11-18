@@ -108,6 +108,13 @@ class BaseSerializer(Field):
         raise NotImplementedError('`create()` must be implemented.')
 
     def save(self, **kwargs):
+        assert not hasattr(self, 'save_object'), (
+            'Serializer `%s.%s` has old-style version 2 `.save_object()` '
+            'that is no longer compatible with REST framework 3. '
+            'Use the new-style `.create()` and `.update()` methods instead.' %
+            (self.__class__.__module__, self.__class__.__name__)
+        )
+
         validated_data = dict(
             list(self.validated_data.items()) +
             list(kwargs.items())
