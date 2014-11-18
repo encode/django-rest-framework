@@ -76,17 +76,16 @@ class TestCustomLookupFields(TestCase):
 
     def setUp(self):
         class NoteSerializer(serializers.HyperlinkedModelSerializer):
+            url = serializers.HyperlinkedIdentityField(view_name='routertestmodel-detail', lookup_field='uuid')
+
             class Meta:
                 model = RouterTestModel
-                lookup_field = 'uuid'
                 fields = ('url', 'uuid', 'text')
 
         class NoteViewSet(viewsets.ModelViewSet):
             queryset = RouterTestModel.objects.all()
             serializer_class = NoteSerializer
             lookup_field = 'uuid'
-
-        RouterTestModel.objects.create(uuid='123', text='foo bar')
 
         self.router = SimpleRouter()
         self.router.register(r'notes', NoteViewSet)
@@ -97,6 +96,8 @@ class TestCustomLookupFields(TestCase):
             '',
             url(r'^', include(self.router.urls)),
         )
+
+        RouterTestModel.objects.create(uuid='123', text='foo bar')
 
     def test_custom_lookup_field_route(self):
         detail_route = self.router.urls[-1]

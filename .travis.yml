@@ -20,6 +20,16 @@ env:
     - TOX_ENV=py2.6-django1.5
     - TOX_ENV=py2.7-django1.4
     - TOX_ENV=py2.6-django1.4
+    - TOX_ENV=py3.4-djangomaster
+    - TOX_ENV=py3.3-djangomaster
+    - TOX_ENV=py2.7-djangomaster
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - env: TOX_ENV=py3.4-djangomaster
+    - env: TOX_ENV=py3.3-djangomaster
+    - env: TOX_ENV=py2.7-djangomaster
 
 install:
   - "pip install tox --download-cache $HOME/.pip-cache"

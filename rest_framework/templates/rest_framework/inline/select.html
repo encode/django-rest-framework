@@ -1,0 +1,10 @@
+<div class="form-group {% if field.errors %}has-error{% endif %}">
+    {% if field.label %}
+        <label class="sr-only">{{ field.label }}</label>
+    {% endif %}
+    <select class="form-control" name="{{ field.name }}">
+        {% for key, text in field.choices.items %}
+        <option value="{{ key }}" {% if key == field.value %}selected{% endif %}>{{ text }}</option>
+        {% endfor %}
+    </select>
+</div>

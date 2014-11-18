@@ -274,7 +274,27 @@ Corresponds to `django.db.models.fields.FloatField`.
 
 ## DecimalField
 
-A decimal representation.
+A decimal representation, represented in Python by a Decimal instance.
+
+Has two required arguments:
+
+- `max_digits` The maximum number of digits allowed in the number. Note that this number must be greater than or equal to decimal_places.
+
+- `decimal_places` The number of decimal places to store with the number.
+
+For example, to validate numbers up to 999 with a resolution of 2 decimal places, you would use:
+
+    serializers.DecimalField(max_digits=5, decimal_places=2)
+
+And to validate numbers up to anything less than one billion with a resolution of 10 decimal places:
+
+    serializers.DecimalField(max_digits=19, decimal_places=10)
+
+This field also takes an optional argument, `coerce_to_string`. If set to `True` the representation will be output as a string. If set to `False` the representation will be left as a `Decimal` instance and the final representation will be determined by the renderer.
+
+If unset, this will default to the same value as the `COERCE_DECIMAL_TO_STRING` setting, which is `True` unless set otherwise.
+
+**Signature:** `DecimalField(max_digits, decimal_places, coerce_to_string=None)`
 
 Corresponds to `django.db.models.fields.DecimalField`.
 

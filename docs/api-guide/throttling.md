@@ -74,7 +74,7 @@ If you need to strictly identify unique client IP addresses, you'll need to firs
 
 It is important to understand that if you configure the `NUM_PROXIES` setting, then all clients behind a unique [NAT'd](http://en.wikipedia.org/wiki/Network_address_translation) gateway will be treated as a single client.
 
-Further context on how the `X-Forwarded-For` header works, and identifing a remote client IP can be [found here][identifing-clients].
+Further context on how the `X-Forwarded-For` header works, and identifying a remote client IP can be [found here][identifing-clients].
 
 ## Setting up the cache
 
@@ -85,7 +85,7 @@ If you need to use a cache other than `'default'`, you can do so by creating a c
     class CustomAnonRateThrottle(AnonRateThrottle):
         cache = get_cache('alternate') 
 
-You'll need to rememeber to also set your custom throttle class in the `'DEFAULT_THROTTLE_CLASSES'` settings key, or using the `throttle_classes` view attribute.
+You'll need to remember to also set your custom throttle class in the `'DEFAULT_THROTTLE_CLASSES'` settings key, or using the `throttle_classes` view attribute.
 
 ---
 
@@ -177,6 +177,8 @@ User requests to either `ContactListView` or `ContactDetailView` would be restri
 To create a custom throttle, override `BaseThrottle` and implement `.allow_request(self, request, view)`.  The method should return `True` if the request should be allowed, and `False` otherwise.
 
 Optionally you may also override the `.wait()` method.  If implemented, `.wait()` should return a recommended number of seconds to wait before attempting the next request, or `None`.  The `.wait()` method will only be called if `.allow_request()` has previously returned `False`.
+
+If the `.wait()` method is implemented and the request is throttled, then a `Retry-After` header will be included in the response.
 
 ## Example
 

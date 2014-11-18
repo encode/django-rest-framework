@@ -15,13 +15,34 @@ class APIException(Exception):
     Subclasses should provide `.status_code` and `.default_detail` properties.
     """
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    default_detail = ''
+    default_detail = 'A server error occured'
 
     def __init__(self, detail=None):
         self.detail = detail or self.default_detail
 
     def __str__(self):
         return self.detail
+
+
+# The recommended style for using `ValidationError` is to keep it namespaced
+# under `serializers`, in order to minimize potential confusion with Django's
+# built in `ValidationError`. For example:
+#
+# from rest_framework import serializers
+# raise serializers.ValidationError('Value was invalid')
+
+class ValidationError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+
+    def __init__(self, detail):
+        # For validation errors the 'detail' key is always required.
+        # The details should always be coerced to a list if not already.
+        if not isinstance(detail, dict) and not isinstance(detail, list):
+            detail = [detail]
+        self.detail = detail
+
+    def __str__(self):
+        return str(self.detail)
 
 
 class ParseError(APIException):
@@ -49,12 +70,12 @@ class MethodNotAllowed(APIException):
     default_detail = "Method '%s' not allowed."
 
     def __init__(self, method, detail=None):
-        self.detail = (detail or self.default_detail) % method
+        self.detail = detail or (self.default_detail % method)
 
 
 class NotAcceptable(APIException):
     status_code = status.HTTP_406_NOT_ACCEPTABLE
-    default_detail = "Could not satisfy the request's Accept header"
+    default_detail = "Could not satisfy the request Accept header"
 
     def __init__(self, detail=None, available_renderers=None):
         self.detail = detail or self.default_detail
@@ -66,7 +87,7 @@ class UnsupportedMediaType(APIException):
     default_detail = "Unsupported media type '%s' in request."
 
     def __init__(self, media_type, detail=None):
-        self.detail = (detail or self.default_detail) % media_type
+        self.detail = detail or (self.default_detail % media_type)
 
 
 class Throttled(APIException):

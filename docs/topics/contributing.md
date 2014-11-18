@@ -10,9 +10,9 @@ There are many ways you can contribute to Django REST framework.  We'd like it t
 
 The most important thing you can do to help push the REST framework project forward is to be actively involved wherever possible.  Code contributions are often overvalued as being the primary way to get involved in a project, we don't believe that needs to be the case.
 
-If you use REST framework, we'd love you to be vocal about your experiences with it - you might consider writing a blog post about using REST framework, or publishing a tutorial about building a project with a particular Javascript framework.  Experiences from beginners can be particularly helpful because you'll be in the best position to assess which bits of REST framework are more difficult to understand and work with.
+If you use REST framework, we'd love you to be vocal about your experiences with it - you might consider writing a blog post about using REST framework, or publishing a tutorial about building a project with a particular JavaScript framework.  Experiences from beginners can be particularly helpful because you'll be in the best position to assess which bits of REST framework are more difficult to understand and work with.
 
-Other really great ways you can help move the community forward include helping answer questions on the [discussion group][google-group], or setting up an [email alert on StackOverflow][so-filter] so that you get notified of any new questions with the `django-rest-framework` tag.
+Other really great ways you can help move the community forward include helping to answer questions on the [discussion group][google-group], or setting up an [email alert on StackOverflow][so-filter] so that you get notified of any new questions with the `django-rest-framework` tag.
 
 When answering questions make sure to help future contributors find their way around by hyperlinking wherever possible to related threads and tickets, and include backlinks from those items if relevant.
 
@@ -33,7 +33,7 @@ Some tips on good issue reporting:
 * When describing issues try to phrase your ticket in terms of the *behavior* you think needs changing rather than the *code* you think need changing.
 * Search the issue list first for related items, and make sure you're running the latest version of REST framework before reporting an issue.
 * If reporting a bug, then try to include a pull request with a failing test case.  This will help us quickly identify if there is a valid issue, and make sure that it gets fixed more quickly if there is one.
-* Feature requests will often be closed with a recommendation that they be implemented outside of the core REST framework library.  Keeping new feature requests implemented as third party libraries allows us to keep down the maintainence overhead of REST framework, so that the focus can be on continued stability, bugfixes, and great documentation.
+* Feature requests will often be closed with a recommendation that they be implemented outside of the core REST framework library.  Keeping new feature requests implemented as third party libraries allows us to keep down the maintenance overhead of REST framework, so that the focus can be on continued stability, bugfixes, and great documentation.
 * Closing an issue doesn't necessarily mean the end of a discussion.  If you believe your issue has been closed incorrectly, explain why and we'll consider if it needs to be reopened.
 
 ## Triaging issues
@@ -52,7 +52,7 @@ To start developing on Django REST framework, clone the repo:
 
     git clone git@github.com:tomchristie/django-rest-framework.git
 
-Changes should broadly follow the [PEP 8][pep-8] style conventions, and we recommend you setup your editor to automatically indicated non-conforming styles.
+Changes should broadly follow the [PEP 8][pep-8] style conventions, and we recommend you set up your editor to automatically indicate non-conforming styles.
 
 ## Testing
 
@@ -71,31 +71,31 @@ To run the tests, clone the repository, and then:
 
 Run using a more concise output style.
 
-    ./runtests -q
+    ./runtests.py -q
 
 Run the tests using a more concise output style, no coverage, no flake8.
 
-    ./runtests --fast
+    ./runtests.py --fast
 
 Don't run the flake8 code linting.
 
-    ./runtests --nolint
+    ./runtests.py --nolint
 
 Only run the flake8 code linting, don't run the tests.
 
-    ./runtests --lintonly
+    ./runtests.py --lintonly
 
 Run the tests for a given test case.
 
-    ./runtests MyTestCase
+    ./runtests.py MyTestCase
 
 Run the tests for a given test method.
 
-    ./runtests MyTestCase.test_this_method
+    ./runtests.py MyTestCase.test_this_method
 
 Shorter form to run the tests for a given test method.
 
-    ./runtests test_this_method
+    ./runtests.py test_this_method
 
 Note: The test case and test method matching is fuzzy and will sometimes run other tests that contain a partial string match to the given  command line input.
 
@@ -109,7 +109,7 @@ You can also use the excellent [tox][tox] testing tool to run the tests against 
 
 It's a good idea to make pull requests early on.  A pull request represents the start of a discussion, and doesn't necessarily need to be the final, finished submission.
 
-It's also always best to make a new branch before starting work on a pull request.  This means that you'll be able to later switch back to working on another seperate issue without interfering with an ongoing pull requests.
+It's also always best to make a new branch before starting work on a pull request.  This means that you'll be able to later switch back to working on another separate issue without interfering with an ongoing pull requests.
 
 It's also useful to remember that if you have an outstanding pull request then pushing new commits to your GitHub repo will also automatically update the pull requests.
 
@@ -117,7 +117,7 @@ GitHub's documentation for working on pull requests is [available here][pull-req
 
 Always run the tests before submitting pull requests, and ideally run `tox` in order to check that your modifications are compatible with both Python 2 and Python 3, and that they run properly on all supported versions of Django.
 
-Once you've made a pull request take a look at the travis build status in the GitHub interface and make sure the tests are runnning as you'd expect.
+Once you've made a pull request take a look at the Travis build status in the GitHub interface and make sure the tests are running as you'd expect.
 
 ![Travis status][travis-status]
 
@@ -131,7 +131,7 @@ Sometimes, in order to ensure your code works on various different versions of D
 
 The documentation for REST framework is built from the [Markdown][markdown] source files in [the docs directory][docs].
 
-There are many great markdown editors that make working with the documentation really easy.  The [Mou editor for Mac][mou] is one such editor that comes highly recommended.
+There are many great Markdown editors that make working with the documentation really easy.  The [Mou editor for Mac][mou] is one such editor that comes highly recommended.
 
 ## Building the documentation
 
@@ -153,7 +153,7 @@ Some other tips:
 
 * Keep paragraphs reasonably short.
 * Use double spacing after the end of sentences.
-* Don't use the abbreviations such as 'e.g.' but instead use long form, such as 'For example'.
+* Don't use abbreviations such as 'e.g.' but instead use the long form, such as 'For example'.
 
 ## Markdown style
 
@@ -186,7 +186,7 @@ If you are hyperlinking to another REST framework document, you should use a rel
 
     [authentication]: ../api-guide/authentication.md
 
-Linking in this style means you'll be able to click the hyperlink in your markdown editor to open the referenced document.  When the documentation is built, these links will be converted into regular links to HTML pages.
+Linking in this style means you'll be able to click the hyperlink in your Markdown editor to open the referenced document.  When the documentation is built, these links will be converted into regular links to HTML pages.
 
 ##### 3. Notes
 

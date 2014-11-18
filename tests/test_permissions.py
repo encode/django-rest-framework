@@ -3,7 +3,7 @@ from django.contrib.auth.models import User, Permission, Group
 from django.db import models
 from django.test import TestCase
 from django.utils import unittest
-from rest_framework import generics, status, permissions, authentication, HTTP_HEADER_ENCODING
+from rest_framework import generics, serializers, status, permissions, authentication, HTTP_HEADER_ENCODING
 from rest_framework.compat import guardian, get_model_name
 from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.test import APIRequestFactory
@@ -13,14 +13,21 @@ import base64
 factory = APIRequestFactory()
 
 
+class BasicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BasicModel
+
+
 class RootView(generics.ListCreateAPIView):
-    model = BasicModel
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [permissions.DjangoModelPermissions]
 
 
 class InstanceView(generics.RetrieveUpdateDestroyAPIView):
-    model = BasicModel
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [permissions.DjangoModelPermissions]
 
@@ -86,19 +93,6 @@ class ModelPermissionsIntegrationTests(TestCase):
     def test_does_not_have_delete_permissions(self):
         request = factory.delete('/1', HTTP_AUTHORIZATION=self.disallowed_credentials)
         response = instance_view(request, pk=1)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_has_put_as_create_permissions(self):
-        # User only has update permissions - should be able to update an entity.
-        request = factory.put('/1', {'text': 'foobar'}, format='json',
-                              HTTP_AUTHORIZATION=self.updateonly_credentials)
-        response = instance_view(request, pk='1')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # But if PUTing to a new entity, permission should be denied.
-        request = factory.put('/2', {'text': 'foobar'}, format='json',
-                              HTTP_AUTHORIZATION=self.updateonly_credentials)
-        response = instance_view(request, pk='2')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_options_permitted(self):
@@ -167,6 +161,11 @@ class BasicPermModel(models.Model):
         )
 
 
+class BasicPermSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BasicPermModel
+
+
 # Custom object-level permission, that includes 'view' permissions
 class ViewObjectPermissions(permissions.DjangoObjectPermissions):
     perms_map = {
@@ -181,7 +180,8 @@ class ViewObjectPermissions(permissions.DjangoObjectPermissions):
 
 
 class ObjectPermissionInstanceView(generics.RetrieveUpdateDestroyAPIView):
-    model = BasicPermModel
+    queryset = BasicPermModel.objects.all()
+    serializer_class = BasicPermSerializer
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [ViewObjectPermissions]
 
@@ -189,7 +189,8 @@ object_permissions_view = ObjectPermissionInstanceView.as_view()
 
 
 class ObjectPermissionListView(generics.ListAPIView):
-    model = BasicPermModel
+    queryset = BasicPermModel.objects.all()
+    serializer_class = BasicPermSerializer
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [ViewObjectPermissions]
 

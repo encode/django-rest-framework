@@ -146,7 +146,13 @@ As with `DjangoModelPermissions`, this permission must only be applied to views 
 
 Note that `DjangoObjectPermissions` **does not** require the `django-guardian` package, and should support other object-level backends equally well.
 
-As with `DjangoModelPermissions` you can use custom model permissions by overriding `DjangoModelPermissions` and setting the `.perms_map` property.  Refer to the source code for details.  Note that if you add a custom `view` permission for `GET`, `HEAD` and `OPTIONS` requests, you'll probably also want to consider adding the `DjangoObjectPermissionsFilter` class to ensure that list endpoints only return results including objects for which the user has appropriate view permissions.
+As with `DjangoModelPermissions` you can use custom model permissions by overriding `DjangoModelPermissions` and setting the `.perms_map` property.  Refer to the source code for details.
+
+---
+
+**Note**: If you need object level `view` permissions for `GET`, `HEAD` and `OPTIONS` requests, you'll want to consider also adding the `DjangoObjectPermissionsFilter` class to ensure that list endpoints only return results including objects for which the user has appropriate view permissions.
+
+---
 
 ## TokenHasReadWriteScope
 
@@ -183,11 +189,7 @@ If you need to test if a request is a read operation or a write operation, you s
 
 ---
 
-**Note**: In versions 2.0 and 2.1, the signature for the permission checks always included an optional `obj` parameter, like so: `.has_permission(self, request, view, obj=None)`.  The method would be called twice, first for the global permission checks, with no object supplied, and second for the object-level check when required.
-
-As of version 2.2 this signature has now been replaced with two separate method calls, which is more explicit and obvious.  The old style signature continues to work, but its use will result in a `PendingDeprecationWarning`, which is silent by default.  In 2.3 this will be escalated to a `DeprecationWarning`, and in 2.4 the old-style signature will be removed.
-
-For more details see the [2.2 release announcement][2.2-announcement].
+**Note**: The instance-level `has_object_permission` method will only be called if the view-level `has_permission` checks have already passed. Also note that in order for the instance-level checks to run, the view code should explicitly call `.check_object_permissions(request, obj)`. If you are using the generic views then this will be handled for you by default.
 
 ---
 

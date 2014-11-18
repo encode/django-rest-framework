@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+import django
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
@@ -11,44 +12,44 @@ from tests.models import ForeignKeySource, ForeignKeyTarget
 factory = APIRequestFactory()
 
 
+class BasicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BasicModel
+
+
+class ForeignKeySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ForeignKeySource
+
+
 class RootView(generics.ListCreateAPIView):
-    """
-    Example description for OPTIONS.
-    """
-    model = BasicModel
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
 
 
 class InstanceView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Example description for OPTIONS.
-    """
-    model = BasicModel
-
-    def get_queryset(self):
-        queryset = super(InstanceView, self).get_queryset()
-        return queryset.exclude(text='filtered out')
+    queryset = BasicModel.objects.exclude(text='filtered out')
+    serializer_class = BasicSerializer
 
 
 class FKInstanceView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    FK: example description for OPTIONS.
-    """
-    model = ForeignKeySource
+    queryset = ForeignKeySource.objects.all()
+    serializer_class = ForeignKeySerializer
 
 
 class SlugSerializer(serializers.ModelSerializer):
-    slug = serializers.Field()  # read only
+    slug = serializers.ReadOnlyField()
 
     class Meta:
         model = SlugBasedModel
-        exclude = ('id',)
+        fields = ('text', 'slug')
 
 
 class SlugBasedInstanceView(InstanceView):
     """
     A model with a slug-field.
     """
-    model = SlugBasedModel
+    queryset = SlugBasedModel.objects.all()
     serializer_class = SlugSerializer
     lookup_field = 'slug'
 
@@ -112,47 +113,6 @@ class TestRootView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEqual(response.data, {"detail": "Method 'DELETE' not allowed."})
 
-    def test_options_root_view(self):
-        """
-        OPTIONS requests to ListCreateAPIView should return metadata
-        """
-        request = factory.options('/')
-        with self.assertNumQueries(0):
-            response = self.view(request).render()
-        expected = {
-            'parses': [
-                'application/json',
-                'application/x-www-form-urlencoded',
-                'multipart/form-data'
-            ],
-            'renders': [
-                'application/json',
-                'text/html'
-            ],
-            'name': 'Root',
-            'description': 'Example description for OPTIONS.',
-            'actions': {
-                'POST': {
-                    'text': {
-                        'max_length': 100,
-                        'read_only': False,
-                        'required': True,
-                        'type': 'string',
-                        "label": "Text comes here",
-                        "help_text": "Text description."
-                    },
-                    'id': {
-                        'read_only': True,
-                        'required': False,
-                        'type': 'integer',
-                        'label': 'ID',
-                    },
-                }
-            }
-        }
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, expected)
-
     def test_post_cannot_set_id(self):
         """
         POST requests to create a new object should not be able to set the id.
@@ -165,6 +125,9 @@ class TestRootView(TestCase):
         self.assertEqual(response.data, {'id': 4, 'text': 'foobar'})
         created = self.objects.get(id=4)
         self.assertEqual(created.text, 'foobar')
+
+
+EXPECTED_QUERYS_FOR_PUT = 3 if django.VERSION < (1, 6) else 2
 
 
 class TestInstanceView(TestCase):
@@ -210,10 +173,10 @@ class TestInstanceView(TestCase):
         """
         data = {'text': 'foobar'}
         request = factory.put('/1', data, format='json')
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(EXPECTED_QUERYS_FOR_PUT):
             response = self.view(request, pk='1').render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
+        self.assertEqual(dict(response.data), {'id': 1, 'text': 'foobar'})
         updated = self.objects.get(id=1)
         self.assertEqual(updated.text, 'foobar')
 
@@ -224,7 +187,7 @@ class TestInstanceView(TestCase):
         data = {'text': 'foobar'}
         request = factory.patch('/1', data, format='json')
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(EXPECTED_QUERYS_FOR_PUT):
             response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
@@ -243,89 +206,6 @@ class TestInstanceView(TestCase):
         ids = [obj.id for obj in self.objects.all()]
         self.assertEqual(ids, [2, 3])
 
-    def test_options_instance_view(self):
-        """
-        OPTIONS requests to RetrieveUpdateDestroyAPIView should return metadata
-        """
-        request = factory.options('/1')
-        with self.assertNumQueries(1):
-            response = self.view(request, pk=1).render()
-        expected = {
-            'parses': [
-                'application/json',
-                'application/x-www-form-urlencoded',
-                'multipart/form-data'
-            ],
-            'renders': [
-                'application/json',
-                'text/html'
-            ],
-            'name': 'Instance',
-            'description': 'Example description for OPTIONS.',
-            'actions': {
-                'PUT': {
-                    'text': {
-                        'max_length': 100,
-                        'read_only': False,
-                        'required': True,
-                        'type': 'string',
-                        'label': 'Text comes here',
-                        'help_text': 'Text description.'
-                    },
-                    'id': {
-                        'read_only': True,
-                        'required': False,
-                        'type': 'integer',
-                        'label': 'ID',
-                    },
-                }
-            }
-        }
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, expected)
-
-    def test_options_before_instance_create(self):
-        """
-        OPTIONS requests to RetrieveUpdateDestroyAPIView should return metadata
-        before the instance has been created
-        """
-        request = factory.options('/999')
-        with self.assertNumQueries(1):
-            response = self.view(request, pk=999).render()
-        expected = {
-            'parses': [
-                'application/json',
-                'application/x-www-form-urlencoded',
-                'multipart/form-data'
-            ],
-            'renders': [
-                'application/json',
-                'text/html'
-            ],
-            'name': 'Instance',
-            'description': 'Example description for OPTIONS.',
-            'actions': {
-                'PUT': {
-                    'text': {
-                        'max_length': 100,
-                        'read_only': False,
-                        'required': True,
-                        'type': 'string',
-                        'label': 'Text comes here',
-                        'help_text': 'Text description.'
-                    },
-                    'id': {
-                        'read_only': True,
-                        'required': False,
-                        'type': 'integer',
-                        'label': 'ID',
-                    },
-                }
-            }
-        }
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, expected)
-
     def test_get_instance_view_incorrect_arg(self):
         """
         GET requests with an incorrect pk type, should raise 404, not 500.
@@ -342,7 +222,7 @@ class TestInstanceView(TestCase):
         """
         data = {'id': 999, 'text': 'foobar'}
         request = factory.put('/1', data, format='json')
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(EXPECTED_QUERYS_FOR_PUT):
             response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
@@ -351,18 +231,15 @@ class TestInstanceView(TestCase):
 
     def test_put_to_deleted_instance(self):
         """
-        PUT requests to RetrieveUpdateDestroyAPIView should create an object
-        if it does not currently exist.
+        PUT requests to RetrieveUpdateDestroyAPIView should return 404 if
+        an object does not currently exist.
         """
         self.objects.get(id=1).delete()
         data = {'text': 'foobar'}
         request = factory.put('/1', data, format='json')
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(1):
             response = self.view(request, pk=1).render()
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
-        updated = self.objects.get(id=1)
-        self.assertEqual(updated.text, 'foobar')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_put_to_filtered_out_instance(self):
         """
@@ -373,35 +250,7 @@ class TestInstanceView(TestCase):
         filtered_out_pk = BasicModel.objects.filter(text='filtered out')[0].pk
         request = factory.put('/{0}'.format(filtered_out_pk), data, format='json')
         response = self.view(request, pk=filtered_out_pk).render()
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_put_as_create_on_id_based_url(self):
-        """
-        PUT requests to RetrieveUpdateDestroyAPIView should create an object
-        at the requested url if it doesn't exist.
-        """
-        data = {'text': 'foobar'}
-        # pk fields can not be created on demand, only the database can set the pk for a new object
-        request = factory.put('/5', data, format='json')
-        with self.assertNumQueries(3):
-            response = self.view(request, pk=5).render()
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        new_obj = self.objects.get(pk=5)
-        self.assertEqual(new_obj.text, 'foobar')
-
-    def test_put_as_create_on_slug_based_url(self):
-        """
-        PUT requests to RetrieveUpdateDestroyAPIView should create an object
-        at the requested url if possible, else return HTTP_403_FORBIDDEN error-response.
-        """
-        data = {'text': 'foobar'}
-        request = factory.put('/test_slug', data, format='json')
-        with self.assertNumQueries(2):
-            response = self.slug_based_view(request, slug='test_slug').render()
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, {'slug': 'test_slug', 'text': 'foobar'})
-        new_obj = SlugBasedModel.objects.get(slug='test_slug')
-        self.assertEqual(new_obj.text, 'foobar')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_patch_cannot_create_an_object(self):
         """
@@ -433,53 +282,6 @@ class TestFKInstanceView(TestCase):
         ]
         self.view = FKInstanceView.as_view()
 
-    def test_options_root_view(self):
-        """
-        OPTIONS requests to ListCreateAPIView should return metadata
-        """
-        request = factory.options('/999')
-        with self.assertNumQueries(1):
-            response = self.view(request, pk=999).render()
-        expected = {
-            'name': 'Fk Instance',
-            'description': 'FK: example description for OPTIONS.',
-            'renders': [
-                'application/json',
-                'text/html'
-            ],
-            'parses': [
-                'application/json',
-                'application/x-www-form-urlencoded',
-                'multipart/form-data'
-            ],
-            'actions': {
-                'PUT': {
-                    'id': {
-                        'type': 'integer',
-                        'required': False,
-                        'read_only': True,
-                        'label': 'ID'
-                    },
-                    'name': {
-                        'type': 'string',
-                        'required': True,
-                        'read_only': False,
-                        'label': 'name',
-                        'max_length': 100
-                    },
-                    'target': {
-                        'type': 'field',
-                        'required': True,
-                        'read_only': False,
-                        'label': 'Target',
-                        'help_text': 'Target'
-                    }
-                }
-            }
-        }
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, expected)
-
 
 class TestOverriddenGetObject(TestCase):
     """
@@ -503,7 +305,7 @@ class TestOverriddenGetObject(TestCase):
             """
             Example detail view for override of get_object().
             """
-            model = BasicModel
+            serializer_class = BasicSerializer
 
             def get_object(self):
                 pk = int(self.kwargs['pk'])
@@ -565,7 +367,9 @@ class ClassA(models.Model):
 
 
 class ClassASerializer(serializers.ModelSerializer):
-    childs = serializers.PrimaryKeyRelatedField(many=True, source='childs')
+    childs = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=ClassB.objects.all()
+    )
 
     class Meta:
         model = ClassA
@@ -573,7 +377,7 @@ class ClassASerializer(serializers.ModelSerializer):
 
 class ExampleView(generics.ListCreateAPIView):
     serializer_class = ClassASerializer
-    model = ClassA
+    queryset = ClassA.objects.all()
 
 
 class TestM2MBrowseableAPI(TestCase):
@@ -603,7 +407,7 @@ class TwoFieldModel(models.Model):
 
 
 class DynamicSerializerView(generics.ListCreateAPIView):
-    model = TwoFieldModel
+    queryset = TwoFieldModel.objects.all()
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
 
     def get_serializer_class(self):
@@ -612,8 +416,11 @@ class DynamicSerializerView(generics.ListCreateAPIView):
                 class Meta:
                     model = TwoFieldModel
                     fields = ('field_b',)
-            return DynamicSerializer
-        return super(DynamicSerializerView, self).get_serializer_class()
+        else:
+            class DynamicSerializer(serializers.ModelSerializer):
+                class Meta:
+                    model = TwoFieldModel
+        return DynamicSerializer
 
 
 class TestFilterBackendAppliedToViews(TestCase):
@@ -681,42 +488,3 @@ class TestFilterBackendAppliedToViews(TestCase):
         response = view(request).render()
         self.assertContains(response, 'field_b')
         self.assertNotContains(response, 'field_a')
-
-    def test_options_with_dynamic_serializer(self):
-        """
-        Ensure that OPTIONS returns correct POST json schema:
-        DynamicSerializer with single field 'field_b'
-        """
-        request = factory.options('/')
-        view = DynamicSerializerView.as_view()
-
-        with self.assertNumQueries(0):
-            response = view(request).render()
-
-        expected = {
-            'name': 'Dynamic Serializer',
-            'description': '',
-            'renders': [
-                'text/html',
-                'application/json'
-            ],
-            'parses': [
-                'application/json',
-                'application/x-www-form-urlencoded',
-                'multipart/form-data'
-            ],
-            'actions': {
-                'POST': {
-                    'field_b': {
-                        'type': 'string',
-                        'required': True,
-                        'read_only': False,
-                        'label': 'field b',
-                        'max_length': 100
-                    }
-                }
-            }
-        }
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, expected)
