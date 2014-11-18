@@ -547,7 +547,10 @@ class BrowsableAPIRenderer(BaseRenderer):
             if existing_serializer is not None:
                 serializer = existing_serializer
             else:
-                serializer = view.get_serializer(instance=instance, data=data)
+                if method in ('PUT', 'PATCH'):
+                    serializer = view.get_serializer(instance=instance, data=data)
+                else:
+                    serializer = view.get_serializer(data=data)
                 if data is not None:
                     serializer.is_valid()
             form_renderer = self.form_renderer_class()
@@ -584,7 +587,10 @@ class BrowsableAPIRenderer(BaseRenderer):
                 # View has a serializer defined and parser class has a
                 # corresponding renderer that can be used to render the data.
 
-                serializer = view.get_serializer(instance=instance)
+                if method in ('PUT', 'PATCH'):
+                    serializer = view.get_serializer(instance=instance)
+                else:
+                    serializer = view.get_serializer()
 
                 # Render the raw data content
                 renderer = renderer_class()
