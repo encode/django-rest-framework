@@ -22,7 +22,7 @@ Before we do anything else we'll create a new virtual environment, using [virtua
 
 Now that we're inside a virtualenv environment, we can install our package requirements.
 
-    pip install django
+    pip install django==1.5.1
     pip install djangorestframework
     pip install pygments  # We'll be using this for the code highlighting
 
