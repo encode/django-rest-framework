@@ -7,12 +7,12 @@ repo_url: https://github.com/tomchristie/django-rest-framework
 pages:
  - ['index.md', ]
  - ['tutorial/quickstart.md', ]
- - ['tutorial/1-serialization.md', "Tutorial", "1 - Serialization"]
- - ['tutorial/2-requests-and-responses.md', "Tutorial", "2 - Requests and responses"]
- - ['tutorial/3-class-based-views.md', "Tutorial", "3 - Class based views"]
- - ['tutorial/4-authentication-and-permissions.md', "Tutorial", "4 - Authentication and permissions"]
- - ['tutorial/5-relationships-and-hyperlinked-apis.md', "Tutorial", "5 - Relationships and hyperlinked APIs"]
- - ['tutorial/6-viewsets-and-routers.md', "Tutorial", "6- Viewsets and routers"]
+ - ['tutorial/1-serialization.md', 'Tutorial', '1 - Serialization']
+ - ['tutorial/2-requests-and-responses.md', 'Tutorial', '2 - Requests and responses']
+ - ['tutorial/3-class-based-views.md', 'Tutorial', '3 - Class based views']
+ - ['tutorial/4-authentication-and-permissions.md', 'Tutorial', '4 - Authentication and permissions']
+ - ['tutorial/5-relationships-and-hyperlinked-apis.md', 'Tutorial', '5 - Relationships and hyperlinked APIs']
+ - ['tutorial/6-viewsets-and-routers.md', 'Tutorial', '6- Viewsets and routers']
  - ['api-guide/requests.md', 'API Guide', ]
  - ['api-guide/responses.md', 'API Guide', ]
  - ['api-guide/views.md', 'API Guide', ]
@@ -22,8 +22,8 @@ pages:
  - ['api-guide/parsers.md', 'API Guide', ]
  - ['api-guide/renderers.md', 'API Guide', ]
  - ['api-guide/serializers.md', 'API Guide', ]
- - ['api-guide/fields.md', 'API Guide', "Serializer fields"]
- - ['api-guide/relations.md', 'API Guide', "Serializer relations"]
+ - ['api-guide/fields.md', 'API Guide', 'Serializer fields']
+ - ['api-guide/relations.md', 'API Guide', 'Serializer relations']
  - ['api-guide/validators.md', 'API Guide', ]
  - ['api-guide/authentication.md', 'API Guide', ]
  - ['api-guide/permissions.md', 'API Guide', ]
@@ -54,5 +54,5 @@ pages:
 
 site_dir: html
 theme_dir: docs_theme
-copyright: Copyright &copy; 2014, <a href="https://twitter.com/_tomchristie">Tom Christie</a>.
+copyright: Copyright &copy; 2014, <a href='https://twitter.com/_tomchristie'>Tom Christie</a>.
 google_analytics: ['UA-18852272-2', 'django-rest-framework.org']
