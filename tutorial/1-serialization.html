@@ -288,8 +288,8 @@ class Snippet(models.Model):
         ordering = ('created',)
 </code></pre>
 <p>Don't forget to sync the database for the first time.</p>
-<pre class="prettyprint lang-py"><code>python manage.py syncdb
-</code></pre>
+<pre class="prettyprint lang-py"><code>python manage.py makemigrations snippets
+python manage.py migrate</code></pre>
 <h2 id="creating-a-serializer-class">Creating a Serializer class</h2>
 <p>The first thing we need to get started on our Web API is to provide a way of serializing and deserializing the snippet instances into representations such as <code>json</code>.  We can do this by declaring serializers that work very similar to Django's forms.  Create a file in the <code>snippets</code> directory named <code>serializers.py</code> and add the following.</p>
 <pre class="prettyprint lang-py"><code>from django.forms import widgets
