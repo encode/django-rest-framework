@@ -106,12 +106,21 @@
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
                 {% for toc_item in toc %}
-                <li class="{% if loop.first %}main{% endif %} {% if toc_item.active %}main{% endif %}"><a href="{{ toc_item.url }}">{{ toc_item.title }}</a>
-                </li>
-                {% for toc_item in toc_item.children %}
-                <li><a href="{{ toc_item.url }}">{{ toc_item.title }}</a>
-                </li>
-                {% endfor %} {% endfor %} {# TODO: This is a bit of a hack. We don't want to refer to the file specifically. #} {% if current_page.input_path == 'index.md' %}
+
+                  <li class="main {% if toc_item.active %}main{% endif %}">
+                    <a href="{{ toc_item.url }}">{{ toc_item.title }}</a>
+                  </li>
+
+                  {% for toc_item in toc_item.children %}
+                    <li>
+                      <a href="{{ toc_item.url }}">{{ toc_item.title }}</a>
+                    </li>
+                  {% endfor %}
+
+                {% endfor %}
+
+                {# TODO: This is a bit of a hack. We don't want to refer to the file specifically. #}
+                {% if current_page.input_path == 'index.md' %}
                 <div class="promo">
                   <hr/>
                   <script type="text/javascript" src="//cdn.fusionads.net/fusion.js?zoneid=1332&serve=C6SDP2Y&placement=djangorestframework" id="_fusionads_js"></script>
