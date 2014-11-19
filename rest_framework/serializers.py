@@ -721,6 +721,7 @@ class ModelSerializer(Serializer):
         # arguments to deal with `unique_for` dates that are required to
         # be in the input data in order to validate it.
         hidden_fields = {}
+        unique_constraint_names = set()
 
         for model_field_name, field_name in model_field_mapping.items():
             try:
@@ -729,12 +730,13 @@ class ModelSerializer(Serializer):
                 continue
 
             # Include each of the `unique_for_*` field names.
-            unique_constraint_names = set([
+            unique_constraint_names |= set([
                 model_field.unique_for_date,
                 model_field.unique_for_month,
                 model_field.unique_for_year
             ])
-            unique_constraint_names -= set([None])
+
+        unique_constraint_names -= set([None])
 
         # Include each of the `unique_together` field names,
         # so long as all the field names are included on the serializer.
