@@ -88,8 +88,8 @@ class TestUniquenessTogetherValidation(TestCase):
         expected = dedent("""
             UniquenessTogetherSerializer():
                 id = IntegerField(label='ID', read_only=True)
-                race_name = CharField(max_length=100)
-                position = IntegerField()
+                race_name = CharField(max_length=100, required=True)
+                position = IntegerField(required=True)
                 class Meta:
                     validators = [<UniqueTogetherValidator(queryset=UniquenessTogetherModel.objects.all(), fields=('race_name', 'position'))>]
         """)
