@@ -736,12 +736,12 @@ class ModelSerializer(Serializer):
             ])
             unique_constraint_names -= set([None])
 
-            # Include each of the `unique_together` field names,
-            # so long as all the field names are included on the serializer.
-            for parent_class in [model] + list(model._meta.parents.keys()):
-                for unique_together_list in parent_class._meta.unique_together:
-                    if set(fields).issuperset(set(unique_together_list)):
-                        unique_constraint_names |= set(unique_together_list)
+        # Include each of the `unique_together` field names,
+        # so long as all the field names are included on the serializer.
+        for parent_class in [model] + list(model._meta.parents.keys()):
+            for unique_together_list in parent_class._meta.unique_together:
+                if set(fields).issuperset(set(unique_together_list)):
+                    unique_constraint_names |= set(unique_together_list)
 
         # Now we have all the field names that have uniqueness constraints
         # applied, we can add the extra 'required=...' or 'default=...'
