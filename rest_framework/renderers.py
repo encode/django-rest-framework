@@ -562,7 +562,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                 serializer.data,
                 self.accepted_media_type,
                 dict(
-                    self.renderer_context.items() +
+                    list(self.renderer_context.items()) +
                     [('template', 'rest_framework/api_form.html')]
                 )
             )
