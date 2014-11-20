@@ -721,6 +721,7 @@ class ModelSerializer(Serializer):
         # arguments to deal with `unique_for` dates that are required to
         # be in the input data in order to validate it.
         hidden_fields = {}
+        unique_constraint_names = set()
 
         for model_field_name, field_name in model_field_mapping.items():
             try:
@@ -729,19 +730,20 @@ class ModelSerializer(Serializer):
                 continue
 
             # Include each of the `unique_for_*` field names.
-            unique_constraint_names = set([
+            unique_constraint_names |= set([
                 model_field.unique_for_date,
                 model_field.unique_for_month,
                 model_field.unique_for_year
             ])
-            unique_constraint_names -= set([None])
 
-            # Include each of the `unique_together` field names,
-            # so long as all the field names are included on the serializer.
-            for parent_class in [model] + list(model._meta.parents.keys()):
-                for unique_together_list in parent_class._meta.unique_together:
-                    if set(fields).issuperset(set(unique_together_list)):
-                        unique_constraint_names |= set(unique_together_list)
+        unique_constraint_names -= set([None])
+
+        # Include each of the `unique_together` field names,
+        # so long as all the field names are included on the serializer.
+        for parent_class in [model] + list(model._meta.parents.keys()):
+            for unique_together_list in parent_class._meta.unique_together:
+                if set(fields).issuperset(set(unique_together_list)):
+                    unique_constraint_names |= set(unique_together_list)
 
         # Now we have all the field names that have uniqueness constraints
         # applied, we can add the extra 'required=...' or 'default=...'
@@ -755,7 +757,7 @@ class ModelSerializer(Serializer):
             elif getattr(unique_constraint_field, 'auto_now', None):
                 default = timezone.now
             elif unique_constraint_field.has_default():
-                default = model_field.default
+                default = unique_constraint_field.default
             else:
                 default = empty
 

@@ -6,7 +6,6 @@ At the moment relationships within our API are represented by using primary keys
 
 Right now we have endpoints for 'snippets' and 'users', but we don't have a single entry point to our API.  To create one, we'll use a regular function-based view and the `@api_view` decorator we introduced earlier. In your `snippets/views.py` add:
 
-    from rest_framework import renderers
     from rest_framework.decorators import api_view
     from rest_framework.response import Response
     from rest_framework.reverse import reverse
