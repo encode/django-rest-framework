@@ -757,7 +757,7 @@ class ModelSerializer(Serializer):
             elif getattr(unique_constraint_field, 'auto_now', None):
                 default = timezone.now
             elif unique_constraint_field.has_default():
-                default = model_field.default
+                default = unique_constraint_field.default
             else:
                 default = empty
 
