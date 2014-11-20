@@ -88,7 +88,7 @@ Notice how we're creating multiple views from each `ViewSet` class, by binding t
 Now that we've bound our resources into concrete views, we can register the views with the URL conf as usual.
 
     urlpatterns = format_suffix_patterns([
-        url(r'^$', api_root),
+        url(r'^$', views.api_root),
         url(r'^snippets/$', snippet_list, name='snippet-list'),
         url(r'^snippets/(?P<pk>[0-9]+)/$', snippet_detail, name='snippet-detail'),
         url(r'^snippets/(?P<pk>[0-9]+)/highlight/$', snippet_highlight, name='snippet-highlight'),
