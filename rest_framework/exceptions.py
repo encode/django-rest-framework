@@ -13,6 +13,23 @@ from rest_framework.compat import force_text
 import math
 
 
+def _force_text_recursive(data):
+    """
+    Descend into a nested data structure, forcing any
+    lazy translation strings into plain text.
+    """
+    if isinstance(data, list):
+        return [
+            _force_text_recursive(item) for item in data
+        ]
+    elif isinstance(data, dict):
+        return dict([
+            (key, _force_text_recursive(value))
+            for key, value in data.items()
+        ])
+    return force_text(data)
+
+
 class APIException(Exception):
     """
     Base class for REST framework exceptions.
@@ -38,19 +55,6 @@ class APIException(Exception):
 # from rest_framework import serializers
 # raise serializers.ValidationError('Value was invalid')
 
-def force_text_recursive(data):
-    if isinstance(data, list):
-        return [
-            force_text_recursive(item) for item in data
-        ]
-    elif isinstance(data, dict):
-        return dict([
-            (key, force_text_recursive(value))
-            for key, value in data.items()
-        ])
-    return force_text(data)
-
-
 class ValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
 
@@ -59,7 +63,7 @@ class ValidationError(APIException):
         # The details should always be coerced to a list if not already.
         if not isinstance(detail, dict) and not isinstance(detail, list):
             detail = [detail]
-        self.detail = force_text_recursive(detail)
+        self.detail = _force_text_recursive(detail)
 
     def __str__(self):
         return str(self.detail)

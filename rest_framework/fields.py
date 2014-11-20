@@ -181,6 +181,9 @@ class Field(object):
         self.style = {} if style is None else style
         self.allow_null = allow_null
 
+        if allow_null and self.default_empty_html is empty:
+            self.default_empty_html = None
+
         if validators is not None:
             self.validators = validators[:]
 
@@ -495,6 +498,7 @@ class CharField(Field):
     }
     initial = ''
     coerce_blank_to_null = False
+    default_empty_html = ''
 
     def __init__(self, **kwargs):
         self.allow_blank = kwargs.pop('allow_blank', False)
