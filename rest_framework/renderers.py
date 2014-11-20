@@ -525,7 +525,10 @@ class BrowsableAPIRenderer(BaseRenderer):
         else:
             instance = None
 
-        if request.method == method:
+        # If this is valid serializer data, and the form is for the same
+        # HTTP method as was used in the request then use the existing
+        # serializer instance, rather than dynamically creating a new one.
+        if request.method == method and serializer is not None:
             try:
                 data = request.data
             except ParseError:
