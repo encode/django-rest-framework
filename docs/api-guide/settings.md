@@ -74,7 +74,7 @@ Default:
 
 #### DEFAULT_PERMISSION_CLASSES
 
-A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view.
+A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view. Permission must be granted by every class in the list.
 
 Default:
 
