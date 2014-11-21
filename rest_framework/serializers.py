@@ -163,7 +163,7 @@ class BaseSerializer(Field):
             if self.instance is not None and not getattr(self, '_errors', None):
                 try:
                     self._data = self.to_representation(self.instance)
-                except Exception as exc:
+                except AttributeError as exc:
                     if isinstance(self.instance, (list, tuple, QuerySet)):
                         msg = (
                             'The reason for this exception might be that you '
