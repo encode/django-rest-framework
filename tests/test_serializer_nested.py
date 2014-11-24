@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.utils.serializer_helpers import ReturnDict
 
 
 class TestNestedSerializer:
@@ -38,6 +39,20 @@ class TestNestedSerializer:
         }
         serializer = self.Serializer()
         assert serializer.data == expected_data
+
+    def test_nested_field_uses_return_dict(self):
+        input_data = {
+            'nested': {
+                'one': '1',
+                'two': '2',
+            }
+        }
+        serializer = self.Serializer(input_data)
+        assert isinstance(serializer.data['nested'], ReturnDict)
+
+    def test_empty_nested_field_uses_return_dict(self):
+        serializer = self.Serializer()
+        assert isinstance(serializer.data['nested'], ReturnDict)
 
 # """
 # Tests to cover nested serializers.
