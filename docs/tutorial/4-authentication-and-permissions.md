@@ -45,6 +45,9 @@ Normally we'd create a database migration in order to do that, but for the purpo
 
     rm tmp.db
     python manage.py syncdb
+    # Also update migrations for the snippets app
+    python manage.py makemigrations snippets
+    python manage.py migrate
 
 You might also want to create a few different users, to use for testing the API.  The quickest way to do this will be with the `createsuperuser` command.
 
