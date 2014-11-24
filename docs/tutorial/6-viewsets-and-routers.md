@@ -60,7 +60,7 @@ To see what's going on under the hood let's first explicitly create a set of vie
 
 In the `urls.py` file we bind our `ViewSet` classes into a set of concrete views.
 
-    from snippets.views import SnippetViewSet, UserViewSet
+    from snippets.views import SnippetViewSet, UserViewSet, api_root
     from rest_framework import renderers
 
     snippet_list = SnippetViewSet.as_view({
