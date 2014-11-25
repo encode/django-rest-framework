@@ -114,7 +114,7 @@ class UpdateModelMixin(object):
     """
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
-        force_insert = kwargs.pop('force_insert', False)
+        force_insert = kwargs.pop('force_insert', True)
         self.object = self.get_object_or_none()
 
         serializer = self.get_serializer(self.object, data=request.DATA,
