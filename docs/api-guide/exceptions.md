@@ -152,5 +152,23 @@ Raised when an incoming request fails the throttling checks.
 
 By default this exception results in a response with the HTTP status code "429 Too Many Requests".
 
+## ValidationError
+
+**Signature:** `ValidationError(detail)`
+
+The `ValidationError` exception is slightly different from the other `APIException` classes:
+
+* The `detail` argument is mandatory, not optional.
+* The `detail` argument may be a list or dictionary of error details, and may also be a nested data structure.
+* By convention you should import the serializers module and use a fully qualified `ValidationError` style, in order to differentiate it from Django's built-in validation error. For example. `raise serializers.ValidationError('This field must be an integer value.')`
+
+The `ValidationError` class should be used for serializer and field validation, and by validator classes. It is also raised when calling `serializer.is_valid` with the `raise_exception` keyword argument:
+
+    serializer.is_valid(raise_exception=True)
+
+The generic views use the `raise_exception=True` flag, which means that you can override the style of validation error responses globally in your API. To do so, use a custom exception handler, as described above.
+
+By default this exception results in a response with the HTTP status code "400 Bad Request".
+
 [cite]: http://www.doughellmann.com/articles/how-tos/python-exception-handling/index.html
 [authentication]: authentication.md
