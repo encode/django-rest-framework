@@ -12,7 +12,7 @@ REST framework includes a number of built in Parser classes, that allow you to a
 
 ## How the parser is determined
 
-The set of valid parsers for a view is always defined as a list of classes.  When either `request.DATA` or `request.FILES` is accessed, REST framework will examine the `Content-Type` header on the incoming request, and determine which parser to use to parse the request content.
+The set of valid parsers for a view is always defined as a list of classes.  When  `request.data` is accessed, REST framework will examine the `Content-Type` header on the incoming request, and determine which parser to use to parse the request content.
 
 ---
 
@@ -48,7 +48,7 @@ using the `APIView` class based views.
         parser_classes = (YAMLParser,)
 
         def post(self, request, format=None):
-            return Response({'received data': request.DATA})
+            return Response({'received data': request.data})
 
 Or, if you're using the `@api_view` decorator with function based views.
 
@@ -58,7 +58,7 @@ Or, if you're using the `@api_view` decorator with function based views.
         """
         A view that can accept POST requests with YAML content.
         """
-        return Response({'received data': request.DATA})
+        return Response({'received data': request.data})
 
 ---
 
@@ -92,7 +92,7 @@ Requires the `defusedxml` package to be installed.
 
 ## FormParser
 
-Parses HTML form content.  `request.DATA` will be populated with a `QueryDict` of data, `request.FILES` will be populated with an empty `QueryDict` of data.
+Parses HTML form content.  `request.data` will be populated with a `QueryDict` of data.
 
 You will typically want to use both `FormParser` and `MultiPartParser` together in order to fully support HTML form data.
 
@@ -100,7 +100,7 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 ## MultiPartParser
 
-Parses multipart HTML form content, which supports file uploads.  Both `request.DATA` and `request.FILES` will be populated with a `QueryDict`.
+Parses multipart HTML form content, which supports file uploads.  Both `request.data` will be populated with a `QueryDict`.
 
 You will typically want to use both `FormParser` and `MultiPartParser` together in order to fully support HTML form data.
 
@@ -108,7 +108,7 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 ## FileUploadParser
 
-Parses raw file upload content.  The `request.DATA` property will be an empty `QueryDict`, and `request.FILES` will be a dictionary with a single key `'file'` containing the uploaded file.
+Parses raw file upload content.  The `request.data` property will be a dictionary with a single key `'file'` containing the uploaded file.
 
 If the view used with `FileUploadParser` is called with a `filename` URL keyword argument, then that argument will be used as the filename.  If it is called without a `filename` URL keyword argument, then the client must set the filename in the `Content-Disposition` HTTP header.  For example `Content-Disposition: attachment; filename=upload.jpg`.
 
@@ -126,7 +126,7 @@ If the view used with `FileUploadParser` is called with a `filename` URL keyword
         parser_classes = (FileUploadParser,)
 
         def put(self, request, filename, format=None):
-            file_obj = request.FILES['file']
+            file_obj = request.data['file']
             # ...
             # do some staff with uploaded file
             # ...
@@ -139,7 +139,7 @@ If the view used with `FileUploadParser` is called with a `filename` URL keyword
 
 To implement a custom parser, you should override `BaseParser`, set the `.media_type` property, and implement the `.parse(self, stream, media_type, parser_context)` method.
 
-The method should return the data that will be used to populate the `request.DATA` property.
+The method should return the data that will be used to populate the `request.data` property.
 
 The arguments passed to `.parse()` are:
 
@@ -161,7 +161,7 @@ By default this will include the following keys: `view`, `request`, `args`, `kwa
 
 ## Example
 
-The following is an example plaintext parser that will populate the `request.DATA` property with a string representing the body of the request. 
+The following is an example plaintext parser that will populate the `request.data` property with a string representing the body of the request. 
 
     class PlainTextParser(BaseParser):
     """

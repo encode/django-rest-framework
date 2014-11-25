@@ -100,7 +100,7 @@ For example, if your API relies on a third party service that may sometimes be u
 
 **Signature:** `ParseError(detail=None)`
 
-Raised if the request contains malformed data when accessing `request.DATA` or `request.FILES`.
+Raised if the request contains malformed data when accessing `request.data`.
 
 By default this exception results in a response with the HTTP status code "400 Bad Request".
 
@@ -140,7 +140,7 @@ By default this exception results in a response with the HTTP status code "405 M
 
 **Signature:** `UnsupportedMediaType(media_type, detail=None)`
 
-Raised if there are no parsers that can handle the content type of the request data when accessing `request.DATA` or `request.FILES`.
+Raised if there are no parsers that can handle the content type of the request data when accessing `request.data`.
 
 By default this exception results in a response with the HTTP status code "415 Unsupported Media Type".
 
