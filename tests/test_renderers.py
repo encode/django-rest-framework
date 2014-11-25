@@ -9,7 +9,7 @@ from django.test import TestCase
 from django.utils import six, unittest
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import status, permissions
-from rest_framework.compat import yaml, etree, StringIO
+from rest_framework.compat import yaml, etree, StringIO, BytesIO
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
@@ -467,7 +467,7 @@ if yaml:
             obj = {'foo': ['bar', 'baz']}
             renderer = YAMLRenderer()
             content = renderer.render(obj, 'application/yaml')
-            self.assertEqual(content, _yaml_repr)
+            self.assertEqual(content.decode('utf-8'), _yaml_repr)
 
         def test_render_and_parse(self):
             """
@@ -480,7 +480,7 @@ if yaml:
             parser = YAMLParser()
 
             content = renderer.render(obj, 'application/yaml')
-            data = parser.parse(StringIO(content))
+            data = parser.parse(BytesIO(content))
             self.assertEqual(obj, data)
 
         def test_render_decimal(self):
@@ -489,7 +489,7 @@ if yaml:
             """
             renderer = YAMLRenderer()
             content = renderer.render({'field': Decimal('111.2')}, 'application/yaml')
-            self.assertYAMLContains(content, "field: '111.2'")
+            self.assertYAMLContains(content.decode('utf-8'), "field: '111.2'")
 
         def assertYAMLContains(self, content, string):
             self.assertTrue(string in content, '%r not in %r' % (string, content))
