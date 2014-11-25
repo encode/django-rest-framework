@@ -139,7 +139,7 @@ To build the documentation, install MkDocs with `pip install mkdocs` and then ru
 
     mkdocs build
 
-This will build the html output into the `html` directory.
+This will build the documentation into the `site` directory.
 
 You can build the documentation and open a preview in a browser window by using the `serve` command.
 
