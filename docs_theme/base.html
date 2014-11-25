@@ -105,6 +105,13 @@
           -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+
+                {% if current_page.input_path == 'index.md' %}
+                    <li class="main">
+                        <a href="#">Django REST framework</a>
+                    </li>
+                {% endif %}
+
                 {% for toc_item in toc %}
 
                   <li class="main {% if toc_item.active %}main{% endif %}">
