@@ -86,6 +86,15 @@ class BaseSerializer(Field):
         class when `many=True` is used. You can customize it if you need to
         control which keyword arguments are passed to the parent, and
         which are passed to the child.
+
+        Note that we're over-cautious in passing most arguments to both parent
+        and child classes in order to try to cover the general case. If you're
+        overriding this method you'll probably want something much simpler, eg:
+
+        @classmethod
+        def many_init(cls, *args, **kwargs):
+            kwargs['child'] = cls()
+            return CustomListSerializer(*args, **kwargs)
         """
         child_serializer = cls(*args, **kwargs)
         list_kwargs = {'child': child_serializer}
