@@ -1,5 +1,5 @@
-<a class="github" href="mixins.py"></a>
-<a class="github" href="generics.py"></a>
+source: mixins.py
+        generics.py
 
 # Generic views
 

@@ -1,4 +1,4 @@
-<a class="github" href="parsers.py"></a>
+source: parsers.py
 
 # Parsers
 
@@ -161,7 +161,7 @@ By default this will include the following keys: `view`, `request`, `args`, `kwa
 
 ## Example
 
-The following is an example plaintext parser that will populate the `request.DATA` property with a string representing the body of the request. 
+The following is an example plaintext parser that will populate the `request.DATA` property with a string representing the body of the request.
 
     class PlainTextParser(BaseParser):
     """
