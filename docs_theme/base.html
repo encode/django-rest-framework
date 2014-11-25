@@ -114,7 +114,7 @@
 
                 {% for toc_item in toc %}
 
-                  <li class="main {% if toc_item.active %}main{% endif %}">
+                  <li class="{% if current_page.input_path != 'index.md' %}main{% endif %}">
                     <a href="{{ toc_item.url }}">{{ toc_item.title }}</a>
                   </li>
 
