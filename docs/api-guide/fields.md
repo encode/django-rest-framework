@@ -22,7 +22,7 @@ Each serializer field class constructor takes at least these arguments.  Some Fi
 
 The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `Field(source='get_absolute_url')`, or may use dotted notation to traverse attributes, such as `Field(source='user.email')`.
 
-The value `source='*'` has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations.  (See the implementation of the `PaginationSerializer` class for an example.)
+The value `source='*'` has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.
 
 Defaults to the name of the field.
 
@@ -45,24 +45,27 @@ Set to false if this field is not required to be present during deserialization.
 
 Defaults to `True`.
 
+### `allow_null`
+
+Normally an error will be raise if `None` is passed to a serializer field. Set this keyword argument to `True` if `None` should be considered a valid value.
+
+Defaults to `False`
+
 ### `default`
 
 If set, this gives the default value that will be used for the field if no input value is supplied.  If not set the default behavior is to not populate the attribute at all.
 
 May be set to a function or other callable, in which case the value will be evaluated each time it is used.
 
+Note that setting a `default` value implies that the field is not required. Including both the `default` and `required` keyword arguments is invalid and will raise an error.
+
 ### `validators`
 
-A list of Django validators that should be used to validate deserialized values.
+A list of validator functions which should be applied to the incoming field input, and which either raise a validation error or simply return. Validator functions should typically raise `serializers.ValidationError`, but Django's built-in `ValidationError` is also supported for compatibility with validators defined in the Django codebase or third party Django packages.
 
 ### `error_messages`
 
 A dictionary of error codes to error messages.
-
-### `widget`
-
-Used only if rendering the field to HTML.
-This argument sets the widget that should be used to render the field. For more details, and a list of available widgets, see [the Django documentation on form widgets][django-widgets]. 
 
 ### `label`
 
@@ -71,6 +74,29 @@ A short text string that may be used as the name of the field in HTML form field
 ### `help_text`
 
 A text string that may be used as a description of the field in HTML form fields or other descriptive elements.
+
+### `initial`
+
+A value that should be used for pre-populating the value of HTML form fields.
+
+### `style`
+
+A dictionary of key-value pairs that can be used to control how renderers should render the field. The API for this should still be considered experimental, and will be formalized with the 3.1 release.
+
+Two options are currently used in HTML form generation, `'input_type'` and `'base_template'`.
+
+    # Use <input type="password"> for the input.
+    password = serializers.CharField(
+        style={'input_type': 'password'}
+    )
+
+    # Use a radio input instead of a select input.
+    color_channel = serializers.ChoiceField(
+        choices=['red', 'green', 'blue']
+        style = {'base_template': 'radio.html'}
+    }
+
+**Note**: The `style` argument replaces the old-style version 2.x `widget` keyword argument. Because REST framework 3 now uses templated HTML form generation, the `widget` option that was used to support Django built-in widgets can no longer be supported. Version 3.1 is planned to include public API support for customizing HTML form generation.
 
 ---
 
