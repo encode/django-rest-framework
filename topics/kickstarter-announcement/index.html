@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Kickstarter Announcement - Django REST framework</title>
+  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
+  <link rel="canonical" href="http://www.django-rest-framework.org/topics/kickstarter-announcement/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django, API, REST, Kickstarter Announcement">
+  <meta name="author" content="Tom Christie">
+
+  <!-- Le styles -->
+  <link href="../../css/prettify.css" rel="stylesheet">
+  <link href="../../css/bootstrap.css" rel="stylesheet">
+  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="../../css/default.css" rel="stylesheet">
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18852272-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <style>
+    span.fusion-wrap a {
+      display: block;
+      margin-top: 10px;
+      color: black;
+    }
+    a.fusion-poweredby {
+      display: block;
+      margin-top: 10px;
+    }
+    @media (max-width: 767px) {
+      div.promo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body onload="prettyPrint()" class="-page">
+
+  <div class="wrapper">
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../release-notes">
+            Next <i class="icon-arrow-right icon-white"></i>
+          </a>
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../2.4-announcement">
+            <i class="icon-arrow-left icon-white"></i> Previous
+          </a>
+          <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+              <li ><a href="/">Home</a></li>
+               
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../tutorial/quickstart">Quickstart</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/1-serialization">1 - Serialization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/2-requests-and-responses">2 - Requests and responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/3-class-based-views">3 - Class based views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/4-authentication-and-permissions">4 - Authentication and permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis">5 - Relationships and hyperlinked APIs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/6-viewsets-and-routers">6- Viewsets and routers</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../api-guide/requests">Requests</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/responses">Responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/views">Views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/generic-views">Generic views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/viewsets">Viewsets</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/routers">Routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/parsers">Parsers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/renderers">Renderers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/serializers">Serializers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/fields">Serializer fields</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/relations">Serializer relations</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/validators">Validators</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/authentication">Authentication</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/permissions">Permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/throttling">Throttling</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/filtering">Filtering</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/pagination">Pagination</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/content-negotiation">Content negotiation</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/format-suffixes">Format suffixes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/reverse">Returning URLs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/exceptions">Exceptions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/status-codes">Status codes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/testing">Testing</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/settings">Settings</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../documenting-your-api">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../ajax-csrf-cors">AJAX, CSRF & CORS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../browser-enhancements">Browser enhancements</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../browsable-api">The Browsable API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../third-party-resources">Third Party Resources</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../contributing">Contributing to REST framework</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../rest-framework-2-announcement">2.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../2.2-announcement">2.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../2.3-announcement">2.3 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../2.4-announcement">2.4 Announcement</a>
+                  </li>
+                  
+                  <li class="active" >
+                    <a href=".">Kickstarter Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../release-notes">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../credits">Credits</a>
+                  </li>
+                  
+                </ul>
+              </li>
+               
+
+            </ul>
+            
+          </div>
+          <!--/.nav-collapse -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="body-content">
+      <div class="container-fluid">
+
+        <!-- Search Modal -->
+        <div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Documentation search</h3>
+          </div>
+
+          <div class="modal-body">
+            <!-- Custom google search -->
+            <script>
+              (function() {
+                var cx = '015016005043623903336:rxraeohqk6w';
+                var gcse = document.createElement('script');
+                gcse.type = 'text/javascript';
+                gcse.async = true;
+                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                  '//www.google.com/cse/cse.js?cx=' + cx;
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(gcse, s);
+              })();
+            </script>
+            <gcse:search></gcse:search>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+
+          <div class="span3">
+            <!-- TODO
+            <p style="margin-top: -12px">
+              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
+              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
+            </p>
+          -->
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+
+                
+
+                
+
+                  <li class="main">
+                    <a href="#kickstarting-django-rest-framework-3">Kickstarting Django REST framework 3</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#project-details">Project details</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#sponsors">Sponsors</a>
+                    </li>
+                  
+
+                
+
+                
+
+              </ul>
+
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            
+
+            <h1 id="kickstarting-django-rest-framework-3">Kickstarting Django REST framework 3</h1>
+<hr />
+<iframe width="480" height="360" src="https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3/widget/video.html" frameborder="0" scrolling="no"> </iframe>
+
+<hr />
+<p>In order to continue to drive the project forward, I'm launching a Kickstarter campaign to help fund the development of a major new release - Django REST framework 3.</p>
+<h2 id="project-details">Project details</h2>
+<p>This new release will allow us to comprehensively address some of the shortcomings of the framework, and will aim to include the following:</p>
+<ul>
+<li>Faster, simpler and easier-to-use serializers.</li>
+<li>An alternative admin-style interface for the browsable API.</li>
+<li>Search and filtering controls made accessible in the browsable API.</li>
+<li>Alternative API pagination styles.</li>
+<li>Documentation around API versioning.</li>
+<li>Triage of outstanding tickets.</li>
+<li>Improving the ongoing quality and maintainability of the project.</li>
+</ul>
+<p>Full details are available now on the <a href="https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3">project page</a>.</p>
+<p>If you're interested in helping make sustainable open source development a reality please <a href="https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3">visit the Kickstarter page</a> and consider funding the project.</p>
+<p>I can't wait to see where this takes us!</p>
+<p>Many thanks to everyone for your support so far,</p>
+<p>Tom Christie :)</p>
+<hr />
+<h2 id="sponsors">Sponsors</h2>
+<p>We've now blazed way past all our goals, with a staggering £30,000 (~$50,000), meaning I'll be in a position to work on the project significantly beyond what we'd originally planned for. I owe a huge debt of gratitude to all the wonderful companies and individuals who have been backing the project so generously, and making this possible.</p>
+<hr />
+<h3 id="platinum-sponsors">Platinum sponsors</h3>
+<p>Our platinum sponsors have each made a hugely substantial contribution to the future development of Django REST framework, and I simply can't thank them enough.</p>
+<ul class="sponsor diamond">
+<li><a href="https://www.eventbrite.com/" rel="nofollow" style="background-image:url(../img/sponsors/0-eventbrite.png);">Eventbrite</a></li>
+</ul>
+
+<ul class="sponsor platinum">
+<li><a href="https://www.divio.ch/" rel="nofollow" style="background-image:url(../img/sponsors/1-divio.png);">Divio</a></li>
+<li><a href="http://company.onlulu.com/en/" rel="nofollow" style="background-image:url(../img/sponsors/1-lulu.png);">Lulu</a></li>
+<li><a href="https://p.ota.to/" rel="nofollow" style="background-image:url(../img/sponsors/1-potato.png);">Potato</a></li>
+<li><a href="http://www.wiredrive.com/" rel="nofollow" style="background-image:url(../img/sponsors/1-wiredrive.png);">Wiredrive</a></li>
+<li><a href="http://www.cyaninc.com/" rel="nofollow" style="background-image:url(../img/sponsors/1-cyan.png);">Cyan</a></li>
+<li><a href="https://www.runscope.com/" rel="nofollow" style="background-image:url(../img/sponsors/1-runscope.png);">Runscope</a></li>
+<li><a href="http://simpleenergy.com/" rel="nofollow" style="background-image:url(../img/sponsors/1-simple-energy.png);">Simple Energy</a></li>
+<li><a href="http://vokalinteractive.com/" rel="nofollow" style="background-image:url(../img/sponsors/1-vokal_interactive.png);">VOKAL Interactive</a></li>
+<li><a href="http://www.purplebit.com/" rel="nofollow" style="background-image:url(../img/sponsors/1-purplebit.png);">Purple Bit</a></li>
+<li><a href="http://www.kuwaitnet.net/" rel="nofollow" style="background-image:url(../img/sponsors/1-kuwaitnet.png);">KuwaitNET</a></li>
+</ul>
+
+<div style="clear: both"></div>
+
+<hr />
+<h3 id="gold-sponsors">Gold sponsors</h3>
+<p>Our gold sponsors include companies large and small. Many thanks for their significant funding of the project and their commitment to sustainable open-source development.</p>
+<ul class="sponsor gold">
+<li><a href="https://laterpay.net/" rel="nofollow" style="background-image:url(../img/sponsors/2-laterpay.png);">LaterPay</a></li>
+<li><a href="https://www.schubergphilis.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-schuberg_philis.png);">Schuberg Philis</a></li>
+<li><a href="http://prorenata.se/" rel="nofollow" style="background-image:url(../img/sponsors/2-prorenata.png);">ProReNata AB</a></li>
+<li><a href="https://www.sgawebsites.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-sga.png);">SGA Websites</a></li>
+<li><a href="http://www.sirono.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-sirono.png);">Sirono</a></li>
+<li><a href="http://www.vinta.com.br/" rel="nofollow" style="background-image:url(../img/sponsors/2-vinta.png);">Vinta Software Studio</a></li>
+<li><a href="http://www.rapasso.nl/index.php/en" rel="nofollow" style="background-image:url(../img/sponsors/2-rapasso.png);">Rapasso</a></li>
+<li><a href="https://mirusresearch.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-mirus_research.png);">Mirus Research</a></li>
+<li><a href="http://hipolabs.com" rel="nofollow" style="background-image:url(../img/sponsors/2-hipo.png);">Hipo</a></li>
+<li><a href="http://www.byte.nl" rel="nofollow" style="background-image:url(../img/sponsors/2-byte.png);">Byte</a></li>
+<li><a href="http://lightningkite.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-lightning_kite.png);">Lightning Kite</a></li>
+<li><a href="https://opbeat.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-opbeat.png);">Opbeat</a></li>
+<li><a href="https://koordinates.com" rel="nofollow" style="background-image:url(../img/sponsors/2-koordinates.png);">Koordinates</a></li>
+<li><a href="http://pulsecode.ca" rel="nofollow" style="background-image:url(../img/sponsors/2-pulsecode.png);">Pulsecode Inc.</a></li>
+<li><a href="http://singinghorsestudio.com" rel="nofollow" style="background-image:url(../img/sponsors/2-singing-horse.png);">Singing Horse Studio Ltd.</a></li>
+<li><a href="https://www.heroku.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-heroku.png);">Heroku</a></li>
+<li><a href="https://www.galileo-press.de/" rel="nofollow" style="background-image:url(../img/sponsors/2-galileo_press.png);">Galileo Press</a></li>
+<li><a href="http://www.securitycompass.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-security_compass.png);">Security Compass</a></li>
+<li><a href="https://www.djangoproject.com/foundation/" rel="nofollow" style="background-image:url(../img/sponsors/2-django.png);">Django Software Foundation</a></li>
+<li><a href="http://www.hipflaskapp.com" rel="nofollow" style="background-image:url(../img/sponsors/2-hipflask.png);">Hipflask</a></li>
+<li><a href="http://www.crate.io/" rel="nofollow" style="background-image:url(../img/sponsors/2-crate.png);">Crate</a></li>
+<li><a href="http://crypticocorp.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-cryptico.png);">Cryptico Corp</a></li>
+<li><a href="http://www.nexthub.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-nexthub.png);">NextHub</a></li>
+<li><a href="https://www.compile.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-compile.png);">Compile</a></li>
+<li><a href="http://wusawork.org" rel="nofollow" style="background-image:url(../img/sponsors/2-wusawork.png);">WusaWork</a></li>
+<li><a href="http://envisionlinux.org/blog" rel="nofollow">Envision Linux</a></li>
+</ul>
+
+<div style="clear: both; padding-bottom: 40px;"></div>
+
+<hr />
+<h3 id="silver-sponsors">Silver sponsors</h3>
+<p>The serious financial contribution that our silver sponsors have made is very much appreciated. I'd like to say a particular thank&nbsp;you to individuals who have choosen to privately support the project at this level.</p>
+<ul class="sponsor silver">
+<li><a href="http://www.imtapps.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-imt_computer_services.png);">IMT Computer Services</a></li>
+<li><a href="http://wildfish.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-wildfish.png);">Wildfish</a></li>
+<li><a href="http://www.thermondo.de/" rel="nofollow" style="background-image:url(../img/sponsors/3-thermondo-gmbh.png);">Thermondo GmbH</a></li>
+<li><a href="http://providenz.fr/" rel="nofollow" style="background-image:url(../img/sponsors/3-providenz.png);">Providenz</a></li>
+<li><a href="https://www.alwaysdata.com" rel="nofollow" style="background-image:url(../img/sponsors/3-alwaysdata.png);">alwaysdata.com</a></li>
+<li><a href="http://www.triggeredmessaging.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-triggered_messaging.png);">Triggered Messaging</a></li>
+<li><a href="https://www.ipushpull.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-ipushpull.png);">PushPull Technology Ltd</a></li>
+<li><a href="http://www.transcode.de/" rel="nofollow" style="background-image:url(../img/sponsors/3-transcode.png);">Transcode</a></li>
+<li><a href="https://garfo.io/" rel="nofollow" style="background-image:url(../img/sponsors/3-garfo.png);">Garfo</a></li>
+<li><a href="https://goshippo.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-shippo.png);">Shippo</a></li>
+<li><a href="http://www.gizmag.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-gizmag.png);">Gizmag</a></li>
+<li><a href="http://www.tivix.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-tivix.png);">Tivix</a></li>
+<li><a href="http://www.safaribooksonline.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-safari.png);">Safari</a></li>
+<li><a href="http://brightloop.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-brightloop.png);">Bright Loop</a></li>
+<li><a href="http://www.aba-systems.com.au/" rel="nofollow" style="background-image:url(../img/sponsors/3-aba.png);">ABA Systems</a></li>
+<li><a href="http://beefarm.ru/" rel="nofollow" style="background-image:url(../img/sponsors/3-beefarm.png);">beefarm.ru</a></li>
+<li><a href="http://www.vzzual.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-vzzual.png);">Vzzual.com</a></li>
+<li><a href="http://infinite-code.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-infinite_code.png);">Infinite Code</a></li>
+<li><a href="http://crosswordtracker.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-crosswordtracker.png);">Crossword Tracker</a></li>
+<li><a href="https://www.pkgfarm.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-pkgfarm.png);">PkgFarm</a></li>
+<li><a href="http://life.tl/" rel="nofollow" style="background-image:url(../img/sponsors/3-life_the_game.png);">Life. The Game.</a></li>
+<li><a href="http://blimp.io/" rel="nofollow" style="background-image:url(../img/sponsors/3-blimp.png);">Blimp</a></li>
+<li><a href="http://pathwright.com" rel="nofollow" style="background-image:url(../img/sponsors/3-pathwright.png);">Pathwright</a></li>
+<li><a href="http://fluxility.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-fluxility.png);">Fluxility</a></li>
+<li><a href="http://teonite.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-teonite.png);">Teonite</a></li>
+<li><a href="http://trackmaven.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-trackmaven.png);">TrackMaven</a></li>
+<li><a href="http://www.phurba.net/" rel="nofollow" style="background-image:url(../img/sponsors/3-phurba.png);">Phurba</a></li>
+<li><a href="http://www.nephila.co.uk/" rel="nofollow" style="background-image:url(../img/sponsors/3-nephila.png);">Nephila</a></li>
+<li><a href="http://www.aditium.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-aditium.png);">Aditium</a></li>
+<li><a href="http://www.eyesopen.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-openeye.png);">OpenEye Scientific Software</a></li>
+<li><a href="https://holvi.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-holvi.png);">Holvi</a></li>
+<li><a href="http://cantemo.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-cantemo.gif);">Cantemo</a></li>
+<li><a href="https://www.makespace.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-makespace.png);">MakeSpace</a></li>
+<li><a href="https://www.ax-semantics.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-ax_semantics.png);">AX Semantics</a></li>
+<li><a href="http://istrategylabs.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-isl.png);">ISL</a></li>
+</ul>
+
+<div style="clear: both; padding-bottom: 40px;"></div>
+
+<p><strong>Individual backers</strong>: Paul Hallett, <a href="http://www.paulwhippconsulting.com/">Paul Whipp</a>, Dylan Roy, Jannis Leidel, <a href="https://linovia.com/en/">Xavier Ordoquy</a>, <a href="http://spielmannsolutions.com/">Johannes Spielmann</a>, <a href="http://brooklynhacker.com/">Rob Spectre</a>, <a href="http://chrisheisel.com/">Chris Heisel</a>, Marwan Alsabbagh, Haris Ali, Tuomas Toivonen.</p>
+<hr />
+<h3 id="advocates">Advocates</h3>
+<p>The following individuals made a significant financial contribution to the development of Django REST framework 3, for which I can only offer a huge, warm and sincere thank you!</p>
+<p><strong>Individual backers</strong>: Jure Cuhalev, Kevin Brolly, Ferenc Szalai, Dougal Matthews, Stefan Foulis, Carlos Hernando, Alen Mujezinovic, Ross Crawford-d'Heureuse, George Kappel, Alasdair Nicol, John Carr, Steve Winton, Trey, Manuel Miranda, David Horn, Vince Mi, Daniel Sears, Jamie Matthews, Ryan Currah, Marty Kemka, Scott Nixon, Moshin Elahi, Kevin Campbell, Jose Antonio Leiva Izquierdo, Kevin Stone, Andrew Godwin, Tijs Teulings, Roger Boardman, Xavier Antoviaque, Darian Moody, Lujeni, Jon Dugan, Wiley Kestner, Daniel C. Silverstein, Daniel Hahler, Subodh Nijsure, Philipp Weidenhiller, Yusuke Muraoka, Danny Roa, Reto Aebersold, Kyle Getrost, Décébal Hormuz, James Dacosta, Matt Long, Mauro Rocco, Tyrel Souza, Ryan Campbell, Ville Jyrkkä, Charalampos Papaloizou, Nikolai Røed Kristiansen, Antoni Aloy López, Celia Oakley, Michał Krawczak, Ivan VenOsdel, Tim Watts, Martin Warne, Nicola Jordan, Ryan Kaskel.</p>
+<p><strong>Corporate backers</strong>: Savannah Informatics, Prism Skylabs, Musical Operating Devices.</p>
+<hr />
+<h3 id="supporters">Supporters</h3>
+<p>There were also almost 300 further individuals choosing to help fund the project at other levels or choosing to give anonymously. Again, thank you, thank you, thank you!</p>
+
+          </div>
+          <!--/span-->
+        </div>
+        <!--/row-->
+      </div>
+      <!--/.fluid-container-->
+    </div>
+    <!--/.body content-->
+    <div id="push"></div>
+  </div>
+  <!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    </p>
+  </footer>
+
+  <!-- Le javascript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="../../js/jquery-1.8.1-min.js"></script>
+  <script src="../../js/prettify-1.0.js"></script>
+  <script src="../../js/bootstrap-2.1.1-min.js"></script>
+
+  <script>
+    //$('.side-nav').scrollspy()
+    var shiftWindow = function() {
+      scrollBy(0, -50)
+    };
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+
+    $('.dropdown-menu').on('click touchstart', function(event) {
+      event.stopPropagation();
+    });
+
+    // Dynamically force sidenav to no higher than browser window
+    $('.side-nav').css('max-height', window.innerHeight - 130);
+
+    $(function() {
+      $(window).resize(function() {
+        $('.side-nav').css('max-height', window.innerHeight - 130);
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Quickstart - Django REST framework</title>
+  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
+  <link rel="canonical" href="http://www.django-rest-framework.org/tutorial/quickstart/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django, API, REST, Quickstart">
+  <meta name="author" content="Tom Christie">
+
+  <!-- Le styles -->
+  <link href="../../css/prettify.css" rel="stylesheet">
+  <link href="../../css/bootstrap.css" rel="stylesheet">
+  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="../../css/default.css" rel="stylesheet">
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18852272-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <style>
+    span.fusion-wrap a {
+      display: block;
+      margin-top: 10px;
+      color: black;
+    }
+    a.fusion-poweredby {
+      display: block;
+      margin-top: 10px;
+    }
+    @media (max-width: 767px) {
+      div.promo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body onload="prettyPrint()" class="-page">
+
+  <div class="wrapper">
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../1-serialization">
+            Next <i class="icon-arrow-right icon-white"></i>
+          </a>
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../..">
+            <i class="icon-arrow-left icon-white"></i> Previous
+          </a>
+          <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+              <li ><a href="/">Home</a></li>
+               
+              <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li class="active" >
+                    <a href=".">Quickstart</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../1-serialization">1 - Serialization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../2-requests-and-responses">2 - Requests and responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3-class-based-views">3 - Class based views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../4-authentication-and-permissions">4 - Authentication and permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../5-relationships-and-hyperlinked-apis">5 - Relationships and hyperlinked APIs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../6-viewsets-and-routers">6- Viewsets and routers</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../api-guide/requests">Requests</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/responses">Responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/views">Views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/generic-views">Generic views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/viewsets">Viewsets</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/routers">Routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/parsers">Parsers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/renderers">Renderers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/serializers">Serializers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/fields">Serializer fields</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/relations">Serializer relations</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/validators">Validators</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/authentication">Authentication</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/permissions">Permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/throttling">Throttling</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/filtering">Filtering</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/pagination">Pagination</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/content-negotiation">Content negotiation</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/format-suffixes">Format suffixes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/reverse">Returning URLs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/exceptions">Exceptions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/status-codes">Status codes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/testing">Testing</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/settings">Settings</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../topics/documenting-your-api">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browser-enhancements">Browser enhancements</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browsable-api">The Browsable API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/third-party-resources">Third Party Resources</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/contributing">Contributing to REST framework</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/rest-framework-2-announcement">2.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.2-announcement">2.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.3-announcement">2.3 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.4-announcement">2.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/kickstarter-announcement">Kickstarter Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/release-notes">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/credits">Credits</a>
+                  </li>
+                  
+                </ul>
+              </li>
+               
+
+            </ul>
+            
+          </div>
+          <!--/.nav-collapse -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="body-content">
+      <div class="container-fluid">
+
+        <!-- Search Modal -->
+        <div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Documentation search</h3>
+          </div>
+
+          <div class="modal-body">
+            <!-- Custom google search -->
+            <script>
+              (function() {
+                var cx = '015016005043623903336:rxraeohqk6w';
+                var gcse = document.createElement('script');
+                gcse.type = 'text/javascript';
+                gcse.async = true;
+                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                  '//www.google.com/cse/cse.js?cx=' + cx;
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(gcse, s);
+              })();
+            </script>
+            <gcse:search></gcse:search>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+
+          <div class="span3">
+            <!-- TODO
+            <p style="margin-top: -12px">
+              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
+              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
+            </p>
+          -->
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+
+                
+
+                
+
+                  <li class="main">
+                    <a href="#quickstart">Quickstart</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#project-setup">Project setup</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#serializers">Serializers</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#views">Views</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#urls">URLs</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#settings">Settings</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#testing-our-api">Testing our API</a>
+                    </li>
+                  
+
+                
+
+                
+
+              </ul>
+
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            
+
+            <h1 id="quickstart">Quickstart</h1>
+<p>We're going to create a simple API to allow admin users to view and edit the users and groups in the system.</p>
+<h2 id="project-setup">Project setup</h2>
+<p>Create a new Django project named <code>tutorial</code>, then start a new app called <code>quickstart</code>.</p>
+<pre><code># Create the project directory
+mkdir tutorial
+cd tutorial
+
+# Create a virtualenv to isolate our package dependencies locally
+virtualenv env
+source env/bin/activate  # On Windows use `env\Scripts\activate`
+
+# Install Django and Django REST framework into the virtualenv
+pip install django
+pip install djangorestframework
+
+# Set up a new project with a single application
+django-admin.py startproject tutorial
+cd tutorial
+django-admin.py startapp quickstart
+cd ..
+</code></pre>
+<p>Now sync your database for the first time:</p>
+<pre><code>python manage.py migrate
+</code></pre>
+<p>We'll also create an initial user named <code>admin</code> with a password of <code>password</code>. We'll authenticate as that user later in our example.</p>
+<pre><code>python manage.py createsuperuser
+</code></pre>
+<p>Once you've set up a database and initial user created and ready to go, open up the app's directory and we'll get coding...</p>
+<h2 id="serializers">Serializers</h2>
+<p>First up we're going to define some serializers. Let's create a new module named <code>tutorial/quickstart/serializers.py</code> that we'll use for our data representations.</p>
+<pre><code>from django.contrib.auth.models import User, Group
+from rest_framework import serializers
+
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ('url', 'username', 'email', 'groups')
+
+
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Group
+        fields = ('url', 'name')
+</code></pre>
+<p>Notice that we're using hyperlinked relations in this case, with <code>HyperlinkedModelSerializer</code>.  You can also use primary key and various other relationships, but hyperlinking is good RESTful design.</p>
+<h2 id="views">Views</h2>
+<p>Right, we'd better write some views then.  Open <code>tutorial/quickstart/views.py</code> and get typing.</p>
+<pre><code>from django.contrib.auth.models import User, Group
+from rest_framework import viewsets
+from tutorial.quickstart.serializers import UserSerializer, GroupSerializer
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class GroupViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+</code></pre>
+<p>Rather than write multiple views we're grouping together all the common behavior into classes called <code>ViewSets</code>.</p>
+<p>We can easily break these down into individual views if we need to, but using viewsets keeps the view logic nicely organized as well as being very concise.</p>
+<p>Notice that our viewset classes here are a little different from those in the <a href="../../../#example">frontpage example</a>, as they include <code>queryset</code> and <code>serializer_class</code> attributes, instead of a <code>model</code> attribute.</p>
+<p>For trivial cases you can simply set a <code>model</code> attribute on the <code>ViewSet</code> class and the serializer and queryset will be automatically generated for you.  Setting the <code>queryset</code> and/or <code>serializer_class</code> attributes gives you more explicit control of the API behaviour, and is the recommended style for most applications.</p>
+<h2 id="urls">URLs</h2>
+<p>Okay, now let's wire up the API URLs.  On to <code>tutorial/urls.py</code>...</p>
+<pre><code>from django.conf.urls import url, include
+from rest_framework import routers
+from tutorial.quickstart import views
+
+router = routers.DefaultRouter()
+router.register(r'users', views.UserViewSet)
+router.register(r'groups', views.GroupViewSet)
+
+# Wire up our API using automatic URL routing.
+# Additionally, we include login URLs for the browseable API.
+urlpatterns = [
+    url(r'^', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+]
+</code></pre>
+<p>Because we're using viewsets instead of views, we can automatically generate the URL conf for our API, by simply registering the viewsets with a router class.</p>
+<p>Again, if we need more control over the API URLs we can simply drop down to using regular class based views, and writing the URL conf explicitly.</p>
+<p>Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browsable API.</p>
+<h2 id="settings">Settings</h2>
+<p>We'd also like to set a few global settings.  We'd like to turn on pagination, and we want our API to only be accessible to admin users.  The settings module will be in <code>tutorial/settings.py</code></p>
+<pre><code>INSTALLED_APPS = (
+    ...
+    'rest_framework',
+)
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
+    'PAGINATE_BY': 10
+}
+</code></pre>
+<p>Okay, we're done.</p>
+<hr />
+<h2 id="testing-our-api">Testing our API</h2>
+<p>We're now ready to test the API we've built.  Let's fire up the server from the command line.</p>
+<pre><code>python ./manage.py runserver
+</code></pre>
+<p>We can now access our API, both from the command-line, using tools like <code>curl</code>...</p>
+<pre><code>bash: curl -H 'Accept: application/json; indent=4' -u admin:password http://127.0.0.1:8000/users/
+{
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "email": "admin@example.com",
+            "groups": [],
+            "url": "http://127.0.0.1:8000/users/1/",
+            "username": "admin"
+        },
+        {
+            "email": "tom@example.com",
+            "groups": [                ],
+            "url": "http://127.0.0.1:8000/users/2/",
+            "username": "tom"
+        }
+    ]
+}
+</code></pre>
+<p>Or directly through the browser...</p>
+<p><img alt="Quick start image" src="../../../img/quickstart.png" /></p>
+<p>If you're working through the browser, make sure to login using the control in the top right corner.</p>
+<p>Great, that was easy!</p>
+<p>If you want to get a more in depth understanding of how REST framework fits together head on over to <a href="../1-serialization">the tutorial</a>, or start browsing the <a href="../../../#api-guide">API guide</a>.</p>
+
+          </div>
+          <!--/span-->
+        </div>
+        <!--/row-->
+      </div>
+      <!--/.fluid-container-->
+    </div>
+    <!--/.body content-->
+    <div id="push"></div>
+  </div>
+  <!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    </p>
+  </footer>
+
+  <!-- Le javascript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="../../js/jquery-1.8.1-min.js"></script>
+  <script src="../../js/prettify-1.0.js"></script>
+  <script src="../../js/bootstrap-2.1.1-min.js"></script>
+
+  <script>
+    //$('.side-nav').scrollspy()
+    var shiftWindow = function() {
+      scrollBy(0, -50)
+    };
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+
+    $('.dropdown-menu').on('click touchstart', function(event) {
+      event.stopPropagation();
+    });
+
+    // Dynamically force sidenav to no higher than browser window
+    $('.side-nav').css('max-height', window.innerHeight - 130);
+
+    $(function() {
+      $(window).resize(function() {
+        $('.side-nav').css('max-height', window.innerHeight - 130);
+      });
+    });
+  </script>
+</body>
+
+</html>

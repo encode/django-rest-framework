@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Throttling - Django REST framework</title>
+  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
+  <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/throttling/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django, API, REST, Throttling">
+  <meta name="author" content="Tom Christie">
+
+  <!-- Le styles -->
+  <link href="../../css/prettify.css" rel="stylesheet">
+  <link href="../../css/bootstrap.css" rel="stylesheet">
+  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="../../css/default.css" rel="stylesheet">
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18852272-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <style>
+    span.fusion-wrap a {
+      display: block;
+      margin-top: 10px;
+      color: black;
+    }
+    a.fusion-poweredby {
+      display: block;
+      margin-top: 10px;
+    }
+    @media (max-width: 767px) {
+      div.promo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body onload="prettyPrint()" class="-page">
+
+  <div class="wrapper">
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../filtering">
+            Next <i class="icon-arrow-right icon-white"></i>
+          </a>
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../permissions">
+            <i class="icon-arrow-left icon-white"></i> Previous
+          </a>
+          <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+              <li ><a href="/">Home</a></li>
+               
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../tutorial/quickstart">Quickstart</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/1-serialization">1 - Serialization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/2-requests-and-responses">2 - Requests and responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/3-class-based-views">3 - Class based views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/4-authentication-and-permissions">4 - Authentication and permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis">5 - Relationships and hyperlinked APIs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/6-viewsets-and-routers">6- Viewsets and routers</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../requests">Requests</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../responses">Responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../views">Views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../generic-views">Generic views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../viewsets">Viewsets</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../routers">Routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../parsers">Parsers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../renderers">Renderers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../serializers">Serializers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../fields">Serializer fields</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../relations">Serializer relations</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../validators">Validators</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../authentication">Authentication</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../permissions">Permissions</a>
+                  </li>
+                  
+                  <li class="active" >
+                    <a href=".">Throttling</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../filtering">Filtering</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../pagination">Pagination</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../content-negotiation">Content negotiation</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../format-suffixes">Format suffixes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../reverse">Returning URLs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../exceptions">Exceptions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../status-codes">Status codes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../testing">Testing</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../settings">Settings</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../topics/documenting-your-api">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browser-enhancements">Browser enhancements</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browsable-api">The Browsable API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/third-party-resources">Third Party Resources</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/contributing">Contributing to REST framework</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/rest-framework-2-announcement">2.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.2-announcement">2.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.3-announcement">2.3 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.4-announcement">2.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/kickstarter-announcement">Kickstarter Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/release-notes">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/credits">Credits</a>
+                  </li>
+                  
+                </ul>
+              </li>
+               
+
+            </ul>
+            
+          </div>
+          <!--/.nav-collapse -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="body-content">
+      <div class="container-fluid">
+
+        <!-- Search Modal -->
+        <div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Documentation search</h3>
+          </div>
+
+          <div class="modal-body">
+            <!-- Custom google search -->
+            <script>
+              (function() {
+                var cx = '015016005043623903336:rxraeohqk6w';
+                var gcse = document.createElement('script');
+                gcse.type = 'text/javascript';
+                gcse.async = true;
+                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                  '//www.google.com/cse/cse.js?cx=' + cx;
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(gcse, s);
+              })();
+            </script>
+            <gcse:search></gcse:search>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+
+          <div class="span3">
+            <!-- TODO
+            <p style="margin-top: -12px">
+              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
+              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
+            </p>
+          -->
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+
+                
+
+                
+
+                  <li class="main">
+                    <a href="#throttling">Throttling</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#how-throttling-is-determined">How throttling is determined</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#setting-the-throttling-policy">Setting the throttling policy</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#how-clients-are-identified">How clients are identified</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#setting-up-the-cache">Setting up the cache</a>
+                    </li>
+                  
+
+                
+
+                  <li class="main">
+                    <a href="#api-reference">API Reference</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#anonratethrottle">AnonRateThrottle</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#userratethrottle">UserRateThrottle</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#scopedratethrottle">ScopedRateThrottle</a>
+                    </li>
+                  
+
+                
+
+                  <li class="main">
+                    <a href="#custom-throttles">Custom throttles</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#example">Example</a>
+                    </li>
+                  
+
+                
+
+                
+
+              </ul>
+
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            
+              
+                <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/throttling.py">
+                  <span class="label label-info">throttling.py</span>
+                </a>
+              
+            
+
+            <h1 id="throttling">Throttling</h1>
+<blockquote>
+<p>HTTP/1.1 420 Enhance Your Calm</p>
+<p><a href="https://dev.twitter.com/docs/error-codes-responses">Twitter API rate limiting response</a></p>
+</blockquote>
+<p>Throttling is similar to <a href="../permissions">permissions</a>, in that it determines if a request should be authorized.  Throttles indicate a temporary state, and are used to control the rate of requests that clients can make to an API.</p>
+<p>As with permissions, multiple throttles may be used.  Your API might have a restrictive throttle for unauthenticated requests, and a less restrictive throttle for authenticated requests.</p>
+<p>Another scenario where you might want to use multiple throttles would be if you need to impose different constraints on different parts of the API, due to some services being particularly resource-intensive.</p>
+<p>Multiple throttles can also be used if you want to impose both burst throttling rates, and sustained throttling rates.  For example, you might want to limit a user to a maximum of 60 requests per minute, and 1000 requests per day.</p>
+<p>Throttles do not necessarily only refer to rate-limiting requests.  For example a storage service might also need to throttle against bandwidth, and a paid data service might want to throttle against a certain number of a records being accessed.</p>
+<h2 id="how-throttling-is-determined">How throttling is determined</h2>
+<p>As with permissions and authentication, throttling in REST framework is always defined as a list of classes.</p>
+<p>Before running the main body of the view each throttle in the list is checked.
+If any throttle check fails an <code>exceptions.Throttled</code> exception will be raised, and the main body of the view will not run.</p>
+<h2 id="setting-the-throttling-policy">Setting the throttling policy</h2>
+<p>The default throttling policy may be set globally, using the <code>DEFAULT_THROTTLE_CLASSES</code> and <code>DEFAULT_THROTTLE_RATES</code> settings.  For example.</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/day'
+    }
+}
+</code></pre>
+<p>The rate descriptions used in <code>DEFAULT_THROTTLE_RATES</code> may include <code>second</code>, <code>minute</code>, <code>hour</code> or <code>day</code> as the throttle period.</p>
+<p>You can also set the throttling policy on a per-view or per-viewset basis,
+using the <code>APIView</code> class based views.</p>
+<pre><code>from rest_framework.response import Response
+from rest_framework.throttling import UserRateThrottle
+from rest_framework.views import APIView
+
+class ExampleView(APIView):
+    throttle_classes = (UserRateThrottle,)
+
+    def get(self, request, format=None):
+        content = {
+            'status': 'request was permitted'
+        }
+        return Response(content)
+</code></pre>
+<p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
+<pre><code>@api_view(['GET'])
+@throttle_classes([UserRateThrottle])
+def example_view(request, format=None):
+    content = {
+        'status': 'request was permitted'
+    }
+    return Response(content)
+</code></pre>
+<h2 id="how-clients-are-identified">How clients are identified</h2>
+<p>The <code>X-Forwarded-For</code> and <code>Remote-Addr</code> HTTP headers are used to uniquely identify client IP addresses for throttling.  If the <code>X-Forwarded-For</code> header is present then it will be used, otherwise the value of the <code>Remote-Addr</code> header will be used.</p>
+<p>If you need to strictly identify unique client IP addresses, you'll need to first configure the number of application proxies that the API runs behind by setting the <code>NUM_PROXIES</code> setting.  This setting should be an integer of zero or more.  If set to non-zero then the client IP will be identified as being the last IP address in the <code>X-Forwarded-For</code> header, once any application proxy IP addresses have first been excluded.  If set to zero, then the <code>Remote-Addr</code> header will always be used as the identifying IP address.</p>
+<p>It is important to understand that if you configure the <code>NUM_PROXIES</code> setting, then all clients behind a unique <a href="http://en.wikipedia.org/wiki/Network_address_translation">NAT'd</a> gateway will be treated as a single client.</p>
+<p>Further context on how the <code>X-Forwarded-For</code> header works, and identifying a remote client IP can be <a href="http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster">found here</a>.</p>
+<h2 id="setting-up-the-cache">Setting up the cache</h2>
+<p>The throttle classes provided by REST framework use Django's cache backend.  You should make sure that you've set appropriate <a href="https://docs.djangoproject.com/en/dev/ref/settings/#caches">cache settings</a>.  The default value of <code>LocMemCache</code> backend should be okay for simple setups.  See Django's <a href="https://docs.djangoproject.com/en/dev/topics/cache/#setting-up-the-cache">cache documentation</a> for more details.</p>
+<p>If you need to use a cache other than <code>'default'</code>, you can do so by creating a custom throttle class and setting the <code>cache</code> attribute.  For example:</p>
+<pre><code>class CustomAnonRateThrottle(AnonRateThrottle):
+    cache = get_cache('alternate')
+</code></pre>
+<p>You'll need to remember to also set your custom throttle class in the <code>'DEFAULT_THROTTLE_CLASSES'</code> settings key, or using the <code>throttle_classes</code> view attribute.</p>
+<hr />
+<h1 id="api-reference">API Reference</h1>
+<h2 id="anonratethrottle">AnonRateThrottle</h2>
+<p>The <code>AnonRateThrottle</code> will only ever throttle unauthenticated users.  The IP address of the incoming request is used to generate a unique key to throttle against.</p>
+<p>The allowed request rate is determined from one of the following (in order of preference).</p>
+<ul>
+<li>The <code>rate</code> property on the class, which may be provided by overriding <code>AnonRateThrottle</code> and setting the property.</li>
+<li>The <code>DEFAULT_THROTTLE_RATES['anon']</code> setting.</li>
+</ul>
+<p><code>AnonRateThrottle</code> is suitable if you want to restrict the rate of requests from unknown sources.</p>
+<h2 id="userratethrottle">UserRateThrottle</h2>
+<p>The <code>UserRateThrottle</code> will throttle users to a given rate of requests across the API.  The user id is used to generate a unique key to throttle against.  Unauthenticated requests will fall back to using the IP address of the incoming request to generate a unique key to throttle against.</p>
+<p>The allowed request rate is determined from one of the following (in order of preference).</p>
+<ul>
+<li>The <code>rate</code> property on the class, which may be provided by overriding <code>UserRateThrottle</code> and setting the property.</li>
+<li>The <code>DEFAULT_THROTTLE_RATES['user']</code> setting.</li>
+</ul>
+<p>An API may have multiple <code>UserRateThrottles</code> in place at the same time.  To do so, override <code>UserRateThrottle</code> and set a unique "scope" for each class.</p>
+<p>For example, multiple user throttle rates could be implemented by using the following classes...</p>
+<pre><code>class BurstRateThrottle(UserRateThrottle):
+    scope = 'burst'
+
+class SustainedRateThrottle(UserRateThrottle):
+    scope = 'sustained'
+</code></pre>
+<p>...and the following settings.</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_CLASSES': (
+        'example.throttles.BurstRateThrottle',
+        'example.throttles.SustainedRateThrottle'
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'burst': '60/min',
+        'sustained': '1000/day'
+    }
+}
+</code></pre>
+<p><code>UserRateThrottle</code> is suitable if you want simple global rate restrictions per-user.</p>
+<h2 id="scopedratethrottle">ScopedRateThrottle</h2>
+<p>The <code>ScopedRateThrottle</code> class can be used to restrict access to specific parts of the API.  This throttle will only be applied if the view that is being accessed includes a <code>.throttle_scope</code> property.  The unique throttle key will then be formed by concatenating the "scope" of the request with the unique user id or IP address.</p>
+<p>The allowed request rate is determined by the <code>DEFAULT_THROTTLE_RATES</code> setting using a key from the request "scope".</p>
+<p>For example, given the following views...</p>
+<pre><code>class ContactListView(APIView):
+    throttle_scope = 'contacts'
+    ...
+
+class ContactDetailView(ApiView):
+    throttle_scope = 'contacts'
+    ...
+
+class UploadView(APIView):
+    throttle_scope = 'uploads'
+    ...
+</code></pre>
+<p>...and the following settings.</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.ScopedRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'contacts': '1000/day',
+        'uploads': '20/day'
+    }
+}
+</code></pre>
+<p>User requests to either <code>ContactListView</code> or <code>ContactDetailView</code> would be restricted to a total of 1000 requests per-day.  User requests to <code>UploadView</code> would be restricted to 20 requests per day.</p>
+<hr />
+<h1 id="custom-throttles">Custom throttles</h1>
+<p>To create a custom throttle, override <code>BaseThrottle</code> and implement <code>.allow_request(self, request, view)</code>.  The method should return <code>True</code> if the request should be allowed, and <code>False</code> otherwise.</p>
+<p>Optionally you may also override the <code>.wait()</code> method.  If implemented, <code>.wait()</code> should return a recommended number of seconds to wait before attempting the next request, or <code>None</code>.  The <code>.wait()</code> method will only be called if <code>.allow_request()</code> has previously returned <code>False</code>.</p>
+<p>If the <code>.wait()</code> method is implemented and the request is throttled, then a <code>Retry-After</code> header will be included in the response.</p>
+<h2 id="example">Example</h2>
+<p>The following is an example of a rate throttle, that will randomly throttle 1 in every 10 requests.</p>
+<pre><code>class RandomRateThrottle(throttles.BaseThrottle):
+    def allow_request(self, request, view):
+        return random.randint(1, 10) == 1
+</code></pre>
+
+          </div>
+          <!--/span-->
+        </div>
+        <!--/row-->
+      </div>
+      <!--/.fluid-container-->
+    </div>
+    <!--/.body content-->
+    <div id="push"></div>
+  </div>
+  <!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    </p>
+  </footer>
+
+  <!-- Le javascript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="../../js/jquery-1.8.1-min.js"></script>
+  <script src="../../js/prettify-1.0.js"></script>
+  <script src="../../js/bootstrap-2.1.1-min.js"></script>
+
+  <script>
+    //$('.side-nav').scrollspy()
+    var shiftWindow = function() {
+      scrollBy(0, -50)
+    };
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+
+    $('.dropdown-menu').on('click touchstart', function(event) {
+      event.stopPropagation();
+    });
+
+    // Dynamically force sidenav to no higher than browser window
+    $('.side-nav').css('max-height', window.innerHeight - 130);
+
+    $(function() {
+      $(window).resize(function() {
+        $('.side-nav').css('max-height', window.innerHeight - 130);
+      });
+    });
+  </script>
+</body>
+
+</html>

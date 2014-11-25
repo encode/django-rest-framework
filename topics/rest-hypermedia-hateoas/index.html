@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>REST, Hypermedia & HATEOAS - Django REST framework</title>
+  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
+  <link rel="canonical" href="http://www.django-rest-framework.org/topics/rest-hypermedia-hateoas/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django, API, REST, REST, Hypermedia & HATEOAS">
+  <meta name="author" content="Tom Christie">
+
+  <!-- Le styles -->
+  <link href="../../css/prettify.css" rel="stylesheet">
+  <link href="../../css/bootstrap.css" rel="stylesheet">
+  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="../../css/default.css" rel="stylesheet">
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18852272-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <style>
+    span.fusion-wrap a {
+      display: block;
+      margin-top: 10px;
+      color: black;
+    }
+    a.fusion-poweredby {
+      display: block;
+      margin-top: 10px;
+    }
+    @media (max-width: 767px) {
+      div.promo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body onload="prettyPrint()" class="-page">
+
+  <div class="wrapper">
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../third-party-resources">
+            Next <i class="icon-arrow-right icon-white"></i>
+          </a>
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../browsable-api">
+            <i class="icon-arrow-left icon-white"></i> Previous
+          </a>
+          <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+              <li ><a href="/">Home</a></li>
+               
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../tutorial/quickstart">Quickstart</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/1-serialization">1 - Serialization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/2-requests-and-responses">2 - Requests and responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/3-class-based-views">3 - Class based views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/4-authentication-and-permissions">4 - Authentication and permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis">5 - Relationships and hyperlinked APIs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/6-viewsets-and-routers">6- Viewsets and routers</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../api-guide/requests">Requests</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/responses">Responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/views">Views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/generic-views">Generic views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/viewsets">Viewsets</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/routers">Routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/parsers">Parsers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/renderers">Renderers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/serializers">Serializers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/fields">Serializer fields</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/relations">Serializer relations</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/validators">Validators</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/authentication">Authentication</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/permissions">Permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/throttling">Throttling</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/filtering">Filtering</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/pagination">Pagination</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/content-negotiation">Content negotiation</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/format-suffixes">Format suffixes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/reverse">Returning URLs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/exceptions">Exceptions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/status-codes">Status codes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/testing">Testing</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/settings">Settings</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../documenting-your-api">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../ajax-csrf-cors">AJAX, CSRF & CORS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../browser-enhancements">Browser enhancements</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../browsable-api">The Browsable API</a>
+                  </li>
+                  
+                  <li class="active" >
+                    <a href=".">REST, Hypermedia & HATEOAS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../third-party-resources">Third Party Resources</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../contributing">Contributing to REST framework</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../rest-framework-2-announcement">2.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../2.2-announcement">2.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../2.3-announcement">2.3 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../2.4-announcement">2.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../kickstarter-announcement">Kickstarter Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../release-notes">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../credits">Credits</a>
+                  </li>
+                  
+                </ul>
+              </li>
+               
+
+            </ul>
+            
+          </div>
+          <!--/.nav-collapse -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="body-content">
+      <div class="container-fluid">
+
+        <!-- Search Modal -->
+        <div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Documentation search</h3>
+          </div>
+
+          <div class="modal-body">
+            <!-- Custom google search -->
+            <script>
+              (function() {
+                var cx = '015016005043623903336:rxraeohqk6w';
+                var gcse = document.createElement('script');
+                gcse.type = 'text/javascript';
+                gcse.async = true;
+                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                  '//www.google.com/cse/cse.js?cx=' + cx;
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(gcse, s);
+              })();
+            </script>
+            <gcse:search></gcse:search>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+
+          <div class="span3">
+            <!-- TODO
+            <p style="margin-top: -12px">
+              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
+              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
+            </p>
+          -->
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+
+                
+
+                
+
+                  <li class="main">
+                    <a href="#rest-hypermedia-hateoas">REST, Hypermedia &amp; HATEOAS</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#building-hypermedia-apis-with-rest-framework">Building Hypermedia APIs with REST framework</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#what-rest-framework-provides">What REST framework provides.</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#what-rest-framework-doesnt-provide">What REST framework doesn't provide.</a>
+                    </li>
+                  
+
+                
+
+                
+
+              </ul>
+
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            
+
+            <h1 id="rest-hypermedia-hateoas">REST, Hypermedia &amp; HATEOAS</h1>
+<blockquote>
+<p>You keep using that word "REST".  I do not think it means what you think it means.</p>
+<p>&mdash; Mike Amundsen, <a href="http://vimeo.com/channels/restfest/page:2">REST fest 2012 keynote</a>.</p>
+</blockquote>
+<p>First off, the disclaimer.  The name "Django REST framework" was chosen simply to sure the project would be easily found by developers.  Throughout the documentation we try to use the more simple and technically correct terminology of "Web APIs".</p>
+<p>If you are serious about designing a Hypermedia APIs, you should look to resources outside of this documentation to help inform your design choices.</p>
+<p>The following fall into the "required reading" category.</p>
+<ul>
+<li>Roy Fielding's dissertation - <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">Architectural Styles and
+the Design of Network-based Software Architectures</a>.</li>
+<li>Roy Fielding's "<a href="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">REST APIs must be hypertext-driven</a>" blog post.</li>
+<li>Leonard Richardson &amp; Mike Amundsen's <a href="http://restfulwebapis.org/">RESTful Web APIs</a>.</li>
+<li>Mike Amundsen's <a href="http://www.amazon.com/Building-Hypermedia-APIs-HTML5-Node/dp/1449306578">Building Hypermedia APIs with HTML5 and Node</a>.</li>
+<li>Steve Klabnik's <a href="http://designinghypermediaapis.com/">Designing Hypermedia APIs</a>.</li>
+<li>The <a href="http://martinfowler.com/articles/richardsonMaturityModel.html">Richardson Maturity Model</a>.</li>
+</ul>
+<p>For a more thorough background, check out Klabnik's <a href="http://blog.steveklabnik.com/posts/2012-02-27-hypermedia-api-reading-list">Hypermedia API reading list</a>.</p>
+<h2 id="building-hypermedia-apis-with-rest-framework">Building Hypermedia APIs with REST framework</h2>
+<p>REST framework is an agnostic Web API toolkit.  It does help guide you towards building well-connected APIs, and makes it easy to design appropriate media types, but it does not strictly enforce any particular design style.</p>
+<h2 id="what-rest-framework-provides">What REST framework provides.</h2>
+<p>It is self evident that REST framework makes it possible to build Hypermedia APIs.  The browsable API that it offers is built on HTML - the hypermedia language of the web.</p>
+<p>REST framework also includes <a href="../../api-guide/serializers">serialization</a> and <a href="../../api-guide/parsers">parser</a>/<a href="../../api-guide/renderers">renderer</a> components that make it easy to build appropriate media types, <a href="../../api-guide/fields">hyperlinked relations</a> for building well-connected systems, and great support for <a href="../../api-guide/content-negotiation">content negotiation</a>.</p>
+<h2 id="what-rest-framework-doesnt-provide">What REST framework doesn't provide.</h2>
+<p>What REST framework doesn't do is give you is machine readable hypermedia formats such as <a href="http://stateless.co/hal_specification.html">HAL</a>, <a href="http://www.amundsen.com/media-types/collection/">Collection+JSON</a>, <a href="http://jsonapi.org/">JSON API</a> or HTML <a href="http://microformats.org/wiki/Main_Page">microformats</a> by default, or the ability to auto-magically create fully HATEOAS style APIs that include hypermedia-based form descriptions and semantically labelled hyperlinks.  Doing so would involve making opinionated choices about API design that should really remain outside of the framework's scope.</p>
+
+          </div>
+          <!--/span-->
+        </div>
+        <!--/row-->
+      </div>
+      <!--/.fluid-container-->
+    </div>
+    <!--/.body content-->
+    <div id="push"></div>
+  </div>
+  <!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    </p>
+  </footer>
+
+  <!-- Le javascript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="../../js/jquery-1.8.1-min.js"></script>
+  <script src="../../js/prettify-1.0.js"></script>
+  <script src="../../js/bootstrap-2.1.1-min.js"></script>
+
+  <script>
+    //$('.side-nav').scrollspy()
+    var shiftWindow = function() {
+      scrollBy(0, -50)
+    };
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+
+    $('.dropdown-menu').on('click touchstart', function(event) {
+      event.stopPropagation();
+    });
+
+    // Dynamically force sidenav to no higher than browser window
+    $('.side-nav').css('max-height', window.innerHeight - 130);
+
+    $(function() {
+      $(window).resize(function() {
+        $('.side-nav').css('max-height', window.innerHeight - 130);
+      });
+    });
+  </script>
+</body>
+
+</html>

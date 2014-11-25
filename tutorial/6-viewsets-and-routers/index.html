@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>6- Viewsets and routers - Django REST framework</title>
+  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
+  <link rel="canonical" href="http://www.django-rest-framework.org/tutorial/6-viewsets-and-routers/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django, API, REST, 6- Viewsets and routers">
+  <meta name="author" content="Tom Christie">
+
+  <!-- Le styles -->
+  <link href="../../css/prettify.css" rel="stylesheet">
+  <link href="../../css/bootstrap.css" rel="stylesheet">
+  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="../../css/default.css" rel="stylesheet">
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18852272-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <style>
+    span.fusion-wrap a {
+      display: block;
+      margin-top: 10px;
+      color: black;
+    }
+    a.fusion-poweredby {
+      display: block;
+      margin-top: 10px;
+    }
+    @media (max-width: 767px) {
+      div.promo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body onload="prettyPrint()" class="-page">
+
+  <div class="wrapper">
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../../api-guide/requests">
+            Next <i class="icon-arrow-right icon-white"></i>
+          </a>
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../5-relationships-and-hyperlinked-apis">
+            <i class="icon-arrow-left icon-white"></i> Previous
+          </a>
+          <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+              <li ><a href="/">Home</a></li>
+               
+              <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../quickstart">Quickstart</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../1-serialization">1 - Serialization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../2-requests-and-responses">2 - Requests and responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3-class-based-views">3 - Class based views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../4-authentication-and-permissions">4 - Authentication and permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../5-relationships-and-hyperlinked-apis">5 - Relationships and hyperlinked APIs</a>
+                  </li>
+                  
+                  <li class="active" >
+                    <a href=".">6- Viewsets and routers</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../api-guide/requests">Requests</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/responses">Responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/views">Views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/generic-views">Generic views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/viewsets">Viewsets</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/routers">Routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/parsers">Parsers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/renderers">Renderers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/serializers">Serializers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/fields">Serializer fields</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/relations">Serializer relations</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/validators">Validators</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/authentication">Authentication</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/permissions">Permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/throttling">Throttling</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/filtering">Filtering</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/pagination">Pagination</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/content-negotiation">Content negotiation</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/format-suffixes">Format suffixes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/reverse">Returning URLs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/exceptions">Exceptions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/status-codes">Status codes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/testing">Testing</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/settings">Settings</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../topics/documenting-your-api">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browser-enhancements">Browser enhancements</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browsable-api">The Browsable API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/third-party-resources">Third Party Resources</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/contributing">Contributing to REST framework</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/rest-framework-2-announcement">2.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.2-announcement">2.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.3-announcement">2.3 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.4-announcement">2.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/kickstarter-announcement">Kickstarter Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/release-notes">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/credits">Credits</a>
+                  </li>
+                  
+                </ul>
+              </li>
+               
+
+            </ul>
+            
+          </div>
+          <!--/.nav-collapse -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="body-content">
+      <div class="container-fluid">
+
+        <!-- Search Modal -->
+        <div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Documentation search</h3>
+          </div>
+
+          <div class="modal-body">
+            <!-- Custom google search -->
+            <script>
+              (function() {
+                var cx = '015016005043623903336:rxraeohqk6w';
+                var gcse = document.createElement('script');
+                gcse.type = 'text/javascript';
+                gcse.async = true;
+                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                  '//www.google.com/cse/cse.js?cx=' + cx;
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(gcse, s);
+              })();
+            </script>
+            <gcse:search></gcse:search>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+
+          <div class="span3">
+            <!-- TODO
+            <p style="margin-top: -12px">
+              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
+              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
+            </p>
+          -->
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+
+                
+
+                
+
+                  <li class="main">
+                    <a href="#tutorial-6-viewsets-routers">Tutorial 6: ViewSets &amp; Routers</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#refactoring-to-use-viewsets">Refactoring to use ViewSets</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#binding-viewsets-to-urls-explicitly">Binding ViewSets to URLs explicitly</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#using-routers">Using Routers</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#trade-offs-between-views-vs-viewsets">Trade-offs between views vs viewsets</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#reviewing-our-work">Reviewing our work</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#onwards-and-upwards">Onwards and upwards</a>
+                    </li>
+                  
+
+                
+
+                
+
+              </ul>
+
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            
+
+            <h1 id="tutorial-6-viewsets-routers">Tutorial 6: ViewSets &amp; Routers</h1>
+<p>REST framework includes an abstraction for dealing with <code>ViewSets</code>, that allows the developer to concentrate on modeling the state and interactions of the API, and leave the URL construction to be handled automatically, based on common conventions.</p>
+<p><code>ViewSet</code> classes are almost the same thing as <code>View</code> classes, except that they provide operations such as <code>read</code>, or <code>update</code>, and not method handlers such as <code>get</code> or <code>put</code>.</p>
+<p>A <code>ViewSet</code> class is only bound to a set of method handlers at the last moment, when it is instantiated into a set of views, typically by using a <code>Router</code> class which handles the complexities of defining the URL conf for you.</p>
+<h2 id="refactoring-to-use-viewsets">Refactoring to use ViewSets</h2>
+<p>Let's take our current set of views, and refactor them into view sets.</p>
+<p>First of all let's refactor our <code>UserList</code> and <code>UserDetail</code> views into a single <code>UserViewSet</code>.  We can remove the two views, and replace them with a single class:</p>
+<pre><code>from rest_framework import viewsets
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    This viewset automatically provides `list` and `detail` actions.
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+</code></pre>
+<p>Here we've used the <code>ReadOnlyModelViewSet</code> class to automatically provide the default 'read-only' operations.  We're still setting the <code>queryset</code> and <code>serializer_class</code> attributes exactly as we did when we were using regular views, but we no longer need to provide the same information to two separate classes.</p>
+<p>Next we're going to replace the <code>SnippetList</code>, <code>SnippetDetail</code> and <code>SnippetHighlight</code> view classes.  We can remove the three views, and again replace them with a single class.</p>
+<pre><code>from rest_framework.decorators import detail_route
+
+class SnippetViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+
+    Additionally we also provide an extra `highlight` action.
+    """
+    queryset = Snippet.objects.all()
+    serializer_class = SnippetSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly,)
+
+    @detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
+    def highlight(self, request, *args, **kwargs):
+        snippet = self.get_object()
+        return Response(snippet.highlighted)
+
+    def pre_save(self, obj):
+        obj.owner = self.request.user
+</code></pre>
+<p>This time we've used the <code>ModelViewSet</code> class in order to get the complete set of default read and write operations.</p>
+<p>Notice that we've also used the <code>@detail_route</code> decorator to create a custom action, named <code>highlight</code>.  This decorator can be used to add any custom endpoints that don't fit into the standard <code>create</code>/<code>update</code>/<code>delete</code> style.</p>
+<p>Custom actions which use the <code>@detail_route</code> decorator will respond to <code>GET</code> requests.  We can use the <code>methods</code> argument if we wanted an action that responded to <code>POST</code> requests.</p>
+<h2 id="binding-viewsets-to-urls-explicitly">Binding ViewSets to URLs explicitly</h2>
+<p>The handler methods only get bound to the actions when we define the URLConf.
+To see what's going on under the hood let's first explicitly create a set of views from our ViewSets.</p>
+<p>In the <code>urls.py</code> file we bind our <code>ViewSet</code> classes into a set of concrete views.</p>
+<pre><code>from snippets.views import SnippetViewSet, UserViewSet, api_root
+from rest_framework import renderers
+
+snippet_list = SnippetViewSet.as_view({
+    'get': 'list',
+    'post': 'create'
+})
+snippet_detail = SnippetViewSet.as_view({
+    'get': 'retrieve',
+    'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy'
+})
+snippet_highlight = SnippetViewSet.as_view({
+    'get': 'highlight'
+}, renderer_classes=[renderers.StaticHTMLRenderer])
+user_list = UserViewSet.as_view({
+    'get': 'list'
+})
+user_detail = UserViewSet.as_view({
+    'get': 'retrieve'
+})
+</code></pre>
+<p>Notice how we're creating multiple views from each <code>ViewSet</code> class, by binding the http methods to the required action for each view.</p>
+<p>Now that we've bound our resources into concrete views, we can register the views with the URL conf as usual.</p>
+<pre><code>urlpatterns = format_suffix_patterns([
+    url(r'^$', api_root),
+    url(r'^snippets/$', snippet_list, name='snippet-list'),
+    url(r'^snippets/(?P&lt;pk&gt;[0-9]+)/$', snippet_detail, name='snippet-detail'),
+    url(r'^snippets/(?P&lt;pk&gt;[0-9]+)/highlight/$', snippet_highlight, name='snippet-highlight'),
+    url(r'^users/$', user_list, name='user-list'),
+    url(r'^users/(?P&lt;pk&gt;[0-9]+)/$', user_detail, name='user-detail')
+])
+</code></pre>
+<h2 id="using-routers">Using Routers</h2>
+<p>Because we're using <code>ViewSet</code> classes rather than <code>View</code> classes, we actually don't need to design the URL conf ourselves.  The conventions for wiring up resources into views and urls can be handled automatically, using a <code>Router</code> class.  All we need to do is register the appropriate view sets with a router, and let it do the rest.</p>
+<p>Here's our re-wired <code>urls.py</code> file.</p>
+<pre><code>from django.conf.urls import url, include
+from snippets import views
+from rest_framework.routers import DefaultRouter
+
+# Create a router and register our viewsets with it.
+router = DefaultRouter()
+router.register(r'snippets', views.SnippetViewSet)
+router.register(r'users', views.UserViewSet)
+
+# The API URLs are now determined automatically by the router.
+# Additionally, we include the login URLs for the browseable API.
+urlpatterns = [
+    url(r'^', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+]
+</code></pre>
+<p>Registering the viewsets with the router is similar to providing a urlpattern.  We include two arguments - the URL prefix for the views, and the viewset itself.</p>
+<p>The <code>DefaultRouter</code> class we're using also automatically creates the API root view for us, so we can now delete the <code>api_root</code> method from our <code>views</code> module.</p>
+<h2 id="trade-offs-between-views-vs-viewsets">Trade-offs between views vs viewsets</h2>
+<p>Using viewsets can be a really useful abstraction.  It helps ensure that URL conventions will be consistent across your API, minimizes the amount of code you need to write, and allows you to concentrate on the interactions and representations your API provides rather than the specifics of the URL conf.</p>
+<p>That doesn't mean it's always the right approach to take.  There's a similar set of trade-offs to consider as when using class-based views instead of function based views.  Using viewsets is less explicit than building your views individually.</p>
+<h2 id="reviewing-our-work">Reviewing our work</h2>
+<p>With an incredibly small amount of code, we've now got a complete pastebin Web API, which is fully web browseable, and comes complete with authentication, per-object permissions, and multiple renderer formats.</p>
+<p>We've walked through each step of the design process, and seen how if we need to customize anything we can gradually work our way down to simply using regular Django views.</p>
+<p>You can review the final <a href="https://github.com/tomchristie/rest-framework-tutorial">tutorial code</a> on GitHub, or try out a live example in <a href="http://restframework.herokuapp.com/">the sandbox</a>.</p>
+<h2 id="onwards-and-upwards">Onwards and upwards</h2>
+<p>We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here are a few places you can start:</p>
+<ul>
+<li>Contribute on <a href="https://github.com/tomchristie/django-rest-framework">GitHub</a> by reviewing and submitting issues, and making pull requests.</li>
+<li>Join the <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">REST framework discussion group</a>, and help build the community.</li>
+<li>Follow <a href="https://twitter.com/_tomchristie">the author</a> on Twitter and say hi.</li>
+</ul>
+<p><strong>Now go build awesome things.</strong></p>
+
+          </div>
+          <!--/span-->
+        </div>
+        <!--/row-->
+      </div>
+      <!--/.fluid-container-->
+    </div>
+    <!--/.body content-->
+    <div id="push"></div>
+  </div>
+  <!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    </p>
+  </footer>
+
+  <!-- Le javascript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="../../js/jquery-1.8.1-min.js"></script>
+  <script src="../../js/prettify-1.0.js"></script>
+  <script src="../../js/bootstrap-2.1.1-min.js"></script>
+
+  <script>
+    //$('.side-nav').scrollspy()
+    var shiftWindow = function() {
+      scrollBy(0, -50)
+    };
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+
+    $('.dropdown-menu').on('click touchstart', function(event) {
+      event.stopPropagation();
+    });
+
+    // Dynamically force sidenav to no higher than browser window
+    $('.side-nav').css('max-height', window.innerHeight - 130);
+
+    $(function() {
+      $(window).resize(function() {
+        $('.side-nav').css('max-height', window.innerHeight - 130);
+      });
+    });
+  </script>
+</body>
+
+</html>

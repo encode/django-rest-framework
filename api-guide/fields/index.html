@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Serializer fields - Django REST framework</title>
+  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
+  <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/fields/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django, API, REST, Serializer fields">
+  <meta name="author" content="Tom Christie">
+
+  <!-- Le styles -->
+  <link href="../../css/prettify.css" rel="stylesheet">
+  <link href="../../css/bootstrap.css" rel="stylesheet">
+  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="../../css/default.css" rel="stylesheet">
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18852272-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <style>
+    span.fusion-wrap a {
+      display: block;
+      margin-top: 10px;
+      color: black;
+    }
+    a.fusion-poweredby {
+      display: block;
+      margin-top: 10px;
+    }
+    @media (max-width: 767px) {
+      div.promo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body onload="prettyPrint()" class="-page">
+
+  <div class="wrapper">
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../relations">
+            Next <i class="icon-arrow-right icon-white"></i>
+          </a>
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../serializers">
+            <i class="icon-arrow-left icon-white"></i> Previous
+          </a>
+          <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+              <li ><a href="/">Home</a></li>
+               
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../tutorial/quickstart">Quickstart</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/1-serialization">1 - Serialization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/2-requests-and-responses">2 - Requests and responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/3-class-based-views">3 - Class based views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/4-authentication-and-permissions">4 - Authentication and permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis">5 - Relationships and hyperlinked APIs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/6-viewsets-and-routers">6- Viewsets and routers</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../requests">Requests</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../responses">Responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../views">Views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../generic-views">Generic views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../viewsets">Viewsets</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../routers">Routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../parsers">Parsers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../renderers">Renderers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../serializers">Serializers</a>
+                  </li>
+                  
+                  <li class="active" >
+                    <a href=".">Serializer fields</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../relations">Serializer relations</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../validators">Validators</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../authentication">Authentication</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../permissions">Permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../throttling">Throttling</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../filtering">Filtering</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../pagination">Pagination</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../content-negotiation">Content negotiation</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../format-suffixes">Format suffixes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../reverse">Returning URLs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../exceptions">Exceptions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../status-codes">Status codes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../testing">Testing</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../settings">Settings</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../topics/documenting-your-api">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browser-enhancements">Browser enhancements</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browsable-api">The Browsable API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/third-party-resources">Third Party Resources</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/contributing">Contributing to REST framework</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/rest-framework-2-announcement">2.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.2-announcement">2.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.3-announcement">2.3 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.4-announcement">2.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/kickstarter-announcement">Kickstarter Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/release-notes">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/credits">Credits</a>
+                  </li>
+                  
+                </ul>
+              </li>
+               
+
+            </ul>
+            
+          </div>
+          <!--/.nav-collapse -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="body-content">
+      <div class="container-fluid">
+
+        <!-- Search Modal -->
+        <div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Documentation search</h3>
+          </div>
+
+          <div class="modal-body">
+            <!-- Custom google search -->
+            <script>
+              (function() {
+                var cx = '015016005043623903336:rxraeohqk6w';
+                var gcse = document.createElement('script');
+                gcse.type = 'text/javascript';
+                gcse.async = true;
+                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                  '//www.google.com/cse/cse.js?cx=' + cx;
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(gcse, s);
+              })();
+            </script>
+            <gcse:search></gcse:search>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+
+          <div class="span3">
+            <!-- TODO
+            <p style="margin-top: -12px">
+              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
+              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
+            </p>
+          -->
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+
+                
+
+                
+
+                  <li class="main">
+                    <a href="#serializer-fields">Serializer fields</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#core-arguments">Core arguments</a>
+                    </li>
+                  
+
+                
+
+                  <li class="main">
+                    <a href="#generic-fields">Generic Fields</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#field">Field</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#writablefield">WritableField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#modelfield">ModelField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#serializermethodfield">SerializerMethodField</a>
+                    </li>
+                  
+
+                
+
+                  <li class="main">
+                    <a href="#typed-fields">Typed Fields</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#booleanfield">BooleanField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#charfield">CharField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#urlfield">URLField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#slugfield">SlugField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#choicefield">ChoiceField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#emailfield">EmailField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#regexfield">RegexField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#datetimefield">DateTimeField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#datefield">DateField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#timefield">TimeField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#integerfield">IntegerField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#floatfield">FloatField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#decimalfield">DecimalField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#filefield">FileField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#imagefield">ImageField</a>
+                    </li>
+                  
+
+                
+
+                  <li class="main">
+                    <a href="#custom-fields">Custom fields</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#examples">Examples</a>
+                    </li>
+                  
+
+                
+
+                  <li class="main">
+                    <a href="#third-party-packages">Third party packages</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#drf-compound-fields">DRF Compound Fields</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#drf-extra-fields">DRF Extra Fields</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#django-rest-framework-gis">django-rest-framework-gis</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#django-rest-framework-hstore">django-rest-framework-hstore</a>
+                    </li>
+                  
+
+                
+
+                
+
+              </ul>
+
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            
+              
+                <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/fields.py">
+                  <span class="label label-info">fields.py</span>
+                </a>
+              
+            
+
+            <h1 id="serializer-fields">Serializer fields</h1>
+<blockquote>
+<p>Each field in a Form class is responsible not only for validating data, but also for "cleaning" it &mdash; normalizing it to a consistent format.</p>
+<p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data">Django documentation</a></p>
+</blockquote>
+<p>Serializer fields handle converting between primitive values and internal datatypes.  They also deal with validating input values, as well as retrieving and setting the values from their parent objects.</p>
+<hr />
+<p><strong>Note:</strong> The serializer fields are declared in fields.py, but by convention you should import them using <code>from rest_framework import serializers</code> and refer to fields as <code>serializers.&lt;FieldName&gt;</code>.</p>
+<hr />
+<h2 id="core-arguments">Core arguments</h2>
+<p>Each serializer field class constructor takes at least these arguments.  Some Field classes take additional, field-specific arguments, but the following should always be accepted:</p>
+<h3 id="source"><code>source</code></h3>
+<p>The name of the attribute that will be used to populate the field.  May be a method that only takes a <code>self</code> argument, such as <code>Field(source='get_absolute_url')</code>, or may use dotted notation to traverse attributes, such as <code>Field(source='user.email')</code>.</p>
+<p>The value <code>source='*'</code> has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations.  (See the implementation of the <code>PaginationSerializer</code> class for an example.)</p>
+<p>Defaults to the name of the field.</p>
+<h3 id="read_only"><code>read_only</code></h3>
+<p>Set this to <code>True</code> to ensure that the field is used when serializing a representation, but is not used when creating or updating an instance during deserialization.</p>
+<p>Defaults to <code>False</code></p>
+<h3 id="write_only"><code>write_only</code></h3>
+<p>Set this to <code>True</code> to ensure that the field may be used when updating or creating an instance, but is not included when serializing the representation.</p>
+<p>Defaults to <code>False</code></p>
+<h3 id="required"><code>required</code></h3>
+<p>Normally an error will be raised if a field is not supplied during deserialization.
+Set to false if this field is not required to be present during deserialization.</p>
+<p>Defaults to <code>True</code>.</p>
+<h3 id="default"><code>default</code></h3>
+<p>If set, this gives the default value that will be used for the field if no input value is supplied.  If not set the default behavior is to not populate the attribute at all.</p>
+<p>May be set to a function or other callable, in which case the value will be evaluated each time it is used.</p>
+<h3 id="validators"><code>validators</code></h3>
+<p>A list of Django validators that should be used to validate deserialized values.</p>
+<h3 id="error_messages"><code>error_messages</code></h3>
+<p>A dictionary of error codes to error messages.</p>
+<h3 id="widget"><code>widget</code></h3>
+<p>Used only if rendering the field to HTML.
+This argument sets the widget that should be used to render the field. For more details, and a list of available widgets, see <a href="https://docs.djangoproject.com/en/dev/ref/forms/widgets/">the Django documentation on form widgets</a>.</p>
+<h3 id="label"><code>label</code></h3>
+<p>A short text string that may be used as the name of the field in HTML form fields or other descriptive elements.</p>
+<h3 id="help_text"><code>help_text</code></h3>
+<p>A text string that may be used as a description of the field in HTML form fields or other descriptive elements.</p>
+<hr />
+<h1 id="generic-fields">Generic Fields</h1>
+<p>These generic fields are used for representing arbitrary model fields or the output of model methods.</p>
+<h2 id="field">Field</h2>
+<p>A generic, <strong>read-only</strong> field.  You can use this field for any attribute that does not need to support write operations.</p>
+<p>For example, using the following model.</p>
+<pre><code>from django.db import models
+from django.utils.timezone import now
+
+class Account(models.Model):
+    owner = models.ForeignKey('auth.user')
+    name = models.CharField(max_length=100)
+    created = models.DateTimeField(auto_now_add=True)
+    payment_expiry = models.DateTimeField()
+
+    def has_expired(self):
+        return now() &gt; self.payment_expiry
+</code></pre>
+<p>A serializer definition that looked like this:</p>
+<pre><code>from rest_framework import serializers
+
+class AccountSerializer(serializers.HyperlinkedModelSerializer):
+    expired = serializers.Field(source='has_expired')
+
+    class Meta:
+        model = Account
+        fields = ('url', 'owner', 'name', 'expired')
+</code></pre>
+<p>Would produce output similar to:</p>
+<pre><code>{
+    'url': 'http://example.com/api/accounts/3/',
+    'owner': 'http://example.com/api/users/12/',
+    'name': 'FooCorp business account',
+    'expired': True
+}
+</code></pre>
+<p>By default, the <code>Field</code> class will perform a basic translation of the source value into primitive datatypes, falling back to unicode representations of complex datatypes when necessary.</p>
+<p>You can customize this  behavior by overriding the <code>.to_native(self, value)</code> method.</p>
+<h2 id="writablefield">WritableField</h2>
+<p>A field that supports both read and write operations.  By itself <code>WritableField</code> does not perform any translation of input values into a given type.  You won't typically use this field directly, but you may want to override it and implement the <code>.to_native(self, value)</code> and <code>.from_native(self, value)</code> methods.</p>
+<h2 id="modelfield">ModelField</h2>
+<p>A generic field that can be tied to any arbitrary model field.  The <code>ModelField</code> class delegates the task of serialization/deserialization to its associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.</p>
+<p>The <code>ModelField</code> class is generally intended for internal use, but can be used by your API if needed.  In order to properly instantiate a <code>ModelField</code>, it must be passed a field that is attached to an instantiated model.  For example: <code>ModelField(model_field=MyModel()._meta.get_field('custom_field'))</code></p>
+<p><strong>Signature:</strong> <code>ModelField(model_field=&lt;Django ModelField instance&gt;)</code></p>
+<h2 id="serializermethodfield">SerializerMethodField</h2>
+<p>This is a read-only field.  It gets its value by calling a method on the serializer class it is attached to.  It can be used to add any sort of data to the serialized representation of your object.  The field's constructor accepts a single argument, which is the name of the method on the serializer to be called.  The method should accept a single argument (in addition to <code>self</code>), which is the object being serialized.  It should return whatever you want to be included in the serialized representation of the object.  For example:</p>
+<pre><code>from django.contrib.auth.models import User
+from django.utils.timezone import now
+from rest_framework import serializers
+
+class UserSerializer(serializers.ModelSerializer):
+    days_since_joined = serializers.SerializerMethodField('get_days_since_joined')
+
+    class Meta:
+        model = User
+
+    def get_days_since_joined(self, obj):
+        return (now() - obj.date_joined).days
+</code></pre>
+<hr />
+<h1 id="typed-fields">Typed Fields</h1>
+<p>These fields represent basic datatypes, and support both reading and writing values.</p>
+<h2 id="booleanfield">BooleanField</h2>
+<p>A Boolean representation.</p>
+<p>Corresponds to <code>django.db.models.fields.BooleanField</code>.</p>
+<h2 id="charfield">CharField</h2>
+<p>A text representation, optionally validates the text to be shorter than <code>max_length</code> and longer than <code>min_length</code>.
+If <code>allow_none</code> is <code>False</code> (default), <code>None</code> values will be converted to an empty string.</p>
+<p>Corresponds to <code>django.db.models.fields.CharField</code>
+or <code>django.db.models.fields.TextField</code>.</p>
+<p><strong>Signature:</strong> <code>CharField(max_length=None, min_length=None, allow_none=False)</code></p>
+<h2 id="urlfield">URLField</h2>
+<p>Corresponds to <code>django.db.models.fields.URLField</code>.  Uses Django's <code>django.core.validators.URLValidator</code> for validation.</p>
+<p><strong>Signature:</strong> <code>URLField(max_length=200, min_length=None)</code></p>
+<h2 id="slugfield">SlugField</h2>
+<p>Corresponds to <code>django.db.models.fields.SlugField</code>.</p>
+<p><strong>Signature:</strong> <code>SlugField(max_length=50, min_length=None)</code></p>
+<h2 id="choicefield">ChoiceField</h2>
+<p>A field that can accept a value out of a limited set of choices. Optionally takes a <code>blank_display_value</code> parameter that customizes the display value of an empty choice.</p>
+<p><strong>Signature:</strong> <code>ChoiceField(choices=(), blank_display_value=None)</code></p>
+<h2 id="emailfield">EmailField</h2>
+<p>A text representation, validates the text to be a valid e-mail address.</p>
+<p>Corresponds to <code>django.db.models.fields.EmailField</code></p>
+<h2 id="regexfield">RegexField</h2>
+<p>A text representation, that validates the given value matches against a certain regular expression.</p>
+<p>Uses Django's <code>django.core.validators.RegexValidator</code> for validation.</p>
+<p>Corresponds to <code>django.forms.fields.RegexField</code></p>
+<p><strong>Signature:</strong> <code>RegexField(regex, max_length=None, min_length=None)</code></p>
+<h2 id="datetimefield">DateTimeField</h2>
+<p>A date and time representation.</p>
+<p>Corresponds to <code>django.db.models.fields.DateTimeField</code></p>
+<p>When using <code>ModelSerializer</code> or <code>HyperlinkedModelSerializer</code>, note that any model fields with <code>auto_now=True</code> or <code>auto_now_add=True</code> will use serializer fields that are <code>read_only=True</code> by default.</p>
+<p>If you want to override this behavior, you'll need to declare the <code>DateTimeField</code> explicitly on the serializer.  For example:</p>
+<pre><code>class CommentSerializer(serializers.ModelSerializer):
+    created = serializers.DateTimeField()
+
+    class Meta:
+        model = Comment
+</code></pre>
+<p>Note that by default, datetime representations are determined by the renderer in use, although this can be explicitly overridden as detailed below.</p>
+<p>In the case of JSON this means the default datetime representation uses the <a href="http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15">ECMA 262 date time string specification</a>.  This is a subset of ISO 8601 which uses millisecond precision, and includes the 'Z' suffix for the UTC timezone, for example: <code>2013-01-29T12:34:56.123Z</code>.</p>
+<p><strong>Signature:</strong> <code>DateTimeField(format=None, input_formats=None)</code></p>
+<ul>
+<li><code>format</code> - A string representing the output format.  If not specified, this defaults to <code>None</code>, which indicates that Python <code>datetime</code> objects should be returned by <code>to_native</code>.  In this case the datetime encoding will be determined by the renderer.</li>
+<li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>DATETIME_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
+</ul>
+<p>DateTime format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style datetimes should be used. (eg <code>'2013-01-29T12:34:56.000000Z'</code>)</p>
+<h2 id="datefield">DateField</h2>
+<p>A date representation.</p>
+<p>Corresponds to <code>django.db.models.fields.DateField</code></p>
+<p><strong>Signature:</strong> <code>DateField(format=None, input_formats=None)</code></p>
+<ul>
+<li><code>format</code> - A string representing the output format.  If not specified, this defaults to <code>None</code>, which indicates that Python <code>date</code> objects should be returned by <code>to_native</code>.  In this case the date encoding will be determined by the renderer.</li>
+<li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>DATE_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
+</ul>
+<p>Date format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style dates should be used. (eg <code>'2013-01-29'</code>)</p>
+<h2 id="timefield">TimeField</h2>
+<p>A time representation.</p>
+<p>Optionally takes <code>format</code> as parameter to replace the matching pattern.</p>
+<p>Corresponds to <code>django.db.models.fields.TimeField</code></p>
+<p><strong>Signature:</strong> <code>TimeField(format=None, input_formats=None)</code></p>
+<ul>
+<li><code>format</code> - A string representing the output format.  If not specified, this defaults to <code>None</code>, which indicates that Python <code>time</code> objects should be returned by <code>to_native</code>.  In this case the time encoding will be determined by the renderer.</li>
+<li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>TIME_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
+</ul>
+<p>Time format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style times should be used. (eg <code>'12:34:56.000000'</code>)</p>
+<h2 id="integerfield">IntegerField</h2>
+<p>An integer representation.</p>
+<p>Corresponds to <code>django.db.models.fields.IntegerField</code>, <code>django.db.models.fields.SmallIntegerField</code>, <code>django.db.models.fields.PositiveIntegerField</code> and <code>django.db.models.fields.PositiveSmallIntegerField</code></p>
+<h2 id="floatfield">FloatField</h2>
+<p>A floating point representation.</p>
+<p>Corresponds to <code>django.db.models.fields.FloatField</code>.</p>
+<h2 id="decimalfield">DecimalField</h2>
+<p>A decimal representation, represented in Python by a Decimal instance.</p>
+<p>Has two required arguments:</p>
+<ul>
+<li>
+<p><code>max_digits</code> The maximum number of digits allowed in the number. Note that this number must be greater than or equal to decimal_places.</p>
+</li>
+<li>
+<p><code>decimal_places</code> The number of decimal places to store with the number.</p>
+</li>
+</ul>
+<p>For example, to validate numbers up to 999 with a resolution of 2 decimal places, you would use:</p>
+<pre><code>serializers.DecimalField(max_digits=5, decimal_places=2)
+</code></pre>
+<p>And to validate numbers up to anything less than one billion with a resolution of 10 decimal places:</p>
+<pre><code>serializers.DecimalField(max_digits=19, decimal_places=10)
+</code></pre>
+<p>This field also takes an optional argument, <code>coerce_to_string</code>. If set to <code>True</code> the representation will be output as a string. If set to <code>False</code> the representation will be left as a <code>Decimal</code> instance and the final representation will be determined by the renderer.</p>
+<p>If unset, this will default to the same value as the <code>COERCE_DECIMAL_TO_STRING</code> setting, which is <code>True</code> unless set otherwise.</p>
+<p><strong>Signature:</strong> <code>DecimalField(max_digits, decimal_places, coerce_to_string=None)</code></p>
+<p>Corresponds to <code>django.db.models.fields.DecimalField</code>.</p>
+<h2 id="filefield">FileField</h2>
+<p>A file representation.  Performs Django's standard FileField validation.</p>
+<p>Corresponds to <code>django.forms.fields.FileField</code>.</p>
+<p><strong>Signature:</strong> <code>FileField(max_length=None, allow_empty_file=False)</code></p>
+<ul>
+<li>
+<p><code>max_length</code> designates the maximum length for the file name.</p>
+</li>
+<li>
+<p><code>allow_empty_file</code> designates if empty files are allowed.</p>
+</li>
+</ul>
+<h2 id="imagefield">ImageField</h2>
+<p>An image representation.</p>
+<p>Corresponds to <code>django.forms.fields.ImageField</code>.</p>
+<p>Requires either the <code>Pillow</code> package or <code>PIL</code> package.  The <code>Pillow</code> package is recommended, as <code>PIL</code> is no longer actively maintained.</p>
+<p>Signature and validation is the same as with <code>FileField</code>.</p>
+<hr />
+<p><strong>Note:</strong> <code>FileFields</code> and <code>ImageFields</code> are only suitable for use with MultiPartParser, since e.g. json doesn't support file uploads.
+Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS">FILE_UPLOAD_HANDLERS</a> are used for handling uploaded files.</p>
+<hr />
+<h1 id="custom-fields">Custom fields</h1>
+<p>If you want to create a custom field, you'll probably want to override either one or both of the <code>.to_native()</code> and <code>.from_native()</code> methods.  These two methods are used to convert between the initial datatype, and a primitive, serializable datatype.  Primitive datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primitive objects.</p>
+<p>The <code>.to_native()</code> method is called to convert the initial datatype into a primitive, serializable datatype.  The <code>from_native()</code> method is called to restore a primitive datatype into its initial representation.</p>
+<h2 id="examples">Examples</h2>
+<p>Let's look at an example of serializing a class that represents an RGB color value:</p>
+<pre><code>class Color(object):
+    """
+    A color represented in the RGB colorspace.
+    """
+    def __init__(self, red, green, blue):
+        assert(red &gt;= 0 and green &gt;= 0 and blue &gt;= 0)
+        assert(red &lt; 256 and green &lt; 256 and blue &lt; 256)
+        self.red, self.green, self.blue = red, green, blue
+
+class ColourField(serializers.WritableField):
+    """
+    Color objects are serialized into "rgb(#, #, #)" notation.
+    """
+    def to_native(self, obj):
+        return "rgb(%d, %d, %d)" % (obj.red, obj.green, obj.blue)
+
+    def from_native(self, data):
+        data = data.strip('rgb(').rstrip(')')
+        red, green, blue = [int(col) for col in data.split(',')]
+        return Color(red, green, blue)
+</code></pre>
+<p>By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override <code>.field_to_native()</code> and/or <code>.field_from_native()</code>.</p>
+<p>As an example, let's create a field that can be used represent the class name of the object being serialized:</p>
+<pre><code>class ClassNameField(serializers.Field):
+    def field_to_native(self, obj, field_name):
+        """
+        Serialize the object's class name.
+        """
+        return obj.__class__.__name__
+</code></pre>
+<h1 id="third-party-packages">Third party packages</h1>
+<p>The following third party packages are also available.</p>
+<h2 id="drf-compound-fields">DRF Compound Fields</h2>
+<p>The <a href="http://drf-compound-fields.readthedocs.org">drf-compound-fields</a> package provides "compound" serializer fields, such as lists of simple values, which can be described by other fields rather than serializers with the <code>many=True</code> option. Also provided are fields for typed dictionaries and values that can be either a specific type or a list of items of that type.</p>
+<h2 id="drf-extra-fields">DRF Extra Fields</h2>
+<p>The <a href="https://github.com/Hipo/drf-extra-fields">drf-extra-fields</a> package provides extra serializer fields for REST framework, including <code>Base64ImageField</code> and <code>PointField</code> classes.</p>
+<h2 id="django-rest-framework-gis">django-rest-framework-gis</h2>
+<p>The <a href="https://github.com/djangonauts/django-rest-framework-gis">django-rest-framework-gis</a> package provides geographic addons for django rest framework like a  <code>GeometryField</code> field and a GeoJSON serializer.</p>
+<h2 id="django-rest-framework-hstore">django-rest-framework-hstore</h2>
+<p>The <a href="https://github.com/djangonauts/django-rest-framework-hstore">django-rest-framework-hstore</a> package provides an <code>HStoreField</code> to support <a href="https://github.com/djangonauts/django-hstore">django-hstore</a> <code>DictionaryField</code> model field.</p>
+
+          </div>
+          <!--/span-->
+        </div>
+        <!--/row-->
+      </div>
+      <!--/.fluid-container-->
+    </div>
+    <!--/.body content-->
+    <div id="push"></div>
+  </div>
+  <!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    </p>
+  </footer>
+
+  <!-- Le javascript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="../../js/jquery-1.8.1-min.js"></script>
+  <script src="../../js/prettify-1.0.js"></script>
+  <script src="../../js/bootstrap-2.1.1-min.js"></script>
+
+  <script>
+    //$('.side-nav').scrollspy()
+    var shiftWindow = function() {
+      scrollBy(0, -50)
+    };
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+
+    $('.dropdown-menu').on('click touchstart', function(event) {
+      event.stopPropagation();
+    });
+
+    // Dynamically force sidenav to no higher than browser window
+    $('.side-nav').css('max-height', window.innerHeight - 130);
+
+    $(function() {
+      $(window).resize(function() {
+        $('.side-nav').css('max-height', window.innerHeight - 130);
+      });
+    });
+  </script>
+</body>
+
+</html>

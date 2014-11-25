@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Views - Django REST framework</title>
+  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
+  <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/views/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django, API, REST, Views">
+  <meta name="author" content="Tom Christie">
+
+  <!-- Le styles -->
+  <link href="../../css/prettify.css" rel="stylesheet">
+  <link href="../../css/bootstrap.css" rel="stylesheet">
+  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="../../css/default.css" rel="stylesheet">
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18852272-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <style>
+    span.fusion-wrap a {
+      display: block;
+      margin-top: 10px;
+      color: black;
+    }
+    a.fusion-poweredby {
+      display: block;
+      margin-top: 10px;
+    }
+    @media (max-width: 767px) {
+      div.promo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body onload="prettyPrint()" class="-page">
+
+  <div class="wrapper">
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../generic-views">
+            Next <i class="icon-arrow-right icon-white"></i>
+          </a>
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../responses">
+            <i class="icon-arrow-left icon-white"></i> Previous
+          </a>
+          <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+              <li ><a href="/">Home</a></li>
+               
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../tutorial/quickstart">Quickstart</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/1-serialization">1 - Serialization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/2-requests-and-responses">2 - Requests and responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/3-class-based-views">3 - Class based views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/4-authentication-and-permissions">4 - Authentication and permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis">5 - Relationships and hyperlinked APIs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/6-viewsets-and-routers">6- Viewsets and routers</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../requests">Requests</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../responses">Responses</a>
+                  </li>
+                  
+                  <li class="active" >
+                    <a href=".">Views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../generic-views">Generic views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../viewsets">Viewsets</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../routers">Routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../parsers">Parsers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../renderers">Renderers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../serializers">Serializers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../fields">Serializer fields</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../relations">Serializer relations</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../validators">Validators</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../authentication">Authentication</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../permissions">Permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../throttling">Throttling</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../filtering">Filtering</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../pagination">Pagination</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../content-negotiation">Content negotiation</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../format-suffixes">Format suffixes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../reverse">Returning URLs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../exceptions">Exceptions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../status-codes">Status codes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../testing">Testing</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../settings">Settings</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../topics/documenting-your-api">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browser-enhancements">Browser enhancements</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browsable-api">The Browsable API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/third-party-resources">Third Party Resources</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/contributing">Contributing to REST framework</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/rest-framework-2-announcement">2.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.2-announcement">2.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.3-announcement">2.3 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.4-announcement">2.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/kickstarter-announcement">Kickstarter Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/release-notes">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/credits">Credits</a>
+                  </li>
+                  
+                </ul>
+              </li>
+               
+
+            </ul>
+            
+          </div>
+          <!--/.nav-collapse -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="body-content">
+      <div class="container-fluid">
+
+        <!-- Search Modal -->
+        <div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Documentation search</h3>
+          </div>
+
+          <div class="modal-body">
+            <!-- Custom google search -->
+            <script>
+              (function() {
+                var cx = '015016005043623903336:rxraeohqk6w';
+                var gcse = document.createElement('script');
+                gcse.type = 'text/javascript';
+                gcse.async = true;
+                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                  '//www.google.com/cse/cse.js?cx=' + cx;
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(gcse, s);
+              })();
+            </script>
+            <gcse:search></gcse:search>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+
+          <div class="span3">
+            <!-- TODO
+            <p style="margin-top: -12px">
+              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
+              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
+            </p>
+          -->
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+
+                
+
+                
+
+                  <li class="main">
+                    <a href="#class-based-views">Class Based Views</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#api-policy-attributes">API policy attributes</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#api-policy-instantiation-methods">API policy instantiation methods</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#api-policy-implementation-methods">API policy implementation methods</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#dispatch-methods">Dispatch methods</a>
+                    </li>
+                  
+
+                
+
+                  <li class="main">
+                    <a href="#function-based-views">Function Based Views</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#api_view">@api_view()</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#api-policy-decorators">API policy decorators</a>
+                    </li>
+                  
+
+                
+
+                
+
+              </ul>
+
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            
+              
+                <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/decorators.py">
+                  <span class="label label-info">decorators.py</span>
+                </a>
+              
+                <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/views.py">
+                  <span class="label label-info">views.py</span>
+                </a>
+              
+            
+
+            <h1 id="class-based-views">Class Based Views</h1>
+<blockquote>
+<p>Django's class based views are a welcome departure from the old-style views.</p>
+<p>&mdash; <a href="http://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html">Reinout van Rees</a></p>
+</blockquote>
+<p>REST framework provides an <code>APIView</code> class, which subclasses Django's <code>View</code> class.</p>
+<p><code>APIView</code> classes are different from regular <code>View</code> classes in the following ways:</p>
+<ul>
+<li>Requests passed to the handler methods will be REST framework's <code>Request</code> instances, not Django's <code>HttpRequest</code> instances.</li>
+<li>Handler methods may return REST framework's <code>Response</code>, instead of Django's <code>HttpResponse</code>.  The view will manage content negotiation and setting the correct renderer on the response.</li>
+<li>Any <code>APIException</code> exceptions will be caught and mediated into appropriate responses.</li>
+<li>Incoming requests will be authenticated and appropriate permission and/or throttle checks will be run before dispatching the request to the handler method.</li>
+</ul>
+<p>Using the <code>APIView</code> class is pretty much the same as using a regular <code>View</code> class, as usual, the incoming request is dispatched to an appropriate handler method such as <code>.get()</code> or <code>.post()</code>.  Additionally, a number of attributes may be set on the class that control various aspects of the API policy.</p>
+<p>For example:</p>
+<pre><code>from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import authentication, permissions
+
+class ListUsers(APIView):
+    """
+    View to list all users in the system.
+
+    * Requires token authentication.
+    * Only admin users are able to access this view.
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request, format=None):
+        """
+        Return a list of all users.
+        """
+        usernames = [user.username for user in User.objects.all()]
+        return Response(usernames)
+</code></pre>
+<h2 id="api-policy-attributes">API policy attributes</h2>
+<p>The following attributes control the pluggable aspects of API views.</p>
+<h3 id="renderer_classes">.renderer_classes</h3>
+<h3 id="parser_classes">.parser_classes</h3>
+<h3 id="authentication_classes">.authentication_classes</h3>
+<h3 id="throttle_classes">.throttle_classes</h3>
+<h3 id="permission_classes">.permission_classes</h3>
+<h3 id="content_negotiation_class">.content_negotiation_class</h3>
+<h2 id="api-policy-instantiation-methods">API policy instantiation methods</h2>
+<p>The following methods are used by REST framework to instantiate the various pluggable API policies.  You won't typically need to override these methods.</p>
+<h3 id="get_renderersself">.get_renderers(self)</h3>
+<h3 id="get_parsersself">.get_parsers(self)</h3>
+<h3 id="get_authenticatorsself">.get_authenticators(self)</h3>
+<h3 id="get_throttlesself">.get_throttles(self)</h3>
+<h3 id="get_permissionsself">.get_permissions(self)</h3>
+<h3 id="get_content_negotiatorself">.get_content_negotiator(self)</h3>
+<h2 id="api-policy-implementation-methods">API policy implementation methods</h2>
+<p>The following methods are called before dispatching to the handler method.</p>
+<h3 id="check_permissionsself-request">.check_permissions(self, request)</h3>
+<h3 id="check_throttlesself-request">.check_throttles(self, request)</h3>
+<h3 id="perform_content_negotiationself-request-forcefalse">.perform_content_negotiation(self, request, force=False)</h3>
+<h2 id="dispatch-methods">Dispatch methods</h2>
+<p>The following methods are called directly by the view's <code>.dispatch()</code> method.
+These perform any actions that need to occur before or after calling the handler methods such as <code>.get()</code>, <code>.post()</code>, <code>put()</code>, <code>patch()</code> and <code>.delete()</code>.</p>
+<h3 id="initialself-request-42args-kwargs">.initial(self, request, *args, **kwargs)</h3>
+<p>Performs any actions that need to occur before the handler method gets called.
+This method is used to enforce permissions and throttling, and perform content negotiation.</p>
+<p>You won't typically need to override this method.</p>
+<h3 id="handle_exceptionself-exc">.handle_exception(self, exc)</h3>
+<p>Any exception thrown by the handler method will be passed to this method, which either returns a <code>Response</code> instance, or re-raises the exception.</p>
+<p>The default implementation handles any subclass of <code>rest_framework.exceptions.APIException</code>, as well as Django's <code>Http404</code> and <code>PermissionDenied</code> exceptions, and returns an appropriate error response.</p>
+<p>If you need to customize the error responses your API returns you should subclass this method.</p>
+<h3 id="initialize_requestself-request-42args-kwargs">.initialize_request(self, request, *args, **kwargs)</h3>
+<p>Ensures that the request object that is passed to the handler method is an instance of <code>Request</code>, rather than the usual Django <code>HttpRequest</code>.</p>
+<p>You won't typically need to override this method.</p>
+<h3 id="finalize_responseself-request-response-42args-kwargs">.finalize_response(self, request, response, *args, **kwargs)</h3>
+<p>Ensures that any <code>Response</code> object returned from the handler method will be rendered into the correct content type, as determined by the content negotiation.</p>
+<p>You won't typically need to override this method.</p>
+<hr />
+<h1 id="function-based-views">Function Based Views</h1>
+<blockquote>
+<p>Saying [that Class based views] is always the superior solution is a mistake.</p>
+<p>&mdash; <a href="http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html">Nick Coghlan</a></p>
+</blockquote>
+<p>REST framework also allows you to work with regular function based views.  It provides a set of simple decorators that wrap your function based views to ensure they receive an instance of <code>Request</code> (rather than the usual Django <code>HttpRequest</code>) and allows them to return a <code>Response</code> (instead of a Django <code>HttpResponse</code>), and allow you to configure how the request is processed.</p>
+<h2 id="api_view">@api_view()</h2>
+<p><strong>Signature:</strong> <code>@api_view(http_method_names)</code></p>
+<p>The core of this functionality is the <code>api_view</code> decorator, which takes a list of HTTP methods that your view should respond to.  For example, this is how you would write a very simple view that just manually returns some data:</p>
+<pre><code>from rest_framework.decorators import api_view
+
+@api_view(['GET'])
+def hello_world(request):
+    return Response({"message": "Hello, world!"})
+</code></pre>
+<p>This view will use the default renderers, parsers, authentication classes etc specified in the <a href="../settings">settings</a>.</p>
+<h2 id="api-policy-decorators">API policy decorators</h2>
+<p>To override the default settings, REST framework provides a set of additional decorators which can be added to your views.  These must come <em>after</em> (below) the <code>@api_view</code> decorator.  For example, to create a view that uses a <a href="../throttling">throttle</a> to ensure it can only be called once per day by a particular user, use the <code>@throttle_classes</code> decorator, passing a list of throttle classes:</p>
+<pre><code>from rest_framework.decorators import api_view, throttle_classes
+from rest_framework.throttling import UserRateThrottle
+
+class OncePerDayUserThrottle(UserRateThrottle):
+        rate = '1/day'
+
+@api_view(['GET'])
+@throttle_classes([OncePerDayUserThrottle])
+def view(request):
+    return Response({"message": "Hello for today! See you tomorrow!"})
+</code></pre>
+<p>These decorators correspond to the attributes set on <code>APIView</code> subclasses, described above.</p>
+<p>The available decorators are:</p>
+<ul>
+<li><code>@renderer_classes(...)</code></li>
+<li><code>@parser_classes(...)</code></li>
+<li><code>@authentication_classes(...)</code></li>
+<li><code>@throttle_classes(...)</code></li>
+<li><code>@permission_classes(...)</code></li>
+</ul>
+<p>Each of these decorators takes a single argument which must be a list or tuple of classes.</p>
+
+          </div>
+          <!--/span-->
+        </div>
+        <!--/row-->
+      </div>
+      <!--/.fluid-container-->
+    </div>
+    <!--/.body content-->
+    <div id="push"></div>
+  </div>
+  <!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    </p>
+  </footer>
+
+  <!-- Le javascript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="../../js/jquery-1.8.1-min.js"></script>
+  <script src="../../js/prettify-1.0.js"></script>
+  <script src="../../js/bootstrap-2.1.1-min.js"></script>
+
+  <script>
+    //$('.side-nav').scrollspy()
+    var shiftWindow = function() {
+      scrollBy(0, -50)
+    };
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+
+    $('.dropdown-menu').on('click touchstart', function(event) {
+      event.stopPropagation();
+    });
+
+    // Dynamically force sidenav to no higher than browser window
+    $('.side-nav').css('max-height', window.innerHeight - 130);
+
+    $(function() {
+      $(window).resize(function() {
+        $('.side-nav').css('max-height', window.innerHeight - 130);
+      });
+    });
+  </script>
+</body>
+
+</html>

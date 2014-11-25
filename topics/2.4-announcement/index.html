@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>2.4 Announcement - Django REST framework</title>
+  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
+  <link rel="canonical" href="http://www.django-rest-framework.org/topics/2.4-announcement/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django, API, REST, 2.4 Announcement">
+  <meta name="author" content="Tom Christie">
+
+  <!-- Le styles -->
+  <link href="../../css/prettify.css" rel="stylesheet">
+  <link href="../../css/bootstrap.css" rel="stylesheet">
+  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="../../css/default.css" rel="stylesheet">
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18852272-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <style>
+    span.fusion-wrap a {
+      display: block;
+      margin-top: 10px;
+      color: black;
+    }
+    a.fusion-poweredby {
+      display: block;
+      margin-top: 10px;
+    }
+    @media (max-width: 767px) {
+      div.promo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body onload="prettyPrint()" class="-page">
+
+  <div class="wrapper">
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../kickstarter-announcement">
+            Next <i class="icon-arrow-right icon-white"></i>
+          </a>
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../2.3-announcement">
+            <i class="icon-arrow-left icon-white"></i> Previous
+          </a>
+          <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+              <li ><a href="/">Home</a></li>
+               
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../tutorial/quickstart">Quickstart</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/1-serialization">1 - Serialization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/2-requests-and-responses">2 - Requests and responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/3-class-based-views">3 - Class based views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/4-authentication-and-permissions">4 - Authentication and permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis">5 - Relationships and hyperlinked APIs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/6-viewsets-and-routers">6- Viewsets and routers</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../api-guide/requests">Requests</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/responses">Responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/views">Views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/generic-views">Generic views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/viewsets">Viewsets</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/routers">Routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/parsers">Parsers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/renderers">Renderers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/serializers">Serializers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/fields">Serializer fields</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/relations">Serializer relations</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/validators">Validators</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/authentication">Authentication</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/permissions">Permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/throttling">Throttling</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/filtering">Filtering</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/pagination">Pagination</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/content-negotiation">Content negotiation</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/format-suffixes">Format suffixes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/reverse">Returning URLs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/exceptions">Exceptions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/status-codes">Status codes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/testing">Testing</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/settings">Settings</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../documenting-your-api">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../ajax-csrf-cors">AJAX, CSRF & CORS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../browser-enhancements">Browser enhancements</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../browsable-api">The Browsable API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../third-party-resources">Third Party Resources</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../contributing">Contributing to REST framework</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../rest-framework-2-announcement">2.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../2.2-announcement">2.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../2.3-announcement">2.3 Announcement</a>
+                  </li>
+                  
+                  <li class="active" >
+                    <a href=".">2.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../kickstarter-announcement">Kickstarter Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../release-notes">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../credits">Credits</a>
+                  </li>
+                  
+                </ul>
+              </li>
+               
+
+            </ul>
+            
+          </div>
+          <!--/.nav-collapse -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="body-content">
+      <div class="container-fluid">
+
+        <!-- Search Modal -->
+        <div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Documentation search</h3>
+          </div>
+
+          <div class="modal-body">
+            <!-- Custom google search -->
+            <script>
+              (function() {
+                var cx = '015016005043623903336:rxraeohqk6w';
+                var gcse = document.createElement('script');
+                gcse.type = 'text/javascript';
+                gcse.async = true;
+                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                  '//www.google.com/cse/cse.js?cx=' + cx;
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(gcse, s);
+              })();
+            </script>
+            <gcse:search></gcse:search>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+
+          <div class="span3">
+            <!-- TODO
+            <p style="margin-top: -12px">
+              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
+              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
+            </p>
+          -->
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+
+                
+
+                
+
+                  <li class="main">
+                    <a href="#rest-framework-24-announcement">REST framework 2.4 announcement</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#version-requirements">Version requirements</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#django-17-support">Django 1.7 support</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#deprecation-of-model-view-attribute">Deprecation of .model view attribute</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#updated-test-runner">Updated test runner</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#improved-viewset-routing">Improved viewset routing</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#throttle-behavior">Throttle behavior</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#other-features">Other features</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#deprecations">Deprecations</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#labels-and-milestones">Labels and milestones</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#next-steps">Next steps</a>
+                    </li>
+                  
+
+                
+
+                
+
+              </ul>
+
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            
+
+            <h1 id="rest-framework-24-announcement">REST framework 2.4 announcement</h1>
+<p>The 2.4 release is largely an intermediate step, tying up some outstanding issues prior to the 3.x series.</p>
+<h2 id="version-requirements">Version requirements</h2>
+<p>Support for Django 1.3 has been dropped.
+The lowest supported version of Django is now 1.4.2.</p>
+<p>The current plan is for REST framework to remain in lockstep with <a href="https://docs.djangoproject.com/en/dev/internals/release-process/#long-term-support-lts-releases">Django's long-term support policy</a>.</p>
+<h2 id="django-17-support">Django 1.7 support</h2>
+<p>The optional authtoken application now includes support for <em>both</em> Django 1.7 schema migrations, <em>and</em> for old-style <code>south</code> migrations.</p>
+<p><strong>If you are using authtoken, and you want to continue using <code>south</code>, you must upgrade your <code>south</code> package to version 1.0.</strong></p>
+<h2 id="deprecation-of-model-view-attribute">Deprecation of <code>.model</code> view attribute</h2>
+<p>The <code>.model</code> attribute on view classes is an optional shortcut for either or both of <code>.serializer_class</code> and <code>.queryset</code>. Its usage results in more implicit, less obvious behavior.</p>
+<p>The documentation has previously stated that usage of the more explicit style is prefered, and we're now taking that one step further and deprecating the usage of the <code>.model</code> shortcut.</p>
+<p>Doing so will mean that there are cases of API code where you'll now need to include a serializer class where you previously were just using the <code>.model</code> shortcut. However we firmly believe that it is the right trade-off to make.</p>
+<p>Removing the shortcut takes away an unnecessary layer of abstraction, and makes your codebase more explicit without any significant extra complexity. It also results in better consistency, as there's now only one way to set the serializer class and queryset attributes for the view, instead of two.</p>
+<p>The <code>DEFAULT_MODEL_SERIALIZER_CLASS</code> API setting is now also deprecated.</p>
+<h2 id="updated-test-runner">Updated test runner</h2>
+<p>We now have a new test runner for developing against the project,, that uses the excellent <a href="http://pytest.org">py.test</a> library.</p>
+<p>To use it make sure you have first installed the test requirements.</p>
+<pre><code>pip install -r requirements-test.txt
+</code></pre>
+<p>Then run the <code>runtests.py</code> script.</p>
+<pre><code>./runtests.py
+</code></pre>
+<p>The new test runner also includes <a href="https://flake8.readthedocs.org">flake8</a> code linting, which should help keep our coding style consistent.</p>
+<h4 id="test-runner-flags">Test runner flags</h4>
+<p>Run using a more concise output style.</p>
+<pre><code>./runtests -q
+</code></pre>
+<p>Run the tests using a more concise output style, no coverage, no flake8.</p>
+<pre><code>./runtests --fast
+</code></pre>
+<p>Don't run the flake8 code linting.</p>
+<pre><code>./runtests --nolint
+</code></pre>
+<p>Only run the flake8 code linting, don't run the tests.</p>
+<pre><code>./runtests --lintonly
+</code></pre>
+<p>Run the tests for a given test case.</p>
+<pre><code>./runtests MyTestCase
+</code></pre>
+<p>Run the tests for a given test method.</p>
+<pre><code>./runtests MyTestCase.test_this_method
+</code></pre>
+<p>Shorter form to run the tests for a given test method.</p>
+<pre><code>./runtests test_this_method
+</code></pre>
+<p>Note: The test case and test method matching is fuzzy and will sometimes run other tests that contain a partial string match to the given  command line input.</p>
+<h2 id="improved-viewset-routing">Improved viewset routing</h2>
+<p>The <code>@action</code> and <code>@link</code> decorators were inflexible in that they only allowed additional routes to be added against instance style URLs, not against list style URLs.</p>
+<p>The <code>@action</code> and <code>@link</code> decorators have now been moved to pending deprecation, and the <code>@list_route</code> and <code>@detail_route</code> decorators have been introduced.</p>
+<p>Here's an example of using the new decorators. Firstly we have a detail-type route named "set_password" that acts on a single instance, and takes a <code>pk</code> argument in the URL. Secondly we have a list-type route named "recent_users" that acts on a queryset, and does not take any arguments in the URL.</p>
+<pre><code>class UserViewSet(viewsets.ModelViewSet):
+    """
+    A viewset that provides the standard actions
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    @detail_route(methods=['post'])
+    def set_password(self, request, pk=None):
+        user = self.get_object()
+        serializer = PasswordSerializer(data=request.DATA)
+        if serializer.is_valid():
+            user.set_password(serializer.data['password'])
+            user.save()
+            return Response({'status': 'password set'})
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    @list_route()
+    def recent_users(self, request):
+        recent_users = User.objects.all().order('-last_login')
+        page = self.paginate_queryset(recent_users)
+        serializer = self.get_pagination_serializer(page)
+        return Response(serializer.data)
+</code></pre>
+<p>For more details, see the <a href="../../api-guide/viewsets">viewsets documentation</a>.</p>
+<h2 id="throttle-behavior">Throttle behavior</h2>
+<p>There's one bugfix in 2.4 that's worth calling out, as it will <em>invalidate existing throttle caches</em> when you upgrade.</p>
+<p>We've now fixed a typo on the <code>cache_format</code> attribute. Previously this was named <code>"throtte_%(scope)s_%(ident)s"</code>, it is now <code>"throttle_%(scope)s_%(ident)s"</code>.</p>
+<p>If you're concerned about the invalidation you have two options.</p>
+<ul>
+<li>Manually pre-populate your cache with the fixed version.</li>
+<li>Set the <code>cache_format</code> attribute on your throttle class in order to retain the previous incorrect spelling.</li>
+</ul>
+<h2 id="other-features">Other features</h2>
+<p>There are also a number of other features and bugfixes as <a href="../../release-notes#240">listed in the release notes</a>. In particular these include:</p>
+<p><a href="../../../api-guide/settings#view-names-and-descriptions">Customizable view name and description functions</a> for use with the browsable API, by using the <code>VIEW_NAME_FUNCTION</code> and <code>VIEW_DESCRIPTION_FUNCTION</code> settings.</p>
+<p>Smarter <a href="../../../api-guide/throttling#how-clients-are-identified">client IP identification for throttling</a>, with the addition of the <code>NUM_PROXIES</code> setting.</p>
+<p>Added the standardized <code>Retry-After</code> header to throttled responses, as per <a href="http://tools.ietf.org/html/rfc6585">RFC 6585</a>. This should now be used in preference to the custom <code>X-Throttle-Wait-Seconds</code> header which will be fully deprecated in 3.0.</p>
+<h2 id="deprecations">Deprecations</h2>
+<p>All API changes in 2.3 that previously raised <code>PendingDeprecationWarning</code> will now raise a <code>DeprecationWarning</code>, which is loud by default.</p>
+<p>All API changes in 2.3 that previously raised <code>DeprecationWarning</code> have now been removed entirely.</p>
+<p>Furter details on these deprecations is available in the <a href="../../2.3-announcement">2.3 announcement</a>.</p>
+<h2 id="labels-and-milestones">Labels and milestones</h2>
+<p>Although not strictly part of the 2.4 release it's also worth noting here that we've been working hard towards improving our triage process.</p>
+<p>The <a href="https://github.com/tomchristie/django-rest-framework/issues">labels that we use in GitHub</a> have been cleaned up, and all existing tickets triaged. Any given ticket should have one and only one label, indicating its current state.</p>
+<p>We've also <a href="https://github.com/tomchristie/django-rest-framework/milestones">started using milestones</a> in order to track tickets against particular releases.</p>
+<hr />
+<p><img alt="Labels and milestones" src="../../../img/labels-and-milestones.png" /></p>
+<p><strong>Above</strong>: <em>Overview of our current use of labels and milestones in GitHub.</em></p>
+<hr />
+<p>We hope both of these changes will help make the management process more clear and obvious and help keep tickets well-organised and relevant.</p>
+<h2 id="next-steps">Next steps</h2>
+<p>The next planned release will be 3.0, featuring an improved and simplified serializer implementation.</p>
+<p>Once again, many thanks to all the generous <a href="../../kickstarter-announcement#sponsors">backers and sponsors</a> who've helped make this possible!</p>
+
+          </div>
+          <!--/span-->
+        </div>
+        <!--/row-->
+      </div>
+      <!--/.fluid-container-->
+    </div>
+    <!--/.body content-->
+    <div id="push"></div>
+  </div>
+  <!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    </p>
+  </footer>
+
+  <!-- Le javascript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="../../js/jquery-1.8.1-min.js"></script>
+  <script src="../../js/prettify-1.0.js"></script>
+  <script src="../../js/bootstrap-2.1.1-min.js"></script>
+
+  <script>
+    //$('.side-nav').scrollspy()
+    var shiftWindow = function() {
+      scrollBy(0, -50)
+    };
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+
+    $('.dropdown-menu').on('click touchstart', function(event) {
+      event.stopPropagation();
+    });
+
+    // Dynamically force sidenav to no higher than browser window
+    $('.side-nav').css('max-height', window.innerHeight - 130);
+
+    $(function() {
+      $(window).resize(function() {
+        $('.side-nav').css('max-height', window.innerHeight - 130);
+      });
+    });
+  </script>
+</body>
+
+</html>

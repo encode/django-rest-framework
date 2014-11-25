@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Authentication - Django REST framework</title>
+  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
+  <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/authentication/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django, API, REST, Authentication">
+  <meta name="author" content="Tom Christie">
+
+  <!-- Le styles -->
+  <link href="../../css/prettify.css" rel="stylesheet">
+  <link href="../../css/bootstrap.css" rel="stylesheet">
+  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="../../css/default.css" rel="stylesheet">
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18852272-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <style>
+    span.fusion-wrap a {
+      display: block;
+      margin-top: 10px;
+      color: black;
+    }
+    a.fusion-poweredby {
+      display: block;
+      margin-top: 10px;
+    }
+    @media (max-width: 767px) {
+      div.promo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body onload="prettyPrint()" class="-page">
+
+  <div class="wrapper">
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../permissions">
+            Next <i class="icon-arrow-right icon-white"></i>
+          </a>
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../validators">
+            <i class="icon-arrow-left icon-white"></i> Previous
+          </a>
+          <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+              <li ><a href="/">Home</a></li>
+               
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../tutorial/quickstart">Quickstart</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/1-serialization">1 - Serialization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/2-requests-and-responses">2 - Requests and responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/3-class-based-views">3 - Class based views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/4-authentication-and-permissions">4 - Authentication and permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis">5 - Relationships and hyperlinked APIs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/6-viewsets-and-routers">6- Viewsets and routers</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../requests">Requests</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../responses">Responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../views">Views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../generic-views">Generic views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../viewsets">Viewsets</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../routers">Routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../parsers">Parsers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../renderers">Renderers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../serializers">Serializers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../fields">Serializer fields</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../relations">Serializer relations</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../validators">Validators</a>
+                  </li>
+                  
+                  <li class="active" >
+                    <a href=".">Authentication</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../permissions">Permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../throttling">Throttling</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../filtering">Filtering</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../pagination">Pagination</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../content-negotiation">Content negotiation</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../format-suffixes">Format suffixes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../reverse">Returning URLs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../exceptions">Exceptions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../status-codes">Status codes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../testing">Testing</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../settings">Settings</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../topics/documenting-your-api">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browser-enhancements">Browser enhancements</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browsable-api">The Browsable API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/third-party-resources">Third Party Resources</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/contributing">Contributing to REST framework</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/rest-framework-2-announcement">2.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.2-announcement">2.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.3-announcement">2.3 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/2.4-announcement">2.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/kickstarter-announcement">Kickstarter Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/release-notes">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/credits">Credits</a>
+                  </li>
+                  
+                </ul>
+              </li>
+               
+
+            </ul>
+            
+          </div>
+          <!--/.nav-collapse -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="body-content">
+      <div class="container-fluid">
+
+        <!-- Search Modal -->
+        <div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Documentation search</h3>
+          </div>
+
+          <div class="modal-body">
+            <!-- Custom google search -->
+            <script>
+              (function() {
+                var cx = '015016005043623903336:rxraeohqk6w';
+                var gcse = document.createElement('script');
+                gcse.type = 'text/javascript';
+                gcse.async = true;
+                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                  '//www.google.com/cse/cse.js?cx=' + cx;
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(gcse, s);
+              })();
+            </script>
+            <gcse:search></gcse:search>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+
+          <div class="span3">
+            <!-- TODO
+            <p style="margin-top: -12px">
+              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
+              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
+            </p>
+          -->
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+
+                
+
+                
+
+                  <li class="main">
+                    <a href="#authentication">Authentication</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#how-authentication-is-determined">How authentication is determined</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#setting-the-authentication-scheme">Setting the authentication scheme</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#unauthorized-and-forbidden-responses">Unauthorized and Forbidden responses</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#apache-mod_wsgi-specific-configuration">Apache mod_wsgi specific configuration</a>
+                    </li>
+                  
+
+                
+
+                  <li class="main">
+                    <a href="#api-reference">API Reference</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#basicauthentication">BasicAuthentication</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#tokenauthentication">TokenAuthentication</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#sessionauthentication">SessionAuthentication</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#oauthauthentication">OAuthAuthentication</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#oauth2authentication">OAuth2Authentication</a>
+                    </li>
+                  
+
+                
+
+                  <li class="main">
+                    <a href="#custom-authentication">Custom authentication</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#example">Example</a>
+                    </li>
+                  
+
+                
+
+                  <li class="main">
+                    <a href="#third-party-packages">Third party packages</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#digest-authentication">Digest Authentication</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#django-oauth-toolkit">Django OAuth Toolkit</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#django-oauth2-consumer">Django OAuth2 Consumer</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#json-web-token-authentication">JSON Web Token Authentication</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#hawk-http-authentication">Hawk HTTP Authentication</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#http-signature-authentication">HTTP Signature Authentication</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#djoser">Djoser</a>
+                    </li>
+                  
+
+                
+
+                
+
+              </ul>
+
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            
+              
+                <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/authentication.py">
+                  <span class="label label-info">authentication.py</span>
+                </a>
+              
+            
+
+            <h1 id="authentication">Authentication</h1>
+<blockquote>
+<p>Auth needs to be pluggable.</p>
+<p>&mdash; Jacob Kaplan-Moss, <a href="http://jacobian.org/writing/rest-worst-practices/">"REST worst practices"</a></p>
+</blockquote>
+<p>Authentication is the mechanism of associating an incoming request with a set of identifying credentials, such as the user the request came from, or the token that it was signed with.  The <a href="../permissions">permission</a> and <a href="../throttling">throttling</a> policies can then use those credentials to determine if the request should be permitted.</p>
+<p>REST framework provides a number of authentication schemes out of the box, and also allows you to implement custom schemes.</p>
+<p>Authentication is always run at the very start of the view, before the permission and throttling checks occur, and before any other code is allowed to proceed.</p>
+<p>The <code>request.user</code> property will typically be set to an instance of the <code>contrib.auth</code> package's <code>User</code> class.</p>
+<p>The <code>request.auth</code> property is used for any additional authentication information, for example, it may be used to represent an authentication token that the request was signed with.</p>
+<hr />
+<p><strong>Note:</strong> Don't forget that <strong>authentication by itself won't allow or disallow an incoming request</strong>, it simply identifies the credentials that the request was made with.</p>
+<p>For information on how to setup the permission polices for your API please see the <a href="../permissions">permissions documentation</a>.</p>
+<hr />
+<h2 id="how-authentication-is-determined">How authentication is determined</h2>
+<p>The authentication schemes are always defined as a list of classes.  REST framework will attempt to authenticate with each class in the list, and will set <code>request.user</code> and <code>request.auth</code> using the return value of the first class that successfully authenticates.</p>
+<p>If no class authenticates, <code>request.user</code> will be set to an instance of <code>django.contrib.auth.models.AnonymousUser</code>, and <code>request.auth</code> will be set to <code>None</code>.</p>
+<p>The value of <code>request.user</code> and <code>request.auth</code> for unauthenticated requests can be modified using the <code>UNAUTHENTICATED_USER</code> and <code>UNAUTHENTICATED_TOKEN</code> settings.</p>
+<h2 id="setting-the-authentication-scheme">Setting the authentication scheme</h2>
+<p>The default authentication schemes may be set globally, using the <code>DEFAULT_AUTHENTICATION</code> setting.  For example.</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    )
+}
+</code></pre>
+<p>You can also set the authentication scheme on a per-view or per-viewset basis,
+using the <code>APIView</code> class based views.</p>
+<pre><code>from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+class ExampleView(APIView):
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        content = {
+            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
+            'auth': unicode(request.auth),  # None
+        }
+        return Response(content)
+</code></pre>
+<p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
+<pre><code>@api_view(['GET'])
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+@permission_classes((IsAuthenticated,))
+def example_view(request, format=None):
+    content = {
+        'user': unicode(request.user),  # `django.contrib.auth.User` instance.
+        'auth': unicode(request.auth),  # None
+    }
+    return Response(content)
+</code></pre>
+<h2 id="unauthorized-and-forbidden-responses">Unauthorized and Forbidden responses</h2>
+<p>When an unauthenticated request is denied permission there are two different error codes that may be appropriate.</p>
+<ul>
+<li><a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">HTTP 401 Unauthorized</a></li>
+<li><a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4">HTTP 403 Permission Denied</a></li>
+</ul>
+<p>HTTP 401 responses must always include a <code>WWW-Authenticate</code> header, that instructs the client how to authenticate.  HTTP 403 responses do not include the <code>WWW-Authenticate</code> header.</p>
+<p>The kind of response that will be used depends on the authentication scheme.  Although multiple authentication schemes may be in use, only one scheme may be used to determine the type of response.  <strong>The first authentication class set on the view is used when determining the type of response</strong>.</p>
+<p>Note that when a request may successfully authenticate, but still be denied permission to perform the request, in which case a <code>403 Permission Denied</code> response will always be used, regardless of the authentication scheme.</p>
+<h2 id="apache-mod_wsgi-specific-configuration">Apache mod_wsgi specific configuration</h2>
+<p>Note that if deploying to <a href="http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization">Apache using mod_wsgi</a>, the authorization header is not passed through to a WSGI application by default, as it is assumed that authentication will be handled by Apache, rather than at an application level.</p>
+<p>If you are deploying to Apache, and using any non-session based authentication, you will need to explicitly configure mod_wsgi to pass the required headers through to the application.  This can be done by specifying the <code>WSGIPassAuthorization</code> directive in the appropriate context and setting it to <code>'On'</code>.</p>
+<pre><code># this can go in either server config, virtual host, directory or .htaccess
+WSGIPassAuthorization On
+</code></pre>
+<hr />
+<h1 id="api-reference">API Reference</h1>
+<h2 id="basicauthentication">BasicAuthentication</h2>
+<p>This authentication scheme uses <a href="http://tools.ietf.org/html/rfc2617">HTTP Basic Authentication</a>, signed against a user's username and password.  Basic authentication is generally only appropriate for testing.</p>
+<p>If successfully authenticated, <code>BasicAuthentication</code> provides the following credentials.</p>
+<ul>
+<li><code>request.user</code> will be a Django <code>User</code> instance.</li>
+<li><code>request.auth</code> will be <code>None</code>.</li>
+</ul>
+<p>Unauthenticated responses that are denied permission will result in an <code>HTTP 401 Unauthorized</code> response with an appropriate WWW-Authenticate header.  For example:</p>
+<pre><code>WWW-Authenticate: Basic realm="api"
+</code></pre>
+<p><strong>Note:</strong> If you use <code>BasicAuthentication</code> in production you must ensure that your API is only available over <code>https</code>.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.</p>
+<h2 id="tokenauthentication">TokenAuthentication</h2>
+<p>This authentication scheme uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.</p>
+<p>To use the <code>TokenAuthentication</code> scheme you'll need to <a href="#setting-the-authentication-scheme">configure the authentication classes</a> to include <code>TokenAuthentication</code>, and additionally include <code>rest_framework.authtoken</code> in your <code>INSTALLED_APPS</code> setting:</p>
+<pre><code>INSTALLED_APPS = (
+    ...
+    'rest_framework.authtoken'
+)
+</code></pre>
+<hr />
+<p><strong>Note:</strong> Make sure to run <code>manage.py syncdb</code> after changing your settings. The <code>rest_framework.authtoken</code> app provides both Django (from v1.7) and South database migrations. See <a href="#schema-migrations">Schema migrations</a> below.</p>
+<hr />
+<p>You'll also need to create tokens for your users.</p>
+<pre><code>from rest_framework.authtoken.models import Token
+
+token = Token.objects.create(user=...)
+print token.key
+</code></pre>
+<p>For clients to authenticate, the token key should be included in the <code>Authorization</code> HTTP header.  The key should be prefixed by the string literal "Token", with whitespace separating the two strings.  For example:</p>
+<pre><code>Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
+</code></pre>
+<p>If successfully authenticated, <code>TokenAuthentication</code> provides the following credentials.</p>
+<ul>
+<li><code>request.user</code> will be a Django <code>User</code> instance.</li>
+<li><code>request.auth</code> will be a <code>rest_framework.authtoken.models.BasicToken</code> instance.</li>
+</ul>
+<p>Unauthenticated responses that are denied permission will result in an <code>HTTP 401 Unauthorized</code> response with an appropriate WWW-Authenticate header.  For example:</p>
+<pre><code>WWW-Authenticate: Token
+</code></pre>
+<p>The <code>curl</code> command line tool may be useful for testing token authenticated APIs.  For example:</p>
+<pre><code>curl -X GET http://127.0.0.1:8000/api/example/ -H 'Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b'
+</code></pre>
+<hr />
+<p><strong>Note:</strong> If you use <code>TokenAuthentication</code> in production you must ensure that your API is only available over <code>https</code>.</p>
+<hr />
+<h4 id="generating-tokens">Generating Tokens</h4>
+<p>If you want every user to have an automatically generated Token, you can simply catch the User's <code>post_save</code> signal.</p>
+<pre><code>from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
+</code></pre>
+<p>Note that you'll want to ensure you place this code snippet in an installed <code>models.py</code> module, or some other location that will be imported by Django on startup.</p>
+<p>If you've already created some users, you can generate tokens for all existing users like this:</p>
+<pre><code>from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
+
+for user in User.objects.all():
+    Token.objects.get_or_create(user=user)
+</code></pre>
+<p>When using <code>TokenAuthentication</code>, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behavior.  To use it, add the <code>obtain_auth_token</code> view to your URLconf:</p>
+<pre><code>from rest_framework.authtoken import views
+urlpatterns += [
+    url(r'^api-token-auth/', views.obtain_auth_token)
+]
+</code></pre>
+<p>Note that the URL part of the pattern can be whatever you want to use.</p>
+<p>The <code>obtain_auth_token</code> view will return a JSON response when valid <code>username</code> and <code>password</code> fields are POSTed to the view using form data or JSON:</p>
+<pre><code>{ 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
+</code></pre>
+<p>Note that the default <code>obtain_auth_token</code> view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.  If you need a customized version of the <code>obtain_auth_token</code> view, you can do so by overriding the <code>ObtainAuthToken</code> view class, and using that in your url conf instead.</p>
+<h4 id="schema-migrations">Schema migrations</h4>
+<p>The <code>rest_framework.authtoken</code> app includes both Django native migrations (for Django versions &gt;1.7) and South migrations (for Django versions &lt;1.7) that will create the authtoken table.</p>
+<hr />
+<p><strong>Note</strong>: From REST Framework v2.4.0 using South with Django &lt;1.7 requires upgrading South v1.0+</p>
+<hr />
+<p>If you're using a <a href="https://docs.djangoproject.com/en/dev/topics/auth/customizing/#specifying-a-custom-user-model">custom user model</a> you'll need to make sure that any initial migration that creates the user table runs before the authtoken table is created.</p>
+<p>You can do so by inserting a <code>needed_by</code> attribute in your user migration:</p>
+<pre><code>class Migration:
+
+    needed_by = (
+        ('authtoken', '0001_initial'),
+    )
+
+    def forwards(self):
+        ...
+</code></pre>
+<p>For more details, see the <a href="http://south.readthedocs.org/en/latest/dependencies.html">south documentation on dependencies</a>.</p>
+<p>Also note that if you're using a <code>post_save</code> signal to create tokens, then the first time you create the database tables, you'll need to ensure any migrations are run prior to creating any superusers.  For example:</p>
+<pre><code>python manage.py syncdb --noinput  # Won't create a superuser just yet, due to `--noinput`.
+python manage.py migrate
+python manage.py createsuperuser
+</code></pre>
+<h2 id="sessionauthentication">SessionAuthentication</h2>
+<p>This authentication scheme uses Django's default session backend for authentication.  Session authentication is appropriate for AJAX clients that are running in the same session context as your website.</p>
+<p>If successfully authenticated, <code>SessionAuthentication</code> provides the following credentials.</p>
+<ul>
+<li><code>request.user</code> will be a Django <code>User</code> instance.</li>
+<li><code>request.auth</code> will be <code>None</code>.</li>
+</ul>
+<p>Unauthenticated responses that are denied permission will result in an <code>HTTP 403 Forbidden</code> response.</p>
+<p>If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as <code>PUT</code>, <code>PATCH</code>, <code>POST</code> or <code>DELETE</code> requests.  See the <a href="https://docs.djangoproject.com/en/dev/ref/contrib/csrf/#ajax">Django CSRF documentation</a> for more details.</p>
+<h2 id="oauthauthentication">OAuthAuthentication</h2>
+<p>This authentication uses <a href="http://oauth.net/core/1.0a">OAuth 1.0a</a> authentication scheme.  OAuth 1.0a provides signature validation which provides a reasonable level of security over plain non-HTTPS connections.  However, it may also be considered more complicated than OAuth2, as it requires clients to sign their requests.</p>
+<p>This authentication class depends on the optional <code>django-oauth-plus</code> and <code>oauth2</code> packages.  In order to make it work you must install these packages and add <code>oauth_provider</code> to your <code>INSTALLED_APPS</code>:</p>
+<pre><code>INSTALLED_APPS = (
+    ...
+    `oauth_provider`,
+)
+</code></pre>
+<p>Don't forget to run <code>syncdb</code> once you've added the package.</p>
+<pre><code>python manage.py syncdb
+</code></pre>
+<h4 id="getting-started-with-django-oauth-plus">Getting started with django-oauth-plus</h4>
+<p>The OAuthAuthentication class only provides token verification and signature validation for requests.  It doesn't provide authorization flow for your clients.  You still need to implement your own views for accessing and authorizing tokens.</p>
+<p>The <code>django-oauth-plus</code> package provides simple foundation for classic 'three-legged' oauth flow.  Please refer to <a href="http://code.larlet.fr/django-oauth-plus">the documentation</a> for more details.</p>
+<h2 id="oauth2authentication">OAuth2Authentication</h2>
+<p>This authentication uses <a href="http://tools.ietf.org/html/rfc6749">OAuth 2.0</a> authentication scheme.  OAuth2 is more simple to work with than OAuth1, and provides much better security than simple token authentication.  It is an unauthenticated scheme, and requires you to use an HTTPS connection.</p>
+<p>This authentication class depends on the optional <a href="https://github.com/caffeinehit/django-oauth2-provider">django-oauth2-provider</a> project.  In order to make it work you must install this package and add <code>provider</code> and <code>provider.oauth2</code> to your <code>INSTALLED_APPS</code>:</p>
+<pre><code>INSTALLED_APPS = (
+    ...
+    'provider',
+    'provider.oauth2',
+)
+</code></pre>
+<p>Then add <code>OAuth2Authentication</code> to your global <code>DEFAULT_AUTHENTICATION</code> setting:</p>
+<pre><code>'DEFAULT_AUTHENTICATION_CLASSES': (
+    'rest_framework.authentication.OAuth2Authentication',
+),
+</code></pre>
+<p>You must also include the following in your root <code>urls.py</code> module:</p>
+<pre><code>url(r'^oauth2/', include('provider.oauth2.urls', namespace='oauth2')),
+</code></pre>
+<p>Note that the <code>namespace='oauth2'</code> argument is required.</p>
+<p>Finally, sync your database.</p>
+<pre><code>python manage.py syncdb
+python manage.py migrate
+</code></pre>
+<hr />
+<p><strong>Note:</strong> If you use <code>OAuth2Authentication</code> in production you must ensure that your API is only available over <code>https</code>.</p>
+<hr />
+<h4 id="getting-started-with-django-oauth2-provider">Getting started with django-oauth2-provider</h4>
+<p>The <code>OAuth2Authentication</code> class only provides token verification for requests.  It doesn't provide authorization flow for your clients.</p>
+<p>The OAuth 2 authorization flow is taken care by the <a href="https://github.com/caffeinehit/django-oauth2-provider">django-oauth2-provider</a> dependency.  A walkthrough is given here, but for more details you should refer to <a href="https://django-oauth2-provider.readthedocs.org/en/latest/">the documentation</a>.</p>
+<p>To get started:</p>
+<h5 id="1-create-a-client">1. Create a client</h5>
+<p>You can create a client, either through the shell, or by using the Django admin.</p>
+<p>Go to the admin panel and create a new <code>Provider.Client</code> entry.  It will create the <code>client_id</code> and <code>client_secret</code> properties for you.</p>
+<h5 id="2-request-an-access-token">2. Request an access token</h5>
+<p>To request an access token, submit a <code>POST</code> request to the url <code>/oauth2/access_token</code> with the following fields:</p>
+<ul>
+<li><code>client_id</code> the client id you've just configured at the previous step.</li>
+<li><code>client_secret</code> again configured at the previous step.</li>
+<li><code>username</code> the username with which you want to log in.</li>
+<li><code>password</code> well, that speaks for itself.</li>
+</ul>
+<p>You can use the command line to test that your local configuration is working:</p>
+<pre><code>curl -X POST -d "client_id=YOUR_CLIENT_ID&amp;client_secret=YOUR_CLIENT_SECRET&amp;grant_type=password&amp;username=YOUR_USERNAME&amp;password=YOUR_PASSWORD" http://localhost:8000/oauth2/access_token/
+</code></pre>
+<p>You should get a response that looks something like this:</p>
+<pre><code>{"access_token": "&lt;your-access-token&gt;", "scope": "read", "expires_in": 86399, "refresh_token": "&lt;your-refresh-token&gt;"}
+</code></pre>
+<h5 id="3-access-the-api">3. Access the API</h5>
+<p>The only thing needed to make the <code>OAuth2Authentication</code> class work is to insert the <code>access_token</code> you've received in the <code>Authorization</code> request header.</p>
+<p>The command line to test the authentication looks like:</p>
+<pre><code>curl -H "Authorization: Bearer &lt;your-access-token&gt;" http://localhost:8000/api/
+</code></pre>
+<h3 id="alternative-oauth-2-implementations">Alternative OAuth 2 implementations</h3>
+<p>Note that <a href="https://github.com/evonove/django-oauth-toolkit">Django OAuth Toolkit</a> is an alternative external package that also includes OAuth 2.0 support for REST framework.</p>
+<hr />
+<h1 id="custom-authentication">Custom authentication</h1>
+<p>To implement a custom authentication scheme, subclass <code>BaseAuthentication</code> and override the <code>.authenticate(self, request)</code> method.  The method should return a two-tuple of <code>(user, auth)</code> if authentication succeeds, or <code>None</code> otherwise.</p>
+<p>In some circumstances instead of returning <code>None</code>, you may want to raise an <code>AuthenticationFailed</code> exception from the <code>.authenticate()</code> method.</p>
+<p>Typically the approach you should take is:</p>
+<ul>
+<li>If authentication is not attempted, return <code>None</code>.  Any other authentication schemes also in use will still be checked.</li>
+<li>If authentication is attempted but fails, raise a <code>AuthenticationFailed</code> exception.  An error response will be returned immediately, regardless of any permissions checks, and without checking any other authentication schemes.</li>
+</ul>
+<p>You <em>may</em> also override the <code>.authenticate_header(self, request)</code> method.  If implemented, it should return a string that will be used as the value of the <code>WWW-Authenticate</code> header in a <code>HTTP 401 Unauthorized</code> response.</p>
+<p>If the <code>.authenticate_header()</code> method is not overridden, the authentication scheme will return <code>HTTP 403 Forbidden</code> responses when an unauthenticated request is denied access.</p>
+<h2 id="example">Example</h2>
+<p>The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X_USERNAME'.</p>
+<pre><code>from django.contrib.auth.models import User
+from rest_framework import authentication
+from rest_framework import exceptions
+
+class ExampleAuthentication(authentication.BaseAuthentication):
+    def authenticate(self, request):
+        username = request.META.get('X_USERNAME')
+        if not username:
+            return None
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise exceptions.AuthenticationFailed('No such user')
+
+        return (user, None)
+</code></pre>
+<hr />
+<h1 id="third-party-packages">Third party packages</h1>
+<p>The following third party packages are also available.</p>
+<h2 id="digest-authentication">Digest Authentication</h2>
+<p>HTTP digest authentication is a widely implemented scheme that was intended to replace HTTP basic authentication, and which provides a simple encrypted authentication mechanism. <a href="https://github.com/juanriaza">Juan Riaza</a> maintains the <a href="https://github.com/juanriaza/django-rest-framework-digestauth">djangorestframework-digestauth</a> package which provides HTTP digest authentication support for REST framework.</p>
+<h2 id="django-oauth-toolkit">Django OAuth Toolkit</h2>
+<p>The <a href="https://github.com/evonove/django-oauth-toolkit">Django OAuth Toolkit</a> package provides OAuth 2.0 support, and works with Python 2.7 and Python 3.3+.  The package is maintained by <a href="https://github.com/evonove/">Evonove</a> and uses the excellent <a href="https://github.com/idan/oauthlib">OAuthLib</a>.  The package is well documented, and comes as a recommended alternative for OAuth 2.0 support.</p>
+<h2 id="django-oauth2-consumer">Django OAuth2 Consumer</h2>
+<p>The <a href="https://github.com/Rediker-Software/doac">Django OAuth2 Consumer</a> library from <a href="https://github.com/Rediker-Software">Rediker Software</a> is another package that provides <a href="https://github.com/Rediker-Software/doac/blob/master/docs/integrations.md#">OAuth 2.0 support for REST framework</a>.  The package includes token scoping permissions on tokens, which allows finer-grained access to your API.</p>
+<h2 id="json-web-token-authentication">JSON Web Token Authentication</h2>
+<p>JSON Web Token is a fairly new standard which can be used for token-based authentication. Unlike the built-in TokenAuthentication scheme, JWT Authentication doesn't need to use a database to validate a token. <a href="https://github.com/GetBlimp">Blimp</a> maintains the <a href="https://github.com/GetBlimp/django-rest-framework-jwt">djangorestframework-jwt</a> package which provides a JWT Authentication class as well as a mechanism for clients to obtain a JWT given the username and password.</p>
+<h2 id="hawk-http-authentication">Hawk HTTP Authentication</h2>
+<p>The <a href="http://hawkrest.readthedocs.org/en/latest/">HawkREST</a> library builds on the <a href="http://mohawk.readthedocs.org/en/latest/">Mohawk</a> library to let you work with <a href="https://github.com/hueniverse/hawk">Hawk</a> signed requests and responses in your API. <a href="https://github.com/hueniverse/hawk">Hawk</a> lets two parties securely communicate with each other using messages signed by a shared key. It is based on <a href="http://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05">HTTP MAC access authentication</a> (which was based on parts of <a href="http://oauth.net/core/1.0a">OAuth 1.0</a>).</p>
+<h2 id="http-signature-authentication">HTTP Signature Authentication</h2>
+<p>HTTP Signature (currently a <a href="https://datatracker.ietf.org/doc/draft-cavage-http-signatures/">IETF draft</a>) provides a way to achieve origin authentication and message integrity for HTTP messages. Similar to <a href="http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html">Amazon's HTTP Signature scheme</a>, used by many of its services, it permits stateless, per-request authentication. <a href="https://github.com/etoccalino/">Elvio Toccalino</a> maintains the <a href="https://github.com/etoccalino/django-rest-framework-httpsignature">djangorestframework-httpsignature</a> package which provides an easy to use HTTP Signature Authentication mechanism.</p>
+<h2 id="djoser">Djoser</h2>
+<p><a href="https://github.com/sunscrapers/djoser">Djoser</a> library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and it uses token based authentication. This is a ready to use REST implementation of Django authentication system.</p>
+
+          </div>
+          <!--/span-->
+        </div>
+        <!--/row-->
+      </div>
+      <!--/.fluid-container-->
+    </div>
+    <!--/.body content-->
+    <div id="push"></div>
+  </div>
+  <!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    </p>
+  </footer>
+
+  <!-- Le javascript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="../../js/jquery-1.8.1-min.js"></script>
+  <script src="../../js/prettify-1.0.js"></script>
+  <script src="../../js/bootstrap-2.1.1-min.js"></script>
+
+  <script>
+    //$('.side-nav').scrollspy()
+    var shiftWindow = function() {
+      scrollBy(0, -50)
+    };
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+
+    $('.dropdown-menu').on('click touchstart', function(event) {
+      event.stopPropagation();
+    });
+
+    // Dynamically force sidenav to no higher than browser window
+    $('.side-nav').css('max-height', window.innerHeight - 130);
+
+    $(function() {
+      $(window).resize(function() {
+        $('.side-nav').css('max-height', window.innerHeight - 130);
+      });
+    });
+  </script>
+</body>
+
+</html>
