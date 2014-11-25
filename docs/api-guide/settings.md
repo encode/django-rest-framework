@@ -1,4 +1,4 @@
-<a class="github" href="settings.py"></a>
+source: settings.py
 
 # Settings
 

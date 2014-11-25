@@ -1,4 +1,4 @@
-<a class="github" href="throttling.py"></a>
+source: throttling.py
 
 # Throttling
 
@@ -83,7 +83,7 @@ The throttle classes provided by REST framework use Django's cache backend.  You
 If you need to use a cache other than `'default'`, you can do so by creating a custom throttle class and setting the `cache` attribute.  For example:
 
     class CustomAnonRateThrottle(AnonRateThrottle):
-        cache = get_cache('alternate') 
+        cache = get_cache('alternate')
 
 You'll need to remember to also set your custom throttle class in the `'DEFAULT_THROTTLE_CLASSES'` settings key, or using the `throttle_classes` view attribute.
 
@@ -147,15 +147,15 @@ For example, given the following views...
     class ContactListView(APIView):
         throttle_scope = 'contacts'
         ...
-    
+
     class ContactDetailView(ApiView):
         throttle_scope = 'contacts'
         ...
 
-    class UploadView(APIView):        
+    class UploadView(APIView):
         throttle_scope = 'uploads'
         ...
-    
+
 ...and the following settings.
 
     REST_FRAMEWORK = {

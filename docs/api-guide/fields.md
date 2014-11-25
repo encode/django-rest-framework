@@ -1,4 +1,4 @@
-<a class="github" href="fields.py"></a>
+source: fields.py
 
 # Serializer fields
 
