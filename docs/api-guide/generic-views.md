@@ -352,7 +352,7 @@ You can then simply apply this mixin to a view or viewset anytime you need to ap
         serializer_class = UserSerializer
         lookup_fields = ('account', 'username')
 
-Using custom mixins is a good option if you have custom behavior that needs to be used
+Using custom mixins is a good option if you have custom behavior that needs to be used.
 
 ## Creating custom base classes
 
