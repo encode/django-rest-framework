@@ -22,7 +22,7 @@
                                 <div id="div_id_username"
                                     class="clearfix control-group {% if form.username.errors %}error{% endif %}">
                                     <div class="controls">
-                                        <Label class="span4">Username:</label>
+                                        <label class="span4">Username:</label>
                                         <input style="height: 25px" type="text" name="username" maxlength="100"
                                             autocapitalize="off"
                                             autocorrect="off" class="span12 textinput textInput"
@@ -36,9 +36,10 @@
                                     </div>
                                 </div>
                                     <div id="div_id_password"
-                                        class="clearfix control-group {% if form.password.errors %}error{% endif %}">
+                                        class="clearfix control-group {% if form.password.errors %}error{% endif %}"
+                                        style="margin-top: 10px">
                                         <div class="controls">
-                                        <Label class="span4">Password:</label>
+                                        <label class="span4">Password:</label>
                                         <input style="height: 25px" type="password" name="password" maxlength="100"
                                             autocapitalize="off" autocorrect="off" class="span12 textinput textInput"
                                             id="id_password" required>
@@ -55,7 +56,7 @@
                                         <div class="well well-small text-error" style="border: none">{{ error }}</div>
                                     {% endfor %}
                                 {% endif %}
-                                <div class="form-actions-no-box">
+                                <div class="form-actions-no-box" style="margin-top: 20px">
                                     <input type="submit" name="submit" value="Log in" class="btn btn-primary" id="submit-id-submit">
                                 </div>
                             </form>
