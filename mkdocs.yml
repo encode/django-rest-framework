@@ -8,7 +8,7 @@ theme_dir: docs_theme
 
 pages:
  - ['index.md', 'Home']
- - ['tutorial/quickstart.md', 'Quickstart']
+ - ['tutorial/quickstart.md', 'Tutorial', 'Quickstart']
  - ['tutorial/1-serialization.md', 'Tutorial', '1 - Serialization']
  - ['tutorial/2-requests-and-responses.md', 'Tutorial', '2 - Requests and responses']
  - ['tutorial/3-class-based-views.md', 'Tutorial', '3 - Class based views']
