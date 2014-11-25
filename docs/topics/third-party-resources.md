@@ -6,7 +6,7 @@ Third Party Packages allow developers to share code that extends the functionali
 
 We **support**, **encourage** and **strongly favour** the creation of Third Party Packages to encapsulate new behaviour rather than adding additional functionality directly to Django REST Framework.
 
-We aim to make creating Third Party Packages as easy as possible, whilst keeping the **simplicity** of the core API and ensuring that **maintainance** of the main project remains under control. If a Third Party Package proves popular it is relatively easy to move it into the main project; removing features is much more problematic.
+We aim to make creating Third Party Packages as easy as possible, whilst keeping the **simplicity** of the core API and ensuring that **maintenance** of the main project remains under control. If a Third Party Package proves popular it is relatively easy to move it into the main project; removing features is much more problematic.
 
 If you have an idea for a new feature please consider how it may be packaged as a Third Party Package. We're always happy to dicuss ideas on the [Mailing List][discussion-group].
 
