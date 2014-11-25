@@ -1,4 +1,4 @@
-<a class="github" href="serializers.py"></a>
+source: serializers.py
 
 # Serializers
 
@@ -21,7 +21,7 @@ Let's start by creating a simple object we can use for example purposes:
             self.email = email
             self.content = content
             self.created = created or datetime.datetime.now()
-    
+
     comment = Comment(email='leila@example.com', content='foo bar')
 
 We'll declare a serializer that we can use to serialize and deserialize `Comment` objects.
@@ -45,7 +45,7 @@ Declaring a serializer looks very similar to declaring a form:
                 instance.content = attrs.get('content', instance.content)
                 instance.created = attrs.get('created', instance.created)
                 return instance
-            return Comment(**attrs) 
+            return Comment(**attrs)
 
 The first part of serializer class defines the fields that get serialized/deserialized.  The `restore_object` method defines how fully fledged instances get created when deserializing data.
 
@@ -83,8 +83,8 @@ If you need to customize the serialized value of a particular field, you can do 
 These methods are essentially the reverse of `validate_<fieldname>` (see *Validation* below.)
 
 ## Deserializing objects
-        
-Deserialization is similar.  First we parse a stream into Python native datatypes... 
+
+Deserialization is similar.  First we parse a stream into Python native datatypes...
 
     from StringIO import StringIO
     from rest_framework.parsers import JSONParser
@@ -174,7 +174,7 @@ To save the deserialized objects created by a serializer, call the `.save()` met
 
 The default behavior of the method is to simply call `.save()` on the deserialized object instance.  You can override the default save behaviour by overriding the `.save_object(obj)` method on the serializer class.
 
-The generic views provided by REST framework call the `.save()` method when updating or creating entities.  
+The generic views provided by REST framework call the `.save()` method when updating or creating entities.
 
 ## Dealing with nested objects
 
@@ -288,12 +288,12 @@ By default the serializer class will use the `id` key on the incoming data to de
         slug = serializers.CharField(max_length=100)
         created = serializers.DateTimeField()
         ...  # Various other fields
-        
+
         def get_identity(self, data):
             """
             This hook is required for bulk update.
             We need to override the default, to use the slug as the identity.
-            
+
             Note that the data has not yet been validated at this point,
             so we need to deal gracefully with incorrect datatypes.
             """
@@ -361,7 +361,7 @@ The `depth` option should be set to an integer value that indicates the depth of
 
 If you want to customize the way the serialization is done (e.g. using `allow_add_remove`) you'll need to define the field yourself.
 
-## Specifying which fields should be read-only 
+## Specifying which fields should be read-only
 
 You may wish to specify multiple fields as read-only.  Instead of adding each field explicitly with the `read_only=True` attribute, you may use the `read_only_fields` Meta option, like so:
 
@@ -371,9 +371,9 @@ You may wish to specify multiple fields as read-only.  Instead of adding each fi
             fields = ('id', 'account_name', 'users', 'created')
             read_only_fields = ('account_name',)
 
-Model fields which have `editable=False` set, and `AutoField` fields will be set to read-only by default, and do not need to be added to the `read_only_fields` option. 
+Model fields which have `editable=False` set, and `AutoField` fields will be set to read-only by default, and do not need to be added to the `read_only_fields` option.
 
-## Specifying which fields should be write-only 
+## Specifying which fields should be write-only
 
 You may wish to specify multiple fields as write-only.  Instead of adding each field explicitly with the `write_only=True` attribute, you may use the `write_only_fields` Meta option, like so:
 
@@ -387,12 +387,12 @@ You may wish to specify multiple fields as write-only.  Instead of adding each f
             """
             Instantiate a new User instance.
             """
-            assert instance is None, 'Cannot update users with CreateUserSerializer'                                
+            assert instance is None, 'Cannot update users with CreateUserSerializer'
             user = User(email=attrs['email'], username=attrs['username'])
             user.set_password(attrs['password'])
             return user
- 
-## Specifying fields explicitly 
+
+## Specifying fields explicitly
 
 You can add extra fields to a `ModelSerializer` or override the default fields by declaring fields on the class, just as you would for a `Serializer` class.
 
@@ -524,10 +524,10 @@ For example, if you wanted to be able to set which fields should be used by a se
         def __init__(self, *args, **kwargs):
             # Don't pass the 'fields' arg up to the superclass
             fields = kwargs.pop('fields', None)
-            
+
             # Instantiate the superclass normally
             super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
-    
+
             if fields:
                 # Drop any fields that are not specified in the `fields` argument.
                 allowed = set(fields)
@@ -550,7 +550,7 @@ This would then allow you to do the following:
 
 ## Customising the default fields
 
-The `field_mapping` attribute is a dictionary that maps model classes to serializer classes.  Overriding the attribute will let you set a different set of default serializer classes. 
+The `field_mapping` attribute is a dictionary that maps model classes to serializer classes.  Overriding the attribute will let you set a different set of default serializer classes.
 
 For more advanced customization than simply changing the default serializer class you can override various `get_<field_type>_field` methods.  Doing so will allow you to customize the arguments that each serializer field is initialized with.  Each of these methods may either return a field or serializer instance, or `None`.
 

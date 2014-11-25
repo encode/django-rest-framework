@@ -26,9 +26,6 @@
 <img alt="Django REST Framework" title="Logo by Jake 'Sid' Smith" src="img/logo.png" width="600px" style="display: block; margin: 0 auto 0 auto">
 </p>
 
-<!--
-# Django REST framework
--->
 
 Django REST framework is a powerful and flexible toolkit that makes it easy to build Web APIs.
 

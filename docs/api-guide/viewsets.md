@@ -1,4 +1,4 @@
-<a class="github" href="viewsets.py"></a>
+source: viewsets.py
 
 # ViewSets
 

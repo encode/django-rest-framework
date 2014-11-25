@@ -63,7 +63,7 @@ You can determine your currently installed version using `pip freeze`:
 * Bugfix: Fix migration in `authtoken` application.
 * Bugfix: Allow selection of integer keys in nested choices.
 * Bugfix: Return `None` instead of `'None'` in `CharField` with `allow_none=True`.
-* Bugfix: Ensure custom model fields map to equivelent serializer fields more reliably. 
+* Bugfix: Ensure custom model fields map to equivelent serializer fields more reliably.
 * Bugfix: `DjangoFilterBackend` no longer quietly changes queryset ordering.
 
 ### 2.4.2
