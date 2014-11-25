@@ -22,6 +22,7 @@ env:
     - TOX_ENV=py26-django1.4
     - TOX_ENV=py34-djangomaster
     - TOX_ENV=py33-djangomaster
+    - TOX_ENV=py32-djangomaster
     - TOX_ENV=py27-djangomaster
 
 matrix:
@@ -29,6 +30,7 @@ matrix:
   allow_failures:
     - env: TOX_ENV=py34-djangomaster
     - env: TOX_ENV=py33-djangomaster
+    - env: TOX_ENV=py32-djangomaster
     - env: TOX_ENV=py27-djangomaster
 
 install:
