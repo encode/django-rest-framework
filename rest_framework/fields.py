@@ -262,7 +262,11 @@ class Field(object):
         if html.is_html_input(dictionary):
             # HTML forms will represent empty fields as '', and cannot
             # represent None or False values directly.
-            ret = dictionary.get(self.field_name, '')
+            if self.field_name not in dictionary:
+                if getattr(self.root, 'partial', False):
+                    return empty
+                return self.default_empty_html
+            ret = dictionary[self.field_name]
             return self.default_empty_html if (ret == '') else ret
         return dictionary.get(self.field_name, empty)
 
