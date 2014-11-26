@@ -13,7 +13,7 @@ class NextPageField(serializers.Field):
     """
     page_field = 'page'
 
-    def to_native(self, value):
+    def to_representation(self, value):
         if not value.has_next():
             return None
         page = value.next_page_number()
@@ -28,7 +28,7 @@ class PreviousPageField(serializers.Field):
     """
     page_field = 'page'
 
-    def to_native(self, value):
+    def to_representation(self, value):
         if not value.has_previous():
             return None
         page = value.previous_page_number()
@@ -37,7 +37,7 @@ class PreviousPageField(serializers.Field):
         return replace_query_param(url, self.page_field, page)
 
 
-class DefaultObjectSerializer(serializers.Field):
+class DefaultObjectSerializer(serializers.ReadOnlyField):
     """
     If no object serializer is specified, then this serializer will be applied
     as the default.
@@ -49,25 +49,11 @@ class DefaultObjectSerializer(serializers.Field):
         super(DefaultObjectSerializer, self).__init__(source=source)
 
 
-class PaginationSerializerOptions(serializers.SerializerOptions):
-    """
-    An object that stores the options that may be provided to a
-    pagination serializer by using the inner `Meta` class.
-
-    Accessible on the instance as `serializer.opts`.
-    """
-    def __init__(self, meta):
-        super(PaginationSerializerOptions, self).__init__(meta)
-        self.object_serializer_class = getattr(meta, 'object_serializer_class',
-                                               DefaultObjectSerializer)
-
-
 class BasePaginationSerializer(serializers.Serializer):
     """
     A base class for pagination serializers to inherit from,
     to make implementing custom serializers more easy.
     """
-    _options_class = PaginationSerializerOptions
     results_field = 'results'
 
     def __init__(self, *args, **kwargs):
@@ -76,22 +62,22 @@ class BasePaginationSerializer(serializers.Serializer):
         """
         super(BasePaginationSerializer, self).__init__(*args, **kwargs)
         results_field = self.results_field
-        object_serializer = self.opts.object_serializer_class
 
-        if 'context' in kwargs:
-            context_kwarg = {'context': kwargs['context']}
-        else:
-            context_kwarg = {}
+        try:
+            object_serializer = self.Meta.object_serializer_class
+        except AttributeError:
+            object_serializer = DefaultObjectSerializer
 
-        self.fields[results_field] = object_serializer(source='object_list',
-                                                       many=True,
-                                                       **context_kwarg)
+        self.fields[results_field] = serializers.ListSerializer(
+            child=object_serializer(),
+            source='object_list'
+        )
 
 
 class PaginationSerializer(BasePaginationSerializer):
     """
     A default implementation of a pagination serializer.
     """
-    count = serializers.Field(source='paginator.count')
+    count = serializers.ReadOnlyField(source='paginator.count')
     next = NextPageField(source='*')
     previous = PreviousPageField(source='*')

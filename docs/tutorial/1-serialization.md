@@ -41,20 +41,7 @@ Once that's done we can create an app that we'll use to create a simple Web API.
 
     python manage.py startapp snippets
 
-The simplest way to get up and running will probably be to use an `sqlite3` database for the tutorial.  Edit the `tutorial/settings.py` file, and set the default database `"ENGINE"` to `"sqlite3"`, and `"NAME"` to `"tmp.db"`.
-
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'tmp.db',
-            'USER': '',
-            'PASSWORD': '',
-            'HOST': '',
-            'PORT': '',
-        }
-    }
-
-We'll also need to add our new `snippets` app and the `rest_framework` app to `INSTALLED_APPS`.
+We'll need to add our new `snippets` app and the `rest_framework` app to `INSTALLED_APPS`. Let's edit the `tutorial/settings.py` file:
 
     INSTALLED_APPS = (
         ...
@@ -72,7 +59,7 @@ Okay, we're ready to roll.
 
 ## Creating a model to work with
 
-For the purposes of this tutorial we're going to start by creating a simple `Snippet` model that is used to store code snippets.  Go ahead and edit the `snippets` app's `models.py` file.  Note: Good programming practices include comments.  Although you will find them in our repository version of this tutorial code, we have omitted them here to focus on the code itself.
+For the purposes of this tutorial we're going to start by creating a simple `Snippet` model that is used to store code snippets.  Go ahead and edit the `snippets/models.py` file.  Note: Good programming practices include comments.  Although you will find them in our repository version of this tutorial code, we have omitted them here to focus on the code itself.
 
     from django.db import models
     from pygments.lexers import get_all_lexers
@@ -98,9 +85,10 @@ For the purposes of this tutorial we're going to start by creating a simple `Sni
         class Meta:
             ordering = ('created',)
 
-Don't forget to sync the database for the first time.
+We'll also need to create an initial migration for our snippet model, and sync the database for the first time.
 
-    python manage.py syncdb
+    python manage.py makemigrations snippets
+    python manage.py migrate
 
 ## Creating a Serializer class
 
@@ -112,42 +100,41 @@ The first thing we need to get started on our Web API is to provide a way of ser
 
 
     class SnippetSerializer(serializers.Serializer):
-        pk = serializers.Field()  # Note: `Field` is an untyped read-only field.
+        pk = serializers.IntegerField(read_only=True)
         title = serializers.CharField(required=False,
                                       max_length=100)
-        code = serializers.CharField(widget=widgets.Textarea,
-                                     max_length=100000)
+        code = serializers.CharField(style={'type': 'textarea'})
         linenos = serializers.BooleanField(required=False)
         language = serializers.ChoiceField(choices=LANGUAGE_CHOICES,
                                            default='python')
         style = serializers.ChoiceField(choices=STYLE_CHOICES,
                                         default='friendly')
 
-        def restore_object(self, attrs, instance=None):
+        def create(self, validated_attrs):
             """
-            Create or update a new snippet instance, given a dictionary
-            of deserialized field values.
-
-            Note that if we don't define this method, then deserializing
-            data will simply return a dictionary of items.
+            Create and return a new `Snippet` instance, given the validated data.
             """
-            if instance:
-                # Update existing instance
-                instance.title = attrs.get('title', instance.title)
-                instance.code = attrs.get('code', instance.code)
-                instance.linenos = attrs.get('linenos', instance.linenos)
-                instance.language = attrs.get('language', instance.language)
-                instance.style = attrs.get('style', instance.style)
-                return instance
+            return Snippet.objects.create(**validated_attrs)
 
-            # Create new instance
-            return Snippet(**attrs)
+        def update(self, instance, validated_attrs):
+            """
+            Update and return an existing `Snippet` instance, given the validated data.
+            """
+            instance.title = validated_attrs.get('title', instance.title)
+            instance.code = validated_attrs.get('code', instance.code)
+            instance.linenos = validated_attrs.get('linenos', instance.linenos)
+            instance.language = validated_attrs.get('language', instance.language)
+            instance.style = validated_attrs.get('style', instance.style)
+            instance.save()
+            return instance
 
-The first part of the serializer class defines the fields that get serialized/deserialized.  The `restore_object` method defines how fully fledged instances get created when deserializing data.
+The first part of the serializer class defines the fields that get serialized/deserialized.  The `create()` and `update()` methods define how fully fledged instances are created or modified when calling `serializer.save()`
 
-Notice that we can also use various attributes that would typically be used on form fields, such as `widget=widgets.Textarea`.  These can be used to control how the serializer should render when displayed as an HTML form.  This is particularly useful for controlling how the browsable API should be displayed, as we'll see later in the tutorial.
+A serializer class is very similar to a Django `Form` class, and includes similar validation flags on the various fields, such as `required`, `max_length` and `default`.
 
-We can actually also save ourselves some time by using the `ModelSerializer` class, as we'll see later, but for now we'll keep our serializer definition explicit.  
+The field flags can also control how the serializer should be displayed in certain circumstances, such as when rendering to HTML. The `style={'type': 'textarea'}` flag above is equivelent to using `widget=widgets.Textarea` on a Django `Form` class. This is particularly useful for controlling how the browsable API should be displayed, as we'll see later in the tutorial.
+
+We can actually also save ourselves some time by using the `ModelSerializer` class, as we'll see later, but for now we'll keep our serializer definition explicit.
 
 ## Working with Serializers
 
@@ -218,6 +205,24 @@ Open the file `snippets/serializers.py` again, and edit the `SnippetSerializer` 
         class Meta:
             model = Snippet
             fields = ('id', 'title', 'code', 'linenos', 'language', 'style')
+
+Once nice property that serializers have is that you can inspect all the fields an serializer instance, by printing it's representation. Open the Django shell with `python manange.py shell`, then try the following:
+
+    >>> from snippets.serializers import SnippetSerializer
+    >>> serializer = SnippetSerializer()
+    >>> print repr(serializer)  # In python 3 use `print(repr(serializer))`
+    SnippetSerializer():
+        id = IntegerField(label='ID', read_only=True)
+        title = CharField(allow_blank=True, max_length=100, required=False)
+        code = CharField(style={'type': 'textarea'})
+        linenos = BooleanField(required=False)
+        language = ChoiceField(choices=[('Clipper', 'FoxPro'), ('Cucumber', 'Gherkin'), ('RobotFramework', 'RobotFramework'), ('abap', 'ABAP'), ('ada', 'Ada')...
+        style = ChoiceField(choices=[('autumn', 'autumn'), ('borland', 'borland'), ('bw', 'bw'), ('colorful', 'colorful')...
+
+It's important to remember that `ModelSerializer` classes don't do anything particularly magically, they are simply a shortcut to creating a serializer class with:
+
+* An automatically determined set of fields.
+* Simple default implementations for the `create()` and `update()` methods.
 
 ## Writing regular Django views using our Serializer
 

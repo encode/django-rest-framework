@@ -1,4 +1,4 @@
-<a class="github" href="status.py"></a>
+source: status.py
 
 # Status Codes
 
@@ -27,7 +27,7 @@ The module also includes a set of helper functions for testing if a status code 
 	        url = reverse('index')
 	        response = self.client.get(url)
 	        self.assertTrue(status.is_success(response.status_code))
-        
+
 
 For more information on proper usage of HTTP status codes see [RFC 2616][rfc2616]
 and [RFC 6585][rfc6585].
@@ -51,7 +51,7 @@ This class of status code indicates that the client's request was successfully r
     HTTP_205_RESET_CONTENT
     HTTP_206_PARTIAL_CONTENT
 
-## Redirection - 3xx 
+## Redirection - 3xx
 
 This class of status code indicates that further action needs to be taken by the user agent in order to fulfill the request.
 

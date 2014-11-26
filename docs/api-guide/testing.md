@@ -1,4 +1,4 @@
-<a class="github" href="test.py"></a>
+source: test.py
 
 # Testing
 
@@ -170,7 +170,7 @@ This can be a useful shortcut if you're testing the API but don't want to have t
 
 To unauthenticate subsequent requests, call `force_authenticate` setting the user and/or token to `None`.
 
-    client.force_authenticate(user=None) 
+    client.force_authenticate(user=None)
 
 ## CSRF validation
 
@@ -197,7 +197,7 @@ You can use any of REST framework's test case classes as you would for the regul
 
     from django.core.urlresolvers import reverse
     from rest_framework import status
-    from rest_framework.test import APITestCase 
+    from rest_framework.test import APITestCase
 
     class AccountTests(APITestCase):
         def test_create_account(self):

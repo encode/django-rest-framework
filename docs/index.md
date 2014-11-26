@@ -9,6 +9,10 @@
 
 ---
 
+**Note**: The incoming 3.0 version has now been merged to the `master` branch on GitHub. For the source of the currently available PyPI version, please see the `2.4.4` tag.
+
+---
+
 <p>
 <h1 style="position: absolute;
     width: 1px;
@@ -22,9 +26,6 @@
 <img alt="Django REST Framework" title="Logo by Jake 'Sid' Smith" src="img/logo.png" width="600px" style="display: block; margin: 0 auto 0 auto">
 </p>
 
-<!--
-# Django REST framework
--->
 
 Django REST framework is a powerful and flexible toolkit that makes it easy to build Web APIs.
 
@@ -43,14 +44,12 @@ Some reasons you might want to use REST framework:
 
 **Above**: *Screenshot from the browsable API*
 
-----
-
 ## Requirements
 
 REST framework requires the following:
 
 * Python (2.6.5+, 2.7, 3.2, 3.3, 3.4)
-* Django (1.4.2+, 1.5, 1.6, 1.7)
+* Django (1.4.11+, 1.5.5+, 1.6, 1.7)
 
 The following packages are optional:
 
@@ -173,6 +172,7 @@ The API guide is your complete reference manual to all the functionality provide
 * [Serializers][serializers]
 * [Serializer fields][fields]
 * [Serializer relations][relations]
+<!--* [Validators][validators]-->
 * [Authentication][authentication]
 * [Permissions][permissions]
 * [Throttling][throttling]
@@ -294,6 +294,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [serializers]: api-guide/serializers.md
 [fields]: api-guide/fields.md
 [relations]: api-guide/relations.md
+[validation]: api-guide/validation.md
 [authentication]: api-guide/authentication.md
 [permissions]: api-guide/permissions.md
 [throttling]: api-guide/throttling.md

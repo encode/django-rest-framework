@@ -4,21 +4,32 @@ from tests.models import NullableForeignKeySource, ForeignKeySource, ForeignKeyT
 
 
 class ForeignKeyTargetSerializer(serializers.ModelSerializer):
-    sources = serializers.SlugRelatedField(many=True, slug_field='name')
+    sources = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=ForeignKeySource.objects.all(),
+        many=True
+    )
 
     class Meta:
         model = ForeignKeyTarget
 
 
 class ForeignKeySourceSerializer(serializers.ModelSerializer):
-    target = serializers.SlugRelatedField(slug_field='name')
+    target = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=ForeignKeyTarget.objects.all()
+    )
 
     class Meta:
         model = ForeignKeySource
 
 
 class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
-    target = serializers.SlugRelatedField(slug_field='name', required=False)
+    target = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=ForeignKeyTarget.objects.all(),
+        allow_null=True
+    )
 
     class Meta:
         model = NullableForeignKeySource
@@ -59,8 +70,8 @@ class SlugForeignKeyTests(TestCase):
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertEqual(serializer.data, data)
         serializer.save()
+        self.assertEqual(serializer.data, data)
 
         # Ensure source 1 is updated, and everything else is as expected
         queryset = ForeignKeySource.objects.all()
@@ -149,7 +160,7 @@ class SlugForeignKeyTests(TestCase):
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEqual(serializer.errors, {'target': ['This field is required.']})
+        self.assertEqual(serializer.errors, {'target': ['This field may not be null.']})
 
 
 class SlugNullableForeignKeyTests(TestCase):
@@ -220,8 +231,8 @@ class SlugNullableForeignKeyTests(TestCase):
         instance = NullableForeignKeySource.objects.get(pk=1)
         serializer = NullableForeignKeySourceSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertEqual(serializer.data, data)
         serializer.save()
+        self.assertEqual(serializer.data, data)
 
         # Ensure source 1 is updated, and everything else is as expected
         queryset = NullableForeignKeySource.objects.all()
@@ -243,8 +254,8 @@ class SlugNullableForeignKeyTests(TestCase):
         instance = NullableForeignKeySource.objects.get(pk=1)
         serializer = NullableForeignKeySourceSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertEqual(serializer.data, expected_data)
         serializer.save()
+        self.assertEqual(serializer.data, expected_data)
 
         # Ensure source 1 is updated, and everything else is as expected
         queryset = NullableForeignKeySource.objects.all()

@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from rest_framework import serializers
 
 
 def foobar():
@@ -178,9 +177,3 @@ class NullableOneToOneSource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
     target = models.OneToOneField(OneToOneTarget, null=True, blank=True,
                                   related_name='nullable_source')
-
-
-# Serializer used to test BasicModel
-class BasicModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BasicModel

@@ -8,6 +8,7 @@ from django.utils.html import escape
 from django.utils.safestring import SafeData, mark_safe
 from django.utils.html import smart_urlquote
 from rest_framework.compat import urlparse, force_text
+from rest_framework.renderers import HTMLFormRenderer
 import re
 
 register = template.Library()
@@ -30,6 +31,13 @@ class_re = re.compile(r'(?<=class=["\'])(.*)(?=["\'])')
 
 
 # And the template tags themselves...
+
+@register.simple_tag
+def render_field(field, style=None):
+    style = style or {}
+    renderer = style.get('renderer', HTMLFormRenderer())
+    return renderer.render_field(field, style)
+
 
 @register.simple_tag
 def optional_login(request):
@@ -75,7 +83,7 @@ def add_query_param(request, key, val):
     """
     iri = request.get_full_path()
     uri = iri_to_uri(iri)
-    return replace_query_param(uri, key, val)
+    return escape(replace_query_param(uri, key, val))
 
 
 @register.filter

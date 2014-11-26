@@ -1,4 +1,4 @@
-<a class="github" href="exceptions.py"></a>
+source: exceptions.py
 
 # Exceptions
 

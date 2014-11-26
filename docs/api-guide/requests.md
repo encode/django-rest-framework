@@ -1,4 +1,4 @@
-<a class="github" href="request.py"></a>
+source: request.py
 
 # Requests
 
@@ -49,6 +49,20 @@ If a client sends a request with a content-type that cannot be parsed then a `Un
 
 ---
 
+# Content negotiation
+
+The request exposes some properties that allow you to determine the result of the content negotiation stage. This allows you to implement behaviour such as selecting a different serialisation schemes for different media types.
+
+## .accepted_renderer
+
+The renderer instance what was selected by the content negotiation stage.
+
+## .accepted_media_type
+
+A string representing the media type that was accepted by the content negotiation stage.
+
+---
+
 # Authentication
 
 REST framework provides flexible, per-request authentication, that gives you the ability to:
@@ -91,7 +105,7 @@ REST framework supports a few browser enhancements such as browser-based `PUT`, 
 
 Browser-based `PUT`, `PATCH` and `DELETE` forms are transparently supported.
 
-For more information see the [browser enhancements documentation].    
+For more information see the [browser enhancements documentation].
 
 ## .content_type
 
@@ -101,7 +115,7 @@ You won't typically need to directly access the request's content type, as you'l
 
 If you do need to access the content type of the request you should use the `.content_type` property in preference to using `request.META.get('HTTP_CONTENT_TYPE')`, as it provides transparent support for browser-based non-form content.
 
-For more information see the [browser enhancements documentation].    
+For more information see the [browser enhancements documentation].
 
 ## .stream
 
@@ -111,7 +125,7 @@ You won't typically need to directly access the request's content, as you'll nor
 
 If you do need to access the raw content directly, you should use the `.stream` property in preference to using `request.content`, as it provides transparent support for browser-based non-form content.
 
-For more information see the [browser enhancements documentation].    
+For more information see the [browser enhancements documentation].
 
 ---
 

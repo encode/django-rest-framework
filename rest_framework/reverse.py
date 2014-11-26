@@ -3,6 +3,7 @@ Provide reverse functions that return fully qualified URLs
 """
 from __future__ import unicode_literals
 from django.core.urlresolvers import reverse as django_reverse
+from django.utils import six
 from django.utils.functional import lazy
 
 
@@ -20,4 +21,4 @@ def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra
     return url
 
 
-reverse_lazy = lazy(reverse, str)
+reverse_lazy = lazy(reverse, six.text_type)

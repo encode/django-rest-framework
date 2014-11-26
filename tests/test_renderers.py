@@ -9,11 +9,11 @@ from django.test import TestCase
 from django.utils import six, unittest
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import status, permissions
-from rest_framework.compat import yaml, etree, StringIO
+from rest_framework.compat import yaml, etree, StringIO, BytesIO
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
-    XMLRenderer, JSONPRenderer, BrowsableAPIRenderer, UnicodeJSONRenderer, UnicodeYAMLRenderer
+    XMLRenderer, JSONPRenderer, BrowsableAPIRenderer
 from rest_framework.parsers import YAMLParser, XMLParser
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
@@ -32,7 +32,7 @@ RENDERER_B_SERIALIZER = lambda x: ('Renderer B: %s' % x).encode('ascii')
 
 
 expected_results = [
-    ((elem for elem in [1, 2, 3]), JSONRenderer, b'[1, 2, 3]')  # Generator
+    ((elem for elem in [1, 2, 3]), JSONRenderer, b'[1,2,3]')  # Generator
 ]
 
 
@@ -270,7 +270,7 @@ class RendererEndToEndTests(TestCase):
         self.assertNotContains(resp, '>text/html; charset=utf-8<')
 
 
-_flat_repr = '{"foo": ["bar", "baz"]}'
+_flat_repr = '{"foo":["bar","baz"]}'
 _indented_repr = '{\n  "foo": [\n    "bar",\n    "baz"\n  ]\n}'
 
 
@@ -373,12 +373,6 @@ class JSONRendererTests(TestCase):
         content = renderer.render(obj, 'application/json; indent=2')
         self.assertEqual(strip_trailing_whitespace(content.decode('utf-8')), _indented_repr)
 
-    def test_check_ascii(self):
-        obj = {'countries': ['United Kingdom', 'France', 'España']}
-        renderer = JSONRenderer()
-        content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"countries": ["United Kingdom", "France", "Espa\\u00f1a"]}'.encode('utf-8'))
-
 
 class UnicodeJSONRendererTests(TestCase):
     """
@@ -386,9 +380,22 @@ class UnicodeJSONRendererTests(TestCase):
     """
     def test_proper_encoding(self):
         obj = {'countries': ['United Kingdom', 'France', 'España']}
-        renderer = UnicodeJSONRenderer()
+        renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"countries": ["United Kingdom", "France", "España"]}'.encode('utf-8'))
+        self.assertEqual(content, '{"countries":["United Kingdom","France","España"]}'.encode('utf-8'))
+
+
+class AsciiJSONRendererTests(TestCase):
+    """
+    Tests specific for the Unicode JSON Renderer
+    """
+    def test_proper_encoding(self):
+        class AsciiJSONRenderer(JSONRenderer):
+            ensure_ascii = True
+        obj = {'countries': ['United Kingdom', 'France', 'España']}
+        renderer = AsciiJSONRenderer()
+        content = renderer.render(obj, 'application/json')
+        self.assertEqual(content, '{"countries":["United Kingdom","France","Espa\\u00f1a"]}'.encode('utf-8'))
 
 
 class JSONPRendererTests(TestCase):
@@ -460,7 +467,7 @@ if yaml:
             obj = {'foo': ['bar', 'baz']}
             renderer = YAMLRenderer()
             content = renderer.render(obj, 'application/yaml')
-            self.assertEqual(content, _yaml_repr)
+            self.assertEqual(content.decode('utf-8'), _yaml_repr)
 
         def test_render_and_parse(self):
             """
@@ -473,7 +480,7 @@ if yaml:
             parser = YAMLParser()
 
             content = renderer.render(obj, 'application/yaml')
-            data = parser.parse(StringIO(content))
+            data = parser.parse(BytesIO(content))
             self.assertEqual(obj, data)
 
         def test_render_decimal(self):
@@ -482,18 +489,14 @@ if yaml:
             """
             renderer = YAMLRenderer()
             content = renderer.render({'field': Decimal('111.2')}, 'application/yaml')
-            self.assertYAMLContains(content, "field: '111.2'")
+            self.assertYAMLContains(content.decode('utf-8'), "field: '111.2'")
 
         def assertYAMLContains(self, content, string):
             self.assertTrue(string in content, '%r not in %r' % (string, content))
 
-    class UnicodeYAMLRendererTests(TestCase):
-        """
-        Tests specific for the Unicode YAML Renderer
-        """
         def test_proper_encoding(self):
             obj = {'countries': ['United Kingdom', 'France', 'España']}
-            renderer = UnicodeYAMLRenderer()
+            renderer = YAMLRenderer()
             content = renderer.render(obj, 'application/yaml')
             self.assertEqual(content.strip(), 'countries: [United Kingdom, France, España]'.encode('utf-8'))
 

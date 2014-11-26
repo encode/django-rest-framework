@@ -75,7 +75,7 @@ You can also use the excellent [`tox`][tox] testing tool to run the tests agains
 
 It's a good idea to make pull requests early on.  A pull request represents the start of a discussion, and doesn't necessarily need to be the final, finished submission.
 
-It's also always best to make a new branch before starting work on a pull request.  This means that you'll be able to later switch back to working on another seperate issue without interfering with an ongoing pull requests.
+It's also always best to make a new branch before starting work on a pull request.  This means that you'll be able to later switch back to working on another separate issue without interfering with an ongoing pull requests.
 
 It's also useful to remember that if you have an outstanding pull request then pushing new commits to your GitHub repo will also automatically update the pull requests.
 
@@ -101,15 +101,15 @@ There are many great markdown editors that make working with the documentation r
 
 ## Building the documentation
 
-To build the documentation, simply run the `mkdocs.py` script.
+To build the documentation, install MkDocs with `pip install mkdocs` and then run the following command.
 
-    ./mkdocs.py
+    mkdocs build
 
 This will build the html output into the `html` directory.
 
-You can build the documentation and open a preview in a browser window by using the `-p` flag.
+You can build the documentation and open a preview in a browser window by using the `serve` command.
 
-    ./mkdocs.py -p
+    mkdocs serve
 
 ## Language style
 

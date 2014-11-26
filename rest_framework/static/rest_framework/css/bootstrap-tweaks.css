@@ -10,6 +10,12 @@ a single block in the template.
   background: transparent;
   border-top-color: transparent;
   padding-top: 0;
+  text-align: right;
+}
+
+#generic-content-form textarea {
+  font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+  font-size: 80%;
 }
 
 .navbar-inverse .brand a {
@@ -29,7 +35,7 @@ a single block in the template.
   z-index: 3;
 }
 
-.navbar .navbar-inner {
+.navbar {
   background: #2C2C2C;
   color: white;
   border: none;
@@ -37,7 +43,7 @@ a single block in the template.
   border-radius: 0px;
 }
 
-.navbar .navbar-inner .nav li, .navbar .navbar-inner .nav li a, .navbar .navbar-inner .brand:hover {
+.navbar .nav li, .navbar .nav li a, .navbar .brand:hover {
   color: white;
 }
 
@@ -45,11 +51,11 @@ a single block in the template.
   background: #2C2C2C;
 }
 
-.navbar .navbar-inner .dropdown-menu li a, .navbar .navbar-inner .dropdown-menu li {
+.navbar .dropdown-menu li a, .navbar .dropdown-menu li {
   color: #A30000;
 }
 
-.navbar .navbar-inner .dropdown-menu li a:hover {
+.navbar .dropdown-menu li a:hover {
   background: #EEEEEE;
   color: #C20000;
 }
@@ -61,10 +67,10 @@ html {
   background: none;
 }
 
-body, .navbar .navbar-inner .container-fluid {
+/*body, .navbar .container-fluid {
   max-width: 1150px;
   margin: 0 auto;
-}
+}*/
 
 body {
   background: url("../img/grid.png") repeat-x;
@@ -107,10 +113,6 @@ html, body {
 
 .well form {
   margin-bottom: 0;
-}
-
-.well form .help-block {
-  color: #999999;
 }
 
 .nav-tabs {
@@ -167,7 +169,7 @@ footer a:hover {
 .page-header {
   border-bottom: none;
   padding-bottom: 0px;
-  margin-bottom: 20px;
+  margin: 0;
 }
 
 /* custom general page styles */
