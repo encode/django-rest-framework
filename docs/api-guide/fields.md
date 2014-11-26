@@ -10,21 +10,13 @@ Serializer fields handle converting between primitive values and internal dataty
 
 ---
 
-**Note:** The serializer fields are declared in fields.py, but by convention you should import them using `from rest_framework import serializers` and refer to fields as `serializers.<FieldName>`.
+**Note:** The serializer fields are declared in `fields.py`, but by convention you should import them using `from rest_framework import serializers` and refer to fields as `serializers.<FieldName>`.
 
 ---
 
 ## Core arguments
 
 Each serializer field class constructor takes at least these arguments.  Some Field classes take additional, field-specific arguments, but the following should always be accepted:
-
-### `source`
-
-The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `Field(source='get_absolute_url')`, or may use dotted notation to traverse attributes, such as `Field(source='user.email')`.
-
-The value `source='*'` has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.
-
-Defaults to the name of the field.
 
 ### `read_only`
 
@@ -58,6 +50,14 @@ If set, this gives the default value that will be used for the field if no input
 May be set to a function or other callable, in which case the value will be evaluated each time it is used.
 
 Note that setting a `default` value implies that the field is not required. Including both the `default` and `required` keyword arguments is invalid and will raise an error.
+
+### `source`
+
+The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `URLField('get_absolute_url')`, or may use dotted notation to traverse attributes, such as `EmailField(source='user.email')`.
+
+The value `source='*'` has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.
+
+Defaults to the name of the field.
 
 ### `validators`
 
@@ -100,52 +100,6 @@ Two options are currently used in HTML form generation, `'input_type'` and `'bas
 
 ---
 
-## Field
-
-A generic, **read-only** field.  You can use this field for any attribute that does not need to support write operations.
-
-For example, using the following model.
-
-    from django.db import models
-    from django.utils.timezone import now
-
-    class Account(models.Model):
-        owner = models.ForeignKey('auth.user')
-        name = models.CharField(max_length=100)
-        created = models.DateTimeField(auto_now_add=True)
-        payment_expiry = models.DateTimeField()
-
-        def has_expired(self):
-            return now() > self.payment_expiry
-
-A serializer definition that looked like this:
-
-    from rest_framework import serializers
-
-    class AccountSerializer(serializers.HyperlinkedModelSerializer):
-        expired = serializers.Field(source='has_expired')
-
-        class Meta:
-            model = Account
-            fields = ('url', 'owner', 'name', 'expired')
-
-Would produce output similar to:
-
-    {
-        'url': 'http://example.com/api/accounts/3/',
-        'owner': 'http://example.com/api/users/12/',
-        'name': 'FooCorp business account',
-        'expired': True
-    }
-
-By default, the `Field` class will perform a basic translation of the source value into primitive datatypes, falling back to unicode representations of complex datatypes when necessary.
-
-You can customize this  behavior by overriding the `.to_native(self, value)` method.
-
-**TODO**: Note removal of `WritableField`
-
----
-
 # Boolean fields
 
 ## BooleanField
@@ -154,11 +108,15 @@ A boolean representation.
 
 Corresponds to `django.db.models.fields.BooleanField`.
 
+**Signature:** `BooleanField()`
+
 ## NullBooleanField
 
 A boolean representation that also accepts `None` as a valid value.
 
 Corresponds to `django.db.models.fields.NullBooleanField`.
+
+**Signature:** `NullBooleanField()`
 
 ---
 
@@ -170,7 +128,13 @@ A text representation. Optionally validates the text to be shorter than `max_len
 
 Corresponds to `django.db.models.fields.CharField` or `django.db.models.fields.TextField`.
 
-**Signature:** `CharField(max_length=None, min_length=None, allow_none=False)`
+**Signature:** `CharField(max_length=None, min_length=None, allow_blank=False)`
+
+- `max_length` - Validates that the input contains no more than this number of characters.
+- `min_length` - Validates that the input contains no fewer than this number of characters.
+- `allow_blank` - If set to `True` then the empty string should be considered a valid value. If set to `False` then the empty string is considered invalid and will raise a validation error. Defaults to `False`.
+
+The `allow_null` option is also available for string fields, although its usage is discouraged in favor of `allow_blank`. It is valid to set both `allow_blank=True` and `allow_null=True`, but doing so means that there will be two differing types of empty value permissible for string representations, which can lead to data inconsistencies and subtle application bugs.
 
 ## EmailField
 
@@ -178,19 +142,19 @@ A text representation, validates the text to be a valid e-mail address.
 
 Corresponds to `django.db.models.fields.EmailField`
 
-**Signature:** `EmailField(max_length=None, min_length=None)`
+**Signature:** `EmailField(max_length=None, min_length=None, allow_blank=False)`
 
 ## RegexField
 
 A text representation, that validates the given value matches against a certain regular expression.
 
+Corresponds to `django.forms.fields.RegexField`.
+
+**Signature:** `RegexField(regex, max_length=None, min_length=None, allow_blank=False)`
+
 The mandatory `regex` argument may either be a string, or a compiled python regular expression object.
 
 Uses Django's `django.core.validators.RegexValidator` for validation.
-
-Corresponds to `django.forms.fields.RegexField`
-
-**Signature:** `RegexField(regex, max_length=None, min_length=None)`
 
 ## SlugField
 
@@ -198,7 +162,7 @@ A `RegexField` that validates the input against the pattern `[a-zA-Z0-9_-]+`.
 
 Corresponds to `django.db.models.fields.SlugField`.
 
-**Signature:** `SlugField(max_length=50, min_length=None)`
+**Signature:** `SlugField(max_length=50, min_length=None, allow_blank=False)`
 
 ## URLField
 
@@ -206,7 +170,7 @@ A `RegexField` that validates the input against a URL matching pattern. Expects 
 
 Corresponds to `django.db.models.fields.URLField`.  Uses Django's `django.core.validators.URLValidator` for validation.
 
-**Signature:** `URLField(max_length=200, min_length=None)`
+**Signature:** `URLField(max_length=200, min_length=None, allow_blank=False)`
 
 ---
 
@@ -216,40 +180,36 @@ Corresponds to `django.db.models.fields.URLField`.  Uses Django's `django.core.v
 
 An integer representation.
 
-Has two optional arguments:
+Corresponds to `django.db.models.fields.IntegerField`, `django.db.models.fields.SmallIntegerField`, `django.db.models.fields.PositiveIntegerField` and `django.db.models.fields.PositiveSmallIntegerField`.
+
+**Signature**: `IntegerField(max_value=None, min_value=None)`
 
 - `max_value` Validate that the number provided is no greater than this value.
-
 - `min_value` Validate that the number provided is no less than this value.
-
-Corresponds to `django.db.models.fields.IntegerField`, `django.db.models.fields.SmallIntegerField`, `django.db.models.fields.PositiveIntegerField` and `django.db.models.fields.PositiveSmallIntegerField`.
 
 ## FloatField
 
 A floating point representation.
 
-Has two optional arguments:
+Corresponds to `django.db.models.fields.FloatField`.
+
+**Signature**: `FloatField(max_value=None, min_value=None)`
 
 - `max_value` Validate that the number provided is no greater than this value.
-
 - `min_value` Validate that the number provided is no less than this value.
-
-Corresponds to `django.db.models.fields.FloatField`.
 
 ## DecimalField
 
-A decimal representation, represented in Python by a Decimal instance.
+A decimal representation, represented in Python by a `Decimal` instance.
 
-Has two required arguments, and three optional arguments:
+Corresponds to `django.db.models.fields.DecimalField`.
+
+**Signature**: `DecimalField(max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None)`
 
 - `max_digits` The maximum number of digits allowed in the number. Note that this number must be greater than or equal to decimal_places.
-
 - `decimal_places` The number of decimal places to store with the number.
-
 - `coerce_to_string` Set to `True` if string values should be returned for the representation, or `False` if `Decimal` objects should be returned. Defaults to the same value as the `COERCE_DECIMAL_TO_STRING` settings key, which will be `True` unless overridden. If `Decimal` objects are returned by the serializer, then the final output format will be determined by the renderer.
-
 - `max_value` Validate that the number provided is no greater than this value.
-
 - `min_value` Validate that the number provided is no less than this value.
 
 #### Example usage
@@ -266,10 +226,6 @@ This field also takes an optional argument, `coerce_to_string`. If set to `True`
 
 If unset, this will default to the same value as the `COERCE_DECIMAL_TO_STRING` setting, which is `True` unless set otherwise.
 
-**Signature:** `DecimalField(max_digits, decimal_places, coerce_to_string=None)`
-
-Corresponds to `django.db.models.fields.DecimalField`.
-
 ---
 
 # Date and time fields
@@ -280,6 +236,21 @@ A date and time representation.
 
 Corresponds to `django.db.models.fields.DateTimeField`.
 
+**Signature:** `DateTimeField(format=None, input_formats=None)`
+
+* `format` - A string representing the output format.  If not specified, this defaults to the same value as the `DATETIME_FORMAT` settings key, which will be `'iso-8601'` unless set. Setting to a format string indicates that `to_representation` return values should be coerced to string output. Format strings are described below. Setting this value to `None` indicates that Python `datetime` objects should be returned by `to_representation`. In this case the datetime encoding will be determined by the renderer.
+* `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
+
+#### `DateTimeField` format strings.
+
+Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style datetimes should be used. (eg `'2013-01-29T12:34:56.000000Z'`)
+
+When a value of `None` is used for the format `datetime` objects will be returned by `to_representation` and the final output representation will determined by the renderer class.
+
+In the case of JSON this means the default datetime representation uses the [ECMA 262 date time string specification][ecma262].  This is a subset of ISO 8601 which uses millisecond precision, and includes the 'Z' suffix for the UTC timezone, for example: `2013-01-29T12:34:56.123Z`.
+
+#### `auto_now` and `auto_now_add` model fields.
+
 When using `ModelSerializer` or `HyperlinkedModelSerializer`, note that any model fields with `auto_now=True` or `auto_now_add=True` will use serializer fields that are `read_only=True` by default.
 
 If you want to override this behavior, you'll need to declare the `DateTimeField` explicitly on the serializer.  For example:
@@ -289,17 +260,6 @@ If you want to override this behavior, you'll need to declare the `DateTimeField
 
         class Meta:
             model = Comment
-
-Note that by default, datetime representations are determined by the renderer in use, although this can be explicitly overridden as detailed below.
-
-In the case of JSON this means the default datetime representation uses the [ECMA 262 date time string specification][ecma262].  This is a subset of ISO 8601 which uses millisecond precision, and includes the 'Z' suffix for the UTC timezone, for example: `2013-01-29T12:34:56.123Z`.
-
-**Signature:** `DateTimeField(format=None, input_formats=None)`
-
-* `format` - A string representing the output format.  If not specified, this defaults to the same value as the `DATETIME_FORMAT` settings key, which will be `'iso-8601'` unless set. Setting to a format string indicates that `to_representation` return values should be coerced to string output. Format strings are described below. Setting this value to `None` indicates that Python `datetime` objects should be returned by `to_representation`. In this case the datetime encoding will be determined by the renderer.
-* `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
-
-**DateTimeField format strings**: Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style datetimes should be used. (eg `'2013-01-29T12:34:56.000000Z'`)
 
 ## DateField
 
@@ -312,7 +272,9 @@ Corresponds to `django.db.models.fields.DateField`
 * `format` - A string representing the output format.  If not specified, this defaults to the same value as the `DATE_FORMAT` settings key, which will be `'iso-8601'` unless set. Setting to a format string indicates that `to_representation` return values should be coerced to string output. Format strings are described below. Setting this value to `None` indicates that Python `date` objects should be returned by `to_representation`. In this case the date encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `DATE_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
 
-**DateField format strings**: Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style dates should be used. (eg `'2013-01-29'`)
+#### `DateField` format strings
+
+Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style dates should be used. (eg `'2013-01-29'`)
 
 ## TimeField
 
@@ -325,7 +287,9 @@ Corresponds to `django.db.models.fields.TimeField`
 * `format` - A string representing the output format.  If not specified, this defaults to the same value as the `TIME_FORMAT` settings key, which will be `'iso-8601'` unless set. Setting to a format string indicates that `to_representation` return values should be coerced to string output. Format strings are described below. Setting this value to `None` indicates that Python `time` objects should be returned by `to_representation`. In this case the time encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `TIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
 
-**TimeField format strings**: Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style times should be used. (eg `'12:34:56.000000'`)
+#### `TimeField` format strings
+
+Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style times should be used. (eg `'12:34:56.000000'`)
 
 ---
 
@@ -333,23 +297,30 @@ Corresponds to `django.db.models.fields.TimeField`
 
 ## ChoiceField
 
-A field that can accept a value out of a limited set of choices. Takes a single mandatory argument.
+A field that can accept a value out of a limited set of choices.
+
+Used by `ModelSerializer` to automatically generate fields if the corresponding model field includes a `choices=…` argument.
+
+**Signature:** `ChoiceField(choices)`
 
 - `choices` - A list of valid values, or a list of `(key, display_name)` tuples.
-
-**Signature:** `ChoiceField(choices=())`
 
 ## MultipleChoiceField
 
 A field that can accept a set of zero, one or many values, chosen from a limited set of choices. Takes a single mandatory argument. `to_internal_representation` returns a `set` containing the selected values.
 
-- `choices` - A list of valid values, or a list of `(key, display_name)` tuples.
+**Signature:** `MultipleChoiceField(choices)`
 
-**Signature:** `MultipleChoiceField(choices=())`
+- `choices` - A list of valid values, or a list of `(key, display_name)` tuples.
 
 ---
 
 # File upload fields
+
+#### Parsers and file uploads.
+
+The `FileField` and `ImageField` classes are only suitable for use with `MultiPartParser` or `FileUploadParser`. Most parsers, such as e.g. JSON don't support file uploads.
+Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
 
 ## FileField
 
@@ -359,10 +330,8 @@ Corresponds to `django.forms.fields.FileField`.
 
 **Signature:** `FileField(max_length=None, allow_empty_file=False, use_url=UPLOADED_FILES_USE_URL)`
 
- - `max_length` - designates the maximum length for the file name.
-
- - `allow_empty_file` - designates if empty files are allowed.
-
+ - `max_length` - Designates the maximum length for the file name.
+ - `allow_empty_file` - Designates if empty files are allowed.
 - `use_url` - If set to `True` then URL string values will be used for the output representation. If set to `False` then filename string values will be used for the output representation. Defaults to the value of the `UPLOADED_FILES_USE_URL` settings key, which is `True` unless set otherwise.
 
 ## ImageField
@@ -371,14 +340,13 @@ An image representation. Validates the uploaded file content as matching a known
 
 Corresponds to `django.forms.fields.ImageField`.
 
+**Signature:** `ImageField(max_length=None, allow_empty_file=False, use_url=UPLOADED_FILES_USE_URL)`
+
+ - `max_length` - Designates the maximum length for the file name.
+ - `allow_empty_file` - Designates if empty files are allowed.
+- `use_url` - If set to `True` then URL string values will be used for the output representation. If set to `False` then filename string values will be used for the output representation. Defaults to the value of the `UPLOADED_FILES_USE_URL` settings key, which is `True` unless set otherwise.
+
 Requires either the `Pillow` package or `PIL` package.  The `Pillow` package is recommended, as `PIL` is no longer actively maintained.
-
-Signature and validation is the same as with `FileField`.
-
----
-
-**Note:** `FileFields` and `ImageFields` are only suitable for use with `MultiPartParser` or `FileUploadParser`. Most parsers, such as e.g. JSON don't support file uploads.
-Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
 
 ---
 
@@ -386,7 +354,24 @@ Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
 
 ## ListField
 
-**TODO**
+A field class that validates a list of objects.
+
+**Signature**: `ListField(child)`
+
+- `child` - A field instance that should be used for validating the objects in the list.
+
+For example, to validate a list of integers you might use something like the following:
+
+    scores = serializers.ListField(
+       child=serializers.IntegerField(min_value=0, max_value=100)
+    )
+
+The `ListField` class also supports a declarative style that allows you to write reusable list field classes.
+
+    class StringListField(serializers.ListField):
+        child = serializers.CharField()
+
+We can now reuse our custom `StringListField` class throughout our application, without having to provide a `child` argument to it.
 
 ---
 
@@ -394,27 +379,52 @@ Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
 
 ## ReadOnlyField
 
-**TODO**
+A field class that simply returns the value of the field without modification.
+
+This field is used by default with `ModelSerializer` when including field names that relate to an attribute rather than a model field.
+
+**Signature**: `ReadOnlyField()`
+
+For example, is `has_expired` was a property on the `Account` model, then the following serializer would automatically generate it as a `ReadOnlyField`:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            fields = ('id', 'account_name', 'has_expired')
 
 ## HiddenField
 
-**TODO**
+A field class that does not take a value based on user input, but instead takes its value from a default value or callable.
+
+**Signature**: `HiddenField()`
+
+For example, to include a field that always provides the current time as part of the serializer validated data, you would use the following:
+
+    modified = serializer.HiddenField(default=timezone.now)
+
+The `HiddenField` class is usually only needed if you have some validation that needs to run based on some pre-provided field values, but you do not want to expose all of those fields to the end user.
+
+For further examples on `HiddenField` see the [validators](validators.md) documentation.
 
 ## ModelField
 
-A generic field that can be tied to any arbitrary model field.  The `ModelField` class delegates the task of serialization/deserialization to its associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.
+A generic field that can be tied to any arbitrary model field. The `ModelField` class delegates the task of serialization/deserialization to its associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.
 
-The `ModelField` class is generally intended for internal use, but can be used by your API if needed.  In order to properly instantiate a `ModelField`, it must be passed a field that is attached to an instantiated model.  For example: `ModelField(model_field=MyModel()._meta.get_field('custom_field'))`
+This field is used by `ModelSerializer` to correspond to custom model field classes.
 
 **Signature:** `ModelField(model_field=<Django ModelField instance>)`
+
+The `ModelField` class is generally intended for internal use, but can be used by your API if needed.  In order to properly instantiate a `ModelField`, it must be passed a field that is attached to an instantiated model.  For example: `ModelField(model_field=MyModel()._meta.get_field('custom_field'))`
 
 ## SerializerMethodField
 
 This is a read-only field. It gets its value by calling a method on the serializer class it is attached to. It can be used to add any sort of data to the serialized representation of your object.
 
-The field constructor accepts a single optional argument, which is the name of the method on the serializer to be called. If not included this defaults to `get_<field_name>`.
+**Signature**: `SerializerMethodField(method_name=None)`
 
-The method should accept a single argument (in addition to `self`), which is the object being serialized.  It should return whatever you want to be included in the serialized representation of the object.  For example:
+- `method-name` - The name of the method on the serializer to be called. If not included this defaults to `get_<field_name>`.
+
+The serializer method referred to by the `method_name` argument should accept a single argument (in addition to `self`), which is the object being serialized. It should return whatever you want to be included in the serialized representation of the object. For example:
 
     from django.contrib.auth.models import User
     from django.utils.timezone import now
@@ -433,9 +443,13 @@ The method should accept a single argument (in addition to `self`), which is the
 
 # Custom fields
 
-If you want to create a custom field, you'll probably want to override either one or both of the `.to_representation()` and `.to_internal_value()` methods.  These two methods are used to convert between the initial datatype, and a primitive, serializable datatype.  Primitive datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primitive objects.
+If you want to create a custom field, you'll need to subclass `Field` and then override either one or both of the `.to_representation()` and `.to_internal_value()` methods.  These two methods are used to convert between the initial datatype, and a primitive, serializable datatype. Primitive datatypes will typically be any of a number, string, boolean, `date`/`time`/`datetime` or `None`. They may also be any list or dictionary like object that only contains other primitive objects. Other types might be supported, depending on the renderer that you are using.
 
-The `.to_representation()` method is called to convert the initial datatype into a primitive, serializable datatype.  The `to_internal_value()` method is called to restore a primitive datatype into its internal python representation.
+The `.to_representation()` method is called to convert the initial datatype into a primitive, serializable datatype.
+
+The `to_internal_value()` method is called to restore a primitive datatype into its internal python representation.
+
+Note that the `WritableField` class that was present in version 2.x no longer exists. You should subclass `Field` and override `to_internal_value()` if the field supports data input.
 
 ## Examples
 
@@ -461,7 +475,6 @@ Let's look at an example of serializing a class that represents an RGB color val
             data = data.strip('rgb(').rstrip(')')
             red, green, blue = [int(col) for col in data.split(',')]
             return Color(red, green, blue)
-
 
 By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override `.get_attribute()` and/or `.get_value()`.
 
