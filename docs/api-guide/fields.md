@@ -433,9 +433,9 @@ The method should accept a single argument (in addition to `self`), which is the
 
 # Custom fields
 
-If you want to create a custom field, you'll probably want to override either one or both of the `.to_native()` and `.from_native()` methods.  These two methods are used to convert between the initial datatype, and a primitive, serializable datatype.  Primitive datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primitive objects.
+If you want to create a custom field, you'll probably want to override either one or both of the `.to_representation()` and `.to_internal_value()` methods.  These two methods are used to convert between the initial datatype, and a primitive, serializable datatype.  Primitive datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primitive objects.
 
-The `.to_native()` method is called to convert the initial datatype into a primitive, serializable datatype.  The `from_native()` method is called to restore a primitive datatype into its initial representation.
+The `.to_representation()` method is called to convert the initial datatype into a primitive, serializable datatype.  The `to_internal_value()` method is called to restore a primitive datatype into its internal python representation.
 
 ## Examples
 
@@ -450,25 +450,30 @@ Let's look at an example of serializing a class that represents an RGB color val
             assert(red < 256 and green < 256 and blue < 256)
             self.red, self.green, self.blue = red, green, blue
 
-    class ColourField(serializers.WritableField):
+    class ColorField(serializers.Field):
         """
         Color objects are serialized into "rgb(#, #, #)" notation.
         """
-        def to_native(self, obj):
+        def to_representation(self, obj):
             return "rgb(%d, %d, %d)" % (obj.red, obj.green, obj.blue)
 
-        def from_native(self, data):
+        def to_internal_value(self, data):
             data = data.strip('rgb(').rstrip(')')
             red, green, blue = [int(col) for col in data.split(',')]
             return Color(red, green, blue)
 
 
-By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override `.field_to_native()` and/or `.field_from_native()`.
+By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override `.get_attribute()` and/or `.get_value()`.
 
 As an example, let's create a field that can be used represent the class name of the object being serialized:
 
     class ClassNameField(serializers.Field):
-        def field_to_native(self, obj, field_name):
+        def get_attribute(self, obj):
+            # We pass the object instance onto `to_representation`,
+            # not just the field attribute.
+            return obj
+ 
+        def to_representation(self, obj):
             """
             Serialize the object's class name.
             """
