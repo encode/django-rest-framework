@@ -646,7 +646,8 @@ class CacheRenderTest(TestCase):
         """
         method = getattr(self.client, http_method)
         resp = method(url)
-        del resp.client, resp.request, resp._closable_objects
+        resp._closable_objects = []
+        del resp.client, resp.request
         try:
             del resp.wsgi_request
         except AttributeError:
