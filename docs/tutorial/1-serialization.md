@@ -219,7 +219,7 @@ One nice property that serializers have is that you can inspect all the fields i
         language = ChoiceField(choices=[('Clipper', 'FoxPro'), ('Cucumber', 'Gherkin'), ('RobotFramework', 'RobotFramework'), ('abap', 'ABAP'), ('ada', 'Ada')...
         style = ChoiceField(choices=[('autumn', 'autumn'), ('borland', 'borland'), ('bw', 'bw'), ('colorful', 'colorful')...
 
-It's important to remember that `ModelSerializer` classes don't do anything particularly magically, they are simply a shortcut to creating a serializer class with:
+It's important to remember that `ModelSerializer` classes don't do anything particularly magical, they are simply a shortcut for creating serializer classes:
 
 * An automatically determined set of fields.
 * Simple default implementations for the `create()` and `update()` methods.
