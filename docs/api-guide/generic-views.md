@@ -190,6 +190,8 @@ These override points are also particularly useful for adding behavior that occu
         instance = serializer.save()
         send_email_confirmation(user=self.request.user, modified=instance)
 
+**Note**: These methods replace the old-style version 2.x `pre_save`, `post_save`, `pre_delete` and `post_delete` methods, which are no longer available.
+
 **Other methods**:
 
 You won't typically need to override the following methods, although you might need to call into them if you're writing custom views using `GenericAPIView`.
