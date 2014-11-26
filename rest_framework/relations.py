@@ -321,7 +321,9 @@ class ManyRelatedField(Field):
     The `ManyRelatedField` class is responsible for handling iterating through
     the values and passing each one to the child relationship.
 
-    You shouldn't need to be using this class directly yourself.
+    This class is treated as private API.
+    You shouldn't generally need to be using this class directly yourself,
+    and should instead simply set 'many=True' on the relationship.
     """
     initial = []
     default_empty_html = []

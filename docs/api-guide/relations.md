@@ -245,7 +245,7 @@ For example, the following serializer:
             fields = ('order', 'title')
 
     class AlbumSerializer(serializers.ModelSerializer):
-        tracks = TrackSerializer(many=True)
+        tracks = TrackSerializer(many=True, read_only=True)
 
         class Meta:
             model = Album
@@ -304,6 +304,16 @@ This custom field would then serialize to the following representation.
 ---
 
 # Further notes
+
+## The `queryset` argument
+
+The `queryset` argument is only ever required for *writable* relationship field, in which case it is used for performing the model instance lookup, that maps from the primitive user input, into a model instance.
+
+In version 2.x a serializer class could *sometimes* automatically determine the `queryset` argument *if* a `ModelSerializer` class was being used.
+
+This behavior is now replaced with *always* using an explicit `queryset` argument for writable relational fields.
+
+Doing so reduces the amount of hidden 'magic' that `ModelSerializer` provides, makes the behavior of the field more clear, and ensures that it is trivial to move between using the `ModelSerializer` shortcut, or using fully explicit `Serializer` classes.
 
 ## Reverse relations
 
