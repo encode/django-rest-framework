@@ -69,7 +69,7 @@ def get_attribute(instance, attrs):
             except (KeyError, TypeError, AttributeError):
                 raise exc
         if is_simple_callable(instance):
-            return instance()
+            instance = instance()
     return instance
 
 
