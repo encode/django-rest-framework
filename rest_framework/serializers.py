@@ -372,6 +372,8 @@ class Serializer(BaseSerializer):
             attribute = field.get_attribute(instance)
             if attribute is None:
                 value = None
+            elif isinstance(field, Serializer):
+                value = field.__class__(attribute).data
             else:
                 value = field.to_representation(attribute)
             transform_method = getattr(self, 'transform_' + field.field_name, None)
@@ -488,9 +490,11 @@ class ListSerializer(BaseSerializer):
         List of object instances -> List of dicts of primitive datatypes.
         """
         iterable = data.all() if (hasattr(data, 'all')) else data
-        return [
-            self.child.to_representation(item) for item in iterable
-        ]
+        if isinstance(self.child, Serializer):
+            serializer = self.child.__class__
+            return [serializer(item).data for item in iterable]
+        else:
+            return [self.child.to_representation(item) for item in iterable]
 
     def update(self, instance, validated_data):
         raise NotImplementedError(
