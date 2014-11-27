@@ -371,14 +371,9 @@ class Serializer(BaseSerializer):
         for field in fields:
             attribute = field.get_attribute(instance)
             if attribute is None:
-                value = None
+                ret[field.field_name] = None
             else:
-                value = field.to_representation(attribute)
-            transform_method = getattr(self, 'transform_' + field.field_name, None)
-            if transform_method is not None:
-                value = transform_method(value)
-
-            ret[field.field_name] = value
+                ret[field.field_name] = field.to_representation(attribute)
 
         return ret
 
