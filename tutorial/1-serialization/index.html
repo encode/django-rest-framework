@@ -563,7 +563,7 @@ Open the file <code>snippets/serializers.py</code> again, and edit the <code>Sni
         model = Snippet
         fields = ('id', 'title', 'code', 'linenos', 'language', 'style')
 </code></pre>
-<p>Once nice property that serializers have is that you can inspect all the fields an serializer instance, by printing it's representation. Open the Django shell with <code>python manange.py shell</code>, then try the following:</p>
+<p>One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing it's representation. Open the Django shell with <code>python manange.py shell</code>, then try the following:</p>
 <pre><code>&gt;&gt;&gt; from snippets.serializers import SnippetSerializer
 &gt;&gt;&gt; serializer = SnippetSerializer()
 &gt;&gt;&gt; print repr(serializer)  # In python 3 use `print(repr(serializer))`
@@ -575,7 +575,7 @@ SnippetSerializer():
     language = ChoiceField(choices=[('Clipper', 'FoxPro'), ('Cucumber', 'Gherkin'), ('RobotFramework', 'RobotFramework'), ('abap', 'ABAP'), ('ada', 'Ada')...
     style = ChoiceField(choices=[('autumn', 'autumn'), ('borland', 'borland'), ('bw', 'bw'), ('colorful', 'colorful')...
 </code></pre>
-<p>It's important to remember that <code>ModelSerializer</code> classes don't do anything particularly magically, they are simply a shortcut to creating a serializer class with:</p>
+<p>It's important to remember that <code>ModelSerializer</code> classes don't do anything particularly magical, they are simply a shortcut for creating serializer classes:</p>
 <ul>
 <li>An automatically determined set of fields.</li>
 <li>Simple default implementations for the <code>create()</code> and <code>update()</code> methods.</li>
