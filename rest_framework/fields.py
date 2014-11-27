@@ -68,8 +68,8 @@ def get_attribute(instance, attrs):
                 return instance[attr]
             except (KeyError, TypeError, AttributeError):
                 raise exc
-    if is_simple_callable(instance):
-        return instance()
+        if is_simple_callable(instance):
+            return instance()
     return instance
 
 
