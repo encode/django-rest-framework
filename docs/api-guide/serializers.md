@@ -271,7 +271,9 @@ Similarly if a nested representation should be a list of items, you should pass 
         content = serializers.CharField(max_length=200)
         created = serializers.DateTimeField()
 
-Validation of nested objects will work the same as before.  Errors with nested objects will be nested under the field name of the nested object.
+## Writable nested representations
+
+When dealing with nested representations that support deserializing the data, an errors with nested objects will be nested under the field name of the nested object.
 
     serializer = CommentSerializer(data={'user': {'email': 'foobar', 'username': 'doe'}, 'content': 'baz'})
     serializer.is_valid()
@@ -279,7 +281,96 @@ Validation of nested objects will work the same as before.  Errors with nested o
     serializer.errors
     # {'user': {'email': [u'Enter a valid e-mail address.']}, 'created': [u'This field is required.']}
 
-**TODO** Document create and update for nested serializers
+Similarly, the `.validated_data` property will include nested data structures.
+
+#### Writing `.create()` methods for nested representations
+
+If you're supporting writable nested representations you'll need to write `.create()` or `.update()` methods that handle saving multiple objects.
+
+The following example demonstrates how you might handle creating a user with a nested profile object.
+
+    class UserSerializer(serializers.ModelSerializer):
+        profile = ProfileSerializer()
+
+        class Meta:
+            model = User
+            fields = ('username', 'email', 'profile')
+
+        def create(self, validated_data):
+            profile_data = validated_data.pop('profile')
+            user = User.objects.create(**validated_data)
+            Profile.objects.create(user=user, **profile_data)
+            return user
+
+#### Writing `.update()` methods for nested representations
+
+For updates you'll want to think carefully about how to handle updates to relationships. For example if the data for the relationship is `None`, or not provided, which of the following should occur?
+
+* Set the relationship to `NULL` in the database.
+* Delete the associated instance.
+* Ignore the data and leave the instance as it is.
+* Raise a validation error.
+
+Here's an example for an `update()` method on our previous `UserSerializer` class.
+
+        def update(self, instance, validated_data):
+            profile_data = validated_data.pop('profile')
+            # Unless the application properly enforces that this field is
+            # always set, the follow could raise a `DoesNotExist`, which
+            # would need to be handled.
+            profile = instance.profile
+
+            user.username = validated_data.get('username', instance.username)
+            user.email = validated_data.get('email', instance.email)
+            user.save()
+
+            profile.is_premium_member = profile_data.get(
+                'is_premium_member',
+                profile.is_premium_member
+            )
+            profile.has_support_contract = profile_data.get(
+                'has_support_contract',
+                profile.has_support_contract
+             )
+            profile.save()
+
+            return user
+
+Because the behavior of nested creates and updates can be ambiguous, and may require complex dependancies between related models, REST framework 3 requires you to always write these methods explicitly. The default `ModelSerializer` `.create()` and `.update()` methods do not include support for writable nested representations.
+
+It is possible that a third party package, providing automatic support some kinds of automatic writable nested representations may be released alongside the 3.1 release.
+
+#### Handling saving related instances in model manager classes
+
+An alternative to saving multiple related instances in the serializer is to write custom model manager classes handle creating the correct instances.
+
+For example, suppose we wanted to ensure that `User` instances and `Profile` instances are always created together as a pair. We might write a custom manager class that looks something like this:
+
+    class UserManager(models.Manager):
+        ...
+
+        def create(self, username, email, is_premium_member=False, has_support_contract=False):
+            user = User(username=username, email=email)
+            user.save()
+            profile = Profile(
+                user=user,
+                is_premium_member=is_premium_member,
+                has_support_contract=has_support_contract
+            )
+            profile.save()
+            return user
+
+This manager class now more nicely encapsulates that user instances and profile instances are always created at the same time. Our `.create()` method on the serializer class can now be re-written to use the new manager method.
+
+    def create(self, validated_data):
+        return User.objects.create(
+            username=validated_data['username'],
+            email=validated_data['email']
+            is_premium_member=validated_data['profile']['is_premium_member']
+            has_support_contract=validated_data['profile']['has_support_contract']
+        )
+
+For more details on this approach see the Django documentation on [model managers](model-managers), and [this blogpost on using model and manger classes](encapsulation-blogpost).
 
 ## Dealing with multiple objects
 
@@ -298,70 +389,9 @@ To serialize a queryset or list of objects instead of a single object instance, 
     #     {'id': 2, 'title': 'The wind-up bird chronicle', 'author': 'Haruki Murakami'}
     # ]
 
-#### Deserializing multiple objects for creation
+#### Deserializing multiple objects
 
-**TODO**
-
-To deserialize a list of object data, and create multiple object instances in a single pass, you should also set the `many=True` flag, and pass a list of data to be deserialized.
-
-This allows you to write views that create multiple items when a `POST` request is made.
-
-For example:
-
-    data = [
-        {'title': 'The bell jar', 'author': 'Sylvia Plath'},
-        {'title': 'For whom the bell tolls', 'author': 'Ernest Hemingway'}
-    ]
-    serializer = BookSerializer(data=data, many=True)
-    serializer.is_valid()
-    # True
-    serializer.save()  # `.save()` will be called on each deserialized instance
-
-The default implementation for multiple object creation is to simply call `.create()` for each item in the list. If you want to customize this behavior, you'll need to customize the `.create()` method on `ListSerializer` class that is used when `many=True` is passed.
-
-For example:
-
-    class BookListSerializer(serializers.ListSerializer):
-        def create(self, validated_data):
-            books = [Book(**item) for item in validated_data]
-            return Book.objects.bulk_create(books)
-
-    class BookSerializer(serializers.Serializer):
-        …
-        class Meta:
-            list_serializer_class = BookListSerializer
-
-#### Deserializing multiple objects for update
-
-**TODO**
-
-You can also deserialize a list of objects as part of a bulk update of multiple existing items.
-In this case you need to supply both an existing list or queryset of items, as well as a list of data to update those items with.
-
-This allows you to write views that update or create multiple items when a `PUT` request is made.
-
-    # Capitalizing the titles of the books
-    queryset = Book.objects.all()
-    data = [
-        {'id': 3, 'title': 'The Bell Jar', 'author': 'Sylvia Plath'},
-        {'id': 4, 'title': 'For Whom the Bell Tolls', 'author': 'Ernest Hemingway'}
-    ]
-    serializer = BookSerializer(queryset, data=data, many=True)
-    serializer.is_valid()
-    # True
-    serializer.save()  # `.save()` will be called on each updated or newly created instance.
-
-By default bulk updates will be limited to updating instances that already exist in the provided queryset.
-
-When performing a bulk update you may want to allow new items to be created, and missing items to be deleted.  To do so, pass `allow_add_remove=True` to the serializer.
-
-    serializer = BookSerializer(queryset, data=data, many=True, allow_add_remove=True)
-    serializer.is_valid()
-    # True
-    serializer.save()  # `.save()` will be called on updated or newly created instances.
-                       # `.delete()` will be called on any other items in the `queryset`.
-
-Passing `allow_add_remove=True` ensures that any update operations will completely overwrite the existing queryset, rather than simply updating existing objects.
+The default behavior for deserializing multiple objects is to support multiple object creation, but not support multiple object updates. For more information on how to support or customize either of these cases, see the [ListSerializer](#ListSerializer) documentation below.
 
 ## Including extra context
 
@@ -399,7 +429,7 @@ By default, all the model fields on the class will be mapped to a corresponding 
 
 Any relationships such as foreign keys on the model will be mapped to `PrimaryKeyRelatedField`. Reverse relationships are not included by default unless explicitly included as described below.
 
-#### Inspecting the generated `ModelSerializer` class.
+#### Inspecting a `ModelSerializer`
 
 Serializer classes generate helpful verbose representation strings, that allow you to fully inspect the state of their fields. This is particularly useful when working with `ModelSerializers` where you want to determine what set of fields and validators are being automatically created for you.
 
@@ -607,7 +637,7 @@ For example:
         class Meta:
             list_serializer_class = CustomListSerializer
 
-#### Customizing `.create()` for multiple objects.
+#### Customizing multiple create
 
 The default implementation for multiple object creation is to simply call `.create()` for each item in the list. If you want to customize this behavior, you'll need to customize the `.create()` method on `ListSerializer` class that is used when `many=True` is passed.
 
@@ -623,7 +653,7 @@ For example:
         class Meta:
             list_serializer_class = BookListSerializer
 
-#### Customizing `.update()` for multiple objects.
+#### Customizing multiple update
 
 By default the `ListSerializer` class does not support multiple updates. This is because the behavior that should be expected for insertions and deletions is ambiguous.
 
@@ -663,6 +693,8 @@ Here's an example of how you might choose to implement multiple updates:
         class Meta:
             list_serializer_class = BookListSerializer
 
+It is possible that a third party package may be included alongside the 3.1 release that provides some automatic support for multiple update operations, similar to the `allow_add_remove` behavior that was present in REST framework 2.
+
 ---
 
 # BaseSerializer
@@ -687,7 +719,7 @@ Because this class provides the same interface as the `Serializer` class, you ca
 
 The only difference you'll notice when doing so is the `BaseSerializer` classes will not generate HTML forms in the browsable API. This is because the data they return does not include all the field information that would allow each field to be rendered into a suitable HTML input.
 
-##### Read-only `BaseSerializer` classes.
+##### Read-only `BaseSerializer` classes
 
 To implement a read-only serializer using the `BaseSerializer` class, we just need to override the `.to_representation()` method. Let's take a look at an example using a simple Django model:
 
@@ -721,7 +753,7 @@ Or use it to serialize multiple instances:
         serializer = HighScoreSerializer(queryset, many=True)
 	    return Response(serializer.data)
 
-##### Read-write `BaseSerializer` classes.
+##### Read-write `BaseSerializer` classes
 
 To create a read-write serializer we first need to implement a `.to_internal_value()` method. This method returns the validated values that will be used to construct the object instance, and may raise a `ValidationError` if the supplied data is in an incorrect format.
 
@@ -766,7 +798,7 @@ Here's a complete example of our previous `HighScoreSerializer`, that's been upd
         def create(self, validated_data):
             return HighScore.objects.create(**validated_data)
 
-#### Creating new generic serializers with `BaseSerializer`.
+#### Creating new base classes
 
 The `BaseSerializer` class is also useful if you want to implement new generic serializer classes for dealing with particular serialization styles, or for integrating with alternative storage backends.
 
@@ -905,6 +937,8 @@ The [django-rest-framework-hstore][django-rest-framework-hstore] package provide
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
+[model-managers]: https://docs.djangoproject.com/en/dev/topics/db/managers/
+[encapsulation-blogpost]: http://www.dabapps.com/blog/django-models-and-encapsulation/
 [mongoengine]: https://github.com/umutbozkurt/django-rest-framework-mongoengine
 [django-rest-framework-gis]: https://github.com/djangonauts/django-rest-framework-gis
 [django-rest-framework-hstore]: https://github.com/djangonauts/django-rest-framework-hstore
