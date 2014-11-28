@@ -179,89 +179,6 @@ class TestContentParsing(TestCase):
         self.assertEqual(request._data, Empty)
         self.assertEqual(request._files, Empty)
 
-    # def test_accessing_post_after_data_form(self):
-    #     """
-    #     Ensures request.POST can be accessed after request.DATA in
-    #     form request.
-    #     """
-    #     data = {'qwerty': 'uiop'}
-    #     request = factory.post('/', data=data)
-    #     self.assertEqual(request.DATA.items(), data.items())
-    #     self.assertEqual(request.POST.items(), data.items())
-
-    # def test_accessing_post_after_data_for_json(self):
-    #     """
-    #     Ensures request.POST can be accessed after request.DATA in
-    #     json request.
-    #     """
-    #     data = {'qwerty': 'uiop'}
-    #     content = json.dumps(data)
-    #     content_type = 'application/json'
-    #     parsers = (JSONParser, )
-
-    #     request = factory.post('/', content, content_type=content_type,
-    #                            parsers=parsers)
-    #     self.assertEqual(request.DATA.items(), data.items())
-    #     self.assertEqual(request.POST.items(), [])
-
-    # def test_accessing_post_after_data_for_overloaded_json(self):
-    #     """
-    #     Ensures request.POST can be accessed after request.DATA in overloaded
-    #     json request.
-    #     """
-    #     data = {'qwerty': 'uiop'}
-    #     content = json.dumps(data)
-    #     content_type = 'application/json'
-    #     parsers = (JSONParser, )
-    #     form_data = {Request._CONTENT_PARAM: content,
-    #                  Request._CONTENTTYPE_PARAM: content_type}
-
-    #     request = factory.post('/', form_data, parsers=parsers)
-    #     self.assertEqual(request.DATA.items(), data.items())
-    #     self.assertEqual(request.POST.items(), form_data.items())
-
-    # def test_accessing_data_after_post_form(self):
-    #     """
-    #     Ensures request.DATA can be accessed after request.POST in
-    #     form request.
-    #     """
-    #     data = {'qwerty': 'uiop'}
-    #     parsers = (FormParser, MultiPartParser)
-    #     request = factory.post('/', data, parsers=parsers)
-
-    #     self.assertEqual(request.POST.items(), data.items())
-    #     self.assertEqual(request.DATA.items(), data.items())
-
-    # def test_accessing_data_after_post_for_json(self):
-    #     """
-    #     Ensures request.DATA can be accessed after request.POST in
-    #     json request.
-    #     """
-    #     data = {'qwerty': 'uiop'}
-    #     content = json.dumps(data)
-    #     content_type = 'application/json'
-    #     parsers = (JSONParser, )
-    #     request = factory.post('/', content, content_type=content_type,
-    #                            parsers=parsers)
-    #     self.assertEqual(request.POST.items(), [])
-    #     self.assertEqual(request.DATA.items(), data.items())
-
-    # def test_accessing_data_after_post_for_overloaded_json(self):
-    #     """
-    #     Ensures request.DATA can be accessed after request.POST in overloaded
-    #     json request
-    #     """
-    #     data = {'qwerty': 'uiop'}
-    #     content = json.dumps(data)
-    #     content_type = 'application/json'
-    #     parsers = (JSONParser, )
-    #     form_data = {Request._CONTENT_PARAM: content,
-    #                  Request._CONTENTTYPE_PARAM: content_type}
-
-    #     request = factory.post('/', form_data, parsers=parsers)
-    #     self.assertEqual(request.POST.items(), form_data.items())
-    #     self.assertEqual(request.DATA.items(), data.items())
-
 
 class MockView(APIView):
     authentication_classes = (SessionAuthentication,)
@@ -300,18 +217,6 @@ class TestContentParsingWithAuthentication(TestCase):
 
         response = self.csrf_client.post('/', content)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
-
-    # def test_user_logged_in_authentication_has_post_when_logged_in(self):
-    #     """Ensures request.POST exists after UserLoggedInAuthentication when user does log in"""
-    #     self.client.login(username='john', password='password')
-    #     self.csrf_client.login(username='john', password='password')
-    #     content = {'example': 'example'}
-
-    #     response = self.client.post('/', content)
-    #     self.assertEqual(status.OK, response.status_code, "POST data is malformed")
-
-    #     response = self.csrf_client.post('/', content)
-    #     self.assertEqual(status.OK, response.status_code, "POST data is malformed")
 
 
 class TestUserSetter(TestCase):
