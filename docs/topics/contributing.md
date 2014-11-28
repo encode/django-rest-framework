@@ -152,7 +152,6 @@ Documentation should be in American English.  The tone of the documentation is v
 Some other tips:
 
 * Keep paragraphs reasonably short.
-* Use double spacing after the end of sentences.
 * Don't use abbreviations such as 'e.g.' but instead use the long form, such as 'For example'.
 
 ## Markdown style
