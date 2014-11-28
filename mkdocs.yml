@@ -53,5 +53,3 @@ pages:
  - ['topics/kickstarter-announcement.md', 'Topics', 'Kickstarter Announcement']
  - ['topics/release-notes.md', 'Topics', 'Release Notes']
  - ['topics/credits.md', 'Topics', 'Credits']
-
-google_analytics: ['UA-18852272-2', 'django-rest-framework.org']
