@@ -567,21 +567,22 @@ There needs to be a way of determining which views should be used for hyperlinki
 
 By default hyperlinks are expected to correspond to a view name that matches the style `'{model_name}-detail'`, and looks up the instance by a `pk` keyword argument.
 
-You can change the field that is used for object lookups by setting the `lookup_field` option. The value of this option should correspond both with a kwarg in the URL conf, and with a field on the model.  For example:
+You can override a URL field view name and lookup field by using either, or both of, the `view_name` and `lookup_field` options in the `extra_field_kwargs` setting, like so:
 
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
-            fields = ('url', 'account_name', 'users', 'created')
-            lookup_field = 'slug'
+            fields = ('account_url', 'account_name', 'users', 'created')
+            extra_field_kwargs = {
+                'url': {'view_name': 'accounts', 'lookup_field': 'account_name'}
+                'users': {'lookup_field': 'username'}
+            }
 
-Note that the `lookup_field` will be used as the default on *all* hyperlinked fields, including both the URL identity, and any hyperlinked relationships.
-
-For more specific requirements such as specifying a different lookup for each field, you'll want to set the fields on the serializer explicitly.  For example:
+Alternatively you can set the fields on the serializer explicitly. For example:
 
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         url = serializers.HyperlinkedIdentityField(
-            view_name='account-detail',
+            view_name='accounts',
             lookup_field='slug'
         )
         users = serializers.HyperlinkedRelatedField(
@@ -595,28 +596,15 @@ For more specific requirements such as specifying a different lookup for each fi
             model = Account
             fields = ('url', 'account_name', 'users', 'created')
 
-## Overriding the URL field behavior
+---
+
+**Tip**: Properly matching together hyperlinked representations and your URL conf can sometimes be a bit fiddly. Printing the `repr` of a `HyperlinkedModelSerializer` instance is a particularly useful way to inspect exactly which view names and lookup fields the relationships are expected to map too.
+
+---
+
+## Changing the URL field name
 
 The name of the URL field defaults to 'url'.  You can override this globally, by using the `URL_FIELD_NAME` setting.
-
-You can also override this on a per-serializer basis by using the `url_field_name` option on the serializer, like so:
-
-    class AccountSerializer(serializers.HyperlinkedModelSerializer):
-        class Meta:
-            model = Account
-            fields = ('account_url', 'account_name', 'users', 'created')
-            url_field_name = 'account_url'
-
-**Note**: The generic view implementations normally generate a `Location` header in response to successful `POST` requests. Serializers using `url_field_name` option will not have this header automatically included by the view.  If you need to do so you will ned to also override the view's `get_success_headers()` method.
-
-You can also override the URL field's view name and lookup field without overriding the field explicitly, by using the `view_name` and `lookup_field` options, like so:
-
-    class AccountSerializer(serializers.HyperlinkedModelSerializer):
-        class Meta:
-            model = Account
-            fields = ('account_url', 'account_name', 'users', 'created')
-            view_name = 'account_detail'
-            lookup_field='account_name'
 
 ---
 
