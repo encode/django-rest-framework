@@ -1,10 +1,17 @@
 # Django REST framework
 
 [![build-status-image]][travis]
+[![pypi-version]][pypi]
 
 **Awesome web-browseable Web APIs.**
 
-**Note**: Full documentation for the project is available at [http://www.django-rest-framework.org][docs].
+Full documentation for the project is available at [http://www.django-rest-framework.org][docs].
+
+---
+
+**Note**: The incoming 3.0 version has now been merged to the `master` branch on GitHub. For the source of the currently available PyPI version, please see the `2.4.4` tag.
+
+---
 
 # Overview
 
@@ -26,8 +33,8 @@ There is a live example API for testing purposes, [available here][sandbox].
 
 # Requirements
 
-* Python (2.6.5+, 2.7, 3.2, 3.3)
-* Django (1.4.2+, 1.5, 1.6, 1.7)
+* Python (2.6.5+, 2.7, 3.2, 3.3, 3.4)
+* Django (1.4.11+, 1.5.5+, 1.6, 1.7)
 
 # Installation
 
@@ -175,6 +182,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master
 [travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
+[pypi-version]: https://pypip.in/version/djangorestframework/badge.svg
+[pypi]: https://pypi.python.org/pypi/djangorestframework
 [twitter]: https://twitter.com/_tomchristie
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X

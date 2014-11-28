@@ -6,6 +6,7 @@ These tests deal with ensuring that we correctly map the model fields onto
 an appropriate set of serializer fields for each case.
 """
 from django.core.exceptions import ImproperlyConfigured
+from django.core.validators import MaxValueValidator, MinValueValidator, MinLengthValidator
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
@@ -15,7 +16,8 @@ def dedent(blocktext):
     return '\n'.join([line[12:] for line in blocktext.splitlines()[1:-1]])
 
 
-# Testing regular field mappings
+# Tests for regular field mappings.
+# ---------------------------------
 
 class CustomField(models.Field):
     """
@@ -32,7 +34,7 @@ class RegularFieldsModel(models.Model):
     big_integer_field = models.BigIntegerField()
     boolean_field = models.BooleanField(default=False)
     char_field = models.CharField(max_length=100)
-    comma_seperated_integer_field = models.CommaSeparatedIntegerField(max_length=100)
+    comma_separated_integer_field = models.CommaSeparatedIntegerField(max_length=100)
     date_field = models.DateField()
     datetime_field = models.DateTimeField()
     decimal_field = models.DecimalField(max_digits=3, decimal_places=1)
@@ -53,6 +55,19 @@ class RegularFieldsModel(models.Model):
         return 'method'
 
 
+COLOR_CHOICES = (('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'))
+
+
+class FieldOptionsModel(models.Model):
+    value_limit_field = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
+    length_limit_field = models.CharField(validators=[MinLengthValidator(3)], max_length=12)
+    blank_field = models.CharField(blank=True, max_length=10)
+    null_field = models.IntegerField(null=True)
+    default_field = models.IntegerField(default=0)
+    descriptive_field = models.IntegerField(help_text='Some help text', verbose_name='A label')
+    choices_field = models.CharField(max_length=100, choices=COLOR_CHOICES)
+
+
 class TestRegularFieldMappings(TestCase):
     def test_regular_fields(self):
         """
@@ -66,24 +81,42 @@ class TestRegularFieldMappings(TestCase):
             TestSerializer():
                 auto_field = IntegerField(read_only=True)
                 big_integer_field = IntegerField()
-                boolean_field = BooleanField(default=False)
+                boolean_field = BooleanField(required=False)
                 char_field = CharField(max_length=100)
-                comma_seperated_integer_field = CharField(max_length=100, validators=[<django.core.validators.RegexValidator object>])
+                comma_separated_integer_field = CharField(max_length=100, validators=[<django.core.validators.RegexValidator object>])
                 date_field = DateField()
                 datetime_field = DateTimeField()
                 decimal_field = DecimalField(decimal_places=1, max_digits=3)
                 email_field = EmailField(max_length=100)
                 float_field = FloatField()
                 integer_field = IntegerField()
-                null_boolean_field = BooleanField(required=False)
+                null_boolean_field = NullBooleanField(required=False)
                 positive_integer_field = IntegerField()
                 positive_small_integer_field = IntegerField()
                 slug_field = SlugField(max_length=100)
                 small_integer_field = IntegerField()
-                text_field = CharField()
+                text_field = CharField(style={'type': 'textarea'})
                 time_field = TimeField()
                 url_field = URLField(max_length=100)
                 custom_field = ModelField(model_field=<tests.test_model_serializer.CustomField: custom_field>)
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+    def test_field_options(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = FieldOptionsModel
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                value_limit_field = IntegerField(max_value=10, min_value=1)
+                length_limit_field = CharField(max_length=12, min_length=3)
+                blank_field = CharField(allow_blank=True, max_length=10, required=False)
+                null_field = IntegerField(allow_null=True, required=False)
+                default_field = IntegerField(required=False)
+                descriptive_field = IntegerField(help_text='Some help text', label='A label')
+                choices_field = ChoiceField(choices=[('red', 'Red'), ('blue', 'Blue'), ('green', 'Green')])
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
@@ -148,7 +181,7 @@ class TestRegularFieldMappings(TestCase):
                 fields = ('auto_field', 'invalid')
 
         with self.assertRaises(ImproperlyConfigured) as excinfo:
-            TestSerializer()
+            TestSerializer().fields
         expected = 'Field name `invalid` is not valid for model `ModelBase`.'
         assert str(excinfo.exception) == expected
 
@@ -165,7 +198,7 @@ class TestRegularFieldMappings(TestCase):
                 fields = ('auto_field',)
 
         with self.assertRaises(ImproperlyConfigured) as excinfo:
-            TestSerializer()
+            TestSerializer().fields
         expected = (
             'Field `missing` has been declared on serializer '
             '`TestSerializer`, but is missing from `Meta.fields`.'
@@ -173,7 +206,8 @@ class TestRegularFieldMappings(TestCase):
         assert str(excinfo.exception) == expected
 
 
-# Testing relational field mappings
+# Tests for relational field mappings.
+# ------------------------------------
 
 class ForeignKeyTargetModel(models.Model):
     name = models.CharField(max_length=100)
@@ -214,7 +248,7 @@ class TestRelationalFieldMappings(TestCase):
             TestSerializer():
                 id = IntegerField(label='ID', read_only=True)
                 foreign_key = PrimaryKeyRelatedField(queryset=ForeignKeyTargetModel.objects.all())
-                one_to_one = PrimaryKeyRelatedField(queryset=OneToOneTargetModel.objects.all())
+                one_to_one = PrimaryKeyRelatedField(queryset=OneToOneTargetModel.objects.all(), validators=[<UniqueValidator(queryset=RelationalModel.objects.all())>])
                 many_to_many = PrimaryKeyRelatedField(many=True, queryset=ManyToManyTargetModel.objects.all())
                 through = PrimaryKeyRelatedField(many=True, read_only=True)
         """)
@@ -253,7 +287,7 @@ class TestRelationalFieldMappings(TestCase):
             TestSerializer():
                 url = HyperlinkedIdentityField(view_name='relationalmodel-detail')
                 foreign_key = HyperlinkedRelatedField(queryset=ForeignKeyTargetModel.objects.all(), view_name='foreignkeytargetmodel-detail')
-                one_to_one = HyperlinkedRelatedField(queryset=OneToOneTargetModel.objects.all(), view_name='onetoonetargetmodel-detail')
+                one_to_one = HyperlinkedRelatedField(queryset=OneToOneTargetModel.objects.all(), validators=[<UniqueValidator(queryset=RelationalModel.objects.all())>], view_name='onetoonetargetmodel-detail')
                 many_to_many = HyperlinkedRelatedField(many=True, queryset=ManyToManyTargetModel.objects.all(), view_name='manytomanytargetmodel-detail')
                 through = HyperlinkedRelatedField(many=True, read_only=True, view_name='throughtargetmodel-detail')
         """)
@@ -468,3 +502,36 @@ class TestIntegration(TestCase):
             'through': []
         }
         self.assertEqual(serializer.data, expected)
+
+
+# Tests for bulk create using `ListSerializer`.
+
+class BulkCreateModel(models.Model):
+    name = models.CharField(max_length=10)
+
+
+class TestBulkCreate(TestCase):
+    def test_bulk_create(self):
+        class BasicModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BulkCreateModel
+                fields = ('name',)
+
+        class BulkCreateSerializer(serializers.ListSerializer):
+            child = BasicModelSerializer()
+
+        data = [{'name': 'a'}, {'name': 'b'}, {'name': 'c'}]
+        serializer = BulkCreateSerializer(data=data)
+        assert serializer.is_valid()
+
+        # Objects are returned by save().
+        instances = serializer.save()
+        assert len(instances) == 3
+        assert [item.name for item in instances] == ['a', 'b', 'c']
+
+        # Objects have been created in the database.
+        assert BulkCreateModel.objects.count() == 3
+        assert list(BulkCreateModel.objects.values_list('name', flat=True)) == ['a', 'b', 'c']
+
+        # Serializer returns correct data.
+        assert serializer.data == data

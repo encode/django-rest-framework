@@ -3,6 +3,8 @@ Helper functions for creating user-friendly representations
 of serializer classes and serializer fields.
 """
 from django.db import models
+from django.utils.functional import Promise
+from rest_framework.compat import force_text
 import re
 
 
@@ -18,6 +20,9 @@ def manager_repr(value):
 def smart_repr(value):
     if isinstance(value, models.Manager):
         return manager_repr(value)
+
+    if isinstance(value, Promise) and value._delegate_text:
+        value = force_text(value)
 
     value = repr(value)
 
@@ -77,6 +82,11 @@ def serializer_repr(serializer, indent, force_many=None):
             ret += field_repr(field.child_relation, force_many=field.child_relation)
         else:
             ret += field_repr(field)
+
+    if serializer.validators:
+        ret += '\n' + indent_str + 'class Meta:'
+        ret += '\n' + indent_str + '    validators = ' + smart_repr(serializer.validators)
+
     return ret
 
 

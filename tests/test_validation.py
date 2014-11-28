@@ -1,10 +1,10 @@
 from __future__ import unicode_literals
-from django.core.validators import MaxValueValidator
-from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator, MaxValueValidator
 from django.db import models
 from django.test import TestCase
 from rest_framework import generics, serializers, status
 from rest_framework.test import APIRequestFactory
+import re
 
 factory = APIRequestFactory()
 
@@ -88,8 +88,11 @@ class TestAvoidValidation(TestCase):
     def test_serializer_errors_has_only_invalid_data_error(self):
         serializer = ValidationSerializer(data='invalid data')
         self.assertFalse(serializer.is_valid())
-        self.assertDictEqual(serializer.errors,
-                             {'non_field_errors': ['Invalid data']})
+        self.assertDictEqual(serializer.errors, {
+            'non_field_errors': [
+                'Invalid data. Expected a dictionary, but got %s.' % type('').__name__
+            ]
+        })
 
 
 # regression tests for issue: 1493
@@ -159,16 +162,22 @@ class TestChoiceFieldChoicesValidate(TestCase):
         value = self.CHOICES[0][0]
         try:
             f.to_internal_value(value)
-        except ValidationError:
+        except serializers.ValidationError:
             self.fail("Value %s does not validate" % str(value))
 
-    # def test_nested_choices(self):
-    #     """
-    #     Make sure a nested value for choices works as expected.
-    #     """
-    #     f = serializers.ChoiceField(choices=self.CHOICES_NESTED)
-    #     value = self.CHOICES_NESTED[0][1][0][0]
-    #     try:
-    #         f.to_native(value)
-    #     except ValidationError:
-    #         self.fail("Value %s does not validate" % str(value))
+
+class RegexSerializer(serializers.Serializer):
+    pin = serializers.CharField(
+        validators=[RegexValidator(regex=re.compile('^[0-9]{4,6}$'),
+                                   message='A PIN is 4-6 digits')])
+
+expected_repr = """
+RegexSerializer():
+    pin = CharField(validators=[<django.core.validators.RegexValidator object>])
+""".strip()
+
+
+class TestRegexSerializer(TestCase):
+    def test_regex_repr(self):
+        serializer_repr = repr(RegexSerializer())
+        assert serializer_repr == expected_repr

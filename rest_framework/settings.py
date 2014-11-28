@@ -45,6 +45,7 @@ DEFAULTS = {
     ),
     'DEFAULT_THROTTLE_CLASSES': (),
     'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'rest_framework.negotiation.DefaultContentNegotiation',
+    'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
 
     # Genric view behavior
     'DEFAULT_MODEL_SERIALIZER_CLASS': 'rest_framework.serializers.ModelSerializer',
@@ -109,7 +110,8 @@ DEFAULTS = {
     # Encoding
     'UNICODE_JSON': True,
     'COMPACT_JSON': True,
-    'COERCE_DECIMAL_TO_STRING': True
+    'COERCE_DECIMAL_TO_STRING': True,
+    'UPLOADED_FILES_USE_URL': True
 }
 
 
@@ -121,6 +123,7 @@ IMPORT_STRINGS = (
     'DEFAULT_PERMISSION_CLASSES',
     'DEFAULT_THROTTLE_CLASSES',
     'DEFAULT_CONTENT_NEGOTIATION_CLASS',
+    'DEFAULT_METADATA_CLASS',
     'DEFAULT_MODEL_SERIALIZER_CLASS',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS',
     'DEFAULT_FILTER_BACKENDS',

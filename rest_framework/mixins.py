@@ -6,10 +6,8 @@ which allows mixin classes to be composed in interesting ways.
 """
 from __future__ import unicode_literals
 
-from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.request import clone_request
 from rest_framework.settings import api_settings
 
 
@@ -18,11 +16,14 @@ class CreateModelMixin(object):
     Create a model instance.
     """
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        serializer.save()
 
     def get_success_headers(self, data):
         try:
@@ -62,10 +63,13 @@ class UpdateModelMixin(object):
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.DATA, partial=partial)
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        self.perform_update(serializer)
         return Response(serializer.data)
+
+    def perform_update(self, serializer):
+        serializer.save()
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
@@ -78,51 +82,8 @@ class DestroyModelMixin(object):
     """
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.delete()
+        self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-# The AllowPUTAsCreateMixin was previously the default behaviour
-# for PUT requests. This has now been removed and must be *explictly*
-# included if it is the behavior that you want.
-# For more info see: ...
-
-class AllowPUTAsCreateMixin(object):
-    """
-    The following mixin class may be used in order to support PUT-as-create
-    behavior for incoming requests.
-    """
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object_or_none()
-        serializer = self.get_serializer(instance, data=request.DATA, partial=partial)
-        serializer.is_valid(raise_exception=True)
-
-        if instance is None:
-            lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
-            lookup_value = self.kwargs[lookup_url_kwarg]
-            extras = {self.lookup_field: lookup_value}
-            serializer.save(extras=extras)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        serializer.save()
-        return Response(serializer.data)
-
-    def partial_update(self, request, *args, **kwargs):
-        kwargs['partial'] = True
-        return self.update(request, *args, **kwargs)
-
-    def get_object_or_none(self):
-        try:
-            return self.get_object()
-        except Http404:
-            if self.request.method == 'PUT':
-                # For PUT-as-create operation, we need to ensure that we have
-                # relevant permissions, as if this was a POST request.  This
-                # will either raise a PermissionDenied exception, or simply
-                # return None.
-                self.check_permissions(clone_request(self.request, 'POST'))
-            else:
-                # PATCH requests where the object does not exist should still
-                # return a 404 response.
-                raise
+    def perform_destroy(self, instance):
+        instance.delete()

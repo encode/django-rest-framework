@@ -6,20 +6,32 @@ from django.core import validators
 from django.db import models
 from django.utils.text import capfirst
 from rest_framework.compat import clean_manytomany_helptext
+from rest_framework.validators import UniqueValidator
 import inspect
 
 
-def lookup_class(mapping, instance):
+class ClassLookupDict(object):
     """
-    Takes a dictionary with classes as keys, and an object.
-    Traverses the object's inheritance hierarchy in method
-    resolution order, and returns the first matching value
+    Takes a dictionary with classes as keys.
+    Lookups against this object will traverses the object's inheritance
+    hierarchy in method resolution order, and returns the first matching value
     from the dictionary or raises a KeyError if nothing matches.
     """
-    for cls in inspect.getmro(instance.__class__):
-        if cls in mapping:
-            return mapping[cls]
-    raise KeyError('Class %s not found in lookup.', cls.__name__)
+    def __init__(self, mapping):
+        self.mapping = mapping
+
+    def __getitem__(self, key):
+        if hasattr(key, '_proxy_class'):
+            # Deal with proxy classes. Ie. BoundField behaves as if it
+            # is a Field instance when using ClassLookupDict.
+            base_class = key._proxy_class
+        else:
+            base_class = key.__class__
+
+        for cls in inspect.getmro(base_class):
+            if cls in self.mapping:
+                return self.mapping[cls]
+        raise KeyError('Class %s not found in lookup.', cls.__name__)
 
 
 def needs_label(model_field, field_name):
@@ -49,8 +61,9 @@ def get_field_kwargs(field_name, model_field):
     kwargs = {}
     validator_kwarg = model_field.validators
 
-    if model_field.null or model_field.blank:
-        kwargs['required'] = False
+    # The following will only be used by ModelField classes.
+    # Gets removed for everything else.
+    kwargs['model_field'] = model_field
 
     if model_field.verbose_name and needs_label(model_field, field_name):
         kwargs['label'] = capfirst(model_field.verbose_name)
@@ -58,23 +71,37 @@ def get_field_kwargs(field_name, model_field):
     if model_field.help_text:
         kwargs['help_text'] = model_field.help_text
 
-    if isinstance(model_field, models.AutoField) or not model_field.editable:
-        kwargs['read_only'] = True
-        # Read only implies that the field is not required.
-        # We have a cleaner repr on the instance if we don't set it.
-        kwargs.pop('required', None)
+    max_digits = getattr(model_field, 'max_digits', None)
+    if max_digits is not None:
+        kwargs['max_digits'] = max_digits
 
-    if model_field.has_default():
-        kwargs['default'] = model_field.get_default()
-        # Having a default implies that the field is not required.
-        # We have a cleaner repr on the instance if we don't set it.
-        kwargs.pop('required', None)
+    decimal_places = getattr(model_field, 'decimal_places', None)
+    if decimal_places is not None:
+        kwargs['decimal_places'] = decimal_places
+
+    if isinstance(model_field, models.TextField):
+        kwargs['style'] = {'type': 'textarea'}
+
+    if isinstance(model_field, models.AutoField) or not model_field.editable:
+        # If this field is read-only, then return early.
+        # Further keyword arguments are not valid.
+        kwargs['read_only'] = True
+        return kwargs
+
+    if model_field.has_default() or model_field.blank or model_field.null:
+        kwargs['required'] = False
 
     if model_field.flatchoices:
-        # If this model field contains choices, then return now,
-        # any further keyword arguments are not valid.
+        # If this model field contains choices, then return early.
+        # Further keyword arguments are not valid.
         kwargs['choices'] = model_field.flatchoices
         return kwargs
+
+    if model_field.null and not isinstance(model_field, models.NullBooleanField):
+        kwargs['allow_null'] = True
+
+    if model_field.blank:
+        kwargs['allow_blank'] = True
 
     # Ensure that max_length is passed explicitly as a keyword arg,
     # rather than as a validator.
@@ -88,7 +115,10 @@ def get_field_kwargs(field_name, model_field):
 
     # Ensure that min_length is passed explicitly as a keyword arg,
     # rather than as a validator.
-    min_length = getattr(model_field, 'min_length', None)
+    min_length = next((
+        validator.limit_value for validator in validator_kwarg
+        if isinstance(validator, validators.MinLengthValidator)
+    ), None)
     if min_length is not None:
         kwargs['min_length'] = min_length
         validator_kwarg = [
@@ -145,27 +175,12 @@ def get_field_kwargs(field_name, model_field):
             if validator is not validators.validate_slug
         ]
 
-    max_digits = getattr(model_field, 'max_digits', None)
-    if max_digits is not None:
-        kwargs['max_digits'] = max_digits
-
-    decimal_places = getattr(model_field, 'decimal_places', None)
-    if decimal_places is not None:
-        kwargs['decimal_places'] = decimal_places
-
-    if isinstance(model_field, models.BooleanField):
-        # models.BooleanField has `blank=True`, but *is* actually
-        # required *unless* a default is provided.
-        # Also note that Django<1.6 uses `default=False` for
-        # models.BooleanField, but Django>=1.6 uses `default=None`.
-        kwargs.pop('required', None)
+    if getattr(model_field, 'unique', False):
+        validator = UniqueValidator(queryset=model_field.model._default_manager)
+        validator_kwarg.append(validator)
 
     if validator_kwarg:
         kwargs['validators'] = validator_kwarg
-
-    # The following will only be used by ModelField classes.
-    # Gets removed for everything else.
-    kwargs['model_field'] = model_field
 
     return kwargs
 
@@ -188,16 +203,27 @@ def get_relation_kwargs(field_name, relation_info):
         kwargs.pop('queryset', None)
 
     if model_field:
-        if model_field.null or model_field.blank:
-            kwargs['required'] = False
         if model_field.verbose_name and needs_label(model_field, field_name):
             kwargs['label'] = capfirst(model_field.verbose_name)
-        if not model_field.editable:
-            kwargs['read_only'] = True
-            kwargs.pop('queryset', None)
         help_text = clean_manytomany_helptext(model_field.help_text)
         if help_text:
             kwargs['help_text'] = help_text
+        if not model_field.editable:
+            kwargs['read_only'] = True
+            kwargs.pop('queryset', None)
+        if kwargs.get('read_only', False):
+            # If this field is read-only, then return early.
+            # No further keyword arguments are valid.
+            return kwargs
+        if model_field.has_default() or model_field.null:
+            kwargs['required'] = False
+        if model_field.null:
+            kwargs['allow_null'] = True
+        if model_field.validators:
+            kwargs['validators'] = model_field.validators
+        if getattr(model_field, 'unique', False):
+            validator = UniqueValidator(queryset=model_field.model._default_manager)
+            kwargs['validators'] = kwargs.get('validators', []) + [validator]
 
     return kwargs
 

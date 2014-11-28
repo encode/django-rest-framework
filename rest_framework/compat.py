@@ -5,11 +5,12 @@ versions of django/python, and compatibility wrappers around optional packages.
 
 # flake8: noqa
 from __future__ import unicode_literals
-import django
-import inspect
+
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
 from django.utils import six
+import django
+import inspect
 
 
 # Handle django.utils.encoding rename in 1.5 onwards.
@@ -23,6 +24,16 @@ try:
     from django.utils.encoding import force_text
 except ImportError:
     from django.utils.encoding import force_unicode as force_text
+
+
+# OrderedDict only available in Python 2.7.
+# This will always be the case in Django 1.7 and above, as these versions
+# no longer support Python 2.6.
+# For Django <= 1.6 and Python 2.6 fall back to OrderedDict.
+try:
+    from collections import OrderedDict
+except:
+    from django.utils.datastructures import SortedDict as OrderedDict
 
 
 # HttpResponseBase only exists from 1.5 onwards
@@ -84,15 +95,6 @@ except ImportError:
     from collections import UserDict
     from collections import MutableMapping as DictMixin
 
-# Try to import PIL in either of the two ways it can end up installed.
-try:
-    from PIL import Image
-except ImportError:
-    try:
-        import Image
-    except ImportError:
-        Image = None
-
 
 def get_model_name(model_cls):
     try:
@@ -121,6 +123,62 @@ else:
             return [m.upper() for m in self.http_method_names if hasattr(self, m)]
 
 
+
+# MinValueValidator, MaxValueValidator et al. only accept `message` in 1.8+
+if django.VERSION >= (1, 8):
+    from django.core.validators import MinValueValidator, MaxValueValidator
+    from django.core.validators import MinLengthValidator, MaxLengthValidator
+else:
+    from django.core.validators import MinValueValidator as DjangoMinValueValidator
+    from django.core.validators import MaxValueValidator as DjangoMaxValueValidator
+    from django.core.validators import MinLengthValidator as DjangoMinLengthValidator
+    from django.core.validators import MaxLengthValidator as DjangoMaxLengthValidator
+
+    class MinValueValidator(DjangoMinValueValidator):
+        def __init__(self, *args, **kwargs):
+            self.message = kwargs.pop('message', self.message)
+            super(MinValueValidator, self).__init__(*args, **kwargs)
+
+    class MaxValueValidator(DjangoMaxValueValidator):
+        def __init__(self, *args, **kwargs):
+            self.message = kwargs.pop('message', self.message)
+            super(MaxValueValidator, self).__init__(*args, **kwargs)
+
+    class MinLengthValidator(DjangoMinLengthValidator):
+        def __init__(self, *args, **kwargs):
+            self.message = kwargs.pop('message', self.message)
+            super(MinLengthValidator, self).__init__(*args, **kwargs)
+
+    class MaxLengthValidator(DjangoMaxLengthValidator):
+        def __init__(self, *args, **kwargs):
+            self.message = kwargs.pop('message', self.message)
+            super(MaxLengthValidator, self).__init__(*args, **kwargs)
+
+
+# URLValidator only accepts `message` in 1.6+
+if django.VERSION >= (1, 6):
+    from django.core.validators import URLValidator
+else:
+    from django.core.validators import URLValidator as DjangoURLValidator
+
+    class URLValidator(DjangoURLValidator):
+        def __init__(self, *args, **kwargs):
+            self.message = kwargs.pop('message', self.message)
+            super(URLValidator, self).__init__(*args, **kwargs)
+
+
+# EmailValidator requires explicit regex prior to 1.6+
+if django.VERSION >= (1, 6):
+    from django.core.validators import EmailValidator
+else:
+    from django.core.validators import EmailValidator as DjangoEmailValidator
+    from django.core.validators import email_re
+
+    class EmailValidator(DjangoEmailValidator):
+        def __init__(self, *args, **kwargs):
+            super(EmailValidator, self).__init__(email_re, *args, **kwargs)
+
+
 # PATCH method is not implemented by Django
 if 'patch' not in View.http_method_names:
     View.http_method_names = View.http_method_names + ['patch']
@@ -144,12 +202,12 @@ class RequestFactory(DjangoRequestFactory):
         r = {
             'PATH_INFO':      self._get_path(parsed),
             'QUERY_STRING':   force_text(parsed[4]),
-            'REQUEST_METHOD': str(method),
+            'REQUEST_METHOD': six.text_type(method),
         }
         if data:
             r.update({
                 'CONTENT_LENGTH': len(data),
-                'CONTENT_TYPE':   str(content_type),
+                'CONTENT_TYPE':   six.text_type(content_type),
                 'wsgi.input':     FakePayload(data),
             })
         elif django.VERSION <= (1, 4):
@@ -191,6 +249,16 @@ try:
     import defusedxml.ElementTree as etree
 except ImportError:
     etree = None
+
+
+# `seperators` argument to `json.dumps()` differs between 2.x and 3.x
+# See: http://bugs.python.org/issue22767
+if six.PY3:
+    SHORT_SEPARATORS = (',', ':')
+    LONG_SEPARATORS = (', ', ': ')
+else:
+    SHORT_SEPARATORS = (b',', b':')
+    LONG_SEPARATORS = (b', ', b': ')
 
 
 # Handle lazy strings across Py2/Py3

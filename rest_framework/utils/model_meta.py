@@ -6,9 +6,10 @@ relationships and their associated metadata.
 Usage: `get_field_info(model)` returns a `FieldInfo` instance.
 """
 from collections import namedtuple
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import six
-from django.utils.datastructures import SortedDict
+from rest_framework.compat import OrderedDict
 import inspect
 
 
@@ -43,7 +44,11 @@ def _resolve_model(obj):
     """
     if isinstance(obj, six.string_types) and len(obj.split('.')) == 2:
         app_name, model_name = obj.split('.')
-        return models.get_model(app_name, model_name)
+        resolved_model = models.get_model(app_name, model_name)
+        if resolved_model is None:
+            msg = "Django did not return a model for {0}.{1}"
+            raise ImproperlyConfigured(msg.format(app_name, model_name))
+        return resolved_model
     elif inspect.isclass(obj) and issubclass(obj, models.Model):
         return obj
     raise ValueError("{0} is not a Django model".format(obj))
@@ -63,12 +68,12 @@ def get_field_info(model):
         pk = pk.rel.to._meta.pk
 
     # Deal with regular fields.
-    fields = SortedDict()
+    fields = OrderedDict()
     for field in [field for field in opts.fields if field.serialize and not field.rel]:
         fields[field.name] = field
 
     # Deal with forward relationships.
-    forward_relations = SortedDict()
+    forward_relations = OrderedDict()
     for field in [field for field in opts.fields if field.serialize and field.rel]:
         forward_relations[field.name] = RelationInfo(
             model_field=field,
@@ -89,7 +94,7 @@ def get_field_info(model):
         )
 
     # Deal with reverse relationships.
-    reverse_relations = SortedDict()
+    reverse_relations = OrderedDict()
     for relation in opts.get_all_related_objects():
         accessor_name = relation.get_accessor_name()
         reverse_relations[accessor_name] = RelationInfo(
@@ -107,21 +112,21 @@ def get_field_info(model):
             related=relation.model,
             to_many=True,
             has_through_model=(
-                hasattr(relation.field.rel, 'through') and
-                not relation.field.rel.through._meta.auto_created
+                (getattr(relation.field.rel, 'through', None) is not None)
+                and not relation.field.rel.through._meta.auto_created
             )
         )
 
     # Shortcut that merges both regular fields and the pk,
     # for simplifying regular field lookup.
-    fields_and_pk = SortedDict()
+    fields_and_pk = OrderedDict()
     fields_and_pk['pk'] = pk
     fields_and_pk[pk.name] = pk
     fields_and_pk.update(fields)
 
     # Shortcut that merges both forward and reverse relationships
 
-    relations = SortedDict(
+    relations = OrderedDict(
         list(forward_relations.items()) +
         list(reverse_relations.items())
     )

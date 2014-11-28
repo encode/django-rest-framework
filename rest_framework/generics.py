@@ -3,14 +3,13 @@ Generic views that provide commonly needed behaviour.
 """
 from __future__ import unicode_literals
 
-from django.db.models.query import QuerySet
-from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, InvalidPage
+from django.db.models.query import QuerySet
 from django.http import Http404
 from django.shortcuts import get_object_or_404 as _get_object_or_404
+from django.utils import six
 from django.utils.translation import ugettext as _
-from rest_framework import views, mixins, exceptions
-from rest_framework.request import clone_request
+from rest_framework import views, mixins
 from rest_framework.settings import api_settings
 
 
@@ -114,7 +113,7 @@ class GenericAPIView(views.APIView):
 
         paginator = self.paginator_class(queryset, page_size)
         page_kwarg = self.kwargs.get(self.page_kwarg)
-        page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
+        page_query_param = self.request.query_params.get(self.page_kwarg)
         page = page_kwarg or page_query_param or 1
         try:
             page_number = paginator.validate_number(page)
@@ -129,7 +128,7 @@ class GenericAPIView(views.APIView):
             error_format = _('Invalid page (%(page_number)s): %(message)s')
             raise Http404(error_format % {
                 'page_number': page_number,
-                'message': str(exc)
+                'message': six.text_type(exc)
             })
 
         return page
@@ -168,7 +167,7 @@ class GenericAPIView(views.APIView):
         if self.paginate_by_param:
             try:
                 return strict_positive_int(
-                    self.request.QUERY_PARAMS[self.paginate_by_param],
+                    self.request.query_params[self.paginate_by_param],
                     cutoff=self.max_paginate_by
                 )
             except (KeyError, ValueError):
@@ -248,53 +247,6 @@ class GenericAPIView(views.APIView):
         self.check_object_permissions(self.request, obj)
 
         return obj
-
-    # The following are placeholder methods,
-    # and are intended to be overridden.
-    #
-    # The are not called by GenericAPIView directly,
-    # but are used by the mixin methods.
-    def metadata(self, request):
-        """
-        Return a dictionary of metadata about the view.
-        Used to return responses for OPTIONS requests.
-
-        We override the default behavior, and add some extra information
-        about the required request body for POST and PUT operations.
-        """
-        ret = super(GenericAPIView, self).metadata(request)
-
-        actions = {}
-        for method in ('PUT', 'POST'):
-            if method not in self.allowed_methods:
-                continue
-
-            cloned_request = clone_request(request, method)
-            try:
-                # Test global permissions
-                self.check_permissions(cloned_request)
-                # Test object permissions
-                if method == 'PUT':
-                    try:
-                        self.get_object()
-                    except Http404:
-                        # Http404 should be acceptable and the serializer
-                        # metadata should be populated. Except this so the
-                        # outer "else" clause of the try-except-else block
-                        # will be executed.
-                        pass
-            except (exceptions.APIException, PermissionDenied):
-                pass
-            else:
-                # If user has appropriate permissions for the view, include
-                # appropriate metadata about the fields that should be supplied.
-                serializer = self.get_serializer()
-                actions[method] = serializer.metadata()
-
-        if actions:
-            ret['actions'] = actions
-
-        return ret
 
 
 # Concrete view classes that provide method handlers

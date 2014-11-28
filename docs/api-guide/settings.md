@@ -1,4 +1,4 @@
-<a class="github" href="settings.py"></a>
+source: settings.py
 
 # Settings
 
@@ -51,7 +51,7 @@ Default:
 
 #### DEFAULT_PARSER_CLASSES
 
-A list or tuple of parser classes, that determines the default set of parsers used when accessing the `request.DATA` property.
+A list or tuple of parser classes, that determines the default set of parsers used when accessing the `request.data` property.
 
 Default:
 
@@ -74,7 +74,7 @@ Default:
 
 #### DEFAULT_PERMISSION_CLASSES
 
-A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view.
+A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view. Permission must be granted by every class in the list.
 
 Default:
 
@@ -154,13 +154,13 @@ Default: `None`
 
 ### SEARCH_PARAM
 
-The name of a query paramater, which can be used to specify the search term used by `SearchFilter`.
+The name of a query parameter, which can be used to specify the search term used by `SearchFilter`.
 
 Default: `search`
 
 #### ORDERING_PARAM
 
-The name of a query paramater, which can be used to specify the ordering of results returned by `OrderingFilter`.
+The name of a query parameter, which can be used to specify the ordering of results returned by `OrderingFilter`.
 
 Default: `ordering`
 
@@ -321,7 +321,7 @@ When set to `False`, JSON responses will escape non-ascii characters, like so:
 
     {"unicode black star":"\u2605"}
 
-Both styles conform to [RFC 4627][rfc4627], and are syntactically valid JSON. The unicode style is prefered as being more user-friendly when inspecting API responses.
+Both styles conform to [RFC 4627][rfc4627], and are syntactically valid JSON. The unicode style is preferred as being more user-friendly when inspecting API responses.
 
 Default: `True`
 
@@ -398,6 +398,12 @@ This should be a function with the following signature:
 * `exc`: The exception.
 
 Default: `'rest_framework.views.exception_handler'`
+
+#### NON_FIELD_ERRORS_KEY
+
+A string representing the key that should be used for serializer errors that do not refer to a specific field, but are instead general errors.
+
+Default: `'non_field_errors'`
 
 #### URL_FIELD_NAME
 

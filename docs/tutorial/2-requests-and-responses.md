@@ -5,10 +5,10 @@ Let's introduce a couple of essential building blocks.
 
 ## Request objects
 
-REST framework introduces a `Request` object that extends the regular `HttpRequest`, and provides more flexible request parsing.  The core functionality of the `Request` object is the `request.DATA` attribute, which is similar to `request.POST`, but more useful for working with Web APIs.
+REST framework introduces a `Request` object that extends the regular `HttpRequest`, and provides more flexible request parsing.  The core functionality of the `Request` object is the `request.data` attribute, which is similar to `request.POST`, but more useful for working with Web APIs.
 
     request.POST  # Only handles form data.  Only works for 'POST' method.
-    request.DATA  # Handles arbitrary data.  Works for 'POST', 'PUT' and 'PATCH' methods.
+    request.data  # Handles arbitrary data.  Works for 'POST', 'PUT' and 'PATCH' methods.
 
 ## Response objects
 
@@ -29,7 +29,7 @@ REST framework provides two wrappers you can use to write API views.
 
 These wrappers provide a few bits of functionality such as making sure you receive `Request` instances in your view, and adding context to `Response` objects so that content negotiation can be performed.
 
-The wrappers also provide behaviour such as returning `405 Method Not Allowed` responses when appropriate, and handling any `ParseError` exception that occurs when accessing `request.DATA` with malformed input.
+The wrappers also provide behaviour such as returning `405 Method Not Allowed` responses when appropriate, and handling any `ParseError` exception that occurs when accessing `request.data` with malformed input.
 
 ## Pulling it all together
 
@@ -55,7 +55,7 @@ We don't need our `JSONResponse` class in `views.py` anymore, so go ahead and de
             return Response(serializer.data)
 
         elif request.method == 'POST':
-            serializer = SnippetSerializer(data=request.DATA)
+            serializer = SnippetSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -80,7 +80,7 @@ Here is the view for an individual snippet, in the `views.py` module.
             return Response(serializer.data)
 
         elif request.method == 'PUT':
-            serializer = SnippetSerializer(snippet, data=request.DATA)
+            serializer = SnippetSerializer(snippet, data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
@@ -92,7 +92,7 @@ Here is the view for an individual snippet, in the `views.py` module.
 
 This should all feel very familiar - it is not a lot different from working with regular Django views.
 
-Notice that we're no longer explicitly tying our requests or responses to a given content type.  `request.DATA` can handle incoming `json` requests, but it can also handle `yaml` and other formats.  Similarly we're returning response objects with data, but allowing REST framework to render the response into the correct content type for us.
+Notice that we're no longer explicitly tying our requests or responses to a given content type.  `request.data` can handle incoming `json` requests, but it can also handle `yaml` and other formats.  Similarly we're returning response objects with data, but allowing REST framework to render the response into the correct content type for us.
 
 ## Adding optional format suffixes to our URLs
 
@@ -110,11 +110,12 @@ Now update the `urls.py` file slightly, to append a set of `format_suffix_patter
 
     from django.conf.urls import patterns, url
     from rest_framework.urlpatterns import format_suffix_patterns
+    from snippets import views
 
-    urlpatterns = patterns('snippets.views',
-        url(r'^snippets/$', 'snippet_list'),
-        url(r'^snippets/(?P<pk>[0-9]+)$', 'snippet_detail'),
-    )
+    urlpatterns = [
+        url(r'^snippets/$', views.snippet_list),
+        url(r'^snippets/(?P<pk>[0-9]+)$', views.snippet_detail),
+    ]
 
     urlpatterns = format_suffix_patterns(urlpatterns)
 

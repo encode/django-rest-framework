@@ -1,4 +1,4 @@
-<a class="github" href="renderers.py"></a>
+source: renderers.py
 
 # Renderers
 
@@ -74,7 +74,7 @@ If your API includes views that can serve both regular webpages and API response
 
 Renders the request data into `JSON`, using utf-8 encoding.
 
-Note that the default style is to include unicode characters, and render the response using a compact style with no uneccessary whitespace:
+Note that the default style is to include unicode characters, and render the response using a compact style with no unnecessary whitespace:
 
     {"unicode black star":"★","value":999}
 
@@ -115,7 +115,7 @@ The `jsonp` approach is essentially a browser hack, and is [only appropriate for
 
 ## YAMLRenderer
 
-Renders the request data into `YAML`. 
+Renders the request data into `YAML`.
 
 Requires the `pyyaml` package to be installed.
 
@@ -131,7 +131,7 @@ Note that non-ascii characters will be rendered using `\uXXXX` character escape.
 
 ## UnicodeYAMLRenderer
 
-Renders the request data into `YAML`. 
+Renders the request data into `YAML`.
 
 Requires the `pyyaml` package to be installed.
 
@@ -184,7 +184,7 @@ An example of a view that uses `TemplateHTMLRenderer`:
         def get(self, request, *args, **kwargs):
             self.object = self.get_object()
             return Response({'user': self.object}, template_name='user_detail.html')
- 
+
 You can use `TemplateHTMLRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
 
 If you're building websites that use `TemplateHTMLRenderer` along with other renderer classes, you should consider listing `TemplateHTMLRenderer` as the first class in the `renderer_classes` list, so that it will be prioritised first even for browsers that send poorly formed `ACCEPT:` headers.
@@ -205,7 +205,7 @@ An example of a view that uses `TemplateHTMLRenderer`:
 
     @api_view(('GET',))
     @renderer_classes((StaticHTMLRenderer,))
-    def simple_html_view(request): 
+    def simple_html_view(request):
         data = '<html><body><h1>Hello, world</h1></body></html>'
         return Response(data)
 
@@ -300,7 +300,7 @@ The following is an example plaintext renderer that will return a response with 
     class PlainTextRenderer(renderers.BaseRenderer):
         media_type = 'text/plain'
         format = 'txt'
-        
+
         def render(self, data, media_type=None, renderer_context=None):
             return data.encode(self.charset)
 
@@ -340,7 +340,7 @@ You can do some pretty flexible things using REST framework's renderers.  Some e
 * Provide either flat or nested representations from the same endpoint, depending on the requested media type.
 * Serve both regular HTML webpages, and JSON based API responses from the same endpoints.
 * Specify multiple types of HTML representation for API clients to use.
-* Underspecify a renderer's media type, such as using `media_type = 'image/*'`, and use the `Accept` header to vary the encoding of the response. 
+* Underspecify a renderer's media type, such as using `media_type = 'image/*'`, and use the `Accept` header to vary the encoding of the response.
 
 ## Varying behaviour by media type
 

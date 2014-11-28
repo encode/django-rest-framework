@@ -2,11 +2,10 @@
 Helper classes for parsers.
 """
 from __future__ import unicode_literals
-from django.utils import timezone
 from django.db.models.query import QuerySet
-from django.utils.datastructures import SortedDict
+from django.utils import six, timezone
 from django.utils.functional import Promise
-from rest_framework.compat import force_text
+from rest_framework.compat import force_text, OrderedDict
 import datetime
 import decimal
 import types
@@ -40,12 +39,12 @@ class JSONEncoder(json.JSONEncoder):
                 representation = representation[:12]
             return representation
         elif isinstance(obj, datetime.timedelta):
-            return str(obj.total_seconds())
+            return six.text_type(obj.total_seconds())
         elif isinstance(obj, decimal.Decimal):
             # Serializers will coerce decimals to strings by default.
             return float(obj)
         elif isinstance(obj, QuerySet):
-            return list(obj)
+            return tuple(obj)
         elif hasattr(obj, 'tolist'):
             # Numpy arrays and array scalars.
             return obj.tolist()
@@ -55,7 +54,7 @@ class JSONEncoder(json.JSONEncoder):
             except:
                 pass
         elif hasattr(obj, '__iter__'):
-            return [item for item in obj]
+            return tuple(item for item in obj)
         return super(JSONEncoder, self).default(obj)
 
 
@@ -68,11 +67,11 @@ else:
     class SafeDumper(yaml.SafeDumper):
         """
         Handles decimals as strings.
-        Handles SortedDicts as usual dicts, but preserves field order, rather
+        Handles OrderedDicts as usual dicts, but preserves field order, rather
         than the usual behaviour of sorting the keys.
         """
         def represent_decimal(self, data):
-            return self.represent_scalar('tag:yaml.org,2002:str', str(data))
+            return self.represent_scalar('tag:yaml.org,2002:str', six.text_type(data))
 
         def represent_mapping(self, tag, mapping, flow_style=None):
             value = []
@@ -82,7 +81,7 @@ else:
             best_style = True
             if hasattr(mapping, 'items'):
                 mapping = list(mapping.items())
-                if not isinstance(mapping, SortedDict):
+                if not isinstance(mapping, OrderedDict):
                     mapping.sort()
             for item_key, item_value in mapping:
                 node_key = self.represent_data(item_key)
@@ -104,7 +103,7 @@ else:
         SafeDumper.represent_decimal
     )
     SafeDumper.add_representer(
-        SortedDict,
+        OrderedDict,
         yaml.representer.SafeRepresenter.represent_dict
     )
     # SafeDumper.add_representer(
@@ -112,7 +111,7 @@ else:
     #     yaml.representer.SafeRepresenter.represent_dict
     # )
     # SafeDumper.add_representer(
-    #     SortedDictWithMetadata,
+    #     OrderedDictWithMetadata,
     #     yaml.representer.SafeRepresenter.represent_dict
     # )
     SafeDumper.add_representer(

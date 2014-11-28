@@ -1,4 +1,4 @@
-<a class="github" href="throttling.py"></a>
+source: throttling.py
 
 # Throttling
 
@@ -74,7 +74,7 @@ If you need to strictly identify unique client IP addresses, you'll need to firs
 
 It is important to understand that if you configure the `NUM_PROXIES` setting, then all clients behind a unique [NAT'd](http://en.wikipedia.org/wiki/Network_address_translation) gateway will be treated as a single client.
 
-Further context on how the `X-Forwarded-For` header works, and identifing a remote client IP can be [found here][identifing-clients].
+Further context on how the `X-Forwarded-For` header works, and identifying a remote client IP can be [found here][identifing-clients].
 
 ## Setting up the cache
 
@@ -83,9 +83,9 @@ The throttle classes provided by REST framework use Django's cache backend.  You
 If you need to use a cache other than `'default'`, you can do so by creating a custom throttle class and setting the `cache` attribute.  For example:
 
     class CustomAnonRateThrottle(AnonRateThrottle):
-        cache = get_cache('alternate') 
+        cache = get_cache('alternate')
 
-You'll need to rememeber to also set your custom throttle class in the `'DEFAULT_THROTTLE_CLASSES'` settings key, or using the `throttle_classes` view attribute.
+You'll need to remember to also set your custom throttle class in the `'DEFAULT_THROTTLE_CLASSES'` settings key, or using the `throttle_classes` view attribute.
 
 ---
 
@@ -147,15 +147,15 @@ For example, given the following views...
     class ContactListView(APIView):
         throttle_scope = 'contacts'
         ...
-    
+
     class ContactDetailView(ApiView):
         throttle_scope = 'contacts'
         ...
 
-    class UploadView(APIView):        
+    class UploadView(APIView):
         throttle_scope = 'uploads'
         ...
-    
+
 ...and the following settings.
 
     REST_FRAMEWORK = {
