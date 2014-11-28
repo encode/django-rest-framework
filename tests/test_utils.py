@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from django.core.exceptions import ImproperlyConfigured
 from django.conf.urls import patterns, url
 from django.test import TestCase
 from django.utils import six
@@ -161,5 +162,5 @@ class ResolveModelWithPatchedDjangoTests(TestCase):
         rest_framework.utils.model_meta.models.get_model = self.get_model
 
     def test_blows_up_if_model_does_not_resolve(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ImproperlyConfigured):
             _resolve_model('tests.BasicModel')
