@@ -442,7 +442,7 @@ The security vulnerabilities only affect APIs which use the `XMLParser` class, b
 * Bugfix: Validation errors instead of exceptions when related fields receive incorrect types.
 * Bugfix: Handle ObjectDoesNotExist exception when serializing null reverse one-to-one
 
-**Note**: Prior to 2.1.16, The Decimals would render in JSON using floating point if `simplejson` was installed, but otherwise render using string notation.  Now that use of `simplejson` has been deprecated, Decimals will consistently render using string notation.  See [#582] for more details.
+**Note**: Prior to 2.1.16, The Decimals would render in JSON using floating point if `simplejson` was installed, but otherwise render using string notation.  Now that use of `simplejson` has been deprecated, Decimals will consistently render using string notation.  See [ticket 582](ticket-582) for more details.
 
 ### 2.1.15
 
@@ -614,122 +614,7 @@ This change will not affect user code, so long as it's following the recommended
 * **Fix all of the things.**  (Well, almost.)
 * For more information please see the [2.0 announcement][announcement].
 
----
-
-## 0.4.x series
-
-### 0.4.0
-
-* Supports Django 1.5.
-* Fixes issues with 'HEAD' method.
-* Allow views to specify template used by TemplateRenderer
-* More consistent error responses
-* Some serializer fixes
-* Fix internet explorer ajax behavior
-* Minor xml and yaml fixes
-* Improve setup (e.g. use staticfiles, not the defunct ADMIN_MEDIA_PREFIX)
-* Sensible absolute URL generation, not using hacky set_script_prefix
-
----
-
-## 0.3.x series
-
-### 0.3.3
-
-* Added DjangoModelPermissions class to support `django.contrib.auth` style permissions.
-* Use `staticfiles` for css files.
-  - Easier to override.  Won't conflict with customized admin styles (e.g. grappelli)
-* Templates are now nicely namespaced.
-  - Allows easier overriding.
-* Drop implied 'pk' filter if last arg in urlconf is unnamed.
-  - Too magical.  Explicit is better than implicit.
-* Saner template variable auto-escaping.
-* Tidier setup.py
-* Updated for URLObject 2.0
-* Bugfixes:
-  - Bug with PerUserThrottling when user contains unicode chars.
-
-### 0.3.2
-
-* Bugfixes:
-  * Fix 403 for POST and PUT from the UI with UserLoggedInAuthentication (#115)
-  * serialize_model method in serializer.py may cause wrong value (#73)
-  * Fix Error when clicking OPTIONS button (#146)
-  * And many other fixes
-* Remove short status codes
-  - Zen of Python: "There should be one-- and preferably only one --obvious way to do it."
-* get_name, get_description become methods on the view - makes them overridable.
-* Improved model mixin API - Hooks for build_query, get_instance_data, get_model, get_queryset, get_ordering
-
-### 0.3.1
-
-* [not documented]
-
-### 0.3.0
-
-* JSONP Support
-* Bugfixes, including support for latest markdown release
-
----
-
-## 0.2.x series
-
-### 0.2.4
-
-* Fix broken IsAdminUser permission.
-* OPTIONS support.
-* XMLParser.
-* Drop mentions of Blog, BitBucket.
-
-### 0.2.3
-
-* Fix some throttling bugs.
-* ``X-Throttle`` header on throttling.
-* Support for nesting resources on related models.
-
-### 0.2.2
-
-* Throttling support complete.
-
-### 0.2.1
-
-* Couple of simple bugfixes over 0.2.0
-
-### 0.2.0
-
-* Big refactoring changes since 0.1.0, ask on the discussion group if anything isn't clear.
-  The public API has been massively cleaned up.  Expect it to be fairly stable from here on in.
-
-* ``Resource`` becomes decoupled into ``View`` and ``Resource``, your views should now inherit from ``View``, not ``Resource``.
-
-* The handler functions on views ``.get() .put() .post()`` etc, no longer have the ``content`` and ``auth`` args.
-  Use ``self.CONTENT`` inside a view to access the deserialized, validated content.
-  Use ``self.user`` inside a view to access the authenticated user.
-
-* ``allowed_methods`` and ``anon_allowed_methods`` are now defunct.  if a method is defined, it's available.
-  The ``permissions`` attribute on a ``View`` is now used to provide generic permissions checking.
-  Use permission classes such as ``FullAnonAccess``, ``IsAuthenticated`` or ``IsUserOrIsAnonReadOnly`` to set the permissions.
-
-* The ``authenticators`` class becomes ``authentication``.  Class names change to ``Authentication``.
-
-* The ``emitters`` class becomes ``renderers``.  Class names change to ``Renderers``.
-
-* ``ResponseException`` becomes ``ErrorResponse``.
-
-* The mixin classes have been nicely refactored, the basic mixins are now ``RequestMixin``, ``ResponseMixin``, ``AuthMixin``, and ``ResourceMixin``
-  You can reuse these mixin classes individually without using the ``View`` class.
-
----
-
-## 0.1.x series
-
-### 0.1.1
-
-* Final build before pulling in all the refactoring changes for 0.2, in case anyone needs to hang on to 0.1.
-
-### 0.1.0
-
-* Initial release.
+For older release notes, [please see the GitHub repo](old-release-notes).
 
 [cite]: http://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s04.html
 [deprecation-policy]: #deprecation-policy
@@ -742,5 +627,6 @@ This change will not affect user code, so long as it's following the recommended
 [staticfiles13]: https://docs.djangoproject.com/en/1.3/howto/static-files/#with-a-template-tag
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
 [announcement]: rest-framework-2-announcement.md
-[#582]: https://github.com/tomchristie/django-rest-framework/issues/582
+[ticket-582]: https://github.com/tomchristie/django-rest-framework/issues/582
 [rfc-6266]: http://tools.ietf.org/html/rfc6266#section-4.3
+[old-release-notes]: https://github.com/tomchristie/django-rest-framework/blob/2.4.4/docs/topics/release-notes.md#04x-series

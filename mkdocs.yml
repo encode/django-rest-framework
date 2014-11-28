@@ -26,7 +26,7 @@ pages:
  - ['api-guide/serializers.md', 'API Guide', 'Serializers']
  - ['api-guide/fields.md', 'API Guide', 'Serializer fields']
  - ['api-guide/relations.md', 'API Guide', 'Serializer relations']
-# - ['api-guide/validators.md', 'API Guide', 'Validators']
+ - ['api-guide/validators.md', 'API Guide', 'Validators']
  - ['api-guide/authentication.md', 'API Guide', 'Authentication']
  - ['api-guide/permissions.md', 'API Guide', 'Permissions']
  - ['api-guide/throttling.md', 'API Guide', 'Throttling']

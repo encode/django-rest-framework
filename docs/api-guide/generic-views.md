@@ -7,7 +7,7 @@ source: mixins.py
 >
 > &mdash; [Django Documentation][cite]
 
-One of the key benefits of class based views is the way they allow you to compose bits of reusable behaviour.  REST framework takes advantage of this by providing a number of pre-built views that provide for commonly used patterns.
+One of the key benefits of class based views is the way they allow you to compose bits of reusable behavior.  REST framework takes advantage of this by providing a number of pre-built views that provide for commonly used patterns.
 
 The generic views provided by REST framework allow you to quickly build API views that map closely to your database models.
 
@@ -171,24 +171,26 @@ For example:
             return 20
         return 100
 
-**Save / deletion hooks**:
+**Save and deletion hooks**:
 
-The following methods are provided as placeholder interfaces.  They contain empty implementations and are not called directly by `GenericAPIView`, but they are overridden and used by some of the mixin classes.
+The following methods are provided by the mixin classes, and provide easy overriding of the object save or deletion behavior.
 
-* `pre_save(self, obj)` - A hook that is called before saving an object.
-* `post_save(self, obj, created=False)` - A hook that is called after saving an object.
-* `pre_delete(self, obj)` - A hook that is called before deleting an object.
-* `post_delete(self, obj)` - A hook that is called after deleting an object.
+* `perform_create(self, serializer)` - Called by `CreateModelMixin` when saving a new object instance.
+* `perform_update(self, serializer)` - Called by `UpdateModelMixin` when saving an existing object instance.
+* `perform_destroy(self, instance)` - Called by `DestroyModelMixin` when deleting an object instance.
 
-The `pre_save` method in particular is a useful hook for setting attributes that are implicit in the request, but are not part of the request data.  For instance, you might set an attribute on the object based on the request user, or based on a URL keyword argument.
+These hooks are particularly useful for setting attributes that are implicit in the request, but are not part of the request data.  For instance, you might set an attribute on the object based on the request user, or based on a URL keyword argument.
 
-    def pre_save(self, obj):
-        """
-        Set the object's owner, based on the incoming request.
-        """
-        obj.owner = self.request.user
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
-Remember that the `pre_save()` method is not called by `GenericAPIView` itself, but it is called by `create()` and `update()` methods on the `CreateModelMixin` and `UpdateModelMixin` classes.
+These override points are also particularly useful for adding behavior that occurs before or after saving an object, such as emailing a confirmation, or logging the update.
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        send_email_confirmation(user=self.request.user, modified=instance)
+
+**Note**: These methods replace the old-style version 2.x `pre_save`, `post_save`, `pre_delete` and `post_delete` methods, which are no longer available.
 
 **Other methods**:
 
@@ -352,7 +354,7 @@ You can then simply apply this mixin to a view or viewset anytime you need to ap
         serializer_class = UserSerializer
         lookup_fields = ('account', 'username')
 
-Using custom mixins is a good option if you have custom behavior that needs to be used
+Using custom mixins is a good option if you have custom behavior that needs to be used.
 
 ## Creating custom base classes
 

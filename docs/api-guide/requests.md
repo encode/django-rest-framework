@@ -14,26 +14,29 @@ REST framework's `Request` class extends the standard `HttpRequest`, adding supp
 
 REST framework's Request objects provide flexible request parsing that allows you to treat requests with JSON data or other media types in the same way that you would normally deal with form data.
 
-## .DATA
+## .data
 
-`request.DATA` returns the parsed content of the request body.  This is similar to the standard `request.POST` attribute except that:
+`request.data` returns the parsed content of the request body.  This is similar to the standard `request.POST` and `request.FILES` attributes except that:
 
+* It includes all parsed content, including *file and non-file* inputs.
 * It supports parsing the content of HTTP methods other than `POST`, meaning that you can access the content of `PUT` and `PATCH` requests.
 * It supports REST framework's flexible request parsing, rather than just supporting form data.  For example you can handle incoming JSON data in the same way that you handle incoming form data.
 
 For more details see the [parsers documentation].
 
-## .FILES
+## .query_params
 
-`request.FILES` returns any uploaded files that may be present in the content of the request body.  This is the same as the standard `HttpRequest` behavior, except that the same flexible request parsing is used for `request.DATA`.
+`request.query_params` is a more correctly named synonym for `request.GET`.
 
-For more details see the [parsers documentation].
+For clarity inside your code, we recommend using `request.query_params` instead of the Django's standard `request.GET`. Doing so will help keep your codebase more correct and obvious - any HTTP method type may include query parameters, not just `GET` requests.
+
+## .DATA and .FILES
+
+The old-style version 2.x `request.data` and `request.FILES` attributes are still available, but are now pending deprecation in favor of the unified `request.data` attribute.
 
 ## .QUERY_PARAMS
 
-`request.QUERY_PARAMS` is a more correctly named synonym for `request.GET`.
-
-For clarity inside your code, we recommend using `request.QUERY_PARAMS` instead of the usual `request.GET`, as *any* HTTP method type may include query parameters.
+The old-style version 2.x `request.QUERY_PARAMS` attribute is still available, but is now pending deprecation in favor of the more pythonic `request.query_params`.
 
 ## .parsers
 
@@ -43,7 +46,7 @@ You won't typically need to access this property.
 
 ---
 
-**Note:** If a client sends malformed content, then accessing `request.DATA` or `request.FILES` may raise a `ParseError`.  By default REST framework's `APIView` class or `@api_view` decorator will catch the error and return a `400 Bad Request` response.
+**Note:** If a client sends malformed content, then accessing `request.data` may raise a `ParseError`.  By default REST framework's `APIView` class or `@api_view` decorator will catch the error and return a `400 Bad Request` response.
 
 If a client sends a request with a content-type that cannot be parsed then a `UnsupportedMediaType` exception will be raised, which by default will be caught and return a `415 Unsupported Media Type` response.
 
