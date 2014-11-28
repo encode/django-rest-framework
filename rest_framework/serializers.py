@@ -102,7 +102,9 @@ class BaseSerializer(Field):
             (key, value) for key, value in kwargs.items()
             if key in LIST_SERIALIZER_KWARGS
         ]))
-        return ListSerializer(*args, **list_kwargs)
+        meta = getattr(cls, 'Meta', None)
+        list_serializer_class = getattr(meta, 'list_serializer_class', ListSerializer)
+        return list_serializer_class(*args, **list_kwargs)
 
     def to_internal_value(self, data):
         raise NotImplementedError('`to_internal_value()` must be implemented.')
