@@ -145,20 +145,6 @@ Note that non-ascii characters will not be character escaped.  For example:
 
 **.charset**: `utf-8`
 
-## XMLRenderer
-
-Renders REST framework's default style of `XML` response content.
-
-Note that the `XML` markup language is used typically used as the base language for more strictly defined domain-specific languages, such as `RSS`, `Atom`, and `XHTML`.
-
-If you are considering using `XML` for your API, you may want to consider implementing a custom renderer and parser for your specific requirements, and using an existing domain-specific media-type, or creating your own custom XML-based media-type.
-
-**.media_type**: `application/xml`
-
-**.format**: `'.xml'`
-
-**.charset**: `utf-8`
-
 ## TemplateHTMLRenderer
 
 Renders data to HTML, using Django's standard template rendering.
