@@ -55,7 +55,6 @@ The following packages are optional:
 
 * [Markdown][markdown] (2.1.0+) - Markdown support for the browsable API.
 * [PyYAML][yaml] (3.10+) - YAML content-type support.
-* [defusedxml][defusedxml] (0.3+) - XML content-type support.
 * [django-filter][django-filter] (0.5.4+) - Filtering support.
 * [django-oauth-plus][django-oauth-plus] (2.0+) and [oauth2][oauth2] (1.5.211+) - OAuth 1.0a support.
 * [django-oauth2-provider][django-oauth2-provider] (0.2.3+) - OAuth 2.0 support.
@@ -259,7 +258,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [eventbrite]: https://www.eventbrite.co.uk/about/
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [yaml]: http://pypi.python.org/pypi/PyYAML
-[defusedxml]: https://pypi.python.org/pypi/defusedxml
 [django-filter]: http://pypi.python.org/pypi/django-filter
 [oauth2]: https://github.com/simplegeo/python-oauth2
 [django-oauth-plus]: https://bitbucket.org/david/django-oauth-plus/wiki/Home

@@ -7,7 +7,6 @@ flake8==2.2.2
 # Optional packages
 markdown>=2.1.0
 PyYAML>=3.10
-defusedxml>=0.3
 django-guardian==1.2.4
 django-filter>=0.5.4
 django-oauth-plus>=2.2.1

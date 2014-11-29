@@ -244,13 +244,6 @@ except ImportError:
     yaml = None
 
 
-# XML is optional
-try:
-    import defusedxml.ElementTree as etree
-except ImportError:
-    etree = None
-
-
 # OAuth2 is optional
 try:
     # Note: The `oauth2` package actually provides oauth1.0a support.  Urg.
