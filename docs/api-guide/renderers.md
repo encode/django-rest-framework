@@ -49,10 +49,10 @@ using the `APIView` class based views.
 Or, if you're using the `@api_view` decorator with function based views.
 
     @api_view(['GET'])
-    @renderer_classes((JSONRenderer, JSONPRenderer))
+    @renderer_classes((JSONRenderer,))
     def user_count_view(request, format=None):
         """
-        A view that returns the count of active users, in JSON or JSONp.
+        A view that returns the count of active users in JSON.
         """
         user_count = User.objects.filter(active=True).count()
         content = {'user_count': user_count}
@@ -92,26 +92,6 @@ The default JSON encoding style can be altered using the `UNICODE_JSON` and `COM
 **.format**: `'.json'`
 
 **.charset**: `None`
-
-## JSONPRenderer
-
-Renders the request data into `JSONP`.  The `JSONP` media type provides a mechanism of allowing cross-domain AJAX requests, by wrapping a `JSON` response in a javascript callback.
-
-The javascript callback function must be set by the client including a `callback` URL query parameter.  For example `http://example.com/api/users?callback=jsonpCallback`.  If the callback function is not explicitly set by the client it will default to `'callback'`.
-
----
-
-**Warning**: If you require cross-domain AJAX requests, you should almost certainly be using the more modern approach of [CORS][cors] as an alternative to `JSONP`.  See the [CORS documentation][cors-docs] for more details.
-
-The `jsonp` approach is essentially a browser hack, and is [only appropriate for globally  readable API endpoints][jsonp-security], where `GET` requests are unauthenticated and do not require any user permissions.
-
----
-
-**.media_type**: `application/javascript`
-
-**.format**: `'.jsonp'`
-
-**.charset**: `utf-8`
 
 ## YAMLRenderer
 
@@ -433,10 +413,6 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
-[rfc4627]: http://www.ietf.org/rfc/rfc4627.txt
-[cors]: http://www.w3.org/TR/cors/
-[cors-docs]: ../topics/ajax-csrf-cors.md
-[jsonp-security]: http://stackoverflow.com/questions/613962/is-jsonp-safe-to-use
 [testing]: testing.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas
 [quote]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
