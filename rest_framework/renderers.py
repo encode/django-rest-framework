@@ -19,7 +19,7 @@ from django.utils import six
 from django.utils.xmlutils import SimplerXMLGenerator
 from rest_framework import exceptions, serializers, status, VERSION
 from rest_framework.compat import (
-    SHORT_SEPARATORS, LONG_SEPARATORS, StringIO, smart_text, yaml
+    SHORT_SEPARATORS, LONG_SEPARATORS, StringIO, smart_text
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.settings import api_settings
@@ -187,29 +187,6 @@ class XMLRenderer(BaseRenderer):
 
         else:
             xml.characters(smart_text(data))
-
-
-class YAMLRenderer(BaseRenderer):
-    """
-    Renderer which serializes to YAML.
-    """
-
-    media_type = 'application/yaml'
-    format = 'yaml'
-    encoder = encoders.SafeDumper
-    charset = 'utf-8'
-    ensure_ascii = False
-
-    def render(self, data, accepted_media_type=None, renderer_context=None):
-        """
-        Renders `data` into serialized YAML.
-        """
-        assert yaml, 'YAMLRenderer requires pyyaml to be installed'
-
-        if data is None:
-            return ''
-
-        return yaml.dump(data, stream=None, encoding=self.charset, Dumper=self.encoder, allow_unicode=not self.ensure_ascii)
 
 
 class TemplateHTMLRenderer(BaseRenderer):

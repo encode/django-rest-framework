@@ -53,7 +53,7 @@ Add `'rest_framework'` to your `INSTALLED_APPS` setting.
 
 Let's take a look at a quick example of using REST framework to build a simple model-backed API for accessing users and groups.
 
-Startup up a new project like so... 
+Startup up a new project like so...
 
     pip install django
     pip install djangorestframework
@@ -79,7 +79,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    
+
 # Routers provide a way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -100,7 +100,7 @@ Add the following to your `settings.py` module:
 ```python
 INSTALLED_APPS = (
     ...  # Make sure to include the default installed apps here.
-    'rest_framework',        
+    'rest_framework',
 )
 
 REST_FRAMEWORK = {
@@ -123,10 +123,10 @@ You can also interact with the API using command line tools such as [`curl`](htt
     $ curl -H 'Accept: application/json; indent=4' -u admin:password http://127.0.0.1:8000/users/
 	[
 	    {
-	        "url": "http://127.0.0.1:8000/users/1/", 
-	        "username": "admin", 
-	        "email": "admin@example.com", 
-	        "is_staff": true, 
+	        "url": "http://127.0.0.1:8000/users/1/",
+	        "username": "admin",
+	        "email": "admin@example.com",
+	        "is_staff": true,
 	    }
 	]
 
@@ -134,10 +134,10 @@ Or to create a new user:
 
     $ curl -X POST -d username=new -d email=new@example.com -d is_staff=false -H 'Accept: application/json; indent=4' -u admin:password http://127.0.0.1:8000/users/
     {
-        "url": "http://127.0.0.1:8000/users/2/", 
-        "username": "new", 
-        "email": "new@example.com", 
-        "is_staff": false, 
+        "url": "http://127.0.0.1:8000/users/2/",
+        "username": "new",
+        "email": "new@example.com",
+        "is_staff": false,
     }
 
 # Documentation & Support
@@ -159,24 +159,24 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 Copyright (c) 2011-2014, Tom Christie
 All rights reserved.
 
-Redistribution and use in source and binary forms, with or without 
+Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
-Redistributions of source code must retain the above copyright notice, this 
+Redistributions of source code must retain the above copyright notice, this
 list of conditions and the following disclaimer.
-Redistributions in binary form must reproduce the above copyright notice, this 
-list of conditions and the following disclaimer in the documentation and/or 
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
 other materials provided with the distribution.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
@@ -214,7 +214,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [docs]: http://www.django-rest-framework.org/
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
-[pyyaml]: http://pypi.python.org/pypi/PyYAML
 [defusedxml]: https://pypi.python.org/pypi/defusedxml
 [django-filter]: http://pypi.python.org/pypi/django-filter
 [security-mail]: mailto:rest-framework-security@googlegroups.com

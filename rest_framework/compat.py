@@ -237,13 +237,6 @@ except ImportError:
     apply_markdown = None
 
 
-# Yaml is optional
-try:
-    import yaml
-except ImportError:
-    yaml = None
-
-
 # XML is optional
 try:
     import defusedxml.ElementTree as etree
