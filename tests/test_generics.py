@@ -6,12 +6,26 @@ from django.test import TestCase
 from django.utils import six
 from rest_framework import generics, renderers, serializers, status
 from rest_framework.test import APIRequestFactory
-from tests.models import BasicModel, Comment, SlugBasedModel
+from tests.models import BasicModel, RESTFrameworkModel
 from tests.models import ForeignKeySource, ForeignKeyTarget
 
 factory = APIRequestFactory()
 
 
+# Models
+class SlugBasedModel(RESTFrameworkModel):
+    text = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=32)
+
+
+# Model for regression test for #285
+class Comment(RESTFrameworkModel):
+    email = models.EmailField()
+    content = models.CharField(max_length=200)
+    created = models.DateTimeField(auto_now_add=True)
+
+
+# Serializers
 class BasicSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasicModel
@@ -22,6 +36,15 @@ class ForeignKeySerializer(serializers.ModelSerializer):
         model = ForeignKeySource
 
 
+class SlugSerializer(serializers.ModelSerializer):
+    slug = serializers.ReadOnlyField()
+
+    class Meta:
+        model = SlugBasedModel
+        fields = ('text', 'slug')
+
+
+# Views
 class RootView(generics.ListCreateAPIView):
     queryset = BasicModel.objects.all()
     serializer_class = BasicSerializer
@@ -37,14 +60,6 @@ class FKInstanceView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ForeignKeySerializer
 
 
-class SlugSerializer(serializers.ModelSerializer):
-    slug = serializers.ReadOnlyField()
-
-    class Meta:
-        model = SlugBasedModel
-        fields = ('text', 'slug')
-
-
 class SlugBasedInstanceView(InstanceView):
     """
     A model with a slug-field.
@@ -54,6 +69,7 @@ class SlugBasedInstanceView(InstanceView):
     lookup_field = 'slug'
 
 
+# Tests
 class TestRootView(TestCase):
     def setUp(self):
         """

@@ -17,11 +17,6 @@ class BasicModel(RESTFrameworkModel):
     text = models.CharField(max_length=100, verbose_name=_("Text comes here"), help_text=_("Text description."))
 
 
-class SlugBasedModel(RESTFrameworkModel):
-    text = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=32)
-
-
 class BaseFilterableItem(RESTFrameworkModel):
     text = models.CharField(max_length=100)
 
@@ -32,13 +27,6 @@ class BaseFilterableItem(RESTFrameworkModel):
 class FilterableItem(BaseFilterableItem):
     decimal = models.DecimalField(max_digits=4, decimal_places=2)
     date = models.DateField()
-
-
-# Model for regression test for #285
-class Comment(RESTFrameworkModel):
-    email = models.EmailField()
-    content = models.CharField(max_length=200)
-    created = models.DateTimeField(auto_now_add=True)
 
 
 # Models for relations tests
