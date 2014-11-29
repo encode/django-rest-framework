@@ -143,13 +143,13 @@ class TestRootView(TestCase):
         self.assertEqual(created.text, 'foobar')
 
 
-EXPECTED_QUERYS_FOR_PUT = 3 if django.VERSION < (1, 6) else 2
+EXPECTED_QUERIES_FOR_PUT = 3 if django.VERSION < (1, 6) else 2
 
 
 class TestInstanceView(TestCase):
     def setUp(self):
         """
-        Create 3 BasicModel intances.
+        Create 3 BasicModel instances.
         """
         items = ['foo', 'bar', 'baz', 'filtered out']
         for item in items:
@@ -189,7 +189,7 @@ class TestInstanceView(TestCase):
         """
         data = {'text': 'foobar'}
         request = factory.put('/1', data, format='json')
-        with self.assertNumQueries(EXPECTED_QUERYS_FOR_PUT):
+        with self.assertNumQueries(EXPECTED_QUERIES_FOR_PUT):
             response = self.view(request, pk='1').render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(dict(response.data), {'id': 1, 'text': 'foobar'})
@@ -203,7 +203,7 @@ class TestInstanceView(TestCase):
         data = {'text': 'foobar'}
         request = factory.patch('/1', data, format='json')
 
-        with self.assertNumQueries(EXPECTED_QUERYS_FOR_PUT):
+        with self.assertNumQueries(EXPECTED_QUERIES_FOR_PUT):
             response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
@@ -238,7 +238,7 @@ class TestInstanceView(TestCase):
         """
         data = {'id': 999, 'text': 'foobar'}
         request = factory.put('/1', data, format='json')
-        with self.assertNumQueries(EXPECTED_QUERYS_FOR_PUT):
+        with self.assertNumQueries(EXPECTED_QUERIES_FOR_PUT):
             response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
@@ -304,9 +304,10 @@ class TestOverriddenGetObject(TestCase):
     Test cases for a RetrieveUpdateDestroyAPIView that does NOT use the
     queryset/model mechanism but instead overrides get_object()
     """
+
     def setUp(self):
         """
-        Create 3 BasicModel intances.
+        Create 3 BasicModel instances.
         """
         items = ['foo', 'bar', 'baz']
         for item in items:
@@ -379,11 +380,11 @@ class ClassB(models.Model):
 
 class ClassA(models.Model):
     name = models.CharField(max_length=255)
-    childs = models.ManyToManyField(ClassB, blank=True, null=True)
+    children = models.ManyToManyField(ClassB, blank=True, null=True)
 
 
 class ClassASerializer(serializers.ModelSerializer):
-    childs = serializers.PrimaryKeyRelatedField(
+    children = serializers.PrimaryKeyRelatedField(
         many=True, queryset=ClassB.objects.all()
     )
 
@@ -396,8 +397,8 @@ class ExampleView(generics.ListCreateAPIView):
     queryset = ClassA.objects.all()
 
 
-class TestM2MBrowseableAPI(TestCase):
-    def test_m2m_in_browseable_api(self):
+class TestM2MBrowsableAPI(TestCase):
+    def test_m2m_in_browsable_api(self):
         """
         Test for particularly ugly regression with m2m in browsable API
         """
@@ -440,7 +441,6 @@ class DynamicSerializerView(generics.ListCreateAPIView):
 
 
 class TestFilterBackendAppliedToViews(TestCase):
-
     def setUp(self):
         """
         Create 3 BasicModel instances to filter on.

@@ -112,7 +112,7 @@ Here's our re-wired `urls.py` file.
     router.register(r'users', views.UserViewSet)
 
     # The API URLs are now determined automatically by the router.
-    # Additionally, we include the login URLs for the browseable API.
+    # Additionally, we include the login URLs for the browsable API.
     urlpatterns = [
         url(r'^', include(router.urls)),
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
@@ -130,7 +130,7 @@ That doesn't mean it's always the right approach to take.  There's a similar set
 
 ## Reviewing our work
 
-With an incredibly small amount of code, we've now got a complete pastebin Web API, which is fully web browseable, and comes complete with authentication, per-object permissions, and multiple renderer formats.
+With an incredibly small amount of code, we've now got a complete pastebin Web API, which is fully web browsable, and comes complete with authentication, per-object permissions, and multiple renderer formats.
 
 We've walked through each step of the design process, and seen how if we need to customize anything we can gradually work our way down to simply using regular Django views.
 

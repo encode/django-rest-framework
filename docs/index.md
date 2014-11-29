@@ -31,7 +31,7 @@ Django REST framework is a powerful and flexible toolkit that makes it easy to b
 
 Some reasons you might want to use REST framework:
 
-* The [Web browseable API][sandbox] is a huge usability win for your developers.
+* The [Web browsable API][sandbox] is a huge usability win for your developers.
 * [Authentication policies][authentication] including [OAuth1a][oauth1-section] and [OAuth2][oauth2-section] out of the box.
 * [Serialization][serializers] that supports both [ORM][modelserializer-section] and [non-ORM][serializer-section] data sources.
 * Customizable all the way down - just use [regular function-based views][functionview-section] if you don't need the [more][generic-views] [powerful][viewsets] [features][routers].
@@ -132,7 +132,7 @@ Here's our project's root `urls.py` module:
     router.register(r'users', UserViewSet)
 
     # Wire up our API using automatic URL routing.
-    # Additionally, we include login URLs for the browseable API.
+    # Additionally, we include login URLs for the browsable API.
     urlpatterns = [
         url(r'^', include(router.urls)),
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
