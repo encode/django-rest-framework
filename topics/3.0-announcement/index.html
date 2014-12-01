@@ -850,18 +850,18 @@ def all_high_scores(request):
 <li><code>Field</code> is the base class for all fields. It does not include any default implementation for either serializing or deserializing data.</li>
 <li><code>ReadOnlyField</code> is a concrete implementation for read-only fields that simply returns the attribute value without modification.</li>
 </ul>
-<h4 id="the-required-allow_none-allow_blank-and-default-arguments">The <code>required</code>, <code>allow_none</code>, <code>allow_blank</code> and <code>default</code> arguments.</h4>
+<h4 id="the-required-allow_null-allow_blank-and-default-arguments">The <code>required</code>, <code>allow_null</code>, <code>allow_blank</code> and <code>default</code> arguments.</h4>
 <p>REST framework now has more explicit and clear control over validating empty values for fields.</p>
 <p>Previously the meaning of the <code>required=False</code> keyword argument was underspecified. In practice its use meant that a field could either be not included in the input, or it could be included, but be <code>None</code> or the empty string.</p>
-<p>We now have a better separation, with separate <code>required</code>, <code>allow_none</code> and <code>allow_blank</code> arguments.</p>
+<p>We now have a better separation, with separate <code>required</code>, <code>allow_null</code> and <code>allow_blank</code> arguments.</p>
 <p>The following set of arguments are used to control validation of empty values:</p>
 <ul>
 <li><code>required=False</code>: The value does not need to be present in the input, and will not be passed to <code>.create()</code> or <code>.update()</code> if it is not seen.</li>
 <li><code>default=&lt;value&gt;</code>: The value does not need to be present in the input, and a default value will be passed to <code>.create()</code> or <code>.update()</code> if it is not seen.</li>
-<li><code>allow_none=True</code>: <code>None</code> is a valid input.</li>
+<li><code>allow_null=True</code>: <code>None</code> is a valid input.</li>
 <li><code>allow_blank=True</code>: <code>''</code> is valid input. For <code>CharField</code> and subclasses only.</li>
 </ul>
-<p>Typically you'll want to use <code>required=False</code> if the corresponding model field has a default value, and additionally set either <code>allow_none=True</code> or <code>allow_blank=True</code> if required.</p>
+<p>Typically you'll want to use <code>required=False</code> if the corresponding model field has a default value, and additionally set either <code>allow_null=True</code> or <code>allow_blank=True</code> if required.</p>
 <p>The <code>default</code> argument is also available and always implies that the field is not required to be in the input. It is unnecessary to use the <code>required</code> argument when a default is specified, and doing so will result in an error.</p>
 <h4 id="coercing-output-types">Coercing output types.</h4>
 <p>The previous field implementations did not forcibly coerce returned values into the correct type in many cases. For example, an <code>IntegerField</code> would return a string output if the attribute value was a string. We now more strictly coerce to the correct return type, leading to more constrained and expected behavior.</p>
