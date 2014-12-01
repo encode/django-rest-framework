@@ -62,7 +62,7 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../authentication">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../validators">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
           <a class="repo-link btn btn-inverse btn-small " rel="next" href="../fields">
@@ -165,6 +165,10 @@
                   </li>
                   
                   <li >
+                    <a href="../validators">Validators</a>
+                  </li>
+                  
+                  <li >
                     <a href="../authentication">Authentication</a>
                   </li>
                   
@@ -264,6 +268,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.0-announcement">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement">Kickstarter Announcement</a>
                   </li>
                   
@@ -341,6 +349,10 @@
                   </li>
 
                   
+                    <li>
+                      <a href="#inspecting-automatically-generated-relationships">Inspecting automatically generated relationships.</a>
+                    </li>
+                  
 
                 
 
@@ -350,7 +362,7 @@
 
                   
                     <li>
-                      <a href="#relatedfield">RelatedField</a>
+                      <a href="#stringrelatedfield">StringRelatedField</a>
                     </li>
                   
                     <li>
@@ -402,6 +414,10 @@
 
                   
                     <li>
+                      <a href="#the-queryset-argument">The queryset argument</a>
+                    </li>
+                  
+                    <li>
                       <a href="#reverse-relations">Reverse relations</a>
                     </li>
                   
@@ -415,10 +431,6 @@
                   
                     <li>
                       <a href="#advanced-hyperlinked-fields">Advanced Hyperlinked fields</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#deprecated-apis">Deprecated APIs</a>
                     </li>
                   
 
@@ -452,7 +464,10 @@
               
             
 
-            <h1 id="serializer-relations">Serializer relations</h1>
+            <hr />
+<p><strong>Note</strong>: This is the documentation for the <strong>version 3.0</strong> of REST framework. Documentation for <a href="http://tomchristie.github.io/rest-framework-2-docs/">version 2.4</a> is also available.</p>
+<hr />
+<h1 id="serializer-relations">Serializer relations</h1>
 <blockquote>
 <p>Bad programmers worry about the code.
 Good programmers worry about data structures and their relationships.</p>
@@ -462,6 +477,17 @@ Good programmers worry about data structures and their relationships.</p>
 <hr />
 <p><strong>Note:</strong> The relational fields are declared in <code>relations.py</code>, but by convention you should import them from the <code>serializers</code> module, using <code>from rest_framework import serializers</code> and refer to fields as <code>serializers.&lt;FieldName&gt;</code>.</p>
 <hr />
+<h4 id="inspecting-automatically-generated-relationships">Inspecting automatically generated relationships.</h4>
+<p>When using the <code>ModelSerializer</code> class, serializer fields and relationships will be automatically generated for you. Inspecting these automatically generated fields can be a useful tool for determining how to customize the relationship style.</p>
+<p>To do so, open the Django shell, using <code>python manage.py shell</code>, then import the serializer class, instantiate it, and print the object representation…</p>
+<pre><code>&gt;&gt;&gt; from myapp.serializers import AccountSerializer
+&gt;&gt;&gt; serializer = AccountSerializer()
+&gt;&gt;&gt; print repr(serializer)  # Or `print(repr(serializer))` in Python 3.x.
+AccountSerializer():
+    id = IntegerField(label='ID', read_only=True)
+    name = CharField(allow_blank=True, max_length=100, required=False)
+    owner = PrimaryKeyRelatedField(queryset=User.objects.all())
+</code></pre>
 <h1 id="api-reference">API Reference</h1>
 <p>In order to explain the various types of relational fields, we'll use a couple of simple models for our examples.  Our models will be for music albums, and the tracks listed on each album.</p>
 <pre><code>class Album(models.Model):
@@ -481,11 +507,11 @@ class Track(models.Model):
     def __unicode__(self):
         return '%d: %s' % (self.order, self.title)
 </code></pre>
-<h2 id="relatedfield">RelatedField</h2>
-<p><code>RelatedField</code> may be used to represent the target of the relationship using its <code>__unicode__</code> method.</p>
+<h2 id="stringrelatedfield">StringRelatedField</h2>
+<p><code>StringRelatedField</code> may be used to represent the target of the relationship using its <code>__unicode__</code> method.</p>
 <p>For example, the following serializer.</p>
 <pre><code>class AlbumSerializer(serializers.ModelSerializer):
-    tracks = serializers.RelatedField(many=True)
+    tracks = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Album
@@ -533,16 +559,19 @@ class Track(models.Model):
 <p>By default this field is read-write, although you can change this behavior using the <code>read_only</code> flag.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
+<li><code>queryset</code> - The queryset used for model instance lookups when validating the field input. Relationships must either set a queryset explicitly, or set <code>read_only=True</code>.</li>
 <li><code>many</code> - If applied to a to-many relationship, you should set this argument to <code>True</code>.</li>
-<li><code>required</code> - If set to <code>False</code>, the field will accept values of <code>None</code> or the empty-string for nullable relationships.</li>
-<li><code>queryset</code> - By default <code>ModelSerializer</code> classes will use the default queryset for the relationship.  <code>Serializer</code> classes must either set a queryset explicitly, or set <code>read_only=True</code>.</li>
+<li><code>allow_null</code> - If set to <code>True</code>, the field will accept values of <code>None</code> or the empty string for nullable relationships. Defaults to <code>False</code>.</li>
 </ul>
 <h2 id="hyperlinkedrelatedfield">HyperlinkedRelatedField</h2>
 <p><code>HyperlinkedRelatedField</code> may be used to represent the target of the relationship using a hyperlink.</p>
 <p>For example, the following serializer:</p>
 <pre><code>class AlbumSerializer(serializers.ModelSerializer):
-    tracks = serializers.HyperlinkedRelatedField(many=True, read_only=True,
-                                                 view_name='track-detail')
+    tracks = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='track-detail'
+    )
 
     class Meta:
         model = Album
@@ -563,19 +592,23 @@ class Track(models.Model):
 <p>By default this field is read-write, although you can change this behavior using the <code>read_only</code> flag.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
-<li><code>view_name</code> - The view name that should be used as the target of the relationship.  If you're using <a href="http://www.django-rest-framework.org/api-guide/routers#defaultrouter">the standard router classes</a> this wil be a string with the format <code>&lt;modelname&gt;-detail</code>. <strong>required</strong>.</li>
+<li><code>view_name</code> - The view name that should be used as the target of the relationship.  If you're using <a href="http://www.django-rest-framework.org/api-guide/routers#defaultrouter">the standard router classes</a> this will be a string with the format <code>&lt;modelname&gt;-detail</code>. <strong>required</strong>.</li>
+<li><code>queryset</code> - The queryset used for model instance lookups when validating the field input. Relationships must either set a queryset explicitly, or set <code>read_only=True</code>.</li>
 <li><code>many</code> - If applied to a to-many relationship, you should set this argument to <code>True</code>.</li>
-<li><code>required</code> - If set to <code>False</code>, the field will accept values of <code>None</code> or the empty-string for nullable relationships.</li>
-<li><code>queryset</code> - By default <code>ModelSerializer</code> classes will use the default queryset for the relationship.  <code>Serializer</code> classes must either set a queryset explicitly, or set <code>read_only=True</code>.</li>
+<li><code>allow_null</code> - If set to <code>True</code>, the field will accept values of <code>None</code> or the empty string for nullable relationships. Defaults to <code>False</code>.</li>
 <li><code>lookup_field</code> - The field on the target that should be used for the lookup.  Should correspond to a URL keyword argument on the referenced view.  Default is <code>'pk'</code>.</li>
+<li><code>lookup_url_kwarg</code> - The name of the keyword argument defined in the URL conf that corresponds to the lookup field. Defaults to using the same value as <code>lookup_field</code>.</li>
 <li><code>format</code> - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the <code>format</code> argument.</li>
 </ul>
 <h2 id="slugrelatedfield">SlugRelatedField</h2>
 <p><code>SlugRelatedField</code> may be used to represent the target of the relationship using a field on the target.</p>
 <p>For example, the following serializer:</p>
 <pre><code>class AlbumSerializer(serializers.ModelSerializer):
-    tracks = serializers.SlugRelatedField(many=True, read_only=True,
-                                          slug_field='title')
+    tracks = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='title'
+     )
 
     class Meta:
         model = Album
@@ -598,9 +631,9 @@ class Track(models.Model):
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li><code>slug_field</code> - The field on the target that should be used to represent it.  This should be a field that uniquely identifies any given instance.  For example, <code>username</code>.  <strong>required</strong></li>
+<li><code>queryset</code> - The queryset used for model instance lookups when validating the field input. Relationships must either set a queryset explicitly, or set <code>read_only=True</code>.</li>
 <li><code>many</code> - If applied to a to-many relationship, you should set this argument to <code>True</code>.</li>
-<li><code>required</code> - If set to <code>False</code>, the field will accept values of <code>None</code> or the empty-string for nullable relationships.</li>
-<li><code>queryset</code> - By default <code>ModelSerializer</code> classes will use the default queryset for the relationship.  <code>Serializer</code> classes must either set a queryset explicitly, or set <code>read_only=True</code>.</li>
+<li><code>allow_null</code> - If set to <code>True</code>, the field will accept values of <code>None</code> or the empty string for nullable relationships. Defaults to <code>False</code>.</li>
 </ul>
 <h2 id="hyperlinkedidentityfield">HyperlinkedIdentityField</h2>
 <p>This field can be applied as an identity relationship, such as the <code>'url'</code> field on  a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:</p>
@@ -637,7 +670,7 @@ class Track(models.Model):
         fields = ('order', 'title')
 
 class AlbumSerializer(serializers.ModelSerializer):
-    tracks = TrackSerializer(many=True)
+    tracks = TrackSerializer(many=True, read_only=True)
 
     class Meta:
         model = Album
@@ -656,14 +689,14 @@ class AlbumSerializer(serializers.ModelSerializer):
 }
 </code></pre>
 <h1 id="custom-relational-fields">Custom relational fields</h1>
-<p>To implement a custom relational field, you should override <code>RelatedField</code>, and implement the <code>.to_native(self, value)</code> method.  This method takes the target of the field as the <code>value</code> argument, and should return the representation that should be used to serialize the target.</p>
-<p>If you want to implement a read-write relational field, you must also implement the <code>.from_native(self, data)</code> method, and add <code>read_only = False</code> to the class definition.</p>
+<p>To implement a custom relational field, you should override <code>RelatedField</code>, and implement the <code>.to_representation(self, value)</code> method. This method takes the target of the field as the <code>value</code> argument, and should return the representation that should be used to serialize the target. The <code>value</code> argument will typically be a model instance.</p>
+<p>If you want to implement a read-write relational field, you must also implement the <code>.to_internal_value(self, data)</code> method.</p>
 <h2 id="example_1">Example</h2>
 <p>For, example, we could define a relational field, to serialize a track to a custom string representation, using its ordering, title, and duration.</p>
 <pre><code>import time
 
 class TrackListingField(serializers.RelatedField):
-    def to_native(self, value):
+    def to_representation(self, value):
         duration = time.strftime('%M:%S', time.gmtime(value.duration))
         return 'Track %d: %s (%s)' % (value.order, value.name, duration)
 
@@ -688,6 +721,11 @@ class AlbumSerializer(serializers.ModelSerializer):
 </code></pre>
 <hr />
 <h1 id="further-notes">Further notes</h1>
+<h2 id="the-queryset-argument">The <code>queryset</code> argument</h2>
+<p>The <code>queryset</code> argument is only ever required for <em>writable</em> relationship field, in which case it is used for performing the model instance lookup, that maps from the primitive user input, into a model instance.</p>
+<p>In version 2.x a serializer class could <em>sometimes</em> automatically determine the <code>queryset</code> argument <em>if</em> a <code>ModelSerializer</code> class was being used.</p>
+<p>This behavior is now replaced with <em>always</em> using an explicit <code>queryset</code> argument for writable relational fields.</p>
+<p>Doing so reduces the amount of hidden 'magic' that <code>ModelSerializer</code> provides, makes the behavior of the field more clear, and ensures that it is trivial to move between using the <code>ModelSerializer</code> shortcut, or using fully explicit <code>Serializer</code> classes.</p>
 <h2 id="reverse-relations">Reverse relations</h2>
 <p>Note that reverse relationships are not automatically included by the <code>ModelSerializer</code> and <code>HyperlinkedModelSerializer</code> classes.  To include a reverse relationship, you must explicitly add it to the fields list.  For example:</p>
 <pre><code>class AlbumSerializer(serializers.ModelSerializer):
@@ -744,7 +782,7 @@ class Note(models.Model):
     A custom field to use for the `tagged_object` generic relationship.
     """
 
-    def to_native(self, value):
+    def to_representation(self, value):
         """
         Serialize tagged objects to a simple textual representation.
         """
@@ -754,8 +792,8 @@ class Note(models.Model):
             return 'Note: ' + value.text
         raise Exception('Unexpected type of tagged object')
 </code></pre>
-<p>If you need the target of the relationship to have a nested representation, you can  use the required serializers inside the <code>.to_native()</code> method:</p>
-<pre><code>    def to_native(self, value):
+<p>If you need the target of the relationship to have a nested representation, you can use the required serializers inside the <code>.to_native()</code> method:</p>
+<pre><code>    def to_representation(self, value):
         """
         Serialize bookmark instances using a bookmark serializer,
         and note instances using a note serializer.
@@ -800,20 +838,6 @@ attributes are not configured to correctly match the URL conf.</p>
         return queryset.get(account=account, slug=slug)
 </code></pre>
 <hr />
-<h2 id="deprecated-apis">Deprecated APIs</h2>
-<p>The following classes have been deprecated, in favor of the <code>many=&lt;bool&gt;</code> syntax.
-They continue to function, but their usage will raise a <code>PendingDeprecationWarning</code>, which is silent by default.</p>
-<ul>
-<li><code>ManyRelatedField</code></li>
-<li><code>ManyPrimaryKeyRelatedField</code></li>
-<li><code>ManyHyperlinkedRelatedField</code></li>
-<li><code>ManySlugRelatedField</code></li>
-</ul>
-<p>The <code>null=&lt;bool&gt;</code> flag has been deprecated in favor of the <code>required=&lt;bool&gt;</code> flag.  It will continue to function, but will raise a <code>PendingDeprecationWarning</code>.</p>
-<p>In the 2.3 release, these warnings will be escalated to a <code>DeprecationWarning</code>, which is loud by default.
-In the 2.4 release, these parts of the API will be removed entirely.</p>
-<p>For more details see the <a href="../../topics/2.2-announcement">2.2 release announcement</a>.</p>
-<hr />
 <h1 id="third-party-packages">Third Party Packages</h1>
 <p>The following third party packages are also available.</p>
 <h2 id="drf-nested-routers">DRF Nested Routers</h2>
@@ -832,7 +856,7 @@ In the 2.4 release, these parts of the API will be removed entirely.</p>
   <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
     </p>
   </footer>
 

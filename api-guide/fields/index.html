@@ -165,6 +165,10 @@
                   </li>
                   
                   <li >
+                    <a href="../validators">Validators</a>
+                  </li>
+                  
+                  <li >
                     <a href="../authentication">Authentication</a>
                   </li>
                   
@@ -264,6 +268,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.0-announcement">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement">Kickstarter Announcement</a>
                   </li>
                   
@@ -349,31 +357,7 @@
                 
 
                   <li class="main">
-                    <a href="#generic-fields">Generic Fields</a>
-                  </li>
-
-                  
-                    <li>
-                      <a href="#field">Field</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#writablefield">WritableField</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#modelfield">ModelField</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#serializermethodfield">SerializerMethodField</a>
-                    </li>
-                  
-
-                
-
-                  <li class="main">
-                    <a href="#typed-fields">Typed Fields</a>
+                    <a href="#boolean-fields">Boolean fields</a>
                   </li>
 
                   
@@ -382,19 +366,19 @@
                     </li>
                   
                     <li>
+                      <a href="#nullbooleanfield">NullBooleanField</a>
+                    </li>
+                  
+
+                
+
+                  <li class="main">
+                    <a href="#string-fields">String fields</a>
+                  </li>
+
+                  
+                    <li>
                       <a href="#charfield">CharField</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#urlfield">URLField</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#slugfield">SlugField</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#choicefield">ChoiceField</a>
                     </li>
                   
                     <li>
@@ -406,16 +390,20 @@
                     </li>
                   
                     <li>
-                      <a href="#datetimefield">DateTimeField</a>
+                      <a href="#slugfield">SlugField</a>
                     </li>
                   
                     <li>
-                      <a href="#datefield">DateField</a>
+                      <a href="#urlfield">URLField</a>
                     </li>
                   
-                    <li>
-                      <a href="#timefield">TimeField</a>
-                    </li>
+
+                
+
+                  <li class="main">
+                    <a href="#numeric-fields">Numeric fields</a>
+                  </li>
+
                   
                     <li>
                       <a href="#integerfield">IntegerField</a>
@@ -429,12 +417,96 @@
                       <a href="#decimalfield">DecimalField</a>
                     </li>
                   
+
+                
+
+                  <li class="main">
+                    <a href="#date-and-time-fields">Date and time fields</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#datetimefield">DateTimeField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#datefield">DateField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#timefield">TimeField</a>
+                    </li>
+                  
+
+                
+
+                  <li class="main">
+                    <a href="#choice-selection-fields">Choice selection fields</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#choicefield">ChoiceField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#multiplechoicefield">MultipleChoiceField</a>
+                    </li>
+                  
+
+                
+
+                  <li class="main">
+                    <a href="#file-upload-fields">File upload fields</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#parsers-and-file-uploads">Parsers and file uploads.</a>
+                    </li>
+                  
                     <li>
                       <a href="#filefield">FileField</a>
                     </li>
                   
                     <li>
                       <a href="#imagefield">ImageField</a>
+                    </li>
+                  
+
+                
+
+                  <li class="main">
+                    <a href="#composite-fields">Composite fields</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#listfield">ListField</a>
+                    </li>
+                  
+
+                
+
+                  <li class="main">
+                    <a href="#miscellaneous-fields">Miscellaneous fields</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#readonlyfield">ReadOnlyField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#hiddenfield">HiddenField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#modelfield">ModelField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#serializermethodfield">SerializerMethodField</a>
                     </li>
                   
 
@@ -492,21 +564,20 @@
               
             
 
-            <h1 id="serializer-fields">Serializer fields</h1>
+            <hr />
+<p><strong>Note</strong>: This is the documentation for the <strong>version 3.0</strong> of REST framework. Documentation for <a href="http://tomchristie.github.io/rest-framework-2-docs/">version 2.4</a> is also available.</p>
+<hr />
+<h1 id="serializer-fields">Serializer fields</h1>
 <blockquote>
 <p>Each field in a Form class is responsible not only for validating data, but also for "cleaning" it &mdash; normalizing it to a consistent format.</p>
 <p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data">Django documentation</a></p>
 </blockquote>
 <p>Serializer fields handle converting between primitive values and internal datatypes.  They also deal with validating input values, as well as retrieving and setting the values from their parent objects.</p>
 <hr />
-<p><strong>Note:</strong> The serializer fields are declared in fields.py, but by convention you should import them using <code>from rest_framework import serializers</code> and refer to fields as <code>serializers.&lt;FieldName&gt;</code>.</p>
+<p><strong>Note:</strong> The serializer fields are declared in <code>fields.py</code>, but by convention you should import them using <code>from rest_framework import serializers</code> and refer to fields as <code>serializers.&lt;FieldName&gt;</code>.</p>
 <hr />
 <h2 id="core-arguments">Core arguments</h2>
 <p>Each serializer field class constructor takes at least these arguments.  Some Field classes take additional, field-specific arguments, but the following should always be accepted:</p>
-<h3 id="source"><code>source</code></h3>
-<p>The name of the attribute that will be used to populate the field.  May be a method that only takes a <code>self</code> argument, such as <code>Field(source='get_absolute_url')</code>, or may use dotted notation to traverse attributes, such as <code>Field(source='user.email')</code>.</p>
-<p>The value <code>source='*'</code> has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations.  (See the implementation of the <code>PaginationSerializer</code> class for an example.)</p>
-<p>Defaults to the name of the field.</p>
 <h3 id="read_only"><code>read_only</code></h3>
 <p>Set this to <code>True</code> to ensure that the field is used when serializing a representation, but is not used when creating or updating an instance during deserialization.</p>
 <p>Defaults to <code>False</code></p>
@@ -517,111 +588,135 @@
 <p>Normally an error will be raised if a field is not supplied during deserialization.
 Set to false if this field is not required to be present during deserialization.</p>
 <p>Defaults to <code>True</code>.</p>
+<h3 id="allow_null"><code>allow_null</code></h3>
+<p>Normally an error will be raised if <code>None</code> is passed to a serializer field. Set this keyword argument to <code>True</code> if <code>None</code> should be considered a valid value.</p>
+<p>Defaults to <code>False</code></p>
 <h3 id="default"><code>default</code></h3>
 <p>If set, this gives the default value that will be used for the field if no input value is supplied.  If not set the default behavior is to not populate the attribute at all.</p>
 <p>May be set to a function or other callable, in which case the value will be evaluated each time it is used.</p>
+<p>Note that setting a <code>default</code> value implies that the field is not required. Including both the <code>default</code> and <code>required</code> keyword arguments is invalid and will raise an error.</p>
+<h3 id="source"><code>source</code></h3>
+<p>The name of the attribute that will be used to populate the field.  May be a method that only takes a <code>self</code> argument, such as <code>URLField('get_absolute_url')</code>, or may use dotted notation to traverse attributes, such as <code>EmailField(source='user.email')</code>.</p>
+<p>The value <code>source='*'</code> has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.</p>
+<p>Defaults to the name of the field.</p>
 <h3 id="validators"><code>validators</code></h3>
-<p>A list of Django validators that should be used to validate deserialized values.</p>
+<p>A list of validator functions which should be applied to the incoming field input, and which either raise a validation error or simply return. Validator functions should typically raise <code>serializers.ValidationError</code>, but Django's built-in <code>ValidationError</code> is also supported for compatibility with validators defined in the Django codebase or third party Django packages.</p>
 <h3 id="error_messages"><code>error_messages</code></h3>
 <p>A dictionary of error codes to error messages.</p>
-<h3 id="widget"><code>widget</code></h3>
-<p>Used only if rendering the field to HTML.
-This argument sets the widget that should be used to render the field. For more details, and a list of available widgets, see <a href="https://docs.djangoproject.com/en/dev/ref/forms/widgets/">the Django documentation on form widgets</a>.</p>
 <h3 id="label"><code>label</code></h3>
 <p>A short text string that may be used as the name of the field in HTML form fields or other descriptive elements.</p>
 <h3 id="help_text"><code>help_text</code></h3>
 <p>A text string that may be used as a description of the field in HTML form fields or other descriptive elements.</p>
-<hr />
-<h1 id="generic-fields">Generic Fields</h1>
-<p>These generic fields are used for representing arbitrary model fields or the output of model methods.</p>
-<h2 id="field">Field</h2>
-<p>A generic, <strong>read-only</strong> field.  You can use this field for any attribute that does not need to support write operations.</p>
-<p>For example, using the following model.</p>
-<pre><code>from django.db import models
-from django.utils.timezone import now
+<h3 id="initial"><code>initial</code></h3>
+<p>A value that should be used for pre-populating the value of HTML form fields.</p>
+<h3 id="style"><code>style</code></h3>
+<p>A dictionary of key-value pairs that can be used to control how renderers should render the field. The API for this should still be considered experimental, and will be formalized with the 3.1 release.</p>
+<p>Two options are currently used in HTML form generation, <code>'input_type'</code> and <code>'base_template'</code>.</p>
+<pre><code># Use &lt;input type="password"&gt; for the input.
+password = serializers.CharField(
+    style={'input_type': 'password'}
+)
 
-class Account(models.Model):
-    owner = models.ForeignKey('auth.user')
-    name = models.CharField(max_length=100)
-    created = models.DateTimeField(auto_now_add=True)
-    payment_expiry = models.DateTimeField()
-
-    def has_expired(self):
-        return now() &gt; self.payment_expiry
-</code></pre>
-<p>A serializer definition that looked like this:</p>
-<pre><code>from rest_framework import serializers
-
-class AccountSerializer(serializers.HyperlinkedModelSerializer):
-    expired = serializers.Field(source='has_expired')
-
-    class Meta:
-        model = Account
-        fields = ('url', 'owner', 'name', 'expired')
-</code></pre>
-<p>Would produce output similar to:</p>
-<pre><code>{
-    'url': 'http://example.com/api/accounts/3/',
-    'owner': 'http://example.com/api/users/12/',
-    'name': 'FooCorp business account',
-    'expired': True
+# Use a radio input instead of a select input.
+color_channel = serializers.ChoiceField(
+    choices=['red', 'green', 'blue']
+    style = {'base_template': 'radio.html'}
 }
 </code></pre>
-<p>By default, the <code>Field</code> class will perform a basic translation of the source value into primitive datatypes, falling back to unicode representations of complex datatypes when necessary.</p>
-<p>You can customize this  behavior by overriding the <code>.to_native(self, value)</code> method.</p>
-<h2 id="writablefield">WritableField</h2>
-<p>A field that supports both read and write operations.  By itself <code>WritableField</code> does not perform any translation of input values into a given type.  You won't typically use this field directly, but you may want to override it and implement the <code>.to_native(self, value)</code> and <code>.from_native(self, value)</code> methods.</p>
-<h2 id="modelfield">ModelField</h2>
-<p>A generic field that can be tied to any arbitrary model field.  The <code>ModelField</code> class delegates the task of serialization/deserialization to its associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.</p>
-<p>The <code>ModelField</code> class is generally intended for internal use, but can be used by your API if needed.  In order to properly instantiate a <code>ModelField</code>, it must be passed a field that is attached to an instantiated model.  For example: <code>ModelField(model_field=MyModel()._meta.get_field('custom_field'))</code></p>
-<p><strong>Signature:</strong> <code>ModelField(model_field=&lt;Django ModelField instance&gt;)</code></p>
-<h2 id="serializermethodfield">SerializerMethodField</h2>
-<p>This is a read-only field.  It gets its value by calling a method on the serializer class it is attached to.  It can be used to add any sort of data to the serialized representation of your object.  The field's constructor accepts a single argument, which is the name of the method on the serializer to be called.  The method should accept a single argument (in addition to <code>self</code>), which is the object being serialized.  It should return whatever you want to be included in the serialized representation of the object.  For example:</p>
-<pre><code>from django.contrib.auth.models import User
-from django.utils.timezone import now
-from rest_framework import serializers
-
-class UserSerializer(serializers.ModelSerializer):
-    days_since_joined = serializers.SerializerMethodField('get_days_since_joined')
-
-    class Meta:
-        model = User
-
-    def get_days_since_joined(self, obj):
-        return (now() - obj.date_joined).days
-</code></pre>
+<p><strong>Note</strong>: The <code>style</code> argument replaces the old-style version 2.x <code>widget</code> keyword argument. Because REST framework 3 now uses templated HTML form generation, the <code>widget</code> option that was used to support Django built-in widgets can no longer be supported. Version 3.1 is planned to include public API support for customizing HTML form generation.</p>
 <hr />
-<h1 id="typed-fields">Typed Fields</h1>
-<p>These fields represent basic datatypes, and support both reading and writing values.</p>
+<h1 id="boolean-fields">Boolean fields</h1>
 <h2 id="booleanfield">BooleanField</h2>
-<p>A Boolean representation.</p>
+<p>A boolean representation.</p>
 <p>Corresponds to <code>django.db.models.fields.BooleanField</code>.</p>
+<p><strong>Signature:</strong> <code>BooleanField()</code></p>
+<h2 id="nullbooleanfield">NullBooleanField</h2>
+<p>A boolean representation that also accepts <code>None</code> as a valid value.</p>
+<p>Corresponds to <code>django.db.models.fields.NullBooleanField</code>.</p>
+<p><strong>Signature:</strong> <code>NullBooleanField()</code></p>
+<hr />
+<h1 id="string-fields">String fields</h1>
 <h2 id="charfield">CharField</h2>
-<p>A text representation, optionally validates the text to be shorter than <code>max_length</code> and longer than <code>min_length</code>.
-If <code>allow_none</code> is <code>False</code> (default), <code>None</code> values will be converted to an empty string.</p>
-<p>Corresponds to <code>django.db.models.fields.CharField</code>
-or <code>django.db.models.fields.TextField</code>.</p>
-<p><strong>Signature:</strong> <code>CharField(max_length=None, min_length=None, allow_none=False)</code></p>
-<h2 id="urlfield">URLField</h2>
-<p>Corresponds to <code>django.db.models.fields.URLField</code>.  Uses Django's <code>django.core.validators.URLValidator</code> for validation.</p>
-<p><strong>Signature:</strong> <code>URLField(max_length=200, min_length=None)</code></p>
-<h2 id="slugfield">SlugField</h2>
-<p>Corresponds to <code>django.db.models.fields.SlugField</code>.</p>
-<p><strong>Signature:</strong> <code>SlugField(max_length=50, min_length=None)</code></p>
-<h2 id="choicefield">ChoiceField</h2>
-<p>A field that can accept a value out of a limited set of choices. Optionally takes a <code>blank_display_value</code> parameter that customizes the display value of an empty choice.</p>
-<p><strong>Signature:</strong> <code>ChoiceField(choices=(), blank_display_value=None)</code></p>
+<p>A text representation. Optionally validates the text to be shorter than <code>max_length</code> and longer than <code>min_length</code>.</p>
+<p>Corresponds to <code>django.db.models.fields.CharField</code> or <code>django.db.models.fields.TextField</code>.</p>
+<p><strong>Signature:</strong> <code>CharField(max_length=None, min_length=None, allow_blank=False)</code></p>
+<ul>
+<li><code>max_length</code> - Validates that the input contains no more than this number of characters.</li>
+<li><code>min_length</code> - Validates that the input contains no fewer than this number of characters.</li>
+<li><code>allow_blank</code> - If set to <code>True</code> then the empty string should be considered a valid value. If set to <code>False</code> then the empty string is considered invalid and will raise a validation error. Defaults to <code>False</code>.</li>
+</ul>
+<p>The <code>allow_null</code> option is also available for string fields, although its usage is discouraged in favor of <code>allow_blank</code>. It is valid to set both <code>allow_blank=True</code> and <code>allow_null=True</code>, but doing so means that there will be two differing types of empty value permissible for string representations, which can lead to data inconsistencies and subtle application bugs.</p>
 <h2 id="emailfield">EmailField</h2>
 <p>A text representation, validates the text to be a valid e-mail address.</p>
 <p>Corresponds to <code>django.db.models.fields.EmailField</code></p>
+<p><strong>Signature:</strong> <code>EmailField(max_length=None, min_length=None, allow_blank=False)</code></p>
 <h2 id="regexfield">RegexField</h2>
 <p>A text representation, that validates the given value matches against a certain regular expression.</p>
+<p>Corresponds to <code>django.forms.fields.RegexField</code>.</p>
+<p><strong>Signature:</strong> <code>RegexField(regex, max_length=None, min_length=None, allow_blank=False)</code></p>
+<p>The mandatory <code>regex</code> argument may either be a string, or a compiled python regular expression object.</p>
 <p>Uses Django's <code>django.core.validators.RegexValidator</code> for validation.</p>
-<p>Corresponds to <code>django.forms.fields.RegexField</code></p>
-<p><strong>Signature:</strong> <code>RegexField(regex, max_length=None, min_length=None)</code></p>
+<h2 id="slugfield">SlugField</h2>
+<p>A <code>RegexField</code> that validates the input against the pattern <code>[a-zA-Z0-9_-]+</code>.</p>
+<p>Corresponds to <code>django.db.models.fields.SlugField</code>.</p>
+<p><strong>Signature:</strong> <code>SlugField(max_length=50, min_length=None, allow_blank=False)</code></p>
+<h2 id="urlfield">URLField</h2>
+<p>A <code>RegexField</code> that validates the input against a URL matching pattern. Expects fully qualified URLs of the form <code>http://&lt;host&gt;/&lt;path&gt;</code>.</p>
+<p>Corresponds to <code>django.db.models.fields.URLField</code>.  Uses Django's <code>django.core.validators.URLValidator</code> for validation.</p>
+<p><strong>Signature:</strong> <code>URLField(max_length=200, min_length=None, allow_blank=False)</code></p>
+<hr />
+<h1 id="numeric-fields">Numeric fields</h1>
+<h2 id="integerfield">IntegerField</h2>
+<p>An integer representation.</p>
+<p>Corresponds to <code>django.db.models.fields.IntegerField</code>, <code>django.db.models.fields.SmallIntegerField</code>, <code>django.db.models.fields.PositiveIntegerField</code> and <code>django.db.models.fields.PositiveSmallIntegerField</code>.</p>
+<p><strong>Signature</strong>: <code>IntegerField(max_value=None, min_value=None)</code></p>
+<ul>
+<li><code>max_value</code> Validate that the number provided is no greater than this value.</li>
+<li><code>min_value</code> Validate that the number provided is no less than this value.</li>
+</ul>
+<h2 id="floatfield">FloatField</h2>
+<p>A floating point representation.</p>
+<p>Corresponds to <code>django.db.models.fields.FloatField</code>.</p>
+<p><strong>Signature</strong>: <code>FloatField(max_value=None, min_value=None)</code></p>
+<ul>
+<li><code>max_value</code> Validate that the number provided is no greater than this value.</li>
+<li><code>min_value</code> Validate that the number provided is no less than this value.</li>
+</ul>
+<h2 id="decimalfield">DecimalField</h2>
+<p>A decimal representation, represented in Python by a <code>Decimal</code> instance.</p>
+<p>Corresponds to <code>django.db.models.fields.DecimalField</code>.</p>
+<p><strong>Signature</strong>: <code>DecimalField(max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None)</code></p>
+<ul>
+<li><code>max_digits</code> The maximum number of digits allowed in the number. Note that this number must be greater than or equal to decimal_places.</li>
+<li><code>decimal_places</code> The number of decimal places to store with the number.</li>
+<li><code>coerce_to_string</code> Set to <code>True</code> if string values should be returned for the representation, or <code>False</code> if <code>Decimal</code> objects should be returned. Defaults to the same value as the <code>COERCE_DECIMAL_TO_STRING</code> settings key, which will be <code>True</code> unless overridden. If <code>Decimal</code> objects are returned by the serializer, then the final output format will be determined by the renderer.</li>
+<li><code>max_value</code> Validate that the number provided is no greater than this value.</li>
+<li><code>min_value</code> Validate that the number provided is no less than this value.</li>
+</ul>
+<h4 id="example-usage">Example usage</h4>
+<p>To validate numbers up to 999 with a resolution of 2 decimal places, you would use:</p>
+<pre><code>serializers.DecimalField(max_digits=5, decimal_places=2)
+</code></pre>
+<p>And to validate numbers up to anything less than one billion with a resolution of 10 decimal places:</p>
+<pre><code>serializers.DecimalField(max_digits=19, decimal_places=10)
+</code></pre>
+<p>This field also takes an optional argument, <code>coerce_to_string</code>. If set to <code>True</code> the representation will be output as a string. If set to <code>False</code> the representation will be left as a <code>Decimal</code> instance and the final representation will be determined by the renderer.</p>
+<p>If unset, this will default to the same value as the <code>COERCE_DECIMAL_TO_STRING</code> setting, which is <code>True</code> unless set otherwise.</p>
+<hr />
+<h1 id="date-and-time-fields">Date and time fields</h1>
 <h2 id="datetimefield">DateTimeField</h2>
 <p>A date and time representation.</p>
-<p>Corresponds to <code>django.db.models.fields.DateTimeField</code></p>
+<p>Corresponds to <code>django.db.models.fields.DateTimeField</code>.</p>
+<p><strong>Signature:</strong> <code>DateTimeField(format=None, input_formats=None)</code></p>
+<ul>
+<li><code>format</code> - A string representing the output format.  If not specified, this defaults to the same value as the <code>DATETIME_FORMAT</code> settings key, which will be <code>'iso-8601'</code> unless set. Setting to a format string indicates that <code>to_representation</code> return values should be coerced to string output. Format strings are described below. Setting this value to <code>None</code> indicates that Python <code>datetime</code> objects should be returned by <code>to_representation</code>. In this case the datetime encoding will be determined by the renderer.</li>
+<li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>DATETIME_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
+</ul>
+<h4 id="datetimefield-format-strings"><code>DateTimeField</code> format strings.</h4>
+<p>Format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style datetimes should be used. (eg <code>'2013-01-29T12:34:56.000000Z'</code>)</p>
+<p>When a value of <code>None</code> is used for the format <code>datetime</code> objects will be returned by <code>to_representation</code> and the final output representation will determined by the renderer class.</p>
+<p>In the case of JSON this means the default datetime representation uses the <a href="http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15">ECMA 262 date time string specification</a>.  This is a subset of ISO 8601 which uses millisecond precision, and includes the 'Z' suffix for the UTC timezone, for example: <code>2013-01-29T12:34:56.123Z</code>.</p>
+<h4 id="auto_now-and-auto_now_add-model-fields"><code>auto_now</code> and <code>auto_now_add</code> model fields.</h4>
 <p>When using <code>ModelSerializer</code> or <code>HyperlinkedModelSerializer</code>, note that any model fields with <code>auto_now=True</code> or <code>auto_now_add=True</code> will use serializer fields that are <code>read_only=True</code> by default.</p>
 <p>If you want to override this behavior, you'll need to declare the <code>DateTimeField</code> explicitly on the serializer.  For example:</p>
 <pre><code>class CommentSerializer(serializers.ModelSerializer):
@@ -630,84 +725,134 @@ or <code>django.db.models.fields.TextField</code>.</p>
     class Meta:
         model = Comment
 </code></pre>
-<p>Note that by default, datetime representations are determined by the renderer in use, although this can be explicitly overridden as detailed below.</p>
-<p>In the case of JSON this means the default datetime representation uses the <a href="http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15">ECMA 262 date time string specification</a>.  This is a subset of ISO 8601 which uses millisecond precision, and includes the 'Z' suffix for the UTC timezone, for example: <code>2013-01-29T12:34:56.123Z</code>.</p>
-<p><strong>Signature:</strong> <code>DateTimeField(format=None, input_formats=None)</code></p>
-<ul>
-<li><code>format</code> - A string representing the output format.  If not specified, this defaults to <code>None</code>, which indicates that Python <code>datetime</code> objects should be returned by <code>to_native</code>.  In this case the datetime encoding will be determined by the renderer.</li>
-<li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>DATETIME_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
-</ul>
-<p>DateTime format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style datetimes should be used. (eg <code>'2013-01-29T12:34:56.000000Z'</code>)</p>
 <h2 id="datefield">DateField</h2>
 <p>A date representation.</p>
 <p>Corresponds to <code>django.db.models.fields.DateField</code></p>
 <p><strong>Signature:</strong> <code>DateField(format=None, input_formats=None)</code></p>
 <ul>
-<li><code>format</code> - A string representing the output format.  If not specified, this defaults to <code>None</code>, which indicates that Python <code>date</code> objects should be returned by <code>to_native</code>.  In this case the date encoding will be determined by the renderer.</li>
+<li><code>format</code> - A string representing the output format.  If not specified, this defaults to the same value as the <code>DATE_FORMAT</code> settings key, which will be <code>'iso-8601'</code> unless set. Setting to a format string indicates that <code>to_representation</code> return values should be coerced to string output. Format strings are described below. Setting this value to <code>None</code> indicates that Python <code>date</code> objects should be returned by <code>to_representation</code>. In this case the date encoding will be determined by the renderer.</li>
 <li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>DATE_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
 </ul>
-<p>Date format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style dates should be used. (eg <code>'2013-01-29'</code>)</p>
+<h4 id="datefield-format-strings"><code>DateField</code> format strings</h4>
+<p>Format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style dates should be used. (eg <code>'2013-01-29'</code>)</p>
 <h2 id="timefield">TimeField</h2>
 <p>A time representation.</p>
-<p>Optionally takes <code>format</code> as parameter to replace the matching pattern.</p>
 <p>Corresponds to <code>django.db.models.fields.TimeField</code></p>
 <p><strong>Signature:</strong> <code>TimeField(format=None, input_formats=None)</code></p>
 <ul>
-<li><code>format</code> - A string representing the output format.  If not specified, this defaults to <code>None</code>, which indicates that Python <code>time</code> objects should be returned by <code>to_native</code>.  In this case the time encoding will be determined by the renderer.</li>
+<li><code>format</code> - A string representing the output format.  If not specified, this defaults to the same value as the <code>TIME_FORMAT</code> settings key, which will be <code>'iso-8601'</code> unless set. Setting to a format string indicates that <code>to_representation</code> return values should be coerced to string output. Format strings are described below. Setting this value to <code>None</code> indicates that Python <code>time</code> objects should be returned by <code>to_representation</code>. In this case the time encoding will be determined by the renderer.</li>
 <li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>TIME_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
 </ul>
-<p>Time format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style times should be used. (eg <code>'12:34:56.000000'</code>)</p>
-<h2 id="integerfield">IntegerField</h2>
-<p>An integer representation.</p>
-<p>Corresponds to <code>django.db.models.fields.IntegerField</code>, <code>django.db.models.fields.SmallIntegerField</code>, <code>django.db.models.fields.PositiveIntegerField</code> and <code>django.db.models.fields.PositiveSmallIntegerField</code></p>
-<h2 id="floatfield">FloatField</h2>
-<p>A floating point representation.</p>
-<p>Corresponds to <code>django.db.models.fields.FloatField</code>.</p>
-<h2 id="decimalfield">DecimalField</h2>
-<p>A decimal representation, represented in Python by a Decimal instance.</p>
-<p>Has two required arguments:</p>
+<h4 id="timefield-format-strings"><code>TimeField</code> format strings</h4>
+<p>Format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style times should be used. (eg <code>'12:34:56.000000'</code>)</p>
+<hr />
+<h1 id="choice-selection-fields">Choice selection fields</h1>
+<h2 id="choicefield">ChoiceField</h2>
+<p>A field that can accept a value out of a limited set of choices.</p>
+<p>Used by <code>ModelSerializer</code> to automatically generate fields if the corresponding model field includes a <code>choices=…</code> argument.</p>
+<p><strong>Signature:</strong> <code>ChoiceField(choices)</code></p>
 <ul>
-<li>
-<p><code>max_digits</code> The maximum number of digits allowed in the number. Note that this number must be greater than or equal to decimal_places.</p>
-</li>
-<li>
-<p><code>decimal_places</code> The number of decimal places to store with the number.</p>
-</li>
+<li><code>choices</code> - A list of valid values, or a list of <code>(key, display_name)</code> tuples.</li>
 </ul>
-<p>For example, to validate numbers up to 999 with a resolution of 2 decimal places, you would use:</p>
-<pre><code>serializers.DecimalField(max_digits=5, decimal_places=2)
-</code></pre>
-<p>And to validate numbers up to anything less than one billion with a resolution of 10 decimal places:</p>
-<pre><code>serializers.DecimalField(max_digits=19, decimal_places=10)
-</code></pre>
-<p>This field also takes an optional argument, <code>coerce_to_string</code>. If set to <code>True</code> the representation will be output as a string. If set to <code>False</code> the representation will be left as a <code>Decimal</code> instance and the final representation will be determined by the renderer.</p>
-<p>If unset, this will default to the same value as the <code>COERCE_DECIMAL_TO_STRING</code> setting, which is <code>True</code> unless set otherwise.</p>
-<p><strong>Signature:</strong> <code>DecimalField(max_digits, decimal_places, coerce_to_string=None)</code></p>
-<p>Corresponds to <code>django.db.models.fields.DecimalField</code>.</p>
+<h2 id="multiplechoicefield">MultipleChoiceField</h2>
+<p>A field that can accept a set of zero, one or many values, chosen from a limited set of choices. Takes a single mandatory argument. <code>to_internal_representation</code> returns a <code>set</code> containing the selected values.</p>
+<p><strong>Signature:</strong> <code>MultipleChoiceField(choices)</code></p>
+<ul>
+<li><code>choices</code> - A list of valid values, or a list of <code>(key, display_name)</code> tuples.</li>
+</ul>
+<hr />
+<h1 id="file-upload-fields">File upload fields</h1>
+<h4 id="parsers-and-file-uploads">Parsers and file uploads.</h4>
+<p>The <code>FileField</code> and <code>ImageField</code> classes are only suitable for use with <code>MultiPartParser</code> or <code>FileUploadParser</code>. Most parsers, such as e.g. JSON don't support file uploads.
+Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS">FILE_UPLOAD_HANDLERS</a> are used for handling uploaded files.</p>
 <h2 id="filefield">FileField</h2>
 <p>A file representation.  Performs Django's standard FileField validation.</p>
 <p>Corresponds to <code>django.forms.fields.FileField</code>.</p>
-<p><strong>Signature:</strong> <code>FileField(max_length=None, allow_empty_file=False)</code></p>
+<p><strong>Signature:</strong> <code>FileField(max_length=None, allow_empty_file=False, use_url=UPLOADED_FILES_USE_URL)</code></p>
 <ul>
-<li>
-<p><code>max_length</code> designates the maximum length for the file name.</p>
-</li>
-<li>
-<p><code>allow_empty_file</code> designates if empty files are allowed.</p>
-</li>
+<li><code>max_length</code> - Designates the maximum length for the file name.</li>
+<li><code>allow_empty_file</code> - Designates if empty files are allowed.</li>
+<li><code>use_url</code> - If set to <code>True</code> then URL string values will be used for the output representation. If set to <code>False</code> then filename string values will be used for the output representation. Defaults to the value of the <code>UPLOADED_FILES_USE_URL</code> settings key, which is <code>True</code> unless set otherwise.</li>
 </ul>
 <h2 id="imagefield">ImageField</h2>
-<p>An image representation.</p>
+<p>An image representation. Validates the uploaded file content as matching a known image format.</p>
 <p>Corresponds to <code>django.forms.fields.ImageField</code>.</p>
+<p><strong>Signature:</strong> <code>ImageField(max_length=None, allow_empty_file=False, use_url=UPLOADED_FILES_USE_URL)</code></p>
+<ul>
+<li><code>max_length</code> - Designates the maximum length for the file name.</li>
+<li><code>allow_empty_file</code> - Designates if empty files are allowed.</li>
+<li><code>use_url</code> - If set to <code>True</code> then URL string values will be used for the output representation. If set to <code>False</code> then filename string values will be used for the output representation. Defaults to the value of the <code>UPLOADED_FILES_USE_URL</code> settings key, which is <code>True</code> unless set otherwise.</li>
+</ul>
 <p>Requires either the <code>Pillow</code> package or <code>PIL</code> package.  The <code>Pillow</code> package is recommended, as <code>PIL</code> is no longer actively maintained.</p>
-<p>Signature and validation is the same as with <code>FileField</code>.</p>
 <hr />
-<p><strong>Note:</strong> <code>FileFields</code> and <code>ImageFields</code> are only suitable for use with MultiPartParser, since e.g. json doesn't support file uploads.
-Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS">FILE_UPLOAD_HANDLERS</a> are used for handling uploaded files.</p>
+<h1 id="composite-fields">Composite fields</h1>
+<h2 id="listfield">ListField</h2>
+<p>A field class that validates a list of objects.</p>
+<p><strong>Signature</strong>: <code>ListField(child)</code></p>
+<ul>
+<li><code>child</code> - A field instance that should be used for validating the objects in the list.</li>
+</ul>
+<p>For example, to validate a list of integers you might use something like the following:</p>
+<pre><code>scores = serializers.ListField(
+   child=serializers.IntegerField(min_value=0, max_value=100)
+)
+</code></pre>
+<p>The <code>ListField</code> class also supports a declarative style that allows you to write reusable list field classes.</p>
+<pre><code>class StringListField(serializers.ListField):
+    child = serializers.CharField()
+</code></pre>
+<p>We can now reuse our custom <code>StringListField</code> class throughout our application, without having to provide a <code>child</code> argument to it.</p>
+<hr />
+<h1 id="miscellaneous-fields">Miscellaneous fields</h1>
+<h2 id="readonlyfield">ReadOnlyField</h2>
+<p>A field class that simply returns the value of the field without modification.</p>
+<p>This field is used by default with <code>ModelSerializer</code> when including field names that relate to an attribute rather than a model field.</p>
+<p><strong>Signature</strong>: <code>ReadOnlyField()</code></p>
+<p>For example, is <code>has_expired</code> was a property on the <code>Account</code> model, then the following serializer would automatically generate it as a <code>ReadOnlyField</code>:</p>
+<pre><code>class AccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ('id', 'account_name', 'has_expired')
+</code></pre>
+<h2 id="hiddenfield">HiddenField</h2>
+<p>A field class that does not take a value based on user input, but instead takes its value from a default value or callable.</p>
+<p><strong>Signature</strong>: <code>HiddenField()</code></p>
+<p>For example, to include a field that always provides the current time as part of the serializer validated data, you would use the following:</p>
+<pre><code>modified = serializer.HiddenField(default=timezone.now)
+</code></pre>
+<p>The <code>HiddenField</code> class is usually only needed if you have some validation that needs to run based on some pre-provided field values, but you do not want to expose all of those fields to the end user.</p>
+<p>For further examples on <code>HiddenField</code> see the <a href="../validators">validators</a> documentation.</p>
+<h2 id="modelfield">ModelField</h2>
+<p>A generic field that can be tied to any arbitrary model field. The <code>ModelField</code> class delegates the task of serialization/deserialization to its associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.</p>
+<p>This field is used by <code>ModelSerializer</code> to correspond to custom model field classes.</p>
+<p><strong>Signature:</strong> <code>ModelField(model_field=&lt;Django ModelField instance&gt;)</code></p>
+<p>The <code>ModelField</code> class is generally intended for internal use, but can be used by your API if needed.  In order to properly instantiate a <code>ModelField</code>, it must be passed a field that is attached to an instantiated model.  For example: <code>ModelField(model_field=MyModel()._meta.get_field('custom_field'))</code></p>
+<h2 id="serializermethodfield">SerializerMethodField</h2>
+<p>This is a read-only field. It gets its value by calling a method on the serializer class it is attached to. It can be used to add any sort of data to the serialized representation of your object.</p>
+<p><strong>Signature</strong>: <code>SerializerMethodField(method_name=None)</code></p>
+<ul>
+<li><code>method-name</code> - The name of the method on the serializer to be called. If not included this defaults to <code>get_&lt;field_name&gt;</code>.</li>
+</ul>
+<p>The serializer method referred to by the <code>method_name</code> argument should accept a single argument (in addition to <code>self</code>), which is the object being serialized. It should return whatever you want to be included in the serialized representation of the object. For example:</p>
+<pre><code>from django.contrib.auth.models import User
+from django.utils.timezone import now
+from rest_framework import serializers
+
+class UserSerializer(serializers.ModelSerializer):
+    days_since_joined = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+
+    def get_days_since_joined(self, obj):
+        return (now() - obj.date_joined).days
+</code></pre>
 <hr />
 <h1 id="custom-fields">Custom fields</h1>
-<p>If you want to create a custom field, you'll probably want to override either one or both of the <code>.to_native()</code> and <code>.from_native()</code> methods.  These two methods are used to convert between the initial datatype, and a primitive, serializable datatype.  Primitive datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primitive objects.</p>
-<p>The <code>.to_native()</code> method is called to convert the initial datatype into a primitive, serializable datatype.  The <code>from_native()</code> method is called to restore a primitive datatype into its initial representation.</p>
+<p>If you want to create a custom field, you'll need to subclass <code>Field</code> and then override either one or both of the <code>.to_representation()</code> and <code>.to_internal_value()</code> methods.  These two methods are used to convert between the initial datatype, and a primitive, serializable datatype. Primitive datatypes will typically be any of a number, string, boolean, <code>date</code>/<code>time</code>/<code>datetime</code> or <code>None</code>. They may also be any list or dictionary like object that only contains other primitive objects. Other types might be supported, depending on the renderer that you are using.</p>
+<p>The <code>.to_representation()</code> method is called to convert the initial datatype into a primitive, serializable datatype.</p>
+<p>The <code>to_internal_value()</code> method is called to restore a primitive datatype into its internal python representation.</p>
+<p>Note that the <code>WritableField</code> class that was present in version 2.x no longer exists. You should subclass <code>Field</code> and override <code>to_internal_value()</code> if the field supports data input.</p>
 <h2 id="examples">Examples</h2>
 <p>Let's look at an example of serializing a class that represents an RGB color value:</p>
 <pre><code>class Color(object):
@@ -719,22 +864,27 @@ Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#st
         assert(red &lt; 256 and green &lt; 256 and blue &lt; 256)
         self.red, self.green, self.blue = red, green, blue
 
-class ColourField(serializers.WritableField):
+class ColorField(serializers.Field):
     """
     Color objects are serialized into "rgb(#, #, #)" notation.
     """
-    def to_native(self, obj):
+    def to_representation(self, obj):
         return "rgb(%d, %d, %d)" % (obj.red, obj.green, obj.blue)
 
-    def from_native(self, data):
+    def to_internal_value(self, data):
         data = data.strip('rgb(').rstrip(')')
         red, green, blue = [int(col) for col in data.split(',')]
         return Color(red, green, blue)
 </code></pre>
-<p>By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override <code>.field_to_native()</code> and/or <code>.field_from_native()</code>.</p>
+<p>By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override <code>.get_attribute()</code> and/or <code>.get_value()</code>.</p>
 <p>As an example, let's create a field that can be used represent the class name of the object being serialized:</p>
 <pre><code>class ClassNameField(serializers.Field):
-    def field_to_native(self, obj, field_name):
+    def get_attribute(self, obj):
+        # We pass the object instance onto `to_representation`,
+        # not just the field attribute.
+        return obj
+
+    def to_representation(self, obj):
         """
         Serialize the object's class name.
         """
@@ -764,7 +914,7 @@ class ColourField(serializers.WritableField):
   <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
     </p>
   </footer>
 

@@ -165,6 +165,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../api-guide/validators">Validators</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../api-guide/authentication">Authentication</a>
                   </li>
                   
@@ -261,6 +265,10 @@
                   
                   <li >
                     <a href="../2.4-announcement">2.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.0-announcement">3.0 Announcement</a>
                   </li>
                   
                   <li >
@@ -460,28 +468,18 @@
 <p>You can override the <code>BrowsableAPIRenderer.get_context()</code> method to customise the context that gets passed to the template.</p>
 <h4 id="not-using-basehtml">Not using base.html</h4>
 <p>For more advanced customization, such as not having a Bootstrap basis or tighter integration with the rest of your site, you can simply choose not to have <code>api.html</code> extend <code>base.html</code>.  Then the page content and capabilities are entirely up to you.</p>
-<h4 id="autocompletion">Autocompletion</h4>
-<p>When a <code>ChoiceField</code> has too many items, rendering the widget containing all the options can become very slow, and cause the browsable API rendering to perform poorly.  One solution is to replace the selector by an autocomplete widget, that only loads and renders a subset of the available options as needed.</p>
-<p>There are <a href="https://www.djangopackages.com/grids/g/auto-complete/">a variety of packages for autocomplete widgets</a>, such as <a href="https://github.com/yourlabs/django-autocomplete-light">django-autocomplete-light</a>.  To setup <code>django-autocomplete-light</code>, follow the <a href="http://django-autocomplete-light.readthedocs.org/en/latest/#install">installation documentation</a>, add the the following to the <code>api.html</code> template:</p>
-<pre><code>{% block script %}
-{{ block.super }}
-{% include 'autocomplete_light/static.html' %}
-{% endblock %}
+<h4 id="handling-choicefield-with-large-numbers-of-items">Handling <code>ChoiceField</code> with large numbers of items.</h4>
+<p>When a relationship or <code>ChoiceField</code> has too many items, rendering the widget containing all the options can become very slow, and cause the browsable API rendering to perform poorly.</p>
+<p>The simplest option in this case is to replace the select input with a standard text input. For example:</p>
+<pre><code> author = serializers.HyperlinkedRelatedField(
+    queryset=User.objects.all(),
+    style={'base_template': 'input.html'}
+)
 </code></pre>
-<p>You can now add the <code>autocomplete_light.ChoiceWidget</code> widget to the serializer field.</p>
-<pre><code>import autocomplete_light
-
-class BookSerializer(serializers.ModelSerializer):
-    author = serializers.ChoiceField(
-        widget=autocomplete_light.ChoiceWidget('AuthorAutocomplete')
-    )
-
-    class Meta:
-        model = Book
-</code></pre>
-<hr />
-<p><img alt="Autocomplete" src="../../../img/autocomplete.png" /></p>
-<p><em>Screenshot of the autocomplete-light widget</em></p>
+<h4 id="autocomplete">Autocomplete</h4>
+<p>An alternative, but more complex option would be to replace the input with an autocomplete widget, that only loads and renders a subset of the available options as needed. If you need to do this you'll need to do some work to build a custom autocomplete HTML template yourself.</p>
+<p>There are <a href="https://www.djangopackages.com/grids/g/auto-complete/">a variety of packages for autocomplete widgets</a>, such as <a href="https://github.com/yourlabs/django-autocomplete-light">django-autocomplete-light</a>, that you may want to refer to. Note that you will not be able to simply include these components as standard widgets, but will need to write the HTML template explicitly. This is because REST framework 3.0 no longer supports the <code>widget</code> keyword argument since it now uses templated HTML generation.</p>
+<p>Better support for autocomplete inputs is planned in future versions.</p>
 <hr />
 
           </div>
@@ -497,7 +495,7 @@ class BookSerializer(serializers.ModelSerializer):
   <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
     </p>
   </footer>
 

@@ -165,6 +165,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../api-guide/validators">Validators</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../api-guide/authentication">Authentication</a>
                   </li>
                   
@@ -261,6 +265,10 @@
                   
                   <li >
                     <a href="../../topics/2.4-announcement">2.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.0-announcement">3.0 Announcement</a>
                   </li>
                   
                   <li >
@@ -388,7 +396,7 @@ class SnippetList(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = SnippetSerializer(data=request.DATA)
+        serializer = SnippetSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -412,7 +420,7 @@ class SnippetList(APIView):
 
     def put(self, request, pk, format=None):
         snippet = self.get_object(pk)
-        serializer = SnippetSerializer(snippet, data=request.DATA)
+        serializer = SnippetSerializer(snippet, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -509,7 +517,7 @@ class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
   <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
     </p>
   </footer>
 

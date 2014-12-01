@@ -165,6 +165,10 @@
                   </li>
                   
                   <li >
+                    <a href="../validators">Validators</a>
+                  </li>
+                  
+                  <li >
                     <a href="../authentication">Authentication</a>
                   </li>
                   
@@ -261,6 +265,10 @@
                   
                   <li >
                     <a href="../../topics/2.4-announcement">2.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.0-announcement">3.0 Announcement</a>
                   </li>
                   
                   <li >
@@ -449,7 +457,7 @@ sending more complex data than simple forms</p>
 </blockquote>
 <p>REST framework includes a number of built in Parser classes, that allow you to accept requests with various media types.  There is also support for defining your own custom parsers, which gives you the flexibility to design the media types that your API accepts.</p>
 <h2 id="how-the-parser-is-determined">How the parser is determined</h2>
-<p>The set of valid parsers for a view is always defined as a list of classes.  When either <code>request.DATA</code> or <code>request.FILES</code> is accessed, REST framework will examine the <code>Content-Type</code> header on the incoming request, and determine which parser to use to parse the request content.</p>
+<p>The set of valid parsers for a view is always defined as a list of classes.  When  <code>request.data</code> is accessed, REST framework will examine the <code>Content-Type</code> header on the incoming request, and determine which parser to use to parse the request content.</p>
 <hr />
 <p><strong>Note</strong>: When developing client applications always remember to make sure you're setting the <code>Content-Type</code> header when sending data in an HTTP request.</p>
 <p>If you don't set the content type, most clients will default to using <code>'application/x-www-form-urlencoded'</code>, which may not be what you wanted.</p>
@@ -476,7 +484,7 @@ class ExampleView(APIView):
     parser_classes = (YAMLParser,)
 
     def post(self, request, format=None):
-        return Response({'received data': request.DATA})
+        return Response({'received data': request.data})
 </code></pre>
 <p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
 <pre><code>@api_view(['POST'])
@@ -485,7 +493,7 @@ def example_view(request, format=None):
     """
     A view that can accept POST requests with YAML content.
     """
-    return Response({'received data': request.DATA})
+    return Response({'received data': request.data})
 </code></pre>
 <hr />
 <h1 id="api-reference">API Reference</h1>
@@ -503,15 +511,15 @@ def example_view(request, format=None):
 <p>Requires the <code>defusedxml</code> package to be installed.</p>
 <p><strong>.media_type</strong>: <code>application/xml</code></p>
 <h2 id="formparser">FormParser</h2>
-<p>Parses HTML form content.  <code>request.DATA</code> will be populated with a <code>QueryDict</code> of data, <code>request.FILES</code> will be populated with an empty <code>QueryDict</code> of data.</p>
+<p>Parses HTML form content.  <code>request.data</code> will be populated with a <code>QueryDict</code> of data.</p>
 <p>You will typically want to use both <code>FormParser</code> and <code>MultiPartParser</code> together in order to fully support HTML form data.</p>
 <p><strong>.media_type</strong>: <code>application/x-www-form-urlencoded</code></p>
 <h2 id="multipartparser">MultiPartParser</h2>
-<p>Parses multipart HTML form content, which supports file uploads.  Both <code>request.DATA</code> and <code>request.FILES</code> will be populated with a <code>QueryDict</code>.</p>
+<p>Parses multipart HTML form content, which supports file uploads.  Both <code>request.data</code> will be populated with a <code>QueryDict</code>.</p>
 <p>You will typically want to use both <code>FormParser</code> and <code>MultiPartParser</code> together in order to fully support HTML form data.</p>
 <p><strong>.media_type</strong>: <code>multipart/form-data</code></p>
 <h2 id="fileuploadparser">FileUploadParser</h2>
-<p>Parses raw file upload content.  The <code>request.DATA</code> property will be an empty <code>QueryDict</code>, and <code>request.FILES</code> will be a dictionary with a single key <code>'file'</code> containing the uploaded file.</p>
+<p>Parses raw file upload content.  The <code>request.data</code> property will be a dictionary with a single key <code>'file'</code> containing the uploaded file.</p>
 <p>If the view used with <code>FileUploadParser</code> is called with a <code>filename</code> URL keyword argument, then that argument will be used as the filename.  If it is called without a <code>filename</code> URL keyword argument, then the client must set the filename in the <code>Content-Disposition</code> HTTP header.  For example <code>Content-Disposition: attachment; filename=upload.jpg</code>.</p>
 <p><strong>.media_type</strong>: <code>*/*</code></p>
 <h5 id="notes">Notes:</h5>
@@ -525,7 +533,7 @@ def example_view(request, format=None):
     parser_classes = (FileUploadParser,)
 
     def put(self, request, filename, format=None):
-        file_obj = request.FILES['file']
+        file_obj = request.data['file']
         # ...
         # do some staff with uploaded file
         # ...
@@ -534,7 +542,7 @@ def example_view(request, format=None):
 <hr />
 <h1 id="custom-parsers">Custom parsers</h1>
 <p>To implement a custom parser, you should override <code>BaseParser</code>, set the <code>.media_type</code> property, and implement the <code>.parse(self, stream, media_type, parser_context)</code> method.</p>
-<p>The method should return the data that will be used to populate the <code>request.DATA</code> property.</p>
+<p>The method should return the data that will be used to populate the <code>request.data</code> property.</p>
 <p>The arguments passed to <code>.parse()</code> are:</p>
 <h3 id="stream">stream</h3>
 <p>A stream-like object representing the body of the request.</p>
@@ -545,7 +553,7 @@ def example_view(request, format=None):
 <p>Optional.  If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.</p>
 <p>By default this will include the following keys: <code>view</code>, <code>request</code>, <code>args</code>, <code>kwargs</code>.</p>
 <h2 id="example">Example</h2>
-<p>The following is an example plaintext parser that will populate the <code>request.DATA</code> property with a string representing the body of the request.</p>
+<p>The following is an example plaintext parser that will populate the <code>request.data</code> property with a string representing the body of the request. </p>
 <pre><code>class PlainTextParser(BaseParser):
 """
 Plain text parser.
@@ -580,7 +588,7 @@ def parse(self, stream, media_type=None, parser_context=None):
   <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
     </p>
   </footer>
 

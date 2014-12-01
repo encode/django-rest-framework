@@ -165,6 +165,10 @@
                   </li>
                   
                   <li >
+                    <a href="../validators">Validators</a>
+                  </li>
+                  
+                  <li >
                     <a href="../authentication">Authentication</a>
                   </li>
                   
@@ -261,6 +265,10 @@
                   
                   <li >
                     <a href="../../topics/2.4-announcement">2.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.0-announcement">3.0 Announcement</a>
                   </li>
                   
                   <li >
@@ -389,6 +397,10 @@
                       <a href="#throttled">Throttled</a>
                     </li>
                   
+                    <li>
+                      <a href="#validationerror">ValidationError</a>
+                    </li>
+                  
 
                 
 
@@ -484,7 +496,7 @@ class ServiceUnavailable(APIException):
 </code></pre>
 <h2 id="parseerror">ParseError</h2>
 <p><strong>Signature:</strong> <code>ParseError(detail=None)</code></p>
-<p>Raised if the request contains malformed data when accessing <code>request.DATA</code> or <code>request.FILES</code>.</p>
+<p>Raised if the request contains malformed data when accessing <code>request.data</code>.</p>
 <p>By default this exception results in a response with the HTTP status code "400 Bad Request".</p>
 <h2 id="authenticationfailed">AuthenticationFailed</h2>
 <p><strong>Signature:</strong> <code>AuthenticationFailed(detail=None)</code></p>
@@ -504,12 +516,25 @@ class ServiceUnavailable(APIException):
 <p>By default this exception results in a response with the HTTP status code "405 Method Not Allowed".</p>
 <h2 id="unsupportedmediatype">UnsupportedMediaType</h2>
 <p><strong>Signature:</strong> <code>UnsupportedMediaType(media_type, detail=None)</code></p>
-<p>Raised if there are no parsers that can handle the content type of the request data when accessing <code>request.DATA</code> or <code>request.FILES</code>.</p>
+<p>Raised if there are no parsers that can handle the content type of the request data when accessing <code>request.data</code>.</p>
 <p>By default this exception results in a response with the HTTP status code "415 Unsupported Media Type".</p>
 <h2 id="throttled">Throttled</h2>
 <p><strong>Signature:</strong> <code>Throttled(wait=None, detail=None)</code></p>
 <p>Raised when an incoming request fails the throttling checks.</p>
 <p>By default this exception results in a response with the HTTP status code "429 Too Many Requests".</p>
+<h2 id="validationerror">ValidationError</h2>
+<p><strong>Signature:</strong> <code>ValidationError(detail)</code></p>
+<p>The <code>ValidationError</code> exception is slightly different from the other <code>APIException</code> classes:</p>
+<ul>
+<li>The <code>detail</code> argument is mandatory, not optional.</li>
+<li>The <code>detail</code> argument may be a list or dictionary of error details, and may also be a nested data structure.</li>
+<li>By convention you should import the serializers module and use a fully qualified <code>ValidationError</code> style, in order to differentiate it from Django's built-in validation error. For example. <code>raise serializers.ValidationError('This field must be an integer value.')</code></li>
+</ul>
+<p>The <code>ValidationError</code> class should be used for serializer and field validation, and by validator classes. It is also raised when calling <code>serializer.is_valid</code> with the <code>raise_exception</code> keyword argument:</p>
+<pre><code>serializer.is_valid(raise_exception=True)
+</code></pre>
+<p>The generic views use the <code>raise_exception=True</code> flag, which means that you can override the style of validation error responses globally in your API. To do so, use a custom exception handler, as described above.</p>
+<p>By default this exception results in a response with the HTTP status code "400 Bad Request".</p>
 
           </div>
           <!--/span-->
@@ -524,7 +549,7 @@ class ServiceUnavailable(APIException):
   <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
     </p>
   </footer>
 

@@ -165,6 +165,10 @@
                   </li>
                   
                   <li >
+                    <a href="../validators">Validators</a>
+                  </li>
+                  
+                  <li >
                     <a href="../authentication">Authentication</a>
                   </li>
                   
@@ -261,6 +265,10 @@
                   
                   <li >
                     <a href="../../topics/2.4-announcement">2.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.0-announcement">3.0 Announcement</a>
                   </li>
                   
                   <li >
@@ -488,12 +496,15 @@
               
             
 
-            <h1 id="generic-views">Generic views</h1>
+            <hr />
+<p><strong>Note</strong>: This is the documentation for the <strong>version 3.0</strong> of REST framework. Documentation for <a href="http://tomchristie.github.io/rest-framework-2-docs/">version 2.4</a> is also available.</p>
+<hr />
+<h1 id="generic-views">Generic views</h1>
 <blockquote>
 <p>Django’s generic views... were developed as a shortcut for common usage patterns... They take certain common idioms and patterns found in view development and abstract them so that you can quickly write common views of data without having to repeat yourself.</p>
 <p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/class-based-views/#base-vs-generic-views">Django Documentation</a></p>
 </blockquote>
-<p>One of the key benefits of class based views is the way they allow you to compose bits of reusable behaviour.  REST framework takes advantage of this by providing a number of pre-built views that provide for commonly used patterns.</p>
+<p>One of the key benefits of class based views is the way they allow you to compose bits of reusable behavior.  REST framework takes advantage of this by providing a number of pre-built views that provide for commonly used patterns.</p>
 <p>The generic views provided by REST framework allow you to quickly build API views that map closely to your database models.</p>
 <p>If the generic views don't suit the needs of your API, you can drop down to using the regular <code>APIView</code> class, or reuse the mixins and base classes used by the generic views to compose your own set of reusable generic views.</p>
 <h2 id="examples">Examples</h2>
@@ -618,22 +629,23 @@ class UserList(generics.ListCreateAPIView):
         return 20
     return 100
 </code></pre>
-<p><strong>Save / deletion hooks</strong>:</p>
-<p>The following methods are provided as placeholder interfaces.  They contain empty implementations and are not called directly by <code>GenericAPIView</code>, but they are overridden and used by some of the mixin classes.</p>
+<p><strong>Save and deletion hooks</strong>:</p>
+<p>The following methods are provided by the mixin classes, and provide easy overriding of the object save or deletion behavior.</p>
 <ul>
-<li><code>pre_save(self, obj)</code> - A hook that is called before saving an object.</li>
-<li><code>post_save(self, obj, created=False)</code> - A hook that is called after saving an object.</li>
-<li><code>pre_delete(self, obj)</code> - A hook that is called before deleting an object.</li>
-<li><code>post_delete(self, obj)</code> - A hook that is called after deleting an object.</li>
+<li><code>perform_create(self, serializer)</code> - Called by <code>CreateModelMixin</code> when saving a new object instance.</li>
+<li><code>perform_update(self, serializer)</code> - Called by <code>UpdateModelMixin</code> when saving an existing object instance.</li>
+<li><code>perform_destroy(self, instance)</code> - Called by <code>DestroyModelMixin</code> when deleting an object instance.</li>
 </ul>
-<p>The <code>pre_save</code> method in particular is a useful hook for setting attributes that are implicit in the request, but are not part of the request data.  For instance, you might set an attribute on the object based on the request user, or based on a URL keyword argument.</p>
-<pre><code>def pre_save(self, obj):
-    """
-    Set the object's owner, based on the incoming request.
-    """
-    obj.owner = self.request.user
+<p>These hooks are particularly useful for setting attributes that are implicit in the request, but are not part of the request data.  For instance, you might set an attribute on the object based on the request user, or based on a URL keyword argument.</p>
+<pre><code>def perform_create(self, serializer):
+    serializer.save(user=self.request.user)
 </code></pre>
-<p>Remember that the <code>pre_save()</code> method is not called by <code>GenericAPIView</code> itself, but it is called by <code>create()</code> and <code>update()</code> methods on the <code>CreateModelMixin</code> and <code>UpdateModelMixin</code> classes.</p>
+<p>These override points are also particularly useful for adding behavior that occurs before or after saving an object, such as emailing a confirmation, or logging the update.</p>
+<pre><code>def perform_update(self, serializer):
+    instance = serializer.save()
+    send_email_confirmation(user=self.request.user, modified=instance)
+</code></pre>
+<p><strong>Note</strong>: These methods replace the old-style version 2.x <code>pre_save</code>, <code>post_save</code>, <code>pre_delete</code> and <code>post_delete</code> methods, which are no longer available.</p>
 <p><strong>Other methods</strong>:</p>
 <p>You won't typically need to override the following methods, although you might need to call into them if you're writing custom views using <code>GenericAPIView</code>.</p>
 <ul>
@@ -728,7 +740,7 @@ class UserList(generics.ListCreateAPIView):
     serializer_class = UserSerializer
     lookup_fields = ('account', 'username')
 </code></pre>
-<p>Using custom mixins is a good option if you have custom behavior that needs to be used</p>
+<p>Using custom mixins is a good option if you have custom behavior that needs to be used.</p>
 <h2 id="creating-custom-base-classes">Creating custom base classes</h2>
 <p>If you are using a mixin across multiple views, you can take this a step further and create your own set of base views that can then be used throughout your project.  For example:</p>
 <pre><code>class BaseRetrieveView(MultipleFieldLookupMixin,
@@ -765,7 +777,7 @@ class BaseRetrieveUpdateDestroyView(MultipleFieldLookupMixin,
   <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
     </p>
   </footer>
 

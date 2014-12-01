@@ -165,6 +165,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../api-guide/validators">Validators</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../api-guide/authentication">Authentication</a>
                   </li>
                   
@@ -261,6 +265,10 @@
                   
                   <li >
                     <a href="../2.4-announcement">2.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.0-announcement">3.0 Announcement</a>
                   </li>
                   
                   <li >
@@ -371,22 +379,6 @@
                   
                     <li>
                       <a href="#20x-series">2.0.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#04x-series">0.4.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#03x-series">0.3.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#02x-series">0.2.x series</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#01x-series">0.1.x series</a>
                     </li>
                   
 
@@ -790,7 +782,7 @@
 <li>Bugfix: Validation errors instead of exceptions when related fields receive incorrect types.</li>
 <li>Bugfix: Handle ObjectDoesNotExist exception when serializing null reverse one-to-one</li>
 </ul>
-<p><strong>Note</strong>: Prior to 2.1.16, The Decimals would render in JSON using floating point if <code>simplejson</code> was installed, but otherwise render using string notation.  Now that use of <code>simplejson</code> has been deprecated, Decimals will consistently render using string notation.  See <a href="https://github.com/tomchristie/django-rest-framework/issues/582">#582</a> for more details.</p>
+<p><strong>Note</strong>: Prior to 2.1.16, The Decimals would render in JSON using floating point if <code>simplejson</code> was installed, but otherwise render using string notation.  Now that use of <code>simplejson</code> has been deprecated, Decimals will consistently render using string notation.  See <a href="../../ticket-582">ticket 582</a> for more details.</p>
 <h3 id="2115">2.1.15</h3>
 <p><strong>Date</strong>: 3rd Jan 2013</p>
 <ul>
@@ -936,124 +928,7 @@
 <li><strong>Fix all of the things.</strong>  (Well, almost.)</li>
 <li>For more information please see the <a href="../rest-framework-2-announcement">2.0 announcement</a>.</li>
 </ul>
-<hr />
-<h2 id="04x-series">0.4.x series</h2>
-<h3 id="040">0.4.0</h3>
-<ul>
-<li>Supports Django 1.5.</li>
-<li>Fixes issues with 'HEAD' method.</li>
-<li>Allow views to specify template used by TemplateRenderer</li>
-<li>More consistent error responses</li>
-<li>Some serializer fixes</li>
-<li>Fix internet explorer ajax behavior</li>
-<li>Minor xml and yaml fixes</li>
-<li>Improve setup (e.g. use staticfiles, not the defunct ADMIN_MEDIA_PREFIX)</li>
-<li>Sensible absolute URL generation, not using hacky set_script_prefix</li>
-</ul>
-<hr />
-<h2 id="03x-series">0.3.x series</h2>
-<h3 id="033">0.3.3</h3>
-<ul>
-<li>Added DjangoModelPermissions class to support <code>django.contrib.auth</code> style permissions.</li>
-<li>Use <code>staticfiles</code> for css files.</li>
-<li>Easier to override.  Won't conflict with customized admin styles (e.g. grappelli)</li>
-<li>Templates are now nicely namespaced.</li>
-<li>Allows easier overriding.</li>
-<li>Drop implied 'pk' filter if last arg in urlconf is unnamed.</li>
-<li>Too magical.  Explicit is better than implicit.</li>
-<li>Saner template variable auto-escaping.</li>
-<li>Tidier setup.py</li>
-<li>Updated for URLObject 2.0</li>
-<li>Bugfixes:</li>
-<li>Bug with PerUserThrottling when user contains unicode chars.</li>
-</ul>
-<h3 id="032">0.3.2</h3>
-<ul>
-<li>Bugfixes:</li>
-<li>Fix 403 for POST and PUT from the UI with UserLoggedInAuthentication (#115)</li>
-<li>serialize_model method in serializer.py may cause wrong value (#73)</li>
-<li>Fix Error when clicking OPTIONS button (#146)</li>
-<li>And many other fixes</li>
-<li>Remove short status codes</li>
-<li>Zen of Python: "There should be one-- and preferably only one --obvious way to do it."</li>
-<li>get_name, get_description become methods on the view - makes them overridable.</li>
-<li>Improved model mixin API - Hooks for build_query, get_instance_data, get_model, get_queryset, get_ordering</li>
-</ul>
-<h3 id="031">0.3.1</h3>
-<ul>
-<li>[not documented]</li>
-</ul>
-<h3 id="030">0.3.0</h3>
-<ul>
-<li>JSONP Support</li>
-<li>Bugfixes, including support for latest markdown release</li>
-</ul>
-<hr />
-<h2 id="02x-series">0.2.x series</h2>
-<h3 id="024">0.2.4</h3>
-<ul>
-<li>Fix broken IsAdminUser permission.</li>
-<li>OPTIONS support.</li>
-<li>XMLParser.</li>
-<li>Drop mentions of Blog, BitBucket.</li>
-</ul>
-<h3 id="023">0.2.3</h3>
-<ul>
-<li>Fix some throttling bugs.</li>
-<li><code>X-Throttle</code> header on throttling.</li>
-<li>Support for nesting resources on related models.</li>
-</ul>
-<h3 id="022">0.2.2</h3>
-<ul>
-<li>Throttling support complete.</li>
-</ul>
-<h3 id="021">0.2.1</h3>
-<ul>
-<li>Couple of simple bugfixes over 0.2.0</li>
-</ul>
-<h3 id="020">0.2.0</h3>
-<ul>
-<li>
-<p>Big refactoring changes since 0.1.0, ask on the discussion group if anything isn't clear.
-  The public API has been massively cleaned up.  Expect it to be fairly stable from here on in.</p>
-</li>
-<li>
-<p><code>Resource</code> becomes decoupled into <code>View</code> and <code>Resource</code>, your views should now inherit from <code>View</code>, not <code>Resource</code>.</p>
-</li>
-<li>
-<p>The handler functions on views <code>.get() .put() .post()</code> etc, no longer have the <code>content</code> and <code>auth</code> args.
-  Use <code>self.CONTENT</code> inside a view to access the deserialized, validated content.
-  Use <code>self.user</code> inside a view to access the authenticated user.</p>
-</li>
-<li>
-<p><code>allowed_methods</code> and <code>anon_allowed_methods</code> are now defunct.  if a method is defined, it's available.
-  The <code>permissions</code> attribute on a <code>View</code> is now used to provide generic permissions checking.
-  Use permission classes such as <code>FullAnonAccess</code>, <code>IsAuthenticated</code> or <code>IsUserOrIsAnonReadOnly</code> to set the permissions.</p>
-</li>
-<li>
-<p>The <code>authenticators</code> class becomes <code>authentication</code>.  Class names change to <code>Authentication</code>.</p>
-</li>
-<li>
-<p>The <code>emitters</code> class becomes <code>renderers</code>.  Class names change to <code>Renderers</code>.</p>
-</li>
-<li>
-<p><code>ResponseException</code> becomes <code>ErrorResponse</code>.</p>
-</li>
-<li>
-<p>The mixin classes have been nicely refactored, the basic mixins are now <code>RequestMixin</code>, <code>ResponseMixin</code>, <code>AuthMixin</code>, and <code>ResourceMixin</code>
-  You can reuse these mixin classes individually without using the <code>View</code> class.</p>
-</li>
-</ul>
-<hr />
-<h2 id="01x-series">0.1.x series</h2>
-<h3 id="011">0.1.1</h3>
-<ul>
-<li>Final build before pulling in all the refactoring changes for 0.2, in case anyone needs to hang on to 0.1.</li>
-</ul>
-<h3 id="010">0.1.0</h3>
-<ul>
-<li>Initial release.</li>
-</ul>
+<p>For older release notes, <a href="../../old-release-notes">please see the GitHub repo</a>.</p>
 
           </div>
           <!--/span-->
@@ -1068,7 +943,7 @@
   <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
     </p>
   </footer>
 

@@ -4,11 +4,11 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <title>Requests - Django REST framework</title>
+  <title>Validators - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/requests/" />
+  <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/validators/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Requests">
+  <meta name="description" content="Django, API, REST, Validators">
   <meta name="author" content="Tom Christie">
 
   <!-- Le styles -->
@@ -62,10 +62,10 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../responses">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../authentication">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../../tutorial/6-viewsets-and-routers">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../relations">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
@@ -120,8 +120,8 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   
-                  <li class="active" >
-                    <a href=".">Requests</a>
+                  <li >
+                    <a href="../requests">Requests</a>
                   </li>
                   
                   <li >
@@ -164,8 +164,8 @@
                     <a href="../relations">Serializer relations</a>
                   </li>
                   
-                  <li >
-                    <a href="../validators">Validators</a>
+                  <li class="active" >
+                    <a href=".">Validators</a>
                   </li>
                   
                   <li >
@@ -345,101 +345,65 @@
                 
 
                   <li class="main">
-                    <a href="#requests">Requests</a>
-                  </li>
-
-                  
-
-                
-
-                  <li class="main">
-                    <a href="#request-parsing">Request parsing</a>
+                    <a href="#validators">Validators</a>
                   </li>
 
                   
                     <li>
-                      <a href="#data">.data</a>
+                      <a href="#validation-in-rest-framework">Validation in REST framework</a>
                     </li>
                   
                     <li>
-                      <a href="#query_params">.query_params</a>
+                      <a href="#uniquevalidator">UniqueValidator</a>
                     </li>
                   
                     <li>
-                      <a href="#data-and-files">.DATA and .FILES</a>
+                      <a href="#uniquetogethervalidator">UniqueTogetherValidator</a>
                     </li>
                   
                     <li>
-                      <a href="#query_params_1">.QUERY_PARAMS</a>
+                      <a href="#uniquefordatevalidator">UniqueForDateValidator</a>
                     </li>
                   
                     <li>
-                      <a href="#parsers">.parsers</a>
+                      <a href="#uniqueformonthvalidator">UniqueForMonthValidator</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#uniqueforyearvalidator">UniqueForYearValidator</a>
                     </li>
                   
 
                 
 
                   <li class="main">
-                    <a href="#content-negotiation">Content negotiation</a>
+                    <a href="#advanced-default-argument-usage">Advanced 'default' argument usage</a>
                   </li>
 
                   
                     <li>
-                      <a href="#accepted_renderer">.accepted_renderer</a>
+                      <a href="#currentuserdefault">CurrentUserDefault</a>
                     </li>
                   
                     <li>
-                      <a href="#accepted_media_type">.accepted_media_type</a>
+                      <a href="#createonlydefault">CreateOnlyDefault</a>
                     </li>
                   
 
                 
 
                   <li class="main">
-                    <a href="#authentication">Authentication</a>
+                    <a href="#writing-custom-validators">Writing custom validators</a>
                   </li>
 
                   
                     <li>
-                      <a href="#user">.user</a>
+                      <a href="#function-based">Function based</a>
                     </li>
                   
                     <li>
-                      <a href="#auth">.auth</a>
+                      <a href="#class-based">Class based</a>
                     </li>
-                  
-                    <li>
-                      <a href="#authenticators">.authenticators</a>
-                    </li>
-                  
-
-                
-
-                  <li class="main">
-                    <a href="#browser-enhancements">Browser enhancements</a>
-                  </li>
-
-                  
-                    <li>
-                      <a href="#method">.method</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#content_type">.content_type</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#stream">.stream</a>
-                    </li>
-                  
-
-                
-
-                  <li class="main">
-                    <a href="#standard-httprequest-attributes">Standard HttpRequest attributes</a>
-                  </li>
-
                   
 
                 
@@ -453,93 +417,180 @@
 
           <div id="main-content" class="span9">
             
-              
-                <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/request.py">
-                  <span class="label label-info">request.py</span>
-                </a>
-              
-            
 
-            <hr />
+            <p><a class="github" href="validators.py"></a></p>
+<hr />
 <p><strong>Note</strong>: This is the documentation for the <strong>version 3.0</strong> of REST framework. Documentation for <a href="http://tomchristie.github.io/rest-framework-2-docs/">version 2.4</a> is also available.</p>
 <hr />
-<h1 id="requests">Requests</h1>
+<h1 id="validators">Validators</h1>
 <blockquote>
-<p>If you're doing REST-based web service stuff ... you should ignore request.POST.</p>
-<p>&mdash; Malcom Tredinnick, <a href="https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion">Django developers group</a></p>
+<p>Validators can be useful for re-using validation logic between different types of fields.</p>
+<p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/validators/">Django documentation</a></p>
 </blockquote>
-<p>REST framework's <code>Request</code> class extends the standard <code>HttpRequest</code>, adding support for REST framework's flexible request parsing and request authentication.</p>
-<hr />
-<h1 id="request-parsing">Request parsing</h1>
-<p>REST framework's Request objects provide flexible request parsing that allows you to treat requests with JSON data or other media types in the same way that you would normally deal with form data.</p>
-<h2 id="data">.data</h2>
-<p><code>request.data</code> returns the parsed content of the request body.  This is similar to the standard <code>request.POST</code> and <code>request.FILES</code> attributes except that:</p>
+<p>Most of the time you're dealing with validation in REST framework you'll simply be relying on the default field validation, or writing explicit validation methods on serializer or field classes.</p>
+<p>However, sometimes you'll want to place your validation logic into reusable components, so that it can easily be reused throughout your codebase. This can be achieved by using validator functions and validator classes.</p>
+<h2 id="validation-in-rest-framework">Validation in REST framework</h2>
+<p>Validation in Django REST framework serializers is handled a little differently to how validation works in Django's <code>ModelForm</code> class.</p>
+<p>With <code>ModelForm</code> the validation is performed partially on the form, and partially on the model instance. With REST framework the validation is performed entirely on the serializer class. This is advantageous for the following reasons:</p>
 <ul>
-<li>It includes all parsed content, including <em>file and non-file</em> inputs.</li>
-<li>It supports parsing the content of HTTP methods other than <code>POST</code>, meaning that you can access the content of <code>PUT</code> and <code>PATCH</code> requests.</li>
-<li>It supports REST framework's flexible request parsing, rather than just supporting form data.  For example you can handle incoming JSON data in the same way that you handle incoming form data.</li>
+<li>It introduces a proper separation of concerns, making your code behavior more obvious.</li>
+<li>It is easy to switch between using shortcut <code>ModelSerializer</code> classes and using  explicit <code>Serializer</code> classes. Any validation behavior being used for <code>ModelSerializer</code> is simple to replicate.</li>
+<li>Printing the <code>repr</code> of a serializer instance will show you exactly what validation rules it applies. There's no extra hidden validation behavior being called on the model instance.</li>
 </ul>
-<p>For more details see the <a href="../parsers">parsers documentation</a>.</p>
-<h2 id="query_params">.query_params</h2>
-<p><code>request.query_params</code> is a more correctly named synonym for <code>request.GET</code>.</p>
-<p>For clarity inside your code, we recommend using <code>request.query_params</code> instead of the Django's standard <code>request.GET</code>. Doing so will help keep your codebase more correct and obvious - any HTTP method type may include query parameters, not just <code>GET</code> requests.</p>
-<h2 id="data-and-files">.DATA and .FILES</h2>
-<p>The old-style version 2.x <code>request.data</code> and <code>request.FILES</code> attributes are still available, but are now pending deprecation in favor of the unified <code>request.data</code> attribute.</p>
-<h2 id="query_params_1">.QUERY_PARAMS</h2>
-<p>The old-style version 2.x <code>request.QUERY_PARAMS</code> attribute is still available, but is now pending deprecation in favor of the more pythonic <code>request.query_params</code>.</p>
-<h2 id="parsers">.parsers</h2>
-<p>The <code>APIView</code> class or <code>@api_view</code> decorator will ensure that this property is automatically set to a list of <code>Parser</code> instances, based on the <code>parser_classes</code> set on the view or based on the <code>DEFAULT_PARSER_CLASSES</code> setting.</p>
-<p>You won't typically need to access this property.</p>
+<p>When you're using <code>ModelSerializer</code> all of this is handled automatically for you. If you want to drop down to using a <code>Serializer</code> classes instead, then you need to define the validation rules explicitly.</p>
+<h4 id="example">Example</h4>
+<p>As an example of how REST framework uses explicit validation, we'll take a simple model class that has a field with a uniqueness constraint.</p>
+<pre><code>class CustomerReportRecord(models.Model):
+    time_raised = models.DateTimeField(default=timezone.now, editable=False) 
+    reference = models.CharField(unique=True, max_length=20)
+    description = models.TextField()
+</code></pre>
+<p>Here's a basic <code>ModelSerializer</code> that we can use for creating or updating instances of <code>CustomerReportRecord</code>:</p>
+<pre><code>class CustomerReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomerReportRecord
+</code></pre>
+<p>If we open up the Django shell using <code>manage.py shell</code> we can now </p>
+<pre><code>&gt;&gt;&gt; from project.example.serializers import CustomerReportSerializer
+&gt;&gt;&gt; serializer = CustomerReportSerializer()
+&gt;&gt;&gt; print(repr(serializer))
+CustomerReportSerializer():
+    id = IntegerField(label='ID', read_only=True)
+    time_raised = DateTimeField(read_only=True)
+    reference = CharField(max_length=20, validators=[&lt;UniqueValidator(queryset=CustomerReportRecord.objects.all())&gt;])
+    description = CharField(style={'type': 'textarea'})
+</code></pre>
+<p>The interesting bit here is the <code>reference</code> field. We can see that the uniqueness constraint is being explicitly enforced by a validator on the serializer field.</p>
+<p>Because of this more explicit style REST framework includes a few validator classes that are not available in core Django. These classes are detailed below.</p>
 <hr />
-<p><strong>Note:</strong> If a client sends malformed content, then accessing <code>request.data</code> may raise a <code>ParseError</code>.  By default REST framework's <code>APIView</code> class or <code>@api_view</code> decorator will catch the error and return a <code>400 Bad Request</code> response.</p>
-<p>If a client sends a request with a content-type that cannot be parsed then a <code>UnsupportedMediaType</code> exception will be raised, which by default will be caught and return a <code>415 Unsupported Media Type</code> response.</p>
-<hr />
-<h1 id="content-negotiation">Content negotiation</h1>
-<p>The request exposes some properties that allow you to determine the result of the content negotiation stage. This allows you to implement behaviour such as selecting a different serialisation schemes for different media types.</p>
-<h2 id="accepted_renderer">.accepted_renderer</h2>
-<p>The renderer instance what was selected by the content negotiation stage.</p>
-<h2 id="accepted_media_type">.accepted_media_type</h2>
-<p>A string representing the media type that was accepted by the content negotiation stage.</p>
-<hr />
-<h1 id="authentication">Authentication</h1>
-<p>REST framework provides flexible, per-request authentication, that gives you the ability to:</p>
+<h2 id="uniquevalidator">UniqueValidator</h2>
+<p>This validator can be used to enforce the <code>unique=True</code> constraint on model fields.
+It takes a single required argument, and an optional <code>messages</code> argument:</p>
 <ul>
-<li>Use different authentication policies for different parts of your API.</li>
-<li>Support the use of multiple authentication policies.</li>
-<li>Provide both user and token information associated with the incoming request.</li>
+<li><code>queryset</code> <em>required</em> - This is the queryset against which uniqueness should be enforced.</li>
+<li><code>message</code> - The error message that should be used when validation fails.</li>
 </ul>
-<h2 id="user">.user</h2>
-<p><code>request.user</code> typically returns an instance of <code>django.contrib.auth.models.User</code>, although the behavior depends on the authentication policy being used.</p>
-<p>If the request is unauthenticated the default value of <code>request.user</code> is an instance of <code>django.contrib.auth.models.AnonymousUser</code>.</p>
-<p>For more details see the <a href="../authentication">authentication documentation</a>.</p>
-<h2 id="auth">.auth</h2>
-<p><code>request.auth</code> returns any additional authentication context.  The exact behavior of <code>request.auth</code> depends on the authentication policy being used, but it may typically be an instance of the token that the request was authenticated against.</p>
-<p>If the request is unauthenticated, or if no additional context is present, the default value of <code>request.auth</code> is <code>None</code>.</p>
-<p>For more details see the <a href="../authentication">authentication documentation</a>.</p>
-<h2 id="authenticators">.authenticators</h2>
-<p>The <code>APIView</code> class or <code>@api_view</code> decorator will ensure that this property is automatically set to a list of <code>Authentication</code> instances, based on the <code>authentication_classes</code> set on the view or based on the <code>DEFAULT_AUTHENTICATORS</code> setting.</p>
-<p>You won't typically need to access this property.</p>
+<p>This validator should be applied to <em>serializer fields</em>, like so:</p>
+<pre><code>slug = SlugField(
+    max_length=100,
+    validators=[UniqueValidator(queryset=BlogPost.objects.all())]
+)
+</code></pre>
+<h2 id="uniquetogethervalidator">UniqueTogetherValidator</h2>
+<p>This validator can be used to enforce <code>unique_together</code> constraints on model instances.
+It has two required arguments, and a single optional <code>messages</code> argument:</p>
+<ul>
+<li><code>queryset</code> <em>required</em> - This is the queryset against which uniqueness should be enforced.</li>
+<li><code>fields</code> <em>required</em> - A list or tuple of field names which should make a unique set. These must exist as fields on the serializer class.</li>
+<li><code>message</code> - The error message that should be used when validation fails.</li>
+</ul>
+<p>The validator should be applied to <em>serializer classes</em>, like so:</p>
+<pre><code>class ExampleSerializer(serializers.Serializer):
+    # ...
+    class Meta:
+        # ToDo items belong to a parent list, and have an ordering defined
+        # by the 'position' field. No two items in a given list may share
+        # the same position.
+        validators = [
+            UniqueTogetherValidator(
+                queryset=ToDoItem.objects.all(),
+                fields=('list', 'position')
+            )
+        ]
+</code></pre>
 <hr />
-<h1 id="browser-enhancements">Browser enhancements</h1>
-<p>REST framework supports a few browser enhancements such as browser-based <code>PUT</code>, <code>PATCH</code> and <code>DELETE</code> forms.</p>
-<h2 id="method">.method</h2>
-<p><code>request.method</code> returns the <strong>uppercased</strong> string representation of the request's HTTP method.</p>
-<p>Browser-based <code>PUT</code>, <code>PATCH</code> and <code>DELETE</code> forms are transparently supported.</p>
-<p>For more information see the <a href="../../topics/browser-enhancements">browser enhancements documentation</a>.</p>
-<h2 id="content_type">.content_type</h2>
-<p><code>request.content_type</code>, returns a string object representing the media type of the HTTP request's body, or an empty string if no media type was provided.</p>
-<p>You won't typically need to directly access the request's content type, as you'll normally rely on REST framework's default request parsing behavior.</p>
-<p>If you do need to access the content type of the request you should use the <code>.content_type</code> property in preference to using <code>request.META.get('HTTP_CONTENT_TYPE')</code>, as it provides transparent support for browser-based non-form content.</p>
-<p>For more information see the <a href="../../topics/browser-enhancements">browser enhancements documentation</a>.</p>
-<h2 id="stream">.stream</h2>
-<p><code>request.stream</code> returns a stream representing the content of the request body.</p>
-<p>You won't typically need to directly access the request's content, as you'll normally rely on REST framework's default request parsing behavior.</p>
-<p>If you do need to access the raw content directly, you should use the <code>.stream</code> property in preference to using <code>request.content</code>, as it provides transparent support for browser-based non-form content.</p>
-<p>For more information see the <a href="../../topics/browser-enhancements">browser enhancements documentation</a>.</p>
+<p><strong>Note</strong>: The <code>UniqueTogetherValidation</code> class always imposes an implicit constraint that all the fields it applies to are always treated as required. Fields with <code>default</code> values are an exception to this as they always supply a value even when omitted from user input.</p>
 <hr />
-<h1 id="standard-httprequest-attributes">Standard HttpRequest attributes</h1>
-<p>As REST framework's <code>Request</code> extends Django's <code>HttpRequest</code>, all the other standard attributes and methods are also available.  For example the <code>request.META</code> and <code>request.session</code> dictionaries are available as normal.</p>
-<p>Note that due to implementation reasons the <code>Request</code> class does not inherit from <code>HttpRequest</code> class, but instead extends the class using composition.</p>
+<h2 id="uniquefordatevalidator">UniqueForDateValidator</h2>
+<h2 id="uniqueformonthvalidator">UniqueForMonthValidator</h2>
+<h2 id="uniqueforyearvalidator">UniqueForYearValidator</h2>
+<p>These validators can be used to enforce the <code>unique_for_date</code>, <code>unique_for_month</code> and <code>unique_for_year</code> constraints on model instances. They take the following arguments:</p>
+<ul>
+<li><code>queryset</code> <em>required</em> - This is the queryset against which uniqueness should be enforced.</li>
+<li><code>field</code> <em>required</em> - A field name against which uniqueness in the given date range will be validated. This must exist as a field on the serializer class.</li>
+<li><code>date_field</code> <em>required</em> - A field name which will be used to determine date range for the uniqueness constrain. This must exist as a field on the serializer class.</li>
+<li><code>message</code> - The error message that should be used when validation fails.</li>
+</ul>
+<p>The validator should be applied to <em>serializer classes</em>, like so:</p>
+<pre><code>class ExampleSerializer(serializers.Serializer):
+    # ...
+    class Meta:
+        # Blog posts should have a slug that is unique for the current year.
+        validators = [
+            UniqueForYearValidator(
+                queryset=BlogPostItem.objects.all(),
+                field='slug',
+                date_field='published'
+            )
+        ]
+</code></pre>
+<p>The date field that is used for the validation is always required to be present on the serializer class. You can't simply rely on a model class <code>default=...</code>, because the value being used for the default wouldn't be generated until after the validation has run.</p>
+<p>There are a couple of styles you may want to use for this depending on how you want your API to behave. If you're using <code>ModelSerializer</code> you'll probably simply rely on the defaults that REST framework generates for you, but if you are using <code>Serializer</code> or simply want more explicit control, use on of the styles demonstrated below.</p>
+<h4 id="using-with-a-writable-date-field">Using with a writable date field.</h4>
+<p>If you want the date field to be writable the only thing worth noting is that you should ensure that it is always available in the input data, either by setting a <code>default</code> argument, or by setting <code>required=True</code>.</p>
+<pre><code>published = serializers.DateTimeField(required=True)
+</code></pre>
+<h4 id="using-with-a-read-only-date-field">Using with a read-only date field.</h4>
+<p>If you want the date field to be visible, but not editable by the user, then set <code>read_only=True</code> and additionally set a <code>default=...</code> argument.</p>
+<pre><code>published = serializers.DateTimeField(read_only=True, default=timezone.now)
+</code></pre>
+<p>The field will not be writable to the user, but the default value will still be passed through to the <code>validated_data</code>.</p>
+<h4 id="using-with-a-hidden-date-field">Using with a hidden date field.</h4>
+<p>If you want the date field to be entirely hidden from the user, then use <code>HiddenField</code>. This field type does not accept user input, but instead always returns it's default value to the <code>validated_data</code> in the serializer.</p>
+<pre><code>published = serializers.HiddenField(default=timezone.now)
+</code></pre>
+<hr />
+<p><strong>Note</strong>: The <code>UniqueFor&lt;Range&gt;Validation</code> classes always imposes an implicit constraint that the fields they are applied to are always treated as required. Fields with <code>default</code> values are an exception to this as they always supply a value even when omitted from user input.</p>
+<hr />
+<h1 id="advanced-default-argument-usage">Advanced 'default' argument usage</h1>
+<p>Validators that are applied across multiple fields in the serializer can sometimes require a field input that should not be provided by the API client, but that <em>is</em> available as input to the validator.</p>
+<p>Two patterns that you may want to use for this sort of validation include:</p>
+<ul>
+<li>Using <code>HiddenField</code>. This field will be present in <code>validated_data</code> but <em>will not</em> be used in the serializer output representation.</li>
+<li>Using a standard field with <code>read_only=True</code>, but that also includes a <code>default=…</code> argument. This field <em>will</em> be used in the serializer output representation, but cannot be set directly by the user.</li>
+</ul>
+<p>REST framework includes a couple of defaults that may be useful in this context.</p>
+<h4 id="currentuserdefault">CurrentUserDefault</h4>
+<p>A default class that can be used to represent the current user. In order to use this, the 'request' must have been provided as part of the context dictionary when instantiating the serializer.</p>
+<pre><code>owner = serializers.HiddenField(
+    default=CurrentUserDefault()
+)
+</code></pre>
+<h4 id="createonlydefault">CreateOnlyDefault</h4>
+<p>A default class that can be used to <em>only set a default argument during create operations</em>. During updates the field is omitted.</p>
+<p>It takes a single argument, which is the default value or callable that should be used during create operations.</p>
+<pre><code>created_at = serializers.DateTimeField(
+    read_only=True,
+    default=CreateOnlyDefault(timezone.now)
+)
+</code></pre>
+<hr />
+<h1 id="writing-custom-validators">Writing custom validators</h1>
+<p>You can use any of Django's existing validators, or write your own custom validators.</p>
+<h2 id="function-based">Function based</h2>
+<p>A validator may be any callable that raises a <code>serializers.ValidationError</code> on failure.</p>
+<pre><code>def even_number(value):
+    if value % 2 != 0:
+        raise serializers.ValidationError('This field must be an even number.')
+</code></pre>
+<h2 id="class-based">Class based</h2>
+<p>To write a class based validator, use the <code>__call__</code> method. Class based validators are useful as they allow you to parameterize and reuse behavior.</p>
+<pre><code>class MultipleOf:
+    def __init__(self, base):
+        self.base = base
+
+    def __call__(self, value):
+        if value % self.base != 0
+            message = 'This field must be a multiple of %d.' % self.base
+            raise serializers.ValidationError(message)
+</code></pre>
+<h4 id="using-set_context">Using <code>set_context()</code></h4>
+<p>In some advanced cases you might want a validator to be passed the serializer field it is being used with as additional context. You can do so by declaring a <code>set_context</code> method on a class based validator.</p>
+<pre><code>def set_context(self, serializer_field):
+    # Determine if this is an update or a create operation.
+    # In `__call__` we can then use that information to modify the validation behavior.
+    self.is_update = serializer_field.parent.instance is not None
+</code></pre>
 
           </div>
           <!--/span-->
