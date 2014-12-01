@@ -565,6 +565,14 @@ class ModelSerializer(Serializer):
     * A set of default fields are automatically populated.
     * A set of default validators are automatically populated.
     * Default `.create()` and `.update()` implementations are provided.
+
+    The process of automatically determining a set of serializer fields
+    based on the model fields is reasonably complex, but you almost certainly
+    don't need to dig into the implemention.
+
+    If the `ModelSerializer` class *doesn't* generate the set of fields that
+    you need you should either declare the extra/differing fields explicitly on
+    the serializer class, or simply use a `Serializer` class.
     """
     _field_mapping = ClassLookupDict({
         models.AutoField: IntegerField,
