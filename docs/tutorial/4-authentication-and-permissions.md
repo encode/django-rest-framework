@@ -198,15 +198,25 @@ If we're interacting with the API programmatically we need to explicitly provide
 
 If we try to create a snippet without authenticating, we'll get an error:
 
-    curl -i -X POST http://127.0.0.1:8000/snippets/ -d "code=print 123"
+    http POST http://127.0.0.1:8000/snippets/ code="print 123"
 
-    {"detail": "Authentication credentials were not provided."}
+    {
+        "detail": "Authentication credentials were not provided."
+    }
 
 We can make a successful request by including the username and password of one of the users we created earlier.
 
-    curl -X POST http://127.0.0.1:8000/snippets/ -d "code=print 789" -u tom:password
+    http POST -a tom:password http://127.0.0.1:8000/snippets/ code="print 789"
 
-    {"id": 5, "owner": "tom", "title": "foo", "code": "print 789", "linenos": false, "language": "python", "style": "friendly"}
+    {
+        "id": 5,
+        "owner": "tom",
+        "title": "foo",
+        "code": "print 789",
+        "linenos": false,
+        "language": "python",
+        "style": "friendly"
+    }
 
 ## Summary
 

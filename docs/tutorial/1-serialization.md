@@ -332,17 +332,51 @@ Quit out of the shell...
 
 In another terminal window, we can test the server.
 
-We can get a list of all of the snippets.
+We could use `curl`, but let's use a nicer tool called [httpie][httpie] to test our server. It has much nicer formatting and makes our output easier to read. This is especially useful when testing.
 
-	curl http://127.0.0.1:8000/snippets/
+You can install httpie on all operating systems using pip:
 
-	[{"id": 1, "title": "", "code": "foo = \"bar\"\n", "linenos": false, "language": "python", "style": "friendly"}, {"id": 2, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}]
+    pip install httpie
 
-Or we can get a particular snippet by referencing its id.
+It can also be installed through [Homebrew][brew] on Mac:
 
-	curl http://127.0.0.1:8000/snippets/2/
+    brew install httpie
 
-	{"id": 2, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}
+Finally, we can get a list of all of the snippets:
+
+	http http://127.0.0.1:8000/snippets/ --body
+
+	[
+      {
+        "id": 1,
+        "title": "",
+        "code": "foo = \"bar\"\n",
+        "linenos": false,
+        "language": "python",
+        "style": "friendly"
+      },
+      {
+        "id": 2,
+        "title": "",
+        "code": "print \"hello, world\"\n",
+        "linenos": false,
+        "language": "python",
+        "style": "friendly"
+      }
+    ]
+
+Or we can get a particular snippet by referencing its id:
+
+	http http://127.0.0.1:8000/snippets/2/ --body
+
+	{
+      "id": 2,
+      "title": "",
+      "code": "print \"hello, world\"\n",
+      "linenos": false,
+      "language": "python",
+      "style": "friendly"
+    }
 
 Similarly, you can have the same json displayed by visiting these URLs in a web browser.
 
@@ -359,3 +393,5 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 [sandbox]: http://restframework.herokuapp.com/
 [virtualenv]: http://www.virtualenv.org/en/latest/index.html
 [tut-2]: 2-requests-and-responses.md
+[httpie]: https://github.com/jakubroztocil/httpie#installation
+[brew]: http://brew.sh

@@ -24,6 +24,10 @@ Create a new Django project named `tutorial`, then start a new app called `quick
     django-admin.py startapp quickstart
 	cd ..
 
+Optionally, install [httpie][httpie] for tastier HTTP requests:
+
+    pip install httpie
+
 Now sync your database for the first time:
 
     python manage.py migrate
@@ -159,6 +163,30 @@ We can now access our API, both from the command-line, using tools like `curl`..
         ]
     }
 
+Or with [httpie][httpie], a tastier version of `curl`...
+
+    bash: http -a username:password http://127.0.0.1:8000/users/ --body
+    {
+        "count": 2,
+        "next": null,
+        "previous": null,
+        "results": [
+            {
+                "email": "admin@example.com",
+                "groups": [],
+                "url": "http://localhost:8000/users/1/",
+                "username": "paul"
+            },
+            {
+                "email": "tom@example.com",
+                "groups": [                ],
+                "url": "http://127.0.0.1:8000/users/2/",
+                "username": "tom"
+            }
+        ]
+    }
+
+
 Or directly through the browser...
 
 ![Quick start image][image]
@@ -173,3 +201,4 @@ If you want to get a more in depth understanding of how REST framework fits toge
 [image]: ../img/quickstart.png
 [tutorial]: 1-serialization.md
 [guide]: ../#api-guide
+[httpie]: https://github.com/jakubroztocil/httpie#installation
