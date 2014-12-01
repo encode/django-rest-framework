@@ -11,6 +11,7 @@ python primitives.
 response content is handled by parsers and renderers.
 """
 from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import models
 from django.db.models.fields import FieldDoesNotExist
 from django.utils import six
@@ -330,6 +331,14 @@ class Serializer(BaseSerializer):
                 raise ValidationError({
                     api_settings.NON_FIELD_ERRORS_KEY: [exc.detail]
                 })
+        except DjangoValidationError as exc:
+            # Normally you should raise `serializers.ValidationError`
+            # inside your codebase, but we handle Django's validation
+            # exception class as well for simpler compat.
+            # Eg. Calling Model.clean() explictily inside Serializer.validate()
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: list(exc.messages)
+            })
 
         return value
 
@@ -353,6 +362,8 @@ class Serializer(BaseSerializer):
                     validated_value = validate_method(validated_value)
             except ValidationError as exc:
                 errors[field.field_name] = exc.detail
+            except DjangoValidationError as exc:
+                errors[field.field_name] = list(exc.messages)
             except SkipField:
                 pass
             else:
