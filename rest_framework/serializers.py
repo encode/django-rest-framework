@@ -601,6 +601,26 @@ class ModelSerializer(Serializer):
     _related_class = PrimaryKeyRelatedField
 
     def create(self, validated_attrs):
+        """
+        We have a bit of extra checking around this in order to provide
+        descriptive messages when something goes wrong, but this method is
+        essentially just:
+
+            return ExampleModel.objects.create(**validated_attrs)
+
+        If there are many to many fields present on the instance then they
+        cannot be set until the model is instantiated, in which case the
+        implementation is like so:
+
+            example_relationship = validated_attrs.pop('example_relationship')
+            instance = ExampleModel.objects.create(**validated_attrs)
+            instance.example_relationship = example_relationship
+            return instance
+
+        The default implementation also does not handle nested relationships.
+        If you want to support writable nested relationships you'll need
+        to write an explicit `.create()` method.
+        """
         # Check that the user isn't trying to handle a writable nested field.
         # If we don't do this explicitly they'd likely get a confusing
         # error at the point of calling `Model.objects.create()`.
@@ -651,13 +671,18 @@ class ModelSerializer(Serializer):
         return instance
 
     def get_validators(self):
+        # If the validators have been declared explicitly then use that.
+        validators = getattr(getattr(self, 'Meta', None), 'validators', None)
+        if validators is not None:
+            return validators
+
+        # Determine the default set of validators.
+        validators = []
+        model_class = self.Meta.model
         field_names = set([
             field.source for field in self.fields.values()
             if (field.source != '*') and ('.' not in field.source)
         ])
-
-        validators = getattr(getattr(self, 'Meta', None), 'validators', [])
-        model_class = self.Meta.model
 
         # Note that we make sure to check `unique_together` both on the
         # base model class, but also on any parent classes.
