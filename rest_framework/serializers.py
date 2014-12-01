@@ -86,6 +86,15 @@ class BaseSerializer(Field):
         class when `many=True` is used. You can customize it if you need to
         control which keyword arguments are passed to the parent, and
         which are passed to the child.
+
+        Note that we're over-cautious in passing most arguments to both parent
+        and child classes in order to try to cover the general case. If you're
+        overriding this method you'll probably want something much simpler, eg:
+
+        @classmethod
+        def many_init(cls, *args, **kwargs):
+            kwargs['child'] = cls()
+            return CustomListSerializer(*args, **kwargs)
         """
         child_serializer = cls(*args, **kwargs)
         list_kwargs = {'child': child_serializer}
@@ -93,7 +102,9 @@ class BaseSerializer(Field):
             (key, value) for key, value in kwargs.items()
             if key in LIST_SERIALIZER_KWARGS
         ]))
-        return ListSerializer(*args, **list_kwargs)
+        meta = getattr(cls, 'Meta', None)
+        list_serializer_class = getattr(meta, 'list_serializer_class', ListSerializer)
+        return list_serializer_class(*args, **list_kwargs)
 
     def to_internal_value(self, data):
         raise NotImplementedError('`to_internal_value()` must be implemented.')
@@ -362,14 +373,9 @@ class Serializer(BaseSerializer):
         for field in fields:
             attribute = field.get_attribute(instance)
             if attribute is None:
-                value = None
+                ret[field.field_name] = None
             else:
-                value = field.to_representation(attribute)
-            transform_method = getattr(self, 'transform_' + field.field_name, None)
-            if transform_method is not None:
-                value = transform_method(value)
-
-            ret[field.field_name] = value
+                ret[field.field_name] = field.to_representation(attribute)
 
         return ret
 
@@ -720,49 +726,62 @@ class ModelSerializer(Serializer):
         # Determine if we need any additional `HiddenField` or extra keyword
         # arguments to deal with `unique_for` dates that are required to
         # be in the input data in order to validate it.
-        unique_fields = {}
+        hidden_fields = {}
+        unique_constraint_names = set()
+
         for model_field_name, field_name in model_field_mapping.items():
             try:
                 model_field = model._meta.get_field(model_field_name)
             except FieldDoesNotExist:
                 continue
 
-            # Deal with each of the `unique_for_*` cases.
-            for date_field_name in (
+            # Include each of the `unique_for_*` field names.
+            unique_constraint_names |= set([
                 model_field.unique_for_date,
                 model_field.unique_for_month,
                 model_field.unique_for_year
-            ):
-                if date_field_name is None:
-                    continue
+            ])
 
-                # Get the model field that is refered too.
-                date_field = model._meta.get_field(date_field_name)
+        unique_constraint_names -= set([None])
 
-                if date_field.auto_now_add:
-                    default = CreateOnlyDefault(timezone.now)
-                elif date_field.auto_now:
-                    default = timezone.now
-                elif date_field.has_default():
-                    default = model_field.default
+        # Include each of the `unique_together` field names,
+        # so long as all the field names are included on the serializer.
+        for parent_class in [model] + list(model._meta.parents.keys()):
+            for unique_together_list in parent_class._meta.unique_together:
+                if set(fields).issuperset(set(unique_together_list)):
+                    unique_constraint_names |= set(unique_together_list)
+
+        # Now we have all the field names that have uniqueness constraints
+        # applied, we can add the extra 'required=...' or 'default=...'
+        # arguments that are appropriate to these fields, or add a `HiddenField` for it.
+        for unique_constraint_name in unique_constraint_names:
+            # Get the model field that is refered too.
+            unique_constraint_field = model._meta.get_field(unique_constraint_name)
+
+            if getattr(unique_constraint_field, 'auto_now_add', None):
+                default = CreateOnlyDefault(timezone.now)
+            elif getattr(unique_constraint_field, 'auto_now', None):
+                default = timezone.now
+            elif unique_constraint_field.has_default():
+                default = unique_constraint_field.default
+            else:
+                default = empty
+
+            if unique_constraint_name in model_field_mapping:
+                # The corresponding field is present in the serializer
+                if unique_constraint_name not in extra_kwargs:
+                    extra_kwargs[unique_constraint_name] = {}
+                if default is empty:
+                    if 'required' not in extra_kwargs[unique_constraint_name]:
+                        extra_kwargs[unique_constraint_name]['required'] = True
                 else:
-                    default = empty
-
-                if date_field_name in model_field_mapping:
-                    # The corresponding date field is present in the serializer
-                    if date_field_name not in extra_kwargs:
-                        extra_kwargs[date_field_name] = {}
-                    if default is empty:
-                        if 'required' not in extra_kwargs[date_field_name]:
-                            extra_kwargs[date_field_name]['required'] = True
-                    else:
-                        if 'default' not in extra_kwargs[date_field_name]:
-                            extra_kwargs[date_field_name]['default'] = default
-                else:
-                    # The corresponding date field is not present in the,
-                    # serializer. We have a default to use for the date, so
-                    # add in a hidden field that populates it.
-                    unique_fields[date_field_name] = HiddenField(default=default)
+                    if 'default' not in extra_kwargs[unique_constraint_name]:
+                        extra_kwargs[unique_constraint_name]['default'] = default
+            elif default is not empty:
+                # The corresponding field is not present in the,
+                # serializer. We have a default to use for it, so
+                # add in a hidden field that populates it.
+                hidden_fields[unique_constraint_name] = HiddenField(default=default)
 
         # Now determine the fields that should be included on the serializer.
         for field_name in fields:
@@ -838,12 +857,16 @@ class ModelSerializer(Serializer):
                     'validators', 'queryset'
                 ]:
                     kwargs.pop(attr, None)
+
+            if extras.get('default') and kwargs.get('required') is False:
+                kwargs.pop('required')
+
             kwargs.update(extras)
 
             # Create the serializer field.
             ret[field_name] = field_cls(**kwargs)
 
-        for field_name, field in unique_fields.items():
+        for field_name, field in hidden_fields.items():
             ret[field_name] = field
 
         return ret

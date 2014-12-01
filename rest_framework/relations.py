@@ -49,6 +49,21 @@ class RelatedField(Field):
 
     @classmethod
     def many_init(cls, *args, **kwargs):
+        """
+        This method handles creating a parent `ManyRelatedField` instance
+        when the `many=True` keyword argument is passed.
+
+        Typically you won't need to override this method.
+
+        Note that we're over-cautious in passing most arguments to both parent
+        and child classes in order to try to cover the general case. If you're
+        overriding this method you'll probably want something much simpler, eg:
+
+        @classmethod
+        def many_init(cls, *args, **kwargs):
+            kwargs['child'] = cls()
+            return CustomManyRelatedField(*args, **kwargs)
+        """
         list_kwargs = {'child_relation': cls(*args, **kwargs)}
         for key in kwargs.keys():
             if key in MANY_RELATION_KWARGS:
@@ -306,7 +321,9 @@ class ManyRelatedField(Field):
     The `ManyRelatedField` class is responsible for handling iterating through
     the values and passing each one to the child relationship.
 
-    You shouldn't need to be using this class directly yourself.
+    This class is treated as private API.
+    You shouldn't generally need to be using this class directly yourself,
+    and should instead simply set 'many=True' on the relationship.
     """
     initial = []
     default_empty_html = []

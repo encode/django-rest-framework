@@ -54,7 +54,7 @@ The title that is used in the browsable API is generated from the view class nam
 
 For example, the view `UserListView`, will be named `User List` when presented in the browsable API.
 
-When working with viewsets, an appropriate suffix is appended to each generated view.  For example, the view set `UserViewSet` will generate views named `User List` and `User Instance`. 
+When working with viewsets, an appropriate suffix is appended to each generated view.  For example, the view set `UserViewSet` will generate views named `User List` and `User Instance`.
 
 #### Setting the description
 
@@ -65,9 +65,9 @@ If the python `markdown` library is installed, then [markdown syntax][markdown] 
     class AccountListView(views.APIView):
         """
         Returns a list of all **active** accounts in the system.
-        
+
         For more details on how accounts are activated please [see here][ref].
-        
+
         [ref]: http://example.com/activating-accounts
         """
 
@@ -84,7 +84,7 @@ You can modify the response behavior to `OPTIONS` requests by overriding the `me
     def metadata(self, request):
         """
         Don't include the view description in OPTIONS responses.
-        """ 
+        """
         data = super(ExampleView, self).metadata(request)
         data.pop('description')
         return data

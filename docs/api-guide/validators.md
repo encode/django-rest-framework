@@ -1,5 +1,11 @@
 <a class="github" href="validators.py"></a>
 
+---
+
+**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
+
+---
+
 # Validators
 
 > Validators can be useful for re-using validation logic between different types of fields.

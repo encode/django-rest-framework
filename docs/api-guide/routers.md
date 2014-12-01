@@ -1,4 +1,4 @@
-<a class="github" href="routers.py"></a>
+source: routers.py
 
 # Routers
 
@@ -56,10 +56,10 @@ For example, given a method like this on the `UserViewSet` class:
 
     from myapp.permissions import IsAdminOrIsSelf
     from rest_framework.decorators import detail_route
-    
+
     class UserViewSet(ModelViewSet):
         ...
-        
+
         @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf])
         def set_password(self, request, pk=None):
             ...
@@ -228,7 +228,7 @@ For another example of setting the `.routes` attribute, see the source code for 
 
 ## Advanced custom routers
 
-If you want to provide totally custom behavior, you can override `BaseRouter` and override the `get_urls(self)` method.  The method should inspect the registered viewsets and return a list of URL patterns.  The registered prefix, viewset and basename tuples may be inspected by accessing the `self.registry` attribute.  
+If you want to provide totally custom behavior, you can override `BaseRouter` and override the `get_urls(self)` method.  The method should inspect the registered viewsets and return a list of URL patterns.  The registered prefix, viewset and basename tuples may be inspected by accessing the `self.registry` attribute.
 
 You may also want to override the `get_default_base_name(self, viewset)` method, or else always explicitly set the `base_name` argument when registering your viewsets with the router.
 

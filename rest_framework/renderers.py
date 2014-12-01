@@ -429,7 +429,10 @@ class HTMLFormRenderer(BaseRenderer):
             style['base_template'] = self.base_template
         style['renderer'] = self
 
-        if 'template' in style:
+        # This API needs to be finessed and finalized for 3.1
+        if 'template' in renderer_context:
+            template_name = renderer_context['template']
+        elif 'template' in style:
             template_name = style['template']
         else:
             template_name = style['template_pack'].strip('/') + '/' + style['base_template']
@@ -522,7 +525,10 @@ class BrowsableAPIRenderer(BaseRenderer):
         else:
             instance = None
 
-        if request.method == method:
+        # If this is valid serializer data, and the form is for the same
+        # HTTP method as was used in the request then use the existing
+        # serializer instance, rather than dynamically creating a new one.
+        if request.method == method and serializer is not None:
             try:
                 data = request.data
             except ParseError:
@@ -555,7 +561,14 @@ class BrowsableAPIRenderer(BaseRenderer):
                 if data is not None:
                     serializer.is_valid()
             form_renderer = self.form_renderer_class()
-            return form_renderer.render(serializer.data, self.accepted_media_type, self.renderer_context)
+            return form_renderer.render(
+                serializer.data,
+                self.accepted_media_type,
+                dict(
+                    list(self.renderer_context.items()) +
+                    [('template', 'rest_framework/api_form.html')]
+                )
+            )
 
     def get_raw_data_form(self, data, view, method, request):
         """

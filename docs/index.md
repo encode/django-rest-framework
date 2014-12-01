@@ -9,7 +9,9 @@
 
 ---
 
-**Note**: The incoming 3.0 version has now been merged to the `master` branch on GitHub. For the source of the currently available PyPI version, please see the `2.4.4` tag.
+**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
+
+For more details see the [3.0 release notes](3.0-announcement).
 
 ---
 
@@ -26,9 +28,6 @@
 <img alt="Django REST Framework" title="Logo by Jake 'Sid' Smith" src="img/logo.png" width="600px" style="display: block; margin: 0 auto 0 auto">
 </p>
 
-<!--
-# Django REST framework
--->
 
 Django REST framework is a powerful and flexible toolkit that makes it easy to build Web APIs.
 
@@ -204,6 +203,7 @@ General guides to using REST framework.
 * [2.2 Announcement][2.2-announcement]
 * [2.3 Announcement][2.3-announcement]
 * [2.4 Announcement][2.4-announcement]
+* [3.0 Announcement][3.0-announcement]
 * [Kickstarter Announcement][kickstarter-announcement]
 * [Release Notes][release-notes]
 * [Credits][credits]
@@ -297,7 +297,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [serializers]: api-guide/serializers.md
 [fields]: api-guide/fields.md
 [relations]: api-guide/relations.md
-[validation]: api-guide/validation.md
+[validators]: api-guide/validators.md
 [authentication]: api-guide/authentication.md
 [permissions]: api-guide/permissions.md
 [throttling]: api-guide/throttling.md
@@ -322,6 +322,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [2.2-announcement]: topics/2.2-announcement.md
 [2.3-announcement]: topics/2.3-announcement.md
 [2.4-announcement]: topics/2.4-announcement.md
+[3.0-announcement]: topics/3.0-announcement.md
 [kickstarter-announcement]: topics/kickstarter-announcement.md
 [release-notes]: topics/release-notes.md
 [credits]: topics/credits.md

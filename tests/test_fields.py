@@ -793,7 +793,8 @@ class TestChoiceField(FieldValues):
         'amazing': ['`amazing` is not a valid choice.']
     }
     outputs = {
-        'good': 'good'
+        'good': 'good',
+        '': ''
     }
     field = serializers.ChoiceField(
         choices=[

@@ -93,6 +93,9 @@ class UniqueTogetherValidator:
         The `UniqueTogetherValidator` always forces an implied 'required'
         state on the fields it applies to.
         """
+        if self.instance is not None:
+            return
+
         missing = dict([
             (field_name, self.missing_message)
             for field_name in self.fields
@@ -105,8 +108,17 @@ class UniqueTogetherValidator:
         """
         Filter the queryset to all instances matching the given attributes.
         """
+        # If this is an update, then any unprovided field should
+        # have it's value set based on the existing instance attribute.
+        if self.instance is not None:
+            for field_name in self.fields:
+                if field_name not in attrs:
+                    attrs[field_name] = getattr(self.instance, field_name)
+
+        # Determine the filter keyword arguments and filter the queryset.
         filter_kwargs = dict([
-            (field_name, attrs[field_name]) for field_name in self.fields
+            (field_name, attrs[field_name])
+            for field_name in self.fields
         ])
         return queryset.filter(**filter_kwargs)
 

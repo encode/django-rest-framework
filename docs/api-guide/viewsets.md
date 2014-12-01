@@ -1,4 +1,4 @@
-<a class="github" href="viewsets.py"></a>
+source: viewsets.py
 
 # ViewSets
 
@@ -124,7 +124,7 @@ For example:
         @detail_route(methods=['post'])
         def set_password(self, request, pk=None):
             user = self.get_object()
-            serializer = PasswordSerializer(data=request.DATA)
+            serializer = PasswordSerializer(data=request.data)
             if serializer.is_valid():
                 user.set_password(serializer.data['password'])
                 user.save()

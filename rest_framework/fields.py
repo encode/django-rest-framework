@@ -68,8 +68,8 @@ def get_attribute(instance, attrs):
                 return instance[attr]
             except (KeyError, TypeError, AttributeError):
                 raise exc
-    if is_simple_callable(instance):
-        return instance()
+        if is_simple_callable(instance):
+            instance = instance()
     return instance
 
 
@@ -181,6 +181,9 @@ class Field(object):
         self.style = {} if style is None else style
         self.allow_null = allow_null
 
+        if allow_null and self.default_empty_html is empty:
+            self.default_empty_html = None
+
         if validators is not None:
             self.validators = validators[:]
 
@@ -259,7 +262,11 @@ class Field(object):
         if html.is_html_input(dictionary):
             # HTML forms will represent empty fields as '', and cannot
             # represent None or False values directly.
-            ret = dictionary.get(self.field_name, '')
+            if self.field_name not in dictionary:
+                if getattr(self.root, 'partial', False):
+                    return empty
+                return self.default_empty_html
+            ret = dictionary[self.field_name]
             return self.default_empty_html if (ret == '') else ret
         return dictionary.get(self.field_name, empty)
 
@@ -314,7 +321,6 @@ class Field(object):
 
         value = self.to_internal_value(data)
         self.run_validators(value)
-        self.validate(value)
         return value
 
     def run_validators(self, value):
@@ -340,9 +346,6 @@ class Field(object):
                 errors.extend(exc.messages)
         if errors:
             raise ValidationError(errors)
-
-    def validate(self, value):
-        pass
 
     def to_internal_value(self, data):
         """
@@ -495,6 +498,7 @@ class CharField(Field):
     }
     initial = ''
     coerce_blank_to_null = False
+    default_empty_html = ''
 
     def __init__(self, **kwargs):
         self.allow_blank = kwargs.pop('allow_blank', False)
@@ -947,6 +951,8 @@ class ChoiceField(Field):
             self.fail('invalid_choice', input=data)
 
     def to_representation(self, value):
+        if value in ('', None):
+            return value
         return self.choice_strings_to_values[six.text_type(value)]
 
 

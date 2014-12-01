@@ -1,4 +1,4 @@
-<a class="github" href="settings.py"></a>
+source: settings.py
 
 # Settings
 
@@ -51,7 +51,7 @@ Default:
 
 #### DEFAULT_PARSER_CLASSES
 
-A list or tuple of parser classes, that determines the default set of parsers used when accessing the `request.DATA` property.
+A list or tuple of parser classes, that determines the default set of parsers used when accessing the `request.data` property.
 
 Default:
 
@@ -74,7 +74,7 @@ Default:
 
 #### DEFAULT_PERMISSION_CLASSES
 
-A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view.
+A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view. Permission must be granted by every class in the list.
 
 Default:
 
