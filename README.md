@@ -9,7 +9,7 @@ Full documentation for the project is available at [http://www.django-rest-frame
 
 ---
 
-**Note**: The incoming 3.0 version has now been merged to the `master` branch on GitHub. For the source of the currently available PyPI version, please see the `2.4.4` tag.
+**Note**: We have now released Django REST framework 3.0. For older codebases you may want to refer to the version 2.4.4 [source code](https://github.com/tomchristie/django-rest-framework/tree/version-2.4.x), and [documentation](http://tomchristie.github.io/rest-framework-2-docs/).
 
 ---
 
