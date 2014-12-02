@@ -10,6 +10,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator, MinLeng
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
+import pytest
 
 
 def dedent(blocktext):
@@ -24,6 +25,10 @@ class CustomField(models.Field):
     A custom model field simply for testing purposes.
     """
     pass
+
+
+class OneFieldModel(models.Model):
+    char_field = models.CharField(max_length=100)
 
 
 class RegularFieldsModel(models.Model):
@@ -66,6 +71,29 @@ class FieldOptionsModel(models.Model):
     default_field = models.IntegerField(default=0)
     descriptive_field = models.IntegerField(help_text='Some help text', verbose_name='A label')
     choices_field = models.CharField(max_length=100, choices=COLOR_CHOICES)
+
+
+class TestModelSerializer(TestCase):
+    def test_create_method(self):
+        class TestSerializer(serializers.ModelSerializer):
+            non_model_field = serializers.CharField()
+
+            class Meta:
+                model = OneFieldModel
+                fields = ('char_field', 'non_model_field')
+
+        serializer = TestSerializer(data={
+            'char_field': 'foo',
+            'non_model_field': 'bar',
+        })
+        serializer.is_valid()
+        with pytest.raises(TypeError):
+            serializer.save()
+
+        try:
+            serializer.save()
+        except TypeError as exc:
+            assert 'ModelSerializer' in str(exc)
 
 
 class TestRegularFieldMappings(TestCase):
