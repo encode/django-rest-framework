@@ -127,6 +127,14 @@ class BaseSerializer(Field):
             (self.__class__.__module__, self.__class__.__name__)
         )
 
+        assert hasattr(self, '_errors'), (
+            'You must call `.is_valid()` before calling `.save()`.'
+        )
+
+        assert not self.errors, (
+            'You cannot call `.save()` on a serializer with invalid data.'
+        )
+
         validated_data = dict(
             list(self.validated_data.items()) +
             list(kwargs.items())
