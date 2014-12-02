@@ -332,15 +332,11 @@ Quit out of the shell...
 
 In another terminal window, we can test the server.
 
-We could use `curl`, but let's use a nicer tool called [httpie][httpie] to test our server. It has much nicer formatting and makes our output easier to read. This is especially useful when testing.
+We can test our API using using `curl` or [httpie][httpie]. Httpie is a user friendly http client that's written in Python. Let's install that.
 
 You can install httpie on all operating systems using pip:
 
     pip install httpie
-
-It can also be installed through [Homebrew][brew] on Mac:
-
-    brew install httpie
 
 Finally, we can get a list of all of the snippets:
 
