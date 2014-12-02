@@ -390,4 +390,3 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 [virtualenv]: http://www.virtualenv.org/en/latest/index.html
 [tut-2]: 2-requests-and-responses.md
 [httpie]: https://github.com/jakubroztocil/httpie#installation
-[brew]: http://brew.sh
