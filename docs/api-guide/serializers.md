@@ -689,6 +689,21 @@ Here's an example of how you might choose to implement multiple updates:
 
 It is possible that a third party package may be included alongside the 3.1 release that provides some automatic support for multiple update operations, similar to the `allow_add_remove` behavior that was present in REST framework 2.
 
+#### Customizing ListSerializer initialization
+
+When a serializer with `many=True` is instantiated, we need to determine which arguments and keyword arguments should be passed to the `.__init__()` method for both the child `Serializer` class, and for the parent `ListSerializer` class.
+
+The default implementation is to pass all arguments to both classes, except for `validators`, and any custom keyword arguments, both of which are assumed to be intended for the child serializer class.
+
+Occasionally you might need to explicitly specify how the child and parent classes should be instantiated when `many=True` is passed. You can do so by using the `many_init` class method.
+
+        @classmethod
+        def many_init(cls, *args, **kwargs):
+            # Instantiate the child serializer.
+            kwargs['child'] = cls()
+            # Instantiate the parent list serializer.
+            return CustomListSerializer(*args, **kwargs)
+
 ---
 
 # BaseSerializer
