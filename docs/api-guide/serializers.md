@@ -96,7 +96,7 @@ If we want to be able to return complete object instances based on the validated
 If your object instances correspond to Django models you'll also want to ensure that these methods save the object to the database. For example, if `Comment` was a Django model, the methods might look like this:
 
         def create(self, validated_data):
-            return Comment.objcts.create(**validated_data)
+            return Comment.objects.create(**validated_data)
 
         def update(self, instance, validated_data):
             instance.email = validated_data.get('email', instance.email)
