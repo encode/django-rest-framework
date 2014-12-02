@@ -653,7 +653,24 @@ class ModelSerializer(Serializer):
             if relation_info.to_many and (field_name in validated_attrs):
                 many_to_many[field_name] = validated_attrs.pop(field_name)
 
-        instance = ModelClass.objects.create(**validated_attrs)
+        try:
+            instance = ModelClass.objects.create(**validated_attrs)
+        except TypeError as exc:
+            msg = (
+                'Got a `TypeError` when calling `%s.objects.create()`. '
+                'This may be because you have a writable field on the '
+                'serializer class that is not a valid argument to '
+                '`%s.objects.create()`. You may need to make the field '
+                'read-only, or override the %s.create() method to handle '
+                'this correctly.\nOriginal exception text was: %s.' %
+                (
+                    ModelClass.__name__,
+                    ModelClass.__name__,
+                    self.__class__.__name__,
+                    exc
+                )
+            )
+            raise TypeError(msg)
 
         # Save many-to-many relationships after the instance is created.
         if many_to_many:
