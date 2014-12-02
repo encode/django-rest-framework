@@ -100,3 +100,20 @@ class BindingDict(object):
 
     def values(self):
         return self.fields.values()
+    
+    def pop(self, field_name, default=None):
+        if field_name in self.fields.keys():
+            popped = self.fields[field_name]
+            del self.fields[field_name]
+            return popped
+        else:
+            return default
+
+    def get(self, field_name, default=None):
+        if field_name in self.fields.keys():
+            return self.fields[field_name]
+        else:
+            return default
+
+    def __len__(self):
+        return len(self.fields())
