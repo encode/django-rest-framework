@@ -567,13 +567,13 @@ There needs to be a way of determining which views should be used for hyperlinki
 
 By default hyperlinks are expected to correspond to a view name that matches the style `'{model_name}-detail'`, and looks up the instance by a `pk` keyword argument.
 
-You can override a URL field view name and lookup field by using either, or both of, the `view_name` and `lookup_field` options in the `extra_field_kwargs` setting, like so:
+You can override a URL field view name and lookup field by using either, or both of, the `view_name` and `lookup_field` options in the `extra_kwargs` setting, like so:
 
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
             fields = ('account_url', 'account_name', 'users', 'created')
-            extra_field_kwargs = {
+            extra_kwargs = {
                 'url': {'view_name': 'accounts', 'lookup_field': 'account_name'}
                 'users': {'lookup_field': 'username'}
             }
