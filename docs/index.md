@@ -11,6 +11,8 @@
 
 **Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
 
+For more details see the [3.0 release notes][3.0-announcement].
+
 ---
 
 <p>
@@ -201,6 +203,7 @@ General guides to using REST framework.
 * [2.2 Announcement][2.2-announcement]
 * [2.3 Announcement][2.3-announcement]
 * [2.4 Announcement][2.4-announcement]
+* [3.0 Announcement][3.0-announcement]
 * [Kickstarter Announcement][kickstarter-announcement]
 * [Release Notes][release-notes]
 * [Credits][credits]
@@ -319,6 +322,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [2.2-announcement]: topics/2.2-announcement.md
 [2.3-announcement]: topics/2.3-announcement.md
 [2.4-announcement]: topics/2.4-announcement.md
+[3.0-announcement]: topics/3.0-announcement.md
 [kickstarter-announcement]: topics/kickstarter-announcement.md
 [release-notes]: topics/release-notes.md
 [credits]: topics/credits.md
