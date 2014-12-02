@@ -1,4 +1,10 @@
-<a class="github" href="relations.py"></a>
+source: relations.py
+
+---
+
+**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
+
+---
 
 # Serializer relations
 
@@ -15,6 +21,20 @@ Relational fields are used to represent model relationships.  They can be applie
 **Note:** The relational fields are declared in `relations.py`, but by convention you should import them from the `serializers` module, using `from rest_framework import serializers` and refer to fields as `serializers.<FieldName>`.
 
 ---
+
+#### Inspecting automatically generated relationships.
+
+When using the `ModelSerializer` class, serializer fields and relationships will be automatically generated for you. Inspecting these automatically generated fields can be a useful tool for determining how to customize the relationship style.
+
+To do so, open the Django shell, using `python manage.py shell`, then import the serializer class, instantiate it, and print the object representation…
+
+    >>> from myapp.serializers import AccountSerializer
+    >>> serializer = AccountSerializer()
+    >>> print repr(serializer)  # Or `print(repr(serializer))` in Python 3.x.
+    AccountSerializer():
+        id = IntegerField(label='ID', read_only=True)
+        name = CharField(allow_blank=True, max_length=100, required=False)
+        owner = PrimaryKeyRelatedField(queryset=User.objects.all())
 
 # API Reference
 
@@ -33,19 +53,19 @@ In order to explain the various types of relational fields, we'll use a couple o
         class Meta:
             unique_together = ('album', 'order')
             order_by = 'order'
-        
+
         def __unicode__(self):
             return '%d: %s' % (self.order, self.title)
 
-## RelatedField
+## StringRelatedField
 
-`RelatedField` may be used to represent the target of the relationship using its `__unicode__` method.
+`StringRelatedField` may be used to represent the target of the relationship using its `__unicode__` method.
 
 For example, the following serializer.
- 
+
     class AlbumSerializer(serializers.ModelSerializer):
-        tracks = serializers.RelatedField(many=True)
-        
+        tracks = serializers.StringRelatedField(many=True)
+
         class Meta:
             model = Album
             fields = ('album_name', 'artist', 'tracks')
@@ -74,10 +94,10 @@ This field is read only.
 `PrimaryKeyRelatedField` may be used to represent the target of the relationship using its primary key.
 
 For example, the following serializer:
- 
+
     class AlbumSerializer(serializers.ModelSerializer):
         tracks = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-        
+
         class Meta:
             model = Album
             fields = ('album_name', 'artist', 'tracks')
@@ -99,20 +119,23 @@ By default this field is read-write, although you can change this behavior using
 
 **Arguments**:
 
+* `queryset` - The queryset used for model instance lookups when validating the field input. Relationships must either set a queryset explicitly, or set `read_only=True`.
 * `many` - If applied to a to-many relationship, you should set this argument to `True`.
-* `required` - If set to `False`, the field will accept values of `None` or the empty-string for nullable relationships.
-* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
+* `allow_null` - If set to `True`, the field will accept values of `None` or the empty string for nullable relationships. Defaults to `False`.
 
 ## HyperlinkedRelatedField
 
 `HyperlinkedRelatedField` may be used to represent the target of the relationship using a hyperlink.
 
 For example, the following serializer:
- 
+
     class AlbumSerializer(serializers.ModelSerializer):
-        tracks = serializers.HyperlinkedRelatedField(many=True, read_only=True,
-                                                     view_name='track-detail')
-        
+        tracks = serializers.HyperlinkedRelatedField(
+            many=True,
+            read_only=True,
+            view_name='track-detail'
+        )
+
         class Meta:
             model = Album
             fields = ('album_name', 'artist', 'tracks')
@@ -134,11 +157,12 @@ By default this field is read-write, although you can change this behavior using
 
 **Arguments**:
 
-* `view_name` - The view name that should be used as the target of the relationship.  If you're using [the standard router classes][routers] this wil be a string with the format `<modelname>-detail`. **required**.
+* `view_name` - The view name that should be used as the target of the relationship.  If you're using [the standard router classes][routers] this will be a string with the format `<modelname>-detail`. **required**.
+* `queryset` - The queryset used for model instance lookups when validating the field input. Relationships must either set a queryset explicitly, or set `read_only=True`.
 * `many` - If applied to a to-many relationship, you should set this argument to `True`.
-* `required` - If set to `False`, the field will accept values of `None` or the empty-string for nullable relationships.
-* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
+* `allow_null` - If set to `True`, the field will accept values of `None` or the empty string for nullable relationships. Defaults to `False`.
 * `lookup_field` - The field on the target that should be used for the lookup.  Should correspond to a URL keyword argument on the referenced view.  Default is `'pk'`.
+* `lookup_url_kwarg` - The name of the keyword argument defined in the URL conf that corresponds to the lookup field. Defaults to using the same value as `lookup_field`.
 * `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
 
 ## SlugRelatedField
@@ -146,11 +170,14 @@ By default this field is read-write, although you can change this behavior using
 `SlugRelatedField` may be used to represent the target of the relationship using a field on the target.
 
 For example, the following serializer:
- 
+
     class AlbumSerializer(serializers.ModelSerializer):
-        tracks = serializers.SlugRelatedField(many=True, read_only=True,
-                                              slug_field='title')
-        
+        tracks = serializers.SlugRelatedField(
+            many=True,
+            read_only=True,
+            slug_field='title'
+         )
+
         class Meta:
             model = Album
             fields = ('album_name', 'artist', 'tracks')
@@ -175,9 +202,9 @@ When using `SlugRelatedField` as a read-write field, you will normally want to e
 **Arguments**:
 
 * `slug_field` - The field on the target that should be used to represent it.  This should be a field that uniquely identifies any given instance.  For example, `username`.  **required**
+* `queryset` - The queryset used for model instance lookups when validating the field input. Relationships must either set a queryset explicitly, or set `read_only=True`.
 * `many` - If applied to a to-many relationship, you should set this argument to `True`.
-* `required` - If set to `False`, the field will accept values of `None` or the empty-string for nullable relationships.
-* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
+* `allow_null` - If set to `True`, the field will accept values of `None` or the empty string for nullable relationships. Defaults to `False`.
 
 ## HyperlinkedIdentityField
 
@@ -222,10 +249,10 @@ For example, the following serializer:
         class Meta:
             model = Track
             fields = ('order', 'title')
-    
+
     class AlbumSerializer(serializers.ModelSerializer):
-        tracks = TrackSerializer(many=True)
-        
+        tracks = TrackSerializer(many=True, read_only=True)
+
         class Meta:
             model = Album
             fields = ('album_name', 'artist', 'tracks')
@@ -245,9 +272,9 @@ Would serialize to a nested representation like this:
 
 # Custom relational fields
 
-To implement a custom relational field, you should override `RelatedField`, and implement the `.to_native(self, value)` method.  This method takes the target of the field as the `value` argument, and should return the representation that should be used to serialize the target.
+To implement a custom relational field, you should override `RelatedField`, and implement the `.to_representation(self, value)` method. This method takes the target of the field as the `value` argument, and should return the representation that should be used to serialize the target. The `value` argument will typically be a model instance.
 
-If you want to implement a read-write relational field, you must also implement the `.from_native(self, data)` method, and add `read_only = False` to the class definition.
+If you want to implement a read-write relational field, you must also implement the `.to_internal_value(self, data)` method.
 
 ## Example
 
@@ -256,13 +283,13 @@ For, example, we could define a relational field, to serialize a track to a cust
     import time
 
     class TrackListingField(serializers.RelatedField):
-        def to_native(self, value):
+        def to_representation(self, value):
             duration = time.strftime('%M:%S', time.gmtime(value.duration))
             return 'Track %d: %s (%s)' % (value.order, value.name, duration)
 
     class AlbumSerializer(serializers.ModelSerializer):
         tracks = TrackListingField(many=True)
-        
+
         class Meta:
             model = Album
             fields = ('album_name', 'artist', 'tracks')
@@ -284,6 +311,16 @@ This custom field would then serialize to the following representation.
 
 # Further notes
 
+## The `queryset` argument
+
+The `queryset` argument is only ever required for *writable* relationship field, in which case it is used for performing the model instance lookup, that maps from the primitive user input, into a model instance.
+
+In version 2.x a serializer class could *sometimes* automatically determine the `queryset` argument *if* a `ModelSerializer` class was being used.
+
+This behavior is now replaced with *always* using an explicit `queryset` argument for writable relational fields.
+
+Doing so reduces the amount of hidden 'magic' that `ModelSerializer` provides, makes the behavior of the field more clear, and ensures that it is trivial to move between using the `ModelSerializer` shortcut, or using fully explicit `Serializer` classes.
+
 ## Reverse relations
 
 Note that reverse relationships are not automatically included by the `ModelSerializer` and `HyperlinkedModelSerializer` classes.  To include a reverse relationship, you must explicitly add it to the fields list.  For example:
@@ -302,7 +339,7 @@ If you have not set a related name for the reverse relationship, you'll need to 
 
     class AlbumSerializer(serializers.ModelSerializer):
         class Meta:
-            fields = ('track_set', ...) 
+            fields = ('track_set', ...)
 
 See the Django documentation on [reverse relationships][reverse-relationships] for more details.
 
@@ -315,14 +352,14 @@ For example, given the following model for a tag, which has a generic relationsh
     class TaggedItem(models.Model):
         """
         Tags arbitrary model instances using a generic relation.
-        
+
         See: https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/
         """
         tag_name = models.SlugField()
         content_type = models.ForeignKey(ContentType)
         object_id = models.PositiveIntegerField()
         tagged_object = GenericForeignKey('content_type', 'object_id')
-    
+
         def __unicode__(self):
             return self.tag
 
@@ -350,23 +387,23 @@ We could define a custom field that could be used to serialize tagged instances,
         A custom field to use for the `tagged_object` generic relationship.
         """
 
-        def to_native(self, value):
+        def to_representation(self, value):
             """
             Serialize tagged objects to a simple textual representation.
-            """                            
+            """
             if isinstance(value, Bookmark):
                 return 'Bookmark: ' + value.url
             elif isinstance(value, Note):
                 return 'Note: ' + value.text
             raise Exception('Unexpected type of tagged object')
 
-If you need the target of the relationship to have a nested representation, you can  use the required serializers inside the `.to_native()` method:
+If you need the target of the relationship to have a nested representation, you can use the required serializers inside the `.to_native()` method:
 
-        def to_native(self, value):
+        def to_representation(self, value):
             """
             Serialize bookmark instances using a bookmark serializer,
             and note instances using a note serializer.
-            """                            
+            """
             if isinstance(value, Bookmark):
                 serializer = BookmarkSerializer(value)
             elif isinstance(value, Note):
@@ -391,7 +428,7 @@ to ``True``.
 
 ## Advanced Hyperlinked fields
 
-If you have very specific requirements for the style of your hyperlinked relationships you can override `HyperlinkedRelatedField`. 
+If you have very specific requirements for the style of your hyperlinked relationships you can override `HyperlinkedRelatedField`.
 
 There are two methods you'll need to override.
 
@@ -404,14 +441,13 @@ attributes are not configured to correctly match the URL conf.
 
 #### get_object(self, queryset, view_name, view_args, view_kwargs)
 
-
 This method should the object that corresponds to the matched URL conf arguments.
 
 May raise an `ObjectDoesNotExist` exception.
 
 ### Example
 
-For example, if all your object URLs used both a account and a slug in the the URL to reference the object, you might create a custom field like this: 
+For example, if all your object URLs used both a account and a slug in the the URL to reference the object, you might create a custom field like this:
 
     class CustomHyperlinkedField(serializers.HyperlinkedRelatedField):
         def get_url(self, obj, view_name, request, format):
@@ -422,25 +458,6 @@ For example, if all your object URLs used both a account and a slug in the the U
             account = view_kwargs['account']
             slug = view_kwargs['slug']
             return queryset.get(account=account, slug=slug)
-
----
-
-## Deprecated APIs
-
-The following classes have been deprecated, in favor of the `many=<bool>` syntax.
-They continue to function, but their usage will raise a `PendingDeprecationWarning`, which is silent by default.
-
-* `ManyRelatedField`
-* `ManyPrimaryKeyRelatedField`
-* `ManyHyperlinkedRelatedField`
-* `ManySlugRelatedField`
-
-The `null=<bool>` flag has been deprecated in favor of the `required=<bool>` flag.  It will continue to function, but will raise a `PendingDeprecationWarning`.
-
-In the 2.3 release, these warnings will be escalated to a `DeprecationWarning`, which is loud by default.
-In the 2.4 release, these parts of the API will be removed entirely.
-
-For more details see the [2.2 release announcement][2.2-announcement].
 
 ---
 

@@ -1,4 +1,4 @@
-<a class="github" href="settings.py"></a>
+source: settings.py
 
 # Settings
 
@@ -51,7 +51,7 @@ Default:
 
 #### DEFAULT_PARSER_CLASSES
 
-A list or tuple of parser classes, that determines the default set of parsers used when accessing the `request.DATA` property.
+A list or tuple of parser classes, that determines the default set of parsers used when accessing the `request.data` property.
 
 Default:
 

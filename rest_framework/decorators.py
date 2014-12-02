@@ -12,12 +12,14 @@ from rest_framework.views import APIView
 import types
 
 
-def api_view(http_method_names):
+def api_view(http_method_names=None):
 
     """
     Decorator that converts a function-based view into an APIView subclass.
     Takes a list of allowed methods for the view as an argument.
     """
+    if http_method_names is None:
+        http_method_names = ['GET']
 
     def decorator(func):
 

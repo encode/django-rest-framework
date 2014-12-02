@@ -135,15 +135,15 @@ There are many great Markdown editors that make working with the documentation r
 
 ## Building the documentation
 
-To build the documentation, simply run the `mkdocs.py` script.
+To build the documentation, install MkDocs with `pip install mkdocs` and then run the following command.
 
-    ./mkdocs.py
+    mkdocs build
 
-This will build the html output into the `html` directory.
+This will build the documentation into the `site` directory.
 
-You can build the documentation and open a preview in a browser window by using the `-p` flag.
+You can build the documentation and open a preview in a browser window by using the `serve` command.
 
-    ./mkdocs.py -p
+    mkdocs serve
 
 ## Language style
 
@@ -152,7 +152,6 @@ Documentation should be in American English.  The tone of the documentation is v
 Some other tips:
 
 * Keep paragraphs reasonably short.
-* Use double spacing after the end of sentences.
 * Don't use abbreviations such as 'e.g.' but instead use the long form, such as 'For example'.
 
 ## Markdown style
@@ -198,21 +197,6 @@ If you want to draw attention to a note or warning, use a pair of enclosing line
 
     ---
 
-# Third party packages
-
-New features to REST framework are generally recommended to be implemented as third party libraries that are developed outside of the core framework.  Ideally third party libraries should be properly documented and packaged, and made available on PyPI.
-
-## Getting started
-
-If you have some functionality that you would like to implement as a third party package it's worth contacting the [discussion group][google-group] as others may be willing to get involved.  We strongly encourage third party package development and will always try to prioritize time spent helping their development, documentation and packaging.
-
-We recommend the [`django-reusable-app`][django-reusable-app] template as a good resource for getting up and running with implementing a third party Django package.
-
-## Linking to your package
-
-Once your package is decently documented and available on PyPI open a pull request or issue, and we'll add a link to it from the main REST framework documentation. You can add your package under **Third party packages** of the API Guide section that best applies, like [Authentication][authentication] or [Permissions][permissions]. You can also link your package under the [Third Party Resources][third-party-resources] section.
-
-We also suggest adding it to the [REST Framework][rest-framework-grid] grid on Django Packages.
 
 [cite]: http://www.w3.org/People/Berners-Lee/FAQ.html
 [code-of-conduct]: https://www.djangoproject.com/conduct/
@@ -226,8 +210,3 @@ We also suggest adding it to the [REST Framework][rest-framework-grid] grid on D
 [markdown]: http://daringfireball.net/projects/markdown/basics
 [docs]: https://github.com/tomchristie/django-rest-framework/tree/master/docs
 [mou]: http://mouapp.com/
-[django-reusable-app]: https://github.com/dabapps/django-reusable-app
-[authentication]: ../api-guide/authentication.md
-[permissions]: ../api-guide/permissions.md
-[third-party-resources]: third-party-resources.md
-[rest-framework-grid]: https://www.djangopackages.com/grids/g/django-rest-framework/

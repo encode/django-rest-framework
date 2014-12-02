@@ -68,8 +68,8 @@ def get_attribute(instance, attrs):
                 return instance[attr]
             except (KeyError, TypeError, AttributeError):
                 raise exc
-    if is_simple_callable(instance):
-        return instance()
+        if is_simple_callable(instance):
+            instance = instance()
     return instance
 
 
@@ -262,7 +262,11 @@ class Field(object):
         if html.is_html_input(dictionary):
             # HTML forms will represent empty fields as '', and cannot
             # represent None or False values directly.
-            ret = dictionary.get(self.field_name, '')
+            if self.field_name not in dictionary:
+                if getattr(self.root, 'partial', False):
+                    return empty
+                return self.default_empty_html
+            ret = dictionary[self.field_name]
             return self.default_empty_html if (ret == '') else ret
         return dictionary.get(self.field_name, empty)
 
@@ -317,7 +321,6 @@ class Field(object):
 
         value = self.to_internal_value(data)
         self.run_validators(value)
-        self.validate(value)
         return value
 
     def run_validators(self, value):
@@ -343,9 +346,6 @@ class Field(object):
                 errors.extend(exc.messages)
         if errors:
             raise ValidationError(errors)
-
-    def validate(self, value):
-        pass
 
     def to_internal_value(self, data):
         """

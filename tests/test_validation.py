@@ -165,17 +165,6 @@ class TestChoiceFieldChoicesValidate(TestCase):
         except serializers.ValidationError:
             self.fail("Value %s does not validate" % str(value))
 
-    # def test_nested_choices(self):
-    #     """
-    #     Make sure a nested value for choices works as expected.
-    #     """
-    #     f = serializers.ChoiceField(choices=self.CHOICES_NESTED)
-    #     value = self.CHOICES_NESTED[0][1][0][0]
-    #     try:
-    #         f.to_native(value)
-    #     except ValidationError:
-    #         self.fail("Value %s does not validate" % str(value))
-
 
 class RegexSerializer(serializers.Serializer):
     pin = serializers.CharField(

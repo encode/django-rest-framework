@@ -1,40 +1,41 @@
 language: python
 
-python: 2.7
-
 sudo: false
 
 env:
-    - TOX_ENV=flake8
-    - TOX_ENV=py3.4-django1.7
-    - TOX_ENV=py3.3-django1.7
-    - TOX_ENV=py3.2-django1.7
-    - TOX_ENV=py2.7-django1.7
-    - TOX_ENV=py3.4-django1.6
-    - TOX_ENV=py3.3-django1.6
-    - TOX_ENV=py3.2-django1.6
-    - TOX_ENV=py2.7-django1.6
-    - TOX_ENV=py2.6-django1.6
-    - TOX_ENV=py3.4-django1.5
-    - TOX_ENV=py3.3-django1.5
-    - TOX_ENV=py3.2-django1.5
-    - TOX_ENV=py2.7-django1.5
-    - TOX_ENV=py2.6-django1.5
-    - TOX_ENV=py2.7-django1.4
-    - TOX_ENV=py2.6-django1.4
-    - TOX_ENV=py3.4-djangomaster
-    - TOX_ENV=py3.3-djangomaster
-    - TOX_ENV=py2.7-djangomaster
+    - TOX_ENV=py27-flake8
+    - TOX_ENV=py27-docs
+    - TOX_ENV=py34-django17
+    - TOX_ENV=py33-django17
+    - TOX_ENV=py32-django17
+    - TOX_ENV=py27-django17
+    - TOX_ENV=py34-django16
+    - TOX_ENV=py33-django16
+    - TOX_ENV=py32-django16
+    - TOX_ENV=py27-django16
+    - TOX_ENV=py26-django16
+    - TOX_ENV=py34-django15
+    - TOX_ENV=py33-django15
+    - TOX_ENV=py32-django15
+    - TOX_ENV=py27-django15
+    - TOX_ENV=py26-django15
+    - TOX_ENV=py27-django14
+    - TOX_ENV=py26-django14
+    - TOX_ENV=py34-djangomaster
+    - TOX_ENV=py33-djangomaster
+    - TOX_ENV=py32-djangomaster
+    - TOX_ENV=py27-djangomaster
 
 matrix:
   fast_finish: true
   allow_failures:
-    - env: TOX_ENV=py3.4-djangomaster
-    - env: TOX_ENV=py3.3-djangomaster
-    - env: TOX_ENV=py2.7-djangomaster
+    - env: TOX_ENV=py34-djangomaster
+    - env: TOX_ENV=py33-djangomaster
+    - env: TOX_ENV=py32-djangomaster
+    - env: TOX_ENV=py27-djangomaster
 
 install:
-  - "pip install tox --download-cache $HOME/.pip-cache"
+  - pip install tox
 
 script:
     - tox -e $TOX_ENV

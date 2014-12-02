@@ -11,6 +11,7 @@ python primitives.
 response content is handled by parsers and renderers.
 """
 from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import models
 from django.db.models.fields import FieldDoesNotExist
 from django.utils import six
@@ -86,6 +87,15 @@ class BaseSerializer(Field):
         class when `many=True` is used. You can customize it if you need to
         control which keyword arguments are passed to the parent, and
         which are passed to the child.
+
+        Note that we're over-cautious in passing most arguments to both parent
+        and child classes in order to try to cover the general case. If you're
+        overriding this method you'll probably want something much simpler, eg:
+
+        @classmethod
+        def many_init(cls, *args, **kwargs):
+            kwargs['child'] = cls()
+            return CustomListSerializer(*args, **kwargs)
         """
         child_serializer = cls(*args, **kwargs)
         list_kwargs = {'child': child_serializer}
@@ -93,7 +103,9 @@ class BaseSerializer(Field):
             (key, value) for key, value in kwargs.items()
             if key in LIST_SERIALIZER_KWARGS
         ]))
-        return ListSerializer(*args, **list_kwargs)
+        meta = getattr(cls, 'Meta', None)
+        list_serializer_class = getattr(meta, 'list_serializer_class', ListSerializer)
+        return list_serializer_class(*args, **list_kwargs)
 
     def to_internal_value(self, data):
         raise NotImplementedError('`to_internal_value()` must be implemented.')
@@ -319,6 +331,14 @@ class Serializer(BaseSerializer):
                 raise ValidationError({
                     api_settings.NON_FIELD_ERRORS_KEY: [exc.detail]
                 })
+        except DjangoValidationError as exc:
+            # Normally you should raise `serializers.ValidationError`
+            # inside your codebase, but we handle Django's validation
+            # exception class as well for simpler compat.
+            # Eg. Calling Model.clean() explictily inside Serializer.validate()
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: list(exc.messages)
+            })
 
         return value
 
@@ -342,6 +362,8 @@ class Serializer(BaseSerializer):
                     validated_value = validate_method(validated_value)
             except ValidationError as exc:
                 errors[field.field_name] = exc.detail
+            except DjangoValidationError as exc:
+                errors[field.field_name] = list(exc.messages)
             except SkipField:
                 pass
             else:
@@ -362,14 +384,9 @@ class Serializer(BaseSerializer):
         for field in fields:
             attribute = field.get_attribute(instance)
             if attribute is None:
-                value = None
+                ret[field.field_name] = None
             else:
-                value = field.to_representation(attribute)
-            transform_method = getattr(self, 'transform_' + field.field_name, None)
-            if transform_method is not None:
-                value = transform_method(value)
-
-            ret[field.field_name] = value
+                ret[field.field_name] = field.to_representation(attribute)
 
         return ret
 
@@ -548,6 +565,14 @@ class ModelSerializer(Serializer):
     * A set of default fields are automatically populated.
     * A set of default validators are automatically populated.
     * Default `.create()` and `.update()` implementations are provided.
+
+    The process of automatically determining a set of serializer fields
+    based on the model fields is reasonably complex, but you almost certainly
+    don't need to dig into the implemention.
+
+    If the `ModelSerializer` class *doesn't* generate the set of fields that
+    you need you should either declare the extra/differing fields explicitly on
+    the serializer class, or simply use a `Serializer` class.
     """
     _field_mapping = ClassLookupDict({
         models.AutoField: IntegerField,
@@ -576,6 +601,26 @@ class ModelSerializer(Serializer):
     _related_class = PrimaryKeyRelatedField
 
     def create(self, validated_attrs):
+        """
+        We have a bit of extra checking around this in order to provide
+        descriptive messages when something goes wrong, but this method is
+        essentially just:
+
+            return ExampleModel.objects.create(**validated_attrs)
+
+        If there are many to many fields present on the instance then they
+        cannot be set until the model is instantiated, in which case the
+        implementation is like so:
+
+            example_relationship = validated_attrs.pop('example_relationship')
+            instance = ExampleModel.objects.create(**validated_attrs)
+            instance.example_relationship = example_relationship
+            return instance
+
+        The default implementation also does not handle nested relationships.
+        If you want to support writable nested relationships you'll need
+        to write an explicit `.create()` method.
+        """
         # Check that the user isn't trying to handle a writable nested field.
         # If we don't do this explicitly they'd likely get a confusing
         # error at the point of calling `Model.objects.create()`.
@@ -626,13 +671,18 @@ class ModelSerializer(Serializer):
         return instance
 
     def get_validators(self):
+        # If the validators have been declared explicitly then use that.
+        validators = getattr(getattr(self, 'Meta', None), 'validators', None)
+        if validators is not None:
+            return validators
+
+        # Determine the default set of validators.
+        validators = []
+        model_class = self.Meta.model
         field_names = set([
             field.source for field in self.fields.values()
             if (field.source != '*') and ('.' not in field.source)
         ])
-
-        validators = getattr(getattr(self, 'Meta', None), 'validators', [])
-        model_class = self.Meta.model
 
         # Note that we make sure to check `unique_together` both on the
         # base model class, but also on any parent classes.

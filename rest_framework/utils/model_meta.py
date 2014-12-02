@@ -6,6 +6,7 @@ relationships and their associated metadata.
 Usage: `get_field_info(model)` returns a `FieldInfo` instance.
 """
 from collections import namedtuple
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import six
 from rest_framework.compat import OrderedDict
@@ -43,7 +44,11 @@ def _resolve_model(obj):
     """
     if isinstance(obj, six.string_types) and len(obj.split('.')) == 2:
         app_name, model_name = obj.split('.')
-        return models.get_model(app_name, model_name)
+        resolved_model = models.get_model(app_name, model_name)
+        if resolved_model is None:
+            msg = "Django did not return a model for {0}.{1}"
+            raise ImproperlyConfigured(msg.format(app_name, model_name))
+        return resolved_model
     elif inspect.isclass(obj) and issubclass(obj, models.Model):
         return obj
     raise ValueError("{0} is not a Django model".format(obj))

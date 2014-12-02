@@ -310,7 +310,7 @@ class Request(object):
 
     def _load_data_and_files(self):
         """
-        Parses the request content into self.DATA and self.FILES.
+        Parses the request content into `self.data`.
         """
         if not _hasattr(self, '_content_type'):
             self._load_method_and_content_type()

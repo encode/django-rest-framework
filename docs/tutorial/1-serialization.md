@@ -134,7 +134,7 @@ A serializer class is very similar to a Django `Form` class, and includes simila
 
 The field flags can also control how the serializer should be displayed in certain circumstances, such as when rendering to HTML. The `style={'type': 'textarea'}` flag above is equivelent to using `widget=widgets.Textarea` on a Django `Form` class. This is particularly useful for controlling how the browsable API should be displayed, as we'll see later in the tutorial.
 
-We can actually also save ourselves some time by using the `ModelSerializer` class, as we'll see later, but for now we'll keep our serializer definition explicit.  
+We can actually also save ourselves some time by using the `ModelSerializer` class, as we'll see later, but for now we'll keep our serializer definition explicit.
 
 ## Working with Serializers
 
@@ -206,7 +206,7 @@ Open the file `snippets/serializers.py` again, and edit the `SnippetSerializer` 
             model = Snippet
             fields = ('id', 'title', 'code', 'linenos', 'language', 'style')
 
-Once nice property that serializers have is that you can inspect all the fields an serializer instance, by printing it's representation. Open the Django shell with `python manange.py shell`, then try the following:
+One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing it's representation. Open the Django shell with `python manange.py shell`, then try the following:
 
     >>> from snippets.serializers import SnippetSerializer
     >>> serializer = SnippetSerializer()
@@ -219,7 +219,7 @@ Once nice property that serializers have is that you can inspect all the fields 
         language = ChoiceField(choices=[('Clipper', 'FoxPro'), ('Cucumber', 'Gherkin'), ('RobotFramework', 'RobotFramework'), ('abap', 'ABAP'), ('ada', 'Ada')...
         style = ChoiceField(choices=[('autumn', 'autumn'), ('borland', 'borland'), ('bw', 'bw'), ('colorful', 'colorful')...
 
-It's important to remember that `ModelSerializer` classes don't do anything particularly magically, they are simply a shortcut to creating a serializer class with:
+It's important to remember that `ModelSerializer` classes don't do anything particularly magical, they are simply a shortcut for creating serializer classes:
 
 * An automatically determined set of fields.
 * Simple default implementations for the `create()` and `update()` methods.

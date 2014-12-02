@@ -3,7 +3,7 @@
 *~
 .*
 
-html/
+site/
 htmlcov/
 coverage/
 build/

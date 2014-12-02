@@ -181,7 +181,7 @@ body{
 }
 
 .navbar .navbar-inner .nav li, .navbar .navbar-inner .nav li a, .navbar .navbar-inner .brand{
-  color: white; 
+  color: white;
 }
 
 .nav-list > .active > a, .navbar .navbar-inner .nav li a:hover {
@@ -190,8 +190,20 @@ body{
 }
 
 .navbar .navbar-inner .dropdown-menu li a, .navbar .navbar-inner .dropdown-menu li{
- color: #A30000; 
+ color: #A30000;
 }
+
+.dropdown-menu .active > a,
+.dropdown-menu .active > a:hover {
+  background-image: none;
+}
+
+.navbar-inverse .nav .dropdown .active > a,
+.navbar-inverse .nav .dropdown .active > a:hover,
+.navbar-inverse .nav .dropdown .active > a:focus {
+  background-color: #eeeeee;
+}
+
 .navbar .navbar-inner .dropdown-menu li a:hover{
   background: #eeeeee;
   color: #c20000;
