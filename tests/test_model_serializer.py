@@ -10,7 +10,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator, MinLeng
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
-import pytest
 
 
 def dedent(blocktext):
@@ -87,13 +86,10 @@ class TestModelSerializer(TestCase):
             'non_model_field': 'bar',
         })
         serializer.is_valid()
-        with pytest.raises(TypeError):
+        with self.assertRaises(TypeError) as excinfo:
             serializer.save()
-
-        try:
-            serializer.save()
-        except TypeError as exc:
-            assert 'ModelSerializer' in str(exc)
+        msginitial = 'Got a `TypeError` when calling `OneFieldModel.objects.create()`.'
+        assert str(excinfo.exception).startswith(msginitial)
 
 
 class TestRegularFieldMappings(TestCase):

@@ -35,7 +35,6 @@ from rest_framework.validators import (
 )
 import copy
 import inspect
-import sys
 import warnings
 
 # Note: We do the following so that users of the framework can use this style:
@@ -658,14 +657,20 @@ class ModelSerializer(Serializer):
             instance = ModelClass.objects.create(**validated_attrs)
         except TypeError as exc:
             msg = (
-                'The mentioned argument might be a field on the serializer '
-                'that is not part of the model. You need to override the '
-                'create() method in your ModelSerializer subclass to support '
-                'this.')
-            six.reraise(
-                type(exc),
-                type(exc)(str(exc) + '. ' + msg),
-                sys.exc_info()[2])
+                'Got a `TypeError` when calling `%s.objects.create()`. '
+                'This may be because you have a writable field on the '
+                'serializer class that is not a valid argument to '
+                '`%s.objects.create()`. You may need to make the field '
+                'read-only, or override the %s.create() method to handle '
+                'this correctly.\nOriginal exception text was: %s.' %
+                (
+                    ModelClass.__name__,
+                    ModelClass.__name__,
+                    self.__class__.__name__,
+                    exc
+                )
+            )
+            raise TypeError(msg)
 
         # Save many-to-many relationships after the instance is created.
         if many_to_many:
