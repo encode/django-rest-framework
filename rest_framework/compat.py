@@ -244,13 +244,6 @@ except ImportError:
     yaml = None
 
 
-# XML is optional
-try:
-    import defusedxml.ElementTree as etree
-except ImportError:
-    etree = None
-
-
 # `seperators` argument to `json.dumps()` differs between 2.x and 3.x
 # See: http://bugs.python.org/issue22767
 if six.PY3:

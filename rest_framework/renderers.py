@@ -16,11 +16,8 @@ from django.http.multipartparser import parse_header
 from django.template import Context, RequestContext, loader, Template
 from django.test.client import encode_multipart
 from django.utils import six
-from django.utils.xmlutils import SimplerXMLGenerator
 from rest_framework import exceptions, serializers, status, VERSION
-from rest_framework.compat import (
-    SHORT_SEPARATORS, LONG_SEPARATORS, StringIO, smart_text, yaml
-)
+from rest_framework.compat import SHORT_SEPARATORS, LONG_SEPARATORS, yaml
 from rest_framework.exceptions import ParseError
 from rest_framework.settings import api_settings
 from rest_framework.request import is_form_media_type, override_method
@@ -138,55 +135,6 @@ class JSONPRenderer(JSONRenderer):
         json = super(JSONPRenderer, self).render(data, accepted_media_type,
                                                  renderer_context)
         return callback.encode(self.charset) + b'(' + json + b');'
-
-
-class XMLRenderer(BaseRenderer):
-    """
-    Renderer which serializes to XML.
-    """
-
-    media_type = 'application/xml'
-    format = 'xml'
-    charset = 'utf-8'
-
-    def render(self, data, accepted_media_type=None, renderer_context=None):
-        """
-        Renders `data` into serialized XML.
-        """
-        if data is None:
-            return ''
-
-        stream = StringIO()
-
-        xml = SimplerXMLGenerator(stream, self.charset)
-        xml.startDocument()
-        xml.startElement("root", {})
-
-        self._to_xml(xml, data)
-
-        xml.endElement("root")
-        xml.endDocument()
-        return stream.getvalue()
-
-    def _to_xml(self, xml, data):
-        if isinstance(data, (list, tuple)):
-            for item in data:
-                xml.startElement("list-item", {})
-                self._to_xml(xml, item)
-                xml.endElement("list-item")
-
-        elif isinstance(data, dict):
-            for key, value in six.iteritems(data):
-                xml.startElement(key, {})
-                self._to_xml(xml, value)
-                xml.endElement(key)
-
-        elif data is None:
-            # Don't output any value
-            pass
-
-        else:
-            xml.characters(smart_text(data))
 
 
 class YAMLRenderer(BaseRenderer):
