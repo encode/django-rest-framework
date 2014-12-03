@@ -681,8 +681,8 @@ class ModelSerializer(Serializer):
 
     def update(self, instance, validated_attrs):
         assert not any(
-            isinstance(field, BaseSerializer) and not field.read_only
-            for field in self.fields.values()
+            isinstance(field, BaseSerializer) and (key in validated_attrs)
+            for key, field in self.fields.values()
         ), (
             'The `.update()` method does not suport nested writable fields '
             'by default. Write an explicit `.update()` method for serializer '
