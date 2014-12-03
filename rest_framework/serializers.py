@@ -633,8 +633,8 @@ class ModelSerializer(Serializer):
         # If we don't do this explicitly they'd likely get a confusing
         # error at the point of calling `Model.objects.create()`.
         assert not any(
-            isinstance(field, BaseSerializer) and not field.read_only
-            for field in self.fields.values()
+            isinstance(field, BaseSerializer) and (key in validated_attrs)
+            for key, field in self.fields.items()
         ), (
             'The `.create()` method does not suport nested writable fields '
             'by default. Write an explicit `.create()` method for serializer '
@@ -682,7 +682,7 @@ class ModelSerializer(Serializer):
     def update(self, instance, validated_attrs):
         assert not any(
             isinstance(field, BaseSerializer) and (key in validated_attrs)
-            for key, field in self.fields.values()
+            for key, field in self.fields.items()
         ), (
             'The `.update()` method does not suport nested writable fields '
             'by default. Write an explicit `.update()` method for serializer '
