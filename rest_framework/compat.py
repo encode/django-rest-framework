@@ -237,13 +237,6 @@ except ImportError:
     apply_markdown = None
 
 
-# Yaml is optional
-try:
-    import yaml
-except ImportError:
-    yaml = None
-
-
 # `seperators` argument to `json.dumps()` differs between 2.x and 3.x
 # See: http://bugs.python.org/issue22767
 if six.PY3:

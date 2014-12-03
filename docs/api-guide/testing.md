@@ -255,14 +255,14 @@ The default format used to make test requests may be set using the `TEST_REQUEST
 
 If you need to test requests using something other than multipart or json requests, you can do so by setting the `TEST_REQUEST_RENDERER_CLASSES` setting.
 
-For example, to add support for using `format='yaml'` in test requests, you might have something like this in your `settings.py` file.
+For example, to add support for using `format='html'` in test requests, you might have something like this in your `settings.py` file.
 
     REST_FRAMEWORK = {
         ...
         'TEST_REQUEST_RENDERER_CLASSES': (
             'rest_framework.renderers.MultiPartRenderer',
             'rest_framework.renderers.JSONRenderer',
-            'rest_framework.renderers.YAMLRenderer'
+            'rest_framework.renderers.TemplateHTMLRenderer'
         )
     }
 

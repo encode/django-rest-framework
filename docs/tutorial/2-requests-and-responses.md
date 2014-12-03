@@ -92,7 +92,7 @@ Here is the view for an individual snippet, in the `views.py` module.
 
 This should all feel very familiar - it is not a lot different from working with regular Django views.
 
-Notice that we're no longer explicitly tying our requests or responses to a given content type.  `request.data` can handle incoming `json` requests, but it can also handle `yaml` and other formats.  Similarly we're returning response objects with data, but allowing REST framework to render the response into the correct content type for us.
+Notice that we're no longer explicitly tying our requests or responses to a given content type.  `request.data` can handle incoming `json` requests, but it can also handle other formats.  Similarly we're returning response objects with data, but allowing REST framework to render the response into the correct content type for us.
 
 ## Adding optional format suffixes to our URLs
 

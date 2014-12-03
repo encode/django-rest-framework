@@ -5,11 +5,11 @@ For example your project's `settings.py` file might look like this:
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.YAMLRenderer',
+        'rest_framework.renderers.TemplateHTMLRenderer',
     )
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
-        'rest_framework.parsers.YAMLParser',
+        'rest_framework.parsers.TemplateHTMLRenderer',
     )
 }
 
