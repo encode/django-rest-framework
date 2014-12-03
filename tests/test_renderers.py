@@ -9,11 +9,9 @@ from django.test import TestCase
 from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import status, permissions
-from rest_framework.compat import yaml, BytesIO
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, BrowsableAPIRenderer
-from rest_framework.parsers import YAMLParser
+from rest_framework.renderers import BaseRenderer, JSONRenderer, BrowsableAPIRenderer
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from collections import MutableMapping
@@ -392,55 +390,6 @@ class AsciiJSONRendererTests(TestCase):
         renderer = AsciiJSONRenderer()
         content = renderer.render(obj, 'application/json')
         self.assertEqual(content, '{"countries":["United Kingdom","France","Espa\\u00f1a"]}'.encode('utf-8'))
-
-
-if yaml:
-    _yaml_repr = 'foo: [bar, baz]\n'
-
-    class YAMLRendererTests(TestCase):
-        """
-        Tests specific to the YAML Renderer
-        """
-
-        def test_render(self):
-            """
-            Test basic YAML rendering.
-            """
-            obj = {'foo': ['bar', 'baz']}
-            renderer = YAMLRenderer()
-            content = renderer.render(obj, 'application/yaml')
-            self.assertEqual(content.decode('utf-8'), _yaml_repr)
-
-        def test_render_and_parse(self):
-            """
-            Test rendering and then parsing returns the original object.
-            IE obj -> render -> parse -> obj.
-            """
-            obj = {'foo': ['bar', 'baz']}
-
-            renderer = YAMLRenderer()
-            parser = YAMLParser()
-
-            content = renderer.render(obj, 'application/yaml')
-            data = parser.parse(BytesIO(content))
-            self.assertEqual(obj, data)
-
-        def test_render_decimal(self):
-            """
-            Test YAML decimal rendering.
-            """
-            renderer = YAMLRenderer()
-            content = renderer.render({'field': Decimal('111.2')}, 'application/yaml')
-            self.assertYAMLContains(content.decode('utf-8'), "field: '111.2'")
-
-        def assertYAMLContains(self, content, string):
-            self.assertTrue(string in content, '%r not in %r' % (string, content))
-
-        def test_proper_encoding(self):
-            obj = {'countries': ['United Kingdom', 'France', 'España']}
-            renderer = YAMLRenderer()
-            content = renderer.render(obj, 'application/yaml')
-            self.assertEqual(content.strip(), 'countries: [United Kingdom, France, España]'.encode('utf-8'))
 
 
 # Tests for caching issue, #346

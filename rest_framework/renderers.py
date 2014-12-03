@@ -17,7 +17,7 @@ from django.template import Context, RequestContext, loader, Template
 from django.test.client import encode_multipart
 from django.utils import six
 from rest_framework import exceptions, serializers, status, VERSION
-from rest_framework.compat import SHORT_SEPARATORS, LONG_SEPARATORS, yaml
+from rest_framework.compat import SHORT_SEPARATORS, LONG_SEPARATORS
 from rest_framework.exceptions import ParseError
 from rest_framework.settings import api_settings
 from rest_framework.request import is_form_media_type, override_method
@@ -101,29 +101,6 @@ class JSONRenderer(BaseRenderer):
         if isinstance(ret, six.text_type):
             return bytes(ret.encode('utf-8'))
         return ret
-
-
-class YAMLRenderer(BaseRenderer):
-    """
-    Renderer which serializes to YAML.
-    """
-
-    media_type = 'application/yaml'
-    format = 'yaml'
-    encoder = encoders.SafeDumper
-    charset = 'utf-8'
-    ensure_ascii = False
-
-    def render(self, data, accepted_media_type=None, renderer_context=None):
-        """
-        Renders `data` into serialized YAML.
-        """
-        assert yaml, 'YAMLRenderer requires pyyaml to be installed'
-
-        if data is None:
-            return ''
-
-        return yaml.dump(data, stream=None, encoding=self.charset, Dumper=self.encoder, allow_unicode=not self.ensure_ascii)
 
 
 class TemplateHTMLRenderer(BaseRenderer):

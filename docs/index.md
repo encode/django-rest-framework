@@ -54,7 +54,6 @@ REST framework requires the following:
 The following packages are optional:
 
 * [Markdown][markdown] (2.1.0+) - Markdown support for the browsable API.
-* [PyYAML][yaml] (3.10+) - YAML content-type support.
 * [django-filter][django-filter] (0.5.4+) - Filtering support.
 * [django-restframework-oauth][django-restframework-oauth] package for OAuth 1.0a and 2.0 support.
 * [django-guardian][django-guardian] (1.1.1+) - Object level permissions support.
@@ -254,7 +253,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [mozilla]: http://www.mozilla.org/en-US/about/
 [eventbrite]: https://www.eventbrite.co.uk/about/
 [markdown]: http://pypi.python.org/pypi/Markdown/
-[yaml]: http://pypi.python.org/pypi/PyYAML
 [django-filter]: http://pypi.python.org/pypi/django-filter
 [django-restframework-oauth]: https://github.com/jlafon/django-rest-framework-oauth
 [django-guardian]: https://github.com/lukaszb/django-guardian

@@ -12,10 +12,10 @@ For example your project's `settings.py` file might include something like this:
 
     REST_FRAMEWORK = {
         'DEFAULT_RENDERER_CLASSES': (
-            'rest_framework.renderers.YAMLRenderer',
+            'rest_framework.renderers.JSONRenderer',
         ),
         'DEFAULT_PARSER_CLASSES': (
-            'rest_framework.parsers.YAMLParser',
+            'rest_framework.parsers.JSONParser',
         )
     }
 

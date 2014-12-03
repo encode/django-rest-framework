@@ -214,6 +214,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [docs]: http://www.django-rest-framework.org/
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
-[pyyaml]: http://pypi.python.org/pypi/PyYAML
 [django-filter]: http://pypi.python.org/pypi/django-filter
 [security-mail]: mailto:rest-framework-security@googlegroups.com
