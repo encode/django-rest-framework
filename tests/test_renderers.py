@@ -6,19 +6,18 @@ from django.conf.urls import patterns, url, include
 from django.core.cache import cache
 from django.db import models
 from django.test import TestCase
-from django.utils import six, unittest
+from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import status, permissions
-from rest_framework.compat import yaml, etree, StringIO, BytesIO
+from rest_framework.compat import yaml, BytesIO
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
-    XMLRenderer, JSONPRenderer, BrowsableAPIRenderer
-from rest_framework.parsers import YAMLParser, XMLParser
+    JSONPRenderer, BrowsableAPIRenderer
+from rest_framework.parsers import YAMLParser
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from collections import MutableMapping
-import datetime
 import json
 import pickle
 import re
@@ -499,104 +498,6 @@ if yaml:
             renderer = YAMLRenderer()
             content = renderer.render(obj, 'application/yaml')
             self.assertEqual(content.strip(), 'countries: [United Kingdom, France, España]'.encode('utf-8'))
-
-
-class XMLRendererTestCase(TestCase):
-    """
-    Tests specific to the XML Renderer
-    """
-
-    _complex_data = {
-        "creation_date": datetime.datetime(2011, 12, 25, 12, 45, 00),
-        "name": "name",
-        "sub_data_list": [
-            {
-                "sub_id": 1,
-                "sub_name": "first"
-            },
-            {
-                "sub_id": 2,
-                "sub_name": "second"
-            }
-        ]
-    }
-
-    def test_render_string(self):
-        """
-        Test XML rendering.
-        """
-        renderer = XMLRenderer()
-        content = renderer.render({'field': 'astring'}, 'application/xml')
-        self.assertXMLContains(content, '<field>astring</field>')
-
-    def test_render_integer(self):
-        """
-        Test XML rendering.
-        """
-        renderer = XMLRenderer()
-        content = renderer.render({'field': 111}, 'application/xml')
-        self.assertXMLContains(content, '<field>111</field>')
-
-    def test_render_datetime(self):
-        """
-        Test XML rendering.
-        """
-        renderer = XMLRenderer()
-        content = renderer.render({
-            'field': datetime.datetime(2011, 12, 25, 12, 45, 00)
-        }, 'application/xml')
-        self.assertXMLContains(content, '<field>2011-12-25 12:45:00</field>')
-
-    def test_render_float(self):
-        """
-        Test XML rendering.
-        """
-        renderer = XMLRenderer()
-        content = renderer.render({'field': 123.4}, 'application/xml')
-        self.assertXMLContains(content, '<field>123.4</field>')
-
-    def test_render_decimal(self):
-        """
-        Test XML rendering.
-        """
-        renderer = XMLRenderer()
-        content = renderer.render({'field': Decimal('111.2')}, 'application/xml')
-        self.assertXMLContains(content, '<field>111.2</field>')
-
-    def test_render_none(self):
-        """
-        Test XML rendering.
-        """
-        renderer = XMLRenderer()
-        content = renderer.render({'field': None}, 'application/xml')
-        self.assertXMLContains(content, '<field></field>')
-
-    def test_render_complex_data(self):
-        """
-        Test XML rendering.
-        """
-        renderer = XMLRenderer()
-        content = renderer.render(self._complex_data, 'application/xml')
-        self.assertXMLContains(content, '<sub_name>first</sub_name>')
-        self.assertXMLContains(content, '<sub_name>second</sub_name>')
-
-    @unittest.skipUnless(etree, 'defusedxml not installed')
-    def test_render_and_parse_complex_data(self):
-        """
-        Test XML rendering.
-        """
-        renderer = XMLRenderer()
-        content = StringIO(renderer.render(self._complex_data, 'application/xml'))
-
-        parser = XMLParser()
-        complex_data_out = parser.parse(content)
-        error_msg = "complex data differs!IN:\n %s \n\n OUT:\n %s" % (repr(self._complex_data), repr(complex_data_out))
-        self.assertEqual(self._complex_data, complex_data_out, error_msg)
-
-    def assertXMLContains(self, xml, string):
-        self.assertTrue(xml.startswith('<?xml version="1.0" encoding="utf-8"?>\n<root>'))
-        self.assertTrue(xml.endswith('</root>'))
-        self.assertTrue(string in xml, '%r not in %r' % (string, xml))
 
 
 # Tests for caching issue, #346
