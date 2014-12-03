@@ -12,8 +12,7 @@ from rest_framework import status, permissions
 from rest_framework.compat import yaml, BytesIO
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
-    JSONPRenderer, BrowsableAPIRenderer
+from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, BrowsableAPIRenderer
 from rest_framework.parsers import YAMLParser
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
@@ -105,8 +104,6 @@ urlpatterns = patterns(
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
     url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
     url(r'^cache$', MockGETView.as_view()),
-    url(r'^jsonp/jsonrenderer$', MockGETView.as_view(renderer_classes=[JSONRenderer, JSONPRenderer])),
-    url(r'^jsonp/nojsonrenderer$', MockGETView.as_view(renderer_classes=[JSONPRenderer])),
     url(r'^parseerror$', MockPOSTView.as_view(renderer_classes=[JSONRenderer, BrowsableAPIRenderer])),
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
@@ -395,60 +392,6 @@ class AsciiJSONRendererTests(TestCase):
         renderer = AsciiJSONRenderer()
         content = renderer.render(obj, 'application/json')
         self.assertEqual(content, '{"countries":["United Kingdom","France","Espa\\u00f1a"]}'.encode('utf-8'))
-
-
-class JSONPRendererTests(TestCase):
-    """
-    Tests specific to the JSONP Renderer
-    """
-
-    urls = 'tests.test_renderers'
-
-    def test_without_callback_with_json_renderer(self):
-        """
-        Test JSONP rendering with View JSON Renderer.
-        """
-        resp = self.client.get(
-            '/jsonp/jsonrenderer',
-            HTTP_ACCEPT='application/javascript'
-        )
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=utf-8')
-        self.assertEqual(
-            resp.content,
-            ('callback(%s);' % _flat_repr).encode('ascii')
-        )
-
-    def test_without_callback_without_json_renderer(self):
-        """
-        Test JSONP rendering without View JSON Renderer.
-        """
-        resp = self.client.get(
-            '/jsonp/nojsonrenderer',
-            HTTP_ACCEPT='application/javascript'
-        )
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=utf-8')
-        self.assertEqual(
-            resp.content,
-            ('callback(%s);' % _flat_repr).encode('ascii')
-        )
-
-    def test_with_callback(self):
-        """
-        Test JSONP rendering with callback function name.
-        """
-        callback_func = 'myjsonpcallback'
-        resp = self.client.get(
-            '/jsonp/nojsonrenderer?callback=' + callback_func,
-            HTTP_ACCEPT='application/javascript'
-        )
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=utf-8')
-        self.assertEqual(
-            resp.content,
-            ('%s(%s);' % (callback_func, _flat_repr)).encode('ascii')
-        )
 
 
 if yaml:
