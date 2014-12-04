@@ -22,7 +22,6 @@ Create a new Django project named `tutorial`, then start a new app called `quick
     django-admin.py startproject tutorial
     cd tutorial
     django-admin.py startapp quickstart
-	cd ..
 
 Now sync your database for the first time:
 
