@@ -24,10 +24,6 @@ Create a new Django project named `tutorial`, then start a new app called `quick
     django-admin.py startapp quickstart
 	cd ..
 
-Optionally, install [httpie][httpie] for tastier HTTP requests:
-
-    pip install httpie
-
 Now sync your database for the first time:
 
     python manage.py migrate
@@ -163,9 +159,12 @@ We can now access our API, both from the command-line, using tools like `curl`..
         ]
     }
 
-Or with [httpie][httpie], a tastier version of `curl`...
+Or using the [httpie][httpie], command line tool...
 
-    bash: http -a username:password http://127.0.0.1:8000/users/ --body
+    bash: http -a username:password http://127.0.0.1:8000/users/
+
+    HTTP/1.1 200 OK
+    ...
     {
         "count": 2,
         "next": null,

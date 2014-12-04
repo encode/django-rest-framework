@@ -332,9 +332,9 @@ Quit out of the shell...
 
 In another terminal window, we can test the server.
 
-We can test our API using using `curl` or [httpie][httpie]. Httpie is a user friendly http client that's written in Python. Let's install that.
+We can test our API using using [curl][curl] or [httpie][httpie]. Httpie is a user friendly http client that's written in Python. Let's install that.
 
-You can install httpie on all operating systems using pip:
+You can install httpie using pip:
 
     pip install httpie
 
@@ -363,8 +363,10 @@ Finally, we can get a list of all of the snippets:
 
 Or we can get a particular snippet by referencing its id:
 
-	http http://127.0.0.1:8000/snippets/2/ --body
+	http http://127.0.0.1:8000/snippets/2/
 
+    HTTP/1.1 200 OK
+    ...
 	{
       "id": 2,
       "title": "",
@@ -390,3 +392,4 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 [virtualenv]: http://www.virtualenv.org/en/latest/index.html
 [tut-2]: 2-requests-and-responses.md
 [httpie]: https://github.com/jakubroztocil/httpie#installation
+[curl]: http://curl.haxx.se
