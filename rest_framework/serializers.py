@@ -13,6 +13,7 @@ response content is handled by parsers and renderers.
 from django.core.exceptions import ImproperlyConfigured
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import models
+from django.db.models.query import QuerySet
 from django.db.models.fields import FieldDoesNotExist
 from django.utils import six
 from django.utils.translation import ugettext_lazy as _
@@ -35,6 +36,7 @@ from rest_framework.validators import (
 )
 import copy
 import inspect
+import sys
 import warnings
 
 # Note: We do the following so that users of the framework can use this style:
@@ -179,7 +181,21 @@ class BaseSerializer(Field):
     def data(self):
         if not hasattr(self, '_data'):
             if self.instance is not None and not getattr(self, '_errors', None):
-                self._data = self.to_representation(self.instance)
+                try:
+                    self._data = self.to_representation(self.instance)
+                except AttributeError as exc:
+                    if isinstance(self.instance, (list, tuple, QuerySet)):
+                        msg = (
+                            'The reason for this exception might be that you '
+                            'have passed a %s as `instance` argument to the '
+                            'serializer but did not set `many=True`.'
+                            % type(self.instance).__name__)
+                        six.reraise(
+                            type(exc),
+                            type(exc)(str(exc) + '. ' + msg),
+                            sys.exc_info()[2])
+                    else:
+                        six.reraise(*sys.exc_info())
             elif hasattr(self, '_validated_data') and not getattr(self, '_errors', None):
                 self._data = self.to_representation(self.validated_data)
             else:

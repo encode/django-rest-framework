@@ -1,3 +1,4 @@
+from django.db.models.query import QuerySet
 from rest_framework import serializers
 import pytest
 
@@ -41,6 +42,41 @@ class TestSerializer:
         serializer = self.Serializer(instance)
         with pytest.raises(AttributeError):
             serializer.data
+
+    def test_missing_many_kwarg(self):
+        serializer = self.Serializer([], many=True)
+        assert serializer.data == []
+
+        expect_failure = (
+            (),
+            [],
+            QuerySet()
+        )
+
+        for failure in expect_failure:
+            serializer = self.Serializer(failure)
+            with pytest.raises(AttributeError):
+                serializer.data
+
+            # Check that message was correctly annotated.
+            try:
+                serializer.data
+            except Exception as exc:
+                assert 'many=True' in str(exc)
+
+        serializer = self.Serializer(None)
+        assert serializer.data
+
+        serializer = self.Serializer(object())
+        with pytest.raises(AttributeError):
+            serializer.data
+
+        # Check that message was NOT annotated. object() is not list but does
+        # not has the required `char` and `integer` attributes.
+        try:
+            serializer.data
+        except Exception as exc:
+            assert 'many=True' not in str(exc)
 
 
 class TestValidateMethod:
