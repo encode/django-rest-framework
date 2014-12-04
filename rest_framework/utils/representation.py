@@ -3,8 +3,8 @@ Helper functions for creating user-friendly representations
 of serializer classes and serializer fields.
 """
 from django.db import models
+from django.utils.encoding import force_text
 from django.utils.functional import Promise
-from rest_framework.compat import force_text
 import re
 
 

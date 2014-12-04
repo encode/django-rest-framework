@@ -16,11 +16,11 @@ from django.http.multipartparser import parse_header
 from django.template import Context, RequestContext, loader, Template
 from django.test.client import encode_multipart
 from django.utils import six
+from django.utils.encoding import smart_text
 from django.utils.xmlutils import SimplerXMLGenerator
+from django.utils.six.moves import StringIO
 from rest_framework import exceptions, serializers, status, VERSION
-from rest_framework.compat import (
-    SHORT_SEPARATORS, LONG_SEPARATORS, StringIO, smart_text, yaml
-)
+from rest_framework.compat import SHORT_SEPARATORS, LONG_SEPARATORS, yaml
 from rest_framework.exceptions import ParseError
 from rest_framework.settings import api_settings
 from rest_framework.request import is_form_media_type, override_method

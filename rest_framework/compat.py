@@ -9,22 +9,10 @@ from __future__ import unicode_literals
 import inspect
 
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.encoding import force_text
 from django.conf import settings
 from django.utils import six
 import django
-
-
-# Handle django.utils.encoding rename in 1.5 onwards.
-# smart_unicode -> smart_text
-# force_unicode -> force_text
-try:
-    from django.utils.encoding import smart_text
-except ImportError:
-    from django.utils.encoding import smart_unicode as smart_text
-try:
-    from django.utils.encoding import force_text
-except ImportError:
-    from django.utils.encoding import force_unicode as force_text
 
 
 # OrderedDict only available in Python 2.7.
@@ -33,7 +21,7 @@ except ImportError:
 # For Django <= 1.6 and Python 2.6 fall back to OrderedDict.
 try:
     from collections import OrderedDict
-except:
+except ImportError:
     from django.utils.datastructures import SortedDict as OrderedDict
 
 
@@ -72,20 +60,12 @@ if 'guardian' in settings.INSTALLED_APPS:
         pass
 
 
-# cStringIO only if it's available, otherwise StringIO
-try:
-    import cStringIO.StringIO as StringIO
-except ImportError:
-    StringIO = six.StringIO
-
-BytesIO = six.BytesIO
-
-
 # urlparse compat import (Required because it changed in python 3.x)
 try:
     from urllib import parse as urlparse
 except ImportError:
     import urlparse
+
 
 # UserDict moves in Python 3
 try:
@@ -102,14 +82,6 @@ def get_model_name(model_cls):
     except AttributeError:
         # < 1.6 used module_name instead of model_name
         return model_cls._meta.module_name
-
-
-def get_concrete_model(model_cls):
-    try:
-        return model_cls._meta.concrete_model
-    except AttributeError:
-        # 1.3 does not include concrete model
-        return model_cls
 
 
 # View._allowed_methods only present from 1.5 onwards

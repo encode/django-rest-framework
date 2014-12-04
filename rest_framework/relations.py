@@ -1,4 +1,5 @@
-from rest_framework.compat import smart_text, urlparse
+from django.utils.encoding import smart_text
+from rest_framework.compat import urlparse
 from rest_framework.fields import get_attribute, empty, Field
 from rest_framework.reverse import reverse
 from rest_framework.utils import html

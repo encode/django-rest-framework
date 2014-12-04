@@ -12,7 +12,8 @@ from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError, parse_header, ChunkIter
 from django.utils import six
-from rest_framework.compat import etree, yaml, force_text, urlparse
+from django.utils.encoding import force_text
+from rest_framework.compat import etree, yaml, urlparse
 from rest_framework.exceptions import ParseError
 from rest_framework import renderers
 import json
