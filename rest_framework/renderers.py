@@ -282,7 +282,9 @@ class TemplateHTMLRenderer(BaseRenderer):
             return view.get_template_names()
         elif hasattr(view, 'template_name'):
             return [view.template_name]
-        raise ImproperlyConfigured('Returned a template response with no `template_name` attribute set on either the view or response')
+        raise ImproperlyConfigured(
+            'Returned a template response with no `template_name` attribute set on either the view or response'
+        )
 
     def get_exception_template(self, response):
         template_names = [name % {'status_code': response.status_code}

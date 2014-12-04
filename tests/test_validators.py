@@ -148,7 +148,7 @@ class TestUniquenessTogetherValidation(TestCase):
     def test_ignore_excluded_fields(self):
         """
         When model fields are not included in a serializer, then uniqueness
-        validtors should not be added for that field.
+        validators should not be added for that field.
         """
         class ExcludedFieldSerializer(serializers.ModelSerializer):
             class Meta:

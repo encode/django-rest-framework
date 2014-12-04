@@ -142,7 +142,7 @@ class PrimaryKeyRelatedField(RelatedField):
     def get_iterable(self, instance, source_attrs):
         # For consistency with `get_attribute` we're using `serializable_value()`
         # here. Typically there won't be any difference, but some custom field
-        # types might return a non-primative value for the pk otherwise.
+        # types might return a non-primitive value for the pk otherwise.
         #
         # We could try to get smart with `values_list('pk', flat=True)`, which
         # would be better in some case, but would actually end up with *more*

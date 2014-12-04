@@ -10,17 +10,13 @@ python primitives.
 2. The process of marshalling between python primitives and request and
 response content is handled by parsers and renderers.
 """
-from django.core.exceptions import ImproperlyConfigured
-from django.core.exceptions import ValidationError as DjangoValidationError
+import warnings
+
 from django.db import models
 from django.db.models.fields import FieldDoesNotExist
-from django.utils import six
 from django.utils.translation import ugettext_lazy as _
-from rest_framework.compat import OrderedDict
-from rest_framework.exceptions import ValidationError
-from rest_framework.fields import empty, set_value, Field, SkipField
-from rest_framework.settings import api_settings
-from rest_framework.utils import html, model_meta, representation
+
+from rest_framework.utils import model_meta
 from rest_framework.utils.field_mapping import (
     get_url_kwargs, get_field_kwargs,
     get_relation_kwargs, get_nested_relation_kwargs,
@@ -33,9 +29,7 @@ from rest_framework.validators import (
     UniqueForDateValidator, UniqueForMonthValidator, UniqueForYearValidator,
     UniqueTogetherValidator
 )
-import copy
-import inspect
-import warnings
+
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -65,6 +59,7 @@ class BaseSerializer(Field):
     The BaseSerializer class provides a minimal class which may be used
     for writing custom serializer implementations.
     """
+
     def __init__(self, instance=None, data=None, **kwargs):
         self.instance = instance
         self._initial_data = data
@@ -245,7 +240,7 @@ class Serializer(BaseSerializer):
         """
         A dictionary of {field_name: field_instance}.
         """
-        # `fields` is evalutated lazily. We do this to ensure that we don't
+        # `fields` is evaluated lazily. We do this to ensure that we don't
         # have issues importing modules that use ModelSerializers as fields,
         # even if Django's app-loading stage has not yet run.
         if not hasattr(self, '_fields'):
@@ -343,7 +338,7 @@ class Serializer(BaseSerializer):
             # Normally you should raise `serializers.ValidationError`
             # inside your codebase, but we handle Django's validation
             # exception class as well for simpler compat.
-            # Eg. Calling Model.clean() explictily inside Serializer.validate()
+            # Eg. Calling Model.clean() explicitly inside Serializer.validate()
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: list(exc.messages)
             })
@@ -576,7 +571,7 @@ class ModelSerializer(Serializer):
 
     The process of automatically determining a set of serializer fields
     based on the model fields is reasonably complex, but you almost certainly
-    don't need to dig into the implemention.
+    don't need to dig into the implementation.
 
     If the `ModelSerializer` class *doesn't* generate the set of fields that
     you need you should either declare the extra/differing fields explicitly on
@@ -636,7 +631,7 @@ class ModelSerializer(Serializer):
             isinstance(field, BaseSerializer) and (key in validated_attrs)
             for key, field in self.fields.items()
         ), (
-            'The `.create()` method does not suport nested writable fields '
+            'The `.create()` method does not support nested writable fields '
             'by default. Write an explicit `.create()` method for serializer '
             '`%s.%s`, or set `read_only=True` on nested serializer fields.' %
             (self.__class__.__module__, self.__class__.__name__)
@@ -684,7 +679,7 @@ class ModelSerializer(Serializer):
             isinstance(field, BaseSerializer) and (key in validated_attrs)
             for key, field in self.fields.items()
         ), (
-            'The `.update()` method does not suport nested writable fields '
+            'The `.update()` method does not support nested writable fields '
             'by default. Write an explicit `.update()` method for serializer '
             '`%s.%s`, or set `read_only=True` on nested serializer fields.' %
             (self.__class__.__module__, self.__class__.__name__)
@@ -824,7 +819,7 @@ class ModelSerializer(Serializer):
         # applied, we can add the extra 'required=...' or 'default=...'
         # arguments that are appropriate to these fields, or add a `HiddenField` for it.
         for unique_constraint_name in unique_constraint_names:
-            # Get the model field that is refered too.
+            # Get the model field that is referred too.
             unique_constraint_field = model._meta.get_field(unique_constraint_name)
 
             if getattr(unique_constraint_field, 'auto_now_add', None):
@@ -907,7 +902,7 @@ class ModelSerializer(Serializer):
                 )
 
             # Check that any fields declared on the class are
-            # also explicity included in `Meta.fields`.
+            # also explicitly included in `Meta.fields`.
             missing_fields = set(declared_fields.keys()) - set(fields)
             if missing_fields:
                 missing_field = list(missing_fields)[0]
@@ -1001,6 +996,7 @@ class ModelSerializer(Serializer):
             class Meta:
                 model = relation_info.related
                 depth = nested_depth
+
         return NestedSerializer
 
 
@@ -1027,4 +1023,5 @@ class HyperlinkedModelSerializer(ModelSerializer):
             class Meta:
                 model = relation_info.related
                 depth = nested_depth
+
         return NestedSerializer

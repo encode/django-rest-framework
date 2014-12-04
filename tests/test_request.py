@@ -187,7 +187,7 @@ class MockView(APIView):
         if request.POST.get('example') is not None:
             return Response(status=status.HTTP_200_OK)
 
-        return Response(status=status.INTERNAL_SERVER_ERROR)
+        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 urlpatterns = patterns(
     '',
