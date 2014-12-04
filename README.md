@@ -3,13 +3,13 @@
 [![build-status-image]][travis]
 [![pypi-version]][pypi]
 
-**Awesome web-browseable Web APIs.**
+**Awesome web-browsable Web APIs.**
 
 Full documentation for the project is available at [http://www.django-rest-framework.org][docs].
 
 ---
 
-**Note**: The incoming 3.0 version has now been merged to the `master` branch on GitHub. For the source of the currently available PyPI version, please see the `2.4.4` tag.
+**Note**: We have now released Django REST framework 3.0. For older codebases you may want to refer to the version 2.4.4 [source code](https://github.com/tomchristie/django-rest-framework/tree/version-2.4.x), and [documentation](http://tomchristie.github.io/rest-framework-2-docs/).
 
 ---
 
@@ -19,7 +19,7 @@ Django REST framework is a powerful and flexible toolkit for building Web APIs.
 
 Some reasons you might want to use REST framework:
 
-* The [Web browseable API][sandbox] is a huge useability win for your developers.
+* The [Web browsable API][sandbox] is a huge usability win for your developers.
 * [Authentication policies][authentication] including [OAuth1a][oauth1-section] and [OAuth2][oauth2-section] out of the box.
 * [Serialization][serializers] that supports both [ORM][modelserializer-section] and [non-ORM][serializer-section] data sources.
 * Customizable all the way down - just use [regular function-based views][functionview-section] if you don't need the [more][generic-views] [powerful][viewsets] [features][routers].
@@ -27,7 +27,7 @@ Some reasons you might want to use REST framework:
 
 There is a live example API for testing purposes, [available here][sandbox].
 
-**Below**: *Screenshot from the browseable API*
+**Below**: *Screenshot from the browsable API*
 
 ![Screenshot][image]
 
@@ -86,7 +86,7 @@ router.register(r'users', UserViewSet)
 
 
 # Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browseable API.
+# Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
@@ -180,7 +180,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-[build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master
+[build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.svg?branch=master
 [travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
 [pypi-version]: https://pypip.in/version/djangorestframework/badge.svg
 [pypi]: https://pypi.python.org/pypi/djangorestframework

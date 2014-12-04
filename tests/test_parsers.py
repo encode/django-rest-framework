@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
-from rest_framework.compat import StringIO
 from django import forms
 from django.core.files.uploadhandler import MemoryFileUploadHandler
 from django.test import TestCase
 from django.utils import unittest
 from rest_framework.compat import etree
+from rest_framework.compat import StringIO
+from rest_framework.exceptions import ParseError
 from rest_framework.parsers import FormParser, FileUploadParser
 from rest_framework.parsers import XMLParser
 import datetime
@@ -104,12 +105,39 @@ class TestFileUploadParser(TestCase):
         self.parser_context = {'request': request, 'kwargs': {}}
 
     def test_parse(self):
-        """ Make sure the `QueryDict` works OK """
+        """
+        Parse raw file upload.
+        """
         parser = FileUploadParser()
         self.stream.seek(0)
         data_and_files = parser.parse(self.stream, None, self.parser_context)
         file_obj = data_and_files.files['file']
         self.assertEqual(file_obj._size, 14)
+
+    def test_parse_missing_filename(self):
+        """
+        Parse raw file upload when filename is missing.
+        """
+        parser = FileUploadParser()
+        self.stream.seek(0)
+        self.parser_context['request'].META['HTTP_CONTENT_DISPOSITION'] = ''
+        with self.assertRaises(ParseError):
+            parser.parse(self.stream, None, self.parser_context)
+
+    def test_parse_missing_filename_multiple_upload_handlers(self):
+        """
+        Parse raw file upload with multiple handlers when filename is missing.
+        Regression test for #2109.
+        """
+        parser = FileUploadParser()
+        self.stream.seek(0)
+        self.parser_context['request'].upload_handlers = (
+            MemoryFileUploadHandler(),
+            MemoryFileUploadHandler()
+        )
+        self.parser_context['request'].META['HTTP_CONTENT_DISPOSITION'] = ''
+        with self.assertRaises(ParseError):
+            parser.parse(self.stream, None, self.parser_context)
 
     def test_get_filename(self):
         parser = FileUploadParser()

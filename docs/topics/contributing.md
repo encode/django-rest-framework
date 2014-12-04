@@ -62,7 +62,6 @@ To run the tests, clone the repository, and then:
     virtualenv env
     source env/bin/activate
     pip install -r requirements.txt
-    pip install -r requirements-test.txt
 
     # Run the tests
     ./runtests.py

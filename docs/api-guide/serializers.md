@@ -96,7 +96,7 @@ If we want to be able to return complete object instances based on the validated
 If your object instances correspond to Django models you'll also want to ensure that these methods save the object to the database. For example, if `Comment` was a Django model, the methods might look like this:
 
         def create(self, validated_data):
-            return Comment.objcts.create(**validated_data)
+            return Comment.objects.create(**validated_data)
 
         def update(self, instance, validated_data):
             instance.email = validated_data.get('email', instance.email)
@@ -567,13 +567,13 @@ There needs to be a way of determining which views should be used for hyperlinki
 
 By default hyperlinks are expected to correspond to a view name that matches the style `'{model_name}-detail'`, and looks up the instance by a `pk` keyword argument.
 
-You can override a URL field view name and lookup field by using either, or both of, the `view_name` and `lookup_field` options in the `extra_field_kwargs` setting, like so:
+You can override a URL field view name and lookup field by using either, or both of, the `view_name` and `lookup_field` options in the `extra_kwargs` setting, like so:
 
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
             fields = ('account_url', 'account_name', 'users', 'created')
-            extra_field_kwargs = {
+            extra_kwargs = {
                 'url': {'view_name': 'accounts', 'lookup_field': 'account_name'}
                 'users': {'lookup_field': 'username'}
             }
@@ -688,6 +688,21 @@ Here's an example of how you might choose to implement multiple updates:
             list_serializer_class = BookListSerializer
 
 It is possible that a third party package may be included alongside the 3.1 release that provides some automatic support for multiple update operations, similar to the `allow_add_remove` behavior that was present in REST framework 2.
+
+#### Customizing ListSerializer initialization
+
+When a serializer with `many=True` is instantiated, we need to determine which arguments and keyword arguments should be passed to the `.__init__()` method for both the child `Serializer` class, and for the parent `ListSerializer` class.
+
+The default implementation is to pass all arguments to both classes, except for `validators`, and any custom keyword arguments, both of which are assumed to be intended for the child serializer class.
+
+Occasionally you might need to explicitly specify how the child and parent classes should be instantiated when `many=True` is passed. You can do so by using the `many_init` class method.
+
+        @classmethod
+        def many_init(cls, *args, **kwargs):
+            # Instantiate the child serializer.
+            kwargs['child'] = cls()
+            # Instantiate the parent list serializer.
+            return CustomListSerializer(*args, **kwargs)
 
 ---
 

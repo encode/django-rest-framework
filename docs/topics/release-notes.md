@@ -121,7 +121,7 @@ You can determine your currently installed version using `pip freeze`:
 * Add `UnicodeYAMLRenderer` that extends `YAMLRenderer` with unicode.
 * Fix `parse_header` argument convertion.
 * Fix mediatype detection under Python 3.
-* Web browseable API now offers blank option on dropdown when the field is not required.
+* Web browsable API now offers blank option on dropdown when the field is not required.
 * `APIException` representation improved for logging purposes.
 * Allow source="*" within nested serializers.
 * Better support for custom oauth2 provider backends.
@@ -200,7 +200,7 @@ You can determine your currently installed version using `pip freeze`:
 * Added `MAX_PAGINATE_BY` setting and `max_paginate_by` generic view attribute.
 * Added `cache` attribute to throttles to allow overriding of default cache.
 * 'Raw data' tab in browsable API now contains pre-populated data.
-* 'Raw data' and 'HTML form' tab preference in browseable API now saved between page views.
+* 'Raw data' and 'HTML form' tab preference in browsable API now saved between page views.
 * Bugfix: `required=True` argument fixed for boolean serializer fields.
 * Bugfix: `client.force_authenticate(None)` should also clear session info if it exists.
 * Bugfix: Client sending empty string instead of file now clears `FileField`.

@@ -93,7 +93,7 @@ The cookiecutter template includes a `runtests.py` which uses the `pytest` packa
 
 Before running, you'll need to install a couple test requirements.
 
-    $ pip install -r requirements-test.txt
+    $ pip install -r requirements.txt
 
 Once requirements installed, you can run `runtests.py`.
 

@@ -11,6 +11,7 @@ python primitives.
 response content is handled by parsers and renderers.
 """
 from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import models
 from django.db.models.fields import FieldDoesNotExist
 from django.utils import six
@@ -124,6 +125,14 @@ class BaseSerializer(Field):
             'that is no longer compatible with REST framework 3. '
             'Use the new-style `.create()` and `.update()` methods instead.' %
             (self.__class__.__module__, self.__class__.__name__)
+        )
+
+        assert hasattr(self, '_errors'), (
+            'You must call `.is_valid()` before calling `.save()`.'
+        )
+
+        assert not self.errors, (
+            'You cannot call `.save()` on a serializer with invalid data.'
         )
 
         validated_data = dict(
@@ -330,6 +339,14 @@ class Serializer(BaseSerializer):
                 raise ValidationError({
                     api_settings.NON_FIELD_ERRORS_KEY: [exc.detail]
                 })
+        except DjangoValidationError as exc:
+            # Normally you should raise `serializers.ValidationError`
+            # inside your codebase, but we handle Django's validation
+            # exception class as well for simpler compat.
+            # Eg. Calling Model.clean() explictily inside Serializer.validate()
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: list(exc.messages)
+            })
 
         return value
 
@@ -353,6 +370,8 @@ class Serializer(BaseSerializer):
                     validated_value = validate_method(validated_value)
             except ValidationError as exc:
                 errors[field.field_name] = exc.detail
+            except DjangoValidationError as exc:
+                errors[field.field_name] = list(exc.messages)
             except SkipField:
                 pass
             else:
@@ -554,6 +573,14 @@ class ModelSerializer(Serializer):
     * A set of default fields are automatically populated.
     * A set of default validators are automatically populated.
     * Default `.create()` and `.update()` implementations are provided.
+
+    The process of automatically determining a set of serializer fields
+    based on the model fields is reasonably complex, but you almost certainly
+    don't need to dig into the implemention.
+
+    If the `ModelSerializer` class *doesn't* generate the set of fields that
+    you need you should either declare the extra/differing fields explicitly on
+    the serializer class, or simply use a `Serializer` class.
     """
     _field_mapping = ClassLookupDict({
         models.AutoField: IntegerField,
@@ -581,13 +608,33 @@ class ModelSerializer(Serializer):
     })
     _related_class = PrimaryKeyRelatedField
 
-    def create(self, validated_attrs):
+    def create(self, validated_data):
+        """
+        We have a bit of extra checking around this in order to provide
+        descriptive messages when something goes wrong, but this method is
+        essentially just:
+
+            return ExampleModel.objects.create(**validated_data)
+
+        If there are many to many fields present on the instance then they
+        cannot be set until the model is instantiated, in which case the
+        implementation is like so:
+
+            example_relationship = validated_data.pop('example_relationship')
+            instance = ExampleModel.objects.create(**validated_data)
+            instance.example_relationship = example_relationship
+            return instance
+
+        The default implementation also does not handle nested relationships.
+        If you want to support writable nested relationships you'll need
+        to write an explicit `.create()` method.
+        """
         # Check that the user isn't trying to handle a writable nested field.
         # If we don't do this explicitly they'd likely get a confusing
         # error at the point of calling `Model.objects.create()`.
         assert not any(
-            isinstance(field, BaseSerializer) and not field.read_only
-            for field in self.fields.values()
+            isinstance(field, BaseSerializer) and (key in validated_attrs)
+            for key, field in self.fields.items()
         ), (
             'The `.create()` method does not suport nested writable fields '
             'by default. Write an explicit `.create()` method for serializer '
@@ -597,16 +644,33 @@ class ModelSerializer(Serializer):
 
         ModelClass = self.Meta.model
 
-        # Remove many-to-many relationships from validated_attrs.
+        # Remove many-to-many relationships from validated_data.
         # They are not valid arguments to the default `.create()` method,
         # as they require that the instance has already been saved.
         info = model_meta.get_field_info(ModelClass)
         many_to_many = {}
         for field_name, relation_info in info.relations.items():
-            if relation_info.to_many and (field_name in validated_attrs):
-                many_to_many[field_name] = validated_attrs.pop(field_name)
+            if relation_info.to_many and (field_name in validated_data):
+                many_to_many[field_name] = validated_data.pop(field_name)
 
-        instance = ModelClass.objects.create(**validated_attrs)
+        try:
+            instance = ModelClass.objects.create(**validated_data)
+        except TypeError as exc:
+            msg = (
+                'Got a `TypeError` when calling `%s.objects.create()`. '
+                'This may be because you have a writable field on the '
+                'serializer class that is not a valid argument to '
+                '`%s.objects.create()`. You may need to make the field '
+                'read-only, or override the %s.create() method to handle '
+                'this correctly.\nOriginal exception text was: %s.' %
+                (
+                    ModelClass.__name__,
+                    ModelClass.__name__,
+                    self.__class__.__name__,
+                    exc
+                )
+            )
+            raise TypeError(msg)
 
         # Save many-to-many relationships after the instance is created.
         if many_to_many:
@@ -615,10 +679,10 @@ class ModelSerializer(Serializer):
 
         return instance
 
-    def update(self, instance, validated_attrs):
+    def update(self, instance, validated_data):
         assert not any(
-            isinstance(field, BaseSerializer) and not field.read_only
-            for field in self.fields.values()
+            isinstance(field, BaseSerializer) and (key in validated_attrs)
+            for key, field in self.fields.items()
         ), (
             'The `.update()` method does not suport nested writable fields '
             'by default. Write an explicit `.update()` method for serializer '
@@ -626,19 +690,24 @@ class ModelSerializer(Serializer):
             (self.__class__.__module__, self.__class__.__name__)
         )
 
-        for attr, value in validated_attrs.items():
+        for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
         return instance
 
     def get_validators(self):
+        # If the validators have been declared explicitly then use that.
+        validators = getattr(getattr(self, 'Meta', None), 'validators', None)
+        if validators is not None:
+            return validators
+
+        # Determine the default set of validators.
+        validators = []
+        model_class = self.Meta.model
         field_names = set([
             field.source for field in self.fields.values()
             if (field.source != '*') and ('.' not in field.source)
         ])
-
-        validators = getattr(getattr(self, 'Meta', None), 'validators', [])
-        model_class = self.Meta.model
 
         # Note that we make sure to check `unique_together` both on the
         # base model class, but also on any parent classes.
