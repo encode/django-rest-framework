@@ -61,15 +61,6 @@ if 'guardian' in settings.INSTALLED_APPS:
         pass
 
 
-# UserDict moves in Python 3
-try:
-    from UserDict import UserDict
-    from UserDict import DictMixin
-except ImportError:
-    from collections import UserDict
-    from collections import MutableMapping as DictMixin
-
-
 def get_model_name(model_cls):
     try:
         return model_cls._meta.model_name
@@ -177,11 +168,6 @@ class RequestFactory(DjangoRequestFactory):
                 'CONTENT_TYPE': six.text_type(content_type),
                 'wsgi.input': FakePayload(data),
             })
-        elif django.VERSION <= (1, 4):
-            # For 1.3 we need an empty WSGI payload
-            r.update({
-                'wsgi.input': FakePayload('')
-            })
         r.update(extra)
         return self.request(**r)
 
@@ -278,16 +264,3 @@ if six.PY3:
 else:
     SHORT_SEPARATORS = (b',', b':')
     LONG_SEPARATORS = (b', ', b': ')
-
-
-# Handle lazy strings across Py2/Py3
-from django.utils.functional import Promise
-
-if six.PY3:
-    def is_non_str_iterable(obj):
-        if isinstance(obj, str) or (isinstance(obj, Promise) and obj._delegate_text):
-            return False
-        return hasattr(obj, '__iter__')
-else:
-    def is_non_str_iterable(obj):
-        return hasattr(obj, '__iter__')
