@@ -1,5 +1,4 @@
 from django.utils.encoding import smart_text
-from rest_framework.compat import urlparse
 from rest_framework.fields import get_attribute, empty, Field
 from rest_framework.reverse import reverse
 from rest_framework.utils import html
@@ -7,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch, Resolver404
 from django.db.models.query import QuerySet
 from django.utils import six
+from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
 

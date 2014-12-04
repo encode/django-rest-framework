@@ -10,6 +10,7 @@ import inspect
 
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.encoding import force_text
+from django.utils.six.moves.urllib import parse as urlparse
 from django.conf import settings
 from django.utils import six
 import django
@@ -58,13 +59,6 @@ if 'guardian' in settings.INSTALLED_APPS:
         import guardian.shortcuts  # Fixes #1624
     except ImportError:
         pass
-
-
-# urlparse compat import (Required because it changed in python 3.x)
-try:
-    from urllib import parse as urlparse
-except ImportError:
-    import urlparse
 
 
 # UserDict moves in Python 3
