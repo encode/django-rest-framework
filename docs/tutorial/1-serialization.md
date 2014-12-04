@@ -210,7 +210,7 @@ One nice property that serializers have is that you can inspect all the fields i
 
     >>> from snippets.serializers import SnippetSerializer
     >>> serializer = SnippetSerializer()
-    >>> print repr(serializer)  # In python 3 use `print(repr(serializer))`
+    >>> print(repr(serializer))
     SnippetSerializer():
         id = IntegerField(label='ID', read_only=True)
         title = CharField(allow_blank=True, max_length=100, required=False)
