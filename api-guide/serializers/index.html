@@ -461,6 +461,10 @@
                       <a href="#customizing-multiple-update">Customizing multiple update</a>
                     </li>
                   
+                    <li>
+                      <a href="#customizing-listserializer-initialization">Customizing ListSerializer initialization</a>
+                    </li>
+                  
 
                 
 
@@ -617,7 +621,7 @@ serializer.validated_data
 </code></pre>
 <p>If your object instances correspond to Django models you'll also want to ensure that these methods save the object to the database. For example, if <code>Comment</code> was a Django model, the methods might look like this:</p>
 <pre><code>    def create(self, validated_data):
-        return Comment.objcts.create(**validated_data)
+        return Comment.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         instance.email = validated_data.get('email', instance.email)
@@ -982,12 +986,12 @@ AccountSerializer():
 <h2 id="how-hyperlinked-views-are-determined">How hyperlinked views are determined</h2>
 <p>There needs to be a way of determining which views should be used for hyperlinking to model instances.</p>
 <p>By default hyperlinks are expected to correspond to a view name that matches the style <code>'{model_name}-detail'</code>, and looks up the instance by a <code>pk</code> keyword argument.</p>
-<p>You can override a URL field view name and lookup field by using either, or both of, the <code>view_name</code> and <code>lookup_field</code> options in the <code>extra_field_kwargs</code> setting, like so:</p>
+<p>You can override a URL field view name and lookup field by using either, or both of, the <code>view_name</code> and <code>lookup_field</code> options in the <code>extra_kwargs</code> setting, like so:</p>
 <pre><code>class AccountSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Account
         fields = ('account_url', 'account_name', 'users', 'created')
-        extra_field_kwargs = {
+        extra_kwargs = {
             'url': {'view_name': 'accounts', 'lookup_field': 'account_name'}
             'users': {'lookup_field': 'username'}
         }
@@ -1084,6 +1088,17 @@ class BookSerializer(serializers.Serializer):
         list_serializer_class = BookListSerializer
 </code></pre>
 <p>It is possible that a third party package may be included alongside the 3.1 release that provides some automatic support for multiple update operations, similar to the <code>allow_add_remove</code> behavior that was present in REST framework 2.</p>
+<h4 id="customizing-listserializer-initialization">Customizing ListSerializer initialization</h4>
+<p>When a serializer with <code>many=True</code> is instantiated, we need to determine which arguments and keyword arguments should be passed to the <code>.__init__()</code> method for both the child <code>Serializer</code> class, and for the parent <code>ListSerializer</code> class.</p>
+<p>The default implementation is to pass all arguments to both classes, except for <code>validators</code>, and any custom keyword arguments, both of which are assumed to be intended for the child serializer class.</p>
+<p>Occasionally you might need to explicitly specify how the child and parent classes should be instantiated when <code>many=True</code> is passed. You can do so by using the <code>many_init</code> class method.</p>
+<pre><code>    @classmethod
+    def many_init(cls, *args, **kwargs):
+        # Instantiate the child serializer.
+        kwargs['child'] = cls()
+        # Instantiate the parent list serializer.
+        return CustomListSerializer(*args, **kwargs)
+</code></pre>
 <hr />
 <h1 id="baseserializer">BaseSerializer</h1>
 <p><code>BaseSerializer</code> class that can be used to easily support alternative serialization and deserialization styles.</p>

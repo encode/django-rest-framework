@@ -464,7 +464,7 @@ router.register(r'groups', GroupViewSet)
 
 
 # Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browseable API.
+# Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
@@ -586,8 +586,8 @@ urlpatterns = [
 <p>In the unlikely event that you're providing a custom serializer class, and implementing these methods you should note the new call signature for both methods is now <code>(self, model_field, related_model, to_many)</code>.  For reverse relationships <code>model_field</code> will be <code>None</code>.</p>
 <p>The old-style signature will continue to function but will raise a <code>PendingDeprecationWarning</code>.</p>
 <h2 id="view-names-and-descriptions">View names and descriptions</h2>
-<p>The mechanics of how the names and descriptions used in the browseable API are generated has been modified and cleaned up somewhat.</p>
-<p>If you've been customizing this behavior, for example perhaps to use <code>rst</code> markup for the browseable API, then you'll need to take a look at the implementation to see what updates you need to make.</p>
+<p>The mechanics of how the names and descriptions used in the browsable API are generated has been modified and cleaned up somewhat.</p>
+<p>If you've been customizing this behavior, for example perhaps to use <code>rst</code> markup for the browsable API, then you'll need to take a look at the implementation to see what updates you need to make.</p>
 <p>Note that the relevant methods have always been private APIs, and the docstrings called them out as intended to be deprecated.</p>
 <hr />
 <h1 id="other-notes">Other notes</h1>

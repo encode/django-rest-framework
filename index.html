@@ -457,7 +457,7 @@
 <a href="https://twitter.com/share" class="twitter-share-button" data-url="django-rest-framework.org" data-text="Checking out the totally awesome Django REST framework! http://www.django-rest-framework.org" data-count="none"></a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="http://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 
-<img src="https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master" class="travis-build-image">
+<img src="https://secure.travis-ci.org/tomchristie/django-rest-framework.svg?branch=master" class="travis-build-image">
 </p>
 
 <hr />
@@ -480,7 +480,7 @@
 <p>Django REST framework is a powerful and flexible toolkit that makes it easy to build Web APIs.</p>
 <p>Some reasons you might want to use REST framework:</p>
 <ul>
-<li>The <a href="http://restframework.herokuapp.com/">Web browseable API</a> is a huge usability win for your developers.</li>
+<li>The <a href="http://restframework.herokuapp.com/">Web browsable API</a> is a huge usability win for your developers.</li>
 <li><a href="api-guide/authentication/">Authentication policies</a> including <a href="./api-guide/authentication#oauthauthentication">OAuth1a</a> and <a href="./api-guide/authentication#oauth2authentication">OAuth2</a> out of the box.</li>
 <li><a href="api-guide/serializers/">Serialization</a> that supports both <a href="./api-guide/serializers#modelserializer">ORM</a> and <a href="./api-guide/serializers#serializers">non-ORM</a> data sources.</li>
 <li>Customizable all the way down - just use <a href="./api-guide/views#function-based-views">regular function-based views</a> if you don't need the <a href="api-guide/generic-views/">more</a> <a href="api-guide/viewsets/">powerful</a> <a href="api-guide/routers/">features</a>.</li>
@@ -564,7 +564,7 @@ router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 
 # Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browseable API.
+# Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))

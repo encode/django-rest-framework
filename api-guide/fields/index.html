@@ -851,7 +851,7 @@ class UserSerializer(serializers.ModelSerializer):
 <h1 id="custom-fields">Custom fields</h1>
 <p>If you want to create a custom field, you'll need to subclass <code>Field</code> and then override either one or both of the <code>.to_representation()</code> and <code>.to_internal_value()</code> methods.  These two methods are used to convert between the initial datatype, and a primitive, serializable datatype. Primitive datatypes will typically be any of a number, string, boolean, <code>date</code>/<code>time</code>/<code>datetime</code> or <code>None</code>. They may also be any list or dictionary like object that only contains other primitive objects. Other types might be supported, depending on the renderer that you are using.</p>
 <p>The <code>.to_representation()</code> method is called to convert the initial datatype into a primitive, serializable datatype.</p>
-<p>The <code>to_internal_value()</code> method is called to restore a primitive datatype into its internal python representation.</p>
+<p>The <code>to_internal_value()</code> method is called to restore a primitive datatype into its internal python representation. This method should raise a <code>serializer.ValidationError</code> if the data is invalid.</p>
 <p>Note that the <code>WritableField</code> class that was present in version 2.x no longer exists. You should subclass <code>Field</code> and override <code>to_internal_value()</code> if the field supports data input.</p>
 <h2 id="examples">Examples</h2>
 <p>Let's look at an example of serializing a class that represents an RGB color value:</p>
@@ -890,6 +890,49 @@ class ColorField(serializers.Field):
         """
         return obj.__class__.__name__
 </code></pre>
+<h4 id="raising-validation-errors">Raising validation errors</h4>
+<p>Our <code>ColorField</code> class above currently does not perform any data validation.
+To indicate invalid data, we should raise a <code>serializers.ValidationError</code>, like so:</p>
+<pre><code>def to_internal_value(self, data):
+    if not isinstance(data, six.text_type):
+        msg = 'Incorrect type. Expected a string, but got %s'
+        raise ValidationError(msg % type(data).__name__)
+
+    if not re.match(r'^rgb\([0-9]+,[0-9]+,[0-9]+\)$', data):
+        raise ValidationError('Incorrect format. Expected `rgb(#,#,#)`.')
+
+    data = data.strip('rgb(').rstrip(')')
+    red, green, blue = [int(col) for col in data.split(',')]
+
+    if any([col &gt; 255 or col &lt; 0 for col in (red, green, blue)]):
+        raise ValidationError('Value out of range. Must be between 0 and 255.')
+
+    return Color(red, green, blue)
+</code></pre>
+<p>The <code>.fail()</code> method is a shortcut for raising <code>ValidationError</code> that takes a message string from the <code>error_messages</code> dictionary. For example:</p>
+<pre><code>default_error_messages = {
+    'incorrect_type': 'Incorrect type. Expected a string, but got {input_type}',
+    'incorrect_format': 'Incorrect format. Expected `rgb(#,#,#)`.',
+    'out_of_range': 'Value out of range. Must be between 0 and 255.'
+}
+
+def to_internal_value(self, data):
+    if not isinstance(data, six.text_type):
+        msg = 'Incorrect type. Expected a string, but got %s'
+        self.fail('incorrect_type', input_type=type(data).__name__)
+
+    if not re.match(r'^rgb\([0-9]+,[0-9]+,[0-9]+\)$', data):
+        self.fail('incorrect_format')
+
+    data = data.strip('rgb(').rstrip(')')
+    red, green, blue = [int(col) for col in data.split(',')]
+
+    if any([col &gt; 255 or col &lt; 0 for col in (red, green, blue)]):
+        self.fail('out_of_range')
+
+    return Color(red, green, blue)
+</code></pre>
+<p>This style keeps you error messages more cleanly separated from your code, and should be preferred.</p>
 <h1 id="third-party-packages">Third party packages</h1>
 <p>The following third party packages are also available.</p>
 <h2 id="drf-compound-fields">DRF Compound Fields</h2>

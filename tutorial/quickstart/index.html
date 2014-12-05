@@ -403,10 +403,9 @@ pip install django
 pip install djangorestframework
 
 # Set up a new project with a single application
-django-admin.py startproject tutorial
+django-admin.py startproject tutorial .
 cd tutorial
 django-admin.py startapp quickstart
-cd ..
 </code></pre>
 <p>Now sync your database for the first time:</p>
 <pre><code>python manage.py migrate
@@ -470,7 +469,7 @@ router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 
 # Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browseable API.
+# Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
