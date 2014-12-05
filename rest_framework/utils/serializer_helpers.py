@@ -1,3 +1,4 @@
+import collections
 from rest_framework.compat import OrderedDict
 
 
@@ -70,7 +71,7 @@ class NestedBoundField(BoundField):
         return BoundField(field, value, error, prefix=self.name + '.')
 
 
-class BindingDict(object):
+class BindingDict(collections.MutableMapping):
     """
     This dict-like object is used to store fields on a serializer.
 
@@ -92,11 +93,8 @@ class BindingDict(object):
     def __delitem__(self, key):
         del self.fields[key]
 
-    def items(self):
-        return self.fields.items()
+    def __iter__(self):
+        return iter(self.fields)
 
-    def keys(self):
-        return self.fields.keys()
-
-    def values(self):
-        return self.fields.values()
+    def __len__(self):
+        return len(self.fields)

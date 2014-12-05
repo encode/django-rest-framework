@@ -48,6 +48,12 @@ class ViewSetMixin(object):
         # eg. 'List' or 'Instance'.
         cls.suffix = None
 
+        # actions must not be empty
+        if not actions:
+            raise TypeError("The `actions` argument must be provided when "
+                            "calling `.as_view()` on a ViewSet. For example "
+                            "`.as_view({'get': 'list'})`")
+
         # sanitize keyword arguments
         for key in initkwargs:
             if key in cls.http_method_names:

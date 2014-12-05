@@ -26,6 +26,10 @@ class CustomField(models.Field):
     pass
 
 
+class OneFieldModel(models.Model):
+    char_field = models.CharField(max_length=100)
+
+
 class RegularFieldsModel(models.Model):
     """
     A model class for testing regular flat fields.
@@ -66,6 +70,26 @@ class FieldOptionsModel(models.Model):
     default_field = models.IntegerField(default=0)
     descriptive_field = models.IntegerField(help_text='Some help text', verbose_name='A label')
     choices_field = models.CharField(max_length=100, choices=COLOR_CHOICES)
+
+
+class TestModelSerializer(TestCase):
+    def test_create_method(self):
+        class TestSerializer(serializers.ModelSerializer):
+            non_model_field = serializers.CharField()
+
+            class Meta:
+                model = OneFieldModel
+                fields = ('char_field', 'non_model_field')
+
+        serializer = TestSerializer(data={
+            'char_field': 'foo',
+            'non_model_field': 'bar',
+        })
+        serializer.is_valid()
+        with self.assertRaises(TypeError) as excinfo:
+            serializer.save()
+        msginitial = 'Got a `TypeError` when calling `OneFieldModel.objects.create()`.'
+        assert str(excinfo.exception).startswith(msginitial)
 
 
 class TestRegularFieldMappings(TestCase):
