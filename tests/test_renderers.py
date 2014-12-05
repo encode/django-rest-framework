@@ -384,6 +384,15 @@ class UnicodeJSONRendererTests(TestCase):
         content = renderer.render(obj, 'application/json')
         self.assertEqual(content, '{"countries":["United Kingdom","France","España"]}'.encode('utf-8'))
 
+    def test_u2028_u2029(self):
+        # The \u2028 and \u2029 characters should be escaped,
+        # even when the non-escaping unicode representation is used.
+        # Regression test for #2169
+        obj = {'should_escape': '\u2028\u2029'}
+        renderer = JSONRenderer()
+        content = renderer.render(obj, 'application/json')
+        self.assertEqual(content, '{"should_escape":"\\u2028\\u2029"}'.encode('utf-8'))
+
 
 class AsciiJSONRendererTests(TestCase):
     """
