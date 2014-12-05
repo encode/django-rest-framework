@@ -411,8 +411,7 @@
 <hr />
 <h2 id="setting-up-a-new-environment">Setting up a new environment</h2>
 <p>Before we do anything else we'll create a new virtual environment, using <a href="http://www.virtualenv.org/en/latest/index.html">virtualenv</a>.  This will make sure our package configuration is kept nicely isolated from any other projects we're working on.</p>
-<pre><code>:::bash
-virtualenv env
+<pre><code>virtualenv env
 source env/bin/activate
 </code></pre>
 <p>Now that we're inside a virtualenv environment, we can install our package requirements.</p>
@@ -460,12 +459,8 @@ class Snippet(models.Model):
     title = models.CharField(max_length=100, blank=True, default='')
     code = models.TextField()
     linenos = models.BooleanField(default=False)
-    language = models.CharField(choices=LANGUAGE_CHOICES,
-                                default='python',
-                                max_length=100)
-    style = models.CharField(choices=STYLE_CHOICES,
-                             default='friendly',
-                             max_length=100)
+    language = models.CharField(choices=LANGUAGE_CHOICES, default='python', max_length=100)
+    style = models.CharField(choices=STYLE_CHOICES, default='friendly', max_length=100)
 
     class Meta:
         ordering = ('created',)
@@ -483,14 +478,11 @@ from snippets.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES
 
 class SnippetSerializer(serializers.Serializer):
     pk = serializers.IntegerField(read_only=True)
-    title = serializers.CharField(required=False, allow_blank=True
-                                  max_length=100)
+    title = serializers.CharField(required=False, allow_blank=True, max_length=100)
     code = serializers.CharField(style={'type': 'textarea'})
     linenos = serializers.BooleanField(required=False)
-    language = serializers.ChoiceField(choices=LANGUAGE_CHOICES,
-                                       default='python')
-    style = serializers.ChoiceField(choices=STYLE_CHOICES,
-                                    default='friendly')
+    language = serializers.ChoiceField(choices=LANGUAGE_CHOICES, default='python')
+    style = serializers.ChoiceField(choices=STYLE_CHOICES, default='friendly')
 
     def create(self, validated_data):
         """
@@ -552,6 +544,8 @@ data = JSONParser().parse(stream)
 <pre><code>serializer = SnippetSerializer(data=data)
 serializer.is_valid()
 # True
+serializer.validated_data
+# OrderedDict([('title', ''), ('code', 'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])
 serializer.save()
 # &lt;Snippet: Snippet object&gt;
 </code></pre>
