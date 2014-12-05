@@ -104,7 +104,7 @@ If your object instances correspond to Django models you'll also want to ensure 
             instance.created = validated_data.get('created', instance.created)
             instance.save()
             return instance
- 
+
 Now when deserializing data, we can call `.save()` to return an object instance, based on the validated data.
 
     comment = serializer.save()
@@ -113,7 +113,7 @@ Calling `.save()` will either create a new instance, or update an existing insta
 
     # .save() will create a new instance.
     serializer = CommentSerializer(data=data)
-    
+
     # .save() will update the existing `comment` instance.
     serializer = CommentSerializer(comment, data=data)
 
@@ -140,7 +140,7 @@ For example:
     class ContactForm(serializers.Serializer):
         email = serializers.EmailField()
         message = serializers.CharField()
-        
+
         def save(self):
             email = self.validated_data['email']
             message = self.validated_data['message']
@@ -230,7 +230,7 @@ Serializer classes can also include reusable validators that are applied to the 
         name = serializers.CharField()
         room_number = serializers.IntegerField(choices=[101, 102, 103, 201])
         date = serializers.DateField()
-        
+
         class Meta:
             # Each room only has one event per day.
             validators = UniqueTogetherValidator(
@@ -448,7 +448,7 @@ To do so, open the Django shell, using `python manage.py shell`, then import the
         id = IntegerField(label='ID', read_only=True)
         name = CharField(allow_blank=True, max_length=100, required=False)
         owner = PrimaryKeyRelatedField(queryset=User.objects.all())
- 
+
 ## Specifying which fields should be included
 
 If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`.
@@ -505,6 +505,19 @@ This option should be a list or tuple of field names, and is declared as follows
 
 Model fields which have `editable=False` set, and `AutoField` fields will be set to read-only by default, and do not need to be added to the `read_only_fields` option.
 
+---
+
+**Note**: There is a special-case where a read-only field is part of a `unique_together` constraint at the model level. Here you **must** specify the field explicitly and provide a valid default value.
+
+A common example of this is a read-only relation to the currently authenticated `User` which is `unique_together` with another identifier. In this case you would declare the user field like so:
+
+    user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
+
+Please review the [Validators Documentation](/api-guide/validators/) for details on the [UniqueTogetherValidator](/api-guide/validators/#uniquetogethervalidator) and [CurrentUserDefault](/api-guide/validators/#currentuserdefault) classes.
+
+---
+
+
 ## Specifying additional keyword arguments for fields.
 
 There is also a shortcut allowing you to specify arbitrary additional keyword arguments on fields, using the `extra_kwargs` option. Similarly to `read_only_fields` this means you do not need to explicitly declare the field on the serializer.
@@ -516,7 +529,7 @@ This option is a dictionary, mapping field names to a dictionary of keyword argu
             model = User
             fields = ('email', 'username', 'password')
             extra_kwargs = {'password': {'write_only': True}}
-            
+
         def create(self, validated_data):
             user = User(
                 email=validated_data['email'],
@@ -656,7 +669,7 @@ To support multiple updates you'll need to do so explicitly. When writing your m
 * How do you determine which instance should be updated for each item in the list of data?
 * How should insertions be handled? Are they invalid, or do they create new objects?
 * How should removals be handled? Do they imply object deletion, or removing a relationship? Should they be silently ignored, or are they invalid?
-* How should ordering be handled? Does changing the position of two items imply any state change or is it ignored? 
+* How should ordering be handled? Does changing the position of two items imply any state change or is it ignored?
 
 Here's an example of how you might choose to implement multiple updates:
 
