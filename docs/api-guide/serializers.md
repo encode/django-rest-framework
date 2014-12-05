@@ -326,9 +326,9 @@ Here's an example for an `update()` method on our previous `UserSerializer` clas
             # would need to be handled.
             profile = instance.profile
 
-            user.username = validated_data.get('username', instance.username)
-            user.email = validated_data.get('email', instance.email)
-            user.save()
+            instance.username = validated_data.get('username', instance.username)
+            instance.email = validated_data.get('email', instance.email)
+            instance.save()
 
             profile.is_premium_member = profile_data.get(
                 'is_premium_member',
@@ -340,7 +340,7 @@ Here's an example for an `update()` method on our previous `UserSerializer` clas
              )
             profile.save()
 
-            return user
+            return instance
 
 Because the behavior of nested creates and updates can be ambiguous, and may require complex dependancies between related models, REST framework 3 requires you to always write these methods explicitly. The default `ModelSerializer` `.create()` and `.update()` methods do not include support for writable nested representations.
 
