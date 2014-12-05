@@ -589,8 +589,8 @@ def raise_errors_on_nested_writes(method_name, serializer):
         isinstance(field, BaseSerializer) and (key in validated_attrs)
         for key, field in serializer.fields.items()
     ), (
-        'The `.{method_name}()` method does not support nested writable '
-        'fields by default. Write an explicit `.{method_name}()` method for '
+        'The `.{method_name}()` method does not support writable nested'
+        'fields by default.\nWrite an explicit `.{method_name}()` method for '
         'serializer `{module}.{class_name}`, or set `read_only=True` on '
         'nested serializer fields.'.format(
             method_name=method_name,
@@ -609,7 +609,7 @@ def raise_errors_on_nested_writes(method_name, serializer):
         for key, field in serializer.fields.items()
     ), (
         'The `.{method_name}()` method does not support writable dotted-source '
-        'fields by default. Write an explicit `.{method_name}()` method for '
+        'fields by default.\nWrite an explicit `.{method_name}()` method for '
         'serializer `{module}.{class_name}`, or set `read_only=True` on '
         'dotted-source serializer fields.'.format(
             method_name=method_name,
@@ -727,6 +727,7 @@ class ModelSerializer(Serializer):
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
+
         return instance
 
     def get_validators(self):
