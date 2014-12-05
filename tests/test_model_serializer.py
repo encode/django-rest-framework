@@ -559,3 +559,53 @@ class TestBulkCreate(TestCase):
 
         # Serializer returns correct data.
         assert serializer.data == data
+
+
+class TestMetaClassModel(models.Model):
+    text = models.CharField(max_length=100)
+
+
+class TestSerializerMetaClass(TestCase):
+    def test_meta_class_fields_option(self):
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = TestMetaClassModel
+                fields = 'text'
+
+        with self.assertRaises(TypeError) as result:
+            ExampleSerializer().fields
+
+        exception = result.exception
+        assert str(exception).startswith(
+            "The `fields` option must be a list or tuple"
+        )
+
+    def test_meta_class_exclude_option(self):
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = TestMetaClassModel
+                exclude = 'text'
+
+        with self.assertRaises(TypeError) as result:
+            ExampleSerializer().fields
+
+        exception = result.exception
+        assert str(exception).startswith(
+            "The `exclude` option must be a list or tuple"
+        )
+
+    def test_meta_class_fields_and_exclude_options(self):
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = TestMetaClassModel
+                fields = ('text',)
+                exclude = ('text',)
+
+        with self.assertRaises(AssertionError) as result:
+            ExampleSerializer().fields
+
+        exception = result.exception
+        self.assertEqual(
+            str(exception),
+            "Cannot set both 'fields' and 'exclude'."
+        )
