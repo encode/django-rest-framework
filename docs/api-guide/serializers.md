@@ -507,9 +507,11 @@ Model fields which have `editable=False` set, and `AutoField` fields will be set
 
 ---
 
-**Note**: There is a special-case where a read-only field is part of a `unique_together` constraint at the model level. Here you **must** specify the field explicitly and provide a valid default value.
+**Note**: There is a special-case where a read-only field is part of a `unique_together` constraint at the model level. In this case the field is required by the serializer class in order to validate the constraint, but should also not be editable by the user.
 
-A common example of this is a read-only relation to the currently authenticated `User` which is `unique_together` with another identifier. In this case you would declare the user field like so:
+The right way to deal with this is to specify the field explicitly on the serializer, providing both the `read_only=True` and `default=…` keyword arguments.
+
+One example of this is a read-only relation to the currently authenticated `User` which is `unique_together` with another identifier. In this case you would declare the user field like so:
 
     user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
 
