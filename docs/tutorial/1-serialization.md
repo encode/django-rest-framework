@@ -16,7 +16,6 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 Before we do anything else we'll create a new virtual environment, using [virtualenv].  This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
 
-    :::bash
     virtualenv env
     source env/bin/activate
 
@@ -75,12 +74,8 @@ For the purposes of this tutorial we're going to start by creating a simple `Sni
         title = models.CharField(max_length=100, blank=True, default='')
         code = models.TextField()
         linenos = models.BooleanField(default=False)
-        language = models.CharField(choices=LANGUAGE_CHOICES,
-                                    default='python',
-                                    max_length=100)
-        style = models.CharField(choices=STYLE_CHOICES,
-                                 default='friendly',
-                                 max_length=100)
+        language = models.CharField(choices=LANGUAGE_CHOICES, default='python', max_length=100)
+        style = models.CharField(choices=STYLE_CHOICES, default='friendly', max_length=100)
 
         class Meta:
             ordering = ('created',)
@@ -101,14 +96,11 @@ The first thing we need to get started on our Web API is to provide a way of ser
 
     class SnippetSerializer(serializers.Serializer):
         pk = serializers.IntegerField(read_only=True)
-        title = serializers.CharField(required=False, allow_blank=True
-                                      max_length=100)
+        title = serializers.CharField(required=False, allow_blank=True, max_length=100)
         code = serializers.CharField(style={'type': 'textarea'})
         linenos = serializers.BooleanField(required=False)
-        language = serializers.ChoiceField(choices=LANGUAGE_CHOICES,
-                                           default='python')
-        style = serializers.ChoiceField(choices=STYLE_CHOICES,
-                                        default='friendly')
+        language = serializers.ChoiceField(choices=LANGUAGE_CHOICES, default='python')
+        style = serializers.ChoiceField(choices=STYLE_CHOICES, default='friendly')
 
         def create(self, validated_data):
             """
