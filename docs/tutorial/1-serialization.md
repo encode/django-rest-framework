@@ -101,7 +101,7 @@ The first thing we need to get started on our Web API is to provide a way of ser
 
     class SnippetSerializer(serializers.Serializer):
         pk = serializers.IntegerField(read_only=True)
-        title = serializers.CharField(required=False,
+        title = serializers.CharField(required=False, allow_blank=True
                                       max_length=100)
         code = serializers.CharField(style={'type': 'textarea'})
         linenos = serializers.BooleanField(required=False)
@@ -181,7 +181,7 @@ Deserialization is similar.  First we parse a stream into Python native datatype
     serializer = SnippetSerializer(data=data)
     serializer.is_valid()
     # True
-    serializer.object
+    serializer.save()
     # <Snippet: Snippet object>
 
 Notice how similar the API is to working with forms.  The similarity should become even more apparent when we start writing views that use our serializer.
@@ -210,7 +210,7 @@ One nice property that serializers have is that you can inspect all the fields i
 
     >>> from snippets.serializers import SnippetSerializer
     >>> serializer = SnippetSerializer()
-    >>> print repr(serializer)  # In python 3 use `print(repr(serializer))`
+    >>> print(repr(serializer))
     SnippetSerializer():
         id = IntegerField(label='ID', read_only=True)
         title = CharField(allow_blank=True, max_length=100, required=False)
@@ -301,7 +301,7 @@ We'll also need a view which corresponds to an individual snippet, and can be us
 
 Finally we need to wire these views up.  Create the `snippets/urls.py` file:
 
-    from django.conf.urls import patterns, url
+    from django.conf.urls import url
     from snippets import views
 
     urlpatterns = [
