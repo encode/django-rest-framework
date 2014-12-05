@@ -19,10 +19,9 @@ Create a new Django project named `tutorial`, then start a new app called `quick
     pip install djangorestframework
 
     # Set up a new project with a single application
-    django-admin.py startproject tutorial
+    django-admin.py startproject tutorial .
     cd tutorial
     django-admin.py startapp quickstart
-	cd ..
 
 Now sync your database for the first time:
 
