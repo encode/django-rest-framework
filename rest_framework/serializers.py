@@ -794,6 +794,12 @@ class ModelSerializer(Serializer):
         depth = getattr(self.Meta, 'depth', 0)
         extra_kwargs = getattr(self.Meta, 'extra_kwargs', {})
 
+        if fields and not isinstance(fields, (list, tuple)):
+            raise TypeError('`fields` must be a list or tuple')
+
+        if exclude and not isinstance(exclude, (list, tuple)):
+            raise TypeError('`exclude` must be a list or tuple')
+
         assert not (fields and exclude), "Cannot set both 'fields' and 'exclude'."
 
         extra_kwargs = self._include_additional_options(extra_kwargs)
