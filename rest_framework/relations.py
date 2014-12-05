@@ -1,4 +1,4 @@
-from rest_framework.compat import smart_text, urlparse
+from django.utils.encoding import smart_text
 from rest_framework.fields import get_attribute, empty, Field
 from rest_framework.reverse import reverse
 from rest_framework.utils import html
@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch, Resolver404
 from django.db.models.query import QuerySet
 from django.utils import six
+from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -141,7 +142,7 @@ class PrimaryKeyRelatedField(RelatedField):
     def get_iterable(self, instance, source_attrs):
         # For consistency with `get_attribute` we're using `serializable_value()`
         # here. Typically there won't be any difference, but some custom field
-        # types might return a non-primative value for the pk otherwise.
+        # types might return a non-primitive value for the pk otherwise.
         #
         # We could try to get smart with `values_list('pk', flat=True)`, which
         # would be better in some case, but would actually end up with *more*

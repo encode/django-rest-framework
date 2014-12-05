@@ -47,7 +47,7 @@ DEFAULTS = {
     'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'rest_framework.negotiation.DefaultContentNegotiation',
     'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
 
-    # Genric view behavior
+    # Generic view behavior
     'DEFAULT_MODEL_SERIALIZER_CLASS': 'rest_framework.serializers.ModelSerializer',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS': 'rest_framework.pagination.PaginationSerializer',
     'DEFAULT_FILTER_BACKENDS': (),

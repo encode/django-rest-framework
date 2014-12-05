@@ -267,7 +267,7 @@ class OAuthAuthentication(BaseAuthentication):
     def authenticate_header(self, request):
         """
         If permission is denied, return a '401 Unauthorized' response,
-        with an appropraite 'WWW-Authenticate' header.
+        with an appropriate 'WWW-Authenticate' header.
         """
         return 'OAuth realm="%s"' % self.www_authenticate_realm
 

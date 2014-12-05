@@ -184,7 +184,7 @@ class DjangoObjectPermissions(DjangoModelPermissions):
         if not user.has_perms(perms, obj):
             # If the user does not have permissions we need to determine if
             # they have read permissions to see 403, or not, and simply see
-            # a 404 reponse.
+            # a 404 response.
 
             if request.method in ('GET', 'OPTIONS', 'HEAD'):
                 # Read permissions already checked and failed, no need

@@ -31,7 +31,7 @@ class AssociatedModelSerializer(serializers.ModelSerializer):
 
 
 # Tests
-class IneritedModelSerializationTests(TestCase):
+class InheritedModelSerializationTests(TestCase):
 
     def test_multitable_inherited_model_fields_as_expected(self):
         """

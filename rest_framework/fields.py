@@ -5,11 +5,11 @@ from django.core.validators import RegexValidator
 from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
-from django.utils.encoding import is_protected_type
+from django.utils.encoding import is_protected_type, smart_text
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    smart_text, EmailValidator, MinValueValidator, MaxValueValidator,
+    EmailValidator, MinValueValidator, MaxValueValidator,
     MinLengthValidator, MaxLengthValidator, URLValidator, OrderedDict
 )
 from rest_framework.exceptions import ValidationError

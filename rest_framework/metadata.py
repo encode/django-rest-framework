@@ -1,17 +1,18 @@
 """
-The metadata API is used to allow cusomization of how `OPTIONS` requests
+The metadata API is used to allow customization of how `OPTIONS` requests
 are handled. We currently provide a single default implementation that returns
 some fairly ad-hoc information about the view.
 
-Future implementations might use JSON schema or other definations in order
+Future implementations might use JSON schema or other definitions in order
 to return this information in a more standardized way.
 """
 from __future__ import unicode_literals
 
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
+from django.utils.encoding import force_text
 from rest_framework import exceptions, serializers
-from rest_framework.compat import force_text, OrderedDict
+from rest_framework.compat import OrderedDict
 from rest_framework.request import clone_request
 from rest_framework.utils.field_mapping import ClassLookupDict
 

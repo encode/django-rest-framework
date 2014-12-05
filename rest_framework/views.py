@@ -5,9 +5,10 @@ from __future__ import unicode_literals
 
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
+from django.utils.encoding import smart_text
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, exceptions
-from rest_framework.compat import smart_text, HttpResponseBase, View
+from rest_framework.compat import HttpResponseBase, View
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
