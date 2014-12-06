@@ -43,7 +43,7 @@ And now we can add a `.save()` method to our model class:
 When that's all done we'll need to update our database tables.
 Normally we'd create a database migration in order to do that, but for the purposes of this tutorial, let's just delete the database and start again.
 
-    rm tmp.db
+    rm -f tmp.db db.sqlite3
     rm -r snippets/migrations
     python manage.py makemigrations snippets
     python manage.py migrate
@@ -59,7 +59,7 @@ Now that we've got some users to work with, we'd better add representations of t
     from django.contrib.auth.models import User
 
     class UserSerializer(serializers.ModelSerializer):
-        snippets = serializers.PrimaryKeyRelatedField(many=True)
+        snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
 
         class Meta:
             model = User

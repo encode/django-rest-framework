@@ -44,7 +44,7 @@ Instead of using a concrete generic view, we'll use the base class for represent
 As usual we need to add the new views that we've created in to our URLconf.
 We'll add a url pattern for our new API root in `snippets/urls.py`:
 
-    url(r'^$', 'api_root'),
+    url(r'^$', views.api_root),
 
 And then add a url pattern for the snippet highlights:
 
