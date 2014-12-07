@@ -561,7 +561,7 @@ class ListSerializer(BaseSerializer):
 # ModelSerializer & HyperlinkedModelSerializer
 # --------------------------------------------
 
-def raise_errors_on_nested_writes(method_name, serializer):
+def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     """
     Give explicit errors when users attempt to pass writable nested data.
 
@@ -586,7 +586,7 @@ def raise_errors_on_nested_writes(method_name, serializer):
     #     ...
     #     profile = ProfileSerializer()
     assert not any(
-        isinstance(field, BaseSerializer) and (key in validated_attrs)
+        isinstance(field, BaseSerializer) and (key in validated_data)
         for key, field in serializer.fields.items()
     ), (
         'The `.{method_name}()` method does not support writable nested'
@@ -605,7 +605,7 @@ def raise_errors_on_nested_writes(method_name, serializer):
     #     ...
     #     address = serializer.CharField('profile.address')
     assert not any(
-        '.' in field.source and (key in validated_attrs)
+        '.' in field.source and (key in validated_data)
         for key, field in serializer.fields.items()
     ), (
         'The `.{method_name}()` method does not support writable dotted-source '
@@ -682,7 +682,7 @@ class ModelSerializer(Serializer):
         If you want to support writable nested relationships you'll need
         to write an explicit `.create()` method.
         """
-        raise_errors_on_nested_writes('create', self)
+        raise_errors_on_nested_writes('create', self, validated_data)
 
         ModelClass = self.Meta.model
 
@@ -722,7 +722,7 @@ class ModelSerializer(Serializer):
         return instance
 
     def update(self, instance, validated_data):
-        raise_errors_on_nested_writes('update', self)
+        raise_errors_on_nested_writes('update', self, validated_data)
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
