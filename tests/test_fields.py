@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
 from decimal import Decimal
 from django.utils import timezone
+from django.test.utils import override_settings
 from rest_framework import serializers
 import datetime
 import django
@@ -21,6 +23,16 @@ class TestEmpty:
         with pytest.raises(serializers.ValidationError) as exc_info:
             field.run_validation()
         assert exc_info.value.detail == ['This field is required.']
+
+    @override_settings(LANGUAGE_CODE='es')
+    def test_required_translated(self):
+        """
+        By default '' is not a valid input.
+        """
+        field = serializers.IntegerField()
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation()
+        assert exc_info.value.detail == ['Este campo es obligatorio.']
 
     def test_not_required(self):
         """
@@ -461,8 +473,25 @@ class TestMinMaxIntegerField(FieldValues):
         '0': ['Ensure this value is greater than or equal to 1.'],
         '4': ['Ensure this value is less than or equal to 3.'],
     }
+    es_invalid_inputs = {
+        0: [u'Asegúrese de que este valor es mayor o igual a 1.'],
+        4: [u'Asegúrese de que este valor es menor o igual a 3.'],
+        '0': [u'Asegúrese de que este valor es mayor o igual a 1.'],
+        '4': [u'Asegúrese de que este valor es menor o igual a 3.'],
+    }
     outputs = {}
     field = serializers.IntegerField(min_value=1, max_value=3)
+
+    @override_settings(LANGUAGE_CODE='es')
+    def test_invalid_inputs_translated(self):
+        """
+        Ensure that invalid values raise the expected validation error.
+        """
+        field = serializers.IntegerField(min_value=1, max_value=3)
+        for input_value, expected_failure in get_items(self.es_invalid_inputs):
+            with pytest.raises(serializers.ValidationError) as exc_info:
+                field.run_validation(input_value)
+            assert exc_info.value.detail == expected_failure
 
 
 class TestFloatField(FieldValues):
