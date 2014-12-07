@@ -272,3 +272,19 @@ class TestNestedListOfListsSerializer:
         serializer = self.Serializer(data=input_data)
         assert serializer.is_valid()
         assert serializer.validated_data == expected_output
+
+
+class TestListSerializerClass:
+    """Tests for a custom list_serializer_class."""
+    def test_list_serializer_class_validate(self):
+        class CustomListSerializer(serializers.ListSerializer):
+            def validate(self, attrs):
+                raise serializers.ValidationError('Non field error')
+
+        class TestSerializer(serializers.Serializer):
+            class Meta:
+                list_serializer_class = CustomListSerializer
+
+        serializer = TestSerializer(data=[], many=True)
+        assert not serializer.is_valid()
+        assert serializer.errors == {'non_field_errors': ['Non field error']}
