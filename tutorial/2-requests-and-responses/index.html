@@ -496,28 +496,61 @@ urlpatterns = format_suffix_patterns(urlpatterns)
 <h2 id="hows-it-looking">How's it looking?</h2>
 <p>Go ahead and test the API from the command line, as we did in <a href="../1-serialization">tutorial part 1</a>.  Everything is working pretty similarly, although we've got some nicer error handling if we send invalid requests.</p>
 <p>We can get a list of all of the snippets, as before.</p>
-<pre><code>curl http://127.0.0.1:8000/snippets/
+<pre><code>http http://127.0.0.1:8000/snippets/
 
-[{"id": 1, "title": "", "code": "foo = \"bar\"\n", "linenos": false, "language": "python", "style": "friendly"}, {"id": 2, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}]
+HTTP/1.1 200 OK
+...
+[
+  {
+    "id": 1,
+    "title": "",
+    "code": "foo = \"bar\"\n",
+    "linenos": false,
+    "language": "python",
+    "style": "friendly"
+  },
+  {
+    "id": 2,
+    "title": "",
+    "code": "print \"hello, world\"\n",
+    "linenos": false,
+    "language": "python",
+    "style": "friendly"
+  }
+]
 </code></pre>
 <p>We can control the format of the response that we get back, either by using the <code>Accept</code> header:</p>
-<pre><code>curl http://127.0.0.1:8000/snippets/ -H 'Accept: application/json'  # Request JSON
-curl http://127.0.0.1:8000/snippets/ -H 'Accept: text/html'         # Request HTML
+<pre><code>http http://127.0.0.1:8000/snippets/ Accept:application/json  # Request JSON
+http http://127.0.0.1:8000/snippets/ Accept:text/html         # Request HTML
 </code></pre>
 <p>Or by appending a format suffix:</p>
-<pre><code>curl http://127.0.0.1:8000/snippets/.json  # JSON suffix
-curl http://127.0.0.1:8000/snippets/.api   # Browsable API suffix
+<pre><code>http http://127.0.0.1:8000/snippets/.json  # JSON suffix
+http http://127.0.0.1:8000/snippets/.api   # Browsable API suffix
 </code></pre>
 <p>Similarly, we can control the format of the request that we send, using the <code>Content-Type</code> header.</p>
 <pre><code># POST using form data
-curl -X POST http://127.0.0.1:8000/snippets/ -d "code=print 123"
+http --form POST http://127.0.0.1:8000/snippets/ code="print 123"
 
-{"id": 3, "title": "", "code": "print 123", "linenos": false, "language": "python", "style": "friendly"}
+{
+  "id": 3,
+  "title": "",
+  "code": "print 123",
+  "linenos": false,
+  "language": "python",
+  "style": "friendly"
+}
 
 # POST using JSON
-curl -X POST http://127.0.0.1:8000/snippets/ -d '{"code": "print 456"}' -H "Content-Type: application/json"
+http --json POST http://127.0.0.1:8000/snippets/ code="print 456"
 
-{"id": 4, "title": "", "code": "print 456", "linenos": true, "language": "python", "style": "friendly"}
+{
+    "id": 4,
+    "title": "",
+    "code": "print 456",
+    "linenos": true,
+    "language": "python",
+    "style": "friendly"
+}
 </code></pre>
 <p>Now go and open the API in a web browser, by visiting <a href="http://127.0.0.1:8000/snippets/">http://127.0.0.1:8000/snippets/</a>.</p>
 <h3 id="browsability">Browsability</h3>

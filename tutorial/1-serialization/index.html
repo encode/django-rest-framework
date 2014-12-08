@@ -676,15 +676,47 @@ Development server is running at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 </code></pre>
 <p>In another terminal window, we can test the server.</p>
-<p>We can get a list of all of the snippets.</p>
-<pre><code>curl http://127.0.0.1:8000/snippets/
-
-[{"id": 1, "title": "", "code": "foo = \"bar\"\n", "linenos": false, "language": "python", "style": "friendly"}, {"id": 2, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}]
+<p>We can test our API using using <a href="http://curl.haxx.se">curl</a> or <a href="https://github.com/jakubroztocil/httpie#installation">httpie</a>. Httpie is a user friendly http client that's written in Python. Let's install that.</p>
+<p>You can install httpie using pip:</p>
+<pre><code>pip install httpie
 </code></pre>
-<p>Or we can get a particular snippet by referencing its id.</p>
-<pre><code>curl http://127.0.0.1:8000/snippets/2/
+<p>Finally, we can get a list of all of the snippets:</p>
+<pre><code>http http://127.0.0.1:8000/snippets/
 
-{"id": 2, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}
+HTTP/1.1 200 OK
+...
+[
+  {
+    "id": 1,
+    "title": "",
+    "code": "foo = \"bar\"\n",
+    "linenos": false,
+    "language": "python",
+    "style": "friendly"
+  },
+  {
+    "id": 2,
+    "title": "",
+    "code": "print \"hello, world\"\n",
+    "linenos": false,
+    "language": "python",
+    "style": "friendly"
+  }
+]
+</code></pre>
+<p>Or we can get a particular snippet by referencing its id:</p>
+<pre><code>http http://127.0.0.1:8000/snippets/2/
+
+HTTP/1.1 200 OK
+...
+{
+  "id": 2,
+  "title": "",
+  "code": "print \"hello, world\"\n",
+  "linenos": false,
+  "language": "python",
+  "style": "friendly"
+}
 </code></pre>
 <p>Similarly, you can have the same json displayed by visiting these URLs in a web browser.</p>
 <h2 id="where-are-we-now">Where are we now</h2>

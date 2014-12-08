@@ -548,14 +548,24 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 <p>When we interact with the API through the web browser, we can login, and the browser session will then provide the required authentication for the requests.</p>
 <p>If we're interacting with the API programmatically we need to explicitly provide the authentication credentials on each request.</p>
 <p>If we try to create a snippet without authenticating, we'll get an error:</p>
-<pre><code>curl -i -X POST http://127.0.0.1:8000/snippets/ -d "code=print 123"
+<pre><code>http POST http://127.0.0.1:8000/snippets/ code="print 123"
 
-{"detail": "Authentication credentials were not provided."}
+{
+    "detail": "Authentication credentials were not provided."
+}
 </code></pre>
 <p>We can make a successful request by including the username and password of one of the users we created earlier.</p>
-<pre><code>curl -X POST http://127.0.0.1:8000/snippets/ -d "code=print 789" -u tom:password
+<pre><code>http POST -a tom:password http://127.0.0.1:8000/snippets/ code="print 789"
 
-{"id": 5, "owner": "tom", "title": "foo", "code": "print 789", "linenos": false, "language": "python", "style": "friendly"}
+{
+    "id": 5,
+    "owner": "tom",
+    "title": "foo",
+    "code": "print 789",
+    "linenos": false,
+    "language": "python",
+    "style": "friendly"
+}
 </code></pre>
 <h2 id="summary">Summary</h2>
 <p>We've now got a fairly fine-grained set of permissions on our Web API, and end points for users of the system and for the code snippets that they have created.</p>
