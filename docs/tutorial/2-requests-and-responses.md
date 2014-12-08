@@ -127,7 +127,7 @@ Go ahead and test the API from the command line, as we did in [tutorial part 1][
 
 We can get a list of all of the snippets, as before.
 
-	http http://127.0.0.1:8000/snippets/
+    http http://127.0.0.1:8000/snippets/
 
     HTTP/1.1 200 OK
     ...

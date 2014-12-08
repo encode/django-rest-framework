@@ -340,9 +340,11 @@ You can install httpie using pip:
 
 Finally, we can get a list of all of the snippets:
 
-	http http://127.0.0.1:8000/snippets/ --body
+    http http://127.0.0.1:8000/snippets/
 
-	[
+    HTTP/1.1 200 OK
+    ...
+    [
       {
         "id": 1,
         "title": "",
@@ -367,7 +369,7 @@ Or we can get a particular snippet by referencing its id:
 
     HTTP/1.1 200 OK
     ...
-	{
+    {
       "id": 2,
       "title": "",
       "code": "print \"hello, world\"\n",
