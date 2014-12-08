@@ -282,7 +282,7 @@ class PKForeignKeyTests(TestCase):
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEqual(serializer.errors, {'target': ['This field may not be null.']})
+        self.assertEqual(serializer.errors, {'target': ['This field cannot be null.']})
 
     def test_foreign_key_with_empty(self):
         """
