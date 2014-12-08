@@ -421,7 +421,7 @@ class SnippetHighlight(generics.GenericAPIView):
 </code></pre>
 <p>As usual we need to add the new views that we've created in to our URLconf.
 We'll add a url pattern for our new API root in <code>snippets/urls.py</code>:</p>
-<pre><code>url(r'^$', 'api_root'),
+<pre><code>url(r'^$', views.api_root),
 </code></pre>
 <p>And then add a url pattern for the snippet highlights:</p>
 <pre><code>url(r'^snippets/(?P&lt;pk&gt;[0-9]+)/highlight/$', views.SnippetHighlight.as_view()),

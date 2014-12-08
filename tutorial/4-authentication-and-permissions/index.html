@@ -435,7 +435,7 @@ from pygments import highlight
 </code></pre>
 <p>When that's all done we'll need to update our database tables.
 Normally we'd create a database migration in order to do that, but for the purposes of this tutorial, let's just delete the database and start again.</p>
-<pre><code>rm tmp.db
+<pre><code>rm -f tmp.db db.sqlite3
 rm -r snippets/migrations
 python manage.py makemigrations snippets
 python manage.py migrate
@@ -448,7 +448,7 @@ python manage.py migrate
 <pre><code>from django.contrib.auth.models import User
 
 class UserSerializer(serializers.ModelSerializer):
-    snippets = serializers.PrimaryKeyRelatedField(many=True)
+    snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
 
     class Meta:
         model = User
