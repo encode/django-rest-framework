@@ -294,6 +294,34 @@ class Field(object):
             return self.default()
         return self.default
 
+    def validate_empty_values(self, data):
+        """
+        Validate empty values, and either:
+
+        * Raise `ValidationError`, indicating invalid data.
+        * Raise `SkipField`, indicating that the field should be ignored.
+        * Return (True, data), indicating an empty value that should be
+          returned without any furhter validation being applied.
+        * Return (False, data), indicating a non-empty value, that should
+          have validation applied as normal.
+        """
+        if self.read_only:
+            return (True, self.get_default())
+
+        if data is empty:
+            if getattr(self.root, 'partial', False):
+                raise SkipField()
+            if self.required:
+                self.fail('required')
+            return (True, self.get_default())
+
+        if data is None:
+            if not self.allow_null:
+                self.fail('null')
+            return (True, None)
+
+        return (False, data)
+
     def run_validation(self, data=empty):
         """
         Validate a simple representation and return the internal value.
@@ -304,21 +332,9 @@ class Field(object):
         May raise `SkipField` if the field should not be included in the
         validated data.
         """
-        if self.read_only:
-            return self.get_default()
-
-        if data is empty:
-            if getattr(self.root, 'partial', False):
-                raise SkipField()
-            if self.required:
-                self.fail('required')
-            return self.get_default()
-
-        if data is None:
-            if not self.allow_null:
-                self.fail('null')
-            return None
-
+        (is_empty_value, data) = self.validate_empty_values(data)
+        if is_empty_value:
+            return data
         value = self.to_internal_value(data)
         self.run_validators(value)
         return value

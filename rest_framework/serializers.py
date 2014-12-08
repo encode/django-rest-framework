@@ -229,6 +229,35 @@ class SerializerMetaclass(type):
         return super(SerializerMetaclass, cls).__new__(cls, name, bases, attrs)
 
 
+def get_validation_error_detail(exc):
+    assert isinstance(exc, (ValidationError, DjangoValidationError))
+
+    if isinstance(exc, DjangoValidationError):
+        # Normally you should raise `serializers.ValidationError`
+        # inside your codebase, but we handle Django's validation
+        # exception class as well for simpler compat.
+        # Eg. Calling Model.clean() explicitly inside Serializer.validate()
+        return {
+            api_settings.NON_FIELD_ERRORS_KEY: list(exc.messages)
+        }
+    elif isinstance(exc.detail, dict):
+        # If errors may be a dict we use the standard {key: list of values}.
+        # Here we ensure that all the values are *lists* of errors.
+        return dict([
+            (key, value if isinstance(value, list) else [value])
+            for key, value in exc.detail.items()
+        ])
+    elif isinstance(exc.detail, list):
+        # Errors raised as a list are non-field errors.
+        return {
+            api_settings.NON_FIELD_ERRORS_KEY: exc.detail
+        }
+    # Errors raised as a string are non-field errors.
+    return {
+        api_settings.NON_FIELD_ERRORS_KEY: [exc.detail]
+    }
+
+
 @six.add_metaclass(SerializerMetaclass)
 class Serializer(BaseSerializer):
     default_error_messages = {
@@ -293,18 +322,24 @@ class Serializer(BaseSerializer):
         performed by validators and the `.validate()` method should
         be coerced into an error dictionary with a 'non_fields_error' key.
         """
-        if data is empty:
-            if getattr(self.root, 'partial', False):
-                raise SkipField()
-            if self.required:
-                self.fail('required')
-            return self.get_default()
+        (is_empty_value, data) = self.validate_empty_values(data)
+        if is_empty_value:
+            return data
 
-        if data is None:
-            if not self.allow_null:
-                self.fail('null')
-            return None
+        value = self.to_internal_value(data)
+        try:
+            self.run_validators(value)
+            value = self.validate(value)
+            assert value is not None, '.validate() should return the validated data'
+        except (ValidationError, DjangoValidationError) as exc:
+            raise ValidationError(detail=get_validation_error_detail(exc))
 
+        return value
+
+    def to_internal_value(self, data):
+        """
+        Dict of native values <- Dict of primitive datatypes.
+        """
         if not isinstance(data, dict):
             message = self.error_messages['invalid'].format(
                 datatype=type(data).__name__
@@ -313,42 +348,6 @@ class Serializer(BaseSerializer):
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
             })
 
-        value = self.to_internal_value(data)
-        try:
-            self.run_validators(value)
-            value = self.validate(value)
-            assert value is not None, '.validate() should return the validated data'
-        except ValidationError as exc:
-            if isinstance(exc.detail, dict):
-                # .validate() errors may be a dict, in which case, use
-                # standard {key: list of values} style.
-                raise ValidationError(dict([
-                    (key, value if isinstance(value, list) else [value])
-                    for key, value in exc.detail.items()
-                ]))
-            elif isinstance(exc.detail, list):
-                raise ValidationError({
-                    api_settings.NON_FIELD_ERRORS_KEY: exc.detail
-                })
-            else:
-                raise ValidationError({
-                    api_settings.NON_FIELD_ERRORS_KEY: [exc.detail]
-                })
-        except DjangoValidationError as exc:
-            # Normally you should raise `serializers.ValidationError`
-            # inside your codebase, but we handle Django's validation
-            # exception class as well for simpler compat.
-            # Eg. Calling Model.clean() explicitly inside Serializer.validate()
-            raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: list(exc.messages)
-            })
-
-        return value
-
-    def to_internal_value(self, data):
-        """
-        Dict of native values <- Dict of primitive datatypes.
-        """
         ret = OrderedDict()
         errors = OrderedDict()
         fields = [
@@ -462,6 +461,26 @@ class ListSerializer(BaseSerializer):
             return html.parse_html_list(dictionary, prefix=self.field_name)
         return dictionary.get(self.field_name, empty)
 
+    def run_validation(self, data=empty):
+        """
+        We override the default `run_validation`, because the validation
+        performed by validators and the `.validate()` method should
+        be coerced into an error dictionary with a 'non_fields_error' key.
+        """
+        (is_empty_value, data) = self.validate_empty_values(data)
+        if is_empty_value:
+            return data
+
+        value = self.to_internal_value(data)
+        try:
+            self.run_validators(value)
+            value = self.validate(value)
+            assert value is not None, '.validate() should return the validated data'
+        except (ValidationError, DjangoValidationError) as exc:
+            raise ValidationError(detail=get_validation_error_detail(exc))
+
+        return value
+
     def to_internal_value(self, data):
         """
         List of dicts of native values <- List of dicts of primitive datatypes.
@@ -502,6 +521,9 @@ class ListSerializer(BaseSerializer):
         return [
             self.child.to_representation(item) for item in iterable
         ]
+
+    def validate(self, attrs):
+        return attrs
 
     def update(self, instance, validated_data):
         raise NotImplementedError(
