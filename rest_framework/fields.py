@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -6,7 +7,7 @@ from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import is_protected_type, smart_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ungettext_lazy, ugettext_lazy as _
 from rest_framework import ISO_8601
 from rest_framework.compat import (
     EmailValidator, MinValueValidator, MaxValueValidator,
@@ -147,7 +148,7 @@ class Field(object):
 
     default_error_messages = {
         'required': _('This field is required.'),
-        'null': _('This field may not be null.')
+        'null': _('This field cannot be null.')
     }
     default_validators = []
     default_empty_html = empty
@@ -369,7 +370,7 @@ class Field(object):
             class_name = self.__class__.__name__
             msg = MISSING_ERROR_MESSAGE.format(class_name=class_name, key=key)
             raise AssertionError(msg)
-        message_string = msg.format(**kwargs)
+        message_string = msg % kwargs
         raise ValidationError(message_string)
 
     @property
@@ -429,7 +430,7 @@ class Field(object):
 
 class BooleanField(Field):
     default_error_messages = {
-        'invalid': _('`{input}` is not a valid boolean.')
+        'invalid': _('`%(input)s` is not a valid boolean.')
     }
     default_empty_html = False
     initial = False
@@ -457,7 +458,7 @@ class BooleanField(Field):
 
 class NullBooleanField(Field):
     default_error_messages = {
-        'invalid': _('`{input}` is not a valid boolean.')
+        'invalid': _('`%(input)s` is not a valid boolean.')
     }
     initial = None
     TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
@@ -492,9 +493,15 @@ class NullBooleanField(Field):
 
 class CharField(Field):
     default_error_messages = {
-        'blank': _('This field may not be blank.'),
-        'max_length': _('Ensure this field has no more than {max_length} characters.'),
-        'min_length': _('Ensure this field has no more than {min_length} characters.')
+        'blank': _('This field cannot be blank.'),
+        'max_length': ungettext_lazy(
+            'Ensure this value has at most %(limit_value)d character (it has %(show_value)d).',
+            'Ensure this value has at most %(limit_value)d characters (it has %(show_value)d).',
+            'limit_value'),
+        'min_length': ungettext_lazy(
+            'Ensure this value has at least %(limit_value)d character (it has %(show_value)d).',
+            'Ensure this value has at least %(limit_value)d characters (it has %(show_value)d).',
+            'limit_value')
     }
     initial = ''
     coerce_blank_to_null = False
@@ -502,15 +509,9 @@ class CharField(Field):
 
     def __init__(self, **kwargs):
         self.allow_blank = kwargs.pop('allow_blank', False)
-        max_length = kwargs.pop('max_length', None)
-        min_length = kwargs.pop('min_length', None)
+        self.max_length = kwargs.pop('max_length', None)
+        self.min_length = kwargs.pop('min_length', None)
         super(CharField, self).__init__(**kwargs)
-        if max_length is not None:
-            message = self.error_messages['max_length'].format(max_length=max_length)
-            self.validators.append(MaxLengthValidator(max_length, message=message))
-        if min_length is not None:
-            message = self.error_messages['min_length'].format(min_length=min_length)
-            self.validators.append(MinLengthValidator(min_length, message=message))
 
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,
@@ -520,6 +521,17 @@ class CharField(Field):
             if not self.allow_blank:
                 self.fail('blank')
             return ''
+
+        if self.max_length is not None:
+            params = {'limit_value': self.max_length, 'show_value': data}
+            message = self.error_messages['max_length'] % params
+            self.validators.append(MaxLengthValidator(self.max_length, message=message))
+
+        if self.min_length is not None:
+            params = {'limit_value': self.min_length, 'show_value': data}
+            message = self.error_messages['min_length'] % params
+            self.validators.append(MinLengthValidator(self.min_length, message=message))
+
         return super(CharField, self).run_validation(data)
 
     def to_internal_value(self, data):
@@ -571,7 +583,7 @@ class SlugField(CharField):
 
 class URLField(CharField):
     default_error_messages = {
-        'invalid': _("Enter a valid URL.")
+        'invalid': _('Enter a valid URL.')
     }
 
     def __init__(self, **kwargs):
@@ -585,8 +597,8 @@ class URLField(CharField):
 class IntegerField(Field):
     default_error_messages = {
         'invalid': _('A valid integer is required.'),
-        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
-        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
+        'max_value': _('Ensure this value is less than or equal to %(limit_value)s.'),
+        'min_value': _('Ensure this value is greater than or equal to %(limit_value)s.'),
         'max_string_length': _('String value too large')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
@@ -596,10 +608,10 @@ class IntegerField(Field):
         min_value = kwargs.pop('min_value', None)
         super(IntegerField, self).__init__(**kwargs)
         if max_value is not None:
-            message = self.error_messages['max_value'].format(max_value=max_value)
+            message = self.error_messages['max_value'] % {'limit_value': max_value}
             self.validators.append(MaxValueValidator(max_value, message=message))
         if min_value is not None:
-            message = self.error_messages['min_value'].format(min_value=min_value)
+            message = self.error_messages['min_value'] % {'limit_value': min_value}
             self.validators.append(MinValueValidator(min_value, message=message))
 
     def to_internal_value(self, data):
@@ -618,9 +630,9 @@ class IntegerField(Field):
 
 class FloatField(Field):
     default_error_messages = {
-        'invalid': _("A valid number is required."),
-        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
-        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
+        'invalid': _('A valid number is required.'),
+        'max_value': _('Ensure this value is less than or equal to %(limit_value)s.'),
+        'min_value': _('Ensure this value is greater than or equal to %(limit_value)s.'),
         'max_string_length': _('String value too large')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
@@ -630,10 +642,12 @@ class FloatField(Field):
         min_value = kwargs.pop('min_value', None)
         super(FloatField, self).__init__(**kwargs)
         if max_value is not None:
-            message = self.error_messages['max_value'].format(max_value=max_value)
+            params = {'limit_value': max_value}
+            message = self.error_messages['max_value'] % params
             self.validators.append(MaxValueValidator(max_value, message=message))
         if min_value is not None:
-            message = self.error_messages['min_value'].format(min_value=min_value)
+            params = {'limit_value': min_value}
+            message = self.error_messages['min_value'] % params
             self.validators.append(MinValueValidator(min_value, message=message))
 
     def to_internal_value(self, data):
@@ -652,11 +666,20 @@ class FloatField(Field):
 class DecimalField(Field):
     default_error_messages = {
         'invalid': _('A valid number is required.'),
-        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
-        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
-        'max_digits': _('Ensure that there are no more than {max_digits} digits in total.'),
-        'max_decimal_places': _('Ensure that there are no more than {max_decimal_places} decimal places.'),
-        'max_whole_digits': _('Ensure that there are no more than {max_whole_digits} digits before the decimal point.'),
+        'max_value': _('Ensure this value is less than or equal to %(limit_value)s.'),
+        'min_value': _('Ensure this value is greater than or equal to %(limit_value)s.'),
+        'max_digits': ungettext_lazy(
+            'Ensure that there are no more than %(max)s digit in total.',
+            'Ensure that there are no more than %(max)s digits in total.',
+            'max'),
+        'max_decimal_places': ungettext_lazy(
+            'Ensure that there are no more than %(max)s decimal place.',
+            'Ensure that there are no more than %(max)s decimal places.',
+            'max'),
+        'max_whole_digits': ungettext_lazy(
+            'Ensure that there are no more than %(max)s digit before the decimal point.',
+            'Ensure that there are no more than %(max)s digits before the decimal point.',
+            'max'),
         'max_string_length': _('String value too large')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
@@ -669,10 +692,12 @@ class DecimalField(Field):
         self.coerce_to_string = coerce_to_string if (coerce_to_string is not None) else self.coerce_to_string
         super(DecimalField, self).__init__(**kwargs)
         if max_value is not None:
-            message = self.error_messages['max_value'].format(max_value=max_value)
+            params = {'limit_value': max_value}
+            message = self.error_messages['max_value'] % params
             self.validators.append(MaxValueValidator(max_value, message=message))
         if min_value is not None:
-            message = self.error_messages['min_value'].format(min_value=min_value)
+            params = {'limit_value': min_value}
+            message = self.error_messages['min_value'] % params
             self.validators.append(MinValueValidator(min_value, message=message))
 
     def to_internal_value(self, data):
@@ -713,11 +738,11 @@ class DecimalField(Field):
         whole_digits = digits - decimals
 
         if self.max_digits is not None and digits > self.max_digits:
-            self.fail('max_digits', max_digits=self.max_digits)
+            self.fail('max_digits', max=self.max_digits)
         if self.decimal_places is not None and decimals > self.decimal_places:
-            self.fail('max_decimal_places', max_decimal_places=self.decimal_places)
+            self.fail('max_decimal_places', max=self.decimal_places)
         if self.max_digits is not None and self.decimal_places is not None and whole_digits > (self.max_digits - self.decimal_places):
-            self.fail('max_whole_digits', max_whole_digits=self.max_digits - self.decimal_places)
+            self.fail('max_whole_digits', max=self.max_digits - self.decimal_places)
 
         return value
 
@@ -740,7 +765,7 @@ class DecimalField(Field):
 
 class DateTimeField(Field):
     default_error_messages = {
-        'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}'),
+        'invalid': _('Datetime has wrong format. Use one of these formats instead: %(format)s'),
         'date': _('Expected a datetime but got a date.'),
     }
     format = api_settings.DATETIME_FORMAT
@@ -805,7 +830,7 @@ class DateTimeField(Field):
 
 class DateField(Field):
     default_error_messages = {
-        'invalid': _('Date has wrong format. Use one of these formats instead: {format}'),
+        'invalid': _('Date has wrong format. Use one of these formats instead: %(format)s'),
         'datetime': _('Expected a date but got a datetime.'),
     }
     format = api_settings.DATE_FORMAT
@@ -863,7 +888,7 @@ class DateField(Field):
 
 class TimeField(Field):
     default_error_messages = {
-        'invalid': _('Time has wrong format. Use one of these formats instead: {format}'),
+        'invalid': _('Time has wrong format. Use one of these formats instead: %(format)s'),
     }
     format = api_settings.TIME_FORMAT
     input_formats = api_settings.TIME_INPUT_FORMATS
@@ -919,7 +944,7 @@ class TimeField(Field):
 
 class ChoiceField(Field):
     default_error_messages = {
-        'invalid_choice': _('`{input}` is not a valid choice.')
+        'invalid_choice': _('Value %(value)r is not a valid choice.')
     }
 
     def __init__(self, choices, **kwargs):
@@ -948,7 +973,7 @@ class ChoiceField(Field):
         try:
             return self.choice_strings_to_values[six.text_type(data)]
         except KeyError:
-            self.fail('invalid_choice', input=data)
+            self.fail('invalid_choice', value=data)
 
     def to_representation(self, value):
         if value in ('', None):
@@ -958,8 +983,8 @@ class ChoiceField(Field):
 
 class MultipleChoiceField(ChoiceField):
     default_error_messages = {
-        'invalid_choice': _('`{input}` is not a valid choice.'),
-        'not_a_list': _('Expected a list of items but got type `{input_type}`.')
+        'invalid_choice': _('Value %(value)r is not a valid choice.'),
+        'not_a_list': _('Expected a list of items but got type `%(input_type)s`.')
     }
     default_empty_html = []
 
@@ -989,11 +1014,14 @@ class MultipleChoiceField(ChoiceField):
 
 class FileField(Field):
     default_error_messages = {
-        'required': _("No file was submitted."),
-        'invalid': _("The submitted data was not a file. Check the encoding type on the form."),
-        'no_name': _("No filename could be determined."),
-        'empty': _("The submitted file is empty."),
-        'max_length': _('Ensure this filename has at most {max_length} characters (it has {length}).'),
+        'required': _('No file was submitted.'),
+        'invalid': _('The submitted data was not a file. Check the encoding type on the form.'),
+        'no_name': _('No filename could be determined.'),
+        'empty': _('The submitted file is empty.'),
+        'max_length': ungettext_lazy(
+            'Ensure this filename has at most %(max)d character (it has %(length)d).',
+            'Ensure this filename has at most %(max)d characters (it has %(length)d).',
+            'max'),
     }
     use_url = api_settings.UPLOADED_FILES_USE_URL
 
@@ -1016,7 +1044,7 @@ class FileField(Field):
         if not self.allow_empty_file and not file_size:
             self.fail('empty')
         if self.max_length and len(file_name) > self.max_length:
-            self.fail('max_length', max_length=self.max_length, length=len(file_name))
+            self.fail('max_length', max=self.max_length, length=len(file_name))
 
         return data
 
@@ -1061,7 +1089,7 @@ class ListField(Field):
     child = None
     initial = []
     default_error_messages = {
-        'not_a_list': _('Expected a list of items but got type `{input_type}`')
+        'not_a_list': _('Expected a list of items but got type `%(input_type)s`')
     }
 
     def __init__(self, *args, **kwargs):
@@ -1192,18 +1220,26 @@ class ModelField(Field):
     that do not have a serializer field to be mapped to.
     """
     default_error_messages = {
-        'max_length': _('Ensure this field has no more than {max_length} characters.'),
+        'max_length': ungettext_lazy(
+            'Ensure this value has at most %(limit_value)d character (it has %(show_value)d).',
+            'Ensure this value has at most %(limit_value)d characters (it has %(show_value)d).',
+            'limit_value'),
     }
 
     def __init__(self, model_field, **kwargs):
         self.model_field = model_field
         # The `max_length` option is supported by Django's base `Field` class,
         # so we'd better support it here.
-        max_length = kwargs.pop('max_length', None)
+        self.max_length = kwargs.pop('max_length', None)
         super(ModelField, self).__init__(**kwargs)
-        if max_length is not None:
-            message = self.error_messages['max_length'].format(max_length=max_length)
-            self.validators.append(MaxLengthValidator(max_length, message=message))
+
+    def run_validation(self, data=empty):
+        if self.max_length is not None:
+            params = {'limit_value': self.max_length, 'show_value': data}
+            message = self.error_messages['max_length'] % params
+            self.validators.append(MaxLengthValidator(self.max_length, message=message))
+
+        return super(ModelField, self).run_validation(data)
 
     def to_internal_value(self, data):
         rel = getattr(self.model_field, 'rel', None)

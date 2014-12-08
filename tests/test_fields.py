@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
 from decimal import Decimal
 from django.utils import timezone
+from django.test.utils import override_settings
 from rest_framework import serializers
 import datetime
 import django
@@ -22,6 +24,16 @@ class TestEmpty:
             field.run_validation()
         assert exc_info.value.detail == ['This field is required.']
 
+    @override_settings(LANGUAGE_CODE='es')
+    def test_required_translated(self):
+        """
+        By default '' is not a valid input.
+        """
+        field = serializers.IntegerField()
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation()
+        assert exc_info.value.detail == ['Este campo es obligatorio.']
+
     def test_not_required(self):
         """
         If `required=False` then a field may be omitted from the input.
@@ -37,7 +49,7 @@ class TestEmpty:
         field = serializers.IntegerField()
         with pytest.raises(serializers.ValidationError) as exc_info:
             field.run_validation(None)
-        assert exc_info.value.detail == ['This field may not be null.']
+        assert exc_info.value.detail == ['This field cannot be null.']
 
     def test_allow_null(self):
         """
@@ -54,7 +66,7 @@ class TestEmpty:
         field = serializers.CharField()
         with pytest.raises(serializers.ValidationError) as exc_info:
             field.run_validation('')
-        assert exc_info.value.detail == ['This field may not be blank.']
+        assert exc_info.value.detail == ['This field cannot be blank.']
 
     def test_allow_blank(self):
         """
@@ -62,7 +74,7 @@ class TestEmpty:
         """
         field = serializers.CharField(allow_blank=True)
         output = field.run_validation('')
-        assert output is ''
+        assert str(output) is str('')
 
     def test_default(self):
         """
@@ -278,6 +290,24 @@ class FieldValues:
         for output_value, expected_output in get_items(self.outputs):
             assert self.field.to_representation(output_value) == expected_output
 
+    @override_settings(LANGUAGE_CODE='es')
+    def test_invalid_inputs_translated(self):
+        """
+        Ensure that invalid values raise the expected validation localized error.
+        """
+        es_invalid_inputs = get_items(getattr(self, 'es_invalid_inputs', {}))
+
+        if not es_invalid_inputs:
+            return
+
+        field_kwargs = getattr(self, 'field_kwargs', {})
+        field = self.field.__class__(**field_kwargs)
+
+        for input_value, expected_failure in es_invalid_inputs:
+            with pytest.raises(serializers.ValidationError) as exc_info:
+                field.run_validation(input_value)
+            assert exc_info.value.detail == expected_failure
+
 
 # Boolean types...
 
@@ -297,7 +327,11 @@ class TestBooleanField(FieldValues):
     }
     invalid_inputs = {
         'foo': ['`foo` is not a valid boolean.'],
-        None: ['This field may not be null.']
+        None: ['This field cannot be null.']
+    }
+    es_invalid_inputs = {
+        'foo': ['`foo` is not a valid boolean.'],
+        None: ['Este campo no puede ser nulo.']
     }
     outputs = {
         'true': True,
@@ -351,7 +385,10 @@ class TestCharField(FieldValues):
         'abc': 'abc'
     }
     invalid_inputs = {
-        '': ['This field may not be blank.']
+        '': ['This field cannot be blank.']
+    }
+    es_invalid_inputs = {
+        '': [u'Este campo no puede estar vacío.']
     }
     outputs = {
         1: '1',
@@ -371,6 +408,9 @@ class TestEmailField(FieldValues):
     invalid_inputs = {
         'examplecom': ['Enter a valid email address.']
     }
+    es_invalid_inputs = {
+        'examplecom': [u'Introduzca una dirección de correo electrónico válida.']
+    }
     outputs = {}
     field = serializers.EmailField()
 
@@ -386,7 +426,8 @@ class TestRegexField(FieldValues):
         'A9': ["This value does not match the required pattern."]
     }
     outputs = {}
-    field = serializers.RegexField(regex='[a-z][0-9]')
+    field_kwargs = {'regex': '[a-z][0-9]'}
+    field = serializers.RegexField(**field_kwargs)
 
 
 class TestSlugField(FieldValues):
@@ -398,6 +439,9 @@ class TestSlugField(FieldValues):
     }
     invalid_inputs = {
         'slug 99': ["Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."]
+    }
+    es_invalid_inputs = {
+        'slug 99': [u"Introduzca un 'slug' válido, consistente en letras, números, guiones bajos o medios."]
     }
     outputs = {}
     field = serializers.SlugField()
@@ -412,6 +456,9 @@ class TestURLField(FieldValues):
     }
     invalid_inputs = {
         'example.com': ['Enter a valid URL.']
+    }
+    es_invalid_inputs = {
+        'example.com': [u'Introduzca una URL válida.']
     }
     outputs = {}
     field = serializers.URLField()
@@ -432,6 +479,9 @@ class TestIntegerField(FieldValues):
         0.0: 0
     }
     invalid_inputs = {
+        'abc': ['A valid integer is required.']
+    }
+    es_invalid_inputs = {
         'abc': ['A valid integer is required.']
     }
     outputs = {
@@ -461,8 +511,18 @@ class TestMinMaxIntegerField(FieldValues):
         '0': ['Ensure this value is greater than or equal to 1.'],
         '4': ['Ensure this value is less than or equal to 3.'],
     }
+    es_invalid_inputs = {
+        0: [u'Asegúrese de que este valor es mayor o igual a 1.'],
+        4: [u'Asegúrese de que este valor es menor o igual a 3.'],
+        '0': [u'Asegúrese de que este valor es mayor o igual a 1.'],
+        '4': [u'Asegúrese de que este valor es menor o igual a 3.'],
+    }
     outputs = {}
-    field = serializers.IntegerField(min_value=1, max_value=3)
+    field_kwargs = {
+        'min_value': 1,
+        'max_value': 3,
+    }
+    field = serializers.IntegerField(**field_kwargs)
 
 
 class TestFloatField(FieldValues):
@@ -479,6 +539,9 @@ class TestFloatField(FieldValues):
     }
     invalid_inputs = {
         'abc': ["A valid number is required."]
+    }
+    es_invalid_inputs = {
+        'abc': ['A valid number is required.']
     }
     outputs = {
         '1': 1.0,
@@ -509,8 +572,15 @@ class TestMinMaxFloatField(FieldValues):
         '0.0': ['Ensure this value is greater than or equal to 1.'],
         '3.1': ['Ensure this value is less than or equal to 3.'],
     }
+    es_invalid_inputs = {
+        0.9: [u'Asegúrese de que este valor es mayor o igual a 1.'],
+        3.1: [u'Asegúrese de que este valor es menor o igual a 3.'],
+        '0.0': [u'Asegúrese de que este valor es mayor o igual a 1.'],
+        '3.1': [u'Asegúrese de que este valor es menor o igual a 3.'],
+    }
     outputs = {}
-    field = serializers.FloatField(min_value=1, max_value=3)
+    field_kwargs = {'min_value': 1, 'max_value': 3}
+    field = serializers.FloatField(**field_kwargs)
 
 
 class TestDecimalField(FieldValues):
@@ -530,8 +600,16 @@ class TestDecimalField(FieldValues):
         (Decimal('Nan'), ["A valid number is required."]),
         (Decimal('Inf'), ["A valid number is required."]),
         ('12.345', ["Ensure that there are no more than 3 digits in total."]),
-        ('0.01', ["Ensure that there are no more than 1 decimal places."]),
+        ('0.01', ["Ensure that there are no more than 1 decimal place."]),
         (123, ["Ensure that there are no more than 2 digits before the decimal point."])
+    )
+    es_invalid_inputs = (
+        ('abc', ["A valid number is required."]),
+        (Decimal('Nan'), ["A valid number is required."]),
+        (Decimal('Inf'), ["A valid number is required."]),
+        ('12.345', [u'Asegúrese de que no hay más de 3 dígitos en total.']),
+        ('0.01', [u'Asegúrese de que no haya más de 1 dígito decimal.']),
+        (123, [u'Asegúrese de que no haya más de 2 dígitos antes del punto decimal.'])
     )
     outputs = {
         '1': '1.0',
@@ -545,7 +623,8 @@ class TestDecimalField(FieldValues):
         Decimal('1.09'): '1.1',
         Decimal('0.04'): '0.0'
     }
-    field = serializers.DecimalField(max_digits=3, decimal_places=1)
+    field_kwargs = {'max_digits': 3, 'decimal_places': 1}
+    field = serializers.DecimalField(**field_kwargs)
 
 
 class TestMinMaxDecimalField(FieldValues):
@@ -560,11 +639,16 @@ class TestMinMaxDecimalField(FieldValues):
         '9.9': ['Ensure this value is greater than or equal to 10.'],
         '20.1': ['Ensure this value is less than or equal to 20.'],
     }
+    es_invalid_inputs = {
+        '9.9': [u'Asegúrese de que este valor es mayor o igual a 10.'],
+        '20.1': [u'Asegúrese de que este valor es menor o igual a 20.'],
+    }
     outputs = {}
-    field = serializers.DecimalField(
-        max_digits=3, decimal_places=1,
-        min_value=10, max_value=20
-    )
+    field_kwargs = {
+        'max_digits': 3, 'decimal_places': 1,
+        'min_value': 10, 'max_value': 20
+    }
+    field = serializers.DecimalField(**field_kwargs)
 
 
 class TestNoStringCoercionDecimalField(FieldValues):
@@ -581,10 +665,11 @@ class TestNoStringCoercionDecimalField(FieldValues):
         Decimal('1.09'): Decimal('1.1'),
         Decimal('0.04'): Decimal('0.0'),
     }
-    field = serializers.DecimalField(
-        max_digits=3, decimal_places=1,
-        coerce_to_string=False
-    )
+    field_kwargs = {
+        'max_digits': 3, 'decimal_places': 1,
+        'coerce_to_string': False
+    }
+    field = serializers.DecimalField(**field_kwargs)
 
 
 # Date & time serializers...
@@ -619,7 +704,8 @@ class TestCustomInputFormatDateField(FieldValues):
         '2001-01-01': ['Date has wrong format. Use one of these formats instead: DD [Jan-Dec] YYYY']
     }
     outputs = {}
-    field = serializers.DateField(input_formats=['%d %b %Y'])
+    field_kwargs = {'input_formats': ['%d %b %Y']}
+    field = serializers.DateField(**field_kwargs)
 
 
 class TestCustomOutputFormatDateField(FieldValues):
@@ -790,19 +876,23 @@ class TestChoiceField(FieldValues):
         'good': 'good',
     }
     invalid_inputs = {
-        'amazing': ['`amazing` is not a valid choice.']
+        'amazing': ["Value 'amazing' is not a valid choice."]
+    }
+    es_invalid_inputs = {
+        'amazing': [u"Valor 'amazing' no es una opción válida."]
     }
     outputs = {
         'good': 'good',
         '': ''
     }
-    field = serializers.ChoiceField(
-        choices=[
+    field_kwargs = {
+        'choices': [
             ('poor', 'Poor quality'),
             ('medium', 'Medium quality'),
             ('good', 'Good quality'),
         ]
-    )
+    }
+    field = serializers.ChoiceField(**field_kwargs)
 
 
 class TestChoiceFieldWithType(FieldValues):
@@ -815,20 +905,25 @@ class TestChoiceFieldWithType(FieldValues):
         3: 3,
     }
     invalid_inputs = {
-        5: ['`5` is not a valid choice.'],
-        'abc': ['`abc` is not a valid choice.']
+        5: ['Value 5 is not a valid choice.'],
+        'abc': ["Value 'abc' is not a valid choice."]
+    }
+    es_invalid_inputs = {
+        5: [u'Valor 5 no es una opción válida.'],
+        'abc': [u"Valor 'abc' no es una opción válida."]
     }
     outputs = {
         '1': 1,
         1: 1
     }
-    field = serializers.ChoiceField(
-        choices=[
+    field_kwargs = {
+        'choices': [
             (1, 'Poor quality'),
             (2, 'Medium quality'),
             (3, 'Good quality'),
         ]
-    )
+    }
+    field = serializers.ChoiceField(**field_kwargs)
 
 
 class TestChoiceFieldWithListChoices(FieldValues):
@@ -842,12 +937,16 @@ class TestChoiceFieldWithListChoices(FieldValues):
         'good': 'good',
     }
     invalid_inputs = {
-        'awful': ['`awful` is not a valid choice.']
+        'awful': ["Value 'awful' is not a valid choice."]
+    }
+    es_invalid_inputs = {
+        'awful': [u"Valor 'awful' no es una opción válida."]
     }
     outputs = {
         'good': 'good'
     }
-    field = serializers.ChoiceField(choices=('poor', 'medium', 'good'))
+    field_kwargs = {'choices': ('poor', 'medium', 'good')}
+    field = serializers.ChoiceField(**field_kwargs)
 
 
 class TestMultipleChoiceField(FieldValues):
@@ -861,18 +960,19 @@ class TestMultipleChoiceField(FieldValues):
     }
     invalid_inputs = {
         'abc': ['Expected a list of items but got type `str`.'],
-        ('aircon', 'incorrect'): ['`incorrect` is not a valid choice.']
+        ('aircon', 'incorrect'): ["Value 'incorrect' is not a valid choice."]
     }
     outputs = [
         (['aircon', 'manual'], set(['aircon', 'manual']))
     ]
-    field = serializers.MultipleChoiceField(
-        choices=[
+    field_kwargs = {
+        'choices': [
             ('aircon', 'AirCon'),
             ('manual', 'Manual drive'),
             ('diesel', 'Diesel'),
         ]
-    )
+    }
+    field = serializers.MultipleChoiceField(**field_kwargs)
 
 
 # File serializers...

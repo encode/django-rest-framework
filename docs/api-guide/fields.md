@@ -491,7 +491,7 @@ As an example, let's create a field that can be used represent the class name of
             # We pass the object instance onto `to_representation`,
             # not just the field attribute.
             return obj
- 
+
         def to_representation(self, obj):
             """
             Serialize the object's class name.
@@ -522,7 +522,7 @@ To indicate invalid data, we should raise a `serializers.ValidationError`, like 
 The `.fail()` method is a shortcut for raising `ValidationError` that takes a message string from the `error_messages` dictionary. For example:
 
     default_error_messages = {
-        'incorrect_type': 'Incorrect type. Expected a string, but got {input_type}',
+        'incorrect_type': 'Incorrect type. Expected a string, but got %(input_type)s',
         'incorrect_format': 'Incorrect format. Expected `rgb(#,#,#)`.',
         'out_of_range': 'Value out of range. Must be between 0 and 255.'
     }

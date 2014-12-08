@@ -116,8 +116,8 @@ class StringRelatedField(RelatedField):
 class PrimaryKeyRelatedField(RelatedField):
     default_error_messages = {
         'required': 'This field is required.',
-        'does_not_exist': "Invalid pk '{pk_value}' - object does not exist.",
-        'incorrect_type': 'Incorrect type. Expected pk value, received {data_type}.',
+        'does_not_exist': "Invalid pk '%(pk_value)s' - object does not exist.",
+        'incorrect_type': 'Incorrect type. Expected pk value, received %(data_type)s.',
     }
 
     def to_internal_value(self, data):
@@ -166,7 +166,7 @@ class HyperlinkedRelatedField(RelatedField):
         'no_match': 'Invalid hyperlink - No URL match',
         'incorrect_match': 'Invalid hyperlink - Incorrect URL match.',
         'does_not_exist': 'Invalid hyperlink - Object does not exist.',
-        'incorrect_type': 'Incorrect type. Expected URL string, received {data_type}.',
+        'incorrect_type': 'Incorrect type. Expected URL string, received %(data_type)s.',
     }
 
     def __init__(self, view_name=None, **kwargs):
@@ -293,7 +293,7 @@ class SlugRelatedField(RelatedField):
     """
 
     default_error_messages = {
-        'does_not_exist': _("Object with {slug_name}={value} does not exist."),
+        'does_not_exist': _("Object with %(slug_name)s=%(value)s does not exist."),
         'invalid': _('Invalid value.'),
     }
 
