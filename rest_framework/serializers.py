@@ -462,6 +462,42 @@ class ListSerializer(BaseSerializer):
             return html.parse_html_list(dictionary, prefix=self.field_name)
         return dictionary.get(self.field_name, empty)
 
+    def run_validation(self, data=empty):
+        data = super(ListSerializer, self).run_validation(data)
+
+        try:
+            data = self.validate(data)
+            assert data is not None, '.validate() should return the validated data'
+        except ValidationError as exc:
+            if isinstance(exc.detail, dict):
+                # .validate() errors may be a dict, in which case, use
+                # standard {key: list of values} style.
+                raise ValidationError(dict([
+                    (key, value if isinstance(value, list) else [value])
+                    for key, value in exc.detail.items()
+                ]))
+            elif isinstance(exc.detail, list):
+                raise ValidationError({
+                    api_settings.NON_FIELD_ERRORS_KEY: exc.detail
+                })
+            else:
+                raise ValidationError({
+                    api_settings.NON_FIELD_ERRORS_KEY: [exc.detail]
+                })
+        except DjangoValidationError as exc:
+            # Normally you should raise `serializers.ValidationError`
+            # inside your codebase, but we handle Django's validation
+            # exception class as well for simpler compat.
+            # Eg. Calling Model.clean() explicitly inside Serializer.validate()
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: list(exc.messages)
+            })
+
+        return data
+
+    def validate(self, attrs):
+        return attrs
+
     def to_internal_value(self, data):
         """
         List of dicts of native values <- List of dicts of primitive datatypes.
