@@ -159,6 +159,33 @@ We can now access our API, both from the command-line, using tools like `curl`..
         ]
     }
 
+Or using the [httpie][httpie], command line tool...
+
+    bash: http -a username:password http://127.0.0.1:8000/users/
+
+    HTTP/1.1 200 OK
+    ...
+    {
+        "count": 2,
+        "next": null,
+        "previous": null,
+        "results": [
+            {
+                "email": "admin@example.com",
+                "groups": [],
+                "url": "http://localhost:8000/users/1/",
+                "username": "paul"
+            },
+            {
+                "email": "tom@example.com",
+                "groups": [                ],
+                "url": "http://127.0.0.1:8000/users/2/",
+                "username": "tom"
+            }
+        ]
+    }
+
+
 Or directly through the browser...
 
 ![Quick start image][image]
@@ -173,3 +200,4 @@ If you want to get a more in depth understanding of how REST framework fits toge
 [image]: ../img/quickstart.png
 [tutorial]: 1-serialization.md
 [guide]: ../#api-guide
+[httpie]: https://github.com/jakubroztocil/httpie#installation
