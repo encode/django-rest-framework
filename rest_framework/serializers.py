@@ -61,6 +61,7 @@ class BaseSerializer(Field):
     """
 
     def __init__(self, instance=None, data=None, **kwargs):
+        assert data is not None
         self.instance = instance
         self._initial_data = data
         self.partial = kwargs.pop('partial', False)
