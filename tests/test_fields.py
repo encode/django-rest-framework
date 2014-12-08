@@ -74,7 +74,7 @@ class TestEmpty:
         """
         field = serializers.CharField(allow_blank=True)
         output = field.run_validation('')
-        assert output is ''
+        assert str(output) is str('')
 
     def test_default(self):
         """
