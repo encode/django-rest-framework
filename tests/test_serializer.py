@@ -34,6 +34,11 @@ class TestSerializer:
         serializer = self.Serializer()
         assert serializer.data == {'char': '', 'integer': None}
 
+    def test_empty_serializer_validity(self):
+        serializer = self.Serializer()
+        with pytest.raises(AssertionError):
+            serializer.is_valid()
+
     def test_missing_attribute_during_serialization(self):
         class MissingAttributes:
             pass

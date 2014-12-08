@@ -61,7 +61,6 @@ class BaseSerializer(Field):
     """
 
     def __init__(self, instance=None, data=None, **kwargs):
-        assert data is not None
         self.instance = instance
         self._initial_data = data
         self.partial = kwargs.pop('partial', False)
@@ -150,6 +149,7 @@ class BaseSerializer(Field):
         return self.instance
 
     def is_valid(self, raise_exception=False):
+        assert self._initial_data is not None
         assert not hasattr(self, 'restore_object'), (
             'Serializer `%s.%s` has old-style version 2 `.restore_object()` '
             'that is no longer compatible with REST framework 3. '
