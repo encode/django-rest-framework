@@ -12,6 +12,7 @@ import json
 import django
 from django import forms
 from django.core.exceptions import ImproperlyConfigured
+from django.core.paginator import Page
 from django.http.multipartparser import parse_header
 from django.template import Context, RequestContext, loader, Template
 from django.test.client import encode_multipart
@@ -533,6 +534,8 @@ class BrowsableAPIRenderer(BaseRenderer):
         serializer = getattr(data, 'serializer', None)
         if serializer and not getattr(serializer, 'many', False):
             instance = getattr(serializer, 'instance', None)
+            if isinstance(instance, Page):
+                instance = None
         else:
             instance = None
 
@@ -591,6 +594,8 @@ class BrowsableAPIRenderer(BaseRenderer):
         serializer = getattr(data, 'serializer', None)
         if serializer and not getattr(serializer, 'many', False):
             instance = getattr(serializer, 'instance', None)
+            if isinstance(instance, Page):
+                instance = None
         else:
             instance = None
 
