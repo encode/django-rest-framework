@@ -753,13 +753,17 @@ color_channel = serializers.ChoiceField(
 <p><strong>Signature:</strong> <code>ChoiceField(choices)</code></p>
 <ul>
 <li><code>choices</code> - A list of valid values, or a list of <code>(key, display_name)</code> tuples.</li>
+<li><code>allow_blank</code> - If set to <code>True</code> then the empty string should be considered a valid value. If set to <code>False</code> then the empty string is considered invalid and will raise a validation error. Defaults to <code>False</code>.</li>
 </ul>
+<p>Both the <code>allow_blank</code> and <code>allow_null</code> are valid options on <code>ChoiceField</code>, although it is highly recommended that you only use one and not both. <code>allow_blank</code> should be preferred for textual choices, and <code>allow_null</code> should be preferred for numeric or other non-textual choices.</p>
 <h2 id="multiplechoicefield">MultipleChoiceField</h2>
 <p>A field that can accept a set of zero, one or many values, chosen from a limited set of choices. Takes a single mandatory argument. <code>to_internal_representation</code> returns a <code>set</code> containing the selected values.</p>
 <p><strong>Signature:</strong> <code>MultipleChoiceField(choices)</code></p>
 <ul>
 <li><code>choices</code> - A list of valid values, or a list of <code>(key, display_name)</code> tuples.</li>
+<li><code>allow_blank</code> - If set to <code>True</code> then the empty string should be considered a valid value. If set to <code>False</code> then the empty string is considered invalid and will raise a validation error. Defaults to <code>False</code>.</li>
 </ul>
+<p>As with <code>ChoiceField</code>, both the <code>allow_blank</code> and <code>allow_null</code> options are valid, although it is highly recommended that you only use one and not both. <code>allow_blank</code> should be preferred for textual choices, and <code>allow_null</code> should be preferred for numeric or other non-textual choices.</p>
 <hr />
 <h1 id="file-upload-fields">File upload fields</h1>
 <h4 id="parsers-and-file-uploads">Parsers and file uploads.</h4>
