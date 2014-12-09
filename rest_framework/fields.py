@@ -48,7 +48,7 @@ def is_simple_callable(obj):
     return len_args <= len_defaults
 
 
-def get_attribute(instance, attrs):
+def get_attribute(instance, attrs, required):
     """
     Similar to Python's built in `getattr(instance, attr)`,
     but takes a list of nested attributes, instead of a single attribute.
@@ -59,15 +59,19 @@ def get_attribute(instance, attrs):
         if instance is None:
             # Break out early if we get `None` at any point in a nested lookup.
             return None
+        if getattr(instance, '__getitem__', None):
+            try:
+                return instance[attr]
+            except (KeyError, TypeError, AttributeError):
+                pass
         try:
             instance = getattr(instance, attr)
         except ObjectDoesNotExist:
             return None
         except AttributeError as exc:
-            try:
-                return instance[attr]
-            except (KeyError, TypeError, AttributeError):
-                raise exc
+            if not required:
+                return None
+            raise exc
         if is_simple_callable(instance):
             instance = instance()
     return instance
@@ -275,7 +279,7 @@ class Field(object):
         Given the *outgoing* object instance, return the primitive value
         that should be used for this field.
         """
-        return get_attribute(instance, self.source_attrs)
+        return get_attribute(instance, self.source_attrs, self.required)
 
     def get_default(self):
         """
