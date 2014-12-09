@@ -84,9 +84,34 @@ class RelatedField(Field):
             queryset = queryset.all()
         return queryset
 
+    def use_pk_only_optimization(self):
+        return False
+
+    def get_attribute(self, instance):
+        if self.use_pk_only_optimization():
+            try:
+                # Optimized case, return a mock object only containing the pk attribute.
+                instance = get_attribute(instance, self.source_attrs[:-1])
+                return PKOnlyObject(pk=instance.serializable_value(self.source_attrs[-1]))
+            except AttributeError:
+                pass
+
+        # Standard case, return the object instance.
+        return get_attribute(instance, self.source_attrs)
+
     def get_iterable(self, instance, source_attrs):
         relationship = get_attribute(instance, source_attrs)
-        return relationship.all() if (hasattr(relationship, 'all')) else relationship
+        relationship = relationship.all() if (hasattr(relationship, 'all')) else relationship
+
+        if self.use_pk_only_optimization():
+            # Optimized case, return mock objects only containing the pk attribute.
+            return [
+                PKOnlyObject(pk=pk)
+                for pk in relationship.values_list('pk', flat=True)
+            ]
+
+        # Standard case, return the object instances.
+        return relationship
 
     @property
     def choices(self):
@@ -120,6 +145,9 @@ class PrimaryKeyRelatedField(RelatedField):
         'incorrect_type': _('Incorrect type. Expected pk value, received {data_type}.'),
     }
 
+    def use_pk_only_optimization(self):
+        return True
+
     def to_internal_value(self, data):
         try:
             return self.get_queryset().get(pk=data)
@@ -127,32 +155,6 @@ class PrimaryKeyRelatedField(RelatedField):
             self.fail('does_not_exist', pk_value=data)
         except (TypeError, ValueError):
             self.fail('incorrect_type', data_type=type(data).__name__)
-
-    def get_attribute(self, instance):
-        # We customize `get_attribute` here for performance reasons.
-        # For relationships the instance will already have the pk of
-        # the related object. We return this directly instead of returning the
-        # object itself, which would require a database lookup.
-        try:
-            instance = get_attribute(instance, self.source_attrs[:-1])
-            return PKOnlyObject(pk=instance.serializable_value(self.source_attrs[-1]))
-        except AttributeError:
-            return get_attribute(instance, self.source_attrs)
-
-    def get_iterable(self, instance, source_attrs):
-        # For consistency with `get_attribute` we're using `serializable_value()`
-        # here. Typically there won't be any difference, but some custom field
-        # types might return a non-primitive value for the pk otherwise.
-        #
-        # We could try to get smart with `values_list('pk', flat=True)`, which
-        # would be better in some case, but would actually end up with *more*
-        # queries if the developer is using `prefetch_related` across the
-        # relationship.
-        relationship = super(PrimaryKeyRelatedField, self).get_iterable(instance, source_attrs)
-        return [
-            PKOnlyObject(pk=item.serializable_value('pk'))
-            for item in relationship
-        ]
 
     def to_representation(self, value):
         return value.pk
@@ -183,6 +185,9 @@ class HyperlinkedRelatedField(RelatedField):
         self.resolve = resolve
 
         super(HyperlinkedRelatedField, self).__init__(**kwargs)
+
+    def use_pk_only_optimization(self):
+        return self.lookup_field == 'pk'
 
     def get_object(self, view_name, view_args, view_kwargs):
         """
@@ -284,6 +289,11 @@ class HyperlinkedIdentityField(HyperlinkedRelatedField):
         kwargs['read_only'] = True
         kwargs['source'] = '*'
         super(HyperlinkedIdentityField, self).__init__(view_name, **kwargs)
+
+    def use_pk_only_optimization(self):
+        # We have the complete object instance already. We don't need
+        # to run the 'only get the pk for this relationship' code.
+        return False
 
 
 class SlugRelatedField(RelatedField):

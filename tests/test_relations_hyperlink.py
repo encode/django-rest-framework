@@ -89,7 +89,8 @@ class HyperlinkedManyToManyTests(TestCase):
             {'url': 'http://testserver/manytomanysource/2/', 'name': 'source-2', 'targets': ['http://testserver/manytomanytarget/1/', 'http://testserver/manytomanytarget/2/']},
             {'url': 'http://testserver/manytomanysource/3/', 'name': 'source-3', 'targets': ['http://testserver/manytomanytarget/1/', 'http://testserver/manytomanytarget/2/', 'http://testserver/manytomanytarget/3/']}
         ]
-        self.assertEqual(serializer.data, expected)
+        with self.assertNumQueries(4):
+            self.assertEqual(serializer.data, expected)
 
     def test_reverse_many_to_many_retrieve(self):
         queryset = ManyToManyTarget.objects.all()
@@ -99,7 +100,8 @@ class HyperlinkedManyToManyTests(TestCase):
             {'url': 'http://testserver/manytomanytarget/2/', 'name': 'target-2', 'sources': ['http://testserver/manytomanysource/2/', 'http://testserver/manytomanysource/3/']},
             {'url': 'http://testserver/manytomanytarget/3/', 'name': 'target-3', 'sources': ['http://testserver/manytomanysource/3/']}
         ]
-        self.assertEqual(serializer.data, expected)
+        with self.assertNumQueries(4):
+            self.assertEqual(serializer.data, expected)
 
     def test_many_to_many_update(self):
         data = {'url': 'http://testserver/manytomanysource/1/', 'name': 'source-1', 'targets': ['http://testserver/manytomanytarget/1/', 'http://testserver/manytomanytarget/2/', 'http://testserver/manytomanytarget/3/']}
@@ -197,7 +199,8 @@ class HyperlinkedForeignKeyTests(TestCase):
             {'url': 'http://testserver/foreignkeysource/2/', 'name': 'source-2', 'target': 'http://testserver/foreignkeytarget/1/'},
             {'url': 'http://testserver/foreignkeysource/3/', 'name': 'source-3', 'target': 'http://testserver/foreignkeytarget/1/'}
         ]
-        self.assertEqual(serializer.data, expected)
+        with self.assertNumQueries(1):
+            self.assertEqual(serializer.data, expected)
 
     def test_reverse_foreign_key_retrieve(self):
         queryset = ForeignKeyTarget.objects.all()
@@ -206,7 +209,8 @@ class HyperlinkedForeignKeyTests(TestCase):
             {'url': 'http://testserver/foreignkeytarget/1/', 'name': 'target-1', 'sources': ['http://testserver/foreignkeysource/1/', 'http://testserver/foreignkeysource/2/', 'http://testserver/foreignkeysource/3/']},
             {'url': 'http://testserver/foreignkeytarget/2/', 'name': 'target-2', 'sources': []},
         ]
-        self.assertEqual(serializer.data, expected)
+        with self.assertNumQueries(3):
+            self.assertEqual(serializer.data, expected)
 
     def test_foreign_key_update(self):
         data = {'url': 'http://testserver/foreignkeysource/1/', 'name': 'source-1', 'target': 'http://testserver/foreignkeytarget/2/'}
