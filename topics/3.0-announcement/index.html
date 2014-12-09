@@ -423,8 +423,13 @@
 <li>Templated based HTML form rendering for serializers. This will be finalized as  public API in the upcoming 3.1 release.</li>
 </ul>
 <p>Significant new functionality continues to be planned for the 3.1 and 3.2 releases. These releases will correspond to the two <a href="https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3">Kickstarter stretch goals</a> - "Feature improvements" and "Admin interface". Further 3.x releases will present simple upgrades, without the same level of fundamental API changes necessary for the 3.0 release.</p>
-<p>Below is an in-depth guide to the API changes and migration notes for 3.0.</p>
 <hr />
+<h4 id="rest-framework-under-the-hood">REST framework: Under the hood.</h4>
+<p>This talk from the Django: Under the Hood event in Amsterdam, Nov 2014 gives some good background context on the design decisions behind 3.0.</p>
+<iframe width="560" height="315" src="//www.youtube.com/embed/3cSsbe-tA0E" frameborder="0" allowfullscreen></iframe>
+
+<hr />
+<p><em>Below is an in-depth guide to the API changes and migration notes for 3.0.</em></p>
 <h2 id="request-objects">Request objects</h2>
 <h4 id="the-data-and-query_params-properties">The <code>.data</code> and <code>.query_params</code> properties.</h4>
 <p>The usage of <code>request.DATA</code> and <code>request.FILES</code> is now pending deprecation in favor of a single <code>request.data</code> attribute that contains <em>all</em> the parsed data.</p>
