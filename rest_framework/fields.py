@@ -59,15 +59,17 @@ def get_attribute(instance, attrs):
         if instance is None:
             # Break out early if we get `None` at any point in a nested lookup.
             return None
+        if getattr(instance, '__getitem__', None):
+            try:
+                return instance[attr]
+            except (KeyError, TypeError, AttributeError):
+                pass
         try:
             instance = getattr(instance, attr)
         except ObjectDoesNotExist:
             return None
         except AttributeError as exc:
-            try:
-                return instance[attr]
-            except (KeyError, TypeError, AttributeError):
-                raise exc
+            raise exc
         if is_simple_callable(instance):
             instance = instance()
     return instance
