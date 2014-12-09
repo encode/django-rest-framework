@@ -85,7 +85,7 @@ We can easily re-write our existing serializers to use hyperlinking. In your `sn
 
 
     class UserSerializer(serializers.HyperlinkedModelSerializer):
-        snippets = serializers.HyperlinkedRelatedField(many=True, view_name='snippet-detail')
+        snippets = serializers.HyperlinkedRelatedField(many=True, view_name='snippet-detail', read_only=True)
 
         class Meta:
             model = User
