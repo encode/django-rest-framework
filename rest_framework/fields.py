@@ -958,9 +958,14 @@ class ChoiceField(Field):
             (six.text_type(key), key) for key in self.choices.keys()
         ])
 
+        self.allow_blank = kwargs.pop('allow_blank', False)
+
         super(ChoiceField, self).__init__(**kwargs)
 
     def to_internal_value(self, data):
+        if data == '' and self.allow_blank:
+            return ''
+
         try:
             return self.choice_strings_to_values[six.text_type(data)]
         except KeyError:

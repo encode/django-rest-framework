@@ -804,6 +804,21 @@ class TestChoiceField(FieldValues):
         ]
     )
 
+    def test_allow_blank(self):
+        """
+        If `allow_blank=True` then '' is a valid input.
+        """
+        field = serializers.ChoiceField(
+            allow_blank=True,
+            choices=[
+                ('poor', 'Poor quality'),
+                ('medium', 'Medium quality'),
+                ('good', 'Good quality'),
+            ]
+        )
+        output = field.run_validation('')
+        assert output is ''
+
 
 class TestChoiceFieldWithType(FieldValues):
     """

@@ -91,17 +91,17 @@ def get_field_kwargs(field_name, model_field):
     if model_field.has_default() or model_field.blank or model_field.null:
         kwargs['required'] = False
 
-    if model_field.flatchoices:
-        # If this model field contains choices, then return early.
-        # Further keyword arguments are not valid.
-        kwargs['choices'] = model_field.flatchoices
-        return kwargs
-
     if model_field.null and not isinstance(model_field, models.NullBooleanField):
         kwargs['allow_null'] = True
 
     if model_field.blank:
         kwargs['allow_blank'] = True
+
+    if model_field.flatchoices:
+        # If this model field contains choices, then return early.
+        # Further keyword arguments are not valid.
+        kwargs['choices'] = model_field.flatchoices
+        return kwargs
 
     # Ensure that max_length is passed explicitly as a keyword arg,
     # rather than as a validator.
