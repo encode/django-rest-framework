@@ -85,7 +85,7 @@ class RelatedField(Field):
         return queryset
 
     def get_iterable(self, instance, source_attrs):
-        relationship = get_attribute(instance, source_attrs)
+        relationship = get_attribute(instance, source_attrs, self.required)
         return relationship.all() if (hasattr(relationship, 'all')) else relationship
 
     @property
@@ -134,10 +134,10 @@ class PrimaryKeyRelatedField(RelatedField):
         # the related object. We return this directly instead of returning the
         # object itself, which would require a database lookup.
         try:
-            instance = get_attribute(instance, self.source_attrs[:-1])
+            instance = get_attribute(instance, self.source_attrs[:-1], self.required)
             return PKOnlyObject(pk=instance.serializable_value(self.source_attrs[-1]))
         except AttributeError:
-            return get_attribute(instance, self.source_attrs)
+            return get_attribute(instance, self.source_attrs, self.required)
 
     def get_iterable(self, instance, source_attrs):
         # For consistency with `get_attribute` we're using `serializable_value()`
@@ -349,7 +349,7 @@ class ManyRelatedField(Field):
         ]
 
     def get_attribute(self, instance):
-        return self.child_relation.get_iterable(instance, self.source_attrs)
+        return self.child_relation.get_iterable(instance, self.source_attrs, self.required)
 
     def to_representation(self, iterable):
         return [
