@@ -517,9 +517,8 @@ class ListSerializer(BaseSerializer):
         """
         List of object instances -> List of dicts of primitive datatypes.
         """
-        iterable = data.all() if (hasattr(data, 'all')) else data
         return [
-            self.child.to_representation(item) for item in iterable
+            self.child.to_representation(item) for item in data
         ]
 
     def validate(self, attrs):
