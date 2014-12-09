@@ -59,7 +59,7 @@ def get_field_kwargs(field_name, model_field):
     Creates a default instance of a basic non-relational field.
     """
     kwargs = {}
-    validator_kwarg = model_field.validators
+    validator_kwarg = list(model_field.validators)
 
     # The following will only be used by ModelField classes.
     # Gets removed for everything else.
