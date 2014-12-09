@@ -1,4 +1,4 @@
-# Django REST framework
+# [Django REST framework][docs]
 
 [![build-status-image]][travis]
 [![pypi-version]][pypi]
