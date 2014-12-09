@@ -310,6 +310,9 @@ Used by `ModelSerializer` to automatically generate fields if the corresponding 
 **Signature:** `ChoiceField(choices)`
 
 - `choices` - A list of valid values, or a list of `(key, display_name)` tuples.
+- `allow_blank` - If set to `True` then the empty string should be considered a valid value. If set to `False` then the empty string is considered invalid and will raise a validation error. Defaults to `False`.
+
+Both the `allow_blank` and `allow_null` are valid options on `ChoiceField`, although it is highly recommended that you only use one and not both. `allow_blank` should be preferred for textual choices, and `allow_null` should be preferred for numeric or other non-textual choices.
 
 ## MultipleChoiceField
 
@@ -318,6 +321,9 @@ A field that can accept a set of zero, one or many values, chosen from a limited
 **Signature:** `MultipleChoiceField(choices)`
 
 - `choices` - A list of valid values, or a list of `(key, display_name)` tuples.
+- `allow_blank` - If set to `True` then the empty string should be considered a valid value. If set to `False` then the empty string is considered invalid and will raise a validation error. Defaults to `False`.
+
+As with `ChoiceField`, both the `allow_blank` and `allow_null` options are valid, although it is highly recommended that you only use one and not both. `allow_blank` should be preferred for textual choices, and `allow_null` should be preferred for numeric or other non-textual choices.
 
 ---
 
