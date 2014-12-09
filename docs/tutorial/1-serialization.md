@@ -326,17 +326,51 @@ Quit out of the shell...
 
 In another terminal window, we can test the server.
 
-We can get a list of all of the snippets.
+We can test our API using using [curl][curl] or [httpie][httpie]. Httpie is a user friendly http client that's written in Python. Let's install that.
 
-	curl http://127.0.0.1:8000/snippets/
+You can install httpie using pip:
 
-	[{"id": 1, "title": "", "code": "foo = \"bar\"\n", "linenos": false, "language": "python", "style": "friendly"}, {"id": 2, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}]
+    pip install httpie
 
-Or we can get a particular snippet by referencing its id.
+Finally, we can get a list of all of the snippets:
 
-	curl http://127.0.0.1:8000/snippets/2/
+    http http://127.0.0.1:8000/snippets/
 
-	{"id": 2, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}
+    HTTP/1.1 200 OK
+    ...
+    [
+      {
+        "id": 1,
+        "title": "",
+        "code": "foo = \"bar\"\n",
+        "linenos": false,
+        "language": "python",
+        "style": "friendly"
+      },
+      {
+        "id": 2,
+        "title": "",
+        "code": "print \"hello, world\"\n",
+        "linenos": false,
+        "language": "python",
+        "style": "friendly"
+      }
+    ]
+
+Or we can get a particular snippet by referencing its id:
+
+    http http://127.0.0.1:8000/snippets/2/
+
+    HTTP/1.1 200 OK
+    ...
+    {
+      "id": 2,
+      "title": "",
+      "code": "print \"hello, world\"\n",
+      "linenos": false,
+      "language": "python",
+      "style": "friendly"
+    }
 
 Similarly, you can have the same json displayed by visiting these URLs in a web browser.
 
@@ -353,3 +387,5 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 [sandbox]: http://restframework.herokuapp.com/
 [virtualenv]: http://www.virtualenv.org/en/latest/index.html
 [tut-2]: 2-requests-and-responses.md
+[httpie]: https://github.com/jakubroztocil/httpie#installation
+[curl]: http://curl.haxx.se

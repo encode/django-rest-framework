@@ -38,6 +38,16 @@ You can determine your currently installed version using `pip freeze`:
 
 ---
 
+## 3.0.x series
+
+### 3.0.0
+
+**Date**: 1st December 2014
+
+For full details see the [3.0 release announcement](3.0-announcement.md).
+
+---
+
 ## 2.4.x series
 
 ### 2.4.4
