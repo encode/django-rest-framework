@@ -54,7 +54,14 @@ class SlugForeignKeyTests(TestCase):
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
             {'id': 3, 'name': 'source-3', 'target': 'target-1'}
         ]
-        self.assertEqual(serializer.data, expected)
+        with self.assertNumQueries(4):
+            self.assertEqual(serializer.data, expected)
+
+    def test_foreign_key_retrieve_select_related(self):
+        queryset = ForeignKeySource.objects.all().select_related('target')
+        serializer = ForeignKeySourceSerializer(queryset, many=True)
+        with self.assertNumQueries(1):
+            serializer.data
 
     def test_reverse_foreign_key_retrieve(self):
         queryset = ForeignKeyTarget.objects.all()
@@ -64,6 +71,12 @@ class SlugForeignKeyTests(TestCase):
             {'id': 2, 'name': 'target-2', 'sources': []},
         ]
         self.assertEqual(serializer.data, expected)
+
+    def test_reverse_foreign_key_retrieve_prefetch_related(self):
+        queryset = ForeignKeyTarget.objects.all().prefetch_related('sources')
+        serializer = ForeignKeyTargetSerializer(queryset, many=True)
+        with self.assertNumQueries(2):
+            serializer.data
 
     def test_foreign_key_update(self):
         data = {'id': 1, 'name': 'source-1', 'target': 'target-2'}
