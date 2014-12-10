@@ -88,7 +88,7 @@ class RelatedField(Field):
         return False
 
     def get_attribute(self, instance):
-        if self.use_pk_only_optimization():
+        if self.use_pk_only_optimization() and self.source_attrs:
             try:
                 # Optimized case, return a mock object only containing the pk attribute.
                 instance = get_attribute(instance, self.source_attrs[:-1])
@@ -98,10 +98,6 @@ class RelatedField(Field):
 
         # Standard case, return the object instance.
         return get_attribute(instance, self.source_attrs)
-
-    def get_iterable(self, instance, source_attrs):
-        relationship = get_attribute(instance, source_attrs)
-        return relationship.all() if (hasattr(relationship, 'all')) else relationship
 
     @property
     def choices(self):
@@ -349,7 +345,8 @@ class ManyRelatedField(Field):
         ]
 
     def get_attribute(self, instance):
-        return self.child_relation.get_iterable(instance, self.source_attrs)
+        relationship = get_attribute(instance, self.source_attrs)
+        return relationship.all() if (hasattr(relationship, 'all')) else relationship
 
     def to_representation(self, iterable):
         return [
