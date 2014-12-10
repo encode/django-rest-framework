@@ -89,8 +89,8 @@ class RelatedField(Field):
 
     def get_attribute(self, instance):
         if self.use_pk_only_optimization() and self.source_attrs:
+            # Optimized case, return a mock object only containing the pk attribute.
             try:
-                # Optimized case, return a mock object only containing the pk attribute.
                 instance = get_attribute(instance, self.source_attrs[:-1])
                 return PKOnlyObject(pk=instance.serializable_value(self.source_attrs[-1]))
             except AttributeError:
