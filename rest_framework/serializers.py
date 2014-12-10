@@ -517,7 +517,9 @@ class ListSerializer(BaseSerializer):
         """
         List of object instances -> List of dicts of primitive datatypes.
         """
-        iterable = data.all() if (hasattr(data, 'all')) else data
+        # Dealing with nested relationships, data can be a Manager,
+        # so, first get a queryset from the Manager if needed
+        iterable = data.all() if isinstance(data, models.Manager) else data
         return [
             self.child.to_representation(item) for item in iterable
         ]
