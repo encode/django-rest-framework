@@ -1,5 +1,9 @@
 # Third Party Resources
 
+> Software ecosystems […] establish a community that further accelerates the sharing of knowledge, content, issues, expertise and skills.
+>
+> &mdash; [Jan Bosch][cite].
+
 ## About Third Party Packages
 
 Third Party Packages allow developers to share code that extends the functionality of Django REST framework, in order to support additional use-cases.
@@ -260,7 +264,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [Web API performance: profiling Django REST framework][web-api-performance-profiling-django-rest-framework]
 * [API Development with Django and Django REST Framework][api-development-with-django-and-django-rest-framework]
 
-
+[cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
 [new-repo]: https://github.com/new
 [create-a-repo]: https://help.github.com/articles/create-a-repo/

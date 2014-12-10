@@ -1,6 +1,4 @@
-# Django REST framework 2
-
-What it is, and why you should care.
+# Django REST framework 2.0
 
 > Most people just make the mistake that it should be simple to design simple things.  In reality, the effort required to design something is inversely proportional to the simplicity of the result.
 >
