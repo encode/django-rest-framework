@@ -71,6 +71,12 @@ class PKManyToManyTests(TestCase):
         with self.assertNumQueries(4):
             self.assertEqual(serializer.data, expected)
 
+    def test_many_to_many_retrieve_prefetch_related(self):
+        queryset = ManyToManySource.objects.all().prefetch_related('targets')
+        serializer = ManyToManySourceSerializer(queryset, many=True)
+        with self.assertNumQueries(2):
+            serializer.data
+
     def test_reverse_many_to_many_retrieve(self):
         queryset = ManyToManyTarget.objects.all()
         serializer = ManyToManyTargetSerializer(queryset, many=True)
@@ -187,6 +193,12 @@ class PKForeignKeyTests(TestCase):
         ]
         with self.assertNumQueries(3):
             self.assertEqual(serializer.data, expected)
+
+    def test_reverse_foreign_key_retrieve_prefetch_related(self):
+        queryset = ForeignKeyTarget.objects.all().prefetch_related('sources')
+        serializer = ForeignKeyTargetSerializer(queryset, many=True)
+        with self.assertNumQueries(2):
+            serializer.data
 
     def test_foreign_key_update(self):
         data = {'id': 1, 'name': 'source-1', 'target': 2}

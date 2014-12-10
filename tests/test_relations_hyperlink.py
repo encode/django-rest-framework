@@ -92,6 +92,12 @@ class HyperlinkedManyToManyTests(TestCase):
         with self.assertNumQueries(4):
             self.assertEqual(serializer.data, expected)
 
+    def test_many_to_many_retrieve_prefetch_related(self):
+        queryset = ManyToManySource.objects.all().prefetch_related('targets')
+        serializer = ManyToManySourceSerializer(queryset, many=True, context={'request': request})
+        with self.assertNumQueries(2):
+            serializer.data
+
     def test_reverse_many_to_many_retrieve(self):
         queryset = ManyToManyTarget.objects.all()
         serializer = ManyToManyTargetSerializer(queryset, many=True, context={'request': request})

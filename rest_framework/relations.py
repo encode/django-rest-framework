@@ -101,17 +101,7 @@ class RelatedField(Field):
 
     def get_iterable(self, instance, source_attrs):
         relationship = get_attribute(instance, source_attrs)
-        relationship = relationship.all() if (hasattr(relationship, 'all')) else relationship
-
-        if self.use_pk_only_optimization():
-            # Optimized case, return mock objects only containing the pk attribute.
-            return [
-                PKOnlyObject(pk=pk)
-                for pk in relationship.values_list('pk', flat=True)
-            ]
-
-        # Standard case, return the object instances.
-        return relationship
+        return relationship.all() if (hasattr(relationship, 'all')) else relationship
 
     @property
     def choices(self):
