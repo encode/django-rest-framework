@@ -47,7 +47,7 @@ You can determine your currently installed version using `pip freeze`:
 * More helpful error message when the default Serializer `create()` fails. ([#2013][gh2013])
 * Raise error when attempting to save serializer if data is not valid. ([#2098][gh2098])
 * Fix `FileUploadParser` breaks with empty file names and multiple upload handlers. ([#2109][gh2109])
-* Improve BindingDict` to support standard dict-functions. ([#2135][gh2135], [#2163][gh2163])
+* Improve `BindingDict` to support standard dict-functions. ([#2135][gh2135], [#2163][gh2163])
 * Add `validate()` to `ListSerializer`. ([#2168][gh2168], [#2225][gh2225], [#2232][gh2232])
 * Fix JSONP renderer failing to escape some characters. ([#2169][gh2169], [#2195][gh2195])
 * Add missing default style for `FileField`. ([#2172][gh2172])
