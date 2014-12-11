@@ -447,7 +447,7 @@ We'll add a url pattern for our new API root in <code>snippets/urls.py</code>:</
 </ul>
 <p>We can easily re-write our existing serializers to use hyperlinking. In your <code>snippets/serializers.py</code> add:</p>
 <pre><code>class SnippetSerializer(serializers.HyperlinkedModelSerializer):
-    owner = serializers.Field(source='owner.username')
+    owner = serializers.ReadOnlyField(source='owner.username')
     highlight = serializers.HyperlinkedIdentityField(view_name='snippet-highlight', format='html')
 
     class Meta:
@@ -457,7 +457,7 @@ We'll add a url pattern for our new API root in <code>snippets/urls.py</code>:</
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    snippets = serializers.HyperlinkedRelatedField(many=True, view_name='snippet-detail', read_only=True)
+    snippets = serializers.HyperlinkedRelatedField(many=True, view_name='snippet-detail')
 
     class Meta:
         model = User
@@ -537,7 +537,6 @@ urlpatterns += [
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
-  <script src="../../js/theme.js"></script>
 
   <script>
     //$('.side-nav').scrollspy()
