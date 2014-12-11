@@ -42,25 +42,24 @@ You can determine your currently installed version using `pip freeze`:
 
 ### 3.0.1
 
-**Date**: [December 2014](https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.1+Release%22)
+**Date**: [December 2014][3.0.1-milestone]
 
-* Documentation improvements
-* More helpful error message when the default `.create` fails (#2013)
+* More helpful error message when the default Serializer `create()` fails (#2013)
 * Raise error when attempting to save serializer if data is not valid. (#2098)
 * Fix `FileUploadParser` breaks with empty file names and multiple upload handlers (#2109)
-* Imporve BindingDict to support standard dict-functions (#2135, #2163)
-* Add `validate` to `ListSerializer` (#2168, #2225, #2232)
+* Improve BindingDict` to support standard dict-functions (#2135, #2163)
+* Add `validate()` to `ListSerializer` (#2168, #2225, #2232)
 * Fix JSONP renderer failing to escape some characters (#2169, #2195)
-* Add missing default style for FileField (#2172)
-* Actions are required when calling viewset.as_view() (#2175)
-* Add allow_blank to ChoiceField (#2184, #2239)
+* Add missing default style for `FileField` (#2172)
+* Actions are required when calling `ViewSet.as_view()` (#2175)
+* Add `allow_blank` to `ChoiceField (#2184, #2239)
 * Cosmetic fixes in the HTML renderer (#2187)
 * Raise error if `fields` on serializer is not a list of strings. (#2193, #2213)
 * Improve checks for nested creates and updates. (#2194, #2196)
-* `validated_attrs` argument renamed to `validated_data` in Serializer's `create`/`update` (#2197)
+* `validated_attrs` argument renamed to `validated_data` in `Serializer` `create()`/`update()` (#2197)
 * Remove deprecated code to reflect the droped Django versions (#2200)
 * Better serializer errors for nested writes. (#2202, #2215)
-* Fix Pagination and custom permissions incompatibility (#2205)
+* Fix pagination and custom permissions incompatibility (#2205)
 * Raise error if `fields` on serializer is not a list of strings. (#2213)
 * Add missing translation markers for relational fields. (#2231)
 * Improve field lookup behavior for dicts/mappings. (#2244, #2243)
@@ -666,3 +665,4 @@ For older release notes, [please see the GitHub repo](old-release-notes).
 [ticket-582]: https://github.com/tomchristie/django-rest-framework/issues/582
 [rfc-6266]: http://tools.ietf.org/html/rfc6266#section-4.3
 [old-release-notes]: https://github.com/tomchristie/django-rest-framework/blob/2.4.4/docs/topics/release-notes.md#04x-series
+[3.0.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.1+Release%22
