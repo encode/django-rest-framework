@@ -156,12 +156,26 @@ class Field(object):
     default_empty_html = empty
     initial = None
 
-    def __init__(self, read_only=False, write_only=False,
+    # allows to subclass a Field and have defaults on the class.
+    read_only = False
+    write_only = False
+    allow_null = False
+
+    def __init__(self, read_only=None, write_only=None,
                  required=None, default=empty, initial=empty, source=None,
                  label=None, help_text=None, style=None,
-                 error_messages=None, validators=None, allow_null=False):
+                 error_messages=None, validators=None, allow_null=None):
         self._creation_counter = Field._creation_counter
         Field._creation_counter += 1
+
+        if read_only is None:
+            read_only = self.read_only
+
+        if write_only is None:
+            write_only = self.write_only
+
+        if allow_null is None:
+            allow_null = self.allow_null
 
         # If `required` is unset, then use `True` unless a default is provided.
         if required is None:
