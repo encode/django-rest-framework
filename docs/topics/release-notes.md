@@ -42,7 +42,7 @@ You can determine your currently installed version using `pip freeze`:
 
 ### 3.0.1
 
-**Date**: [December 2014][3.0.1][3.0.1-milestone]:
+**Date**: [December 2014][3.0.1-milestone].
 
 * More helpful error message when the default Serializer `create()` fails. ([#2013](https://github.com/tomchristie/django-rest-framework/issues/2013))
 * Raise error when attempting to save serializer if data is not valid. ([#2098](https://github.com/tomchristie/django-rest-framework/issues/2098))
