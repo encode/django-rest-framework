@@ -431,6 +431,30 @@
 </code></pre>
 <hr />
 <h2 id="30x-series">3.0.x series</h2>
+<h3 id="301">3.0.1</h3>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.1+Release%22">December 2014</a>.</p>
+<ul>
+<li>More helpful error message when the default Serializer <code>create()</code> fails. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2013">#2013</a>)</li>
+<li>Raise error when attempting to save serializer if data is not valid. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2098">#2098</a>)</li>
+<li>Fix <code>FileUploadParser</code> breaks with empty file names and multiple upload handlers. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2109">#2109</a>)</li>
+<li>Improve <code>BindingDict</code> to support standard dict-functions. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2135">#2135</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2163">#2163</a>)</li>
+<li>Add <code>validate()</code> to <code>ListSerializer</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2168">#2168</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2225">#2225</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2232">#2232</a>)</li>
+<li>Fix JSONP renderer failing to escape some characters. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2169">#2169</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2195">#2195</a>)</li>
+<li>Add missing default style for <code>FileField</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2172">#2172</a>)</li>
+<li>Actions are required when calling <code>ViewSet.as_view()</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2175">#2175</a>)</li>
+<li>Add <code>allow_blank</code> to <code>ChoiceField</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2184">#2184</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2239">#2239</a>)</li>
+<li>Cosmetic fixes in the HTML renderer. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2187">#2187</a>)</li>
+<li>Raise error if <code>fields</code> on serializer is not a list of strings. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2193">#2193</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2213">#2213</a>)</li>
+<li>Improve checks for nested creates and updates. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2194">#2194</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2196">#2196</a>)</li>
+<li><code>validated_attrs</code> argument renamed to <code>validated_data</code> in <code>Serializer</code> <code>create()</code>/<code>update()</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2197">#2197</a>)</li>
+<li>Remove deprecated code to reflect the dropped Django versions. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2200">#2200</a>)</li>
+<li>Better serializer errors for nested writes. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2202">#2202</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2215">#2215</a>)</li>
+<li>Fix pagination and custom permissions incompatibility. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2205">#2205</a>)</li>
+<li>Raise error if <code>fields</code> on serializer is not a list of strings. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2213">#2213</a>)</li>
+<li>Add missing translation markers for relational fields. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2231">#2231</a>)</li>
+<li>Improve field lookup behavior for dicts/mappings. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2244">#2244</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2243">#2243</a>)</li>
+<li>Optimized hyperlinked PK. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2242">#2242</a>)</li>
+</ul>
 <h3 id="300">3.0.0</h3>
 <p><strong>Date</strong>: 1st December 2014</p>
 <p>For full details see the <a href="../3.0-announcement">3.0 release announcement</a>.</p>
