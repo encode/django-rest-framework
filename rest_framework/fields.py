@@ -509,7 +509,7 @@ class CharField(Field):
     default_error_messages = {
         'blank': _('This field may not be blank.'),
         'max_length': _('Ensure this field has no more than {max_length} characters.'),
-        'min_length': _('Ensure this field has no more than {min_length} characters.')
+        'min_length': _('Ensure this field has at least {min_length} characters.')
     }
     initial = ''
     coerce_blank_to_null = False
