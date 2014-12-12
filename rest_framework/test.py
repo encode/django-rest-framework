@@ -204,6 +204,11 @@ class APIClient(APIRequestFactory, DjangoClient):
 
     def logout(self):
         self._credentials = {}
+
+        # Also clear any `force_authenticate`
+        self.handler._force_user = None
+        self.handler._force_token = None
+
         return super(APIClient, self).logout()
 
 
