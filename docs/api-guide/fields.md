@@ -310,6 +310,9 @@ Used by `ModelSerializer` to automatically generate fields if the corresponding 
 **Signature:** `ChoiceField(choices)`
 
 - `choices` - A list of valid values, or a list of `(key, display_name)` tuples.
+- `allow_blank` - If set to `True` then the empty string should be considered a valid value. If set to `False` then the empty string is considered invalid and will raise a validation error. Defaults to `False`.
+
+Both the `allow_blank` and `allow_null` are valid options on `ChoiceField`, although it is highly recommended that you only use one and not both. `allow_blank` should be preferred for textual choices, and `allow_null` should be preferred for numeric or other non-textual choices.
 
 ## MultipleChoiceField
 
@@ -318,6 +321,9 @@ A field that can accept a set of zero, one or many values, chosen from a limited
 **Signature:** `MultipleChoiceField(choices)`
 
 - `choices` - A list of valid values, or a list of `(key, display_name)` tuples.
+- `allow_blank` - If set to `True` then the empty string should be considered a valid value. If set to `False` then the empty string is considered invalid and will raise a validation error. Defaults to `False`.
+
+As with `ChoiceField`, both the `allow_blank` and `allow_null` options are valid, although it is highly recommended that you only use one and not both. `allow_blank` should be preferred for textual choices, and `allow_null` should be preferred for numeric or other non-textual choices.
 
 ---
 
@@ -453,7 +459,7 @@ If you want to create a custom field, you'll need to subclass `Field` and then o
 
 The `.to_representation()` method is called to convert the initial datatype into a primitive, serializable datatype.
 
-The `to_internal_value()` method is called to restore a primitive datatype into its internal python representation.
+The `to_internal_value()` method is called to restore a primitive datatype into its internal python representation. This method should raise a `serializer.ValidationError` if the data is invalid.
 
 Note that the `WritableField` class that was present in version 2.x no longer exists. You should subclass `Field` and override `to_internal_value()` if the field supports data input.
 
@@ -497,6 +503,53 @@ As an example, let's create a field that can be used represent the class name of
             Serialize the object's class name.
             """
             return obj.__class__.__name__
+
+#### Raising validation errors
+
+Our `ColorField` class above currently does not perform any data validation.
+To indicate invalid data, we should raise a `serializers.ValidationError`, like so:
+
+    def to_internal_value(self, data):
+        if not isinstance(data, six.text_type):
+            msg = 'Incorrect type. Expected a string, but got %s'
+            raise ValidationError(msg % type(data).__name__)
+
+        if not re.match(r'^rgb\([0-9]+,[0-9]+,[0-9]+\)$', data):
+            raise ValidationError('Incorrect format. Expected `rgb(#,#,#)`.')
+
+        data = data.strip('rgb(').rstrip(')')
+        red, green, blue = [int(col) for col in data.split(',')]
+
+        if any([col > 255 or col < 0 for col in (red, green, blue)]):
+            raise ValidationError('Value out of range. Must be between 0 and 255.')
+
+        return Color(red, green, blue)
+
+The `.fail()` method is a shortcut for raising `ValidationError` that takes a message string from the `error_messages` dictionary. For example:
+
+    default_error_messages = {
+        'incorrect_type': 'Incorrect type. Expected a string, but got {input_type}',
+        'incorrect_format': 'Incorrect format. Expected `rgb(#,#,#)`.',
+        'out_of_range': 'Value out of range. Must be between 0 and 255.'
+    }
+
+    def to_internal_value(self, data):
+        if not isinstance(data, six.text_type):
+            msg = 'Incorrect type. Expected a string, but got %s'
+            self.fail('incorrect_type', input_type=type(data).__name__)
+
+        if not re.match(r'^rgb\([0-9]+,[0-9]+,[0-9]+\)$', data):
+            self.fail('incorrect_format')
+
+        data = data.strip('rgb(').rstrip(')')
+        red, green, blue = [int(col) for col in data.split(',')]
+
+        if any([col > 255 or col < 0 for col in (red, green, blue)]):
+            self.fail('out_of_range')
+
+        return Color(red, green, blue)
+
+This style keeps you error messages more cleanly separated from your code, and should be preferred.
 
 # Third party packages
 

@@ -14,7 +14,7 @@ If you use REST framework, we'd love you to be vocal about your experiences with
 
 Other really great ways you can help move the community forward include helping answer questions on the [discussion group][google-group], or setting up an [email alert on StackOverflow][so-filter] so that you get notified of any new questions with the `django-rest-framework` tag.
 
-When answering questions make sure to help future contributors find their way around by hyperlinking wherever possible to related threads and tickets, and include backlinks from those items if relevant. 
+When answering questions make sure to help future contributors find their way around by hyperlinking wherever possible to related threads and tickets, and include backlinks from those items if relevant.
 
 ## Code of conduct
 
@@ -33,12 +33,12 @@ Some tips on good issue reporting:
 * When describing issues try to phrase your ticket in terms of the *behavior* you think needs changing rather than the *code* you think need changing.
 * Search the issue list first for related items, and make sure you're running the latest version of REST framework before reporting an issue.
 * If reporting a bug, then try to include a pull request with a failing test case.  This will help us quickly identify if there is a valid issue, and make sure that it gets fixed more quickly if there is one.
-* Feature requests will often be closed with a recommendation that they be implemented outside of the core REST framework library.  Keeping new feature requests implemented as third party libraries allows us to keep down the maintainence overhead of REST framework, so that the focus can be on continued stability, bugfixes, and great documentation.
+* Feature requests will often be closed with a recommendation that they be implemented outside of the core REST framework library.  Keeping new feature requests implemented as third party libraries allows us to keep down the maintenance overhead of REST framework, so that the focus can be on continued stability, bugfixes, and great documentation.
 * Closing an issue doesn't necessarily mean the end of a discussion.  If you believe your issue has been closed incorrectly, explain why and we'll consider if it needs to be reopened.
 
 ## Triaging issues
 
-Getting involved in triaging incoming issues is a good way to start contributing.  Every single ticket that comes into the ticket tracker needs to be reviewed in order to determine what the next steps should be.  Anyone can help out with this, you just need to be willing to 
+Getting involved in triaging incoming issues is a good way to start contributing.  Every single ticket that comes into the ticket tracker needs to be reviewed in order to determine what the next steps should be.  Anyone can help out with this, you just need to be willing to
 
 * Read through the ticket - does it make sense, is it missing any context that would help explain it better?
 * Is the ticket reported in the correct place, would it be better suited as a discussion on the discussion group?
@@ -62,7 +62,6 @@ To run the tests, clone the repository, and then:
     virtualenv env
     env/bin/activate
     pip install -r requirements.txt
-    pip install -r requirements-test.txt
 
     # Run the tests
     ./runtests.py
@@ -83,7 +82,7 @@ GitHub's documentation for working on pull requests is [available here][pull-req
 
 Always run the tests before submitting pull requests, and ideally run `tox` in order to check that your modifications are compatible with both Python 2 and Python 3, and that they run properly on all supported versions of Django.
 
-Once you've made a pull request take a look at the travis build status in the GitHub interface and make sure the tests are runnning as you'd expect.
+Once you've made a pull request take a look at the travis build status in the GitHub interface and make sure the tests are running as you'd expect.
 
 ![Travis status][travis-status]
 
@@ -130,8 +129,8 @@ There are a couple of conventions you should follow when working on the document
 Headers should use the hash style.  For example:
 
     ### Some important topic
-    
-The underline style should not be used.  **Don't do this:** 
+
+The underline style should not be used.  **Don't do this:**
 
     Some important topic
     ====================
@@ -141,9 +140,9 @@ The underline style should not be used.  **Don't do this:**
 Links should always use the reference style, with the referenced hyperlinks kept at the end of the document.
 
     Here is a link to [some other thing][other-thing].
-    
+
     More text...
-    
+
     [other-thing]: http://example.com/other/thing
 
 This style helps keep the documentation source consistent and readable.
@@ -159,9 +158,9 @@ Linking in this style means you'll be able to click the hyperlink in your markdo
 If you want to draw attention to a note or warning, use a pair of enclosing lines, like so:
 
     ---
-    
+
     **Note:** A useful documentation note.
-    
+
     ---
 
 # Third party packages

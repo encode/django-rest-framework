@@ -4,7 +4,7 @@
     {% endif %}
     <div class="col-sm-10">
         <select class="form-control" name="{{ field.name }}">
-        {% if field.allow_null %}
+        {% if field.allow_null or field.allow_blank %}
             <option value="" {% if not field.value %}selected{% endif %}>--------</option>
         {% endif %}
         {% for key, text in field.choices.items %}

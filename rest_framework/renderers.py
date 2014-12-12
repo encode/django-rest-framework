@@ -12,6 +12,7 @@ import json
 import django
 from django import forms
 from django.core.exceptions import ImproperlyConfigured
+from django.core.paginator import Page
 from django.http.multipartparser import parse_header
 from django.template import Context, RequestContext, loader, Template
 from django.test.client import encode_multipart
@@ -99,6 +100,11 @@ class JSONRenderer(BaseRenderer):
         # and may (or may not) be unicode.
         # On python 3.x json.dumps() returns unicode strings.
         if isinstance(ret, six.text_type):
+            # We always fully escape \u2028 and \u2029 to ensure we output JSON
+            # that is a strict javascript subset. If bytes were returned
+            # by json.dumps() then we don't have these characters in any case.
+            # See: http://timelessrepo.com/json-isnt-a-javascript-subset
+            ret = ret.replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
             return bytes(ret.encode('utf-8'))
         return ret
 
@@ -173,7 +179,9 @@ class TemplateHTMLRenderer(BaseRenderer):
             return view.get_template_names()
         elif hasattr(view, 'template_name'):
             return [view.template_name]
-        raise ImproperlyConfigured('Returned a template response with no `template_name` attribute set on either the view or response')
+        raise ImproperlyConfigured(
+            'Returned a template response with no `template_name` attribute set on either the view or response'
+        )
 
     def get_exception_template(self, response):
         template_names = [name % {'status_code': response.status_code}
@@ -264,6 +272,10 @@ class HTMLFormRenderer(BaseRenderer):
         serializers.TimeField: {
             'base_template': 'input.html',
             'input_type': 'time'
+        },
+        serializers.FileField: {
+            'base_template': 'input.html',
+            'input_type': 'file'
         },
         serializers.BooleanField: {
             'base_template': 'checkbox.html'
@@ -413,6 +425,8 @@ class BrowsableAPIRenderer(BaseRenderer):
         serializer = getattr(data, 'serializer', None)
         if serializer and not getattr(serializer, 'many', False):
             instance = getattr(serializer, 'instance', None)
+            if isinstance(instance, Page):
+                instance = None
         else:
             instance = None
 
@@ -471,6 +485,8 @@ class BrowsableAPIRenderer(BaseRenderer):
         serializer = getattr(data, 'serializer', None)
         if serializer and not getattr(serializer, 'many', False):
             instance = getattr(serializer, 'instance', None)
+            if isinstance(instance, Page):
+                instance = None
         else:
             instance = None
 

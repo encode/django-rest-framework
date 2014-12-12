@@ -14,9 +14,9 @@ from django.http import QueryDict
 from django.http.multipartparser import parse_header
 from django.utils.datastructures import MultiValueDict
 from django.utils.datastructures import MergeDict as DjangoMergeDict
+from django.utils.six import BytesIO
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
-from rest_framework.compat import BytesIO
 from rest_framework.settings import api_settings
 import warnings
 

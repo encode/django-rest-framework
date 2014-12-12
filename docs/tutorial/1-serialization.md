@@ -16,7 +16,6 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 Before we do anything else we'll create a new virtual environment, using [virtualenv].  This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
 
-    :::bash
     virtualenv env
     source env/bin/activate
 
@@ -75,12 +74,8 @@ For the purposes of this tutorial we're going to start by creating a simple `Sni
         title = models.CharField(max_length=100, blank=True, default='')
         code = models.TextField()
         linenos = models.BooleanField(default=False)
-        language = models.CharField(choices=LANGUAGE_CHOICES,
-                                    default='python',
-                                    max_length=100)
-        style = models.CharField(choices=STYLE_CHOICES,
-                                 default='friendly',
-                                 max_length=100)
+        language = models.CharField(choices=LANGUAGE_CHOICES, default='python', max_length=100)
+        style = models.CharField(choices=STYLE_CHOICES, default='friendly', max_length=100)
 
         class Meta:
             ordering = ('created',)
@@ -101,30 +96,27 @@ The first thing we need to get started on our Web API is to provide a way of ser
 
     class SnippetSerializer(serializers.Serializer):
         pk = serializers.IntegerField(read_only=True)
-        title = serializers.CharField(required=False,
-                                      max_length=100)
+        title = serializers.CharField(required=False, allow_blank=True, max_length=100)
         code = serializers.CharField(style={'type': 'textarea'})
         linenos = serializers.BooleanField(required=False)
-        language = serializers.ChoiceField(choices=LANGUAGE_CHOICES,
-                                           default='python')
-        style = serializers.ChoiceField(choices=STYLE_CHOICES,
-                                        default='friendly')
+        language = serializers.ChoiceField(choices=LANGUAGE_CHOICES, default='python')
+        style = serializers.ChoiceField(choices=STYLE_CHOICES, default='friendly')
 
-        def create(self, validated_attrs):
+        def create(self, validated_data):
             """
             Create and return a new `Snippet` instance, given the validated data.
             """
-            return Snippet.objects.create(**validated_attrs)
+            return Snippet.objects.create(**validated_data)
 
-        def update(self, instance, validated_attrs):
+        def update(self, instance, validated_data):
             """
             Update and return an existing `Snippet` instance, given the validated data.
             """
-            instance.title = validated_attrs.get('title', instance.title)
-            instance.code = validated_attrs.get('code', instance.code)
-            instance.linenos = validated_attrs.get('linenos', instance.linenos)
-            instance.language = validated_attrs.get('language', instance.language)
-            instance.style = validated_attrs.get('style', instance.style)
+            instance.title = validated_data.get('title', instance.title)
+            instance.code = validated_data.get('code', instance.code)
+            instance.linenos = validated_data.get('linenos', instance.linenos)
+            instance.language = validated_data.get('language', instance.language)
+            instance.style = validated_data.get('style', instance.style)
             instance.save()
             return instance
 
@@ -181,7 +173,9 @@ Deserialization is similar.  First we parse a stream into Python native datatype
     serializer = SnippetSerializer(data=data)
     serializer.is_valid()
     # True
-    serializer.object
+    serializer.validated_data
+    # OrderedDict([('title', ''), ('code', 'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])
+    serializer.save()
     # <Snippet: Snippet object>
 
 Notice how similar the API is to working with forms.  The similarity should become even more apparent when we start writing views that use our serializer.
@@ -210,7 +204,7 @@ One nice property that serializers have is that you can inspect all the fields i
 
     >>> from snippets.serializers import SnippetSerializer
     >>> serializer = SnippetSerializer()
-    >>> print repr(serializer)  # In python 3 use `print(repr(serializer))`
+    >>> print(repr(serializer))
     SnippetSerializer():
         id = IntegerField(label='ID', read_only=True)
         title = CharField(allow_blank=True, max_length=100, required=False)
@@ -301,7 +295,7 @@ We'll also need a view which corresponds to an individual snippet, and can be us
 
 Finally we need to wire these views up.  Create the `snippets/urls.py` file:
 
-    from django.conf.urls import patterns, url
+    from django.conf.urls import url
     from snippets import views
 
     urlpatterns = [
@@ -332,17 +326,51 @@ Quit out of the shell...
 
 In another terminal window, we can test the server.
 
-We can get a list of all of the snippets.
+We can test our API using using [curl][curl] or [httpie][httpie]. Httpie is a user friendly http client that's written in Python. Let's install that.
 
-	curl http://127.0.0.1:8000/snippets/
+You can install httpie using pip:
 
-	[{"id": 1, "title": "", "code": "foo = \"bar\"\n", "linenos": false, "language": "python", "style": "friendly"}, {"id": 2, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}]
+    pip install httpie
 
-Or we can get a particular snippet by referencing its id.
+Finally, we can get a list of all of the snippets:
 
-	curl http://127.0.0.1:8000/snippets/2/
+    http http://127.0.0.1:8000/snippets/
 
-	{"id": 2, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}
+    HTTP/1.1 200 OK
+    ...
+    [
+      {
+        "id": 1,
+        "title": "",
+        "code": "foo = \"bar\"\n",
+        "linenos": false,
+        "language": "python",
+        "style": "friendly"
+      },
+      {
+        "id": 2,
+        "title": "",
+        "code": "print \"hello, world\"\n",
+        "linenos": false,
+        "language": "python",
+        "style": "friendly"
+      }
+    ]
+
+Or we can get a particular snippet by referencing its id:
+
+    http http://127.0.0.1:8000/snippets/2/
+
+    HTTP/1.1 200 OK
+    ...
+    {
+      "id": 2,
+      "title": "",
+      "code": "print \"hello, world\"\n",
+      "linenos": false,
+      "language": "python",
+      "style": "friendly"
+    }
 
 Similarly, you can have the same json displayed by visiting these URLs in a web browser.
 
@@ -359,3 +387,5 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 [sandbox]: http://restframework.herokuapp.com/
 [virtualenv]: http://www.virtualenv.org/en/latest/index.html
 [tut-2]: 2-requests-and-responses.md
+[httpie]: https://github.com/jakubroztocil/httpie#installation
+[curl]: http://curl.haxx.se

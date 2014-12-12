@@ -201,6 +201,8 @@ Note that you can use any of the standard attributes or method overrides provide
         def get_queryset(self):
             return self.request.user.accounts.all()
 
+Note however that upon removal of the `queryset` property from your `ViewSet`, any associated [router][routers] will be unable to derive the base_name of your Model automatically, and so you you will have to specify the `base_name` kwarg as part of your [router registration][routers].
+
 Also note that although this class provides the complete set of create/list/retrieve/update/destroy actions by default, you can restrict the available operations by using the standard permission classes.
 
 ## ReadOnlyModelViewSet
@@ -243,3 +245,4 @@ To create a base viewset class that provides `create`, `list` and `retrieve` ope
 By creating your own base `ViewSet` classes, you can provide common behavior that can be reused in multiple viewsets across your API.
 
 [cite]: http://guides.rubyonrails.org/routing.html
+[routers]: routers.md

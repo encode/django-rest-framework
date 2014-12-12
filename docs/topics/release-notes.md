@@ -38,6 +38,41 @@ You can determine your currently installed version using `pip freeze`:
 
 ---
 
+## 3.0.x series
+
+### 3.0.1
+
+**Date**: [December 2014][3.0.1-milestone].
+
+* More helpful error message when the default Serializer `create()` fails. ([#2013][gh2013])
+* Raise error when attempting to save serializer if data is not valid. ([#2098][gh2098])
+* Fix `FileUploadParser` breaks with empty file names and multiple upload handlers. ([#2109][gh2109])
+* Improve `BindingDict` to support standard dict-functions. ([#2135][gh2135], [#2163][gh2163])
+* Add `validate()` to `ListSerializer`. ([#2168][gh2168], [#2225][gh2225], [#2232][gh2232])
+* Fix JSONP renderer failing to escape some characters. ([#2169][gh2169], [#2195][gh2195])
+* Add missing default style for `FileField`. ([#2172][gh2172])
+* Actions are required when calling `ViewSet.as_view()`. ([#2175][gh2175])
+* Add `allow_blank` to `ChoiceField`. ([#2184][gh2184], [#2239][gh2239])
+* Cosmetic fixes in the HTML renderer. ([#2187][gh2187])
+* Raise error if `fields` on serializer is not a list of strings. ([#2193][gh2193], [#2213][gh2213])
+* Improve checks for nested creates and updates. ([#2194][gh2194], [#2196][gh2196])
+* `validated_attrs` argument renamed to `validated_data` in `Serializer` `create()`/`update()`. ([#2197][gh2197])
+* Remove deprecated code to reflect the dropped Django versions. ([#2200][gh2200])
+* Better serializer errors for nested writes. ([#2202][gh2202], [#2215][gh2215])
+* Fix pagination and custom permissions incompatibility. ([#2205][gh2205])
+* Raise error if `fields` on serializer is not a list of strings. ([#2213][gh2213])
+* Add missing translation markers for relational fields. ([#2231][gh2231])
+* Improve field lookup behavior for dicts/mappings. ([#2244][gh2244], [#2243][gh2243])
+* Optimized hyperlinked PK. ([#2242][gh2242])
+
+### 3.0.0
+
+**Date**: 1st December 2014
+
+For full details see the [3.0 release announcement](3.0-announcement.md).
+
+---
+
 ## 2.4.x series
 
 ### 2.4.4
@@ -121,7 +156,7 @@ You can determine your currently installed version using `pip freeze`:
 * Add `UnicodeYAMLRenderer` that extends `YAMLRenderer` with unicode.
 * Fix `parse_header` argument convertion.
 * Fix mediatype detection under Python 3.
-* Web browseable API now offers blank option on dropdown when the field is not required.
+* Web browsable API now offers blank option on dropdown when the field is not required.
 * `APIException` representation improved for logging purposes.
 * Allow source="*" within nested serializers.
 * Better support for custom oauth2 provider backends.
@@ -200,7 +235,7 @@ You can determine your currently installed version using `pip freeze`:
 * Added `MAX_PAGINATE_BY` setting and `max_paginate_by` generic view attribute.
 * Added `cache` attribute to throttles to allow overriding of default cache.
 * 'Raw data' tab in browsable API now contains pre-populated data.
-* 'Raw data' and 'HTML form' tab preference in browseable API now saved between page views.
+* 'Raw data' and 'HTML form' tab preference in browsable API now saved between page views.
 * Bugfix: `required=True` argument fixed for boolean serializer fields.
 * Bugfix: `client.force_authenticate(None)` should also clear session info if it exists.
 * Bugfix: Client sending empty string instead of file now clears `FileField`.
@@ -630,3 +665,35 @@ For older release notes, [please see the GitHub repo](old-release-notes).
 [ticket-582]: https://github.com/tomchristie/django-rest-framework/issues/582
 [rfc-6266]: http://tools.ietf.org/html/rfc6266#section-4.3
 [old-release-notes]: https://github.com/tomchristie/django-rest-framework/blob/2.4.4/docs/topics/release-notes.md#04x-series
+[3.0.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.1+Release%22
+
+
+[gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
+[gh2098]: https://github.com/tomchristie/django-rest-framework/issues/2098
+[gh2109]: https://github.com/tomchristie/django-rest-framework/issues/2109
+[gh2135]: https://github.com/tomchristie/django-rest-framework/issues/2135
+[gh2163]: https://github.com/tomchristie/django-rest-framework/issues/2163
+[gh2168]: https://github.com/tomchristie/django-rest-framework/issues/2168
+[gh2169]: https://github.com/tomchristie/django-rest-framework/issues/2169
+[gh2172]: https://github.com/tomchristie/django-rest-framework/issues/2172
+[gh2175]: https://github.com/tomchristie/django-rest-framework/issues/2175
+[gh2184]: https://github.com/tomchristie/django-rest-framework/issues/2184
+[gh2187]: https://github.com/tomchristie/django-rest-framework/issues/2187
+[gh2193]: https://github.com/tomchristie/django-rest-framework/issues/2193
+[gh2194]: https://github.com/tomchristie/django-rest-framework/issues/2194
+[gh2195]: https://github.com/tomchristie/django-rest-framework/issues/2195
+[gh2196]: https://github.com/tomchristie/django-rest-framework/issues/2196
+[gh2197]: https://github.com/tomchristie/django-rest-framework/issues/2197
+[gh2200]: https://github.com/tomchristie/django-rest-framework/issues/2200
+[gh2202]: https://github.com/tomchristie/django-rest-framework/issues/2202
+[gh2205]: https://github.com/tomchristie/django-rest-framework/issues/2205
+[gh2213]: https://github.com/tomchristie/django-rest-framework/issues/2213
+[gh2213]: https://github.com/tomchristie/django-rest-framework/issues/2213
+[gh2215]: https://github.com/tomchristie/django-rest-framework/issues/2215
+[gh2225]: https://github.com/tomchristie/django-rest-framework/issues/2225
+[gh2231]: https://github.com/tomchristie/django-rest-framework/issues/2231
+[gh2232]: https://github.com/tomchristie/django-rest-framework/issues/2232
+[gh2239]: https://github.com/tomchristie/django-rest-framework/issues/2239
+[gh2242]: https://github.com/tomchristie/django-rest-framework/issues/2242
+[gh2243]: https://github.com/tomchristie/django-rest-framework/issues/2243
+[gh2244]: https://github.com/tomchristie/django-rest-framework/issues/2244

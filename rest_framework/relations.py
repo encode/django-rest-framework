@@ -1,4 +1,4 @@
-from rest_framework.compat import smart_text, urlparse
+from django.utils.encoding import smart_text
 from rest_framework.fields import get_attribute, empty, Field
 from rest_framework.reverse import reverse
 from rest_framework.utils import html
@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch, Resolver404
 from django.db.models.query import QuerySet
 from django.utils import six
+from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -83,9 +84,20 @@ class RelatedField(Field):
             queryset = queryset.all()
         return queryset
 
-    def get_iterable(self, instance, source_attrs):
-        relationship = get_attribute(instance, source_attrs)
-        return relationship.all() if (hasattr(relationship, 'all')) else relationship
+    def use_pk_only_optimization(self):
+        return False
+
+    def get_attribute(self, instance):
+        if self.use_pk_only_optimization() and self.source_attrs:
+            # Optimized case, return a mock object only containing the pk attribute.
+            try:
+                instance = get_attribute(instance, self.source_attrs[:-1])
+                return PKOnlyObject(pk=instance.serializable_value(self.source_attrs[-1]))
+            except AttributeError:
+                pass
+
+        # Standard case, return the object instance.
+        return get_attribute(instance, self.source_attrs)
 
     @property
     def choices(self):
@@ -114,10 +126,13 @@ class StringRelatedField(RelatedField):
 
 class PrimaryKeyRelatedField(RelatedField):
     default_error_messages = {
-        'required': 'This field is required.',
-        'does_not_exist': "Invalid pk '{pk_value}' - object does not exist.",
-        'incorrect_type': 'Incorrect type. Expected pk value, received {data_type}.',
+        'required': _('This field is required.'),
+        'does_not_exist': _("Invalid pk '{pk_value}' - object does not exist."),
+        'incorrect_type': _('Incorrect type. Expected pk value, received {data_type}.'),
     }
+
+    def use_pk_only_optimization(self):
+        return True
 
     def to_internal_value(self, data):
         try:
@@ -127,32 +142,6 @@ class PrimaryKeyRelatedField(RelatedField):
         except (TypeError, ValueError):
             self.fail('incorrect_type', data_type=type(data).__name__)
 
-    def get_attribute(self, instance):
-        # We customize `get_attribute` here for performance reasons.
-        # For relationships the instance will already have the pk of
-        # the related object. We return this directly instead of returning the
-        # object itself, which would require a database lookup.
-        try:
-            instance = get_attribute(instance, self.source_attrs[:-1])
-            return PKOnlyObject(pk=instance.serializable_value(self.source_attrs[-1]))
-        except AttributeError:
-            return get_attribute(instance, self.source_attrs)
-
-    def get_iterable(self, instance, source_attrs):
-        # For consistency with `get_attribute` we're using `serializable_value()`
-        # here. Typically there won't be any difference, but some custom field
-        # types might return a non-primative value for the pk otherwise.
-        #
-        # We could try to get smart with `values_list('pk', flat=True)`, which
-        # would be better in some case, but would actually end up with *more*
-        # queries if the developer is using `prefetch_related` across the
-        # relationship.
-        relationship = super(PrimaryKeyRelatedField, self).get_iterable(instance, source_attrs)
-        return [
-            PKOnlyObject(pk=item.serializable_value('pk'))
-            for item in relationship
-        ]
-
     def to_representation(self, value):
         return value.pk
 
@@ -161,11 +150,11 @@ class HyperlinkedRelatedField(RelatedField):
     lookup_field = 'pk'
 
     default_error_messages = {
-        'required': 'This field is required.',
-        'no_match': 'Invalid hyperlink - No URL match',
-        'incorrect_match': 'Invalid hyperlink - Incorrect URL match.',
-        'does_not_exist': 'Invalid hyperlink - Object does not exist.',
-        'incorrect_type': 'Incorrect type. Expected URL string, received {data_type}.',
+        'required': _('This field is required.'),
+        'no_match': _('Invalid hyperlink - No URL match'),
+        'incorrect_match': _('Invalid hyperlink - Incorrect URL match.'),
+        'does_not_exist': _('Invalid hyperlink - Object does not exist.'),
+        'incorrect_type': _('Incorrect type. Expected URL string, received {data_type}.'),
     }
 
     def __init__(self, view_name=None, **kwargs):
@@ -182,6 +171,9 @@ class HyperlinkedRelatedField(RelatedField):
         self.resolve = resolve
 
         super(HyperlinkedRelatedField, self).__init__(**kwargs)
+
+    def use_pk_only_optimization(self):
+        return self.lookup_field == 'pk'
 
     def get_object(self, view_name, view_args, view_kwargs):
         """
@@ -284,6 +276,11 @@ class HyperlinkedIdentityField(HyperlinkedRelatedField):
         kwargs['source'] = '*'
         super(HyperlinkedIdentityField, self).__init__(view_name, **kwargs)
 
+    def use_pk_only_optimization(self):
+        # We have the complete object instance already. We don't need
+        # to run the 'only get the pk for this relationship' code.
+        return False
+
 
 class SlugRelatedField(RelatedField):
     """
@@ -348,7 +345,8 @@ class ManyRelatedField(Field):
         ]
 
     def get_attribute(self, instance):
-        return self.child_relation.get_iterable(instance, self.source_attrs)
+        relationship = get_attribute(instance, self.source_attrs)
+        return relationship.all() if (hasattr(relationship, 'all')) else relationship
 
     def to_representation(self, iterable):
         return [

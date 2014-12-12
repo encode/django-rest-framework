@@ -4,7 +4,7 @@ the using Django's `.full_clean()`.
 
 This gives us better separation of concerns, allows us to use single-step
 object creation, and makes it possible to switch between using the implicit
-`ModelSerializer` class and an equivelent explicit `Serializer` class.
+`ModelSerializer` class and an equivalent explicit `Serializer` class.
 """
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.exceptions import ValidationError

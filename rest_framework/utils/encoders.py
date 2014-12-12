@@ -4,8 +4,8 @@ Helper classes for parsers.
 from __future__ import unicode_literals
 from django.db.models.query import QuerySet
 from django.utils import six, timezone
+from django.utils.encoding import force_text
 from django.utils.functional import Promise
-from rest_framework.compat import force_text
 import datetime
 import decimal
 import json

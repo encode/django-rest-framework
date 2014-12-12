@@ -20,6 +20,15 @@ class UniquenessSerializer(serializers.ModelSerializer):
         model = UniquenessModel
 
 
+class AnotherUniquenessModel(models.Model):
+    code = models.IntegerField(unique=True)
+
+
+class AnotherUniquenessSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnotherUniquenessModel
+
+
 class TestUniquenessValidation(TestCase):
     def setUp(self):
         self.instance = UniquenessModel.objects.create(username='existing')
@@ -50,6 +59,17 @@ class TestUniquenessValidation(TestCase):
         serializer = UniquenessSerializer(self.instance, data=data)
         assert serializer.is_valid()
         assert serializer.validated_data == {'username': 'existing'}
+
+    def test_doesnt_pollute_model(self):
+        instance = AnotherUniquenessModel.objects.create(code='100')
+        serializer = AnotherUniquenessSerializer(instance)
+        self.assertEqual(
+            AnotherUniquenessModel._meta.get_field('code').validators, [])
+
+        # Accessing data shouldn't effect validators on the model
+        serializer.data
+        self.assertEqual(
+            AnotherUniquenessModel._meta.get_field('code').validators, [])
 
 
 # Tests for `UniqueTogetherValidator`
@@ -148,7 +168,7 @@ class TestUniquenessTogetherValidation(TestCase):
     def test_ignore_excluded_fields(self):
         """
         When model fields are not included in a serializer, then uniqueness
-        validtors should not be added for that field.
+        validators should not be added for that field.
         """
         class ExcludedFieldSerializer(serializers.ModelSerializer):
             class Meta:

@@ -43,7 +43,7 @@ And now we can add a `.save()` method to our model class:
 When that's all done we'll need to update our database tables.
 Normally we'd create a database migration in order to do that, but for the purposes of this tutorial, let's just delete the database and start again.
 
-    rm tmp.db
+    rm -f tmp.db db.sqlite3
     rm -r snippets/migrations
     python manage.py makemigrations snippets
     python manage.py migrate
@@ -59,7 +59,7 @@ Now that we've got some users to work with, we'd better add representations of t
     from django.contrib.auth.models import User
 
     class UserSerializer(serializers.ModelSerializer):
-        snippets = serializers.PrimaryKeyRelatedField(many=True)
+        snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
 
         class Meta:
             model = User
@@ -198,15 +198,25 @@ If we're interacting with the API programmatically we need to explicitly provide
 
 If we try to create a snippet without authenticating, we'll get an error:
 
-    curl -i -X POST http://127.0.0.1:8000/snippets/ -d "code=print 123"
+    http POST http://127.0.0.1:8000/snippets/ code="print 123"
 
-    {"detail": "Authentication credentials were not provided."}
+    {
+        "detail": "Authentication credentials were not provided."
+    }
 
 We can make a successful request by including the username and password of one of the users we created earlier.
 
-    curl -X POST http://127.0.0.1:8000/snippets/ -d "code=print 789" -u tom:password
+    http POST -a tom:password http://127.0.0.1:8000/snippets/ code="print 789"
 
-    {"id": 5, "owner": "tom", "title": "foo", "code": "print 789", "linenos": false, "language": "python", "style": "friendly"}
+    {
+        "id": 5,
+        "owner": "tom",
+        "title": "foo",
+        "code": "print 789",
+        "linenos": false,
+        "language": "python",
+        "style": "friendly"
+    }
 
 ## Summary
 

@@ -127,31 +127,64 @@ Go ahead and test the API from the command line, as we did in [tutorial part 1][
 
 We can get a list of all of the snippets, as before.
 
-	curl http://127.0.0.1:8000/snippets/
+    http http://127.0.0.1:8000/snippets/
 
-	[{"id": 1, "title": "", "code": "foo = \"bar\"\n", "linenos": false, "language": "python", "style": "friendly"}, {"id": 2, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}]
+    HTTP/1.1 200 OK
+    ...
+    [
+      {
+        "id": 1,
+        "title": "",
+        "code": "foo = \"bar\"\n",
+        "linenos": false,
+        "language": "python",
+        "style": "friendly"
+      },
+      {
+        "id": 2,
+        "title": "",
+        "code": "print \"hello, world\"\n",
+        "linenos": false,
+        "language": "python",
+        "style": "friendly"
+      }
+    ]
 
 We can control the format of the response that we get back, either by using the `Accept` header:
 
-    curl http://127.0.0.1:8000/snippets/ -H 'Accept: application/json'  # Request JSON
-    curl http://127.0.0.1:8000/snippets/ -H 'Accept: text/html'         # Request HTML
+    http http://127.0.0.1:8000/snippets/ Accept:application/json  # Request JSON
+    http http://127.0.0.1:8000/snippets/ Accept:text/html         # Request HTML
 
 Or by appending a format suffix:
 
-    curl http://127.0.0.1:8000/snippets/.json  # JSON suffix
-    curl http://127.0.0.1:8000/snippets/.api   # Browsable API suffix
+    http http://127.0.0.1:8000/snippets/.json  # JSON suffix
+    http http://127.0.0.1:8000/snippets/.api   # Browsable API suffix
 
 Similarly, we can control the format of the request that we send, using the `Content-Type` header.
 
     # POST using form data
-    curl -X POST http://127.0.0.1:8000/snippets/ -d "code=print 123"
+    http --form POST http://127.0.0.1:8000/snippets/ code="print 123"
 
-    {"id": 3, "title": "", "code": "print 123", "linenos": false, "language": "python", "style": "friendly"}
+    {
+      "id": 3,
+      "title": "",
+      "code": "print 123",
+      "linenos": false,
+      "language": "python",
+      "style": "friendly"
+    }
 
     # POST using JSON
-    curl -X POST http://127.0.0.1:8000/snippets/ -d '{"code": "print 456"}' -H "Content-Type: application/json"
+    http --json POST http://127.0.0.1:8000/snippets/ code="print 456"
 
-    {"id": 4, "title": "", "code": "print 456", "linenos": true, "language": "python", "style": "friendly"}
+    {
+        "id": 4,
+        "title": "",
+        "code": "print 456",
+        "linenos": true,
+        "language": "python",
+        "style": "friendly"
+    }
 
 Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/snippets/][devserver].
 

@@ -1,14 +1,18 @@
 # Third Party Resources
 
+> Software ecosystems […] establish a community that further accelerates the sharing of knowledge, content, issues, expertise and skills.
+>
+> &mdash; [Jan Bosch][cite].
+
 ## About Third Party Packages
 
 Third Party Packages allow developers to share code that extends the functionality of Django REST framework, in order to support additional use-cases.
 
-We **support**, **encourage** and **strongly favour** the creation of Third Party Packages to encapsulate new behaviour rather than adding additional functionality directly to Django REST Framework.
+We **support**, **encourage** and **strongly favor** the creation of Third Party Packages to encapsulate new behavior rather than adding additional functionality directly to Django REST Framework.
 
-We aim to make creating Third Party Packages as easy as possible, whilst keeping the **simplicity** of the core API and ensuring that **maintenance** of the main project remains under control. If a Third Party Package proves popular it is relatively easy to move it into the main project; removing features is much more problematic.
+We aim to make creating third party packages as easy as possible, whilst keeping a **simple** and **well maintained** core API. By promoting third party packages we ensure that the responsibility for a package remains with its author. If a package proves suitably popular it can always be considered for inclusion into the core REST framework.
 
-If you have an idea for a new feature please consider how it may be packaged as a Third Party Package. We're always happy to dicuss ideas on the [Mailing List][discussion-group].
+If you have an idea for a new feature please consider how it may be packaged as a Third Party Package. We're always happy to discuss ideas on the [Mailing List][discussion-group].
 
 ## How to create a Third Party Package
 
@@ -93,7 +97,7 @@ The cookiecutter template includes a `runtests.py` which uses the `pytest` packa
 
 Before running, you'll need to install a couple test requirements.
 
-    $ pip install -r requirements-test.txt
+    $ pip install -r requirements.txt
 
 Once requirements installed, you can run `runtests.py`.
 
@@ -260,7 +264,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [Web API performance: profiling Django REST framework][web-api-performance-profiling-django-rest-framework]
 * [API Development with Django and Django REST Framework][api-development-with-django-and-django-rest-framework]
 
-
+[cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
 [new-repo]: https://github.com/new
 [create-a-repo]: https://help.github.com/articles/create-a-repo/

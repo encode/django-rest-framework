@@ -3,8 +3,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericRelation, GenericForeignKey
 from django.db import models
 from django.test import TestCase
+from django.utils.encoding import python_2_unicode_compatible
 from rest_framework import serializers
-from rest_framework.compat import python_2_unicode_compatible
 
 
 @python_2_unicode_compatible

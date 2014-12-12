@@ -5,16 +5,17 @@ from django.core.validators import RegexValidator
 from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
-from django.utils.encoding import is_protected_type
+from django.utils.encoding import is_protected_type, smart_text
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    smart_text, EmailValidator, MinValueValidator, MaxValueValidator,
+    EmailValidator, MinValueValidator, MaxValueValidator,
     MinLengthValidator, MaxLengthValidator, URLValidator, OrderedDict
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, representation, humanize_datetime
+import collections
 import copy
 import datetime
 import decimal
@@ -60,14 +61,12 @@ def get_attribute(instance, attrs):
             # Break out early if we get `None` at any point in a nested lookup.
             return None
         try:
-            instance = getattr(instance, attr)
+            if isinstance(instance, collections.Mapping):
+                instance = instance[attr]
+            else:
+                instance = getattr(instance, attr)
         except ObjectDoesNotExist:
             return None
-        except AttributeError as exc:
-            try:
-                return instance[attr]
-            except (KeyError, TypeError, AttributeError):
-                raise exc
         if is_simple_callable(instance):
             instance = instance()
     return instance
@@ -294,6 +293,34 @@ class Field(object):
             return self.default()
         return self.default
 
+    def validate_empty_values(self, data):
+        """
+        Validate empty values, and either:
+
+        * Raise `ValidationError`, indicating invalid data.
+        * Raise `SkipField`, indicating that the field should be ignored.
+        * Return (True, data), indicating an empty value that should be
+          returned without any furhter validation being applied.
+        * Return (False, data), indicating a non-empty value, that should
+          have validation applied as normal.
+        """
+        if self.read_only:
+            return (True, self.get_default())
+
+        if data is empty:
+            if getattr(self.root, 'partial', False):
+                raise SkipField()
+            if self.required:
+                self.fail('required')
+            return (True, self.get_default())
+
+        if data is None:
+            if not self.allow_null:
+                self.fail('null')
+            return (True, None)
+
+        return (False, data)
+
     def run_validation(self, data=empty):
         """
         Validate a simple representation and return the internal value.
@@ -304,21 +331,9 @@ class Field(object):
         May raise `SkipField` if the field should not be included in the
         validated data.
         """
-        if self.read_only:
-            return self.get_default()
-
-        if data is empty:
-            if getattr(self.root, 'partial', False):
-                raise SkipField()
-            if self.required:
-                self.fail('required')
-            return self.get_default()
-
-        if data is None:
-            if not self.allow_null:
-                self.fail('null')
-            return None
-
+        (is_empty_value, data) = self.validate_empty_values(data)
+        if is_empty_value:
+            return data
         value = self.to_internal_value(data)
         self.run_validators(value)
         return value
@@ -494,7 +509,7 @@ class CharField(Field):
     default_error_messages = {
         'blank': _('This field may not be blank.'),
         'max_length': _('Ensure this field has no more than {max_length} characters.'),
-        'min_length': _('Ensure this field has no more than {min_length} characters.')
+        'min_length': _('Ensure this field has at least {min_length} characters.')
     }
     initial = ''
     coerce_blank_to_null = False
@@ -942,9 +957,14 @@ class ChoiceField(Field):
             (six.text_type(key), key) for key in self.choices.keys()
         ])
 
+        self.allow_blank = kwargs.pop('allow_blank', False)
+
         super(ChoiceField, self).__init__(**kwargs)
 
     def to_internal_value(self, data):
+        if data == '' and self.allow_blank:
+            return ''
+
         try:
             return self.choice_strings_to_values[six.text_type(data)]
         except KeyError:

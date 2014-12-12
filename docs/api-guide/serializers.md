@@ -96,7 +96,7 @@ If we want to be able to return complete object instances based on the validated
 If your object instances correspond to Django models you'll also want to ensure that these methods save the object to the database. For example, if `Comment` was a Django model, the methods might look like this:
 
         def create(self, validated_data):
-            return Comment.objcts.create(**validated_data)
+            return Comment.objects.create(**validated_data)
 
         def update(self, instance, validated_data):
             instance.email = validated_data.get('email', instance.email)
@@ -104,7 +104,7 @@ If your object instances correspond to Django models you'll also want to ensure 
             instance.created = validated_data.get('created', instance.created)
             instance.save()
             return instance
- 
+
 Now when deserializing data, we can call `.save()` to return an object instance, based on the validated data.
 
     comment = serializer.save()
@@ -113,7 +113,7 @@ Calling `.save()` will either create a new instance, or update an existing insta
 
     # .save() will create a new instance.
     serializer = CommentSerializer(data=data)
-    
+
     # .save() will update the existing `comment` instance.
     serializer = CommentSerializer(comment, data=data)
 
@@ -140,7 +140,7 @@ For example:
     class ContactForm(serializers.Serializer):
         email = serializers.EmailField()
         message = serializers.CharField()
-        
+
         def save(self):
             email = self.validated_data['email']
             message = self.validated_data['message']
@@ -230,7 +230,7 @@ Serializer classes can also include reusable validators that are applied to the 
         name = serializers.CharField()
         room_number = serializers.IntegerField(choices=[101, 102, 103, 201])
         date = serializers.DateField()
-        
+
         class Meta:
             # Each room only has one event per day.
             validators = UniqueTogetherValidator(
@@ -326,9 +326,9 @@ Here's an example for an `update()` method on our previous `UserSerializer` clas
             # would need to be handled.
             profile = instance.profile
 
-            user.username = validated_data.get('username', instance.username)
-            user.email = validated_data.get('email', instance.email)
-            user.save()
+            instance.username = validated_data.get('username', instance.username)
+            instance.email = validated_data.get('email', instance.email)
+            instance.save()
 
             profile.is_premium_member = profile_data.get(
                 'is_premium_member',
@@ -340,7 +340,7 @@ Here's an example for an `update()` method on our previous `UserSerializer` clas
              )
             profile.save()
 
-            return user
+            return instance
 
 Because the behavior of nested creates and updates can be ambiguous, and may require complex dependancies between related models, REST framework 3 requires you to always write these methods explicitly. The default `ModelSerializer` `.create()` and `.update()` methods do not include support for writable nested representations.
 
@@ -448,7 +448,7 @@ To do so, open the Django shell, using `python manage.py shell`, then import the
         id = IntegerField(label='ID', read_only=True)
         name = CharField(allow_blank=True, max_length=100, required=False)
         owner = PrimaryKeyRelatedField(queryset=User.objects.all())
- 
+
 ## Specifying which fields should be included
 
 If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`.
@@ -505,6 +505,21 @@ This option should be a list or tuple of field names, and is declared as follows
 
 Model fields which have `editable=False` set, and `AutoField` fields will be set to read-only by default, and do not need to be added to the `read_only_fields` option.
 
+---
+
+**Note**: There is a special-case where a read-only field is part of a `unique_together` constraint at the model level. In this case the field is required by the serializer class in order to validate the constraint, but should also not be editable by the user.
+
+The right way to deal with this is to specify the field explicitly on the serializer, providing both the `read_only=True` and `default=…` keyword arguments.
+
+One example of this is a read-only relation to the currently authenticated `User` which is `unique_together` with another identifier. In this case you would declare the user field like so:
+
+    user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
+
+Please review the [Validators Documentation](/api-guide/validators/) for details on the [UniqueTogetherValidator](/api-guide/validators/#uniquetogethervalidator) and [CurrentUserDefault](/api-guide/validators/#currentuserdefault) classes.
+
+---
+
+
 ## Specifying additional keyword arguments for fields.
 
 There is also a shortcut allowing you to specify arbitrary additional keyword arguments on fields, using the `extra_kwargs` option. Similarly to `read_only_fields` this means you do not need to explicitly declare the field on the serializer.
@@ -516,7 +531,7 @@ This option is a dictionary, mapping field names to a dictionary of keyword argu
             model = User
             fields = ('email', 'username', 'password')
             extra_kwargs = {'password': {'write_only': True}}
-            
+
         def create(self, validated_data):
             user = User(
                 email=validated_data['email'],
@@ -567,13 +582,13 @@ There needs to be a way of determining which views should be used for hyperlinki
 
 By default hyperlinks are expected to correspond to a view name that matches the style `'{model_name}-detail'`, and looks up the instance by a `pk` keyword argument.
 
-You can override a URL field view name and lookup field by using either, or both of, the `view_name` and `lookup_field` options in the `extra_field_kwargs` setting, like so:
+You can override a URL field view name and lookup field by using either, or both of, the `view_name` and `lookup_field` options in the `extra_kwargs` setting, like so:
 
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
             fields = ('account_url', 'account_name', 'users', 'created')
-            extra_field_kwargs = {
+            extra_kwargs = {
                 'url': {'view_name': 'accounts', 'lookup_field': 'account_name'}
                 'users': {'lookup_field': 'username'}
             }
@@ -656,7 +671,7 @@ To support multiple updates you'll need to do so explicitly. When writing your m
 * How do you determine which instance should be updated for each item in the list of data?
 * How should insertions be handled? Are they invalid, or do they create new objects?
 * How should removals be handled? Do they imply object deletion, or removing a relationship? Should they be silently ignored, or are they invalid?
-* How should ordering be handled? Does changing the position of two items imply any state change or is it ignored? 
+* How should ordering be handled? Does changing the position of two items imply any state change or is it ignored?
 
 Here's an example of how you might choose to implement multiple updates:
 
@@ -688,6 +703,21 @@ Here's an example of how you might choose to implement multiple updates:
             list_serializer_class = BookListSerializer
 
 It is possible that a third party package may be included alongside the 3.1 release that provides some automatic support for multiple update operations, similar to the `allow_add_remove` behavior that was present in REST framework 2.
+
+#### Customizing ListSerializer initialization
+
+When a serializer with `many=True` is instantiated, we need to determine which arguments and keyword arguments should be passed to the `.__init__()` method for both the child `Serializer` class, and for the parent `ListSerializer` class.
+
+The default implementation is to pass all arguments to both classes, except for `validators`, and any custom keyword arguments, both of which are assumed to be intended for the child serializer class.
+
+Occasionally you might need to explicitly specify how the child and parent classes should be instantiated when `many=True` is passed. You can do so by using the `many_init` class method.
+
+        @classmethod
+        def many_init(cls, *args, **kwargs):
+            # Instantiate the child serializer.
+            kwargs['child'] = cls()
+            # Instantiate the parent list serializer.
+            return CustomListSerializer(*args, **kwargs)
 
 ---
 
