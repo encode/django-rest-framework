@@ -128,7 +128,7 @@ class TestAPITestClient(TestCase):
         self.assertEqual(response.data['user'], 'example')
         self.client.logout()
         response = self.client.get('/view/')
-        self.assertEqual(response.data['user'], b'')
+        self.assertEqual(response.data['user'], '')
 
     def test_follow_redirect(self):
         """
