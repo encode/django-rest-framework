@@ -109,7 +109,7 @@ class TestAPITestClient(TestCase):
 
     def test_can_logout(self):
         """
-        `logout()` reset stored credentials
+        `logout()` resets stored credentials
         """
         self.client.credentials(HTTP_AUTHORIZATION='example')
         response = self.client.get('/view/')
@@ -117,6 +117,18 @@ class TestAPITestClient(TestCase):
         self.client.logout()
         response = self.client.get('/view/')
         self.assertEqual(response.data['auth'], b'')
+
+    def test_logout_resets_force_authenticate(self):
+        """
+        `logout()` resets any `force_authenticate`
+        """
+        user = User.objects.create_user('example', 'example@example.com', 'password')
+        self.client.force_authenticate(user)
+        response = self.client.get('/view/')
+        self.assertEqual(response.data['user'], 'example')
+        self.client.logout()
+        response = self.client.get('/view/')
+        self.assertEqual(response.data['user'], b'')
 
     def test_follow_redirect(self):
         """
