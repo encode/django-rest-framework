@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from rest_framework import serializers
 import pytest
 
@@ -175,3 +176,23 @@ class TestStarredSource:
         instance = {'a': 1, 'b': 2, 'c': 3, 'd': 4}
         serializer = self.Serializer(instance)
         assert serializer.data == self.data
+
+
+class TestIncorrectlyConfigured:
+    def test_incorrect_field_name(self):
+        class ExampleSerializer(serializers.Serializer):
+            incorrect_name = serializers.IntegerField()
+
+        class ExampleObject:
+            def __init__(self):
+                self.correct_name = 123
+
+        instance = ExampleObject()
+        serializer = ExampleSerializer(instance)
+        with pytest.raises(AttributeError) as exc_info:
+            serializer.data
+        assert str(exc_info.value) == (
+            "Got AttributeError when attempting to get a value for field `incorrect_name` on serializer `ExampleSerializer`.\n"
+            "The serializer field might be named incorrectly and not match any attribute or key on the `ExampleObject` instance.\n"
+            "Original exception text was: ExampleObject instance has no attribute 'incorrect_name'."
+        )
