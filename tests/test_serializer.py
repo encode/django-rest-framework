@@ -191,8 +191,9 @@ class TestIncorrectlyConfigured:
         serializer = ExampleSerializer(instance)
         with pytest.raises(AttributeError) as exc_info:
             serializer.data
-        assert str(exc_info.value) == (
+        msg = str(exc_info.value)
+        assert msg.startswith(
             "Got AttributeError when attempting to get a value for field `incorrect_name` on serializer `ExampleSerializer`.\n"
             "The serializer field might be named incorrectly and not match any attribute or key on the `ExampleObject` instance.\n"
-            "Original exception text was: ExampleObject instance has no attribute 'incorrect_name'."
+            "Original exception text was:"
         )
