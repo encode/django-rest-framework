@@ -274,7 +274,23 @@ class Field(object):
         Given the *outgoing* object instance, return the primitive value
         that should be used for this field.
         """
-        return get_attribute(instance, self.source_attrs)
+        try:
+            return get_attribute(instance, self.source_attrs)
+        except (KeyError, AttributeError) as exc:
+            msg = (
+                'Got {exc_type} when attempting to get a value for field '
+                '`{field}` on serializer `{serializer}`.\nThe serializer '
+                'field might be named incorrectly and not match '
+                'any attribute or key on the `{instance}` instance.\n'
+                'Original exception text was: {exc}.'.format(
+                    exc_type=type(exc).__name__,
+                    field=self.field_name,
+                    serializer=self.parent.__class__.__name__,
+                    instance=instance.__class__.__name__,
+                    exc=exc
+                )
+            )
+            raise type(exc)(msg)
 
     def get_default(self):
         """
