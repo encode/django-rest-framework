@@ -630,7 +630,7 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     #     ...
     #     address = serializer.CharField('profile.address')
     assert not any(
-        '.' in field.source and (key in validated_data)
+        '.' in field.source and (key in validated_data) and (field.read_only is not True)
         and isinstance(validated_data[key], (list, dict))
         for key, field in serializer.fields.items()
     ), (
