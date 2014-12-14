@@ -371,16 +371,18 @@ class APIView(View):
             else:
                 exc.status_code = status.HTTP_403_FORBIDDEN
 
-        if len(inspect.getargspec(self.settings.EXCEPTION_HANDLER).args) == 1:
+        exception_handler = self.settings.EXCEPTION_HANDLER
+
+        if len(inspect.getargspec(exception_handler).args) == 1:
             warnings.warn(
                 'The `exception_handler(exc)` call signature is deprecated. '
                 'Use `exception_handler(exc, context) instead.',
                 PendingDeprecationWarning
             )
-            response = self.settings.EXCEPTION_HANDLER(exc)
+            response = exception_handler(exc)
         else:
             context = self.get_renderer_context()
-            response = self.settings.EXCEPTION_HANDLER(exc, context)
+            response = exception_handler(exc, context)
 
         if response is None:
             raise
