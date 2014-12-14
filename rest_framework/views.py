@@ -186,6 +186,18 @@ class APIView(View):
             'request': getattr(self, 'request', None)
         }
 
+    def get_exception_handler_context(self):
+        """
+        Returns a dict that is passed through to EXCEPTION_HANDLER,
+        as the `context` argument.
+        """
+        return {
+            'view': self,
+            'args': getattr(self, 'args', ()),
+            'kwargs': getattr(self, 'kwargs', {}),
+            'request': getattr(self, 'request', None)
+        }
+
     def get_view_name(self):
         """
         Return the view name, as used in OPTIONS responses and in the
@@ -381,7 +393,7 @@ class APIView(View):
             )
             response = exception_handler(exc)
         else:
-            context = self.get_renderer_context()
+            context = self.get_exception_handler_context()
             response = exception_handler(exc, context)
 
         if response is None:
