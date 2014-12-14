@@ -6,6 +6,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.request import Request
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView
@@ -121,12 +122,7 @@ class TestCustomExceptionHandler(TestCase):
     def setUp(self):
         self.DEFAULT_HANDLER = api_settings.EXCEPTION_HANDLER
 
-        def exception_handler(exc, context=None):
-            self.assertTrue('args' in context)
-            self.assertTrue('kwargs' in context)
-            self.assertTrue('request' in context)
-            self.assertTrue('view' in context)
-
+        def exception_handler(exc):
             return Response('Error!', status=status.HTTP_400_BAD_REQUEST)
 
         api_settings.EXCEPTION_HANDLER = exception_handler
@@ -145,6 +141,25 @@ class TestCustomExceptionHandler(TestCase):
 
     def test_function_based_view_exception_handler(self):
         view = error_view
+
+        request = factory.get('/', content_type='application/json')
+        response = view(request)
+        expected = 'Error!'
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, expected)
+
+    def test_context_exception_handler(self):
+        def exception_handler(exc, context=None):
+            self.assertEqual(context['args'], ())
+            self.assertEqual(context['kwargs'], {})
+            self.assertTrue(isinstance(context['request'], Request))
+            self.assertTrue(isinstance(context['view'], ErrorView))
+
+            return Response('Error!', status=status.HTTP_400_BAD_REQUEST)
+
+        api_settings.EXCEPTION_HANDLER = exception_handler
+
+        view = ErrorView.as_view()
 
         request = factory.get('/', content_type='application/json')
         response = view(request)
