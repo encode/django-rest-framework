@@ -3,6 +3,7 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
 import inspect
+import warnings
 
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
@@ -370,13 +371,16 @@ class APIView(View):
             else:
                 exc.status_code = status.HTTP_403_FORBIDDEN
 
-        exception_handler = self.settings.EXCEPTION_HANDLER
-
-        if 'context' in inspect.getargspec(exception_handler).args:
-            context = self.get_renderer_context()
-            response = exception_handler(exc, context)
+        if len(inspect.getargspec(self.settings.EXCEPTION_HANDLER).args) == 1:
+            warnings.warn(
+                'The `exception_handler(exc)` call signature is deprecated. '
+                'Use `exception_handler(exc, context) instead.',
+                PendingDeprecationWarning
+            )
+            response = self.settings.EXCEPTION_HANDLER(exc)
         else:
-            response = exception_handler(exc)
+            context = self.get_renderer_context()
+            response = self.settings.EXCEPTION_HANDLER(exc, context)
 
         if response is None:
             raise
