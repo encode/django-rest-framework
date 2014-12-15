@@ -1,5 +1,6 @@
+from __future__ import unicode_literals
 import collections
-from rest_framework.compat import OrderedDict
+from rest_framework.compat import OrderedDict, unicode_to_repr
 
 
 class ReturnDict(OrderedDict):
@@ -47,9 +48,9 @@ class BoundField(object):
         return self._field.__class__
 
     def __repr__(self):
-        return '<%s value=%s errors=%s>' % (
+        return unicode_to_repr('<%s value=%s errors=%s>' % (
             self.__class__.__name__, self.value, self.errors
-        )
+        ))
 
 
 class NestedBoundField(BoundField):

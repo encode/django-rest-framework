@@ -16,6 +16,23 @@ from django.utils import six
 import django
 
 
+def unicode_repr(instance):
+    # Get the repr of an instance, but ensure it is a unicode string
+    # on both python 3 (already the case) and 2 (not the case).
+    if six.PY2:
+        repr(instance).decode('utf-8')
+    return repr(instance)
+
+
+def unicode_to_repr(value):
+    # Coerce a unicode string to the correct repr return type, depending on
+    # the Python version. We wrap all our `__repr__` implementations with
+    # this and then use unicode throughout internally.
+    if six.PY2:
+        return value.encode('utf-8')
+    return value
+
+
 # OrderedDict only available in Python 2.7.
 # This will always be the case in Django 1.7 and above, as these versions
 # no longer support Python 2.6.

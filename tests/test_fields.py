@@ -62,7 +62,7 @@ class TestEmpty:
         """
         field = serializers.CharField(allow_blank=True)
         output = field.run_validation('')
-        assert output is ''
+        assert output == ''
 
     def test_default(self):
         """
@@ -817,7 +817,7 @@ class TestChoiceField(FieldValues):
             ]
         )
         output = field.run_validation('')
-        assert output is ''
+        assert output == ''
 
 
 class TestChoiceFieldWithType(FieldValues):
