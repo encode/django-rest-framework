@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -10,7 +11,8 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import ISO_8601
 from rest_framework.compat import (
     EmailValidator, MinValueValidator, MaxValueValidator,
-    MinLengthValidator, MaxLengthValidator, URLValidator, OrderedDict
+    MinLengthValidator, MaxLengthValidator, URLValidator, OrderedDict,
+    unicode_repr, unicode_to_repr
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
@@ -113,7 +115,9 @@ class CreateOnlyDefault:
         return self.default
 
     def __repr__(self):
-        return '%s(%s)' % (self.__class__.__name__, repr(self.default))
+        return unicode_to_repr(
+            '%s(%s)' % (self.__class__.__name__, unicode_repr(self.default))
+        )
 
 
 class CurrentUserDefault:
@@ -124,7 +128,7 @@ class CurrentUserDefault:
         return self.user
 
     def __repr__(self):
-        return '%s()' % self.__class__.__name__
+        return unicode_to_repr('%s()' % self.__class__.__name__)
 
 
 class SkipField(Exception):
@@ -382,13 +386,23 @@ class Field(object):
         """
         Transform the *incoming* primitive data into a native value.
         """
-        raise NotImplementedError('to_internal_value() must be implemented.')
+        raise NotImplementedError(
+            '{cls}.to_internal_value() must be implemented.'.format(
+                cls=self.__class__.__name__
+            )
+        )
 
     def to_representation(self, value):
         """
         Transform the *outgoing* native value into primitive data.
         """
-        raise NotImplementedError('to_representation() must be implemented.')
+        raise NotImplementedError(
+            '{cls}.to_representation() must be implemented.\n'
+            'If you are upgrading from REST framework version 2 '
+            'you might want `ReadOnlyField`.'.format(
+                cls=self.__class__.__name__
+            )
+        )
 
     def fail(self, key, **kwargs):
         """
@@ -453,7 +467,7 @@ class Field(object):
         This allows us to create descriptive representations for serializer
         instances that show all the declared fields on the serializer.
         """
-        return representation.field_repr(self)
+        return unicode_to_repr(representation.field_repr(self))
 
 
 # Boolean types...

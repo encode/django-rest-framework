@@ -181,7 +181,7 @@ Similarly, we can control the format of the request that we send, using the `Con
         "id": 4,
         "title": "",
         "code": "print 456",
-        "linenos": true,
+        "linenos": false,
         "language": "python",
         "style": "friendly"
     }

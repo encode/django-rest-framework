@@ -10,12 +10,11 @@ python primitives.
 2. The process of marshalling between python primitives and request and
 response content is handled by parsers and renderers.
 """
-import warnings
-
+from __future__ import unicode_literals
 from django.db import models
 from django.db.models.fields import FieldDoesNotExist
 from django.utils.translation import ugettext_lazy as _
-
+from rest_framework.compat import unicode_to_repr
 from rest_framework.utils import model_meta
 from rest_framework.utils.field_mapping import (
     get_url_kwargs, get_field_kwargs,
@@ -29,6 +28,7 @@ from rest_framework.validators import (
     UniqueForDateValidator, UniqueForMonthValidator, UniqueForYearValidator,
     UniqueTogetherValidator
 )
+import warnings
 
 
 # Note: We do the following so that users of the framework can use this style:
@@ -396,7 +396,7 @@ class Serializer(BaseSerializer):
         return attrs
 
     def __repr__(self):
-        return representation.serializer_repr(self, indent=1)
+        return unicode_to_repr(representation.serializer_repr(self, indent=1))
 
     # The following are used for accessing `BoundField` instances on the
     # serializer, for the purposes of presenting a form-like API onto the
@@ -564,7 +564,7 @@ class ListSerializer(BaseSerializer):
         return self.instance
 
     def __repr__(self):
-        return representation.list_repr(self, indent=1)
+        return unicode_to_repr(representation.list_repr(self, indent=1))
 
     # Include a backlink to the serializer class on return objects.
     # Allows renderers such as HTMLFormRenderer to get the full field info.

@@ -1,6 +1,7 @@
 # coding: utf-8
 from __future__ import unicode_literals
 from rest_framework import serializers
+from rest_framework.compat import unicode_repr
 import pytest
 
 
@@ -208,9 +209,10 @@ class TestUnicodeRepr:
         class ExampleObject:
             def __init__(self):
                 self.example = '한국'
+
             def __repr__(self):
-                return self.example.encode('utf8')
+                return unicode_repr(self.example)
 
         instance = ExampleObject()
         serializer = ExampleSerializer(instance)
-        repr(serializer)
+        repr(serializer)  # Should not error.
