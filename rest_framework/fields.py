@@ -382,13 +382,23 @@ class Field(object):
         """
         Transform the *incoming* primitive data into a native value.
         """
-        raise NotImplementedError('to_internal_value() must be implemented.')
+        raise NotImplementedError(
+            '{cls}.to_internal_value() must be implemented.'.format(
+                cls=self.__class__.__name__
+            )
+        )
 
     def to_representation(self, value):
         """
         Transform the *outgoing* native value into primitive data.
         """
-        raise NotImplementedError('to_representation() must be implemented.')
+        raise NotImplementedError(
+            '{cls}.to_representation() must be implemented.\n'
+            'If you are upgrading from REST framework version 2 '
+            'you might want `ReadOnlyField`.'.format(
+                cls=self.__class__.__name__
+            )
+        )
 
     def fail(self, key, **kwargs):
         """
