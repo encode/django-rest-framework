@@ -30,7 +30,6 @@ def smart_repr(value):
 
     # Representations like u'help text'
     # should simply be presented as 'help text'
-    print type(value), value
     if value.startswith("u'") and value.endswith("'"):
         return value[1:]
 
