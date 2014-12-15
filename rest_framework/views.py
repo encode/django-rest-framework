@@ -2,6 +2,8 @@
 Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
+import inspect
+import warnings
 
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
@@ -46,7 +48,7 @@ def get_view_description(view_cls, html=False):
     return description
 
 
-def exception_handler(exc):
+def exception_handler(exc, context):
     """
     Returns the response that should be used for any given exception.
 
@@ -177,6 +179,18 @@ class APIView(View):
         """
         # Note: Additionally 'response' will also be added to the context,
         #       by the Response object.
+        return {
+            'view': self,
+            'args': getattr(self, 'args', ()),
+            'kwargs': getattr(self, 'kwargs', {}),
+            'request': getattr(self, 'request', None)
+        }
+
+    def get_exception_handler_context(self):
+        """
+        Returns a dict that is passed through to EXCEPTION_HANDLER,
+        as the `context` argument.
+        """
         return {
             'view': self,
             'args': getattr(self, 'args', ()),
@@ -369,7 +383,18 @@ class APIView(View):
             else:
                 exc.status_code = status.HTTP_403_FORBIDDEN
 
-        response = self.settings.EXCEPTION_HANDLER(exc)
+        exception_handler = self.settings.EXCEPTION_HANDLER
+
+        if len(inspect.getargspec(exception_handler).args) == 1:
+            warnings.warn(
+                'The `exception_handler(exc)` call signature is deprecated. '
+                'Use `exception_handler(exc, context) instead.',
+                PendingDeprecationWarning
+            )
+            response = exception_handler(exc)
+        else:
+            context = self.get_exception_handler_context()
+            response = exception_handler(exc, context)
 
         if response is None:
             raise

@@ -393,7 +393,7 @@ This setting can be changed to support error responses other than the default `{
 
 This should be a function with the following signature:
 
-    exception_handler(exc)
+    exception_handler(exc, context)
 
 * `exc`: The exception.
 
