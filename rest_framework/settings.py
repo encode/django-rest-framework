@@ -48,7 +48,6 @@ DEFAULTS = {
     'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
 
     # Generic view behavior
-    'DEFAULT_MODEL_SERIALIZER_CLASS': 'rest_framework.serializers.ModelSerializer',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS': 'rest_framework.pagination.PaginationSerializer',
     'DEFAULT_FILTER_BACKENDS': (),
 
@@ -124,7 +123,6 @@ IMPORT_STRINGS = (
     'DEFAULT_THROTTLE_CLASSES',
     'DEFAULT_CONTENT_NEGOTIATION_CLASS',
     'DEFAULT_METADATA_CLASS',
-    'DEFAULT_MODEL_SERIALIZER_CLASS',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS',
     'DEFAULT_FILTER_BACKENDS',
     'EXCEPTION_HANDLER',
@@ -176,8 +174,8 @@ class APISettings(object):
     """
     def __init__(self, user_settings=None, defaults=None, import_strings=None):
         self.user_settings = user_settings or {}
-        self.defaults = defaults or {}
-        self.import_strings = import_strings or ()
+        self.defaults = defaults or DEFAULTS
+        self.import_strings = import_strings or IMPORT_STRINGS
 
     def __getattr__(self, attr):
         if attr not in self.defaults.keys():
