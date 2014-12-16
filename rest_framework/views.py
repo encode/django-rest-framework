@@ -95,6 +95,7 @@ class APIView(View):
     permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
     content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS
     metadata_class = api_settings.DEFAULT_METADATA_CLASS
+    versioning_class = api_settings.DEFAULT_VERSIONING_CLASS
 
     # Allow dependency injection of other settings to make testing easier.
     settings = api_settings
@@ -314,6 +315,16 @@ class APIView(View):
             if not throttle.allow_request(request, self):
                 self.throttled(request, throttle.wait())
 
+    def determine_version(self, request, *args, **kwargs):
+        """
+        If versioning is being used, then determine any API version for the
+        incoming request. Returns a two-tuple of (version, versioning_scheme)
+        """
+        if self.versioning_class is None:
+            return (None, None)
+        scheme = self.versioning_class()
+        return (scheme.determine_version(request, *args, **kwargs), scheme)
+
     # Dispatch methods
 
     def initialize_request(self, request, *args, **kwargs):
@@ -322,11 +333,13 @@ class APIView(View):
         """
         parser_context = self.get_parser_context(request)
 
-        return Request(request,
-                       parsers=self.get_parsers(),
-                       authenticators=self.get_authenticators(),
-                       negotiator=self.get_content_negotiator(),
-                       parser_context=parser_context)
+        return Request(
+            request,
+            parsers=self.get_parsers(),
+            authenticators=self.get_authenticators(),
+            negotiator=self.get_content_negotiator(),
+            parser_context=parser_context
+        )
 
     def initial(self, request, *args, **kwargs):
         """
@@ -342,6 +355,10 @@ class APIView(View):
         # Perform content negotiation and store the accepted info on the request
         neg = self.perform_content_negotiation(request)
         request.accepted_renderer, request.accepted_media_type = neg
+
+        # Determine the API version, if versioning is in use.
+        version, scheme = self.determine_version(request, *args, **kwargs)
+        request.version, request.versioning_scheme = version, scheme
 
     def finalize_response(self, request, response, *args, **kwargs):
         """

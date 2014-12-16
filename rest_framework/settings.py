@@ -46,6 +46,7 @@ DEFAULTS = {
     'DEFAULT_THROTTLE_CLASSES': (),
     'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'rest_framework.negotiation.DefaultContentNegotiation',
     'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
+    'DEFAULT_VERSIONING_CLASS': None,
 
     # Generic view behavior
     'DEFAULT_MODEL_SERIALIZER_CLASS': 'rest_framework.serializers.ModelSerializer',
@@ -124,7 +125,7 @@ IMPORT_STRINGS = (
     'DEFAULT_THROTTLE_CLASSES',
     'DEFAULT_CONTENT_NEGOTIATION_CLASS',
     'DEFAULT_METADATA_CLASS',
-    'DEFAULT_MODEL_SERIALIZER_CLASS',
+    'DEFAULT_VERSIONING_CLASS',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS',
     'DEFAULT_FILTER_BACKENDS',
     'EXCEPTION_HANDLER',
@@ -141,7 +142,9 @@ def perform_import(val, setting_name):
     If the given setting is a string import notation,
     then perform the necessary import or imports.
     """
-    if isinstance(val, six.string_types):
+    if val is None:
+        return None
+    elif isinstance(val, six.string_types):
         return import_from_string(val, setting_name)
     elif isinstance(val, (list, tuple)):
         return [import_from_string(item, setting_name) for item in val]
