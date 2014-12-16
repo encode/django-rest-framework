@@ -1,6 +1,7 @@
 # coding: utf-8
 from __future__ import unicode_literals
 from rest_framework.reverse import _reverse
+from rest_framework.templatetags.rest_framework import replace_query_param
 from rest_framework.utils.mediatypes import _MediaType
 import re
 
@@ -30,7 +31,7 @@ class QueryParameterVersioning(BaseVersioning):
 
     def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
         url = super(QueryParameterVersioning, self).reverse(
-            viewname, args, kwargs, request, format, **kwargs
+            viewname, args, kwargs, request, format, **extra
         )
         if request.version is not None:
             return replace_query_param(url, self.version_param, request.version)
@@ -92,5 +93,31 @@ class URLPathVersioning(BaseVersioning):
             kwargs[self.version_param] = request.version
 
         return super(URLPathVersioning, self).reverse(
-            viewname, args, kwargs, request, format, **kwargs
+            viewname, args, kwargs, request, format, **extra
+        )
+
+
+class NamespaceVersioning(BaseVersioning):
+    """
+    To the client this is the same style as `URLPathVersioning`.
+    The difference is in the backend - this implementation uses
+    Django's URL namespaces to determine the version.
+
+    GET /1.0/something/ HTTP/1.1
+    Host: example.com
+    Accept: application/json
+    """
+    default_version = None
+
+    def determine_version(self, request, *args, **kwargs):
+        resolver_match = getattr(request, 'resolver_match', None)
+        if (resolver_match is None or not resolver_match.namespace):
+            return self.default_version
+        return resolver_match.namespace
+
+    def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
+        if request.version is not None:
+            viewname = request.version + ':' + viewname
+        return super(NamespaceVersioning, self).reverse(
+            viewname, args, kwargs, request, format, **extra
         )

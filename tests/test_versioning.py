@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.conf.urls import include, url
 from rest_framework import versioning
 from rest_framework.decorators import APIView
 from rest_framework.response import Response
@@ -10,6 +10,7 @@ class RequestVersionView(APIView):
     def get(self, request, *args, **kwargs):
         return Response({'version': request.version})
 
+
 class ReverseView(APIView):
     def get(self, request, *args, **kwargs):
         return Response({'url': reverse('another', request=request)})
@@ -19,8 +20,14 @@ factory = APIRequestFactory()
 
 mock_view = lambda request: None
 
+included_patterns = [
+    url(r'^namespaced/$', mock_view, name='another'),
+]
+
 urlpatterns = [
-    url(r'^another/$', mock_view, name='another')
+    url(r'^v1/', include(included_patterns, namespace='v1')),
+    url(r'^another/$', mock_view, name='another'),
+    url(r'^(?P<version>[^/]+)/another/$', mock_view, name='another')
 ]
 
 
@@ -80,12 +87,40 @@ class TestRequestVersion:
         response = view(request)
         assert response.data == {'version': None}
 
+    def test_namespace_versioning(self):
+        class FakeResolverMatch:
+            namespace = 'v1'
+
+        scheme = versioning.NamespaceVersioning
+        view = RequestVersionView.as_view(versioning_class=scheme)
+
+        request = factory.get('/v1/endpoint/')
+        request.resolver_match = FakeResolverMatch
+        response = view(request, version='v1')
+        assert response.data == {'version': 'v1'}
+
+        request = factory.get('/endpoint/')
+        response = view(request)
+        assert response.data == {'version': None}
+
 
 class TestURLReversing(APITestCase):
     urls = 'tests.test_versioning'
 
     def test_reverse_unversioned(self):
         view = ReverseView.as_view()
+
+        request = factory.get('/endpoint/')
+        response = view(request)
+        assert response.data == {'url': 'http://testserver/another/'}
+
+    def test_reverse_query_param_versioning(self):
+        scheme = versioning.QueryParameterVersioning
+        view = ReverseView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/?version=v1')
+        response = view(request)
+        assert response.data == {'url': 'http://testserver/another/?version=v1'}
 
         request = factory.get('/endpoint/')
         response = view(request)
@@ -98,6 +133,34 @@ class TestURLReversing(APITestCase):
         request = factory.get('/endpoint/', HTTP_HOST='v1.example.org')
         response = view(request)
         assert response.data == {'url': 'http://v1.example.org/another/'}
+
+        request = factory.get('/endpoint/')
+        response = view(request)
+        assert response.data == {'url': 'http://testserver/another/'}
+
+    def test_reverse_url_path_versioning(self):
+        scheme = versioning.URLPathVersioning
+        view = ReverseView.as_view(versioning_class=scheme)
+
+        request = factory.get('/v1/endpoint/')
+        response = view(request, version='v1')
+        assert response.data == {'url': 'http://testserver/v1/another/'}
+
+        request = factory.get('/endpoint/')
+        response = view(request)
+        assert response.data == {'url': 'http://testserver/another/'}
+
+    def test_namespace_versioning(self):
+        class FakeResolverMatch:
+            namespace = 'v1'
+
+        scheme = versioning.NamespaceVersioning
+        view = ReverseView.as_view(versioning_class=scheme)
+
+        request = factory.get('/v1/endpoint/')
+        request.resolver_match = FakeResolverMatch
+        response = view(request, version='v1')
+        assert response.data == {'url': 'http://testserver/v1/namespaced/'}
 
         request = factory.get('/endpoint/')
         response = view(request)
