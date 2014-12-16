@@ -56,7 +56,7 @@ class HostNameVersioning(BaseVersioning):
         return match.group(1)
 
     # We don't need to implement `reverse`, as the hostname will already be
-    # preserved as part of the standard `reverse` implementation.
+    # preserved as part of the REST framework `reverse` implementation.
 
 
 class AcceptHeaderVersioning(BaseVersioning):
