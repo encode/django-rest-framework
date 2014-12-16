@@ -397,7 +397,7 @@ We could define a custom field that could be used to serialize tagged instances,
                 return 'Note: ' + value.text
             raise Exception('Unexpected type of tagged object')
 
-If you need the target of the relationship to have a nested representation, you can use the required serializers inside the `.to_native()` method:
+If you need the target of the relationship to have a nested representation, you can use the required serializers inside the `.to_representation()` method:
 
         def to_representation(self, value):
             """
