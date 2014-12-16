@@ -5,15 +5,13 @@ versions of django/python, and compatibility wrappers around optional packages.
 
 # flake8: noqa
 from __future__ import unicode_literals
-
-import inspect
-
 from django.core.exceptions import ImproperlyConfigured
+from django.conf import settings
 from django.utils.encoding import force_text
 from django.utils.six.moves.urllib import parse as urlparse
-from django.conf import settings
 from django.utils import six
 import django
+import inspect
 
 
 def unicode_repr(instance):
@@ -30,6 +28,13 @@ def unicode_to_repr(value):
     # this and then use unicode throughout internally.
     if six.PY2:
         return value.encode('utf-8')
+    return value
+
+
+def unicode_http_header(value):
+    # Coerce HTTP header value to unicode.
+    if isinstance(value, six.binary_type):
+        return value.decode('iso-8859-1')
     return value
 
 

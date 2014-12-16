@@ -1,5 +1,6 @@
 # coding: utf-8
 from __future__ import unicode_literals
+from rest_framework.compat import unicode_http_header
 from rest_framework.reverse import _reverse
 from rest_framework.templatetags.rest_framework import replace_query_param
 from rest_framework.utils.mediatypes import _MediaType
@@ -69,7 +70,8 @@ class AcceptHeaderVersioning(BaseVersioning):
 
     def determine_version(self, request, *args, **kwargs):
         media_type = _MediaType(request.accepted_media_type)
-        return media_type.params.get(self.version_param, self.default_version)
+        version = media_type.params.get(self.version_param, self.default_version)
+        return unicode_http_header(version)
 
     # We don't need to implement `reverse`, as the versioning is based
     # on the `Accept` header, not on the request URL.
@@ -77,6 +79,17 @@ class AcceptHeaderVersioning(BaseVersioning):
 
 class URLPathVersioning(BaseVersioning):
     """
+    To the client this is the same style as `NamespaceVersioning`.
+    The difference is in the backend - this implementation uses
+    Django's URL keyword arguments to determine the version.
+
+    An example URL conf for two views that accept two different versions.
+
+    urlpatterns = [
+        url(r'^(?P<version>{v1,v2})/users/$', users_list, name='users-list'),
+        url(r'^(?P<version>{v1,v2})/users/(?P<pk>[0-9]+)/$', users_detail, name='users-detail')
+    ]
+
     GET /1.0/something/ HTTP/1.1
     Host: example.com
     Accept: application/json
@@ -102,6 +115,20 @@ class NamespaceVersioning(BaseVersioning):
     To the client this is the same style as `URLPathVersioning`.
     The difference is in the backend - this implementation uses
     Django's URL namespaces to determine the version.
+
+    An example URL conf that is namespaced into two seperate versions
+
+    # users/urls.py
+    urlpatterns = [
+        url(r'^/users/$', users_list, name='users-list'),
+        url(r'^/users/(?P<pk>[0-9]+)/$', users_detail, name='users-detail')
+    ]
+
+    # urls.py
+    urlpatterns = [
+        url(r'^v1/', include('users.urls', namespace='v1')),
+        url(r'^v2/', include('users.urls', namespace='v2'))
+    ]
 
     GET /1.0/something/ HTTP/1.1
     Host: example.com
