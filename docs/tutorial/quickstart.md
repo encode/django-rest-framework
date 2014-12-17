@@ -7,16 +7,15 @@ We're going to create a simple API to allow admin users to view and edit the use
 Create a new Django project named `tutorial`, then start a new app called `quickstart`.
 
     # Create the project directory
-    mkdir tutorial
-    cd tutorial
+    cd ~
+    mkdir tutorial && cd tutorial
 
     # Create a virtualenv to isolate our package dependencies locally
     virtualenv env
     source env/bin/activate  # On Windows use `env\Scripts\activate`
 
     # Install Django and Django REST framework into the virtualenv
-    pip install django
-    pip install djangorestframework
+    pip install django djangorestframework
 
     # Set up a new project with a single application
     django-admin.py startproject tutorial .
