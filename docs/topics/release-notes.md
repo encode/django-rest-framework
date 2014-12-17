@@ -44,7 +44,6 @@ You can determine your currently installed version using `pip freeze`:
 
 **Date**: [December 2014][3.0.2-milestone].
 
-
 * Ensure `request.user` is made available to response middleware. ([#2155][gh2155])
 * `Client.logout()` also cancels any existing `force_authenticate`. ([#2218][gh2218], [#2259][gh2259])
 * Extra assertions and better checks to preventing incorrect serializer API use. ([#2228][gh2228], [#2234][gh2234], [#2262][gh2262], [#2263][gh2263], [#2266][gh2266], [#2267][gh2267], [#2289][gh2289], [#2291][gh2291])
