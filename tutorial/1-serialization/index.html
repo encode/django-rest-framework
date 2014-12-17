@@ -533,9 +533,7 @@ content
 # '{"pk": 2, "title": "", "code": "print \\"hello, world\\"\\n", "linenos": false, "language": "python", "style": "friendly"}'
 </code></pre>
 <p>Deserialization is similar.  First we parse a stream into Python native datatypes...</p>
-<pre><code># This import will use either `StringIO.StringIO` or `io.BytesIO`
-# as appropriate, depending on if we're running Python 2 or Python 3.
-from django.utils.six import BytesIO
+<pre><code>from django.utils.six import BytesIO
 
 stream = BytesIO(content)
 data = JSONParser().parse(stream)

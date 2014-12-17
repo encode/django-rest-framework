@@ -562,11 +562,13 @@ will take some serious design work.</p>
 <p>The serializers in REST framework work very similarly to Django's <code>Form</code> and <code>ModelForm</code> classes. We provide a <code>Serializer</code> class which gives you a powerful, generic way to control the output of your responses, as well as a <code>ModelSerializer</code> class which provides a useful shortcut for creating serializers that deal with model instances and querysets.</p>
 <h2 id="declaring-serializers">Declaring Serializers</h2>
 <p>Let's start by creating a simple object we can use for example purposes:</p>
-<pre><code>class Comment(object):
+<pre><code>from datetime import datetime
+
+class Comment(object):
     def __init__(self, email, content, created=None):
         self.email = email
         self.content = content
-        self.created = created or datetime.datetime.now()
+        self.created = created or datetime.now()
 
 comment = Comment(email='leila@example.com', content='foo bar')
 </code></pre>
@@ -594,10 +596,10 @@ json
 </code></pre>
 <h2 id="deserializing-objects">Deserializing objects</h2>
 <p>Deserialization is similar. First we parse a stream into Python native datatypes...</p>
-<pre><code>from StringIO import StringIO
+<pre><code>from django.utils.six import BytesIO
 from rest_framework.parsers import JSONParser
 
-stream = StringIO(json)
+stream = BytesIO(json)
 data = JSONParser().parse(stream)
 </code></pre>
 <p>...then we restore those native datatypes into a dictionary of validated data.</p>
