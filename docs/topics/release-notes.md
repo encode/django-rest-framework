@@ -42,7 +42,7 @@ You can determine your currently installed version using `pip freeze`:
 
 ### 3.0.2
 
-**Date**: [December 2014][3.0.2-milestone].
+**Date**: [17th December 2014][3.0.2-milestone].
 
 * Ensure `request.user` is made available to response middleware. ([#2155][gh2155])
 * `Client.logout()` also cancels any existing `force_authenticate`. ([#2218][gh2218], [#2259][gh2259])
