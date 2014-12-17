@@ -163,7 +163,7 @@ Deserialization is similar.  First we parse a stream into Python native datatype
 
     # This import will use either `StringIO.StringIO` or `io.BytesIO`
     # as appropriate, depending on if we're running Python 2 or Python 3.
-    from rest_framework.compat import BytesIO
+    from django.utils.six import BytesIO
 
     stream = BytesIO(content)
     data = JSONParser().parse(stream)
