@@ -431,8 +431,19 @@
 </code></pre>
 <hr />
 <h2 id="30x-series">3.0.x series</h2>
+<h3 id="302">3.0.2</h3>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.2+Release%22">December 2014</a>.</p>
+<ul>
+<li>Ensure <code>request.user</code> is made available to response middleware. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2155">#2155</a>)</li>
+<li><code>Client.logout()</code> also cancels any existing <code>force_authenticate</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2218">#2218</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2259">#2259</a>)</li>
+<li>Extra assertions and better checks to preventing incorrect serializer API use. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2228">#2228</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2234">#2234</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2262">#2262</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2263">#2263</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2266">#2266</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2267">#2267</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2289">#2289</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2291">#2291</a>)</li>
+<li>Fixed <code>min_length</code> message for <code>CharField</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2255">#2255</a>)</li>
+<li>Fix <code>UnicodeDecodeError</code>, which can occur on serializer <code>repr</code>.  (<a href="https://github.com/tomchristie/django-rest-framework/issues/2270">#2270</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2279">#2279</a>)</li>
+<li>Fix empty HTML values when a default is provided. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2280">#2280</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2294">#2294</a>)</li>
+<li>Fix <code>SlugRelatedField</code> raising <code>UnicodeEncodeError</code> when used as a multiple choice input. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2290">#2290</a>)</li>
+</ul>
 <h3 id="301">3.0.1</h3>
-<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.1+Release%22">December 2014</a>.</p>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.1+Release%22">11th December 2014</a>.</p>
 <ul>
 <li>More helpful error message when the default Serializer <code>create()</code> fails. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2013">#2013</a>)</li>
 <li>Raise error when attempting to save serializer if data is not valid. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2098">#2098</a>)</li>
@@ -962,6 +973,10 @@
 <li>For more information please see the <a href="../rest-framework-2-announcement">2.0 announcement</a>.</li>
 </ul>
 <p>For older release notes, <a href="../../old-release-notes">please see the GitHub repo</a>.</p>
+<!-- 3.0.1 -->
+
+<!-- 3.0.2 -->
+
 
           </div>
           <!--/span-->
