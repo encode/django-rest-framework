@@ -166,6 +166,28 @@ Default: `ordering`
 
 ---
 
+## Versioning settings
+
+#### DEFAULT_VERSION
+
+The value that should be used for `request.version` when no versioning information is present.
+
+Default: `None`
+
+#### ALLOWED_VERSIONS
+
+If set, this value will restrict the set of versions that may be returned by the versioning scheme, and will raise an error if the provided version if not in this set.
+
+Default: `None`
+
+#### VERSION_PARAMETER
+
+The string that should used for any versioning parameters, such as in the media type or URL query parameters.
+
+Default: `'version'`
+
+---
+
 ## Authentication settings
 
 *The following settings control the behavior of unauthenticated requests.*

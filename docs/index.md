@@ -175,6 +175,7 @@ The API guide is your complete reference manual to all the functionality provide
 * [Throttling][throttling]
 * [Filtering][filtering]
 * [Pagination][pagination]
+* [Versioning][versioning]
 * [Content negotiation][contentnegotiation]
 * [Format suffixes][formatsuffixes]
 * [Returning URLs][reverse]
@@ -294,6 +295,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [throttling]: api-guide/throttling.md
 [filtering]: api-guide/filtering.md
 [pagination]: api-guide/pagination.md
+[versioning]: api-guide/versioning.md
 [contentnegotiation]: api-guide/content-negotiation.md
 [formatsuffixes]: api-guide/format-suffixes.md
 [reverse]: api-guide/reverse.md

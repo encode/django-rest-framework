@@ -32,6 +32,7 @@ pages:
  - ['api-guide/throttling.md', 'API Guide', 'Throttling']
  - ['api-guide/filtering.md', 'API Guide', 'Filtering']
  - ['api-guide/pagination.md', 'API Guide', 'Pagination']
+ - ['api-guide/versioning.md', 'API Guide', 'Versioning']
  - ['api-guide/content-negotiation.md', 'API Guide', 'Content negotiation']
  - ['api-guide/format-suffixes.md', 'API Guide', 'Format suffixes']
  - ['api-guide/reverse.md', 'API Guide', 'Returning URLs']
