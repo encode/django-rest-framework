@@ -58,11 +58,31 @@ class BaseSerializer(Field):
     """
     The BaseSerializer class provides a minimal class which may be used
     for writing custom serializer implementations.
+
+    Note that we strongly restrict the ordering of operations/properties
+    that may be used on the serializer in order to enforce correct usage.
+
+    In particular, if a `data=` argument is passed then:
+
+    .is_valid() - Available.
+    .initial_data - Available.
+    .validated_data - Only available after calling `is_valid()`
+    .errors - Only available after calling `is_valid()`
+    .data - Only available after calling `is_valid()`
+
+    If a `data=` argument is not passed then:
+
+    .is_valid() - Not available.
+    .initial_data - Not available.
+    .validated_data - Not available.
+    .errors - Not available.
+    .data - Available.
     """
 
-    def __init__(self, instance=None, data=None, **kwargs):
+    def __init__(self, instance=None, data=empty, **kwargs):
         self.instance = instance
-        self._initial_data = data
+        if data is not empty:
+            self.initial_data = data
         self.partial = kwargs.pop('partial', False)
         self._context = kwargs.pop('context', {})
         kwargs.pop('many', None)
@@ -156,9 +176,14 @@ class BaseSerializer(Field):
             (self.__class__.__module__, self.__class__.__name__)
         )
 
+        assert hasattr(self, 'initial_data'), (
+            'Cannot call `.is_valid()` as no `data=` keyword argument was'
+            'passed when instantiating the serializer instance.'
+        )
+
         if not hasattr(self, '_validated_data'):
             try:
-                self._validated_data = self.run_validation(self._initial_data)
+                self._validated_data = self.run_validation(self.initial_data)
             except ValidationError as exc:
                 self._validated_data = {}
                 self._errors = exc.detail
@@ -172,6 +197,16 @@ class BaseSerializer(Field):
 
     @property
     def data(self):
+        if hasattr(self, 'initial_data') and not hasattr(self, '_validated_data'):
+            msg = (
+                'When a serializer is passed a `data` keyword argument you '
+                'must call `.is_valid()` before attempting to access the '
+                'serialized `.data` representation.\n'
+                'You should either call `.is_valid()` first, '
+                'or access `.initial_data` instead.'
+            )
+            raise AssertionError(msg)
+
         if not hasattr(self, '_data'):
             if self.instance is not None and not getattr(self, '_errors', None):
                 self._data = self.to_representation(self.instance)
@@ -295,11 +330,11 @@ class Serializer(BaseSerializer):
         return getattr(getattr(self, 'Meta', None), 'validators', [])
 
     def get_initial(self):
-        if self._initial_data is not None:
+        if hasattr(self, 'initial_data'):
             return OrderedDict([
-                (field_name, field.get_value(self._initial_data))
+                (field_name, field.get_value(self.initial_data))
                 for field_name, field in self.fields.items()
-                if field.get_value(self._initial_data) is not empty
+                if field.get_value(self.initial_data) is not empty
                 and not field.read_only
             ])
 
@@ -447,8 +482,8 @@ class ListSerializer(BaseSerializer):
         self.child.bind(field_name='', parent=self)
 
     def get_initial(self):
-        if self._initial_data is not None:
-            return self.to_representation(self._initial_data)
+        if hasattr(self, 'initial_data'):
+            return self.to_representation(self.initial_data)
         return []
 
     def get_value(self, dictionary):

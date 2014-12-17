@@ -22,7 +22,7 @@ class TestSimpleBoundField:
             amount = serializers.IntegerField()
 
         serializer = ExampleSerializer(data={'text': 'abc', 'amount': 123})
-
+        assert serializer.is_valid()
         assert serializer['text'].value == 'abc'
         assert serializer['text'].errors is None
         assert serializer['text'].name == 'text'
