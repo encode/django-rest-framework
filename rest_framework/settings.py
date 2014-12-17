@@ -68,6 +68,11 @@ DEFAULTS = {
     'SEARCH_PARAM': 'search',
     'ORDERING_PARAM': 'ordering',
 
+    # Versioning
+    'DEFAULT_VERSION': None,
+    'ALLOWED_VERSIONS': None,
+    'VERSION_PARAM': 'version',
+
     # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
