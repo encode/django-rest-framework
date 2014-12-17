@@ -459,10 +459,19 @@
 </blockquote>
 <p>Together with <a href="../authentication">authentication</a> and <a href="../throttling">throttling</a>, permissions determine whether a request should be granted or denied access.</p>
 <p>Permission checks are always run at the very start of the view, before any other code is allowed to proceed.  Permission checks will typically use the authentication information in the <code>request.user</code> and <code>request.auth</code> properties to determine if the incoming request should be permitted.</p>
+<p>Permissions are used to grant or deny access different classes of users to different parts of the API.</p>
+<p>The simplest style of permission would be to allow access to any authenticated user, and deny access to any unauthenticated user. This corresponds the <code>IsAuthenticated</code> class in REST framework.</p>
+<p>A slightly less strict style of permission would be to allow full access to authenticated users, but allow read-only access to unauthenticated users. This corresponds to the <code>IsAuthenticatedOrReadOnly</code> class in REST framework.</p>
 <h2 id="how-permissions-are-determined">How permissions are determined</h2>
 <p>Permissions in REST framework are always defined as a list of permission classes.</p>
 <p>Before running the main body of the view each permission in the list is checked.
-If any permission check fails an <code>exceptions.PermissionDenied</code> exception will be raised, and the main body of the view will not run.</p>
+If any permission check fails an <code>exceptions.PermissionDenied</code> or <code>exceptions.NotAuthenticated</code> exception will be raised, and the main body of the view will not run.</p>
+<p>When the permissions checks fail either a "403 Forbidden" or a "401 Unauthorized" response will be returned, according to the following rules:</p>
+<ul>
+<li>The request was successfully authenticated, but permission was denied. <em>&mdash; An HTTP 403 Forbidden response will be returned.</em></li>
+<li>The request was not successfully authenticated, and the highest priority authentication class <em>does not</em> use <code>WWW-Authenticate</code> headers. <em>&mdash; An HTTP 403 Forbidden response will be returned.</em></li>
+<li>The request was not successfully authenticated, and the highest priority authentication class <em>does</em> use <code>WWW-Authenticate</code> headers. <em>&mdash; An HTTP 401 Unauthorized response, with an appropriate <code>WWW-Authenticate</code> header will be returned.</em></li>
+</ul>
 <h2 id="object-level-permissions">Object level permissions</h2>
 <p>REST framework permissions also support object-level permissioning.  Object level permissions are used to determine if a user should be allowed to act on a particular object, which will typically be a model instance.</p>
 <p>Object level permissions are run by REST framework's generic views when <code>.get_object()</code> is called.
@@ -526,7 +535,7 @@ def example_view(request, format=None):
 <p>This permission is suitable if you want your API to only be accessible to registered users.</p>
 <h2 id="isadminuser">IsAdminUser</h2>
 <p>The <code>IsAdminUser</code> permission class will deny permission to any user, unless <code>user.is_staff</code> is <code>True</code> in which case permission will be allowed.</p>
-<p>This permission is suitable is you want your API to only be accessible to a subset of trusted administrators.</p>
+<p>This permission is suitable if you want your API to only be accessible to a subset of trusted administrators.</p>
 <h2 id="isauthenticatedorreadonly">IsAuthenticatedOrReadOnly</h2>
 <p>The <code>IsAuthenticatedOrReadOnly</code> will allow authenticated users to perform any request.  Requests for unauthorised users will only be permitted if the request method is one of the "safe" methods; <code>GET</code>, <code>HEAD</code> or <code>OPTIONS</code>.</p>
 <p>This permission is suitable if you want to your API to allow read permissions to anonymous users, and only allow write permissions to authenticated users.</p>

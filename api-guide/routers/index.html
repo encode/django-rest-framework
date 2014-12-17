@@ -462,7 +462,7 @@ urlpatterns = router.urls
 </ul>
 <hr />
 <p><strong>Note</strong>: The <code>base_name</code> argument is used to specify the initial part of the view name pattern.  In the example above, that's the <code>user</code> or <code>account</code> part.</p>
-<p>Typically you won't <em>need</em> to specify the <code>base-name</code> argument, but if you have a viewset where you've defined a custom <code>get_queryset</code> method, then the viewset may not have a <code>.queryset</code> attribute set.  If you try to register that viewset you'll see an error like this:</p>
+<p>Typically you won't <em>need</em> to specify the <code>base_name</code> argument, but if you have a viewset where you've defined a custom <code>get_queryset</code> method, then the viewset may not have a <code>.queryset</code> attribute set.  If you try to register that viewset you'll see an error like this:</p>
 <pre><code>'base_name' argument not specified, and could not automatically determine the name from the viewset, as it does not have a '.queryset' attribute.
 </code></pre>
 <p>This means you'll need to explicitly set the <code>base_name</code> argument when registering the viewset, as it could not be automatically determined from the model name.</p>

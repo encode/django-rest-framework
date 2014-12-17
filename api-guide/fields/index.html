@@ -628,6 +628,7 @@ color_channel = serializers.ChoiceField(
 <h1 id="boolean-fields">Boolean fields</h1>
 <h2 id="booleanfield">BooleanField</h2>
 <p>A boolean representation.</p>
+<p>When using HTML encoded form input be aware that omitting a value will always be treated as setting a field to <code>False</code>, even if it has a <code>default=True</code> option specified. This is because HTML checkbox inputs represent the unchecked state by omitting the value, so REST framework treats omission as if it is an empty checkbox input.</p>
 <p>Corresponds to <code>django.db.models.fields.BooleanField</code>.</p>
 <p><strong>Signature:</strong> <code>BooleanField()</code></p>
 <h2 id="nullbooleanfield">NullBooleanField</h2>

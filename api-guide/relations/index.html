@@ -792,7 +792,7 @@ class Note(models.Model):
             return 'Note: ' + value.text
         raise Exception('Unexpected type of tagged object')
 </code></pre>
-<p>If you need the target of the relationship to have a nested representation, you can use the required serializers inside the <code>.to_native()</code> method:</p>
+<p>If you need the target of the relationship to have a nested representation, you can use the required serializers inside the <code>.to_representation()</code> method:</p>
 <pre><code>    def to_representation(self, value):
         """
         Serialize bookmark instances using a bookmark serializer,
