@@ -240,6 +240,12 @@ Serializer classes can also include reusable validators that are applied to the 
 
 For more information see the [validators documentation](validators.md).
 
+## Accessing the initial data and instance
+
+When passing an initial object or queryset to a serializer instance, the object will be made available as `.instance`. If no initial object is passed then the `.instance` attribute will be `None`.
+
+When passing data to a serializer instance, the unmodified data will be made available as `.initial_data`. If the data keyword argument is not passed then the `.initial_data` attribute will not exist.
+
 ## Partial updates
 
 By default, serializers must be passed values for all required fields or they will raise validation errors. You can use the `partial` argument in order to allow partial updates.
