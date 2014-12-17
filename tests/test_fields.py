@@ -215,6 +215,26 @@ class TestBooleanHTMLInput:
         assert serializer.validated_data == {'archived': False}
 
 
+class TestCharHTMLInput:
+    def setup(self):
+        class TestSerializer(serializers.Serializer):
+            message = serializers.CharField(default='happy')
+        self.Serializer = TestSerializer
+
+    def test_empty_html_checkbox(self):
+        """
+        HTML checkboxes do not send any value, but should be treated
+        as `False` by BooleanField.
+        """
+        # This class mocks up a dictionary like object, that behaves
+        # as if it was returned for multipart or urlencoded data.
+        class MockHTMLDict(dict):
+            getlist = None
+        serializer = self.Serializer(data=MockHTMLDict())
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'message': 'happy'}
+
+
 class TestCreateOnlyDefault:
     def setup(self):
         default = serializers.CreateOnlyDefault('2001-01-01')

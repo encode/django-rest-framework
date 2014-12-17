@@ -185,7 +185,12 @@ class Field(object):
         self.allow_null = allow_null
 
         if allow_null and self.default_empty_html is empty:
+            # HTML input cannot represent `None` values, so we need to
+            # forcibly coerce empty HTML values to `None` if `allow_null=True`.
             self.default_empty_html = None
+
+        if default is not empty:
+            self.default_empty_html = default
 
         if validators is not None:
             self.validators = validators[:]
