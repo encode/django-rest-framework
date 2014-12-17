@@ -40,9 +40,22 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.0.x series
 
+### 3.0.2
+
+**Date**: [December 2014][3.0.2-milestone].
+
+
+* Ensure `request.user` is made available to response middleware. ([#2155][gh2155])
+* `Client.logout()` also cancels any existing `force_authenticate`. ([#2218][gh2218], [#2259][gh2259])
+* Extra assertions and better checks to preventing incorrect serializer API use. ([#2228][gh2228], [#2234][gh2234], [#2262][gh2262], [#2263][gh2263], [#2266][gh2266], [#2267][gh2267], [#2289][gh2289], [#2291][gh2291])
+* Fixed `min_length` message for `CharField`. ([#2255][gh2255])
+* Fix `UnicodeDecodeError`, which can occur on serializer `repr`.  ([#2270][gh2270], [#2279][gh2279])
+* Fix empty HTML values when a default is provided. ([#2280][gh2280], [#2294][gh2294])
+* Fix `SlugRelatedField` raising `UnicodeEncodeError` when used as a multiple choice input. ([#2290][gh2290])
+
 ### 3.0.1
 
-**Date**: [December 2014][3.0.1-milestone].
+**Date**: [11th December 2014][3.0.1-milestone].
 
 * More helpful error message when the default Serializer `create()` fails. ([#2013][gh2013])
 * Raise error when attempting to save serializer if data is not valid. ([#2098][gh2098])
@@ -665,9 +678,11 @@ For older release notes, [please see the GitHub repo](old-release-notes).
 [ticket-582]: https://github.com/tomchristie/django-rest-framework/issues/582
 [rfc-6266]: http://tools.ietf.org/html/rfc6266#section-4.3
 [old-release-notes]: https://github.com/tomchristie/django-rest-framework/blob/2.4.4/docs/topics/release-notes.md#04x-series
+
 [3.0.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.1+Release%22
+[3.0.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.2+Release%22
 
-
+<!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
 [gh2098]: https://github.com/tomchristie/django-rest-framework/issues/2098
 [gh2109]: https://github.com/tomchristie/django-rest-framework/issues/2109
@@ -697,3 +712,21 @@ For older release notes, [please see the GitHub repo](old-release-notes).
 [gh2242]: https://github.com/tomchristie/django-rest-framework/issues/2242
 [gh2243]: https://github.com/tomchristie/django-rest-framework/issues/2243
 [gh2244]: https://github.com/tomchristie/django-rest-framework/issues/2244
+<!-- 3.0.2 -->
+[gh2155]: https://github.com/tomchristie/django-rest-framework/issues/2155
+[gh2218]: https://github.com/tomchristie/django-rest-framework/issues/2218
+[gh2228]: https://github.com/tomchristie/django-rest-framework/issues/2228
+[gh2234]: https://github.com/tomchristie/django-rest-framework/issues/2234
+[gh2255]: https://github.com/tomchristie/django-rest-framework/issues/2255
+[gh2259]: https://github.com/tomchristie/django-rest-framework/issues/2259
+[gh2262]: https://github.com/tomchristie/django-rest-framework/issues/2262
+[gh2263]: https://github.com/tomchristie/django-rest-framework/issues/2263
+[gh2266]: https://github.com/tomchristie/django-rest-framework/issues/2266
+[gh2267]: https://github.com/tomchristie/django-rest-framework/issues/2267
+[gh2270]: https://github.com/tomchristie/django-rest-framework/issues/2270
+[gh2279]: https://github.com/tomchristie/django-rest-framework/issues/2279
+[gh2280]: https://github.com/tomchristie/django-rest-framework/issues/2280
+[gh2289]: https://github.com/tomchristie/django-rest-framework/issues/2289
+[gh2290]: https://github.com/tomchristie/django-rest-framework/issues/2290
+[gh2291]: https://github.com/tomchristie/django-rest-framework/issues/2291
+[gh2294]: https://github.com/tomchristie/django-rest-framework/issues/2294
