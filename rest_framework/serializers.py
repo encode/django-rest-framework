@@ -974,10 +974,7 @@ class ModelSerializer(Serializer):
                 kwargs = get_url_kwargs(model)
 
             else:
-                raise ImproperlyConfigured(
-                    'Field name `%s` is not valid for model `%s`.' %
-                    (field_name, model.__class__.__name__)
-                )
+                field_cls, kwargs = self.get_extra_field(field_name, model)
 
             # Check that any fields declared on the class are
             # also explicitly included in `Meta.fields`.
@@ -1012,6 +1009,12 @@ class ModelSerializer(Serializer):
             ret[field_name] = field
 
         return ret
+
+    def get_extra_field(self, field_name, model):
+        raise ImproperlyConfigured(
+            'Field name `%s` is not valid for model `%s`.' %
+            (field_name, model.__class__.__name__)
+        )
 
     def _include_additional_options(self, extra_kwargs):
         read_only_fields = getattr(self.Meta, 'read_only_fields', None)
