@@ -1,13 +1,15 @@
-from django.utils.encoding import smart_text
-from rest_framework.fields import get_attribute, empty, Field
-from rest_framework.reverse import reverse
-from rest_framework.utils import html
+# coding: utf-8
+from __future__ import unicode_literals
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch, Resolver404
 from django.db.models.query import QuerySet
 from django.utils import six
+from django.utils.encoding import smart_text
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
+from rest_framework.fields import get_attribute, empty, Field
+from rest_framework.reverse import reverse
+from rest_framework.utils import html
 
 
 class PKOnlyObject(object):
@@ -103,8 +105,8 @@ class RelatedField(Field):
     def choices(self):
         return dict([
             (
-                str(self.to_representation(item)),
-                str(item)
+                six.text_type(self.to_representation(item)),
+                six.text_type(item)
             )
             for item in self.queryset.all()
         ])
@@ -364,8 +366,8 @@ class ManyRelatedField(Field):
         ]
         return dict([
             (
-                str(item_representation),
-                str(item) + ' - ' + str(item_representation)
+                six.text_type(item_representation),
+                six.text_type(item) + ' - ' + six.text_type(item_representation)
             )
             for item, item_representation in items_and_representations
         ])
