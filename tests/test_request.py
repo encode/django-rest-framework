@@ -224,7 +224,8 @@ class TestUserSetter(TestCase):
     def setUp(self):
         # Pass request object through session middleware so session is
         # available to login and logout functions
-        self.request = Request(factory.get('/'))
+        self.wrapped_request = factory.get('/')
+        self.request = Request(self.wrapped_request)
         SessionMiddleware().process_request(self.request)
 
         User.objects.create_user('ringo', 'starr@thebeatles.com', 'yellow')
@@ -243,6 +244,10 @@ class TestUserSetter(TestCase):
         self.assertFalse(self.request.user.is_anonymous())
         logout(self.request)
         self.assertTrue(self.request.user.is_anonymous())
+
+    def test_logged_in_user_is_set_on_wrapped_request(self):
+        login(self.request, self.user)
+        self.assertEqual(self.wrapped_request.user, self.user)
 
 
 class TestAuthSetter(TestCase):
