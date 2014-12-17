@@ -22,11 +22,13 @@ The serializers in REST framework work very similarly to Django's `Form` and `Mo
 
 Let's start by creating a simple object we can use for example purposes:
 
+    from datetime import datetime
+    
     class Comment(object):
         def __init__(self, email, content, created=None):
             self.email = email
             self.content = content
-            self.created = created or datetime.datetime.now()
+            self.created = created or datetime.now()
 
     comment = Comment(email='leila@example.com', content='foo bar')
 
@@ -61,10 +63,10 @@ At this point we've translated the model instance into Python native datatypes. 
 
 Deserialization is similar. First we parse a stream into Python native datatypes...
 
-    from StringIO import StringIO
+    from django.utils.six import BytesIO
     from rest_framework.parsers import JSONParser
 
-    stream = StringIO(json)
+    stream = BytesIO(json)
     data = JSONParser().parse(stream)
 
 ...then we restore those native datatypes into a dictionary of validated data.
