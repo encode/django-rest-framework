@@ -33,6 +33,7 @@ pages:
  - ['api-guide/filtering.md', 'API Guide', 'Filtering']
  - ['api-guide/pagination.md', 'API Guide', 'Pagination']
  - ['api-guide/content-negotiation.md', 'API Guide', 'Content negotiation']
+ - ['api-guide/metadata.md', 'API Guide', 'Metadata']
  - ['api-guide/format-suffixes.md', 'API Guide', 'Format suffixes']
  - ['api-guide/reverse.md', 'API Guide', 'Returning URLs']
  - ['api-guide/exceptions.md', 'API Guide', 'Exceptions']

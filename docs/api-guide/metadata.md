@@ -1,4 +1,4 @@
-<a class="github" href="metadata.py"></a>
+source: metadata.py
 
 ---
 

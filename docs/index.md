@@ -181,6 +181,7 @@ The API guide is your complete reference manual to all the functionality provide
 * [Filtering][filtering]
 * [Pagination][pagination]
 * [Content negotiation][contentnegotiation]
+* [Metadata][metadata]
 * [Format suffixes][formatsuffixes]
 * [Returning URLs][reverse]
 * [Exceptions][exceptions]
@@ -305,6 +306,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [filtering]: api-guide/filtering.md
 [pagination]: api-guide/pagination.md
 [contentnegotiation]: api-guide/content-negotiation.md
+[metadata]: api-guide/metadata.md
 [formatsuffixes]: api-guide/format-suffixes.md
 [reverse]: api-guide/reverse.md
 [exceptions]: api-guide/exceptions.md
