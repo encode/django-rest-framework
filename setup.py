@@ -8,20 +8,6 @@ import os
 import sys
 
 
-# This command has been borrowed from
-# https://github.com/getsentry/sentry/blob/master/setup.py
-class PyTest(TestCommand):
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = ['tests']
-        self.test_suite = True
-
-    def run_tests(self):
-        import pytest
-        errno = pytest.main(self.test_args)
-        sys.exit(errno)
-
-
 def get_version(package):
     """
     Return package version as listed in `__version__` in `init.py`.
@@ -80,7 +66,6 @@ setup(
     author_email='tom@tomchristie.com',  # SEE NOTE BELOW (*)
     packages=get_packages('rest_framework'),
     package_data=get_package_data('rest_framework'),
-    cmdclass={'test': PyTest},
     install_requires=[],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
