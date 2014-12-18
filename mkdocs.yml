@@ -46,6 +46,7 @@ pages:
  - ['topics/rest-hypermedia-hateoas.md', 'Topics', 'REST, Hypermedia & HATEOAS']
  - ['topics/third-party-resources.md', 'Topics', 'Third Party Resources']
  - ['topics/contributing.md', 'Topics', 'Contributing to REST framework']
+ - ['topics/project-management.md', 'Topics', 'Project management']
  - ['topics/rest-framework-2-announcement.md', 'Topics', '2.0 Announcement']
  - ['topics/2.2-announcement.md', 'Topics', '2.2 Announcement']
  - ['topics/2.3-announcement.md', 'Topics', '2.3 Announcement']
