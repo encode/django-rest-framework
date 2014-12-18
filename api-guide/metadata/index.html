@@ -4,11 +4,11 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <title>Parsers - Django REST framework</title>
+  <title>Metadata - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/parsers/" />
+  <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/metadata/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Parsers">
+  <meta name="description" content="Django, API, REST, Metadata">
   <meta name="author" content="Tom Christie">
 
   <!-- Le styles -->
@@ -62,10 +62,10 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../renderers">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../format-suffixes">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../routers">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../content-negotiation">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
@@ -144,8 +144,8 @@
                     <a href="../routers">Routers</a>
                   </li>
                   
-                  <li class="active" >
-                    <a href=".">Parsers</a>
+                  <li >
+                    <a href="../parsers">Parsers</a>
                   </li>
                   
                   <li >
@@ -192,8 +192,8 @@
                     <a href="../content-negotiation">Content negotiation</a>
                   </li>
                   
-                  <li >
-                    <a href="../metadata">Metadata</a>
+                  <li class="active" >
+                    <a href=".">Metadata</a>
                   </li>
                   
                   <li >
@@ -353,88 +353,28 @@
                 
 
                   <li class="main">
-                    <a href="#parsers">Parsers</a>
+                    <a href="#metadata">Metadata</a>
                   </li>
 
                   
                     <li>
-                      <a href="#how-the-parser-is-determined">How the parser is determined</a>
+                      <a href="#setting-the-metadata-scheme">Setting the metadata scheme</a>
                     </li>
                   
                     <li>
-                      <a href="#setting-the-parsers">Setting the parsers</a>
+                      <a href="#creating-schema-endpoints">Creating schema endpoints</a>
                     </li>
                   
 
                 
 
                   <li class="main">
-                    <a href="#api-reference">API Reference</a>
+                    <a href="#custom-metadata-classes">Custom metadata classes</a>
                   </li>
 
-                  
-                    <li>
-                      <a href="#jsonparser">JSONParser</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#yamlparser">YAMLParser</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#xmlparser">XMLParser</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#formparser">FormParser</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#multipartparser">MultiPartParser</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#fileuploadparser">FileUploadParser</a>
-                    </li>
-                  
-
-                
-
-                  <li class="main">
-                    <a href="#custom-parsers">Custom parsers</a>
-                  </li>
-
-                  
-                    <li>
-                      <a href="#stream">stream</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#media_type">media_type</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#parser_context">parser_context</a>
-                    </li>
                   
                     <li>
                       <a href="#example">Example</a>
-                    </li>
-                  
-
-                
-
-                  <li class="main">
-                    <a href="#third-party-packages">Third party packages</a>
-                  </li>
-
-                  
-                    <li>
-                      <a href="#messagepack">MessagePack</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#camelcase-json">CamelCase JSON</a>
                     </li>
                   
 
@@ -450,138 +390,95 @@
           <div id="main-content" class="span9">
             
               
-                <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/parsers.py">
-                  <span class="label label-info">parsers.py</span>
+                <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/metadata.py">
+                  <span class="label label-info">metadata.py</span>
                 </a>
               
             
 
-            <h1 id="parsers">Parsers</h1>
+            <hr />
+<p><strong>Note</strong>: This is the documentation for the <strong>version 3.0</strong> of REST framework. Documentation for <a href="http://tomchristie.github.io/rest-framework-2-docs/">version 2.4</a> is also available.</p>
+<hr />
+<h1 id="metadata">Metadata</h1>
 <blockquote>
-<p>Machine interacting web services tend to use more
-structured formats for sending data than form-encoded, since they're
-sending more complex data than simple forms</p>
-<p>&mdash; Malcom Tredinnick, <a href="https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion">Django developers group</a></p>
+<p>[The <code>OPTIONS</code>] method allows a client to determine the options and/or requirements associated with a resource, or the capabilities of a server, without implying a resource action or initiating a resource retrieval.</p>
+<p>&mdash; <a href="http://tools.ietf.org/html/rfc7231#section-4.3.7">RFC7231, Section 4.3.7.</a></p>
 </blockquote>
-<p>REST framework includes a number of built in Parser classes, that allow you to accept requests with various media types.  There is also support for defining your own custom parsers, which gives you the flexibility to design the media types that your API accepts.</p>
-<h2 id="how-the-parser-is-determined">How the parser is determined</h2>
-<p>The set of valid parsers for a view is always defined as a list of classes.  When  <code>request.data</code> is accessed, REST framework will examine the <code>Content-Type</code> header on the incoming request, and determine which parser to use to parse the request content.</p>
-<hr />
-<p><strong>Note</strong>: When developing client applications always remember to make sure you're setting the <code>Content-Type</code> header when sending data in an HTTP request.</p>
-<p>If you don't set the content type, most clients will default to using <code>'application/x-www-form-urlencoded'</code>, which may not be what you wanted.</p>
-<p>As an example, if you are sending <code>json</code> encoded data using jQuery with the <a href="http://api.jquery.com/jQuery.ajax/">.ajax() method</a>, you should make sure to include the <code>contentType: 'application/json'</code> setting.</p>
-<hr />
-<h2 id="setting-the-parsers">Setting the parsers</h2>
-<p>The default set of parsers may be set globally, using the <code>DEFAULT_PARSER_CLASSES</code> setting.  For example, the following settings would allow requests with <code>YAML</code> content.</p>
-<pre><code>REST_FRAMEWORK = {
-    'DEFAULT_PARSER_CLASSES': (
-        'rest_framework.parsers.YAMLParser',
-    )
+<p>REST framework includes a configurable mechanism for determining how your API should respond to <code>OPTIONS</code> requests. This allows you to return API schema or other resource information.</p>
+<p>There are not currently any widely adopted conventions for exactly what style of response should be returned for HTTP <code>OPTIONS</code> requests, so we provide an ad-hoc style that returns some useful information.</p>
+<p>Here's an example response that demonstrates the information that is returned by default.</p>
+<pre><code>HTTP 200 OK
+Allow: GET, POST, HEAD, OPTIONS
+Content-Type: application/json
+
+{
+    "name": "To Do List",
+    "description": "List existing 'To Do' items, or create a new item.",
+    "renders": [
+        "application/json",
+        "text/html"
+    ],
+    "parses": [
+        "application/json",
+        "application/x-www-form-urlencoded",
+        "multipart/form-data"
+    ],
+    "actions": {
+        "POST": {
+            "note": {
+                "type": "string",
+                "required": false,
+                "read_only": false,
+                "label": "title",
+                "max_length": 100
+            }
+        }
+    }
 }
 </code></pre>
-<p>You can also set the parsers used for an individual view, or viewset,
-using the <code>APIView</code> class based views.</p>
-<pre><code>from rest_framework.parsers import YAMLParser
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
-class ExampleView(APIView):
-    """
-    A view that can accept POST requests with YAML content.
-    """
-    parser_classes = (YAMLParser,)
-
-    def post(self, request, format=None):
-        return Response({'received data': request.data})
+<h2 id="setting-the-metadata-scheme">Setting the metadata scheme</h2>
+<p>You can set the metadata class globally using the <code>'DEFAULT_METADATA_CLASS'</code> settings key:</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata'
+}
 </code></pre>
-<p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
-<pre><code>@api_view(['POST'])
-@parser_classes((YAMLParser,))
-def example_view(request, format=None):
-    """
-    A view that can accept POST requests with YAML content.
-    """
-    return Response({'received data': request.data})
+<p>Or you can set the metadata class individually for a view:</p>
+<pre><code>class APIRoot(APIView):
+    metadata_class = APIRootMetadata
+
+    def get(self, request, format=None):
+        return Response({
+            ...
+        })
 </code></pre>
+<p>The REST framework package only includes a single metadata class implementation, named <code>SimpleMetadata</code>. If you want to use an alternative style you'll need to implement a custom metadata class.</p>
+<h2 id="creating-schema-endpoints">Creating schema endpoints</h2>
+<p>If you have specific requirements for creating schema endpoints that are accessed with regular <code>GET</code> requests, you might consider re-using the metadata API for doing so.</p>
+<p>For example, the following additional route could be used on a viewset to provide a linkable schema endpoint.</p>
+<pre><code>@list_route(methods=['GET'])
+def schema(self, request):
+    meta = self.metadata_class()
+    data = meta.determine_metadata(request, self)
+    return Response(data)
+</code></pre>
+<p>There are a couple of reasons that you might choose to take this approach, including that <code>OPTIONS</code> responses <a href="https://www.mnot.net/blog/2012/10/29/NO_OPTIONS">are not cacheable</a>.</p>
 <hr />
-<h1 id="api-reference">API Reference</h1>
-<h2 id="jsonparser">JSONParser</h2>
-<p>Parses <code>JSON</code> request content.</p>
-<p><strong>.media_type</strong>: <code>application/json</code></p>
-<h2 id="yamlparser">YAMLParser</h2>
-<p>Parses <code>YAML</code> request content.</p>
-<p>Requires the <code>pyyaml</code> package to be installed.</p>
-<p><strong>.media_type</strong>: <code>application/yaml</code></p>
-<h2 id="xmlparser">XMLParser</h2>
-<p>Parses REST framework's default style of <code>XML</code> request content.</p>
-<p>Note that the <code>XML</code> markup language is typically used as the base language for more strictly defined domain-specific languages, such as <code>RSS</code>, <code>Atom</code>, and <code>XHTML</code>.</p>
-<p>If you are considering using <code>XML</code> for your API, you may want to consider implementing a custom renderer and parser for your specific requirements, and using an existing domain-specific media-type, or creating your own custom XML-based media-type.</p>
-<p>Requires the <code>defusedxml</code> package to be installed.</p>
-<p><strong>.media_type</strong>: <code>application/xml</code></p>
-<h2 id="formparser">FormParser</h2>
-<p>Parses HTML form content.  <code>request.data</code> will be populated with a <code>QueryDict</code> of data.</p>
-<p>You will typically want to use both <code>FormParser</code> and <code>MultiPartParser</code> together in order to fully support HTML form data.</p>
-<p><strong>.media_type</strong>: <code>application/x-www-form-urlencoded</code></p>
-<h2 id="multipartparser">MultiPartParser</h2>
-<p>Parses multipart HTML form content, which supports file uploads.  Both <code>request.data</code> will be populated with a <code>QueryDict</code>.</p>
-<p>You will typically want to use both <code>FormParser</code> and <code>MultiPartParser</code> together in order to fully support HTML form data.</p>
-<p><strong>.media_type</strong>: <code>multipart/form-data</code></p>
-<h2 id="fileuploadparser">FileUploadParser</h2>
-<p>Parses raw file upload content.  The <code>request.data</code> property will be a dictionary with a single key <code>'file'</code> containing the uploaded file.</p>
-<p>If the view used with <code>FileUploadParser</code> is called with a <code>filename</code> URL keyword argument, then that argument will be used as the filename.  If it is called without a <code>filename</code> URL keyword argument, then the client must set the filename in the <code>Content-Disposition</code> HTTP header.  For example <code>Content-Disposition: attachment; filename=upload.jpg</code>.</p>
-<p><strong>.media_type</strong>: <code>*/*</code></p>
-<h5 id="notes">Notes:</h5>
-<ul>
-<li>The <code>FileUploadParser</code> is for usage with native clients that can upload the file as a raw data request.  For web-based uploads, or for native clients with multipart upload support, you should use the <code>MultiPartParser</code> parser instead.</li>
-<li>Since this parser's <code>media_type</code> matches any content type, <code>FileUploadParser</code> should generally be the only parser set on an API view.</li>
-<li><code>FileUploadParser</code> respects Django's standard <code>FILE_UPLOAD_HANDLERS</code> setting, and the <code>request.upload_handlers</code> attribute.  See the <a href="https://docs.djangoproject.com/en/dev/topics/http/file-uploads/#upload-handlers">Django documentation</a> for more details.</li>
-</ul>
-<h5 id="basic-usage-example">Basic usage example:</h5>
-<pre><code>class FileUploadView(views.APIView):
-    parser_classes = (FileUploadParser,)
-
-    def put(self, request, filename, format=None):
-        file_obj = request.data['file']
-        # ...
-        # do some staff with uploaded file
-        # ...
-        return Response(status=204)
-</code></pre>
-<hr />
-<h1 id="custom-parsers">Custom parsers</h1>
-<p>To implement a custom parser, you should override <code>BaseParser</code>, set the <code>.media_type</code> property, and implement the <code>.parse(self, stream, media_type, parser_context)</code> method.</p>
-<p>The method should return the data that will be used to populate the <code>request.data</code> property.</p>
-<p>The arguments passed to <code>.parse()</code> are:</p>
-<h3 id="stream">stream</h3>
-<p>A stream-like object representing the body of the request.</p>
-<h3 id="media_type">media_type</h3>
-<p>Optional.  If provided, this is the media type of the incoming request content.</p>
-<p>Depending on the request's <code>Content-Type:</code> header, this may be more specific than the renderer's <code>media_type</code> attribute, and may include media type parameters.  For example <code>"text/plain; charset=utf-8"</code>.</p>
-<h3 id="parser_context">parser_context</h3>
-<p>Optional.  If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.</p>
-<p>By default this will include the following keys: <code>view</code>, <code>request</code>, <code>args</code>, <code>kwargs</code>.</p>
+<h1 id="custom-metadata-classes">Custom metadata classes</h1>
+<p>If you want to provide a custom metadata class you should override <code>BaseMetadata</code> and implement the <code>determine_metadata(self, request, view)</code> method.</p>
+<p>Useful things that you might want to do could include returning schema information, using a format such as <a href="http://json-schema.org/">JSON schema</a>, or returning debug information to admin users.</p>
 <h2 id="example">Example</h2>
-<p>The following is an example plaintext parser that will populate the <code>request.data</code> property with a string representing the body of the request. </p>
-<pre><code>class PlainTextParser(BaseParser):
-"""
-Plain text parser.
-"""
-
-media_type = 'text/plain'
-
-def parse(self, stream, media_type=None, parser_context=None):
+<p>The following class could be used to limit the information that is returned to <code>OPTIONS</code> requests.</p>
+<pre><code>class MinimalMetadata(BaseMetadata):
     """
-    Simply return a string representing the body of the request.
+    Don't include field and other information for `OPTIONS` requests.
+    Just return the name and description.
     """
-    return stream.read()
+    def determine_metadata(self, request, view):
+        return {
+            'name': view.get_view_name(),
+            'description': view.get_view_description()
+        }
 </code></pre>
-<hr />
-<h1 id="third-party-packages">Third party packages</h1>
-<p>The following third party packages are also available.</p>
-<h2 id="messagepack">MessagePack</h2>
-<p><a href="https://github.com/juanriaza/django-rest-framework-msgpack">MessagePack</a> is a fast, efficient binary serialization format.  <a href="https://github.com/juanriaza">Juan Riaza</a> maintains the <a href="https://github.com/juanriaza/django-rest-framework-msgpack">djangorestframework-msgpack</a> package which provides MessagePack renderer and parser support for REST framework.</p>
-<h2 id="camelcase-json">CamelCase JSON</h2>
-<p><a href="https://github.com/vbabiy/djangorestframework-camel-case">djangorestframework-camel-case</a> provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by <a href="https://github.com/vbabiy">Vitaly Babiy</a>.</p>
 
           </div>
           <!--/span-->
