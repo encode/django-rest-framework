@@ -184,13 +184,11 @@ class Field(object):
         self.style = {} if style is None else style
         self.allow_null = allow_null
 
-        if allow_null and self.default_empty_html is empty:
-            # HTML input cannot represent `None` values, so we need to
-            # forcibly coerce empty HTML values to `None` if `allow_null=True`.
-            self.default_empty_html = None
-
-        if default is not empty:
-            self.default_empty_html = default
+        if self.default_empty_html is not empty:
+            if not required:
+                self.default_empty_html = empty
+            elif default is not empty:
+                self.default_empty_html = default
 
         if validators is not None:
             self.validators = validators[:]
@@ -561,6 +559,11 @@ class CharField(Field):
         if min_length is not None:
             message = self.error_messages['min_length'].format(min_length=min_length)
             self.validators.append(MinLengthValidator(min_length, message=message))
+
+        if self.allow_null and (not self.allow_blank) and (self.default is empty):
+            # HTML input cannot represent `None` values, so we need to
+            # forcibly coerce empty HTML values to `None` if `allow_null=True`.
+            self.default_empty_html = None
 
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,
