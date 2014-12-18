@@ -7,6 +7,7 @@ from django.utils import six, timezone
 from django.utils.encoding import force_text
 from django.utils.functional import Promise
 from rest_framework.compat import OrderedDict
+from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 import datetime
 import decimal
 import types
@@ -107,14 +108,14 @@ else:
         OrderedDict,
         yaml.representer.SafeRepresenter.represent_dict
     )
-    # SafeDumper.add_representer(
-    #     DictWithMetadata,
-    #     yaml.representer.SafeRepresenter.represent_dict
-    # )
-    # SafeDumper.add_representer(
-    #     OrderedDictWithMetadata,
-    #     yaml.representer.SafeRepresenter.represent_dict
-    # )
+    SafeDumper.add_representer(
+        ReturnDict,
+        yaml.representer.SafeRepresenter.represent_dict
+    )
+    SafeDumper.add_representer(
+        ReturnList,
+        yaml.representer.SafeRepresenter.represent_list
+    )
     SafeDumper.add_representer(
         types.GeneratorType,
         yaml.representer.SafeRepresenter.represent_list
