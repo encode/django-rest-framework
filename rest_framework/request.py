@@ -277,8 +277,12 @@ class Request(object):
         Sets the user on the current request. This is necessary to maintain
         compatibility with django.contrib.auth where the user property is
         set in the login and logout functions.
+
+        Note that we also set the user on Django's underlying `HttpRequest`
+        instance, ensuring that it is available to any middleware in the stack.
         """
         self._user = value
+        self._request.user = value
 
     @property
     def auth(self):
@@ -297,6 +301,7 @@ class Request(object):
         request, such as an authentication token.
         """
         self._auth = value
+        self._request.auth = value
 
     @property
     def successful_authenticator(self):
@@ -456,7 +461,7 @@ class Request(object):
 
             if user_auth_tuple is not None:
                 self._authenticator = authenticator
-                self._user, self._auth = user_auth_tuple
+                self.user, self.auth = user_auth_tuple
                 return
 
         self._not_authenticated()
@@ -471,14 +476,14 @@ class Request(object):
         self._authenticator = None
 
         if api_settings.UNAUTHENTICATED_USER:
-            self._user = api_settings.UNAUTHENTICATED_USER()
+            self.user = api_settings.UNAUTHENTICATED_USER()
         else:
-            self._user = None
+            self.user = None
 
         if api_settings.UNAUTHENTICATED_TOKEN:
-            self._auth = api_settings.UNAUTHENTICATED_TOKEN()
+            self.auth = api_settings.UNAUTHENTICATED_TOKEN()
         else:
-            self._auth = None
+            self.auth = None
 
     def __getattr__(self, attr):
         """

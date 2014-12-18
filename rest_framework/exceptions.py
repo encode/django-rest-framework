@@ -5,8 +5,8 @@ In addition Django's built in 403 and 404 exceptions are handled.
 (`django.http.Http404` and `django.core.exceptions.PermissionDenied`)
 """
 from __future__ import unicode_literals
+from django.utils import six
 from django.utils.encoding import force_text
-
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ungettext_lazy
 from rest_framework import status
@@ -66,7 +66,7 @@ class ValidationError(APIException):
         self.detail = _force_text_recursive(detail)
 
     def __str__(self):
-        return str(self.detail)
+        return six.text_type(self.detail)
 
 
 class ParseError(APIException):

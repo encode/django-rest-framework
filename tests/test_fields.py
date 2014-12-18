@@ -215,6 +215,48 @@ class TestBooleanHTMLInput:
         assert serializer.validated_data == {'archived': False}
 
 
+class MockHTMLDict(dict):
+    """
+    This class mocks up a dictionary like object, that behaves
+    as if it was returned for multipart or urlencoded data.
+    """
+    getlist = None
+
+
+class TestCharHTMLInput:
+    def test_empty_html_checkbox(self):
+        class TestSerializer(serializers.Serializer):
+            message = serializers.CharField(default='happy')
+
+        serializer = TestSerializer(data=MockHTMLDict())
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'message': 'happy'}
+
+    def test_empty_html_checkbox_allow_null(self):
+        class TestSerializer(serializers.Serializer):
+            message = serializers.CharField(allow_null=True)
+
+        serializer = TestSerializer(data=MockHTMLDict())
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'message': None}
+
+    def test_empty_html_checkbox_allow_null_allow_blank(self):
+        class TestSerializer(serializers.Serializer):
+            message = serializers.CharField(allow_null=True, allow_blank=True)
+
+        serializer = TestSerializer(data=MockHTMLDict({}))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'message': ''}
+
+    def test_empty_html_required_false(self):
+        class TestSerializer(serializers.Serializer):
+            message = serializers.CharField(required=False)
+
+        serializer = TestSerializer(data=MockHTMLDict())
+        assert serializer.is_valid()
+        assert serializer.validated_data == {}
+
+
 class TestCreateOnlyDefault:
     def setup(self):
         default = serializers.CreateOnlyDefault('2001-01-01')

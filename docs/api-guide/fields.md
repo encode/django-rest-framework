@@ -112,6 +112,8 @@ Two options are currently used in HTML form generation, `'input_type'` and `'bas
 
 A boolean representation.
 
+When using HTML encoded form input be aware that omitting a value will always be treated as setting a field to `False`, even if it has a `default=True` option specified. This is because HTML checkbox inputs represent the unchecked state by omitting the value, so REST framework treats omission as if it is an empty checkbox input.
+
 Corresponds to `django.db.models.fields.BooleanField`.
 
 **Signature:** `BooleanField()`
