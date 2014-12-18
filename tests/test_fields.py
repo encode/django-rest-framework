@@ -245,8 +245,6 @@ class TestCharHTMLInput:
             message = serializers.CharField(allow_null=True, allow_blank=True)
 
         serializer = TestSerializer(data=MockHTMLDict({}))
-        print serializer.is_valid()
-        print serializer.errors
         assert serializer.is_valid()
         assert serializer.validated_data == {'message': ''}
 
