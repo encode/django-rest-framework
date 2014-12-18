@@ -11,3 +11,9 @@ flake8==2.2.2
 markdown>=2.1.0
 django-guardian==1.2.4
 django-filter>=0.5.4
+
+# wheel for PyPI installs
+wheel==0.24.0
+
+# MkDocs for documentation previews/deploys
+mkdocs==0.11.1
