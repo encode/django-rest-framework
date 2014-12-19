@@ -883,41 +883,14 @@ class ModelSerializer(Serializer):
 
         ret = OrderedDict()
         model = getattr(self.Meta, 'model')
-        fields = getattr(self.Meta, 'fields', None)
-        exclude = getattr(self.Meta, 'exclude', None)
         depth = getattr(self.Meta, 'depth', 0)
         extra_kwargs = getattr(self.Meta, 'extra_kwargs', {})
-
-        if fields and not isinstance(fields, (list, tuple)):
-            raise TypeError(
-                'The `fields` option must be a list or tuple. Got %s.' %
-                type(fields).__name__
-            )
-
-        if exclude and not isinstance(exclude, (list, tuple)):
-            raise TypeError(
-                'The `exclude` option must be a list or tuple. Got %s.' %
-                type(exclude).__name__
-            )
-
-        assert not (fields and exclude), "Cannot set both 'fields' and 'exclude'."
-
         extra_kwargs = self._include_additional_options(extra_kwargs)
 
         # Retrieve metadata about fields & relationships on the model class.
         info = model_meta.get_field_info(model)
 
-        # Use the default set of field names if none is supplied explicitly.
-        if fields is None:
-            fields = self._get_default_field_names(declared_fields, info)
-            exclude = getattr(self.Meta, 'exclude', None)
-            if exclude is not None:
-                for field_name in exclude:
-                    assert field_name in fields, (
-                        'The field in the `exclude` option must be a model field. Got %s.' %
-                        field_name
-                    )
-                    fields.remove(field_name)
+        fields = self.get_field_names(declared_fields, info)
 
         # Determine the set of model fields, and the fields that they map to.
         # We actually only need this to deal with the slightly awkward case
@@ -1133,7 +1106,72 @@ class ModelSerializer(Serializer):
 
         return extra_kwargs
 
-    def _get_default_field_names(self, declared_fields, model_info):
+    def get_field_names(self, declared_fields, info):
+        """
+        Returns the list of all field names that should be created when
+        instantiating this serializer class. This is based on the default
+        set of fields, but also takes into account the `Meta.fields` or
+        `Meta.exclude` options if they have been specified.
+        """
+        fields = getattr(self.Meta, 'fields', None)
+        exclude = getattr(self.Meta, 'exclude', None)
+
+        if fields and not isinstance(fields, (list, tuple)):
+            raise TypeError(
+                'The `fields` option must be a list or tuple. Got %s.' %
+                type(fields).__name__
+            )
+
+        if exclude and not isinstance(exclude, (list, tuple)):
+            raise TypeError(
+                'The `exclude` option must be a list or tuple. Got %s.' %
+                type(exclude).__name__
+            )
+
+        assert not (fields and exclude), (
+            "Cannot set both 'fields' and 'exclude' options on "
+            "serializer {serializer_class}.".format(
+                serializer_class=self.__class__.__name__
+            )
+        )
+
+        if fields is not None:
+            # Ensure that all declared fields have also been included in the
+            # `Meta.fields` option.
+            for field_name in declared_fields:
+                assert field_name in fields, (
+                    "The field '{field_name}' was declared on serializer "
+                    "{serializer_class}, but has not been included in the "
+                    "'fields' option.".format(
+                        field_name=field_name,
+                        serializer_class=self.__class__.__name__
+                    )
+                )
+            return fields
+
+        # Use the default set of field names if `Meta.fields` is not specified.
+        fields = self.get_default_field_names(declared_fields, info)
+
+        if exclude is not None:
+            # If `Meta.exclude` is included, then remove those fields.
+            for field_name in exclude:
+                assert field_name in fields, (
+                    "The field '{field_name}' was include on serializer "
+                    "{serializer_class} in the 'exclude' option, but does "
+                    "not match any model field.".format(
+                        field_name=field_name,
+                        serializer_class=self.__class__.__name__
+                    )
+                )
+                fields.remove(field_name)
+
+        return fields
+
+    def get_default_field_names(self, declared_fields, model_info):
+        """
+        Return the default list of field names that will be used if the
+        `Meta.fields` option is not specified.
+        """
         return (
             [model_info.pk.name] +
             list(declared_fields.keys()) +
@@ -1160,7 +1198,11 @@ class HyperlinkedModelSerializer(ModelSerializer):
     """
     _related_class = HyperlinkedRelatedField
 
-    def _get_default_field_names(self, declared_fields, model_info):
+    def get_default_field_names(self, declared_fields, model_info):
+        """
+        Return the default list of field names that will be used if the
+        `Meta.fields` option is not specified.
+        """
         return (
             [api_settings.URL_FIELD_NAME] +
             list(declared_fields.keys()) +
