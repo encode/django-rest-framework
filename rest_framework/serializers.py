@@ -908,74 +908,91 @@ class ModelSerializer(Serializer):
                 ret[field_name] = declared_fields[field_name]
                 continue
 
-            elif field_name in info.fields_and_pk:
-                # Create regular model fields.
-                model_field = info.fields_and_pk[field_name]
-                field_cls = self._field_mapping[model_field]
-                kwargs = get_field_kwargs(field_name, model_field)
-                if 'choices' in kwargs:
-                    # Fields with choices get coerced into `ChoiceField`
-                    # instead of using their regular typed field.
-                    field_cls = ChoiceField
-                if not issubclass(field_cls, ModelField):
-                    # `model_field` is only valid for the fallback case of
-                    # `ModelField`, which is used when no other typed field
-                    # matched to the model field.
-                    kwargs.pop('model_field', None)
-                if not issubclass(field_cls, CharField) and not issubclass(field_cls, ChoiceField):
-                    # `allow_blank` is only valid for textual fields.
-                    kwargs.pop('allow_blank', None)
-
-            elif field_name in info.relations:
-                # Create forward and reverse relationships.
-                relation_info = info.relations[field_name]
-                if depth:
-                    field_cls = self._get_nested_class(depth, relation_info)
-                    kwargs = get_nested_relation_kwargs(relation_info)
-                else:
-                    field_cls = self._related_class
-                    kwargs = get_relation_kwargs(field_name, relation_info)
-                    # `view_name` is only valid for hyperlinked relationships.
-                    if not issubclass(field_cls, HyperlinkedRelatedField):
-                        kwargs.pop('view_name', None)
-
-            elif hasattr(model, field_name):
-                # Create a read only field for model methods and properties.
-                field_cls = ReadOnlyField
-                kwargs = {}
-
-            elif field_name == api_settings.URL_FIELD_NAME:
-                # Create the URL field.
-                field_cls = HyperlinkedIdentityField
-                kwargs = get_url_kwargs(model)
-
-            else:
-                raise ImproperlyConfigured(
-                    'Field name `%s` is not valid for model `%s`.' %
-                    (field_name, model.__class__.__name__)
-                )
+            # Determine the serializer field class and keyword arguments.
+            field_cls, kwargs = self.build_field(field_name, info, model, depth)
 
             # Populate any kwargs defined in `Meta.extra_kwargs`
-            extras = extra_kwargs.get(field_name, {})
-            if extras.get('read_only', False):
-                for attr in [
-                    'required', 'default', 'allow_blank', 'allow_null',
-                    'min_length', 'max_length', 'min_value', 'max_value',
-                    'validators', 'queryset'
-                ]:
-                    kwargs.pop(attr, None)
-
-            if extras.get('default') and kwargs.get('required') is False:
-                kwargs.pop('required')
-
-            kwargs.update(extras)
+            kwargs = self.build_final_kwargs(kwargs, extra_kwargs, field_name)
 
             # Create the serializer field.
             ret[field_name] = field_cls(**kwargs)
 
+        # Add in any hidden fields.
         ret.update(hidden_fields)
 
         return ret
+
+    def build_field(self, field_name, info, model, depth):
+        if field_name in info.fields_and_pk:
+            # Create regular model fields.
+            model_field = info.fields_and_pk[field_name]
+            field_cls = self._field_mapping[model_field]
+            kwargs = get_field_kwargs(field_name, model_field)
+            if 'choices' in kwargs:
+                # Fields with choices get coerced into `ChoiceField`
+                # instead of using their regular typed field.
+                field_cls = ChoiceField
+            if not issubclass(field_cls, ModelField):
+                # `model_field` is only valid for the fallback case of
+                # `ModelField`, which is used when no other typed field
+                # matched to the model field.
+                kwargs.pop('model_field', None)
+            if not issubclass(field_cls, CharField) and not issubclass(field_cls, ChoiceField):
+                # `allow_blank` is only valid for textual fields.
+                kwargs.pop('allow_blank', None)
+
+        elif field_name in info.relations:
+            # Create forward and reverse relationships.
+            relation_info = info.relations[field_name]
+            if depth:
+                field_cls = self._get_nested_class(depth, relation_info)
+                kwargs = get_nested_relation_kwargs(relation_info)
+            else:
+                field_cls = self._related_class
+                kwargs = get_relation_kwargs(field_name, relation_info)
+                # `view_name` is only valid for hyperlinked relationships.
+                if not issubclass(field_cls, HyperlinkedRelatedField):
+                    kwargs.pop('view_name', None)
+
+        elif hasattr(model, field_name):
+            # Create a read only field for model methods and properties.
+            field_cls = ReadOnlyField
+            kwargs = {}
+
+        elif field_name == api_settings.URL_FIELD_NAME:
+            # Create the URL field.
+            field_cls = HyperlinkedIdentityField
+            kwargs = get_url_kwargs(model)
+
+        else:
+            raise ImproperlyConfigured(
+                'Field name `%s` is not valid for model `%s`.' %
+                (field_name, model.__class__.__name__)
+            )
+
+        return field_cls, kwargs
+
+    def build_final_kwargs(self, kwargs, extra_kwargs, field_name):
+        """
+        Include an 'extra_kwargs' that have been included for this field,
+        possibly removing any incompatible existing keyword arguments.
+        """
+        extras = extra_kwargs.get(field_name, {})
+
+        if extras.get('read_only', False):
+            for attr in [
+                'required', 'default', 'allow_blank', 'allow_null',
+                'min_length', 'max_length', 'min_value', 'max_value',
+                'validators', 'queryset'
+            ]:
+                kwargs.pop(attr, None)
+
+        if extras.get('default') and kwargs.get('required') is False:
+            kwargs.pop('required')
+
+        kwargs.update(extras)
+
+        return kwargs
 
     def _get_model_fields(self, field_names, declared_fields, extra_kwargs):
         """
