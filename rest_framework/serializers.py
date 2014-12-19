@@ -792,14 +792,33 @@ class ModelSerializer(Serializer):
         return instance
 
     def get_validators(self):
+        """
+        Determine the set of validators to use when instantiating serializer.
+        """
         # If the validators have been declared explicitly then use that.
         validators = getattr(getattr(self, 'Meta', None), 'validators', None)
         if validators is not None:
             return validators
 
-        # Determine the default set of validators.
-        validators = []
-        model_class = self.Meta.model
+        # Otherwise use the default set of validators.
+        return (
+            self.get_unique_together_validators() +
+            self.get_unique_for_date_validators()
+        )
+
+    def get_unique_together_validators(self):
+        """
+        Determine a default set of validators for any unique_together contraints.
+        """
+        model_class_inheritance_tree = (
+            [self.Meta.model] +
+            list(self.Meta.model._meta.parents.keys())
+        )
+
+        # The field names we're passing though here only include fields
+        # which may map onto a model field. Any dotted field name lookups
+        # cannot map to a field, and must be a traversal, so we're not
+        # including those.
         field_names = set([
             field.source for field in self.fields.values()
             if (field.source != '*') and ('.' not in field.source)
@@ -807,7 +826,8 @@ class ModelSerializer(Serializer):
 
         # Note that we make sure to check `unique_together` both on the
         # base model class, but also on any parent classes.
-        for parent_class in [model_class] + list(model_class._meta.parents.keys()):
+        validators = []
+        for parent_class in model_class_inheritance_tree:
             for unique_together in parent_class._meta.unique_together:
                 if field_names.issuperset(set(unique_together)):
                     validator = UniqueTogetherValidator(
@@ -815,13 +835,26 @@ class ModelSerializer(Serializer):
                         fields=unique_together
                     )
                     validators.append(validator)
+        return validators
 
-        # Add any unique_for_date/unique_for_month/unique_for_year constraints.
-        info = model_meta.get_field_info(model_class)
+    def get_unique_for_date_validators(self):
+        """
+        Determine a default set of validators for the following contraints:
+
+        * unique_for_date
+        * unique_for_month
+        * unique_for_year
+        """
+        info = model_meta.get_field_info(self.Meta.model)
+        default_manager = self.Meta.model._default_manager
+        field_names = [field.source for field in self.fields.values()]
+
+        validators = []
+
         for field_name, field in info.fields_and_pk.items():
             if field.unique_for_date and field_name in field_names:
                 validator = UniqueForDateValidator(
-                    queryset=model_class._default_manager,
+                    queryset=default_manager,
                     field=field_name,
                     date_field=field.unique_for_date
                 )
@@ -829,7 +862,7 @@ class ModelSerializer(Serializer):
 
             if field.unique_for_month and field_name in field_names:
                 validator = UniqueForMonthValidator(
-                    queryset=model_class._default_manager,
+                    queryset=default_manager,
                     field=field_name,
                     date_field=field.unique_for_month
                 )
@@ -837,7 +870,7 @@ class ModelSerializer(Serializer):
 
             if field.unique_for_year and field_name in field_names:
                 validator = UniqueForYearValidator(
-                    queryset=model_class._default_manager,
+                    queryset=default_manager,
                     field=field_name,
                     date_field=field.unique_for_year
                 )
