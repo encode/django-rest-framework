@@ -884,13 +884,12 @@ class ModelSerializer(Serializer):
         ret = OrderedDict()
         model = getattr(self.Meta, 'model')
         depth = getattr(self.Meta, 'depth', 0)
-        extra_kwargs = getattr(self.Meta, 'extra_kwargs', {})
-        extra_kwargs = self._include_additional_options(extra_kwargs)
 
         # Retrieve metadata about fields & relationships on the model class.
         info = model_meta.get_field_info(model)
 
         fields = self.get_field_names(declared_fields, info)
+        extra_kwargs = self.get_extra_kwargs()
 
         # Determine the set of model fields, and the fields that they map to.
         # We actually only need this to deal with the slightly awkward case
@@ -1024,17 +1023,6 @@ class ModelSerializer(Serializer):
                     (field_name, model.__class__.__name__)
                 )
 
-            # Check that any fields declared on the class are
-            # also explicitly included in `Meta.fields`.
-            missing_fields = set(declared_fields.keys()) - set(fields)
-            if missing_fields:
-                missing_field = list(missing_fields)[0]
-                raise ImproperlyConfigured(
-                    'Field `%s` has been declared on serializer `%s`, but '
-                    'is missing from `Meta.fields`.' %
-                    (missing_field, self.__class__.__name__)
-                )
-
             # Populate any kwargs defined in `Meta.extra_kwargs`
             extras = extra_kwargs.get(field_name, {})
             if extras.get('read_only', False):
@@ -1058,7 +1046,13 @@ class ModelSerializer(Serializer):
 
         return ret
 
-    def _include_additional_options(self, extra_kwargs):
+    def get_extra_kwargs(self):
+        """
+        Return a dictionary mapping field names to a dictionary of
+        additional keyword arguments.
+        """
+        extra_kwargs = getattr(self.Meta, 'extra_kwargs', {})
+
         read_only_fields = getattr(self.Meta, 'read_only_fields', None)
         if read_only_fields is not None:
             for field_name in read_only_fields:
