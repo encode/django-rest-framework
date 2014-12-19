@@ -68,7 +68,7 @@ The following URL pattern would additionally be generated:
 
 * URL pattern: `^users/{pk}/set_password/$`  Name: `'user-set-password'`
 
-If you did not like the default URL generated for your custom action, you could use `url_path` parameter with `@detail_route` or `@list_route` to customize it.
+If you do not want to use the default URL generated for your custom action, you can instead use the url_path parameter to customize it.
 
 For example, if you want to change the URL for our custom action to `^users/{pk}/change-password/$`, you could write:
 
@@ -82,7 +82,7 @@ For example, if you want to change the URL for our custom action to `^users/{pk}
         def set_password(self, request, pk=None):
             ...
 
-Above example would instead generate following URL pattern:
+The above example would now generate the following URL pattern:
 
 * URL pattern: `^users/{pk}/change-password/$`  Name: `'user-change-password'`
 
