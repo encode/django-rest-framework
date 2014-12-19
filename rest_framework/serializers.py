@@ -571,7 +571,10 @@ class BaseSerializer(WritableField):
                                   DeprecationWarning, stacklevel=2)
 
             if many:
-                self._data = [self.to_native(item) for item in obj]
+                if hasattr(obj, '__iter__'):
+                    self._data = [self.to_native(item) for item in obj]
+                else:
+                    self._data = []
             else:
                 self._data = self.to_native(obj)
 

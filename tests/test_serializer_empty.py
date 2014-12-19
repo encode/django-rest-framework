@@ -13,3 +13,16 @@ class EmptySerializerTestCase(TestCase):
 
         serializer = FooBarSerializer()
         self.assertEquals(serializer.data, {'foo': 0})
+
+    def test_serializing_none(self):
+        class FooBarSerializer(serializers.Serializer):
+            foo = serializers.IntegerField()
+            bar = serializers.SerializerMethodField('get_bar')
+
+            def get_bar(self, obj):
+                return 'bar'
+
+        serializer = FooBarSerializer(None, many=True)
+        self.assertEquals(serializer.data, [])
+
+
