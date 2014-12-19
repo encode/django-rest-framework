@@ -722,6 +722,8 @@ class ModelSerializer(Serializer):
     })
     _related_class = PrimaryKeyRelatedField
 
+    # Default `create` and `update` behavior...
+
     def create(self, validated_data):
         """
         We have a bit of extra checking around this in order to provide
@@ -790,6 +792,8 @@ class ModelSerializer(Serializer):
         instance.save()
 
         return instance
+
+    # Determine the validators to apply...
 
     def get_validators(self):
         """
@@ -878,28 +882,26 @@ class ModelSerializer(Serializer):
 
         return validators
 
+    # Determine the fields to apply...
+
     def get_fields(self):
         declared_fields = copy.deepcopy(self._declared_fields)
-
-        ret = OrderedDict()
         model = getattr(self.Meta, 'model')
         depth = getattr(self.Meta, 'depth', 0)
 
         # Retrieve metadata about fields & relationships on the model class.
         info = model_meta.get_field_info(model)
-
         field_names = self.get_field_names(declared_fields, info)
-        extra_kwargs = self.get_extra_kwargs()
 
-        model_fields = self.get_model_fields(field_names, declared_fields, extra_kwargs)
-        uniqueness_extra_kwargs, hidden_fields = self.get_uniqueness_field_options(field_names, model_fields)
-        for key, value in uniqueness_extra_kwargs.items():
-            if key in extra_kwargs:
-                extra_kwargs[key].update(value)
-            else:
-                extra_kwargs[key] = value
+        # Determine any extra field arguments and hidden fields that
+        # should be included
+        extra_kwargs = self.get_extra_kwargs()
+        extra_kwargs, hidden_fields = self.get_uniqueness_extra_kwargs(
+            field_names, declared_fields, extra_kwargs
+        )
 
         # Now determine the fields that should be included on the serializer.
+        ret = OrderedDict()
         for field_name in field_names:
             if field_name in declared_fields:
                 # Field is explicitly declared on the class, use that.
@@ -971,15 +973,17 @@ class ModelSerializer(Serializer):
             # Create the serializer field.
             ret[field_name] = field_cls(**kwargs)
 
-        for field_name, field in hidden_fields.items():
-            ret[field_name] = field
+        ret.update(hidden_fields)
 
         return ret
 
-    def get_model_fields(self, field_names, declared_fields, extra_kwargs):
-        # Returns all the model fields that are being mapped to by fields
-        # on the serializer class.
-        # Returned as a dict of 'model field name' -> 'model field'
+    def _get_model_fields(self, field_names, declared_fields, extra_kwargs):
+        """
+        Returns all the model fields that are being mapped to by fields
+        on the serializer class.
+        Returned as a dict of 'model field name' -> 'model field'.
+        Used internally by `get_uniqueness_field_options`.
+        """
         model = getattr(self.Meta, 'model')
         model_fields = {}
 
@@ -1006,8 +1010,18 @@ class ModelSerializer(Serializer):
 
         return model_fields
 
-    def get_uniqueness_field_options(self, field_names, model_fields):
+    def get_uniqueness_extra_kwargs(self, field_names, declared_fields, extra_kwargs):
+        """
+        Return any additional field options that need to be included as a
+        result of uniqueness constraints on the model. This is returned as
+        a two-tuple of:
+
+        ('dict of updated extra kwargs', 'mapping of hidden fields')
+        """
         model = getattr(self.Meta, 'model')
+        model_fields = self._get_model_fields(
+            field_names, declared_fields, extra_kwargs
+        )
 
         # Determine if we need any additional `HiddenField` or extra keyword
         # arguments to deal with `unique_for` dates that are required to
@@ -1035,7 +1049,7 @@ class ModelSerializer(Serializer):
         # applied, we can add the extra 'required=...' or 'default=...'
         # arguments that are appropriate to these fields, or add a `HiddenField` for it.
         hidden_fields = {}
-        extra_kwargs = {}
+        uniqueness_extra_kwargs = {}
 
         for unique_constraint_name in unique_constraint_names:
             # Get the model field that is referred too.
@@ -1053,14 +1067,21 @@ class ModelSerializer(Serializer):
             if unique_constraint_name in model_fields:
                 # The corresponding field is present in the serializer
                 if default is empty:
-                    extra_kwargs[unique_constraint_name] = {'required': True}
+                    uniqueness_extra_kwargs[unique_constraint_name] = {'required': True}
                 else:
-                    extra_kwargs[unique_constraint_name] = {'default': default}
+                    uniqueness_extra_kwargs[unique_constraint_name] = {'default': default}
             elif default is not empty:
                 # The corresponding field is not present in the,
                 # serializer. We have a default to use for it, so
                 # add in a hidden field that populates it.
                 hidden_fields[unique_constraint_name] = HiddenField(default=default)
+
+        # Update `extra_kwargs` with any new options.
+        for key, value in uniqueness_extra_kwargs.items():
+            if key in extra_kwargs:
+                extra_kwargs[key].update(value)
+            else:
+                extra_kwargs[key] = value
 
         return extra_kwargs, hidden_fields
 
