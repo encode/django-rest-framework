@@ -261,11 +261,11 @@ class DynamicListAndDetailViewSet(viewsets.ViewSet):
     def detail_route_get(self, request, *args, **kwargs):
         return Response({'method': 'link2'})
 
-    @list_route(custom_method_name="list_custom-route")
+    @list_route(url_path="list_custom-route")
     def list_custom_route_get(self, request, *args, **kwargs):
         return Response({'method': 'link1'})
 
-    @detail_route(custom_method_name="detail_custom-route")
+    @detail_route(url_path="detail_custom-route")
     def detail_custom_route_get(self, request, *args, **kwargs):
         return Response({'method': 'link2'})
 
@@ -278,7 +278,7 @@ class TestDynamicListAndDetailRouter(TestCase):
         routes = self.router.get_routes(DynamicListAndDetailViewSet)
         decorator_routes = [r for r in routes if not (r.name.endswith('-list') or r.name.endswith('-detail'))]
 
-        MethodNamesMap = namedtuple('MethodNamesMap', 'method_name custom_method_name')
+        MethodNamesMap = namedtuple('MethodNamesMap', 'method_name url_path')
         # Make sure all these endpoints exist and none have been clobbered
         for i, endpoint in enumerate([MethodNamesMap('list_custom_route_get', 'list_custom-route'),
                                       MethodNamesMap('list_route_get', 'list_route_get'),
@@ -290,14 +290,14 @@ class TestDynamicListAndDetailRouter(TestCase):
             route = decorator_routes[i]
             # check url listing
             method_name = endpoint.method_name
-            custom_method_name = endpoint.custom_method_name
+            url_path = endpoint.url_path
 
             if method_name.startswith('list_'):
                 self.assertEqual(route.url,
-                                 '^{{prefix}}/{0}{{trailing_slash}}$'.format(custom_method_name))
+                                 '^{{prefix}}/{0}{{trailing_slash}}$'.format(url_path))
             else:
                 self.assertEqual(route.url,
-                                 '^{{prefix}}/{{lookup}}/{0}{{trailing_slash}}$'.format(custom_method_name))
+                                 '^{{prefix}}/{{lookup}}/{0}{{trailing_slash}}$'.format(url_path))
             # check method to function mapping
             if method_name.endswith('_post'):
                 method_map = 'post'
