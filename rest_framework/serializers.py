@@ -913,6 +913,10 @@ class ModelSerializer(Serializer):
             exclude = getattr(self.Meta, 'exclude', None)
             if exclude is not None:
                 for field_name in exclude:
+                    assert field_name in fields, (
+                        'The field in the `exclude` option must be a model field. Got %s.' %
+                        field_name
+                    )
                     fields.remove(field_name)
 
         # Determine the set of model fields, and the fields that they map to.
