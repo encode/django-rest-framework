@@ -8,6 +8,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.routers import SimpleRouter, DefaultRouter
 from rest_framework.test import APIRequestFactory
+from collections import namedtuple
 
 factory = APIRequestFactory()
 
@@ -261,6 +262,14 @@ class DynamicListAndDetailViewSet(viewsets.ViewSet):
     def detail_route_get(self, request, *args, **kwargs):
         return Response({'method': 'link2'})
 
+    @list_route(url_path="list_custom-route")
+    def list_custom_route_get(self, request, *args, **kwargs):
+        return Response({'method': 'link1'})
+
+    @detail_route(url_path="detail_custom-route")
+    def detail_custom_route_get(self, request, *args, **kwargs):
+        return Response({'method': 'link2'})
+
 
 class TestDynamicListAndDetailRouter(TestCase):
     def setUp(self):
@@ -269,22 +278,33 @@ class TestDynamicListAndDetailRouter(TestCase):
     def test_list_and_detail_route_decorators(self):
         routes = self.router.get_routes(DynamicListAndDetailViewSet)
         decorator_routes = [r for r in routes if not (r.name.endswith('-list') or r.name.endswith('-detail'))]
+
+        MethodNamesMap = namedtuple('MethodNamesMap', 'method_name url_path')
         # Make sure all these endpoints exist and none have been clobbered
-        for i, endpoint in enumerate(['list_route_get', 'list_route_post', 'detail_route_get', 'detail_route_post']):
+        for i, endpoint in enumerate([MethodNamesMap('list_custom_route_get', 'list_custom-route'),
+                                      MethodNamesMap('list_route_get', 'list_route_get'),
+                                      MethodNamesMap('list_route_post', 'list_route_post'),
+                                      MethodNamesMap('detail_custom_route_get', 'detail_custom-route'),
+                                      MethodNamesMap('detail_route_get', 'detail_route_get'),
+                                      MethodNamesMap('detail_route_post', 'detail_route_post')
+                                      ]):
             route = decorator_routes[i]
             # check url listing
-            if endpoint.startswith('list_'):
+            method_name = endpoint.method_name
+            url_path = endpoint.url_path
+
+            if method_name.startswith('list_'):
                 self.assertEqual(route.url,
-                                 '^{{prefix}}/{0}{{trailing_slash}}$'.format(endpoint))
+                                 '^{{prefix}}/{0}{{trailing_slash}}$'.format(url_path))
             else:
                 self.assertEqual(route.url,
-                                 '^{{prefix}}/{{lookup}}/{0}{{trailing_slash}}$'.format(endpoint))
+                                 '^{{prefix}}/{{lookup}}/{0}{{trailing_slash}}$'.format(url_path))
             # check method to function mapping
-            if endpoint.endswith('_post'):
+            if method_name.endswith('_post'):
                 method_map = 'post'
             else:
                 method_map = 'get'
-            self.assertEqual(route.mapping[method_map], endpoint)
+            self.assertEqual(route.mapping[method_map], method_name)
 
 
 class TestRootWithAListlessViewset(TestCase):

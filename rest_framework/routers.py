@@ -176,23 +176,27 @@ class SimpleRouter(BaseRouter):
             if isinstance(route, DynamicDetailRoute):
                 # Dynamic detail routes (@detail_route decorator)
                 for httpmethods, methodname in detail_routes:
+                    method_kwargs = getattr(viewset, methodname).kwargs
+                    url_path = method_kwargs.pop("url_path", None) or methodname
                     initkwargs = route.initkwargs.copy()
-                    initkwargs.update(getattr(viewset, methodname).kwargs)
+                    initkwargs.update(method_kwargs)
                     ret.append(Route(
-                        url=replace_methodname(route.url, methodname),
+                        url=replace_methodname(route.url, url_path),
                         mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
-                        name=replace_methodname(route.name, methodname),
+                        name=replace_methodname(route.name, url_path),
                         initkwargs=initkwargs,
                     ))
             elif isinstance(route, DynamicListRoute):
                 # Dynamic list routes (@list_route decorator)
                 for httpmethods, methodname in list_routes:
+                    method_kwargs = getattr(viewset, methodname).kwargs
+                    url_path = method_kwargs.pop("url_path", None) or methodname
                     initkwargs = route.initkwargs.copy()
-                    initkwargs.update(getattr(viewset, methodname).kwargs)
+                    initkwargs.update(method_kwargs)
                     ret.append(Route(
-                        url=replace_methodname(route.url, methodname),
+                        url=replace_methodname(route.url, url_path),
                         mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
-                        name=replace_methodname(route.name, methodname),
+                        name=replace_methodname(route.name, url_path),
                         initkwargs=initkwargs,
                     ))
             else:
