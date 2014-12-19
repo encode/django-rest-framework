@@ -1112,7 +1112,7 @@ class ModelSerializer(Serializer):
         class NestedSerializer(ModelSerializer):
             class Meta:
                 model = relation_info.related
-                depth = nested_depth
+                depth = nested_depth - 1
 
         return NestedSerializer
 
@@ -1139,6 +1139,6 @@ class HyperlinkedModelSerializer(ModelSerializer):
         class NestedSerializer(HyperlinkedModelSerializer):
             class Meta:
                 model = relation_info.related
-                depth = nested_depth
+                depth = nested_depth - 1
 
         return NestedSerializer
