@@ -682,6 +682,10 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     )
 
 
+MODEL_SERIALIZER_FIELDS_CACHE = {}
+MODEL_SERIALIZER_VALIDATORS_CACHE = {}
+
+
 class ModelSerializer(Serializer):
     """
     A `ModelSerializer` is just a regular `Serializer`, except that:
@@ -802,6 +806,11 @@ class ModelSerializer(Serializer):
         Return the dict of field names -> field instances that should be
         used for `self.fields` when instantiating the serializer.
         """
+        cls = self.__class__
+
+        if cls in MODEL_SERIALIZER_FIELDS_CACHE:
+            return copy.deepcopy(MODEL_SERIALIZER_FIELDS_CACHE[cls])
+
         declared_fields = copy.deepcopy(self._declared_fields)
         model = getattr(self.Meta, 'model')
         depth = getattr(self.Meta, 'depth', 0)
@@ -836,6 +845,8 @@ class ModelSerializer(Serializer):
 
         # Add in any hidden fields.
         ret.update(hidden_fields)
+
+        MODEL_SERIALIZER_FIELDS_CACHE[cls] = ret
 
         return ret
 
@@ -1217,11 +1228,20 @@ class ModelSerializer(Serializer):
         if validators is not None:
             return validators[:]
 
+        cls = self.__class__
+
+        if cls in MODEL_SERIALIZER_VALIDATORS_CACHE:
+            return MODEL_SERIALIZER_VALIDATORS_CACHE[cls][:]
+
         # Otherwise use the default set of validators.
-        return (
+        validators = (
             self.get_unique_together_validators() +
             self.get_unique_for_date_validators()
         )
+
+        MODEL_SERIALIZER_VALIDATORS_CACHE[cls] = validators
+
+        return validators
 
     def get_unique_together_validators(self):
         """
