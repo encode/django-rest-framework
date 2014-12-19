@@ -567,6 +567,32 @@ The inner `Meta` class on serializers is not inherited from parent classes by de
 
 Typically we would recommend *not* using inheritance on inner Meta classes, but instead declaring all options explicitly.
 
+## Advanced `ModelSerializer` usage
+
+The ModelSerializer class also exposes an API that you can override in order to alter how serializer fields are automatically determined when instantiating the serializer.
+
+#### `.serializer_field_mapping`
+
+A mapping of Django model classes to REST framework serializer classes. You can override this mapping to alter the default serializer classes that should be used for each model class.
+
+#### `.serializer_relational_field`
+
+This property should be the serializer field class, that is used for relational fields by default. For `ModelSerializer` this defaults to `PrimaryKeyRelatedField`. For `HyperlinkedModelSerializer` this defaults to `HyperlinkedRelatedField`.
+
+#### The build field methods
+
+#### `build_standard_field(**kwargs)`
+
+#### `build_relational_field(**kwargs)`
+
+#### `build_nested_field(**kwargs)`
+
+#### `build_property_field(**kwargs)`
+
+#### `build_url_field(**kwargs)`
+
+#### `build_unknown_field(**kwargs)`
+
 ---
 
 # HyperlinkedModelSerializer
