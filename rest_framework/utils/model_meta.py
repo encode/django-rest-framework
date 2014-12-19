@@ -24,7 +24,7 @@ FieldInfo = namedtuple('FieldResult', [
 
 RelationInfo = namedtuple('RelationInfo', [
     'model_field',
-    'related',
+    'related_model',
     'to_many',
     'has_through_model'
 ])
@@ -77,7 +77,7 @@ def get_field_info(model):
     for field in [field for field in opts.fields if field.serialize and field.rel]:
         forward_relations[field.name] = RelationInfo(
             model_field=field,
-            related=_resolve_model(field.rel.to),
+            related_model=_resolve_model(field.rel.to),
             to_many=False,
             has_through_model=False
         )
@@ -86,7 +86,7 @@ def get_field_info(model):
     for field in [field for field in opts.many_to_many if field.serialize]:
         forward_relations[field.name] = RelationInfo(
             model_field=field,
-            related=_resolve_model(field.rel.to),
+            related_model=_resolve_model(field.rel.to),
             to_many=True,
             has_through_model=(
                 not field.rel.through._meta.auto_created
@@ -99,7 +99,7 @@ def get_field_info(model):
         accessor_name = relation.get_accessor_name()
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
-            related=relation.model,
+            related_model=relation.model,
             to_many=relation.field.rel.multiple,
             has_through_model=False
         )
@@ -109,7 +109,7 @@ def get_field_info(model):
         accessor_name = relation.get_accessor_name()
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
-            related=relation.model,
+            related_model=relation.model,
             to_many=True,
             has_through_model=(
                 (getattr(relation.field.rel, 'through', None) is not None)

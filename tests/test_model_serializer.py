@@ -206,7 +206,7 @@ class TestRegularFieldMappings(TestCase):
 
         with self.assertRaises(ImproperlyConfigured) as excinfo:
             TestSerializer().fields
-        expected = 'Field name `invalid` is not valid for model `ModelBase`.'
+        expected = 'Field name `invalid` is not valid for model `RegularFieldsModel`.'
         assert str(excinfo.exception) == expected
 
     def test_missing_field(self):

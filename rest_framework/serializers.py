@@ -802,9 +802,24 @@ class ModelSerializer(Serializer):
         Return the dict of field names -> field instances that should be
         used for `self.fields` when instantiating the serializer.
         """
+        assert hasattr(self, 'Meta'), (
+            'Class {serializer_class} missing "Meta" attribute'.format(
+                serializer_class=self.__class__.__name__
+            )
+        )
+        assert hasattr(self.Meta, 'model'), (
+            'Class {serializer_class} missing "Meta.model" attribute'.format(
+                serializer_class=self.__class__.__name__
+            )
+        )
+
         declared_fields = copy.deepcopy(self._declared_fields)
         model = getattr(self.Meta, 'model')
         depth = getattr(self.Meta, 'depth', 0)
+
+        if depth is not None:
+            assert depth >= 0, "'depth' may not be negative."
+            assert depth <= 10, "'depth' may not be greater than 10."
 
         # Retrieve metadata about fields & relationships on the model class.
         info = model_meta.get_field_info(model)
@@ -817,27 +832,32 @@ class ModelSerializer(Serializer):
             field_names, declared_fields, extra_kwargs
         )
 
-        # Now determine the fields that should be included on the serializer.
-        ret = OrderedDict()
+        # Determine the fields that should be included on the serializer.
+        fields = OrderedDict()
+
         for field_name in field_names:
+            # If the field is explicitly declared on the class then use that.
             if field_name in declared_fields:
-                # Field is explicitly declared on the class, use that.
-                ret[field_name] = declared_fields[field_name]
+                fields[field_name] = declared_fields[field_name]
                 continue
 
             # Determine the serializer field class and keyword arguments.
-            field_cls, kwargs = self.build_field(field_name, info, model, depth)
+            field_class, field_kwargs = self.build_field(
+                field_name, info, model, depth
+            )
 
-            # Populate any kwargs defined in `Meta.extra_kwargs`
-            kwargs = self.build_field_kwargs(kwargs, extra_kwargs, field_name)
+            # Include any kwargs defined in `Meta.extra_kwargs`
+            field_kwargs = self.build_field_kwargs(
+                field_kwargs, extra_kwargs, field_name
+            )
 
             # Create the serializer field.
-            ret[field_name] = field_cls(**kwargs)
+            fields[field_name] = field_class(**field_kwargs)
 
         # Add in any hidden fields.
-        ret.update(hidden_fields)
+        fields.update(hidden_fields)
 
-        return ret
+        return fields
 
     # Methods for determining the set of field names to include...
 
@@ -916,108 +936,105 @@ class ModelSerializer(Serializer):
 
     # Methods for constructing serializer fields...
 
-    def build_field(self, field_name, info, model, nested_depth):
+    def build_field(self, field_name, info, model_class, nested_depth):
         """
         Return a two tuple of (cls, kwargs) to build a serializer field with.
         """
         if field_name in info.fields_and_pk:
-            return self.build_standard_field(field_name, info, model)
+            model_field = info.fields_and_pk[field_name]
+            return self.build_standard_field(field_name, model_field)
 
         elif field_name in info.relations:
+            relation_info = info.relations[field_name]
             if not nested_depth:
-                return self.build_relational_field(field_name, info, model)
+                return self.build_relational_field(field_name, relation_info)
             else:
-                return self.build_nested_field(field_name, info, model, nested_depth)
+                return self.build_nested_field(field_name, relation_info, nested_depth)
 
-        elif hasattr(model, field_name):
-            return self.build_property_field(field_name, info, model)
+        elif hasattr(model_class, field_name):
+            return self.build_property_field(field_name, model_class)
 
         elif field_name == api_settings.URL_FIELD_NAME:
-            return self.build_url_field(field_name, info, model)
+            return self.build_url_field(field_name, model_class)
 
-        return self.build_unknown_field(field_name, info, model)
+        return self.build_unknown_field(field_name, model_class)
 
-    def build_standard_field(self, field_name, info, model):
+    def build_standard_field(self, field_name, model_field):
         """
         Create regular model fields.
         """
         field_mapping = ClassLookupDict(self.serializer_field_mapping)
-        model_field = info.fields_and_pk[field_name]
 
-        field_cls = field_mapping[model_field]
-        kwargs = get_field_kwargs(field_name, model_field)
+        field_class = field_mapping[model_field]
+        field_kwargs = get_field_kwargs(field_name, model_field)
 
-        if 'choices' in kwargs:
+        if 'choices' in field_kwargs:
             # Fields with choices get coerced into `ChoiceField`
             # instead of using their regular typed field.
-            field_cls = ChoiceField
-        if not issubclass(field_cls, ModelField):
+            field_class = ChoiceField
+        if not issubclass(field_class, ModelField):
             # `model_field` is only valid for the fallback case of
             # `ModelField`, which is used when no other typed field
             # matched to the model field.
-            kwargs.pop('model_field', None)
-        if not issubclass(field_cls, CharField) and not issubclass(field_cls, ChoiceField):
+            field_kwargs.pop('model_field', None)
+        if not issubclass(field_class, CharField) and not issubclass(field_class, ChoiceField):
             # `allow_blank` is only valid for textual fields.
-            kwargs.pop('allow_blank', None)
+            field_kwargs.pop('allow_blank', None)
 
-        return field_cls, kwargs
+        return field_class, field_kwargs
 
-    def build_relational_field(self, field_name, info, model):
+    def build_relational_field(self, field_name, relation_info):
         """
         Create fields for forward and reverse relationships.
         """
-        relation_info = info.relations[field_name]
-
-        field_cls = self.serializer_related_class
-        kwargs = get_relation_kwargs(field_name, relation_info)
+        field_class = self.serializer_related_class
+        field_kwargs = get_relation_kwargs(field_name, relation_info)
 
         # `view_name` is only valid for hyperlinked relationships.
-        if not issubclass(field_cls, HyperlinkedRelatedField):
-            kwargs.pop('view_name', None)
+        if not issubclass(field_class, HyperlinkedRelatedField):
+            field_kwargs.pop('view_name', None)
 
-        return field_cls, kwargs
+        return field_class, field_kwargs
 
-    def build_nested_field(self, field_name, info, model, nested_depth):
+    def build_nested_field(self, field_name, relation_info, nested_depth):
         """
         Create nested fields for forward and reverse relationships.
         """
-        relation_info = info.relations[field_name]
-
         class NestedSerializer(ModelSerializer):
             class Meta:
-                model = relation_info.related
-                depth = nested_depth - 1
+                model = relation_info.related_model
+                depth = nested_depth
 
-        field_cls = NestedSerializer
-        kwargs = get_nested_relation_kwargs(relation_info)
+        field_class = NestedSerializer
+        field_kwargs = get_nested_relation_kwargs(relation_info)
 
-        return field_cls, kwargs
+        return field_class, field_kwargs
 
-    def build_property_field(self, field_name, info, model):
+    def build_property_field(self, field_name, model_class):
         """
         Create a read only field for model methods and properties.
         """
-        field_cls = ReadOnlyField
-        kwargs = {}
+        field_class = ReadOnlyField
+        field_kwargs = {}
 
-        return field_cls, kwargs
+        return field_class, field_kwargs
 
-    def build_url_field(self, field_name, info, model):
+    def build_url_field(self, field_name, model_class):
         """
         Create a field representing the object's own URL.
         """
-        field_cls = HyperlinkedIdentityField
-        kwargs = get_url_kwargs(model)
+        field_class = HyperlinkedIdentityField
+        field_kwargs = get_url_kwargs(model_class)
 
-        return field_cls, kwargs
+        return field_class, field_kwargs
 
-    def build_unknown_field(self, field_name, info, model):
+    def build_unknown_field(self, field_name, model_class):
         """
         Raise an error on any unknown fields.
         """
         raise ImproperlyConfigured(
             'Field name `%s` is not valid for model `%s`.' %
-            (field_name, model.__class__.__name__)
+            (field_name, model_class.__name__)
         )
 
     def build_field_kwargs(self, kwargs, extra_kwargs, field_name):
@@ -1318,17 +1335,16 @@ class HyperlinkedModelSerializer(ModelSerializer):
             list(model_info.forward_relations.keys())
         )
 
-    def build_nested_field(self, field_name, info, model, nested_depth):
+    def build_nested_field(self, field_name, relation_info, nested_depth):
         """
         Create nested fields for forward and reverse relationships.
         """
-        relation_info = info.relations[field_name]
-
         class NestedSerializer(HyperlinkedModelSerializer):
             class Meta:
-                model = relation_info.related
+                model = relation_info.related_model
                 depth = nested_depth - 1
 
-        field_cls = NestedSerializer
-        kwargs = get_nested_relation_kwargs(relation_info)
-        return field_cls, kwargs
+        field_class = NestedSerializer
+        field_kwargs = get_nested_relation_kwargs(relation_info)
+
+        return field_class, field_kwargs
