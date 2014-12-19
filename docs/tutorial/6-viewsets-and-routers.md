@@ -53,7 +53,7 @@ Notice that we've also used the `@detail_route` decorator to create a custom act
 
 Custom actions which use the `@detail_route` decorator will respond to `GET` requests.  We can use the `methods` argument if we wanted an action that responded to `POST` requests.
 
-The URLs for custom actions by default depends on the method name itself. If you want to change the way url should be constructed, you can use `url_path` parameter of `@detail_route` and provide the string value for the same.
+The URLs for custom actions by default depend on the method name itself. If you want to change the way url should be constructed, you can include url_path as a decorator keyword argument.
 
 ## Binding ViewSets to URLs explicitly
 
