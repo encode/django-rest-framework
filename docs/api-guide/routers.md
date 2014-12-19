@@ -68,6 +68,24 @@ The following URL pattern would additionally be generated:
 
 * URL pattern: `^users/{pk}/set_password/$`  Name: `'user-set-password'`
 
+If you did not like the default URL generated for your custom action, you could use `url_path` parameter with `@detail_route` or `@list_route` to customize it.
+
+For example, if you want to change the URL for our custom action to `^users/{pk}/change-password/$`, you could write:
+
+    from myapp.permissions import IsAdminOrIsSelf
+    from rest_framework.decorators import detail_route
+    
+    class UserViewSet(ModelViewSet):
+        ...
+        
+        @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf], url_path='change-password')
+        def set_password(self, request, pk=None):
+            ...
+
+Above example would instead generate following URL pattern:
+
+* URL pattern: `^users/{pk}/change-password/$`  Name: `'user-change-password'`
+
 For more information see the viewset documentation on [marking extra actions for routing][route-decorators].
 
 # API Guide
