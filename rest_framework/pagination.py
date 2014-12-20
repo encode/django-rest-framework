@@ -68,7 +68,12 @@ class BasePaginationSerializer(serializers.Serializer):
         except AttributeError:
             object_serializer = DefaultObjectSerializer
 
-        self.fields[results_field] = serializers.ListSerializer(
+        try:
+            list_serializer_class = object_serializer.Meta.list_serializer_class
+        except AttributeError:
+            list_serializer_class = serializers.ListSerializer
+
+        self.fields[results_field] = list_serializer_class(
             child=object_serializer(),
             source='object_list'
         )
