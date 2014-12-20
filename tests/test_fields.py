@@ -223,8 +223,8 @@ class MockHTMLDict(dict):
     getlist = None
 
 
-class TestCharHTMLInput:
-    def test_empty_html_checkbox(self):
+class TestHTMLInput:
+    def test_empty_html_charfield(self):
         class TestSerializer(serializers.Serializer):
             message = serializers.CharField(default='happy')
 
@@ -232,23 +232,31 @@ class TestCharHTMLInput:
         assert serializer.is_valid()
         assert serializer.validated_data == {'message': 'happy'}
 
-    def test_empty_html_checkbox_allow_null(self):
+    def test_empty_html_charfield_allow_null(self):
         class TestSerializer(serializers.Serializer):
             message = serializers.CharField(allow_null=True)
 
-        serializer = TestSerializer(data=MockHTMLDict())
+        serializer = TestSerializer(data=MockHTMLDict({'message': ''}))
         assert serializer.is_valid()
         assert serializer.validated_data == {'message': None}
 
-    def test_empty_html_checkbox_allow_null_allow_blank(self):
+    def test_empty_html_datefield_allow_null(self):
+        class TestSerializer(serializers.Serializer):
+            expiry = serializers.DateField(allow_null=True)
+
+        serializer = TestSerializer(data=MockHTMLDict({'expiry': ''}))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'expiry': None}
+
+    def test_empty_html_charfield_allow_null_allow_blank(self):
         class TestSerializer(serializers.Serializer):
             message = serializers.CharField(allow_null=True, allow_blank=True)
 
-        serializer = TestSerializer(data=MockHTMLDict({}))
+        serializer = TestSerializer(data=MockHTMLDict({'message': ''}))
         assert serializer.is_valid()
         assert serializer.validated_data == {'message': ''}
 
-    def test_empty_html_required_false(self):
+    def test_empty_html_charfield_required_false(self):
         class TestSerializer(serializers.Serializer):
             message = serializers.CharField(required=False)
 

@@ -273,7 +273,11 @@ class Field(object):
                     return empty
                 return self.default_empty_html
             ret = dictionary[self.field_name]
-            return self.default_empty_html if (ret == '') else ret
+            if ret == '' and self.allow_null:
+                # If the field is blank, and null is a valid value then
+                # determine if we should use null instead.
+                return '' if getattr(self, 'allow_blank', False) else None
+            return ret
         return dictionary.get(self.field_name, empty)
 
     def get_attribute(self, instance):
@@ -545,8 +549,6 @@ class CharField(Field):
         'min_length': _('Ensure this field has at least {min_length} characters.')
     }
     initial = ''
-    coerce_blank_to_null = False
-    default_empty_html = ''
 
     def __init__(self, **kwargs):
         self.allow_blank = kwargs.pop('allow_blank', False)
@@ -559,11 +561,6 @@ class CharField(Field):
         if min_length is not None:
             message = self.error_messages['min_length'].format(min_length=min_length)
             self.validators.append(MinLengthValidator(min_length, message=message))
-
-        if self.allow_null and (not self.allow_blank) and (self.default is empty):
-            # HTML input cannot represent `None` values, so we need to
-            # forcibly coerce empty HTML values to `None` if `allow_null=True`.
-            self.default_empty_html = None
 
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,
