@@ -140,6 +140,17 @@ As with `SimpleRouter` the trailing slashes on the URL routes can be removed by 
 
     router = DefaultRouter(trailing_slash=False)
 
+If you wish to put the router namespace, you will need to pass the `namespace` name to `DefaultRouter`.
+
+    router = DefaultRouter(namespace='api')
+    urlpatterns = [
+        url(r'^', include(router.urls, namespace='api')),
+    ]
+
+Please note if you do this, you will have to specify your namespace in your serializers too.
+
+    url = serializers.HyperlinkedIdentityField(view_name='api:mymodel-detail')
+
 # Custom Routers
 
 Implementing a custom router isn't something you'd need to do very often, but it can be useful if you have specific requirements about how the your URLs for your API are structured.  Doing so allows you to encapsulate the URL structure in a reusable way that ensures you don't have to write your URL patterns explicitly for each new view.
