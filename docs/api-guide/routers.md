@@ -21,6 +21,32 @@ Here's an example of a simple URL conf, that uses `SimpleRouter`.
     router.register(r'accounts', AccountViewSet)
     urlpatterns = router.urls
 
+A more common usage of routers is
+
+    from django.conf.urls import patterns, include, url
+    from rest_framework import routers
+    
+    router = routers.SimpleRouter()
+    router.register(r'users', UserViewSet)
+    router.register(r'accounts', AccountViewSet)
+    
+    urlpatterns = patterns('',
+        url(r'^', include(router.urls))
+    )
+    
+It is possible to namespace the router's views using Django's standard namespacing mechanism:     
+
+    from django.conf.urls import patterns, include, url
+    from rest_framework import routers
+    
+    router = routers.SimpleRouter()
+    router.register(r'users', UserViewSet)
+    router.register(r'accounts', AccountViewSet)
+    
+    urlpatterns = patterns('',
+        url(r'^', include(router.urls, namespace='api'))
+    )
+
 There are two mandatory arguments to the `register()` method:
 
 * `prefix` - The URL prefix to use for this set of routes.
