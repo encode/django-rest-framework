@@ -80,7 +80,7 @@ def get_field_kwargs(field_name, model_field):
         kwargs['decimal_places'] = decimal_places
 
     if isinstance(model_field, models.TextField):
-        kwargs['style'] = {'type': 'textarea'}
+        kwargs['style'] = {'base_template': 'textarea.html'}
 
     if isinstance(model_field, models.AutoField) or not model_field.editable:
         # If this field is read-only, then return early.
