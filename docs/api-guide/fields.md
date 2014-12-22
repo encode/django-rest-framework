@@ -480,7 +480,7 @@ Let's look at an example of serializing a class that represents an RGB color val
 
     class ColorField(serializers.Field):
         """
-        Color objects are serialized into "rgb(#, #, #)" notation.
+        Color objects are serialized into 'rgb(#, #, #)' notation.
         """
         def to_representation(self, obj):
             return "rgb(%d, %d, %d)" % (obj.red, obj.green, obj.blue)
