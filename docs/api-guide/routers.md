@@ -21,7 +21,7 @@ Here's an example of a simple URL conf, that uses `SimpleRouter`.
     router.register(r'accounts', AccountViewSet)
     urlpatterns = router.urls
 
-A more common usage of routers is
+A more common usage of routers is to include it in order to combine it with other patterns.
 
     from django.conf.urls import patterns, include, url
     from rest_framework import routers
@@ -31,6 +31,7 @@ A more common usage of routers is
     router.register(r'accounts', AccountViewSet)
     
     urlpatterns = patterns('',
+        url(r'^forgot-password/$, ForgotPasswordFormView.as_view(),
         url(r'^', include(router.urls))
     )
     
