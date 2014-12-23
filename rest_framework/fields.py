@@ -644,7 +644,7 @@ class IntegerField(Field):
     def __init__(self, **kwargs):
         max_value = kwargs.pop('max_value', None)
         min_value = kwargs.pop('min_value', None)
-        max_length = kwargs.pop('max_length', None) # valid, but ignored.
+        kwargs.pop('max_length', None)  # valid, but ignored.
         super(IntegerField, self).__init__(**kwargs)
         if max_value is not None:
             message = self.error_messages['max_value'].format(max_value=max_value)

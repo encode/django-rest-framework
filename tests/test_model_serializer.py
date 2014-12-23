@@ -610,6 +610,7 @@ class TestSerializerMetaClass(TestCase):
             "Cannot set both 'fields' and 'exclude'."
         )
 
+
 class MaxIntLengthModel(models.Model):
     count = models.IntegerField()
 
@@ -626,4 +627,3 @@ class TestIntegerMaxLength(TestCase):
                 count = IntegerField()
         """)
         self.assertEqual(repr(BasicModelSerializer()), expected)
-
