@@ -5,7 +5,7 @@
     {% for key, text in field.choices.items %}
     <div class="checkbox">
         <label>
-            <input type="checkbox" name="{{ rest_framework/field.name }}" value="{{ key }}" {% if key in field.value %}checked{% endif %}>
+            <input type="checkbox" name="{{ field.name }}" value="{{ key }}" {% if key in field.value %}checked{% endif %}>
             {{ text }}
         </label>
     </div>
