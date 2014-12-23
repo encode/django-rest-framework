@@ -231,6 +231,7 @@ This field is always read-only.
 
 * `view_name` - The view name that should be used as the target of the relationship.  If you're using [the standard router classes][routers] this will be a string with the format `<model_name>-detail`.  **required**.
 * `lookup_field` - The field on the target that should be used for the lookup.  Should correspond to a URL keyword argument on the referenced view.  Default is `'pk'`.
+* `lookup_url_kwarg` - The name of the keyword argument defined in the URL conf that corresponds to the lookup field. Defaults to using the same value as `lookup_field`.
 * `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
 
 ---
