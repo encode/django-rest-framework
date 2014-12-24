@@ -321,3 +321,13 @@ class TestRootWithAListlessViewset(TestCase):
         request = factory.get('/')
         response = self.view(request)
         self.assertEqual(response.data, {})
+
+
+class TestNamespacedDefaultRouter(TestCase):
+    urls = 'tests.namespaced_urls'
+
+    def test_api_root(self):
+        from django.core.urlresolvers import reverse
+        url = reverse('api-namespace:api-root')
+        response = self.client.get(url)
+        self.assertEqual(response.data['note'], 'http://testserver/namespaced-api/note/')
