@@ -5,11 +5,12 @@ import pytest
 import sys
 import os
 import subprocess
+import multiprocessing
 
 
 PYTEST_ARGS = {
     'default': ['tests'],
-    'fast': ['tests', '-q'],
+    'fast': ['tests', '-q', '-n %d' % multiprocessing.cpu_count()],
 }
 
 FLAKE8_ARGS = ['rest_framework', 'tests', '--ignore=E501']
