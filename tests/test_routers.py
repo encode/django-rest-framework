@@ -3,7 +3,8 @@ from django.conf.urls import patterns, url, include
 from django.db import models
 from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
-from rest_framework import serializers, viewsets, mixins, permissions
+from django.core import urlresolvers
+from rest_framework import serializers, viewsets, permissions
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.routers import SimpleRouter, DefaultRouter
@@ -307,17 +308,28 @@ class TestDynamicListAndDetailRouter(TestCase):
             self.assertEqual(route.mapping[method_map], method_name)
 
 
-class TestRootWithAListlessViewset(TestCase):
-    def setUp(self):
-        class NoteViewSet(mixins.RetrieveModelMixin,
-                          viewsets.GenericViewSet):
-            model = RouterTestModel
+# APIRoot
+class APIRootTestModel(models.Model):
+    pass
 
-        self.router = DefaultRouter()
-        self.router.register(r'notes', NoteViewSet)
-        self.view = self.router.urls[0].callback
 
-    def test_api_root(self):
-        request = factory.get('/')
-        response = self.view(request)
-        self.assertEqual(response.data, {})
+class TestAPIRootView(TestCase):
+    urls = 'tests.router_test_urls'
+
+    def test_listless(self):
+        url = urlresolvers.reverse('listless-api-root')
+        response = self.client.get(url)
+        self.assertIn('full', response.data)
+        self.assertNotIn('listless', response.data)
+
+    def test_normal_api_root_contains_routes(self):
+        url = urlresolvers.reverse('api-root')
+        response = self.client.get(url)
+        self.assertIn('test-model', response.data)
+        self.assertEqual(response.data['test-model'], 'http://testserver/api/test-model/')
+
+    def test_namespaced_api_root_contains_routes(self):
+        url = urlresolvers.reverse('api-namespace:api-root')
+        response = self.client.get(url)
+        self.assertIn('test-model', response.data)
+        self.assertEqual(response.data['test-model'], 'http://testserver/namespaced-api/test-model/')
