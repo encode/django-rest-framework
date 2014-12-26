@@ -74,7 +74,7 @@ class BasePaginationSerializer(serializers.Serializer):
             list_serializer_class = serializers.ListSerializer
 
         self.fields[results_field] = list_serializer_class(
-            child=object_serializer(),
+            child=object_serializer(*args, **kwargs),
             source='object_list'
         )
         self.fields[results_field].bind(field_name=results_field, parent=self)
