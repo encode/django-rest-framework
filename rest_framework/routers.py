@@ -21,7 +21,7 @@ from django.conf.urls import patterns, url
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
 from rest_framework import views
-from rest_framework.compat import OrderedDict
+from rest_framework.compat import get_resolver_match, OrderedDict
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.urlpatterns import format_suffix_patterns
@@ -292,7 +292,10 @@ class DefaultRouter(SimpleRouter):
 
             def get(self, request, *args, **kwargs):
                 ret = OrderedDict()
+                namespace = get_resolver_match(request).namespace
                 for key, url_name in api_root_dict.items():
+                    if namespace:
+                        url_name = namespace + ':' + url_name
                     try:
                         ret[key] = reverse(
                             url_name,
