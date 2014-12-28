@@ -49,6 +49,38 @@ This means you'll need to explicitly set the `base_name` argument when registeri
 
 ---
 
+### Using `include` with routers
+
+The `.urls` attribute on a router instance is simply a standard list of URL patterns. There are a number of different styles for how you can include these URLs.
+
+For example, you can append `router.urls` to a list of existing views…
+
+    router = routers.SimpleRouter()
+    router.register(r'users', UserViewSet)
+    router.register(r'accounts', AccountViewSet)
+    
+    urlpatterns = [
+        url(r'^forgot-password/$, ForgotPasswordFormView.as_view(),
+    ]
+    
+    urlpatterns += router.urls
+
+Alternatively you can use Django's `include` function, like so…
+
+    urlpatterns = [
+        url(r'^forgot-password/$, ForgotPasswordFormView.as_view(),
+        url(r'^', include(router.urls))
+    ]
+
+Router URL patterns can also be namespaces.
+
+    urlpatterns = [
+        url(r'^forgot-password/$, ForgotPasswordFormView.as_view(),
+        url(r'^api/', include(router.urls, namespace='api'))
+    ]
+
+If using namespacing with hyperlinked serializers you'll also need to ensure that any `view_name` parameters on the serializers correctly reflect the namespace. In the example above you'd need to include a parameter such as `view_name='api:user-detail'` for serializer fields hyperlinked to the user detail view.
+
 ### Extra link and actions
 
 Any methods on the viewset decorated with `@detail_route` or `@list_route` will also be routed.
