@@ -214,6 +214,8 @@ You won't typically need to override the following methods, although you might n
 
 The mixin classes provide the actions that are used to provide the basic view behavior.  Note that the mixin classes provide action methods rather than defining the handler methods, such as `.get()` and `.post()`, directly.  This allows for more flexible composition of behavior.
 
+The mixin classes can be imported from `rest_framework.mixins`.
+
 ## ListModelMixin
 
 Provides a `.list(request, *args, **kwargs)` method, that implements listing a queryset.
@@ -257,6 +259,8 @@ If an object is deleted this returns a `204 No Content` response, otherwise it w
 # Concrete View Classes
 
 The following classes are the concrete generic views.  If you're using generic views this is normally the level you'll be working at unless you need heavily customized behavior.
+
+The view classes can be imported from `rest_framework.generics`.
 
 ## CreateAPIView
 
