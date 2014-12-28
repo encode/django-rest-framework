@@ -3,7 +3,7 @@ from django.conf.urls import patterns, url, include
 from django.db import models
 from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
-from rest_framework import serializers, viewsets, mixins, permissions
+from rest_framework import serializers, viewsets, permissions
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.routers import SimpleRouter, DefaultRouter
