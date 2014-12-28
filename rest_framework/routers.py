@@ -21,7 +21,7 @@ from django.conf.urls import patterns, url
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
 from rest_framework import views
-from rest_framework.compat import OrderedDict
+from rest_framework.compat import OrderedDict, get_resolver_match
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.urlpatterns import format_suffix_patterns
@@ -290,9 +290,19 @@ class DefaultRouter(SimpleRouter):
         class APIRoot(views.APIView):
             _ignore_model_permissions = True
 
+            def get_namespace(self):
+                """
+                Attempt to retrieve the namespace of the current router.
+                """
+                resolver_match = get_resolver_match(self.request)
+                return resolver_match.namespace
+
             def get(self, request, *args, **kwargs):
                 ret = OrderedDict()
+                namespace = self.get_namespace()
                 for key, url_name in api_root_dict.items():
+                    if namespace:
+                        url_name = namespace + ':' + url_name
                     try:
                         ret[key] = reverse(
                             url_name,
