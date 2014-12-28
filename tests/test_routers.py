@@ -305,19 +305,3 @@ class TestDynamicListAndDetailRouter(TestCase):
             else:
                 method_map = 'get'
             self.assertEqual(route.mapping[method_map], method_name)
-
-
-class TestRootWithAListlessViewset(TestCase):
-    def setUp(self):
-        class NoteViewSet(mixins.RetrieveModelMixin,
-                          viewsets.GenericViewSet):
-            model = RouterTestModel
-
-        self.router = DefaultRouter()
-        self.router.register(r'notes', NoteViewSet)
-        self.view = self.router.urls[0].callback
-
-    def test_api_root(self):
-        request = factory.get('/')
-        response = self.view(request)
-        self.assertEqual(response.data, {})
