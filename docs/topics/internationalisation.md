@@ -9,12 +9,40 @@ This guide assumes you are already familiar with how to translate a Django app. 
 
 #### To translate REST framework error messages:
 
-1. Pick an app where you want the translations to be, for example `myapp`
+1. Make a new folder where you want to store the translated errors. Add this 
+path to your [`LOCALE_PATHS`][django-locale-paths] setting. 
 
-2. Add a symlink from that app to the installed `rest_framework`
+  ---
+
+  **Note:** For the rest of 
+this document we will assume the path you created was 
+`/home/www/project/conf/locale/`, and that you have updated your `settings.py` to include the setting:
+
   ```
-  ln -s /home/user/.virtualenvs/myproject/lib/python2.7/site-packages/rest_framework/ rest_framework
+  LOCALE_PATHS = (
+      '/home/www/project/conf/locale/',
+  )
   ```
+
+  ---
+
+2. Now create a subfolder for the language you want to translate. The folder should be named using [locale 
+name][django-locale-name] notation.  E.g. `de`, `pt_BR`, `es_AR`, etc.
+
+  ```
+  mkdir /home/www/project/conf/locale/pt_BR/LC_MESSAGES
+  ```
+
+3. Now copy the base translations file from the REST framework source code 
+into your translations folder
+
+  ```
+  cp /home/user/.virtualenvs/myproject/lib/python2.7/site-packages/rest_framework/locale/en_US/LC_MESSAGES/django.po
+  /home/www/project/conf/locale/pt_BR/LC_MESSAGES
+  ```
+  
+  This should create the file 
+  `/home/www/project/conf/locale/pt_BR/LC_MESSAGES/django.po`
   
   ---
 
@@ -27,17 +55,17 @@ This guide assumes you are already familiar with how to translate a Django app. 
   ---
   
   
+4. Edit `/home/www/project/conf/locale/pt_BR/LC_MESSAGES/django.po` and 
+translate all the error messages.
 
-3. Run Django's `makemessages` command in the normal way, but add the `--symlink` option.  For example, if you want to translate into Brazilian Portuguese you would run
-  ```
-  manage.py makemessages --symlink -l pt_BR
-  ```
-  
-4. Translate the `django.po` file which is created as normal.  This will be in the folder `myapp/locale/pt_BR/LC_MESSAGES`.
+5. Run `manage.py compilemessages -l pt_BR` to make the translations 
+available for Django to use. You should see a message
 
-5. Run `manage.py compilemessages` as normal
+    ```
+    processing file django.po in /home/www/project/conf/locale/pt_BR/LC_MESSAGES
+    ```
 
-6. Restart your server
+6. Restart your server.
 
 
 
@@ -59,3 +87,5 @@ REST framework will use the same preferences to select which language to display
 
 [django-translation]: https://docs.djangoproject.com/en/1.7/topics/i18n/translation
 [django-language-preference]: https://docs.djangoproject.com/en/1.7/topics/i18n/translation/#how-django-discovers-language-preference
+[django-locale-paths]: https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-LOCALE_PATHS
+[django-locale-name]: https://docs.djangoproject.com/en/1.7/topics/i18n/#term-locale-name
