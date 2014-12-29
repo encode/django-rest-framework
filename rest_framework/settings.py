@@ -18,6 +18,7 @@ REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
 from __future__ import unicode_literals
+from collections import Iterable
 import warnings
 from django.conf import settings
 from django.utils import importlib, six
@@ -190,13 +191,21 @@ class APISettings(object):
             # Fall back to defaults
             val = self.defaults[attr]
         else:
-            expected_class = self.defaults[attr].__class__
-            if val.__class__ != expected_class:
+            # Verify that the user hasn't accidentally given a string instead
+            #  of an iterable, or vice-versa
+            default = self.defaults[attr]
+            if issubclass(val.__class__, Iterable) \
+                    and (not issubclass(default.__class__, Iterable)
+                         or isinstance(val, basestring)):
                 warnings.warn(
-                    "The `{val}` setting has the class {val.__class__}, "
-                    "but the expected class was {expected_class}".format(
-                        **locals()
-                    ),
+                    "The `{attr}` setting must be iterable".format(**locals()),
+                    RESTFrameworkSettingHasUnexpectedClassWarning,
+                    stacklevel=3
+                )
+            elif isinstance(default, basestring) and not \
+                    isinstance(val, basestring):
+                warnings.warn(
+                    "The `{attr}` setting must be a string".format(**locals()),
                     RESTFrameworkSettingHasUnexpectedClassWarning,
                     stacklevel=3
                 )

@@ -19,9 +19,10 @@ class TestSettings(TestCase):
         with self.assertRaises(ImportError):
             settings.DEFAULT_RENDERER_CLASSES
 
-    def test_bad_setting_class_raises_warning(self):
+    def test_bad_iterable_setting_class_raises_warning(self):
         """
-        Make sure warnings are emitted when settings have an unexpected class.
+        Make sure warnings are emitted when settings which should be iterable
+        are not.
         """
         settings = APISettings({
             'DEFAULT_RENDERER_CLASSES': 'rest_framework.renderers.JSONRenderer'
@@ -30,6 +31,25 @@ class TestSettings(TestCase):
         with warnings.catch_warnings(record=True) as w:
             # Trigger a warning.
             settings.DEFAULT_RENDERER_CLASSES
+            # Verify that a warning is thrown
+            assert len(w) == 1
+            assert issubclass(
+                w[-1].category, RESTFrameworkSettingHasUnexpectedClassWarning
+            )
+
+    def test_bad_string_setting_class_raises_warning(self):
+        """
+        Make sure warnings are emitted when settings which should be strings are
+        not.
+        """
+        settings = APISettings({
+            'DEFAULT_METADATA_CLASS': []
+        })
+
+        with warnings.catch_warnings(record=True) as w:
+            # Trigger a warning.
+            settings.DEFAULT_METADATA_CLASS
+
             # Verify that a warning is thrown
             assert len(w) == 1
             assert issubclass(
