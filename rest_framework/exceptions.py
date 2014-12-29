@@ -145,3 +145,7 @@ class Throttled(APIException):
             self.detail += ' ' + force_text(
                 self.extra_detail % {'wait': self.wait}
             )
+
+
+class RESTFrameworkSettingHasUnexpectedClassWarning(Warning):
+    pass

@@ -18,9 +18,11 @@ REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
 from __future__ import unicode_literals
+import warnings
 from django.conf import settings
 from django.utils import importlib, six
 from rest_framework import ISO_8601
+from rest_framework.exceptions import RESTFrameworkSettingHasUnexpectedClassWarning
 
 
 USER_SETTINGS = getattr(settings, 'REST_FRAMEWORK', None)
@@ -187,6 +189,17 @@ class APISettings(object):
         except KeyError:
             # Fall back to defaults
             val = self.defaults[attr]
+        else:
+            expected_class = self.defaults[attr].__class__
+            if val.__class__ != expected_class:
+                warnings.warn(
+                    "The `{val}` setting has the class {val.__class__}, "
+                    "but the expected class was {expected_class}".format(
+                        **locals()
+                    ),
+                    RESTFrameworkSettingHasUnexpectedClassWarning,
+                    stacklevel=3
+                )
 
         # Coerce import strings into classes
         if val and attr in self.import_strings:
