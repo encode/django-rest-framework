@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-28 17:49+0000\n"
+"POT-Creation-Date: 2014-12-31 12:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,7 +30,7 @@ msgid "Must include \"username\" and \"password\""
 msgstr ""
 
 #: rest_framework/exceptions.py:39
-msgid "A server error occured"
+msgid "A server error occurred"
 msgstr ""
 
 #: rest_framework/exceptions.py:74
@@ -212,7 +212,7 @@ msgid "Expected a list of items but got type `{input_type}`"
 msgstr ""
 
 #: rest_framework/generics.py:122
-msgid "Page is not 'last', nor can it be converted to an int."
+msgid "Page is not 'last', and cannot be converted to an int."
 msgstr ""
 
 #: rest_framework/generics.py:126
