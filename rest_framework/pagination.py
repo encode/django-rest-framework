@@ -77,6 +77,7 @@ class BasePaginationSerializer(serializers.Serializer):
             child=object_serializer(),
             source='object_list'
         )
+        self.fields[results_field].bind(field_name=results_field, parent=self)
 
 
 class PaginationSerializer(BasePaginationSerializer):

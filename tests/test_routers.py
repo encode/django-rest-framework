@@ -1,9 +1,9 @@
 from __future__ import unicode_literals
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.db import models
 from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
-from rest_framework import serializers, viewsets, mixins, permissions
+from rest_framework import serializers, viewsets, permissions
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.routers import SimpleRouter, DefaultRouter
@@ -12,7 +12,42 @@ from collections import namedtuple
 
 factory = APIRequestFactory()
 
-urlpatterns = patterns('',)
+
+class RouterTestModel(models.Model):
+    uuid = models.CharField(max_length=20)
+    text = models.CharField(max_length=200)
+
+
+class NoteSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='routertestmodel-detail', lookup_field='uuid')
+
+    class Meta:
+        model = RouterTestModel
+        fields = ('url', 'uuid', 'text')
+
+
+class NoteViewSet(viewsets.ModelViewSet):
+    queryset = RouterTestModel.objects.all()
+    serializer_class = NoteSerializer
+    lookup_field = 'uuid'
+
+
+class MockViewSet(viewsets.ModelViewSet):
+    queryset = None
+    serializer_class = None
+
+
+notes_router = SimpleRouter()
+notes_router.register(r'notes', NoteViewSet)
+
+namespaced_router = DefaultRouter()
+namespaced_router.register(r'example', MockViewSet, base_name='example')
+
+urlpatterns = [
+    url(r'^non-namespaced/', include(namespaced_router.urls)),
+    url(r'^namespaced/', include(namespaced_router.urls, namespace='example')),
+    url(r'^example/', include(notes_router.urls)),
+]
 
 
 class BasicViewSet(viewsets.ViewSet):
@@ -64,9 +99,26 @@ class TestSimpleRouter(TestCase):
                 self.assertEqual(route.mapping[method], endpoint)
 
 
-class RouterTestModel(models.Model):
-    uuid = models.CharField(max_length=20)
-    text = models.CharField(max_length=200)
+class TestRootView(TestCase):
+    urls = 'tests.test_routers'
+
+    def test_retrieve_namespaced_root(self):
+        response = self.client.get('/namespaced/')
+        self.assertEqual(
+            response.data,
+            {
+                "example": "http://testserver/namespaced/example/",
+            }
+        )
+
+    def test_retrieve_non_namespaced_root(self):
+        response = self.client.get('/non-namespaced/')
+        self.assertEqual(
+            response.data,
+            {
+                "example": "http://testserver/non-namespaced/example/",
+            }
+        )
 
 
 class TestCustomLookupFields(TestCase):
@@ -76,51 +128,29 @@ class TestCustomLookupFields(TestCase):
     urls = 'tests.test_routers'
 
     def setUp(self):
-        class NoteSerializer(serializers.HyperlinkedModelSerializer):
-            url = serializers.HyperlinkedIdentityField(view_name='routertestmodel-detail', lookup_field='uuid')
-
-            class Meta:
-                model = RouterTestModel
-                fields = ('url', 'uuid', 'text')
-
-        class NoteViewSet(viewsets.ModelViewSet):
-            queryset = RouterTestModel.objects.all()
-            serializer_class = NoteSerializer
-            lookup_field = 'uuid'
-
-        self.router = SimpleRouter()
-        self.router.register(r'notes', NoteViewSet)
-
-        from tests import test_routers
-        urls = getattr(test_routers, 'urlpatterns')
-        urls += patterns(
-            '',
-            url(r'^', include(self.router.urls)),
-        )
-
         RouterTestModel.objects.create(uuid='123', text='foo bar')
 
     def test_custom_lookup_field_route(self):
-        detail_route = self.router.urls[-1]
+        detail_route = notes_router.urls[-1]
         detail_url_pattern = detail_route.regex.pattern
         self.assertIn('<uuid>', detail_url_pattern)
 
     def test_retrieve_lookup_field_list_view(self):
-        response = self.client.get('/notes/')
+        response = self.client.get('/example/notes/')
         self.assertEqual(
             response.data,
             [{
-                "url": "http://testserver/notes/123/",
+                "url": "http://testserver/example/notes/123/",
                 "uuid": "123", "text": "foo bar"
             }]
         )
 
     def test_retrieve_lookup_field_detail_view(self):
-        response = self.client.get('/notes/123/')
+        response = self.client.get('/example/notes/123/')
         self.assertEqual(
             response.data,
             {
-                "url": "http://testserver/notes/123/",
+                "url": "http://testserver/example/notes/123/",
                 "uuid": "123", "text": "foo bar"
             }
         )
@@ -305,19 +335,3 @@ class TestDynamicListAndDetailRouter(TestCase):
             else:
                 method_map = 'get'
             self.assertEqual(route.mapping[method_map], method_name)
-
-
-class TestRootWithAListlessViewset(TestCase):
-    def setUp(self):
-        class NoteViewSet(mixins.RetrieveModelMixin,
-                          viewsets.GenericViewSet):
-            model = RouterTestModel
-
-        self.router = DefaultRouter()
-        self.router.register(r'notes', NoteViewSet)
-        self.view = self.router.urls[0].callback
-
-    def test_api_root(self):
-        request = factory.get('/')
-        response = self.view(request)
-        self.assertEqual(response.data, {})
