@@ -119,7 +119,7 @@ class GenericAPIView(views.APIView):
             if page == 'last':
                 page_number = paginator.num_pages
             else:
-                raise Http404(_("Page is not 'last', and cannot be converted to an int."))
+                raise Http404(_("Choose a valid page number. Page numbers must be a whole number, or must be the string 'last'."))
         try:
             page = paginator.page(page_number)
         except InvalidPage as exc:

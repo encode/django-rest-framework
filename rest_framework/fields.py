@@ -637,7 +637,7 @@ class IntegerField(Field):
         'invalid': _('A valid integer is required.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
-        'max_string_length': _('String value too large')
+        'max_string_length': _('String value too large.')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
@@ -671,7 +671,7 @@ class FloatField(Field):
         'invalid': _("A valid number is required."),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
-        'max_string_length': _('String value too large')
+        'max_string_length': _('String value too large.')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
@@ -707,7 +707,7 @@ class DecimalField(Field):
         'max_digits': _('Ensure that there are no more than {max_digits} digits in total.'),
         'max_decimal_places': _('Ensure that there are no more than {max_decimal_places} decimal places.'),
         'max_whole_digits': _('Ensure that there are no more than {max_whole_digits} digits before the decimal point.'),
-        'max_string_length': _('String value too large')
+        'max_string_length': _('String value too large.')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
@@ -790,7 +790,7 @@ class DecimalField(Field):
 
 class DateTimeField(Field):
     default_error_messages = {
-        'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}'),
+        'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}.'),
         'date': _('Expected a datetime but got a date.'),
     }
     format = api_settings.DATETIME_FORMAT
@@ -855,7 +855,7 @@ class DateTimeField(Field):
 
 class DateField(Field):
     default_error_messages = {
-        'invalid': _('Date has wrong format. Use one of these formats instead: {format}'),
+        'invalid': _('Date has wrong format. Use one of these formats instead: {format}.'),
         'datetime': _('Expected a date but got a datetime.'),
     }
     format = api_settings.DATE_FORMAT
@@ -913,7 +913,7 @@ class DateField(Field):
 
 class TimeField(Field):
     default_error_messages = {
-        'invalid': _('Time has wrong format. Use one of these formats instead: {format}'),
+        'invalid': _('Time has wrong format. Use one of these formats instead: {format}.'),
     }
     format = api_settings.TIME_FORMAT
     input_formats = api_settings.TIME_INPUT_FORMATS
@@ -1090,8 +1090,7 @@ class FileField(Field):
 class ImageField(FileField):
     default_error_messages = {
         'invalid_image': _(
-            'Upload a valid image. The file you uploaded was either not an '
-            'image or a corrupted image.'
+            'Upload a valid image. The file you uploaded was either not an image or a corrupted image.'
         ),
     }
 
@@ -1116,7 +1115,7 @@ class ListField(Field):
     child = None
     initial = []
     default_error_messages = {
-        'not_a_list': _('Expected a list of items but got type `{input_type}`')
+        'not_a_list': _('Expected a list of items but got type `{input_type}`.')
     }
 
     def __init__(self, *args, **kwargs):
