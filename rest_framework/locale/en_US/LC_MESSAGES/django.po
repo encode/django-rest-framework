@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-31 12:48+0000\n"
+"POT-Creation-Date: 2014-12-31 13:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,7 +30,7 @@ msgid "Must include \"username\" and \"password\""
 msgstr ""
 
 #: rest_framework/exceptions.py:39
-msgid "A server error occurred"
+msgid "A server error occurred."
 msgstr ""
 
 #: rest_framework/exceptions.py:74
@@ -55,7 +55,7 @@ msgid "Method '%s' not allowed."
 msgstr ""
 
 #: rest_framework/exceptions.py:105
-msgid "Could not satisfy the request Accept header"
+msgid "Could not satisfy the request Accept header."
 msgstr ""
 
 #: rest_framework/exceptions.py:117
@@ -92,7 +92,7 @@ msgstr ""
 msgid "This field may not be blank."
 msgstr ""
 
-#: rest_framework/fields.py:548 rest_framework/fields.py:1250
+#: rest_framework/fields.py:548 rest_framework/fields.py:1249
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr ""
 
@@ -133,7 +133,7 @@ msgstr ""
 
 #: rest_framework/fields.py:640 rest_framework/fields.py:674
 #: rest_framework/fields.py:710
-msgid "String value too large"
+msgid "String value too large."
 msgstr ""
 
 #: rest_framework/fields.py:671 rest_framework/fields.py:704
@@ -155,7 +155,7 @@ msgid ""
 msgstr ""
 
 #: rest_framework/fields.py:793
-msgid "Datetime has wrong format. Use one of these formats instead: {format}"
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
 #: rest_framework/fields.py:794
@@ -163,7 +163,7 @@ msgid "Expected a datetime but got a date."
 msgstr ""
 
 #: rest_framework/fields.py:858
-msgid "Date has wrong format. Use one of these formats instead: {format}"
+msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
 #: rest_framework/fields.py:859
@@ -171,14 +171,15 @@ msgid "Expected a date but got a datetime."
 msgstr ""
 
 #: rest_framework/fields.py:916
-msgid "Time has wrong format. Use one of these formats instead: {format}"
+msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
 #: rest_framework/fields.py:972 rest_framework/fields.py:1016
 msgid "`{input}` is not a valid choice."
 msgstr ""
 
-#: rest_framework/fields.py:1017 rest_framework/serializers.py:474
+#: rest_framework/fields.py:1017 rest_framework/fields.py:1118
+#: rest_framework/serializers.py:474
 msgid "Expected a list of items but got type `{input_type}`."
 msgstr ""
 
@@ -204,15 +205,15 @@ msgid ""
 msgstr ""
 
 #: rest_framework/fields.py:1093
-msgid "Upload a valid image. The file you uploaded was either not an "
-msgstr ""
-
-#: rest_framework/fields.py:1119
-msgid "Expected a list of items but got type `{input_type}`"
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
 msgstr ""
 
 #: rest_framework/generics.py:122
-msgid "Page is not 'last', and cannot be converted to an int."
+msgid ""
+"Choose a valid page number. Page numbers must be a whole number, or must be "
+"the string 'last'."
 msgstr ""
 
 #: rest_framework/generics.py:126
