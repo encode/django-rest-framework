@@ -70,7 +70,8 @@ available for Django to use. You should see a message
 
 
 ## How Django chooses which language to use
-REST framework will use the same preferences to select which language to display as Django does.  You can find more info in the [django docs on discovering language preferences][django-language-preference].  For reference, these are
+REST framework will use the same preferences to select which language to 
+display as Django does.  You can find more info in the [Django docs on discovering language preferences][django-language-preference].  For reference, these are
 
 1. First, it looks for the language prefix in the requested URL
 2. Failing that, it looks for the `LANGUAGE_SESSION_KEY` key in the current user’s session.
