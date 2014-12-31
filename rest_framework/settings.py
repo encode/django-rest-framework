@@ -196,14 +196,14 @@ class APISettings(object):
             default = self.defaults[attr]
             if issubclass(val.__class__, Iterable) \
                     and (not issubclass(default.__class__, Iterable)
-                         or isinstance(val, basestring)):
+                         or isinstance(val, six.string_types)):
                 warnings.warn(
                     "The `{attr}` setting must be iterable".format(**locals()),
                     RESTFrameworkSettingHasUnexpectedClassWarning,
                     stacklevel=3
                 )
-            elif isinstance(default, basestring) and not \
-                    isinstance(val, basestring):
+            elif isinstance(default, six.string_types) and not \
+                    isinstance(val, six.string_types):
                 warnings.warn(
                     "The `{attr}` setting must be a string".format(**locals()),
                     RESTFrameworkSettingHasUnexpectedClassWarning,
