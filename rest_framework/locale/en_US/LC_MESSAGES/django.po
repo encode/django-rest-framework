@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-31 13:02+0000\n"
+"POT-Creation-Date: 2015-01-02 11:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,24 +50,28 @@ msgid "You do not have permission to perform this action."
 msgstr ""
 
 #: rest_framework/exceptions.py:94
+msgid "Not found."
+msgstr ""
+
+#: rest_framework/exceptions.py:99
 #, python-format
 msgid "Method '%s' not allowed."
 msgstr ""
 
-#: rest_framework/exceptions.py:105
+#: rest_framework/exceptions.py:110
 msgid "Could not satisfy the request Accept header."
 msgstr ""
 
-#: rest_framework/exceptions.py:117
+#: rest_framework/exceptions.py:122
 #, python-format
 msgid "Unsupported media type '%s' in request."
 msgstr ""
 
-#: rest_framework/exceptions.py:128
+#: rest_framework/exceptions.py:133
 msgid "Request was throttled."
 msgstr ""
 
-#: rest_framework/exceptions.py:130
+#: rest_framework/exceptions.py:135
 #, python-format
 msgid "Expected available in %(wait)d second."
 msgid_plural "Expected available in %(wait)d seconds."
@@ -84,127 +88,127 @@ msgstr ""
 msgid "This field may not be null."
 msgstr ""
 
-#: rest_framework/fields.py:484 rest_framework/fields.py:512
+#: rest_framework/fields.py:480 rest_framework/fields.py:508
 msgid "`{input}` is not a valid boolean."
 msgstr ""
 
-#: rest_framework/fields.py:547
+#: rest_framework/fields.py:543
 msgid "This field may not be blank."
 msgstr ""
 
-#: rest_framework/fields.py:548 rest_framework/fields.py:1249
+#: rest_framework/fields.py:544 rest_framework/fields.py:1252
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr ""
 
-#: rest_framework/fields.py:549
+#: rest_framework/fields.py:545
 msgid "Ensure this field has at least {min_length} characters."
 msgstr ""
 
-#: rest_framework/fields.py:584
+#: rest_framework/fields.py:587
 msgid "Enter a valid email address."
 msgstr ""
 
-#: rest_framework/fields.py:601
+#: rest_framework/fields.py:604
 msgid "This value does not match the required pattern."
 msgstr ""
 
-#: rest_framework/fields.py:612
+#: rest_framework/fields.py:615
 msgid ""
 "Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."
 msgstr ""
 
-#: rest_framework/fields.py:624
+#: rest_framework/fields.py:627
 msgid "Enter a valid URL."
 msgstr ""
 
-#: rest_framework/fields.py:637
+#: rest_framework/fields.py:640
 msgid "A valid integer is required."
 msgstr ""
 
-#: rest_framework/fields.py:638 rest_framework/fields.py:672
-#: rest_framework/fields.py:705
+#: rest_framework/fields.py:641 rest_framework/fields.py:675
+#: rest_framework/fields.py:708
 msgid "Ensure this value is less than or equal to {max_value}."
 msgstr ""
 
-#: rest_framework/fields.py:639 rest_framework/fields.py:673
-#: rest_framework/fields.py:706
+#: rest_framework/fields.py:642 rest_framework/fields.py:676
+#: rest_framework/fields.py:709
 msgid "Ensure this value is greater than or equal to {min_value}."
 msgstr ""
 
-#: rest_framework/fields.py:640 rest_framework/fields.py:674
-#: rest_framework/fields.py:710
+#: rest_framework/fields.py:643 rest_framework/fields.py:677
+#: rest_framework/fields.py:713
 msgid "String value too large."
 msgstr ""
 
-#: rest_framework/fields.py:671 rest_framework/fields.py:704
+#: rest_framework/fields.py:674 rest_framework/fields.py:707
 msgid "A valid number is required."
 msgstr ""
 
-#: rest_framework/fields.py:707
+#: rest_framework/fields.py:710
 msgid "Ensure that there are no more than {max_digits} digits in total."
 msgstr ""
 
-#: rest_framework/fields.py:708
+#: rest_framework/fields.py:711
 msgid "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr ""
 
-#: rest_framework/fields.py:709
+#: rest_framework/fields.py:712
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
 msgstr ""
 
-#: rest_framework/fields.py:793
+#: rest_framework/fields.py:796
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
-#: rest_framework/fields.py:794
+#: rest_framework/fields.py:797
 msgid "Expected a datetime but got a date."
 msgstr ""
 
-#: rest_framework/fields.py:858
+#: rest_framework/fields.py:861
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
-#: rest_framework/fields.py:859
+#: rest_framework/fields.py:862
 msgid "Expected a date but got a datetime."
 msgstr ""
 
-#: rest_framework/fields.py:916
+#: rest_framework/fields.py:919
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
-#: rest_framework/fields.py:972 rest_framework/fields.py:1016
+#: rest_framework/fields.py:975 rest_framework/fields.py:1019
 msgid "`{input}` is not a valid choice."
 msgstr ""
 
-#: rest_framework/fields.py:1017 rest_framework/fields.py:1118
-#: rest_framework/serializers.py:474
+#: rest_framework/fields.py:1020 rest_framework/fields.py:1121
+#: rest_framework/serializers.py:476
 msgid "Expected a list of items but got type `{input_type}`."
 msgstr ""
 
-#: rest_framework/fields.py:1047
+#: rest_framework/fields.py:1050
 msgid "No file was submitted."
 msgstr ""
 
-#: rest_framework/fields.py:1048
+#: rest_framework/fields.py:1051
 msgid "The submitted data was not a file. Check the encoding type on the form."
 msgstr ""
 
-#: rest_framework/fields.py:1049
+#: rest_framework/fields.py:1052
 msgid "No filename could be determined."
 msgstr ""
 
-#: rest_framework/fields.py:1050
+#: rest_framework/fields.py:1053
 msgid "The submitted file is empty."
 msgstr ""
 
-#: rest_framework/fields.py:1051
+#: rest_framework/fields.py:1054
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr ""
 
-#: rest_framework/fields.py:1093
+#: rest_framework/fields.py:1096
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
@@ -275,4 +279,20 @@ msgstr ""
 
 #: rest_framework/validators.py:247
 msgid "This field must be unique for the \"{date_field}\" year."
+msgstr ""
+
+#: rest_framework/versioning.py:39
+msgid "Invalid version in 'Accept' header."
+msgstr ""
+
+#: rest_framework/versioning.py:70 rest_framework/versioning.py:112
+msgid "Invalid version in URL path."
+msgstr ""
+
+#: rest_framework/versioning.py:138
+msgid "Invalid version in hostname."
+msgstr ""
+
+#: rest_framework/versioning.py:160
+msgid "Invalid version in query parameter."
 msgstr ""
