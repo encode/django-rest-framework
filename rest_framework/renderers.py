@@ -17,11 +17,8 @@ from django.http.multipartparser import parse_header
 from django.template import Context, RequestContext, loader, Template
 from django.test.client import encode_multipart
 from django.utils import six
-from django.utils.encoding import smart_text
-from django.utils.xmlutils import SimplerXMLGenerator
-from django.utils.six.moves import StringIO
 from rest_framework import exceptions, serializers, status, VERSION
-from rest_framework.compat import SHORT_SEPARATORS, LONG_SEPARATORS, yaml
+from rest_framework.compat import SHORT_SEPARATORS, LONG_SEPARATORS
 from rest_framework.exceptions import ParseError
 from rest_framework.settings import api_settings
 from rest_framework.request import is_form_media_type, override_method
@@ -110,112 +107,6 @@ class JSONRenderer(BaseRenderer):
             ret = ret.replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
             return bytes(ret.encode('utf-8'))
         return ret
-
-
-class JSONPRenderer(JSONRenderer):
-    """
-    Renderer which serializes to json,
-    wrapping the json output in a callback function.
-    """
-
-    media_type = 'application/javascript'
-    format = 'jsonp'
-    callback_parameter = 'callback'
-    default_callback = 'callback'
-    charset = 'utf-8'
-
-    def get_callback(self, renderer_context):
-        """
-        Determine the name of the callback to wrap around the json output.
-        """
-        request = renderer_context.get('request', None)
-        params = request and request.query_params or {}
-        return params.get(self.callback_parameter, self.default_callback)
-
-    def render(self, data, accepted_media_type=None, renderer_context=None):
-        """
-        Renders into jsonp, wrapping the json output in a callback function.
-
-        Clients may set the callback function name using a query parameter
-        on the URL, for example: ?callback=exampleCallbackName
-        """
-        renderer_context = renderer_context or {}
-        callback = self.get_callback(renderer_context)
-        json = super(JSONPRenderer, self).render(data, accepted_media_type,
-                                                 renderer_context)
-        return callback.encode(self.charset) + b'(' + json + b');'
-
-
-class XMLRenderer(BaseRenderer):
-    """
-    Renderer which serializes to XML.
-    """
-
-    media_type = 'application/xml'
-    format = 'xml'
-    charset = 'utf-8'
-
-    def render(self, data, accepted_media_type=None, renderer_context=None):
-        """
-        Renders `data` into serialized XML.
-        """
-        if data is None:
-            return ''
-
-        stream = StringIO()
-
-        xml = SimplerXMLGenerator(stream, self.charset)
-        xml.startDocument()
-        xml.startElement("root", {})
-
-        self._to_xml(xml, data)
-
-        xml.endElement("root")
-        xml.endDocument()
-        return stream.getvalue()
-
-    def _to_xml(self, xml, data):
-        if isinstance(data, (list, tuple)):
-            for item in data:
-                xml.startElement("list-item", {})
-                self._to_xml(xml, item)
-                xml.endElement("list-item")
-
-        elif isinstance(data, dict):
-            for key, value in six.iteritems(data):
-                xml.startElement(key, {})
-                self._to_xml(xml, value)
-                xml.endElement(key)
-
-        elif data is None:
-            # Don't output any value
-            pass
-
-        else:
-            xml.characters(smart_text(data))
-
-
-class YAMLRenderer(BaseRenderer):
-    """
-    Renderer which serializes to YAML.
-    """
-
-    media_type = 'application/yaml'
-    format = 'yaml'
-    encoder = encoders.SafeDumper
-    charset = 'utf-8'
-    ensure_ascii = False
-
-    def render(self, data, accepted_media_type=None, renderer_context=None):
-        """
-        Renders `data` into serialized YAML.
-        """
-        assert yaml, 'YAMLRenderer requires pyyaml to be installed'
-
-        if data is None:
-            return ''
-
-        return yaml.dump(data, stream=None, encoding=self.charset, Dumper=self.encoder, allow_unicode=not self.ensure_ascii)
 
 
 class TemplateHTMLRenderer(BaseRenderer):
