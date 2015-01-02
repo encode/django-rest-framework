@@ -18,11 +18,11 @@ For more information see the documentation on [content negotiation][conneg].
 
 ## Setting the renderers
 
-The default set of renderers may be set globally, using the `DEFAULT_RENDERER_CLASSES` setting.  For example, the following settings would use `YAML` as the main media type and also include the self describing API.
+The default set of renderers may be set globally, using the `DEFAULT_RENDERER_CLASSES` setting.  For example, the following settings would use `JSON` as the main media type and also include the self describing API.
 
     REST_FRAMEWORK = {
         'DEFAULT_RENDERER_CLASSES': (
-            'rest_framework.renderers.YAMLRenderer',
+            'rest_framework.renderers.JSONRenderer',
             'rest_framework.renderers.BrowsableAPIRenderer',
         )
     }
@@ -31,15 +31,15 @@ You can also set the renderers used for an individual view, or viewset,
 using the `APIView` class based views.
 
     from django.contrib.auth.models import User
-    from rest_framework.renderers import JSONRenderer, YAMLRenderer
+    from rest_framework.renderers import JSONRenderer
     from rest_framework.response import Response
     from rest_framework.views import APIView
 
     class UserCountView(APIView):
         """
-        A view that returns the count of active users, in JSON or YAML.
+        A view that returns the count of active users in JSON.
         """
-        renderer_classes = (JSONRenderer, YAMLRenderer)
+        renderer_classes = (JSONRenderer, )
 
         def get(self, request, format=None):
             user_count = User.objects.filter(active=True).count()
@@ -49,10 +49,10 @@ using the `APIView` class based views.
 Or, if you're using the `@api_view` decorator with function based views.
 
     @api_view(['GET'])
-    @renderer_classes((JSONRenderer, JSONPRenderer))
+    @renderer_classes((JSONRenderer,))
     def user_count_view(request, format=None):
         """
-        A view that returns the count of active users, in JSON or JSONp.
+        A view that returns the count of active users in JSON.
         """
         user_count = User.objects.filter(active=True).count()
         content = {'user_count': user_count}
@@ -92,72 +92,6 @@ The default JSON encoding style can be altered using the `UNICODE_JSON` and `COM
 **.format**: `'.json'`
 
 **.charset**: `None`
-
-## JSONPRenderer
-
-Renders the request data into `JSONP`.  The `JSONP` media type provides a mechanism of allowing cross-domain AJAX requests, by wrapping a `JSON` response in a javascript callback.
-
-The javascript callback function must be set by the client including a `callback` URL query parameter.  For example `http://example.com/api/users?callback=jsonpCallback`.  If the callback function is not explicitly set by the client it will default to `'callback'`.
-
----
-
-**Warning**: If you require cross-domain AJAX requests, you should almost certainly be using the more modern approach of [CORS][cors] as an alternative to `JSONP`.  See the [CORS documentation][cors-docs] for more details.
-
-The `jsonp` approach is essentially a browser hack, and is [only appropriate for globally  readable API endpoints][jsonp-security], where `GET` requests are unauthenticated and do not require any user permissions.
-
----
-
-**.media_type**: `application/javascript`
-
-**.format**: `'.jsonp'`
-
-**.charset**: `utf-8`
-
-## YAMLRenderer
-
-Renders the request data into `YAML`.
-
-Requires the `pyyaml` package to be installed.
-
-Note that non-ascii characters will be rendered using `\uXXXX` character escape.  For example:
-
-    unicode black star: "\u2605"
-
-**.media_type**: `application/yaml`
-
-**.format**: `'.yaml'`
-
-**.charset**: `utf-8`
-
-## UnicodeYAMLRenderer
-
-Renders the request data into `YAML`.
-
-Requires the `pyyaml` package to be installed.
-
-Note that non-ascii characters will not be character escaped.  For example:
-
-    unicode black star: ★
-
-**.media_type**: `application/yaml`
-
-**.format**: `'.yaml'`
-
-**.charset**: `utf-8`
-
-## XMLRenderer
-
-Renders REST framework's default style of `XML` response content.
-
-Note that the `XML` markup language is used typically used as the base language for more strictly defined domain-specific languages, such as `RSS`, `Atom`, and `XHTML`.
-
-If you are considering using `XML` for your API, you may want to consider implementing a custom renderer and parser for your specific requirements, and using an existing domain-specific media-type, or creating your own custom XML-based media-type.
-
-**.media_type**: `application/xml`
-
-**.format**: `'.xml'`
-
-**.charset**: `utf-8`
 
 ## TemplateHTMLRenderer
 
@@ -433,10 +367,6 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
-[rfc4627]: http://www.ietf.org/rfc/rfc4627.txt
-[cors]: http://www.w3.org/TR/cors/
-[cors-docs]: ../topics/ajax-csrf-cors.md
-[jsonp-security]: http://stackoverflow.com/questions/613962/is-jsonp-safe-to-use
 [testing]: testing.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas
 [quote]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven

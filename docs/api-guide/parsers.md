@@ -26,26 +26,26 @@ As an example, if you are sending `json` encoded data using jQuery with the [.aj
 
 ## Setting the parsers
 
-The default set of parsers may be set globally, using the `DEFAULT_PARSER_CLASSES` setting.  For example, the following settings would allow requests with `YAML` content.
+The default set of parsers may be set globally, using the `DEFAULT_PARSER_CLASSES` setting.  For example, the following settings would allow requests with `JSON` content.
 
     REST_FRAMEWORK = {
         'DEFAULT_PARSER_CLASSES': (
-            'rest_framework.parsers.YAMLParser',
+            'rest_framework.parsers.JSONParser',
         )
     }
 
 You can also set the parsers used for an individual view, or viewset,
 using the `APIView` class based views.
 
-	from rest_framework.parsers import YAMLParser
+	from rest_framework.parsers import JSONParser
 	from rest_framework.response import Response
     from rest_framework.views import APIView
 
     class ExampleView(APIView):
         """
-        A view that can accept POST requests with YAML content.
+        A view that can accept POST requests with JSON content.
         """
-        parser_classes = (YAMLParser,)
+        parser_classes = (JSONParser,)
 
         def post(self, request, format=None):
             return Response({'received data': request.data})
@@ -53,10 +53,10 @@ using the `APIView` class based views.
 Or, if you're using the `@api_view` decorator with function based views.
 
     @api_view(['POST'])
-    @parser_classes((YAMLParser,))
+    @parser_classes((JSONParser,))
     def example_view(request, format=None):
         """
-        A view that can accept POST requests with YAML content.
+        A view that can accept POST requests with JSON content.
         """
         return Response({'received data': request.data})
 
@@ -69,26 +69,6 @@ Or, if you're using the `@api_view` decorator with function based views.
 Parses `JSON` request content.
 
 **.media_type**: `application/json`
-
-## YAMLParser
-
-Parses `YAML` request content.
-
-Requires the `pyyaml` package to be installed.
-
-**.media_type**: `application/yaml`
-
-## XMLParser
-
-Parses REST framework's default style of `XML` request content.
-
-Note that the `XML` markup language is typically used as the base language for more strictly defined domain-specific languages, such as `RSS`, `Atom`, and `XHTML`.
-
-If you are considering using `XML` for your API, you may want to consider implementing a custom renderer and parser for your specific requirements, and using an existing domain-specific media-type, or creating your own custom XML-based media-type.
-
-Requires the `defusedxml` package to be installed.
-
-**.media_type**: `application/xml`
 
 ## FormParser
 
@@ -161,7 +141,7 @@ By default this will include the following keys: `view`, `request`, `args`, `kwa
 
 ## Example
 
-The following is an example plaintext parser that will populate the `request.data` property with a string representing the body of the request. 
+The following is an example plaintext parser that will populate the `request.data` property with a string representing the body of the request.
 
     class PlainTextParser(BaseParser):
     """

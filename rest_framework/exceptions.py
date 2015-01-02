@@ -89,6 +89,11 @@ class PermissionDenied(APIException):
     default_detail = _('You do not have permission to perform this action.')
 
 
+class NotFound(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = _('Not found')
+
+
 class MethodNotAllowed(APIException):
     status_code = status.HTTP_405_METHOD_NOT_ALLOWED
     default_detail = _("Method '%s' not allowed.")
