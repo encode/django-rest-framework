@@ -948,12 +948,13 @@ class TimeField(Field):
     default_error_messages = {
         'invalid': _('Time has wrong format. Use one of these formats instead: {format}'),
     }
+    # allows subclasses to change defaults
     format = api_settings.TIME_FORMAT
     input_formats = api_settings.TIME_INPUT_FORMATS
 
-    def __init__(self, format=empty, input_formats=None, *args, **kwargs):
-        self.format = format if format is not empty else self.format
-        self.input_formats = input_formats if input_formats is not None else self.input_formats
+    def __init__(self, *args, **kwargs):
+        self.format = kwargs.pop('format', self.format)
+        self.input_formats = kwargs.pop('input_formats', self.input_formats)
         super(TimeField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, value):
