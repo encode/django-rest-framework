@@ -734,20 +734,27 @@ class DecimalField(Field):
         'max_string_length': _('String value too large')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
+    # allows subclasses to change defaults
+    max_value = None
+    min_value = None
+    # todo: max_digits = None
+    # todo: decimal_places = None
 
     coerce_to_string = api_settings.COERCE_DECIMAL_TO_STRING
 
-    def __init__(self, max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None, **kwargs):
+    def __init__(self, max_digits, decimal_places, coerce_to_string=None, **kwargs):
         self.max_digits = max_digits
         self.decimal_places = decimal_places
         self.coerce_to_string = coerce_to_string if (coerce_to_string is not None) else self.coerce_to_string
+        self.max_value = kwargs.pop('max_value', self.max_value)
+        self.min_value = kwargs.pop('min_value', self.min_value)
         super(DecimalField, self).__init__(**kwargs)
-        if max_value is not None:
-            message = self.error_messages['max_value'].format(max_value=max_value)
-            self.validators.append(MaxValueValidator(max_value, message=message))
-        if min_value is not None:
-            message = self.error_messages['min_value'].format(min_value=min_value)
-            self.validators.append(MinValueValidator(min_value, message=message))
+        if self.max_value is not None:
+            message = self.error_messages['max_value'].format(max_value=self.max_value)
+            self.validators.append(MaxValueValidator(self.max_value, message=message))
+        if self.min_value is not None:
+            message = self.error_messages['min_value'].format(min_value=self.min_value)
+            self.validators.append(MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, data):
         """
