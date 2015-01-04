@@ -658,17 +658,20 @@ class IntegerField(Field):
         'max_string_length': _('String value too large')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
+    # allows subclasses to change defaults
+    max_value = None
+    min_value = None
 
     def __init__(self, **kwargs):
-        max_value = kwargs.pop('max_value', None)
-        min_value = kwargs.pop('min_value', None)
+        self.max_value = kwargs.pop('max_value', self.max_value)
+        self.min_value = kwargs.pop('min_value', self.min_value)
         super(IntegerField, self).__init__(**kwargs)
-        if max_value is not None:
-            message = self.error_messages['max_value'].format(max_value=max_value)
-            self.validators.append(MaxValueValidator(max_value, message=message))
-        if min_value is not None:
-            message = self.error_messages['min_value'].format(min_value=min_value)
-            self.validators.append(MinValueValidator(min_value, message=message))
+        if self.max_value is not None:
+            message = self.error_messages['max_value'].format(max_value=self.max_value)
+            self.validators.append(MaxValueValidator(self.max_value, message=message))
+        if self.min_value is not None:
+            message = self.error_messages['min_value'].format(min_value=self.min_value)
+            self.validators.append(MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, data):
         if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
