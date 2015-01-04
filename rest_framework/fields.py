@@ -1286,16 +1286,18 @@ class ModelField(Field):
     default_error_messages = {
         'max_length': _('Ensure this field has no more than {max_length} characters.'),
     }
+    # allows subclasses to change defaults
+    max_length = None
 
     def __init__(self, model_field, **kwargs):
         self.model_field = model_field
         # The `max_length` option is supported by Django's base `Field` class,
         # so we'd better support it here.
-        max_length = kwargs.pop('max_length', None)
+        self.max_length = kwargs.pop('max_length', self.max_length)
         super(ModelField, self).__init__(**kwargs)
-        if max_length is not None:
-            message = self.error_messages['max_length'].format(max_length=max_length)
-            self.validators.append(MaxLengthValidator(max_length, message=message))
+        if self.max_length is not None:
+            message = self.error_messages['max_length'].format(max_length=self.max_length)
+            self.validators.append(MaxLengthValidator(self.max_length, message=message))
 
     def to_internal_value(self, data):
         rel = getattr(self.model_field, 'rel', None)
