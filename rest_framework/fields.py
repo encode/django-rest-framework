@@ -563,18 +563,22 @@ class CharField(Field):
         'min_length': _('Ensure this field has at least {min_length} characters.')
     }
     initial = ''
+    # allows subclasses to change defaults
+    allow_blank = False
+    max_length = None
+    min_length = None
 
     def __init__(self, **kwargs):
-        self.allow_blank = kwargs.pop('allow_blank', False)
-        max_length = kwargs.pop('max_length', None)
-        min_length = kwargs.pop('min_length', None)
+        self.allow_blank = kwargs.pop('allow_blank', self.allow_blank)
+        self.max_length = kwargs.pop('max_length', self.max_length)
+        self.min_length = kwargs.pop('min_length', self.min_length)
         super(CharField, self).__init__(**kwargs)
-        if max_length is not None:
-            message = self.error_messages['max_length'].format(max_length=max_length)
-            self.validators.append(MaxLengthValidator(max_length, message=message))
-        if min_length is not None:
-            message = self.error_messages['min_length'].format(min_length=min_length)
-            self.validators.append(MinLengthValidator(min_length, message=message))
+        if self.max_length is not None:
+            message = self.error_messages['max_length'].format(max_length=self.max_length)
+            self.validators.append(MaxLengthValidator(self.max_length, message=message))
+        if self.min_length is not None:
+            message = self.error_messages['min_length'].format(min_length=self.min_length)
+            self.validators.append(MinLengthValidator(self.min_length, message=message))
 
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,
