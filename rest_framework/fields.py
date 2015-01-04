@@ -1084,11 +1084,14 @@ class FileField(Field):
         'empty': _("The submitted file is empty."),
         'max_length': _('Ensure this filename has at most {max_length} characters (it has {length}).'),
     }
+    # allows subclasses to change defaults
     use_url = api_settings.UPLOADED_FILES_USE_URL
+    max_length = None
+    allow_empty_file = False
 
     def __init__(self, *args, **kwargs):
-        self.max_length = kwargs.pop('max_length', None)
-        self.allow_empty_file = kwargs.pop('allow_empty_file', False)
+        self.max_length = kwargs.pop('max_length', self.max_length)
+        self.allow_empty_file = kwargs.pop('allow_empty_file', self.allow_empty_file)
         self.use_url = kwargs.pop('use_url', self.use_url)
         super(FileField, self).__init__(*args, **kwargs)
 
