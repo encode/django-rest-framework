@@ -824,6 +824,7 @@ class DateTimeField(Field):
         'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}'),
         'date': _('Expected a datetime but got a date.'),
     }
+    # allows subclasses to change defaults
     format = api_settings.DATETIME_FORMAT
     input_formats = api_settings.DATETIME_INPUT_FORMATS
     default_timezone = timezone.get_default_timezone() if settings.USE_TZ else None
@@ -889,12 +890,13 @@ class DateField(Field):
         'invalid': _('Date has wrong format. Use one of these formats instead: {format}'),
         'datetime': _('Expected a date but got a datetime.'),
     }
+    # allows subclasses to change defaults
     format = api_settings.DATE_FORMAT
     input_formats = api_settings.DATE_INPUT_FORMATS
 
-    def __init__(self, format=empty, input_formats=None, *args, **kwargs):
-        self.format = format if format is not empty else self.format
-        self.input_formats = input_formats if input_formats is not None else self.input_formats
+    def __init__(self, *args, **kwargs):
+        self.format = kwargs.pop('format', self.format)
+        self.input_formats = kwargs.pop('input_formats', self.input_formats)
         super(DateField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, value):
