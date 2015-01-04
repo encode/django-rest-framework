@@ -1005,8 +1005,18 @@ class ChoiceField(Field):
     default_error_messages = {
         'invalid_choice': _('`{input}` is not a valid choice.')
     }
+    # allows subclasses to change defaults
+    allow_blank = False
+    choices = None
 
-    def __init__(self, choices, **kwargs):
+    def __init__(self, *args, **kwargs):
+        if args:
+            choices = args[0]
+        else:
+            choices = kwargs.pop('choices', self.choices)
+        # not available on class or as kwarg
+        assert choices is not None, 'need to specify `choices`.'
+
         # Allow either single or paired choices style:
         # choices = [1, 2, 3]
         # choices = [(1, 'First'), (2, 'Second'), (3, 'Third')]
@@ -1026,7 +1036,7 @@ class ChoiceField(Field):
             (six.text_type(key), key) for key in self.choices.keys()
         ])
 
-        self.allow_blank = kwargs.pop('allow_blank', False)
+        self.allow_blank = kwargs.pop('allow_blank', self.allow_blank)
 
         super(ChoiceField, self).__init__(**kwargs)
 
