@@ -828,10 +828,10 @@ class DateTimeField(Field):
     input_formats = api_settings.DATETIME_INPUT_FORMATS
     default_timezone = timezone.get_default_timezone() if settings.USE_TZ else None
 
-    def __init__(self, format=empty, input_formats=None, default_timezone=None, *args, **kwargs):
-        self.format = format if format is not empty else self.format
-        self.input_formats = input_formats if input_formats is not None else self.input_formats
-        self.default_timezone = default_timezone if default_timezone is not None else self.default_timezone
+    def __init__(self, *args, **kwargs):
+        self.format = kwargs.pop('format', self.format)
+        self.default_timezone = kwargs.pop('default_timezone', self.default_timezone)
+        self.input_formats = kwargs.pop('input_formats', self.input_formats)
         super(DateTimeField, self).__init__(*args, **kwargs)
 
     def enforce_timezone(self, value):
