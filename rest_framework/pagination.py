@@ -37,16 +37,13 @@ class PreviousPageField(serializers.Field):
         return replace_query_param(url, self.page_field, page)
 
 
-class DefaultObjectSerializer(serializers.ReadOnlyField):
+class DefaultObjectSerializer(serializers.Serializer):
     """
     If no object serializer is specified, then this serializer will be applied
     as the default.
     """
-
-    def __init__(self, source=None, many=None, context=None):
-        # Note: Swallow context and many kwargs - only required for
-        # eg. ModelSerializer.
-        super(DefaultObjectSerializer, self).__init__(source=source)
+    def to_representation(self, value):
+        return value
 
 
 class BasePaginationSerializer(serializers.Serializer):
@@ -74,10 +71,9 @@ class BasePaginationSerializer(serializers.Serializer):
             list_serializer_class = serializers.ListSerializer
 
         self.fields[results_field] = list_serializer_class(
-            child=object_serializer(),
+            child=object_serializer(*args, **kwargs),
             source='object_list'
         )
-        self.fields[results_field].bind(field_name=results_field, parent=self)
 
 
 class PaginationSerializer(BasePaginationSerializer):
