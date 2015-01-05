@@ -190,8 +190,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [sandbox]: http://restframework.herokuapp.com/
 
 [index]: http://www.django-rest-framework.org/
-[oauth1-section]: http://www.django-rest-framework.org/api-guide/authentication.html#oauthauthentication
-[oauth2-section]: http://www.django-rest-framework.org/api-guide/authentication.html#oauth2authentication
+[oauth1-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
+[oauth2-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
 [serializer-section]: http://www.django-rest-framework.org/api-guide/serializers.html#serializers
 [modelserializer-section]: http://www.django-rest-framework.org/api-guide/serializers.html#modelserializer
 [functionview-section]: http://www.django-rest-framework.org/api-guide/views.html#function-based-views

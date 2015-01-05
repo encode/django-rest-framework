@@ -342,13 +342,81 @@ Templates will render with a `RequestContext` which includes the `status_code` a
 
 The following third party packages are also available.
 
+## YAML
+
+[REST framework YAML][rest-framework-yaml] provides [YAML][yaml] parsing and rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.
+
+#### Installation & configuration
+
+Install using pip.
+
+    $ pip install djangorestframework-yaml
+
+Modify your REST framework settings.
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PARSER_CLASSES': (
+            'rest_framework_yaml.parsers.YAMLParser',
+        ),
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework_yaml.renderers.YAMLRenderer',
+        ),
+    }
+
+## XML
+
+[REST Framework XML][rest-framework-xml] provides a simple informal XML format. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.
+
+#### Installation & configuration
+
+Install using pip.
+
+    $ pip install djangorestframework-xml
+
+Modify your REST framework settings.
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PARSER_CLASSES': (
+            'rest_framework_xml.parsers.XMLParser',
+        ),
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework_xml.renderers.XMLRenderer',
+        ),
+    }
+
+## JSONP
+
+[REST framework JSONP][rest-framework-jsonp] provides JSONP rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.
+
+---
+
+**Warning**: If you require cross-domain AJAX requests, you should generally be using the more modern approach of [CORS][cors] as an alternative to `JSONP`. See the [CORS documentation][cors-docs] for more details.
+
+The `jsonp` approach is essentially a browser hack, and is [only appropriate for globally readable API endpoints][jsonp-security], where `GET` requests are unauthenticated and do not require any user permissions.
+
+---
+
+#### Installation & configuration
+
+Install using pip.
+
+    $ pip install djangorestframework-jsonp
+
+Modify your REST framework settings.
+
+    REST_FRAMEWORK = {
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework_yaml.renderers.JSONPRenderer',
+        ),
+    }
+
 ## MessagePack
 
 [MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
 
 ## CSV
 
-Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications.  [Mjumbe Poe][mjumbewu] maintains the [djangorestframework-csv][djangorestframework-csv] package which provides CSV renderer support for REST framework.
+Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications. [Mjumbe Poe][mjumbewu] maintains the [djangorestframework-csv][djangorestframework-csv] package which provides CSV renderer support for REST framework.
 
 ## UltraJSON
 
@@ -357,7 +425,6 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 ## CamelCase JSON
 
 [djangorestframework-camel-case] provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by [Vitaly Babiy][vbabiy].
-
 
 ## Pandas (CSV, Excel, PNG)
 
@@ -373,10 +440,19 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [application/vnd.github+json]: http://developer.github.com/v3/media/
 [application/vnd.collection+json]: http://www.amundsen.com/media-types/collection/
 [django-error-views]: https://docs.djangoproject.com/en/dev/topics/http/views/#customizing-error-views
+[rest-framework-jsonp]: http://jpadilla.github.io/django-rest-framework-jsonp/
+[cors]: http://www.w3.org/TR/cors/
+[cors-docs]: http://www.django-rest-framework.org/topics/ajax-csrf-cors/
+[jsonp-security]: http://stackoverflow.com/questions/613962/is-jsonp-safe-to-use
+[rest-framework-yaml]: http://jpadilla.github.io/django-rest-framework-yaml/
+[rest-framework-xml]: http://jpadilla.github.io/django-rest-framework-xml/
 [messagepack]: http://msgpack.org/
 [juanriaza]: https://github.com/juanriaza
 [mjumbewu]: https://github.com/mjumbewu
 [vbabiy]: https://github.com/vbabiy
+[rest-framework-yaml]: http://jpadilla.github.io/django-rest-framework-yaml/
+[rest-framework-xml]: http://jpadilla.github.io/django-rest-framework-xml/
+[yaml]: http://www.yaml.org/
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv
 [ultrajson]: https://github.com/esnme/ultrajson

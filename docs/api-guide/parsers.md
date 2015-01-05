@@ -26,7 +26,7 @@ As an example, if you are sending `json` encoded data using jQuery with the [.aj
 
 ## Setting the parsers
 
-The default set of parsers may be set globally, using the `DEFAULT_PARSER_CLASSES` setting.  For example, the following settings would allow requests with `JSON` content.
+The default set of parsers may be set globally, using the `DEFAULT_PARSER_CLASSES` setting. For example, the following settings would allow only requests with `JSON` content, instead of the default of JSON or form data.
 
     REST_FRAMEWORK = {
         'DEFAULT_PARSER_CLASSES': (
@@ -37,8 +37,8 @@ The default set of parsers may be set globally, using the `DEFAULT_PARSER_CLASSE
 You can also set the parsers used for an individual view, or viewset,
 using the `APIView` class based views.
 
-	from rest_framework.parsers import JSONParser
-	from rest_framework.response import Response
+    from rest_framework.parsers import JSONParser
+    from rest_framework.response import Response
     from rest_framework.views import APIView
 
     class ExampleView(APIView):
@@ -162,6 +162,48 @@ The following is an example plaintext parser that will populate the `request.dat
 
 The following third party packages are also available.
 
+## YAML
+
+[REST framework YAML][rest-framework-yaml] provides [YAML][yaml] parsing and rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.
+
+#### Installation & configuration
+
+Install using pip.
+
+    $ pip install djangorestframework-yaml
+
+Modify your REST framework settings.
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PARSER_CLASSES': (
+            'rest_framework_yaml.parsers.YAMLParser',
+        ),
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework_yaml.renderers.YAMLRenderer',
+        ),
+    }
+
+## XML
+
+[REST Framework XML][rest-framework-xml] provides a simple informal XML format. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.
+
+#### Installation & configuration
+
+Install using pip.
+
+    $ pip install djangorestframework-xml
+
+Modify your REST framework settings.
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PARSER_CLASSES': (
+            'rest_framework_xml.parsers.XMLParser',
+        ),
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework_xml.renderers.XMLRenderer',
+        ),
+    }
+
 ## MessagePack
 
 [MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
@@ -173,6 +215,9 @@ The following third party packages are also available.
 [jquery-ajax]: http://api.jquery.com/jQuery.ajax/
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion
 [upload-handlers]: https://docs.djangoproject.com/en/dev/topics/http/file-uploads/#upload-handlers
+[rest-framework-yaml]: http://jpadilla.github.io/django-rest-framework-yaml/
+[rest-framework-xml]: http://jpadilla.github.io/django-rest-framework-xml/
+[yaml]: http://www.yaml.org/
 [messagepack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [juanriaza]: https://github.com/juanriaza
 [vbabiy]: https://github.com/vbabiy
