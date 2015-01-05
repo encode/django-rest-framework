@@ -421,8 +421,14 @@ class Serializer(BaseSerializer):
         fields = [field for field in self.fields.values() if not field.write_only]
 
         for field in fields:
-            attribute = field.get_attribute(instance)
+            try:
+                attribute = field.get_attribute(instance)
+            except SkipField:
+                continue
+
             if attribute is None:
+                # We skip `to_representation` for `None` values so that
+                # fields do not have to explicitly deal with that case.
                 ret[field.field_name] = None
             else:
                 ret[field.field_name] = field.to_representation(attribute)

@@ -41,6 +41,8 @@ Defaults to `False`
 Normally an error will be raised if a field is not supplied during deserialization.
 Set to false if this field is not required to be present during deserialization.
 
+Setting this to `False` also allows the object attribute or dictionary key to be omitted from output when serializing the instance. If the key is not present it will simply not be included in the output representation.
+
 Defaults to `True`.
 
 ### `allow_null`
