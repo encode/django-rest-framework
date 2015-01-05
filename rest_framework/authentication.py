@@ -126,7 +126,7 @@ class SessionAuthentication(BaseAuthentication):
         """
         Enforce CSRF validation for session based authentication.
         """
-        reason = CSRFCheck().process_view(request, None, (), {})
+        reason = CSRFCheck().process_view(request, request.resolver_match[0] if hasattr(request, 'resolver_match') else None, (), {})
         if reason:
             # CSRF failed, bail with explicit error message
             raise exceptions.PermissionDenied('CSRF Failed: %s' % reason)
