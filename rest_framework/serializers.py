@@ -236,11 +236,11 @@ class BaseSerializer(Field):
 
 class SerializerMetaclass(type):
     """
-    This metaclass sets a dictionary named `base_fields` on the class.
+    This metaclass sets a dictionary named `_declared_fields` on the class.
 
     Any instances of `Field` included as attributes on either the class
     or on any of its superclasses will be include in the
-    `base_fields` dictionary.
+    `_declared_fields` dictionary.
     """
 
     @classmethod
