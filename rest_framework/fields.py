@@ -563,7 +563,6 @@ class CharField(Field):
         'min_length': _('Ensure this field has at least {min_length} characters.')
     }
     initial = ''
-    # allows subclasses to change defaults
     allow_blank = False
     max_length = None
     min_length = None
@@ -658,7 +657,6 @@ class IntegerField(Field):
         'max_string_length': _('String value too large')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
-    # allows subclasses to change defaults
     max_value = None
     min_value = None
 
@@ -695,7 +693,6 @@ class FloatField(Field):
         'max_string_length': _('String value too large')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
-    # allows subclasses to change defaults
     max_value = None
     min_value = None
 
@@ -734,7 +731,6 @@ class DecimalField(Field):
         'max_string_length': _('String value too large')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
-    # allows subclasses to change defaults
     max_value = None
     min_value = None
     # todo: max_digits = None
@@ -824,7 +820,6 @@ class DateTimeField(Field):
         'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}'),
         'date': _('Expected a datetime but got a date.'),
     }
-    # allows subclasses to change defaults
     format = api_settings.DATETIME_FORMAT
     input_formats = api_settings.DATETIME_INPUT_FORMATS
     default_timezone = timezone.get_default_timezone() if settings.USE_TZ else None
@@ -890,7 +885,6 @@ class DateField(Field):
         'invalid': _('Date has wrong format. Use one of these formats instead: {format}'),
         'datetime': _('Expected a date but got a datetime.'),
     }
-    # allows subclasses to change defaults
     format = api_settings.DATE_FORMAT
     input_formats = api_settings.DATE_INPUT_FORMATS
 
@@ -948,7 +942,6 @@ class TimeField(Field):
     default_error_messages = {
         'invalid': _('Time has wrong format. Use one of these formats instead: {format}'),
     }
-    # allows subclasses to change defaults
     format = api_settings.TIME_FORMAT
     input_formats = api_settings.TIME_INPUT_FORMATS
 
@@ -1005,7 +998,6 @@ class ChoiceField(Field):
     default_error_messages = {
         'invalid_choice': _('`{input}` is not a valid choice.')
     }
-    # allows subclasses to change defaults
     allow_blank = False
     choices = None
 
@@ -1094,7 +1086,6 @@ class FileField(Field):
         'empty': _("The submitted file is empty."),
         'max_length': _('Ensure this filename has at most {max_length} characters (it has {length}).'),
     }
-    # allows subclasses to change defaults
     use_url = api_settings.UPLOADED_FILES_USE_URL
     max_length = None
     allow_empty_file = False
@@ -1296,7 +1287,6 @@ class ModelField(Field):
     default_error_messages = {
         'max_length': _('Ensure this field has no more than {max_length} characters.'),
     }
-    # allows subclasses to change defaults
     max_length = None
 
     def __init__(self, model_field, **kwargs):
