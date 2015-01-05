@@ -49,6 +49,38 @@ This means you'll need to explicitly set the `base_name` argument when registeri
 
 ---
 
+### Using `include` with routers
+
+The `.urls` attribute on a router instance is simply a standard list of URL patterns. There are a number of different styles for how you can include these URLs.
+
+For example, you can append `router.urls` to a list of existing views…
+
+    router = routers.SimpleRouter()
+    router.register(r'users', UserViewSet)
+    router.register(r'accounts', AccountViewSet)
+    
+    urlpatterns = [
+        url(r'^forgot-password/$, ForgotPasswordFormView.as_view(),
+    ]
+    
+    urlpatterns += router.urls
+
+Alternatively you can use Django's `include` function, like so…
+
+    urlpatterns = [
+        url(r'^forgot-password/$, ForgotPasswordFormView.as_view(),
+        url(r'^', include(router.urls))
+    ]
+
+Router URL patterns can also be namespaces.
+
+    urlpatterns = [
+        url(r'^forgot-password/$, ForgotPasswordFormView.as_view(),
+        url(r'^api/', include(router.urls, namespace='api'))
+    ]
+
+If using namespacing with hyperlinked serializers you'll also need to ensure that any `view_name` parameters on the serializers correctly reflect the namespace. In the example above you'd need to include a parameter such as `view_name='api:user-detail'` for serializer fields hyperlinked to the user detail view.
+
 ### Extra link and actions
 
 Any methods on the viewset decorated with `@detail_route` or `@list_route` will also be routed.
@@ -67,6 +99,24 @@ For example, given a method like this on the `UserViewSet` class:
 The following URL pattern would additionally be generated:
 
 * URL pattern: `^users/{pk}/set_password/$`  Name: `'user-set-password'`
+
+If you do not want to use the default URL generated for your custom action, you can instead use the url_path parameter to customize it.
+
+For example, if you want to change the URL for our custom action to `^users/{pk}/change-password/$`, you could write:
+
+    from myapp.permissions import IsAdminOrIsSelf
+    from rest_framework.decorators import detail_route
+    
+    class UserViewSet(ModelViewSet):
+        ...
+        
+        @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf], url_path='change-password')
+        def set_password(self, request, pk=None):
+            ...
+
+The above example would now generate the following URL pattern:
+
+* URL pattern: `^users/{pk}/change-password/$`  Name: `'user-change-password'`
 
 For more information see the viewset documentation on [marking extra actions for routing][route-decorators].
 

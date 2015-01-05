@@ -35,7 +35,7 @@ def _resolve_model(obj):
     Resolve supplied `obj` to a Django model class.
 
     `obj` must be a Django model class itself, or a string
-    representation of one.  Useful in situtations like GH #1225 where
+    representation of one.  Useful in situations like GH #1225 where
     Django may not have resolved a string-based reference to a model in
     another model's foreign key definition.
 
@@ -56,23 +56,44 @@ def _resolve_model(obj):
 
 def get_field_info(model):
     """
-    Given a model class, returns a `FieldInfo` instance containing metadata
-    about the various field types on the model.
+    Given a model class, returns a `FieldInfo` instance, which is a
+    `namedtuple`, containing metadata about the various field types on the model
+    including information about their relationships.
     """
     opts = model._meta.concrete_model._meta
 
-    # Deal with the primary key.
+    pk = _get_pk(opts)
+    fields = _get_fields(opts)
+    forward_relations = _get_forward_relationships(opts)
+    reverse_relations = _get_reverse_relationships(opts)
+    fields_and_pk = _merge_fields_and_pk(pk, fields)
+    relationships = _merge_relationships(forward_relations, reverse_relations)
+
+    return FieldInfo(pk, fields, forward_relations, reverse_relations,
+                     fields_and_pk, relationships)
+
+
+def _get_pk(opts):
     pk = opts.pk
     while pk.rel and pk.rel.parent_link:
-        # If model is a child via multitable inheritance, use parent's pk.
+        # If model is a child via multi-table inheritance, use parent's pk.
         pk = pk.rel.to._meta.pk
 
-    # Deal with regular fields.
+    return pk
+
+
+def _get_fields(opts):
     fields = OrderedDict()
     for field in [field for field in opts.fields if field.serialize and not field.rel]:
         fields[field.name] = field
 
-    # Deal with forward relationships.
+    return fields
+
+
+def _get_forward_relationships(opts):
+    """
+    Returns an `OrderedDict` of field names to `RelationInfo`.
+    """
     forward_relations = OrderedDict()
     for field in [field for field in opts.fields if field.serialize and field.rel]:
         forward_relations[field.name] = RelationInfo(
@@ -93,7 +114,13 @@ def get_field_info(model):
             )
         )
 
-    # Deal with reverse relationships.
+    return forward_relations
+
+
+def _get_reverse_relationships(opts):
+    """
+    Returns an `OrderedDict` of field names to `RelationInfo`.
+    """
     reverse_relations = OrderedDict()
     for relation in opts.get_all_related_objects():
         accessor_name = relation.get_accessor_name()
@@ -117,18 +144,20 @@ def get_field_info(model):
             )
         )
 
-    # Shortcut that merges both regular fields and the pk,
-    # for simplifying regular field lookup.
+    return reverse_relations
+
+
+def _merge_fields_and_pk(pk, fields):
     fields_and_pk = OrderedDict()
     fields_and_pk['pk'] = pk
     fields_and_pk[pk.name] = pk
     fields_and_pk.update(fields)
 
-    # Shortcut that merges both forward and reverse relationships
+    return fields_and_pk
 
-    relations = OrderedDict(
+
+def _merge_relationships(forward_relations, reverse_relations):
+    return OrderedDict(
         list(forward_relations.items()) +
         list(reverse_relations.items())
     )
-
-    return FieldInfo(pk, fields, forward_relations, reverse_relations, fields_and_pk, relations)

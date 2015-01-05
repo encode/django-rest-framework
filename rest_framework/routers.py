@@ -21,7 +21,7 @@ from django.conf.urls import patterns, url
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
 from rest_framework import views
-from rest_framework.compat import OrderedDict
+from rest_framework.compat import get_resolver_match, OrderedDict
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.urlpatterns import format_suffix_patterns
@@ -176,23 +176,27 @@ class SimpleRouter(BaseRouter):
             if isinstance(route, DynamicDetailRoute):
                 # Dynamic detail routes (@detail_route decorator)
                 for httpmethods, methodname in detail_routes:
+                    method_kwargs = getattr(viewset, methodname).kwargs
+                    url_path = method_kwargs.pop("url_path", None) or methodname
                     initkwargs = route.initkwargs.copy()
-                    initkwargs.update(getattr(viewset, methodname).kwargs)
+                    initkwargs.update(method_kwargs)
                     ret.append(Route(
-                        url=replace_methodname(route.url, methodname),
+                        url=replace_methodname(route.url, url_path),
                         mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
-                        name=replace_methodname(route.name, methodname),
+                        name=replace_methodname(route.name, url_path),
                         initkwargs=initkwargs,
                     ))
             elif isinstance(route, DynamicListRoute):
                 # Dynamic list routes (@list_route decorator)
                 for httpmethods, methodname in list_routes:
+                    method_kwargs = getattr(viewset, methodname).kwargs
+                    url_path = method_kwargs.pop("url_path", None) or methodname
                     initkwargs = route.initkwargs.copy()
-                    initkwargs.update(getattr(viewset, methodname).kwargs)
+                    initkwargs.update(method_kwargs)
                     ret.append(Route(
-                        url=replace_methodname(route.url, methodname),
+                        url=replace_methodname(route.url, url_path),
                         mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
-                        name=replace_methodname(route.name, methodname),
+                        name=replace_methodname(route.name, url_path),
                         initkwargs=initkwargs,
                     ))
             else:
@@ -288,7 +292,10 @@ class DefaultRouter(SimpleRouter):
 
             def get(self, request, *args, **kwargs):
                 ret = OrderedDict()
+                namespace = get_resolver_match(request).namespace
                 for key, url_name in api_root_dict.items():
+                    if namespace:
+                        url_name = namespace + ':' + url_name
                     try:
                         ret[key] = reverse(
                             url_name,

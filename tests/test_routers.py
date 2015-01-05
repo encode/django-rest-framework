@@ -1,17 +1,53 @@
 from __future__ import unicode_literals
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.db import models
 from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
-from rest_framework import serializers, viewsets, mixins, permissions
+from rest_framework import serializers, viewsets, permissions
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.routers import SimpleRouter, DefaultRouter
 from rest_framework.test import APIRequestFactory
+from collections import namedtuple
 
 factory = APIRequestFactory()
 
-urlpatterns = patterns('',)
+
+class RouterTestModel(models.Model):
+    uuid = models.CharField(max_length=20)
+    text = models.CharField(max_length=200)
+
+
+class NoteSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='routertestmodel-detail', lookup_field='uuid')
+
+    class Meta:
+        model = RouterTestModel
+        fields = ('url', 'uuid', 'text')
+
+
+class NoteViewSet(viewsets.ModelViewSet):
+    queryset = RouterTestModel.objects.all()
+    serializer_class = NoteSerializer
+    lookup_field = 'uuid'
+
+
+class MockViewSet(viewsets.ModelViewSet):
+    queryset = None
+    serializer_class = None
+
+
+notes_router = SimpleRouter()
+notes_router.register(r'notes', NoteViewSet)
+
+namespaced_router = DefaultRouter()
+namespaced_router.register(r'example', MockViewSet, base_name='example')
+
+urlpatterns = [
+    url(r'^non-namespaced/', include(namespaced_router.urls)),
+    url(r'^namespaced/', include(namespaced_router.urls, namespace='example')),
+    url(r'^example/', include(notes_router.urls)),
+]
 
 
 class BasicViewSet(viewsets.ViewSet):
@@ -63,9 +99,26 @@ class TestSimpleRouter(TestCase):
                 self.assertEqual(route.mapping[method], endpoint)
 
 
-class RouterTestModel(models.Model):
-    uuid = models.CharField(max_length=20)
-    text = models.CharField(max_length=200)
+class TestRootView(TestCase):
+    urls = 'tests.test_routers'
+
+    def test_retrieve_namespaced_root(self):
+        response = self.client.get('/namespaced/')
+        self.assertEqual(
+            response.data,
+            {
+                "example": "http://testserver/namespaced/example/",
+            }
+        )
+
+    def test_retrieve_non_namespaced_root(self):
+        response = self.client.get('/non-namespaced/')
+        self.assertEqual(
+            response.data,
+            {
+                "example": "http://testserver/non-namespaced/example/",
+            }
+        )
 
 
 class TestCustomLookupFields(TestCase):
@@ -75,51 +128,29 @@ class TestCustomLookupFields(TestCase):
     urls = 'tests.test_routers'
 
     def setUp(self):
-        class NoteSerializer(serializers.HyperlinkedModelSerializer):
-            url = serializers.HyperlinkedIdentityField(view_name='routertestmodel-detail', lookup_field='uuid')
-
-            class Meta:
-                model = RouterTestModel
-                fields = ('url', 'uuid', 'text')
-
-        class NoteViewSet(viewsets.ModelViewSet):
-            queryset = RouterTestModel.objects.all()
-            serializer_class = NoteSerializer
-            lookup_field = 'uuid'
-
-        self.router = SimpleRouter()
-        self.router.register(r'notes', NoteViewSet)
-
-        from tests import test_routers
-        urls = getattr(test_routers, 'urlpatterns')
-        urls += patterns(
-            '',
-            url(r'^', include(self.router.urls)),
-        )
-
         RouterTestModel.objects.create(uuid='123', text='foo bar')
 
     def test_custom_lookup_field_route(self):
-        detail_route = self.router.urls[-1]
+        detail_route = notes_router.urls[-1]
         detail_url_pattern = detail_route.regex.pattern
         self.assertIn('<uuid>', detail_url_pattern)
 
     def test_retrieve_lookup_field_list_view(self):
-        response = self.client.get('/notes/')
+        response = self.client.get('/example/notes/')
         self.assertEqual(
             response.data,
             [{
-                "url": "http://testserver/notes/123/",
+                "url": "http://testserver/example/notes/123/",
                 "uuid": "123", "text": "foo bar"
             }]
         )
 
     def test_retrieve_lookup_field_detail_view(self):
-        response = self.client.get('/notes/123/')
+        response = self.client.get('/example/notes/123/')
         self.assertEqual(
             response.data,
             {
-                "url": "http://testserver/notes/123/",
+                "url": "http://testserver/example/notes/123/",
                 "uuid": "123", "text": "foo bar"
             }
         )
@@ -261,6 +292,14 @@ class DynamicListAndDetailViewSet(viewsets.ViewSet):
     def detail_route_get(self, request, *args, **kwargs):
         return Response({'method': 'link2'})
 
+    @list_route(url_path="list_custom-route")
+    def list_custom_route_get(self, request, *args, **kwargs):
+        return Response({'method': 'link1'})
+
+    @detail_route(url_path="detail_custom-route")
+    def detail_custom_route_get(self, request, *args, **kwargs):
+        return Response({'method': 'link2'})
+
 
 class TestDynamicListAndDetailRouter(TestCase):
     def setUp(self):
@@ -269,35 +308,30 @@ class TestDynamicListAndDetailRouter(TestCase):
     def test_list_and_detail_route_decorators(self):
         routes = self.router.get_routes(DynamicListAndDetailViewSet)
         decorator_routes = [r for r in routes if not (r.name.endswith('-list') or r.name.endswith('-detail'))]
+
+        MethodNamesMap = namedtuple('MethodNamesMap', 'method_name url_path')
         # Make sure all these endpoints exist and none have been clobbered
-        for i, endpoint in enumerate(['list_route_get', 'list_route_post', 'detail_route_get', 'detail_route_post']):
+        for i, endpoint in enumerate([MethodNamesMap('list_custom_route_get', 'list_custom-route'),
+                                      MethodNamesMap('list_route_get', 'list_route_get'),
+                                      MethodNamesMap('list_route_post', 'list_route_post'),
+                                      MethodNamesMap('detail_custom_route_get', 'detail_custom-route'),
+                                      MethodNamesMap('detail_route_get', 'detail_route_get'),
+                                      MethodNamesMap('detail_route_post', 'detail_route_post')
+                                      ]):
             route = decorator_routes[i]
             # check url listing
-            if endpoint.startswith('list_'):
+            method_name = endpoint.method_name
+            url_path = endpoint.url_path
+
+            if method_name.startswith('list_'):
                 self.assertEqual(route.url,
-                                 '^{{prefix}}/{0}{{trailing_slash}}$'.format(endpoint))
+                                 '^{{prefix}}/{0}{{trailing_slash}}$'.format(url_path))
             else:
                 self.assertEqual(route.url,
-                                 '^{{prefix}}/{{lookup}}/{0}{{trailing_slash}}$'.format(endpoint))
+                                 '^{{prefix}}/{{lookup}}/{0}{{trailing_slash}}$'.format(url_path))
             # check method to function mapping
-            if endpoint.endswith('_post'):
+            if method_name.endswith('_post'):
                 method_map = 'post'
             else:
                 method_map = 'get'
-            self.assertEqual(route.mapping[method_map], endpoint)
-
-
-class TestRootWithAListlessViewset(TestCase):
-    def setUp(self):
-        class NoteViewSet(mixins.RetrieveModelMixin,
-                          viewsets.GenericViewSet):
-            model = RouterTestModel
-
-        self.router = DefaultRouter()
-        self.router.register(r'notes', NoteViewSet)
-        self.view = self.router.urls[0].callback
-
-    def test_api_root(self):
-        request = factory.get('/')
-        response = self.view(request)
-        self.assertEqual(response.data, {})
+            self.assertEqual(route.mapping[method_map], method_name)

@@ -55,6 +55,16 @@ except ImportError:
     from django.http import HttpResponse as HttpResponseBase
 
 
+# request only provides `resolver_match` from 1.5 onwards.
+def get_resolver_match(request):
+    try:
+        return request.resolver_match
+    except AttributeError:
+        # Django < 1.5
+        from django.core.urlresolvers import resolve
+        return resolve(request.path_info)
+
+
 # django-filter is optional
 try:
     import django_filters
