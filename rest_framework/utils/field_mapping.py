@@ -10,6 +10,11 @@ from rest_framework.validators import UniqueValidator
 import inspect
 
 
+NUMERIC_FIELD_TYPES = (
+    models.IntegerField, models.FloatField, models.DecimalField
+)
+
+
 class ClassLookupDict(object):
     """
     Takes a dictionary with classes as keys.
@@ -119,7 +124,7 @@ def get_field_kwargs(field_name, model_field):
         validator.limit_value for validator in validator_kwarg
         if isinstance(validator, validators.MinLengthValidator)
     ), None)
-    if min_length is not None:
+    if min_length is not None and isinstance(model_field, models.CharField):
         kwargs['min_length'] = min_length
         validator_kwarg = [
             validator for validator in validator_kwarg
@@ -132,7 +137,7 @@ def get_field_kwargs(field_name, model_field):
         validator.limit_value for validator in validator_kwarg
         if isinstance(validator, validators.MaxValueValidator)
     ), None)
-    if max_value is not None:
+    if max_value is not None and isinstance(model_field, NUMERIC_FIELD_TYPES):
         kwargs['max_value'] = max_value
         validator_kwarg = [
             validator for validator in validator_kwarg
@@ -145,7 +150,7 @@ def get_field_kwargs(field_name, model_field):
         validator.limit_value for validator in validator_kwarg
         if isinstance(validator, validators.MinValueValidator)
     ), None)
-    if min_value is not None:
+    if min_value is not None and isinstance(model_field, NUMERIC_FIELD_TYPES):
         kwargs['min_value'] = min_value
         validator_kwarg = [
             validator for validator in validator_kwarg
