@@ -155,14 +155,40 @@ class Field(object):
     }
     default_validators = []
     default_empty_html = empty
-    initial = None
 
-    def __init__(self, read_only=False, write_only=False,
-                 required=None, default=empty, initial=empty, source=None,
-                 label=None, help_text=None, style=None,
-                 error_messages=None, validators=None, allow_null=False):
+    # allows subclasses to change defaults
+    read_only = False
+    write_only = False
+    required = None
+    default = empty
+    initial = None
+    source = None
+    label = None
+    help_text = None
+    style = None
+    error_messages = None
+    validators = None
+    allow_null = False
+
+    def __init__(self, **kwargs):
         self._creation_counter = Field._creation_counter
         Field._creation_counter += 1
+
+        # precedence is given to kwargs over class attributes.
+        # you can create a subclass of a Field for maximum reuse while still
+        # needing a one-off instance where you need to change an attribute.
+        read_only = kwargs.pop('read_only', self.read_only)
+        write_only = kwargs.pop('write_only', self.write_only)
+        required = kwargs.pop('required', self.required)
+        default = kwargs.pop('default', self.default)
+        initial = kwargs.pop('initial', self.initial)
+        source = kwargs.pop('source', self.source)
+        label = kwargs.pop('label', self.label)
+        help_text = kwargs.pop('help_text', self.help_text)
+        style = kwargs.pop('style', self.style)
+        error_messages = kwargs.pop('error_messages', self.error_messages)
+        validators = kwargs.pop('validators', self.validators)
+        allow_null = kwargs.pop('allow_null', self.allow_null)
 
         # If `required` is unset, then use `True` unless a default is provided.
         if required is None:
@@ -179,7 +205,7 @@ class Field(object):
         self.required = required
         self.default = default
         self.source = source
-        self.initial = self.initial if (initial is empty) else initial
+        self.initial = initial
         self.label = label
         self.help_text = help_text
         self.style = {} if style is None else style
