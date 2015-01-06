@@ -18,7 +18,7 @@ The handled exceptions are:
 
 In each case, REST framework will return a response with an appropriate status code and content-type.  The body of the response will include any additional details regarding the nature of the error.
 
-By default all error responses will include a key `detail` in the body of the response, but other keys may also be included.
+Most error responses will include a key `detail` in the body of the response.
 
 For example, the following request:
 
@@ -32,6 +32,16 @@ Might receive an error response indicating that the `DELETE` method is not allow
     Content-Length: 42
 
     {"detail": "Method 'DELETE' not allowed."}
+
+Validation errors are handled slightly differently, and will include the field names as the keys in the response. If the validation error was not specific to a particular field then it will use the "non_field_errors" key, or whatever string value has been set for the `NON_FIELD_ERRORS_KEY` setting.
+
+Any example validation error might look like this:
+
+    HTTP/1.1 400 Bad Request
+    Content-Type: application/json
+    Content-Length: 94
+
+    {"amount": ["A valid integer is required."], "description": ["This field may not be blank."]}
 
 ## Custom exception handling
 
