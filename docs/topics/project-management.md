@@ -58,6 +58,8 @@ The following template should be used for the description of the issue, and serv
     #### New members.
     
     If you wish to be considered for this or a future date, please comment against this or subsequent issues.
+    
+    To modify this process for future releases make a pull request to the [project management](http://www.django-rest-framework.org/topics/project-management/) documentation.
 
 #### Responsibilities of team members
 
@@ -107,6 +109,8 @@ The following template should be used for the description of the issue, and serv
     - [ ] Make a release announcement on the [discussion group](https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework).
     - [ ] Make a release announcement on twitter.
     - [ ] Close the milestone on GitHub.
+    
+    To modify this process for future releases make a pull request to the [project management](http://www.django-rest-framework.org/topics/project-management/) documentation.
 
 When pushing the release to PyPI ensure that your environment has been installed from our development `requirement.txt`, so that documentation and PyPI installs are consistently being built against a pinned set of packages.
 
