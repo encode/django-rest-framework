@@ -40,6 +40,26 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.0.x series
 
+
+### 3.0.3
+
+**Date**: [8th January 2015][3.0.3-milestone].
+
+* Fix `MinValueValidator` on `models.DateField`. ([#2369][gh2369])
+* Fix serializer missing context when pagination is used. ([#2355][gh2355])
+* Namespaced router URLs are now supported by the `DefaultRouter`. ([#2351][gh2351])
+* `required=False` allows omission of value for output. ([#2342][gh2342])
+* Use textarea input for `models.TextField`. ([#2340][gh2340])
+* Use custom `ListSerializer` for pagination if required. ([#2331][gh2331], [#2327][gh2327])
+* Better behavior with null and '' for blank HTML fields. ([#2330][gh2330])
+* Ensure fields in `exclude` are model fields. ([#2319][gh2319])
+* Fix `IntegerField` and `max_length` argument incompatibility. ([#2317][gh2317])
+* Fix the YAML encoder for 3.0 serializers. ([#2315][gh2315], [#2283][gh2283])
+* Fix the behavior of empty HTML fields. ([#2311][gh2311], [#1101][gh1101])
+* Fix Metaclass attribute depth ignoring fields attribute. ([#2287][gh2287])
+* Fix `format_suffix_patterns` to work with Django's `i18n_patterns`. ([#2278][gh2278])
+* Ability to customize router URLs for custom actions, using `url_path`. ([#2010][gh2010])
+
 ### 3.0.2
 
 **Date**: [17th December 2014][3.0.2-milestone].
@@ -729,3 +749,21 @@ For older release notes, [please see the GitHub repo](old-release-notes).
 [gh2290]: https://github.com/tomchristie/django-rest-framework/issues/2290
 [gh2291]: https://github.com/tomchristie/django-rest-framework/issues/2291
 [gh2294]: https://github.com/tomchristie/django-rest-framework/issues/2294
+<!-- 3.0.3 -->
+[gh1101]: https://github.com/tomchristie/django-rest-framework/issues/1101
+[gh2010]: https://github.com/tomchristie/django-rest-framework/issues/2010
+[gh2278]: https://github.com/tomchristie/django-rest-framework/issues/2278
+[gh2283]: https://github.com/tomchristie/django-rest-framework/issues/2283
+[gh2287]: https://github.com/tomchristie/django-rest-framework/issues/2287
+[gh2311]: https://github.com/tomchristie/django-rest-framework/issues/2311
+[gh2315]: https://github.com/tomchristie/django-rest-framework/issues/2315
+[gh2317]: https://github.com/tomchristie/django-rest-framework/issues/2317
+[gh2319]: https://github.com/tomchristie/django-rest-framework/issues/2319
+[gh2327]: https://github.com/tomchristie/django-rest-framework/issues/2327
+[gh2330]: https://github.com/tomchristie/django-rest-framework/issues/2330
+[gh2331]: https://github.com/tomchristie/django-rest-framework/issues/2331
+[gh2340]: https://github.com/tomchristie/django-rest-framework/issues/2340
+[gh2342]: https://github.com/tomchristie/django-rest-framework/issues/2342
+[gh2351]: https://github.com/tomchristie/django-rest-framework/issues/2351
+[gh2355]: https://github.com/tomchristie/django-rest-framework/issues/2355
+[gh2369]: https://github.com/tomchristie/django-rest-framework/issues/2369
