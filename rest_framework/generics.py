@@ -125,7 +125,7 @@ class GenericAPIView(views.APIView):
         try:
             page = paginator.page(page_number)
         except InvalidPage as exc:
-            error_format = _('Invalid page ({page_number}): {message}')
+            error_format = _("Invalid page ({page_number}): {message}.")
             raise NotFound(error_format.format(
                 page_number=page_number, message=six.text_type(exc)
             ))

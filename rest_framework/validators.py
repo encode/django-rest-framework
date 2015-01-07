@@ -19,7 +19,7 @@ class UniqueValidator:
 
     Should be applied to an individual field on the serializer.
     """
-    message = _('This field must be unique.')
+    message = _("This field must be unique.")
 
     def __init__(self, queryset, message=None):
         self.queryset = queryset
@@ -73,8 +73,8 @@ class UniqueTogetherValidator:
 
     Should be applied to the serializer class, not to an individual field.
     """
-    message = _('The fields {field_names} must make a unique set.')
-    missing_message = _('This field is required.')
+    message = _("The fields {field_names} must make a unique set.")
+    missing_message = _("This field is required.")
 
     def __init__(self, queryset, fields, message=None):
         self.queryset = queryset
@@ -152,7 +152,7 @@ class UniqueTogetherValidator:
 
 class BaseUniqueForValidator:
     message = None
-    missing_message = _('This field is required.')
+    missing_message = _("This field is required.")
 
     def __init__(self, queryset, field, date_field, message=None):
         self.queryset = queryset
@@ -216,7 +216,7 @@ class BaseUniqueForValidator:
 
 
 class UniqueForDateValidator(BaseUniqueForValidator):
-    message = _('This field must be unique for the "{date_field}" date.')
+    message = _("This field must be unique for the \"{date_field}\" date.")
 
     def filter_queryset(self, attrs, queryset):
         value = attrs[self.field]
@@ -231,7 +231,7 @@ class UniqueForDateValidator(BaseUniqueForValidator):
 
 
 class UniqueForMonthValidator(BaseUniqueForValidator):
-    message = _('This field must be unique for the "{date_field}" month.')
+    message = _("This field must be unique for the \"{date_field}\" month.")
 
     def filter_queryset(self, attrs, queryset):
         value = attrs[self.field]
@@ -244,7 +244,7 @@ class UniqueForMonthValidator(BaseUniqueForValidator):
 
 
 class UniqueForYearValidator(BaseUniqueForValidator):
-    message = _('This field must be unique for the "{date_field}" year.')
+    message = _("This field must be unique for the \"{date_field}\" year.")
 
     def filter_queryset(self, attrs, queryset):
         value = attrs[self.field]

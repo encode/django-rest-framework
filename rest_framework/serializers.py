@@ -296,7 +296,7 @@ def get_validation_error_detail(exc):
 @six.add_metaclass(SerializerMetaclass)
 class Serializer(BaseSerializer):
     default_error_messages = {
-        'invalid': _('Invalid data. Expected a dictionary, but got {datatype}.')
+        'invalid': _("Invalid data. Expected a dictionary, but got {datatype}.")
     }
 
     @property
@@ -473,7 +473,7 @@ class ListSerializer(BaseSerializer):
     many = True
 
     default_error_messages = {
-        'not_a_list': _('Expected a list of items but got type `{input_type}`.')
+        'not_a_list': _("Expected a list of items but got type `{input_type}`.")
     }
 
     def __init__(self, *args, **kwargs):

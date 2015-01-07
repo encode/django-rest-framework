@@ -149,8 +149,8 @@ class Field(object):
     _creation_counter = 0
 
     default_error_messages = {
-        'required': _('This field is required.'),
-        'null': _('This field may not be null.')
+        'required': _("This field is required."),
+        'null': _("This field may not be null.")
     }
     default_validators = []
     default_empty_html = empty
@@ -477,7 +477,7 @@ class Field(object):
 
 class BooleanField(Field):
     default_error_messages = {
-        'invalid': _('`{input}` is not a valid boolean.')
+        'invalid': _("`{input}` is not a valid boolean.")
     }
     default_empty_html = False
     initial = False
@@ -505,7 +505,7 @@ class BooleanField(Field):
 
 class NullBooleanField(Field):
     default_error_messages = {
-        'invalid': _('`{input}` is not a valid boolean.')
+        'invalid': _("`{input}` is not a valid boolean.")
     }
     initial = None
     TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
@@ -540,9 +540,9 @@ class NullBooleanField(Field):
 
 class CharField(Field):
     default_error_messages = {
-        'blank': _('This field may not be blank.'),
-        'max_length': _('Ensure this field has no more than {max_length} characters.'),
-        'min_length': _('Ensure this field has at least {min_length} characters.')
+        'blank': _("This field may not be blank."),
+        'max_length': _("Ensure this field has no more than {max_length} characters."),
+        'min_length': _("Ensure this field has at least {min_length} characters.")
     }
     initial = ''
     coerce_blank_to_null = False
@@ -584,7 +584,7 @@ class CharField(Field):
 
 class EmailField(CharField):
     default_error_messages = {
-        'invalid': _('Enter a valid email address.')
+        'invalid': _("Enter a valid email address.")
     }
 
     def __init__(self, **kwargs):
@@ -601,7 +601,7 @@ class EmailField(CharField):
 
 class RegexField(CharField):
     default_error_messages = {
-        'invalid': _('This value does not match the required pattern.')
+        'invalid': _("This value does not match the required pattern.")
     }
 
     def __init__(self, regex, **kwargs):
@@ -637,10 +637,10 @@ class URLField(CharField):
 
 class IntegerField(Field):
     default_error_messages = {
-        'invalid': _('A valid integer is required.'),
-        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
-        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
-        'max_string_length': _('String value too large.')
+        'invalid': _("A valid integer is required."),
+        'max_value': _("Ensure this value is less than or equal to {max_value}."),
+        'min_value': _("Ensure this value is greater than or equal to {min_value}."),
+        'max_string_length': _("String value too large.")
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
@@ -672,9 +672,9 @@ class IntegerField(Field):
 class FloatField(Field):
     default_error_messages = {
         'invalid': _("A valid number is required."),
-        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
-        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
-        'max_string_length': _('String value too large.')
+        'max_value': _("Ensure this value is less than or equal to {max_value}."),
+        'min_value': _("Ensure this value is greater than or equal to {min_value}."),
+        'max_string_length': _("String value too large.")
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
@@ -704,13 +704,13 @@ class FloatField(Field):
 
 class DecimalField(Field):
     default_error_messages = {
-        'invalid': _('A valid number is required.'),
-        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
-        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
-        'max_digits': _('Ensure that there are no more than {max_digits} digits in total.'),
-        'max_decimal_places': _('Ensure that there are no more than {max_decimal_places} decimal places.'),
-        'max_whole_digits': _('Ensure that there are no more than {max_whole_digits} digits before the decimal point.'),
-        'max_string_length': _('String value too large.')
+        'invalid': _("A valid number is required."),
+        'max_value': _("Ensure this value is less than or equal to {max_value}."),
+        'min_value': _("Ensure this value is greater than or equal to {min_value}."),
+        'max_digits': _("Ensure that there are no more than {max_digits} digits in total."),
+        'max_decimal_places': _("Ensure that there are no more than {max_decimal_places} decimal places."),
+        'max_whole_digits': _("Ensure that there are no more than {max_whole_digits} digits before the decimal point."),
+        'max_string_length': _("String value too large.")
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
@@ -793,8 +793,8 @@ class DecimalField(Field):
 
 class DateTimeField(Field):
     default_error_messages = {
-        'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}.'),
-        'date': _('Expected a datetime but got a date.'),
+        'invalid': _("Datetime has wrong format. Use one of these formats instead: {format}."),
+        'date': _("Expected a datetime but got a date."),
     }
     format = api_settings.DATETIME_FORMAT
     input_formats = api_settings.DATETIME_INPUT_FORMATS
@@ -858,8 +858,8 @@ class DateTimeField(Field):
 
 class DateField(Field):
     default_error_messages = {
-        'invalid': _('Date has wrong format. Use one of these formats instead: {format}.'),
-        'datetime': _('Expected a date but got a datetime.'),
+        'invalid': _("Date has wrong format. Use one of these formats instead: {format}."),
+        'datetime': _("Expected a date but got a datetime."),
     }
     format = api_settings.DATE_FORMAT
     input_formats = api_settings.DATE_INPUT_FORMATS
@@ -916,7 +916,7 @@ class DateField(Field):
 
 class TimeField(Field):
     default_error_messages = {
-        'invalid': _('Time has wrong format. Use one of these formats instead: {format}.'),
+        'invalid': _("Time has wrong format. Use one of these formats instead: {format}."),
     }
     format = api_settings.TIME_FORMAT
     input_formats = api_settings.TIME_INPUT_FORMATS
@@ -972,7 +972,7 @@ class TimeField(Field):
 
 class ChoiceField(Field):
     default_error_messages = {
-        'invalid_choice': _('`{input}` is not a valid choice.')
+        'invalid_choice': _("`{input}` is not a valid choice.")
     }
 
     def __init__(self, choices, **kwargs):
@@ -1016,8 +1016,8 @@ class ChoiceField(Field):
 
 class MultipleChoiceField(ChoiceField):
     default_error_messages = {
-        'invalid_choice': _('`{input}` is not a valid choice.'),
-        'not_a_list': _('Expected a list of items but got type `{input_type}`.')
+        'invalid_choice': _("`{input}` is not a valid choice."),
+        'not_a_list': _("Expected a list of items but got type `{input_type}`.")
     }
     default_empty_html = []
 
@@ -1051,7 +1051,7 @@ class FileField(Field):
         'invalid': _("The submitted data was not a file. Check the encoding type on the form."),
         'no_name': _("No filename could be determined."),
         'empty': _("The submitted file is empty."),
-        'max_length': _('Ensure this filename has at most {max_length} characters (it has {length}).'),
+        'max_length': _("Ensure this filename has at most {max_length} characters (it has {length})."),
     }
     use_url = api_settings.UPLOADED_FILES_USE_URL
 
@@ -1118,7 +1118,7 @@ class ListField(Field):
     child = None
     initial = []
     default_error_messages = {
-        'not_a_list': _('Expected a list of items but got type `{input_type}`.')
+        'not_a_list': _("Expected a list of items but got type `{input_type}`.")
     }
 
     def __init__(self, *args, **kwargs):
@@ -1249,7 +1249,7 @@ class ModelField(Field):
     that do not have a serializer field to be mapped to.
     """
     default_error_messages = {
-        'max_length': _('Ensure this field has no more than {max_length} characters.'),
+        'max_length': _("Ensure this field has no more than {max_length} characters."),
     }
 
     def __init__(self, model_field, **kwargs):

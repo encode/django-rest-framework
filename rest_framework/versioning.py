@@ -67,7 +67,7 @@ class URLPathVersioning(BaseVersioning):
     Host: example.com
     Accept: application/json
     """
-    invalid_version_message = _('Invalid version in URL path.')
+    invalid_version_message = _("Invalid version in URL path.")
 
     def determine_version(self, request, *args, **kwargs):
         version = kwargs.get(self.version_param, self.default_version)
@@ -109,7 +109,7 @@ class NamespaceVersioning(BaseVersioning):
     Host: example.com
     Accept: application/json
     """
-    invalid_version_message = _('Invalid version in URL path.')
+    invalid_version_message = _("Invalid version in URL path.")
 
     def determine_version(self, request, *args, **kwargs):
         resolver_match = getattr(request, 'resolver_match', None)
@@ -135,7 +135,7 @@ class HostNameVersioning(BaseVersioning):
     Accept: application/json
     """
     hostname_regex = re.compile(r'^([a-zA-Z0-9]+)\.[a-zA-Z0-9]+\.[a-zA-Z0-9]+$')
-    invalid_version_message = _('Invalid version in hostname.')
+    invalid_version_message = _("Invalid version in hostname.")
 
     def determine_version(self, request, *args, **kwargs):
         hostname, seperator, port = request.get_host().partition(':')
@@ -157,7 +157,7 @@ class QueryParameterVersioning(BaseVersioning):
     Host: example.com
     Accept: application/json
     """
-    invalid_version_message = _('Invalid version in query parameter.')
+    invalid_version_message = _("Invalid version in query parameter.")
 
     def determine_version(self, request, *args, **kwargs):
         version = request.query_params.get(self.version_param)
