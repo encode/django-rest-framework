@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-07 12:28+0000\n"
+"POT-Creation-Date: 2015-01-07 18:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,7 +111,7 @@ msgid "This field may not be null."
 msgstr ""
 
 #: fields.py:480 fields.py:508
-msgid "`{input}` is not a valid boolean."
+msgid "\"{input}\" is not a valid boolean."
 msgstr ""
 
 #: fields.py:543
@@ -199,11 +199,11 @@ msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
 #: fields.py:975 fields.py:1019
-msgid "`{input}` is not a valid choice."
+msgid "\"{input}\" is not a valid choice."
 msgstr ""
 
 #: fields.py:1020 fields.py:1121 serializers.py:476
-msgid "Expected a list of items but got type `{input_type}`."
+msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr ""
 
 #: fields.py:1050

@@ -52,7 +52,7 @@ class APIException(Exception):
 # built in `ValidationError`. For example:
 #
 # from rest_framework import serializers
-# raise serializers.ValidationError("Value was invalid")
+# raise serializers.ValidationError('Value was invalid')
 
 class ValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST

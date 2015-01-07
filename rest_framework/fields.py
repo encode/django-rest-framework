@@ -477,7 +477,7 @@ class Field(object):
 
 class BooleanField(Field):
     default_error_messages = {
-        'invalid': _('`{input}` is not a valid boolean.')
+        'invalid': _('"{input}" is not a valid boolean.')
     }
     default_empty_html = False
     initial = False
@@ -505,7 +505,7 @@ class BooleanField(Field):
 
 class NullBooleanField(Field):
     default_error_messages = {
-        'invalid': _('`{input}` is not a valid boolean.')
+        'invalid': _('"{input}" is not a valid boolean.')
     }
     initial = None
     TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
@@ -972,7 +972,7 @@ class TimeField(Field):
 
 class ChoiceField(Field):
     default_error_messages = {
-        'invalid_choice': _('`{input}` is not a valid choice.')
+        'invalid_choice': _('"{input}" is not a valid choice.')
     }
 
     def __init__(self, choices, **kwargs):
@@ -1016,8 +1016,8 @@ class ChoiceField(Field):
 
 class MultipleChoiceField(ChoiceField):
     default_error_messages = {
-        'invalid_choice': _('`{input}` is not a valid choice.'),
-        'not_a_list': _('Expected a list of items but got type `{input_type}`.')
+        'invalid_choice': _('"{input}" is not a valid choice.'),
+        'not_a_list': _('Expected a list of items but got type "{input_type}".')
     }
     default_empty_html = []
 
@@ -1118,7 +1118,7 @@ class ListField(Field):
     child = None
     initial = []
     default_error_messages = {
-        'not_a_list': _('Expected a list of items but got type `{input_type}`.')
+        'not_a_list': _('Expected a list of items but got type "{input_type}".')
     }
 
     def __init__(self, *args, **kwargs):
