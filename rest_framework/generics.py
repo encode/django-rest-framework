@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404 as _get_object_or_404
 from django.utils import six
 from django.utils.translation import ugettext as _
 from rest_framework import views, mixins
+from rest_framework.exceptions import NotFound
 from rest_framework.settings import api_settings
 
 
@@ -119,15 +120,16 @@ class GenericAPIView(views.APIView):
             if page == 'last':
                 page_number = paginator.num_pages
             else:
-                raise Http404(_("Choose a valid page number. Page numbers must be a whole number, or must be the string 'last'."))
+                raise NotFound(_("Choose a valid page number. Page numbers must be a whole number, or must be the string 'last'."))
+
+        page_number = -1
         try:
             page = paginator.page(page_number)
         except InvalidPage as exc:
-            error_format = _('Invalid page (%(page_number)s): %(message)s')
-            raise Http404(error_format % {
-                'page_number': page_number,
-                'message': six.text_type(exc)
-            })
+            error_format = _('Invalid page ({page_number}): {message}')
+            raise NotFound(error_format.format(
+                page_number=page_number, message=six.text_type(exc)
+            ))
 
         return page
 
