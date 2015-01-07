@@ -120,12 +120,12 @@ class GenericAPIView(views.APIView):
             if page == 'last':
                 page_number = paginator.num_pages
             else:
-                raise NotFound(_("Choose a valid page number. Page numbers must be a whole number, or must be the string 'last'."))
+                raise NotFound(_("Choose a valid page number. Page numbers must be a whole number, or must be the string \"last\"."))
 
         try:
             page = paginator.page(page_number)
         except InvalidPage as exc:
-            error_format = _("Invalid page ({page_number}): {message}.")
+            error_format = _("Invalid page \"{page_number}\": {message}.")
             raise NotFound(error_format.format(
                 page_number=page_number, message=six.text_type(exc)
             ))

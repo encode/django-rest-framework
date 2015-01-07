@@ -129,7 +129,7 @@ class StringRelatedField(RelatedField):
 class PrimaryKeyRelatedField(RelatedField):
     default_error_messages = {
         'required': _("This field is required."),
-        'does_not_exist': _("Invalid pk '{pk_value}' - object does not exist."),
+        'does_not_exist': _("Invalid pk \"{pk_value}\" - object does not exist."),
         'incorrect_type': _("Incorrect type. Expected pk value, received {data_type}."),
     }
 

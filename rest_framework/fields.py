@@ -612,7 +612,7 @@ class RegexField(CharField):
 
 class SlugField(CharField):
     default_error_messages = {
-        'invalid': _("Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens.")
+        'invalid': _("Enter a valid \"slug\" consisting of letters, numbers, underscores or hyphens.")
     }
 
     def __init__(self, **kwargs):

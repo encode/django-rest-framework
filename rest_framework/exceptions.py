@@ -95,7 +95,7 @@ class NotFound(APIException):
 
 class MethodNotAllowed(APIException):
     status_code = status.HTTP_405_METHOD_NOT_ALLOWED
-    default_detail = _("Method '{method}' not allowed.")
+    default_detail = _("Method \"{method}\" not allowed.")
 
     def __init__(self, method, detail=None):
         if detail is not None:
@@ -118,7 +118,7 @@ class NotAcceptable(APIException):
 
 class UnsupportedMediaType(APIException):
     status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
-    default_detail = _("Unsupported media type '{media_type}' in request.")
+    default_detail = _("Unsupported media type \"{media_type}\" in request.")
 
     def __init__(self, media_type, detail=None):
         if detail is not None:
