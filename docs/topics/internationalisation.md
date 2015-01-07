@@ -3,11 +3,13 @@ REST framework ships with translatable error messages.  You can make these appea
 
 ## How to translate REST Framework errors
 
+REST framework translations are managed online using [Transifex.com][transifex]. To get started, checkout the guide in the [CONTRIBUTING.md guide][contributing].
+
+Sometimes you may want to use REST Framework in a language which has not been translated yet on Transifex. If that is the case then you should translate the error messages locally.
+
+#### How to translate REST Framework error messages locally:
 
 This guide assumes you are already familiar with how to translate a Django app.  If you're not, start by reading [Django's translation docs][django-translation].
-
-
-#### To translate REST framework error messages:
 
 1. Make a new folder where you want to store the translated errors. Add this 
 path to your [`LOCALE_PATHS`][django-locale-paths] setting. 
@@ -90,3 +92,4 @@ display as Django does.  You can find more info in the [Django docs on discoveri
 [django-language-preference]: https://docs.djangoproject.com/en/1.7/topics/i18n/translation/#how-django-discovers-language-preference
 [django-locale-paths]: https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-LOCALE_PATHS
 [django-locale-name]: https://docs.djangoproject.com/en/1.7/topics/i18n/#term-locale-name
+[contributing]: ../../CONTRIBUTING.md
