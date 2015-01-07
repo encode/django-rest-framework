@@ -66,16 +66,16 @@ class BasicAuthentication(BaseAuthentication):
             return None
 
         if len(auth) == 1:
-            msg = _("Invalid basic header. No credentials provided.")
+            msg = _('Invalid basic header. No credentials provided.')
             raise exceptions.AuthenticationFailed(msg)
         elif len(auth) > 2:
-            msg = _("Invalid basic header. Credentials string should not contain spaces.")
+            msg = _('Invalid basic header. Credentials string should not contain spaces.')
             raise exceptions.AuthenticationFailed(msg)
 
         try:
             auth_parts = base64.b64decode(auth[1]).decode(HTTP_HEADER_ENCODING).partition(':')
         except (TypeError, UnicodeDecodeError):
-            msg = _("Invalid basic header. Credentials not correctly base64 encoded.")
+            msg = _('Invalid basic header. Credentials not correctly base64 encoded.')
             raise exceptions.AuthenticationFailed(msg)
 
         userid, password = auth_parts[0], auth_parts[2]
@@ -87,7 +87,7 @@ class BasicAuthentication(BaseAuthentication):
         """
         user = authenticate(username=userid, password=password)
         if user is None or not user.is_active:
-            raise exceptions.AuthenticationFailed(_("Invalid username/password."))
+            raise exceptions.AuthenticationFailed(_('Invalid username/password.'))
         return (user, None)
 
     def authenticate_header(self, request):
@@ -153,10 +153,10 @@ class TokenAuthentication(BaseAuthentication):
             return None
 
         if len(auth) == 1:
-            msg = _("Invalid token header. No credentials provided.")
+            msg = _('Invalid token header. No credentials provided.')
             raise exceptions.AuthenticationFailed(msg)
         elif len(auth) > 2:
-            msg = _("Invalid token header. Token string should not contain spaces.")
+            msg = _('Invalid token header. Token string should not contain spaces.')
             raise exceptions.AuthenticationFailed(msg)
 
         return self.authenticate_credentials(auth[1])
@@ -165,10 +165,10 @@ class TokenAuthentication(BaseAuthentication):
         try:
             token = self.model.objects.get(key=key)
         except self.model.DoesNotExist:
-            raise exceptions.AuthenticationFailed(_("Invalid token"))
+            raise exceptions.AuthenticationFailed(_('Invalid token.'))
 
         if not token.user.is_active:
-            raise exceptions.AuthenticationFailed(_("User inactive or deleted"))
+            raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
 
         return (token.user, token)
 

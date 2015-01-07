@@ -17,13 +17,13 @@ class AuthTokenSerializer(serializers.Serializer):
 
             if user:
                 if not user.is_active:
-                    msg = _("User account is disabled.")
+                    msg = _('User account is disabled.')
                     raise exceptions.ValidationError(msg)
             else:
-                msg = _("Unable to log in with provided credentials.")
+                msg = _('Unable to log in with provided credentials.')
                 raise exceptions.ValidationError(msg)
         else:
-            msg = _("Must include \"username\" and \"password\"")
+            msg = _('Must include "username" and "password".')
             raise exceptions.ValidationError(msg)
 
         attrs['user'] = user

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-07 11:58+0000\n"
+"POT-Creation-Date: 2015-01-07 12:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,11 +42,11 @@ msgid "Invalid token header. Token string should not contain spaces."
 msgstr ""
 
 #: authentication.py:168
-msgid "Invalid token"
+msgid "Invalid token."
 msgstr ""
 
 #: authentication.py:171
-msgid "User inactive or deleted"
+msgid "User inactive or deleted."
 msgstr ""
 
 #: authtoken/serializers.py:20
@@ -58,7 +58,7 @@ msgid "Unable to log in with provided credentials."
 msgstr ""
 
 #: authtoken/serializers.py:26
-msgid "Must include \"username\" and \"password\""
+msgid "Must include \"username\" and \"password\"."
 msgstr ""
 
 #: exceptions.py:38
@@ -86,7 +86,7 @@ msgid "Not found."
 msgstr ""
 
 #: exceptions.py:98
-msgid "Method '{method}' not allowed."
+msgid "Method \"{method}\" not allowed."
 msgstr ""
 
 #: exceptions.py:109
@@ -94,7 +94,7 @@ msgid "Could not satisfy the request Accept header."
 msgstr ""
 
 #: exceptions.py:121
-msgid "Unsupported media type '{media_type}' in request."
+msgid "Unsupported media type \"{media_type}\" in request."
 msgstr ""
 
 #: exceptions.py:134
@@ -136,7 +136,8 @@ msgstr ""
 
 #: fields.py:615
 msgid ""
-"Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
 msgstr ""
 
 #: fields.py:627
@@ -235,15 +236,15 @@ msgstr ""
 #: generics.py:123
 msgid ""
 "Choose a valid page number. Page numbers must be a whole number, or must be "
-"the string 'last'."
+"the string \"last\"."
 msgstr ""
 
 #: generics.py:128
-msgid "Invalid page ({page_number}): {message}."
+msgid "Invalid page \"{page_number}\": {message}."
 msgstr ""
 
 #: relations.py:132
-msgid "Invalid pk '{pk_value}' - object does not exist."
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
 msgstr ""
 
 #: relations.py:133
@@ -299,7 +300,7 @@ msgid "This field must be unique for the \"{date_field}\" year."
 msgstr ""
 
 #: versioning.py:39
-msgid "Invalid version in 'Accept' header."
+msgid "Invalid version in \"Accept\" header."
 msgstr ""
 
 #: versioning.py:70 versioning.py:112

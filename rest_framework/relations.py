@@ -128,9 +128,9 @@ class StringRelatedField(RelatedField):
 
 class PrimaryKeyRelatedField(RelatedField):
     default_error_messages = {
-        'required': _("This field is required."),
-        'does_not_exist': _("Invalid pk \"{pk_value}\" - object does not exist."),
-        'incorrect_type': _("Incorrect type. Expected pk value, received {data_type}."),
+        'required': _('This field is required.'),
+        'does_not_exist': _('Invalid pk "{pk_value}" - object does not exist.'),
+        'incorrect_type': _('Incorrect type. Expected pk value, received {data_type}.'),
     }
 
     def use_pk_only_optimization(self):
@@ -152,11 +152,11 @@ class HyperlinkedRelatedField(RelatedField):
     lookup_field = 'pk'
 
     default_error_messages = {
-        'required': _("This field is required."),
-        'no_match': _("Invalid hyperlink - No URL match."),
-        'incorrect_match': _("Invalid hyperlink - Incorrect URL match."),
-        'does_not_exist': _("Invalid hyperlink - Object does not exist."),
-        'incorrect_type': _("Incorrect type. Expected URL string, received {data_type}."),
+        'required': _('This field is required.'),
+        'no_match': _('Invalid hyperlink - No URL match.'),
+        'incorrect_match': _('Invalid hyperlink - Incorrect URL match.'),
+        'does_not_exist': _('Invalid hyperlink - Object does not exist.'),
+        'incorrect_type': _('Incorrect type. Expected URL string, received {data_type}.'),
     }
 
     def __init__(self, view_name=None, **kwargs):
@@ -291,8 +291,8 @@ class SlugRelatedField(RelatedField):
     """
 
     default_error_messages = {
-        'does_not_exist': _("Object with {slug_name}={value} does not exist."),
-        'invalid': _("Invalid value."),
+        'does_not_exist': _('Object with {slug_name}={value} does not exist.'),
+        'invalid': _('Invalid value.'),
     }
 
     def __init__(self, slug_field=None, **kwargs):

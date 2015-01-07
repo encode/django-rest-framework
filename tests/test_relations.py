@@ -33,7 +33,7 @@ class TestPrimaryKeyRelatedField(APISimpleTestCase):
         with pytest.raises(serializers.ValidationError) as excinfo:
             self.field.to_internal_value(4)
         msg = excinfo.value.detail[0]
-        assert msg == "Invalid pk '4' - object does not exist."
+        assert msg == 'Invalid pk "4" - object does not exist.'
 
     def test_pk_related_lookup_invalid_type(self):
         with pytest.raises(serializers.ValidationError) as excinfo:
