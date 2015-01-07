@@ -59,7 +59,7 @@ The following template should be used for the description of the issue, and serv
     
     If you wish to be considered for this or a future date, please comment against this or subsequent issues.
     
-    To modify this process for future releases make a pull request to the [project management](http://www.django-rest-framework.org/topics/project-management/) documentation.
+    To modify this process for future maintenance cycles make a pull request to the [project management](http://www.django-rest-framework.org/topics/project-management/) documentation.
 
 #### Responsibilities of team members
 
