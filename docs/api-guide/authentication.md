@@ -34,7 +34,7 @@ The value of `request.user` and `request.auth` for unauthenticated requests can 
 
 ## Setting the authentication scheme
 
-The default authentication schemes may be set globally, using the `DEFAULT_AUTHENTICATION` setting.  For example.
+The default authentication schemes may be set globally, using the `DEFAULT_AUTHENTICATION_CLASSES` setting.  For example.
 
     REST_FRAMEWORK = {
         'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -282,7 +282,7 @@ This authentication class depends on the optional [django-oauth2-provider][djang
         'provider.oauth2',
     )
 
-Then add `OAuth2Authentication` to your global `DEFAULT_AUTHENTICATION` setting:
+Then add `OAuth2Authentication` to your global `DEFAULT_AUTHENTICATION_CLASSES` setting:
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.OAuth2Authentication',
