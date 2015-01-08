@@ -10,7 +10,7 @@ import inspect
 
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.encoding import force_text
-from django.utils.six.moves.urllib import parse as urlparse
+from django.utils.six.moves.urllib.parse import urlparse as _urlparse
 from django.conf import settings
 from django.utils import six
 import django
@@ -182,7 +182,7 @@ except ImportError:
 class RequestFactory(DjangoRequestFactory):
     def generic(self, method, path,
             data='', content_type='application/octet-stream', **extra):
-        parsed = urlparse.urlparse(path)
+        parsed = _urlparse(path)
         data = force_bytes_or_smart_bytes(data, settings.DEFAULT_CHARSET)
         r = {
             'PATH_INFO': self._get_path(parsed),
