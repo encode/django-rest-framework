@@ -126,6 +126,7 @@ The following issues still need to be addressed:
 * Ensure `@jamie` has back-up access to the `django-rest-framework.org` domain setup and admin.
 * Document ownership of the [live example][sandbox] API.
 * Document ownership of the [mailing list][mailing-list] and IRC channel.
+* Document ownership and management of the security mailing list.
 
 [bus-factor]: http://en.wikipedia.org/wiki/Bus_factor
 [un-triaged]: https://github.com/tomchristie/django-rest-framework/issues?q=is%3Aopen+no%3Alabel

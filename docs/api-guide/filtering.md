@@ -316,6 +316,7 @@ Typically you'd instead control this by setting `order_by` on the initial querys
         queryset = User.objects.all()
         serializer_class = UserSerializer
         filter_backends = (filters.OrderingFilter,)
+        ordering_fields = ('username', 'email')
         ordering = ('username',)
 
 The `ordering` attribute may be either a string or a list/tuple of strings.
