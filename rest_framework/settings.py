@@ -197,13 +197,20 @@ class APISettings(object):
                     and (not issubclass(default.__class__, Iterable)
                          or isinstance(val, six.string_types)):
                 raise ImproperlyConfigured(
-                    'The "{attr}" setting must be a list or a tuple'
-                    .format(attr=attr)
+                    'The "{settings_key}" setting must be a list or tuple, but '
+                    'got type "{type_name}" with value "{value}".'.format(
+                        settings_key=attr, type_name=val.__class__.__name__,
+                        value=val
+                    )
                 )
             elif isinstance(default, six.string_types) and not \
                     isinstance(val, six.string_types):
                 raise ImproperlyConfigured(
-                    'The "{attr}" setting must be a string'.format(attr=attr)
+                    'The "{settings_key}" setting must be a string, but '
+                    'got type "{type_name}" with value "{value}".'.format(
+                        settings_key=attr, type_name=val.__class__.__name__,
+                        value=val
+                    )
                 )
 
         # Coerce import strings into classes
