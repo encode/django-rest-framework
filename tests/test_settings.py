@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured
 import pytest
 from django.test import TestCase
+import six
 from rest_framework.settings import APISettings
 
 
@@ -30,10 +31,15 @@ class TestSettings(TestCase):
         # Trigger the exception
         with pytest.raises(ImproperlyConfigured) as exc_info:
             settings.DEFAULT_RENDERER_CLASSES
+
+        # Construct the expected error message
+        text_type_name = str(six.text_type.__name__)
         expected_error = (
             u'The "DEFAULT_RENDERER_CLASSES" setting must be a list or '
-            u'tuple, but got type "unicode" with value '
-            u'"rest_framework.renderers.JSONRenderer".'
+            u'tuple, but got type "{text_type_name}" with value '
+            u'"rest_framework.renderers.JSONRenderer".'.format(
+                text_type_name=text_type_name
+            )
         )
         assert exc_info.value.args[0] == expected_error
 
