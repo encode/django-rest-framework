@@ -36,7 +36,7 @@ def unicode_to_repr(value):
 # OrderedDict only available in Python 2.7.
 # This will always be the case in Django 1.7 and above, as these versions
 # no longer support Python 2.6.
-# For Django <= 1.6 and Python 2.6 fall back to OrderedDict.
+# For Django <= 1.6 and Python 2.6 fall back to SortedDict.
 try:
     from collections import OrderedDict
 except ImportError:
