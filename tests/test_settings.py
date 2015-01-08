@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured
 import pytest
-import warnings
 from django.test import TestCase
 from rest_framework.settings import APISettings
 
@@ -32,7 +31,9 @@ class TestSettings(TestCase):
         with pytest.raises(ImproperlyConfigured) as exc_info:
             settings.DEFAULT_RENDERER_CLASSES
         expected_error = (
-            u'The "DEFAULT_RENDERER_CLASSES" setting must be a list or a tuple'
+            u'The "DEFAULT_RENDERER_CLASSES" setting must be a list or '
+            u'tuple, but got type "unicode" with value '
+            u'"rest_framework.renderers.JSONRenderer".'
         )
         assert exc_info.value[0] == expected_error
 
@@ -50,6 +51,7 @@ class TestSettings(TestCase):
             settings.DEFAULT_METADATA_CLASS
 
         expected_error = (
-            u'The "DEFAULT_METADATA_CLASS" setting must be a string'
+            u'The "DEFAULT_METADATA_CLASS" setting must be a string, but got '
+            u'type "list" with value "[]".'
         )
         assert exc_info.value[0] == expected_error
