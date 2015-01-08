@@ -19,11 +19,10 @@ back to the defaults.
 """
 from __future__ import unicode_literals
 from collections import Iterable
-import warnings
+from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
 from django.utils import importlib, six
 from rest_framework import ISO_8601
-from rest_framework.exceptions import RESTFrameworkSettingHasUnexpectedClassWarning
 
 
 USER_SETTINGS = getattr(settings, 'REST_FRAMEWORK', None)
@@ -197,17 +196,14 @@ class APISettings(object):
             if issubclass(val.__class__, Iterable) \
                     and (not issubclass(default.__class__, Iterable)
                          or isinstance(val, six.string_types)):
-                warnings.warn(
-                    "The `{attr}` setting must be iterable".format(**locals()),
-                    RESTFrameworkSettingHasUnexpectedClassWarning,
-                    stacklevel=3
+                raise ImproperlyConfigured(
+                    'The "{attr}" setting must be a list or a tuple'
+                    .format(attr=attr)
                 )
             elif isinstance(default, six.string_types) and not \
                     isinstance(val, six.string_types):
-                warnings.warn(
-                    "The `{attr}` setting must be a string".format(**locals()),
-                    RESTFrameworkSettingHasUnexpectedClassWarning,
-                    stacklevel=3
+                raise ImproperlyConfigured(
+                    'The "{attr}" setting must be a string'.format(attr=attr)
                 )
 
         # Coerce import strings into classes

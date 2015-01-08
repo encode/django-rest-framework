@@ -1,8 +1,8 @@
 from __future__ import unicode_literals
+from django.core.exceptions import ImproperlyConfigured
+import pytest
 import warnings
 from django.test import TestCase
-from rest_framework.exceptions import \
-    RESTFrameworkSettingHasUnexpectedClassWarning
 from rest_framework.settings import APISettings
 
 
@@ -21,37 +21,35 @@ class TestSettings(TestCase):
 
     def test_bad_iterable_setting_class_raises_warning(self):
         """
-        Make sure warnings are emitted when settings which should be iterable
-        are not.
+        Make sure errors are raised when settings which should be iterable are
+        not.
         """
         settings = APISettings({
             'DEFAULT_RENDERER_CLASSES': 'rest_framework.renderers.JSONRenderer'
         })
 
-        with warnings.catch_warnings(record=True) as w:
-            # Trigger a warning.
+        # Trigger the exception
+        with pytest.raises(ImproperlyConfigured) as exc_info:
             settings.DEFAULT_RENDERER_CLASSES
-            # Verify that a warning is thrown
-            assert len(w) == 1
-            assert issubclass(
-                w[-1].category, RESTFrameworkSettingHasUnexpectedClassWarning
-            )
+        expected_error = (
+            u'The "DEFAULT_RENDERER_CLASSES" setting must be a list or a tuple'
+        )
+        assert exc_info.value[0] == expected_error
 
     def test_bad_string_setting_class_raises_warning(self):
         """
-        Make sure warnings are emitted when settings which should be strings are
+        Make sure errors are raised when settings which should be strings are
         not.
         """
         settings = APISettings({
             'DEFAULT_METADATA_CLASS': []
         })
 
-        with warnings.catch_warnings(record=True) as w:
-            # Trigger a warning.
+        # Trigger the exception
+        with pytest.raises(ImproperlyConfigured) as exc_info:
             settings.DEFAULT_METADATA_CLASS
 
-            # Verify that a warning is thrown
-            assert len(w) == 1
-            assert issubclass(
-                w[-1].category, RESTFrameworkSettingHasUnexpectedClassWarning
-            )
+        expected_error = (
+            u'The "DEFAULT_METADATA_CLASS" setting must be a string'
+        )
+        assert exc_info.value[0] == expected_error
