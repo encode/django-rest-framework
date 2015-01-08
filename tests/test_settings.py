@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured
 import pytest
 from django.test import TestCase
-import six
+from django.utils import six
 from rest_framework.settings import APISettings
 
 
