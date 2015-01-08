@@ -59,6 +59,7 @@ You can determine your currently installed version using `pip freeze`:
 * Fix Metaclass attribute depth ignoring fields attribute. ([#2287][gh2287])
 * Fix `format_suffix_patterns` to work with Django's `i18n_patterns`. ([#2278][gh2278])
 * Ability to customize router URLs for custom actions, using `url_path`. ([#2010][gh2010])
+* Don't install Django REST Framework as egg. ([#2386][gh2386])
 
 ### 3.0.2
 
@@ -700,6 +701,7 @@ For older release notes, [please see the GitHub repo](old-release-notes).
 
 [3.0.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.1+Release%22
 [3.0.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.2+Release%22
+[3.0.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.3+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -767,3 +769,4 @@ For older release notes, [please see the GitHub repo](old-release-notes).
 [gh2351]: https://github.com/tomchristie/django-rest-framework/issues/2351
 [gh2355]: https://github.com/tomchristie/django-rest-framework/issues/2355
 [gh2369]: https://github.com/tomchristie/django-rest-framework/issues/2369
+[gh2386]: https://github.com/tomchristie/django-rest-framework/issues/2386
