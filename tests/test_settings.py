@@ -35,7 +35,7 @@ class TestSettings(TestCase):
             u'tuple, but got type "unicode" with value '
             u'"rest_framework.renderers.JSONRenderer".'
         )
-        assert exc_info.value[0] == expected_error
+        assert exc_info.value.args[0] == expected_error
 
     def test_bad_string_setting_class_raises_warning(self):
         """
@@ -54,4 +54,4 @@ class TestSettings(TestCase):
             u'The "DEFAULT_METADATA_CLASS" setting must be a string, but got '
             u'type "list" with value "[]".'
         )
-        assert exc_info.value[0] == expected_error
+        assert exc_info.value.args[0] == expected_error
