@@ -338,7 +338,7 @@ class TestBooleanField(FieldValues):
         False: False,
     }
     invalid_inputs = {
-        'foo': ['`foo` is not a valid boolean.'],
+        'foo': ['"foo" is not a valid boolean.'],
         None: ['This field may not be null.']
     }
     outputs = {
@@ -368,7 +368,7 @@ class TestNullBooleanField(FieldValues):
         None: None
     }
     invalid_inputs = {
-        'foo': ['`foo` is not a valid boolean.'],
+        'foo': ['"foo" is not a valid boolean.'],
     }
     outputs = {
         'true': True,
@@ -832,7 +832,7 @@ class TestChoiceField(FieldValues):
         'good': 'good',
     }
     invalid_inputs = {
-        'amazing': ['`amazing` is not a valid choice.']
+        'amazing': ['"amazing" is not a valid choice.']
     }
     outputs = {
         'good': 'good',
@@ -872,8 +872,8 @@ class TestChoiceFieldWithType(FieldValues):
         3: 3,
     }
     invalid_inputs = {
-        5: ['`5` is not a valid choice.'],
-        'abc': ['`abc` is not a valid choice.']
+        5: ['"5" is not a valid choice.'],
+        'abc': ['"abc" is not a valid choice.']
     }
     outputs = {
         '1': 1,
@@ -899,7 +899,7 @@ class TestChoiceFieldWithListChoices(FieldValues):
         'good': 'good',
     }
     invalid_inputs = {
-        'awful': ['`awful` is not a valid choice.']
+        'awful': ['"awful" is not a valid choice.']
     }
     outputs = {
         'good': 'good'
@@ -917,8 +917,8 @@ class TestMultipleChoiceField(FieldValues):
         ('aircon', 'manual'): set(['aircon', 'manual']),
     }
     invalid_inputs = {
-        'abc': ['Expected a list of items but got type `str`.'],
-        ('aircon', 'incorrect'): ['`incorrect` is not a valid choice.']
+        'abc': ['Expected a list of items but got type "str".'],
+        ('aircon', 'incorrect'): ['"incorrect" is not a valid choice.']
     }
     outputs = [
         (['aircon', 'manual'], set(['aircon', 'manual']))
@@ -1028,7 +1028,7 @@ class TestListField(FieldValues):
         (['1', '2', '3'], [1, 2, 3])
     ]
     invalid_inputs = [
-        ('not a list', ['Expected a list of items but got type `str`.']),
+        ('not a list', ['Expected a list of items but got type "str".']),
         ([1, 2, 'error'], ['A valid integer is required.'])
     ]
     outputs = [
