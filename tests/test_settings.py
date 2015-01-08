@@ -35,9 +35,9 @@ class TestSettings(TestCase):
         # Construct the expected error message
         text_type_name = str(six.text_type.__name__)
         expected_error = (
-            u'The "DEFAULT_RENDERER_CLASSES" setting must be a list or '
-            u'tuple, but got type "{text_type_name}" with value '
-            u'"rest_framework.renderers.JSONRenderer".'.format(
+            'The "DEFAULT_RENDERER_CLASSES" setting must be a list or '
+            'tuple, but got type "{text_type_name}" with value '
+            '"rest_framework.renderers.JSONRenderer".'.format(
                 text_type_name=text_type_name
             )
         )
@@ -57,7 +57,7 @@ class TestSettings(TestCase):
             settings.DEFAULT_METADATA_CLASS
 
         expected_error = (
-            u'The "DEFAULT_METADATA_CLASS" setting must be a string, but got '
-            u'type "list" with value "[]".'
+            'The "DEFAULT_METADATA_CLASS" setting must be a string, but got '
+            'type "list" with value "[]".'
         )
         assert exc_info.value.args[0] == expected_error
