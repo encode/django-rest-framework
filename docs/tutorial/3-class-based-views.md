@@ -64,7 +64,7 @@ That's looking good.  Again, it's still pretty similar to the function based vie
 
 We'll also need to refactor our `urls.py` slightly now we're using class based views.
 
-    from django.conf.urls import patterns, url
+    from django.conf.urls import url
     from rest_framework.urlpatterns import format_suffix_patterns
     from snippets import views
 
