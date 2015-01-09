@@ -177,6 +177,57 @@ We recommend the [`django-reusable-app`][django-reusable-app] template as a good
 
 Once your package is decently documented and available on PyPI open a pull request or issue, and we'll add a link to it from the main REST framework documentation.
 
+# Translations
+
+If REST framework isn't translated into your language you can request that it is at the [Transifex project][transifex].
+
+## Managing Transfiex
+The [official Transifex client][transifex-client] is used to upload and download translations to Transifex. The client is installed using pip:
+
+```
+pip install transifex-client
+```
+
+To use it you'll need a login to Transifex which has a password, and you'll need to have administrative access to the Transifex project. You'll need to create a `~/.transifexrc` file which contains your authentication information:
+
+```
+[https://www.transifex.com]
+username = user
+token =
+password = p@ssw0rd
+hostname = https://www.transifex.com
+```
+
+## Upload new source translations
+When any user-visible strings are changed, they should be uploaded to Transifex so that the translators can start to translate them. To do this, just run:
+
+```
+cd rest_framework
+django-admin.py makemessages -l en_US
+cd ..
+tx push -s
+```
+
+When pushing source files, Transifex will update the source strings of a resource to match those from the new source file.
+
+Here's how differences between the old and new source files will be handled:
+
+* New strings will be added.
+* Modified strings will be added as well.
+* Strings which do not exist in the new source file will be removed from the database, along with their translations. If that source strings gets re-added later then [Transifex Translation Memory][translation-memory] will automatically restore the translated string too. 
+
+
+## Get translations
+When a translator has finished translating their work needs to be downloaded from Transifex into the source repo. To do this, run:
+
+```
+tx pull -a
+cd rest_framework
+django-admin.py compilemessages
+```
+
+You can then commit as normal.
+
 [cite]: http://www.w3.org/People/Berners-Lee/FAQ.html
 [code-of-conduct]: https://www.djangoproject.com/conduct/
 [google-group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
@@ -190,3 +241,6 @@ Once your package is decently documented and available on PyPI open a pull reque
 [docs]: https://github.com/tomchristie/django-rest-framework/tree/master/docs
 [mou]: http://mouapp.com/
 [django-reusable-app]: https://github.com/dabapps/django-reusable-app
+[transifex]: https://www.transifex.com/projects/p/django-rest-framework/
+[transifex-client]: https://pypi.python.org/pypi/transifex-client
+[translation-memory]: http://docs.transifex.com/guides/tm#let-tm-automatically-populate-translations

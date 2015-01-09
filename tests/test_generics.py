@@ -117,7 +117,7 @@ class TestRootView(TestCase):
         with self.assertNumQueries(0):
             response = self.view(request).render()
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEqual(response.data, {"detail": "Method 'PUT' not allowed."})
+        self.assertEqual(response.data, {"detail": 'Method "PUT" not allowed.'})
 
     def test_delete_root_view(self):
         """
@@ -127,7 +127,7 @@ class TestRootView(TestCase):
         with self.assertNumQueries(0):
             response = self.view(request).render()
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEqual(response.data, {"detail": "Method 'DELETE' not allowed."})
+        self.assertEqual(response.data, {"detail": 'Method "DELETE" not allowed.'})
 
     def test_post_cannot_set_id(self):
         """
@@ -181,7 +181,7 @@ class TestInstanceView(TestCase):
         with self.assertNumQueries(0):
             response = self.view(request).render()
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEqual(response.data, {"detail": "Method 'POST' not allowed."})
+        self.assertEqual(response.data, {"detail": 'Method "POST" not allowed.'})
 
     def test_put_instance_view(self):
         """

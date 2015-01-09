@@ -36,7 +36,7 @@ class AcceptHeaderVersioning(BaseVersioning):
     Host: example.com
     Accept: application/json; version=1.0
     """
-    invalid_version_message = _("Invalid version in 'Accept' header.")
+    invalid_version_message = _('Invalid version in "Accept" header.')
 
     def determine_version(self, request, *args, **kwargs):
         media_type = _MediaType(request.accepted_media_type)

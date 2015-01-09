@@ -346,7 +346,7 @@ class TestBooleanField(FieldValues):
         False: False,
     }
     invalid_inputs = {
-        'foo': ['`foo` is not a valid boolean.'],
+        'foo': ['"foo" is not a valid boolean.'],
         None: ['This field may not be null.']
     }
     outputs = {
@@ -376,7 +376,7 @@ class TestNullBooleanField(FieldValues):
         None: None
     }
     invalid_inputs = {
-        'foo': ['`foo` is not a valid boolean.'],
+        'foo': ['"foo" is not a valid boolean.'],
     }
     outputs = {
         'true': True,
@@ -447,7 +447,7 @@ class TestSlugField(FieldValues):
         'slug-99': 'slug-99',
     }
     invalid_inputs = {
-        'slug 99': ["Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."]
+        'slug 99': ['Enter a valid "slug" consisting of letters, numbers, underscores or hyphens.']
     }
     outputs = {}
     field = serializers.SlugField()
@@ -648,8 +648,8 @@ class TestDateField(FieldValues):
         datetime.date(2001, 1, 1): datetime.date(2001, 1, 1),
     }
     invalid_inputs = {
-        'abc': ['Date has wrong format. Use one of these formats instead: YYYY[-MM[-DD]]'],
-        '2001-99-99': ['Date has wrong format. Use one of these formats instead: YYYY[-MM[-DD]]'],
+        'abc': ['Date has wrong format. Use one of these formats instead: YYYY[-MM[-DD]].'],
+        '2001-99-99': ['Date has wrong format. Use one of these formats instead: YYYY[-MM[-DD]].'],
         datetime.datetime(2001, 1, 1, 12, 00): ['Expected a date but got a datetime.'],
     }
     outputs = {
@@ -666,7 +666,7 @@ class TestCustomInputFormatDateField(FieldValues):
         '1 Jan 2001': datetime.date(2001, 1, 1),
     }
     invalid_inputs = {
-        '2001-01-01': ['Date has wrong format. Use one of these formats instead: DD [Jan-Dec] YYYY']
+        '2001-01-01': ['Date has wrong format. Use one of these formats instead: DD [Jan-Dec] YYYY.']
     }
     outputs = {}
     field = serializers.DateField(input_formats=['%d %b %Y'])
@@ -710,8 +710,8 @@ class TestDateTimeField(FieldValues):
         '2001-01-01T14:00+01:00' if (django.VERSION > (1, 4)) else '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC())
     }
     invalid_inputs = {
-        'abc': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]'],
-        '2001-99-99T99:00': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]'],
+        'abc': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].'],
+        '2001-99-99T99:00': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].'],
         datetime.date(2001, 1, 1): ['Expected a datetime but got a date.'],
     }
     outputs = {
@@ -729,7 +729,7 @@ class TestCustomInputFormatDateTimeField(FieldValues):
         '1:35pm, 1 Jan 2001': datetime.datetime(2001, 1, 1, 13, 35, tzinfo=timezone.UTC()),
     }
     invalid_inputs = {
-        '2001-01-01T20:50': ['Datetime has wrong format. Use one of these formats instead: hh:mm[AM|PM], DD [Jan-Dec] YYYY']
+        '2001-01-01T20:50': ['Datetime has wrong format. Use one of these formats instead: hh:mm[AM|PM], DD [Jan-Dec] YYYY.']
     }
     outputs = {}
     field = serializers.DateTimeField(default_timezone=timezone.UTC(), input_formats=['%I:%M%p, %d %b %Y'])
@@ -781,8 +781,8 @@ class TestTimeField(FieldValues):
         datetime.time(13, 00): datetime.time(13, 00),
     }
     invalid_inputs = {
-        'abc': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss[.uuuuuu]]'],
-        '99:99': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss[.uuuuuu]]'],
+        'abc': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss[.uuuuuu]].'],
+        '99:99': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss[.uuuuuu]].'],
     }
     outputs = {
         datetime.time(13, 00): '13:00:00'
@@ -798,7 +798,7 @@ class TestCustomInputFormatTimeField(FieldValues):
         '1:00pm': datetime.time(13, 00),
     }
     invalid_inputs = {
-        '13:00': ['Time has wrong format. Use one of these formats instead: hh:mm[AM|PM]'],
+        '13:00': ['Time has wrong format. Use one of these formats instead: hh:mm[AM|PM].'],
     }
     outputs = {}
     field = serializers.TimeField(input_formats=['%I:%M%p'])
@@ -840,7 +840,7 @@ class TestChoiceField(FieldValues):
         'good': 'good',
     }
     invalid_inputs = {
-        'amazing': ['`amazing` is not a valid choice.']
+        'amazing': ['"amazing" is not a valid choice.']
     }
     outputs = {
         'good': 'good',
@@ -880,8 +880,8 @@ class TestChoiceFieldWithType(FieldValues):
         3: 3,
     }
     invalid_inputs = {
-        5: ['`5` is not a valid choice.'],
-        'abc': ['`abc` is not a valid choice.']
+        5: ['"5" is not a valid choice.'],
+        'abc': ['"abc" is not a valid choice.']
     }
     outputs = {
         '1': 1,
@@ -907,7 +907,7 @@ class TestChoiceFieldWithListChoices(FieldValues):
         'good': 'good',
     }
     invalid_inputs = {
-        'awful': ['`awful` is not a valid choice.']
+        'awful': ['"awful" is not a valid choice.']
     }
     outputs = {
         'good': 'good'
@@ -925,8 +925,8 @@ class TestMultipleChoiceField(FieldValues):
         ('aircon', 'manual'): set(['aircon', 'manual']),
     }
     invalid_inputs = {
-        'abc': ['Expected a list of items but got type `str`.'],
-        ('aircon', 'incorrect'): ['`incorrect` is not a valid choice.']
+        'abc': ['Expected a list of items but got type "str".'],
+        ('aircon', 'incorrect'): ['"incorrect" is not a valid choice.']
     }
     outputs = [
         (['aircon', 'manual'], set(['aircon', 'manual']))
@@ -1036,7 +1036,7 @@ class TestListField(FieldValues):
         (['1', '2', '3'], [1, 2, 3])
     ]
     invalid_inputs = [
-        ('not a list', ['Expected a list of items but got type `str`']),
+        ('not a list', ['Expected a list of items but got type "str".']),
         ([1, 2, 'error'], ['A valid integer is required.'])
     ]
     outputs = [

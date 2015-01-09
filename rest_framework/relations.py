@@ -129,7 +129,7 @@ class StringRelatedField(RelatedField):
 class PrimaryKeyRelatedField(RelatedField):
     default_error_messages = {
         'required': _('This field is required.'),
-        'does_not_exist': _("Invalid pk '{pk_value}' - object does not exist."),
+        'does_not_exist': _('Invalid pk "{pk_value}" - object does not exist.'),
         'incorrect_type': _('Incorrect type. Expected pk value, received {data_type}.'),
     }
 
@@ -153,7 +153,7 @@ class HyperlinkedRelatedField(RelatedField):
 
     default_error_messages = {
         'required': _('This field is required.'),
-        'no_match': _('Invalid hyperlink - No URL match'),
+        'no_match': _('Invalid hyperlink - No URL match.'),
         'incorrect_match': _('Invalid hyperlink - Incorrect URL match.'),
         'does_not_exist': _('Invalid hyperlink - Object does not exist.'),
         'incorrect_type': _('Incorrect type. Expected URL string, received {data_type}.'),
@@ -291,7 +291,7 @@ class SlugRelatedField(RelatedField):
     """
 
     default_error_messages = {
-        'does_not_exist': _("Object with {slug_name}={value} does not exist."),
+        'does_not_exist': _('Object with {slug_name}={value} does not exist.'),
         'invalid': _('Invalid value.'),
     }
 

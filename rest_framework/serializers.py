@@ -479,7 +479,7 @@ class ListSerializer(BaseSerializer):
     many = True
 
     default_error_messages = {
-        'not_a_list': _('Expected a list of items but got type `{input_type}`.')
+        'not_a_list': _('Expected a list of items but got type "{input_type}".')
     }
 
     def __init__(self, *args, **kwargs):
