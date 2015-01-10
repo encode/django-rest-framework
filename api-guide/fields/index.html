@@ -595,6 +595,7 @@
 <h3 id="required"><code>required</code></h3>
 <p>Normally an error will be raised if a field is not supplied during deserialization.
 Set to false if this field is not required to be present during deserialization.</p>
+<p>Setting this to <code>False</code> also allows the object attribute or dictionary key to be omitted from output when serializing the instance. If the key is not present it will simply not be included in the output representation.</p>
 <p>Defaults to <code>True</code>.</p>
 <h3 id="allow_null"><code>allow_null</code></h3>
 <p>Normally an error will be raised if <code>None</code> is passed to a serializer field. Set this keyword argument to <code>True</code> if <code>None</code> should be considered a valid value.</p>
@@ -879,7 +880,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ColorField(serializers.Field):
     """
-    Color objects are serialized into "rgb(#, #, #)" notation.
+    Color objects are serialized into 'rgb(#, #, #)' notation.
     """
     def to_representation(self, obj):
         return "rgb(%d, %d, %d)" % (obj.red, obj.green, obj.blue)

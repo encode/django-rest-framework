@@ -512,7 +512,7 @@ class SnippetSerializer(serializers.Serializer):
 </code></pre>
 <p>The first part of the serializer class defines the fields that get serialized/deserialized.  The <code>create()</code> and <code>update()</code> methods define how fully fledged instances are created or modified when calling <code>serializer.save()</code></p>
 <p>A serializer class is very similar to a Django <code>Form</code> class, and includes similar validation flags on the various fields, such as <code>required</code>, <code>max_length</code> and <code>default</code>.</p>
-<p>The field flags can also control how the serializer should be displayed in certain circumstances, such as when rendering to HTML. The <code>style={'type': 'textarea'}</code> flag above is equivelent to using <code>widget=widgets.Textarea</code> on a Django <code>Form</code> class. This is particularly useful for controlling how the browsable API should be displayed, as we'll see later in the tutorial.</p>
+<p>The field flags can also control how the serializer should be displayed in certain circumstances, such as when rendering to HTML. The <code>{'base_template': 'textarea.html'}</code> flag above is equivelent to using <code>widget=widgets.Textarea</code> on a Django <code>Form</code> class. This is particularly useful for controlling how the browsable API should be displayed, as we'll see later in the tutorial.</p>
 <p>We can actually also save ourselves some time by using the <code>ModelSerializer</code> class, as we'll see later, but for now we'll keep our serializer definition explicit.</p>
 <h2 id="working-with-serializers">Working with Serializers</h2>
 <p>Before we go any further we'll familiarize ourselves with using our new Serializer class.  Let's drop into the Django shell.</p>
@@ -578,7 +578,7 @@ Open the file <code>snippets/serializers.py</code> again, and edit the <code>Sni
 SnippetSerializer():
     id = IntegerField(label='ID', read_only=True)
     title = CharField(allow_blank=True, max_length=100, required=False)
-    code = CharField(style={'type': 'textarea'})
+    code = CharField(style={'base_template': 'textarea.html'})
     linenos = BooleanField(required=False)
     language = ChoiceField(choices=[('Clipper', 'FoxPro'), ('Cucumber', 'Gherkin'), ('RobotFramework', 'RobotFramework'), ('abap', 'ABAP'), ('ada', 'Ada')...
     style = ChoiceField(choices=[('autumn', 'autumn'), ('borland', 'borland'), ('bw', 'bw'), ('colorful', 'colorful')...

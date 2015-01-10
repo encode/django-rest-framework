@@ -475,6 +475,32 @@ urlpatterns = router.urls
 </code></pre>
 <p>This means you'll need to explicitly set the <code>base_name</code> argument when registering the viewset, as it could not be automatically determined from the model name.</p>
 <hr />
+<h3 id="using-include-with-routers">Using <code>include</code> with routers</h3>
+<p>The <code>.urls</code> attribute on a router instance is simply a standard list of URL patterns. There are a number of different styles for how you can include these URLs.</p>
+<p>For example, you can append <code>router.urls</code> to a list of existing views…</p>
+<pre><code>router = routers.SimpleRouter()
+router.register(r'users', UserViewSet)
+router.register(r'accounts', AccountViewSet)
+
+urlpatterns = [
+    url(r'^forgot-password/$, ForgotPasswordFormView.as_view(),
+]
+
+urlpatterns += router.urls
+</code></pre>
+<p>Alternatively you can use Django's <code>include</code> function, like so…</p>
+<pre><code>urlpatterns = [
+    url(r'^forgot-password/$, ForgotPasswordFormView.as_view(),
+    url(r'^', include(router.urls))
+]
+</code></pre>
+<p>Router URL patterns can also be namespaces.</p>
+<pre><code>urlpatterns = [
+    url(r'^forgot-password/$, ForgotPasswordFormView.as_view(),
+    url(r'^api/', include(router.urls, namespace='api'))
+]
+</code></pre>
+<p>If using namespacing with hyperlinked serializers you'll also need to ensure that any <code>view_name</code> parameters on the serializers correctly reflect the namespace. In the example above you'd need to include a parameter such as <code>view_name='api:user-detail'</code> for serializer fields hyperlinked to the user detail view.</p>
 <h3 id="extra-link-and-actions">Extra link and actions</h3>
 <p>Any methods on the viewset decorated with <code>@detail_route</code> or <code>@list_route</code> will also be routed.
 For example, given a method like this on the <code>UserViewSet</code> class:</p>
@@ -491,6 +517,22 @@ class UserViewSet(ModelViewSet):
 <p>The following URL pattern would additionally be generated:</p>
 <ul>
 <li>URL pattern: <code>^users/{pk}/set_password/$</code>  Name: <code>'user-set-password'</code></li>
+</ul>
+<p>If you do not want to use the default URL generated for your custom action, you can instead use the url_path parameter to customize it.</p>
+<p>For example, if you want to change the URL for our custom action to <code>^users/{pk}/change-password/$</code>, you could write:</p>
+<pre><code>from myapp.permissions import IsAdminOrIsSelf
+from rest_framework.decorators import detail_route
+
+class UserViewSet(ModelViewSet):
+    ...
+
+    @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf], url_path='change-password')
+    def set_password(self, request, pk=None):
+        ...
+</code></pre>
+<p>The above example would now generate the following URL pattern:</p>
+<ul>
+<li>URL pattern: <code>^users/{pk}/change-password/$</code>  Name: <code>'user-change-password'</code></li>
 </ul>
 <p>For more information see the viewset documentation on <a href="../../viewsets.html#marking-extra-actions-for-routing">marking extra actions for routing</a>.</p>
 <h1 id="api-guide">API Guide</h1>

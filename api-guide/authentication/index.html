@@ -487,7 +487,7 @@
 <p>If no class authenticates, <code>request.user</code> will be set to an instance of <code>django.contrib.auth.models.AnonymousUser</code>, and <code>request.auth</code> will be set to <code>None</code>.</p>
 <p>The value of <code>request.user</code> and <code>request.auth</code> for unauthenticated requests can be modified using the <code>UNAUTHENTICATED_USER</code> and <code>UNAUTHENTICATED_TOKEN</code> settings.</p>
 <h2 id="setting-the-authentication-scheme">Setting the authentication scheme</h2>
-<p>The default authentication schemes may be set globally, using the <code>DEFAULT_AUTHENTICATION</code> setting.  For example.</p>
+<p>The default authentication schemes may be set globally, using the <code>DEFAULT_AUTHENTICATION_CLASSES</code> setting.  For example.</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
@@ -672,7 +672,7 @@ python manage.py createsuperuser
     'provider.oauth2',
 )
 </code></pre>
-<p>Then add <code>OAuth2Authentication</code> to your global <code>DEFAULT_AUTHENTICATION</code> setting:</p>
+<p>Then add <code>OAuth2Authentication</code> to your global <code>DEFAULT_AUTHENTICATION_CLASSES</code> setting:</p>
 <pre><code>'DEFAULT_AUTHENTICATION_CLASSES': (
     'rest_framework.authentication.OAuth2Authentication',
 ),

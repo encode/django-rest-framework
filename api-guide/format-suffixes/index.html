@@ -428,6 +428,16 @@ def comment_list(request, format=None):
 </code></pre>
 <p>The name of the kwarg used may be modified by using the <code>FORMAT_SUFFIX_KWARG</code> setting.</p>
 <p>Also note that <code>format_suffix_patterns</code> does not support descending into <code>include</code> URL patterns.</p>
+<h3 id="using-with-i18n_patterns">Using with <code>i18n_patterns</code></h3>
+<p>If using the <code>i18n_patterns</code> function provided by Django, as well as <code>format_suffix_patterns</code> you should make sure that the <code>i18n_patterns</code> function is applied as the final, or outermost function. For example:</p>
+<pre><code>url patterns = [
+    …
+]
+
+urlpatterns = i18n_patterns(
+    format_suffix_patterns(urlpatterns, allowed=['json', 'html'])
+)
+</code></pre>
 <hr />
 <h2 id="accept-headers-vs-format-suffixes">Accept headers vs. format suffixes</h2>
 <p>There seems to be a view among some of the Web community that filename extensions are not a RESTful pattern, and that <code>HTTP Accept</code> headers should always be used instead.</p>

@@ -666,6 +666,7 @@ class UserList(generics.ListCreateAPIView):
 <hr />
 <h1 id="mixins">Mixins</h1>
 <p>The mixin classes provide the actions that are used to provide the basic view behavior.  Note that the mixin classes provide action methods rather than defining the handler methods, such as <code>.get()</code> and <code>.post()</code>, directly.  This allows for more flexible composition of behavior.</p>
+<p>The mixin classes can be imported from <code>rest_framework.mixins</code>.</p>
 <h2 id="listmodelmixin">ListModelMixin</h2>
 <p>Provides a <code>.list(request, *args, **kwargs)</code> method, that implements listing a queryset.</p>
 <p>If the queryset is populated, this returns a <code>200 OK</code> response, with a serialized representation of the queryset as the body of the response.  The response data may optionally be paginated.</p>
@@ -688,6 +689,7 @@ class UserList(generics.ListCreateAPIView):
 <hr />
 <h1 id="concrete-view-classes">Concrete View Classes</h1>
 <p>The following classes are the concrete generic views.  If you're using generic views this is normally the level you'll be working at unless you need heavily customized behavior.</p>
+<p>The view classes can be imported from <code>rest_framework.generics</code>.</p>
 <h2 id="createapiview">CreateAPIView</h2>
 <p>Used for <strong>create-only</strong> endpoints.</p>
 <p>Provides a <code>post</code> method handler.</p>

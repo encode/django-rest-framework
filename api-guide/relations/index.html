@@ -664,6 +664,7 @@ class Track(models.Model):
 <ul>
 <li><code>view_name</code> - The view name that should be used as the target of the relationship.  If you're using <a href="http://www.django-rest-framework.org/api-guide/routers#defaultrouter">the standard router classes</a> this will be a string with the format <code>&lt;model_name&gt;-detail</code>.  <strong>required</strong>.</li>
 <li><code>lookup_field</code> - The field on the target that should be used for the lookup.  Should correspond to a URL keyword argument on the referenced view.  Default is <code>'pk'</code>.</li>
+<li><code>lookup_url_kwarg</code> - The name of the keyword argument defined in the URL conf that corresponds to the lookup field. Defaults to using the same value as <code>lookup_field</code>.</li>
 <li><code>format</code> - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the <code>format</code> argument.</li>
 </ul>
 <hr />

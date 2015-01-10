@@ -437,6 +437,7 @@ class SnippetViewSet(viewsets.ModelViewSet):
 <p>This time we've used the <code>ModelViewSet</code> class in order to get the complete set of default read and write operations.</p>
 <p>Notice that we've also used the <code>@detail_route</code> decorator to create a custom action, named <code>highlight</code>.  This decorator can be used to add any custom endpoints that don't fit into the standard <code>create</code>/<code>update</code>/<code>delete</code> style.</p>
 <p>Custom actions which use the <code>@detail_route</code> decorator will respond to <code>GET</code> requests.  We can use the <code>methods</code> argument if we wanted an action that responded to <code>POST</code> requests.</p>
+<p>The URLs for custom actions by default depend on the method name itself. If you want to change the way url should be constructed, you can include url_path as a decorator keyword argument.</p>
 <h2 id="binding-viewsets-to-urls-explicitly">Binding ViewSets to URLs explicitly</h2>
 <p>The handler methods only get bound to the actions when we define the URLConf.
 To see what's going on under the hood let's first explicitly create a set of views from our ViewSets.</p>

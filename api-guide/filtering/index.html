@@ -702,6 +702,7 @@ class ProductFilter(django_filters.FilterSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = (filters.OrderingFilter,)
+    ordering_fields = ('username', 'email')
     ordering = ('username',)
 </code></pre>
 <p>The <code>ordering</code> attribute may be either a string or a list/tuple of strings.</p>

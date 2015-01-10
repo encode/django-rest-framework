@@ -442,7 +442,7 @@
 <li>Django's <code>PermissionDenied</code> exception.</li>
 </ul>
 <p>In each case, REST framework will return a response with an appropriate status code and content-type.  The body of the response will include any additional details regarding the nature of the error.</p>
-<p>By default all error responses will include a key <code>detail</code> in the body of the response, but other keys may also be included.</p>
+<p>Most error responses will include a key <code>detail</code> in the body of the response.</p>
 <p>For example, the following request:</p>
 <pre><code>DELETE http://api.example.com/foo/bar HTTP/1.1
 Accept: application/json
@@ -453,6 +453,14 @@ Content-Type: application/json
 Content-Length: 42
 
 {"detail": "Method 'DELETE' not allowed."}
+</code></pre>
+<p>Validation errors are handled slightly differently, and will include the field names as the keys in the response. If the validation error was not specific to a particular field then it will use the "non_field_errors" key, or whatever string value has been set for the <code>NON_FIELD_ERRORS_KEY</code> setting.</p>
+<p>Any example validation error might look like this:</p>
+<pre><code>HTTP/1.1 400 Bad Request
+Content-Type: application/json
+Content-Length: 94
+
+{"amount": ["A valid integer is required."], "description": ["This field may not be blank."]}
 </code></pre>
 <h2 id="custom-exception-handling">Custom exception handling</h2>
 <p>You can implement custom exception handling by creating a handler function that converts exceptions raised in your API views into response objects.  This allows you to control the style of error responses used by your API.</p>

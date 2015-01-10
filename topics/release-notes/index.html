@@ -439,6 +439,25 @@
 </code></pre>
 <hr />
 <h2 id="30x-series">3.0.x series</h2>
+<h3 id="303">3.0.3</h3>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.3+Release%22">8th January 2015</a>.</p>
+<ul>
+<li>Fix <code>MinValueValidator</code> on <code>models.DateField</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2369">#2369</a>)</li>
+<li>Fix serializer missing context when pagination is used. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2355">#2355</a>)</li>
+<li>Namespaced router URLs are now supported by the <code>DefaultRouter</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2351">#2351</a>)</li>
+<li><code>required=False</code> allows omission of value for output. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2342">#2342</a>)</li>
+<li>Use textarea input for <code>models.TextField</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2340">#2340</a>)</li>
+<li>Use custom <code>ListSerializer</code> for pagination if required. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2331">#2331</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2327">#2327</a>)</li>
+<li>Better behavior with null and '' for blank HTML fields. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2330">#2330</a>)</li>
+<li>Ensure fields in <code>exclude</code> are model fields. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2319">#2319</a>)</li>
+<li>Fix <code>IntegerField</code> and <code>max_length</code> argument incompatibility. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2317">#2317</a>)</li>
+<li>Fix the YAML encoder for 3.0 serializers. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2315">#2315</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2283">#2283</a>)</li>
+<li>Fix the behavior of empty HTML fields. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2311">#2311</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/1101">#1101</a>)</li>
+<li>Fix Metaclass attribute depth ignoring fields attribute. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2287">#2287</a>)</li>
+<li>Fix <code>format_suffix_patterns</code> to work with Django's <code>i18n_patterns</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2278">#2278</a>)</li>
+<li>Ability to customize router URLs for custom actions, using <code>url_path</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2010">#2010</a>)</li>
+<li>Don't install Django REST Framework as egg. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2386">#2386</a>)</li>
+</ul>
 <h3 id="302">3.0.2</h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.2+Release%22">17th December 2014</a>.</p>
 <ul>
@@ -983,8 +1002,8 @@
 <p>For older release notes, <a href="../../old-release-notes">please see the GitHub repo</a>.</p>
 <!-- 3.0.1 -->
 
-<!-- 3.0.2 -->
-
+<p><!-- 3.0.2 -->
+<!-- 3.0.3 --></p>
 
           </div>
           <!--/span-->
