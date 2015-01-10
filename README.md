@@ -190,18 +190,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [sandbox]: http://restframework.herokuapp.com/
 
 [index]: http://www.django-rest-framework.org/
-[oauth1-section]: http://www.django-rest-framework.org/api-guide/authentication.html#oauthauthentication
-[oauth2-section]: http://www.django-rest-framework.org/api-guide/authentication.html#oauth2authentication
-[serializer-section]: http://www.django-rest-framework.org/api-guide/serializers.html#serializers
-[modelserializer-section]: http://www.django-rest-framework.org/api-guide/serializers.html#modelserializer
-[functionview-section]: http://www.django-rest-framework.org/api-guide/views.html#function-based-views
-[generic-views]: http://www.django-rest-framework.org/api-guide/generic-views.html
-[viewsets]: http://www.django-rest-framework.org/api-guide/viewsets.html
-[routers]: http://www.django-rest-framework.org/api-guide/routers.html
-[serializers]: http://www.django-rest-framework.org/api-guide/serializers.html
-[authentication]: http://www.django-rest-framework.org/api-guide/authentication.html
+[oauth1-section]: http://www.django-rest-framework.org/api-guide/authentication/#oauthauthentication
+[oauth2-section]: http://www.django-rest-framework.org/api-guide/authentication/#oauth2authentication
+[serializer-section]: http://www.django-rest-framework.org/api-guide/serializers/#serializers
+[modelserializer-section]: http://www.django-rest-framework.org/api-guide/serializers/#modelserializer
+[functionview-section]: http://www.django-rest-framework.org/api-guide/views/#function-based-views
+[generic-views]: http://www.django-rest-framework.org/api-guide/generic-views/
+[viewsets]: http://www.django-rest-framework.org/api-guide/viewsets/
+[routers]: http://www.django-rest-framework.org/api-guide/routers/
+[serializers]: http://www.django-rest-framework.org/api-guide/serializers/
+[authentication]: http://www.django-rest-framework.org/api-guide/authentication/
 
-[rest-framework-2-announcement]: http://www.django-rest-framework.org/topics/rest-framework-2-announcement.html
+[rest-framework-2-announcement]: http://www.django-rest-framework.org/topics/rest-framework-2-announcement
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
 [image]: http://www.django-rest-framework.org/img/quickstart.png
 
