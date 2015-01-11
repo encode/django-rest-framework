@@ -35,7 +35,7 @@ class BaseThrottle(object):
             client_addr = addrs[-min(num_proxies, len(xff))]
             return client_addr.strip()
 
-        return xff if xff else remote_addr
+        return ''.join(xff.split()) if xff else remote_addr
 
     def wait(self):
         """
@@ -172,12 +172,6 @@ class AnonRateThrottle(SimpleRateThrottle):
     def get_cache_key(self, request, view):
         if request.user.is_authenticated():
             return None  # Only throttle unauthenticated requests.
-
-        ident = request.META.get('HTTP_X_FORWARDED_FOR')
-        if ident is None:
-            ident = request.META.get('REMOTE_ADDR')
-        else:
-            ident = ''.join(ident.split())
 
         return self.cache_format % {
             'scope': self.scope,
