@@ -32,7 +32,7 @@ class BaseThrottle(object):
             if num_proxies == 0 or xff is None:
                 return remote_addr
             addrs = xff.split(',')
-            client_addr = addrs[-min(num_proxies, len(xff))]
+            client_addr = addrs[-min(num_proxies, len(addrs))]
             return client_addr.strip()
 
         return ''.join(xff.split()) if xff else remote_addr
