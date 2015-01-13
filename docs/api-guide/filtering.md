@@ -388,9 +388,9 @@ We could achieve the same behavior by overriding `get_queryset()` on the views, 
 
 The following third party packages provide additional filter implementations.
 
-## Django REST framework chain
+## Django REST framework filters package
 
-The [django-rest-framework-chain package][django-rest-framework-chain] works together with the `DjangoFilterBackend` class, and allows you to easily create filters across relationships, or create multiple filter lookup types for a given field.
+The [django-rest-framework-filters package][django-rest-framework-filters] works together with the `DjangoFilterBackend` class, and allows you to easily create filters across relationships, or create multiple filter lookup types for a given field.
 
 [cite]: https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter]: https://github.com/alex/django-filter
@@ -400,4 +400,4 @@ The [django-rest-framework-chain package][django-rest-framework-chain] works tog
 [view-permissions-blogpost]: http://blog.nyaruka.com/adding-a-view-permission-to-django-models
 [nullbooleanselect]: https://github.com/django/django/blob/master/django/forms/widgets.py
 [search-django-admin]: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
-[django-rest-framework-chain]: https://github.com/philipn/django-rest-framework-chain
+[django-rest-framework-filters]: https://github.com/philipn/django-rest-framework-filters
