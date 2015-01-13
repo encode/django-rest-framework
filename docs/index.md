@@ -305,6 +305,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [settings]: api-guide/settings.md
 
 [documenting-your-api]: topics/documenting-your-api.md
+[internationalization]: topics/documenting-your-api.md
 [ajax-csrf-cors]: topics/ajax-csrf-cors.md
 [browser-enhancements]: topics/browser-enhancements.md
 [browsableapi]: topics/browsable-api.md

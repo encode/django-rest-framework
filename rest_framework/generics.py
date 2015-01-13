@@ -2,27 +2,11 @@
 Generic views that provide commonly needed behaviour.
 """
 from __future__ import unicode_literals
-
-from django.core.paginator import Paginator, InvalidPage
 from django.db.models.query import QuerySet
 from django.http import Http404
 from django.shortcuts import get_object_or_404 as _get_object_or_404
-from django.utils import six
-from django.utils.translation import ugettext as _
 from rest_framework import views, mixins
 from rest_framework.settings import api_settings
-
-
-def strict_positive_int(integer_string, cutoff=None):
-    """
-    Cast a string to a strictly positive integer.
-    """
-    ret = int(integer_string)
-    if ret <= 0:
-        raise ValueError()
-    if cutoff:
-        ret = min(ret, cutoff)
-    return ret
 
 
 def get_object_or_404(queryset, *filter_args, **filter_kwargs):
@@ -40,7 +24,6 @@ class GenericAPIView(views.APIView):
     """
     Base class for all other generic views.
     """
-
     # You'll need to either set these attributes,
     # or override `get_queryset()`/`get_serializer_class()`.
     # If you are overriding a view method, it is important that you call
@@ -50,146 +33,16 @@ class GenericAPIView(views.APIView):
     queryset = None
     serializer_class = None
 
-    # If you want to use object lookups other than pk, set this attribute.
+    # If you want to use object lookups other than pk, set 'lookup_field'.
     # For more complex lookup requirements override `get_object()`.
     lookup_field = 'pk'
     lookup_url_kwarg = None
 
-    # Pagination settings
-    paginate_by = api_settings.PAGINATE_BY
-    paginate_by_param = api_settings.PAGINATE_BY_PARAM
-    max_paginate_by = api_settings.MAX_PAGINATE_BY
-    pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
-    page_kwarg = 'page'
-
     # The filter backend classes to use for queryset filtering
     filter_backends = api_settings.DEFAULT_FILTER_BACKENDS
 
-    # The following attribute may be subject to change,
-    # and should be considered private API.
-    paginator_class = Paginator
-
-    def get_serializer_context(self):
-        """
-        Extra context provided to the serializer class.
-        """
-        return {
-            'request': self.request,
-            'format': self.format_kwarg,
-            'view': self
-        }
-
-    def get_serializer(self, *args, **kwargs):
-        """
-        Return the serializer instance that should be used for validating and
-        deserializing input, and for serializing output.
-        """
-        serializer_class = self.get_serializer_class()
-        kwargs['context'] = self.get_serializer_context()
-        return serializer_class(*args, **kwargs)
-
-    def get_pagination_serializer(self, page):
-        """
-        Return a serializer instance to use with paginated data.
-        """
-        class SerializerClass(self.pagination_serializer_class):
-            class Meta:
-                object_serializer_class = self.get_serializer_class()
-
-        pagination_serializer_class = SerializerClass
-        context = self.get_serializer_context()
-        return pagination_serializer_class(instance=page, context=context)
-
-    def paginate_queryset(self, queryset):
-        """
-        Paginate a queryset if required, either returning a page object,
-        or `None` if pagination is not configured for this view.
-        """
-        page_size = self.get_paginate_by()
-        if not page_size:
-            return None
-
-        paginator = self.paginator_class(queryset, page_size)
-        page_kwarg = self.kwargs.get(self.page_kwarg)
-        page_query_param = self.request.query_params.get(self.page_kwarg)
-        page = page_kwarg or page_query_param or 1
-        try:
-            page_number = paginator.validate_number(page)
-        except InvalidPage:
-            if page == 'last':
-                page_number = paginator.num_pages
-            else:
-                raise Http404(_('Choose a valid page number. Page numbers must be a whole number, or must be the string "last".'))
-
-        try:
-            page = paginator.page(page_number)
-        except InvalidPage as exc:
-            error_format = _('Invalid page "{page_number}": {message}.')
-            raise Http404(error_format.format(
-                page_number=page_number, message=six.text_type(exc)
-            ))
-
-        return page
-
-    def filter_queryset(self, queryset):
-        """
-        Given a queryset, filter it with whichever filter backend is in use.
-
-        You are unlikely to want to override this method, although you may need
-        to call it either from a list view, or from a custom `get_object`
-        method if you want to apply the configured filtering backend to the
-        default queryset.
-        """
-        for backend in self.get_filter_backends():
-            queryset = backend().filter_queryset(self.request, queryset, self)
-        return queryset
-
-    def get_filter_backends(self):
-        """
-        Returns the list of filter backends that this view requires.
-        """
-        return list(self.filter_backends)
-
-    # The following methods provide default implementations
-    # that you may want to override for more complex cases.
-
-    def get_paginate_by(self):
-        """
-        Return the size of pages to use with pagination.
-
-        If `PAGINATE_BY_PARAM` is set it will attempt to get the page size
-        from a named query parameter in the url, eg. ?page_size=100
-
-        Otherwise defaults to using `self.paginate_by`.
-        """
-        if self.paginate_by_param:
-            try:
-                return strict_positive_int(
-                    self.request.query_params[self.paginate_by_param],
-                    cutoff=self.max_paginate_by
-                )
-            except (KeyError, ValueError):
-                pass
-
-        return self.paginate_by
-
-    def get_serializer_class(self):
-        """
-        Return the class to use for the serializer.
-        Defaults to using `self.serializer_class`.
-
-        You may want to override this if you need to provide different
-        serializations depending on the incoming request.
-
-        (Eg. admins get full serialization, others get basic serialization)
-        """
-        assert self.serializer_class is not None, (
-            "'%s' should either include a `serializer_class` attribute, "
-            "or override the `get_serializer_class()` method."
-            % self.__class__.__name__
-        )
-
-        return self.serializer_class
+    # The style to use for queryset pagination.
+    pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
 
     def get_queryset(self):
         """
@@ -245,6 +98,73 @@ class GenericAPIView(views.APIView):
         self.check_object_permissions(self.request, obj)
 
         return obj
+
+    def get_serializer(self, *args, **kwargs):
+        """
+        Return the serializer instance that should be used for validating and
+        deserializing input, and for serializing output.
+        """
+        serializer_class = self.get_serializer_class()
+        kwargs['context'] = self.get_serializer_context()
+        return serializer_class(*args, **kwargs)
+
+    def get_serializer_class(self):
+        """
+        Return the class to use for the serializer.
+        Defaults to using `self.serializer_class`.
+
+        You may want to override this if you need to provide different
+        serializations depending on the incoming request.
+
+        (Eg. admins get full serialization, others get basic serialization)
+        """
+        assert self.serializer_class is not None, (
+            "'%s' should either include a `serializer_class` attribute, "
+            "or override the `get_serializer_class()` method."
+            % self.__class__.__name__
+        )
+
+        return self.serializer_class
+
+    def get_serializer_context(self):
+        """
+        Extra context provided to the serializer class.
+        """
+        return {
+            'request': self.request,
+            'format': self.format_kwarg,
+            'view': self
+        }
+
+    def filter_queryset(self, queryset):
+        """
+        Given a queryset, filter it with whichever filter backend is in use.
+
+        You are unlikely to want to override this method, although you may need
+        to call it either from a list view, or from a custom `get_object`
+        method if you want to apply the configured filtering backend to the
+        default queryset.
+        """
+        for backend in list(self.filter_backends):
+            queryset = backend().filter_queryset(self.request, queryset, self)
+        return queryset
+
+    @property
+    def pager(self):
+        if not hasattr(self, '_pager'):
+            if self.pagination_class is None:
+                self._pager = None
+            else:
+                self._pager = self.pagination_class()
+        return self._pager
+
+    def paginate_queryset(self, queryset):
+        if self.pager is None:
+            return queryset
+        return self.pager.paginate_queryset(queryset, self.request, view=self)
+
+    def get_paginated_response(self, data):
+        return self.pager.get_paginated_response(data)
 
 
 # Concrete view classes that provide method handlers

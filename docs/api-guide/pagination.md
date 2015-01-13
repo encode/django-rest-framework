@@ -6,147 +6,100 @@ source: pagination.py
 >
 > &mdash; [Django documentation][cite]
 
-REST framework includes a `PaginationSerializer` class that makes it easy to return paginated data in a way that can then be rendered to arbitrary media types.
+REST framework includes support for customizable pagination styles. This allows you to modify how large result sets are split into individual pages of data.
 
-## Paginating basic data
+The pagination API can support either:
 
-Let's start by taking a look at an example from the Django documentation.
+* Pagination links that are provided as part of the content of the response.
+* Pagination links that are included in response headers, such as `Content-Range` or `Link`.
 
-    from django.core.paginator import Paginator
+The built-in styles currently all use links included as part of the content of the response. This style is more accessible when using the browsable API.
 
-    objects = ['john', 'paul', 'george', 'ringo']
-    paginator = Paginator(objects, 2)
-    page = paginator.page(1)
-    page.object_list
-    # ['john', 'paul']
+Pagination is only performed automatically if you're using the generic views or viewsets. If you're using a regular `APIView`, you'll need to call into the pagination API yourself to ensure you return a paginated response. See the source code for the `mixins.ListMixin` and `generics.GenericAPIView` classes for an example.
 
-At this point we've got a page object.  If we wanted to return this page object as a JSON response, we'd need to provide the client with context such as next and previous links, so that it would be able to page through the remaining results.
+## Setting the pagination style
 
-    from rest_framework.pagination import PaginationSerializer
-
-    serializer = PaginationSerializer(instance=page)
-    serializer.data
-    # {'count': 4, 'next': '?page=2', 'previous': None, 'results': [u'john', u'paul']}
-
-The `context` argument of the `PaginationSerializer` class may optionally include the request.  If the request is included in the context then the next and previous links returned by the serializer will use absolute URLs instead of relative URLs.
-
-    request = RequestFactory().get('/foobar')
-    serializer = PaginationSerializer(instance=page, context={'request': request})
-    serializer.data
-    # {'count': 4, 'next': 'http://testserver/foobar?page=2', 'previous': None, 'results': [u'john', u'paul']}
-
-We could now return that data in a `Response` object, and it would be rendered into the correct media type.
-
-## Paginating QuerySets
-
-Our first example worked because we were using primitive objects.  If we wanted to paginate a queryset or other complex data, we'd need to specify a serializer to use to serialize the result set itself.
-
-We can do this using the `object_serializer_class` attribute on the inner `Meta` class of the pagination serializer.  For example.
-
-    class UserSerializer(serializers.ModelSerializer):
-        """
-        Serializes user querysets.
-        """
-        class Meta:
-            model = User
-            fields = ('username', 'email')
-
-    class PaginatedUserSerializer(pagination.PaginationSerializer):
-        """
-        Serializes page objects of user querysets.
-        """
-        class Meta:
-            object_serializer_class = UserSerializer
-
-We could now use our pagination serializer in a view like this.
-
-    @api_view('GET')
-    def user_list(request):
-        queryset = User.objects.all()
-        paginator = Paginator(queryset, 20)
-
-        page = request.QUERY_PARAMS.get('page')
-        try:
-            users = paginator.page(page)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            users = paginator.page(1)
-        except EmptyPage:
-            # If page is out of range (e.g. 9999),
-            # deliver last page of results.
-            users = paginator.page(paginator.num_pages)
-
-        serializer_context = {'request': request}
-        serializer = PaginatedUserSerializer(users,
-                                             context=serializer_context)
-        return Response(serializer.data)
-
-## Pagination in the generic views
-
-The generic class based views `ListAPIView` and `ListCreateAPIView` provide pagination of the returned querysets by default.  You can customise this behaviour by altering the pagination style, by modifying the default number of results, by allowing clients to override the page size using a query parameter, or by turning pagination off completely.
-
-The default pagination style may be set globally, using the `DEFAULT_PAGINATION_SERIALIZER_CLASS`, `PAGINATE_BY`, `PAGINATE_BY_PARAM`, and `MAX_PAGINATE_BY` settings.  For example.
+The default pagination style may be set globally, using the `DEFAULT_PAGINATION_CLASS` settings key. For example, to use the built-in limit/offset pagination, you would do:
 
     REST_FRAMEWORK = {
-        'PAGINATE_BY': 10,                 # Default to 10
-        'PAGINATE_BY_PARAM': 'page_size',  # Allow client to override, using `?page_size=xxx`.
-        'MAX_PAGINATE_BY': 100             # Maximum limit allowed when using `?page_size=xxx`.
+        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
     }
 
-You can also set the pagination style on a per-view basis, using the `ListAPIView` generic class-based view.
+You can also set the pagination class on an individual view by using the `pagination_class` attribute. Typically you'll want to use the same pagination style throughout your API, although you might want to vary individual aspects of the pagination, such as default or maximum page size, on a per-view basis.
 
-    class PaginatedListView(ListAPIView):
-        queryset = ExampleModel.objects.all()
-        serializer_class = ExampleModelSerializer
-        paginate_by = 10
+## Modifying the pagination style
+
+If you want to modify particular aspects of the pagination style, you'll want to override one of the pagination classes, and set the attributes that you want to change.
+
+    class LargeResultsSetPagination(PageNumberPagination):
+        paginate_by = 1000
         paginate_by_param = 'page_size'
-        max_paginate_by = 100
+        max_paginate_by = 10000
 
-Note that using a `paginate_by` value of `None` will turn off pagination for the view.
-Note if you use the `PAGINATE_BY_PARAM` settings, you also have to set the `paginate_by_param` attribute in your view to `None` in order to turn off pagination for those requests that contain the `paginate_by_param` parameter.
+    class StandardResultsSetPagination(PageNumberPagination):
+        paginate_by = 100
+        paginate_by_param = 'page_size'
+        max_paginate_by = 1000
 
-For more complex requirements such as serialization that differs depending on the requested media type you can override the `.get_paginate_by()` and `.get_pagination_serializer_class()` methods.
+You can then apply your new style to a view using the `.pagination_class` attribute:
+
+    class BillingRecordsView(generics.ListAPIView):
+        queryset = Billing.objects.all()
+        serializer = BillingRecordsSerializer
+        pagination_class = LargeResultsSetPagination
+
+Or apply the style globally, using the `DEFAULT_PAGINATION_CLASS` settings key. For example:
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.StandardResultsSetPagination'    }
+
+# API Reference
+
+## PageNumberPagination
+
+## LimitOffsetPagination
 
 ---
 
-# Custom pagination serializers
+# Custom pagination styles
 
-To create a custom pagination serializer class you should override `pagination.BasePaginationSerializer` and set the fields that you want the serializer to return.
+To create a custom pagination serializer class you should subclass `pagination.BasePagination` and override the `paginate_queryset(self, queryset, request, view)` and `get_paginated_response(self, data)` methods:
 
-You can also override the name used for the object list field, by setting the `results_field` attribute, which defaults to `'results'`.
+* The `paginate_queryset` method is passed the initial queryset and should return an iterable object that contains only the data in the requested page.
+* The `get_paginated_response` method is passed the serialized page data and should return a `Response` instance.
+
+Note that the `paginate_queryset` method may set state on the pagination instance, that may later be used by the `get_paginated_response` method.
 
 ## Example
 
-For example, to nest a pair of links labelled 'prev' and 'next', and set the name for the results field to 'objects', you might use something like this.
+Let's modify the built-in `PageNumberPagination` style, so that instead of include the pagination links in the body of the response, we'll instead include a `Link` header, in a [similar style to the GitHub API][github-link-pagination].
 
-    from rest_framework import pagination
-    from rest_framework import serializers
+    class LinkHeaderPagination(PageNumberPagination)
+        def get_paginated_response(self, data):
+            next_url = self.get_next_link()            previous_url = self.get_previous_link()
 
-    class LinksSerializer(serializers.Serializer):
-        next = pagination.NextPageField(source='*')
-        prev = pagination.PreviousPageField(source='*')
+            if next_url is not None and previous_url is not None:
+                link = '<{next_url}; rel="next">, <{previous_url}; rel="prev">'
+            elif next_url is not None:
+                link = '<{next_url}; rel="next">'
+            elif prev_url is not None:
+                link = '<{previous_url}; rel="prev">'
+            else:
+                link = ''
 
-    class CustomPaginationSerializer(pagination.BasePaginationSerializer):
-        links = LinksSerializer(source='*')  # Takes the page object as the source
-        total_results = serializers.ReadOnlyField(source='paginator.count')
+            link = link.format(next_url=next_url, previous_url=previous_url)
+            headers = {'Link': link} if link else {}
 
-        results_field = 'objects'
+            return Response(data, headers=headers)
 
-## Using your custom pagination serializer
+## Using your custom pagination class
 
-To have your custom pagination serializer be used by default, use the `DEFAULT_PAGINATION_SERIALIZER_CLASS` setting:
+To have your custom pagination class be used by default, use the `DEFAULT_PAGINATION_CLASS` setting:
 
     REST_FRAMEWORK = {
-        'DEFAULT_PAGINATION_SERIALIZER_CLASS':
-            'example_app.pagination.CustomPaginationSerializer',
+        'DEFAULT_PAGINATION_CLASS':
+            'my_project.apps.core.pagination.LinkHeaderPagination',
     }
-
-Alternatively, to set your custom pagination serializer on a per-view basis, use the `pagination_serializer_class` attribute on a generic class based view:
-
-    class PaginatedListView(generics.ListAPIView):
-        model = ExampleModel
-        pagination_serializer_class = CustomPaginationSerializer
-        paginate_by = 10
 
 # Third party packages
 
@@ -157,5 +110,6 @@ The following third party packages are also available.
 The [`DRF-extensions` package][drf-extensions] includes a [`PaginateByMaxMixin` mixin class][paginate-by-max-mixin] that allows your API clients to specify `?page_size=max` to obtain the maximum allowed page size.
 
 [cite]: https://docs.djangoproject.com/en/dev/topics/pagination/
+[github-link-pagination]: https://developer.github.com/guides/traversing-with-pagination/
 [drf-extensions]: http://chibisov.github.io/drf-extensions/docs/
 [paginate-by-max-mixin]: http://chibisov.github.io/drf-extensions/docs/#paginatebymaxmixin

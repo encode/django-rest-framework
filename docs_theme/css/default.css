@@ -171,6 +171,21 @@ body{
   background-attachment: fixed;
 }
 
+
+#main-content h1:first-of-type {
+    margin-top: 0
+}
+
+#main-content h1, #main-content h2 {
+    font-weight: 300;
+    margin-top: 20px
+}
+
+#main-content h3, #main-content h4, #main-content h5 {
+    font-weight: 500;
+    margin-top: 15px
+}
+
 /* custom navigation styles */
 
 .navbar .navbar-inner{
