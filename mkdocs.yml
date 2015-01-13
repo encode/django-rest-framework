@@ -42,6 +42,7 @@ pages:
  - ['api-guide/testing.md', 'API Guide', 'Testing']
  - ['api-guide/settings.md', 'API Guide', 'Settings']
  - ['topics/documenting-your-api.md', 'Topics', 'Documenting your API']
+ - ['topics/internationalization.md', 'Topics', 'Internationalization']
  - ['topics/ajax-csrf-cors.md', 'Topics', 'AJAX, CSRF & CORS']
  - ['topics/browser-enhancements.md', 'Topics',]
  - ['topics/browsable-api.md', 'Topics', 'The Browsable API']
