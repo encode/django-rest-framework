@@ -25,11 +25,21 @@ def _strict_positive_int(integer_string, cutoff=None):
     return ret
 
 
+def _get_count(queryset):
+    """
+    Determine an object count, supporting either querysets or regular lists.
+    """
+    try:
+        return queryset.count()
+    except AttributeError:
+        return len(queryset)
+
+
 class BasePagination(object):
-    def paginate_queryset(self, queryset, request):
+    def paginate_queryset(self, queryset, request, view):
         raise NotImplemented('paginate_queryset() must be implemented.')
 
-    def get_paginated_response(self, data, page, request):
+    def get_paginated_response(self, data):
         raise NotImplemented('get_paginated_response() must be implemented.')
 
 
@@ -58,8 +68,8 @@ class PageNumberPagination(BasePagination):
 
     def paginate_queryset(self, queryset, request, view):
         """
-        Paginate a queryset if required, either returning a page object,
-        or `None` if pagination is not configured for this view.
+        Paginate a queryset if required, either returning a
+        page object, or `None` if pagination is not configured for this view.
         """
         for attr in (
             'paginate_by', 'page_query_param',
@@ -97,12 +107,12 @@ class PageNumberPagination(BasePagination):
         self.request = request
         return self.page
 
-    def get_paginated_response(self, objects):
+    def get_paginated_response(self, data):
         return Response(OrderedDict([
             ('count', self.page.paginator.count),
             ('next', self.get_next_link()),
             ('previous', self.get_previous_link()),
-            ('results', objects)
+            ('results', data)
         ]))
 
     def get_page_size(self, request):
@@ -147,16 +157,16 @@ class LimitOffsetPagination(BasePagination):
     def paginate_queryset(self, queryset, request, view):
         self.limit = self.get_limit(request)
         self.offset = self.get_offset(request)
-        self.count = queryset.count()
+        self.count = _get_count(queryset)
         self.request = request
         return queryset[self.offset:self.offset + self.limit]
 
-    def get_paginated_response(self, objects):
+    def get_paginated_response(self, data):
         return Response(OrderedDict([
             ('count', self.count),
             ('next', self.get_next_link()),
             ('previous', self.get_previous_link()),
-            ('results', objects)
+            ('results', data)
         ]))
 
     def get_limit(self, request):

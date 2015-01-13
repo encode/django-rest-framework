@@ -160,11 +160,11 @@ class GenericAPIView(views.APIView):
 
     def paginate_queryset(self, queryset):
         if self.pager is None:
-            return None
+            return queryset
         return self.pager.paginate_queryset(queryset, self.request, view=self)
 
-    def get_paginated_response(self, objects):
-        return self.pager.get_paginated_response(objects)
+    def get_paginated_response(self, data):
+        return self.pager.get_paginated_response(data)
 
 
 # Concrete view classes that provide method handlers
