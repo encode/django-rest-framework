@@ -7,6 +7,7 @@ from django.utils import six
 from django.utils.encoding import smart_text
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
+from rest_framework.compat import OrderedDict
 from rest_framework.fields import get_attribute, empty, Field
 from rest_framework.reverse import reverse
 from rest_framework.utils import html
@@ -103,7 +104,7 @@ class RelatedField(Field):
 
     @property
     def choices(self):
-        return dict([
+        return OrderedDict([
             (
                 six.text_type(self.to_representation(item)),
                 six.text_type(item)
@@ -364,7 +365,7 @@ class ManyRelatedField(Field):
             (item, self.child_relation.to_representation(item))
             for item in iterable
         ]
-        return dict([
+        return OrderedDict([
             (
                 six.text_type(item_representation),
                 six.text_type(item) + ' - ' + six.text_type(item_representation)
