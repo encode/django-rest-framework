@@ -59,4 +59,5 @@ def markup_description(description):
         description = apply_markdown(description)
     else:
         description = escape(description).replace('\n', '<br />')
+        description = '<p>' + description + '</p>'
     return mark_safe(description)
