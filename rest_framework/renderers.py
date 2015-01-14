@@ -449,6 +449,11 @@ class HTMLFormRenderer(BaseRenderer):
         else:
             template_name = style['template_pack'].strip('/') + '/' + style['base_template']
 
+        # Remove hidden fields from serializer before rendering
+        for field in form.fields:
+            if isinstance(form.fields[field], serializers.HiddenField):
+                form.fields.pop(field)
+
         renderer_context = renderer_context or {}
         request = renderer_context['request']
         template = loader.get_template(template_name)
@@ -624,6 +629,11 @@ class BrowsableAPIRenderer(BaseRenderer):
                     serializer = view.get_serializer(instance=instance)
                 else:
                     serializer = view.get_serializer()
+
+                # Remove hidden fields from serializer before rendering
+                for field in serializer.fields:
+                    if isinstance(serializer.fields[field], serializers.HiddenField):
+                        serializer.fields.pop(field)
 
                 # Render the raw data content
                 renderer = renderer_class()
