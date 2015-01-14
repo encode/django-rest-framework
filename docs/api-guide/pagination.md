@@ -74,7 +74,7 @@ Note that the `paginate_queryset` method may set state on the pagination instanc
 
 Let's modify the built-in `PageNumberPagination` style, so that instead of include the pagination links in the body of the response, we'll instead include a `Link` header, in a [similar style to the GitHub API][github-link-pagination].
 
-    class LinkHeaderPagination(PageNumberPagination)
+    class LinkHeaderPagination(pagination.PageNumberPagination):
         def get_paginated_response(self, data):
             next_url = self.get_next_link()            previous_url = self.get_previous_link()
 
@@ -82,7 +82,7 @@ Let's modify the built-in `PageNumberPagination` style, so that instead of inclu
                 link = '<{next_url}; rel="next">, <{previous_url}; rel="prev">'
             elif next_url is not None:
                 link = '<{next_url}; rel="next">'
-            elif prev_url is not None:
+            elif previous_url is not None:
                 link = '<{previous_url}; rel="prev">'
             else:
                 link = ''
@@ -97,9 +97,19 @@ Let's modify the built-in `PageNumberPagination` style, so that instead of inclu
 To have your custom pagination class be used by default, use the `DEFAULT_PAGINATION_CLASS` setting:
 
     REST_FRAMEWORK = {
-        'DEFAULT_PAGINATION_CLASS':
-            'my_project.apps.core.pagination.LinkHeaderPagination',
+        'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.LinkHeaderPagination',
+        'PAGINATE_BY': 10
     }
+
+API responses for list endpoints will now include a `Link` header, instead of including the pagination links as part of the body of the response, for example:
+
+---
+
+![Link Header][link-header]
+
+*A custom pagination style, using the 'Link' header'*
+
+---
 
 # Third party packages
 
@@ -111,5 +121,6 @@ The [`DRF-extensions` package][drf-extensions] includes a [`PaginateByMaxMixin` 
 
 [cite]: https://docs.djangoproject.com/en/dev/topics/pagination/
 [github-link-pagination]: https://developer.github.com/guides/traversing-with-pagination/
+[link-header]: ../img/link-header-pagination.png
 [drf-extensions]: http://chibisov.github.io/drf-extensions/docs/
 [paginate-by-max-mixin]: http://chibisov.github.io/drf-extensions/docs/#paginatebymaxmixin

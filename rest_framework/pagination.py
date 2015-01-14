@@ -46,6 +46,12 @@ def _get_displayed_page_numbers(current, final):
 
     For example:
     current=14, final=16 -> [1, None, 13, 14, 15, 16]
+
+    This implementation gives one page to each side of the cursor,
+    for an implementation which gives two pages to each side of the cursor,
+    which is a copy of how GitHub treat pagination in their issue lists, see:
+
+    https://gist.github.com/tomchristie/321140cebb1c4a558b15
     """
     assert current >= 1
     assert final >= current
@@ -60,10 +66,12 @@ def _get_displayed_page_numbers(current, final):
 
     # If the break would only exclude a single page number then we
     # may as well include the page number instead of the break.
-    if current == 4:
+    if current <= 4:
         included.add(2)
-    if current == final - 3:
+        included.add(3)
+    if current >= final - 3:
         included.add(final - 1)
+        included.add(final - 2)
 
     # Now sort the page numbers and drop anything outside the limits.
     included = [
