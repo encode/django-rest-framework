@@ -185,10 +185,6 @@ body a:hover {
   color: #c20000;
 }
 
-#content a span {
-  text-decoration: underline;
- }
-
 .request-info {
   clear:both;
 }

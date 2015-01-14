@@ -26,6 +26,23 @@ def replace_query_param(url, key, val):
     return urlparse.urlunsplit((scheme, netloc, path, query, fragment))
 
 
+def remove_query_param(url, key):
+    """
+    Given a URL and a key/val pair, set or replace an item in the query
+    parameters of the URL, and return the new URL.
+    """
+    (scheme, netloc, path, query, fragment) = urlparse.urlsplit(url)
+    query_dict = QueryDict(query).copy()
+    query_dict.pop(key, None)
+    query = query_dict.urlencode()
+    return urlparse.urlunsplit((scheme, netloc, path, query, fragment))
+
+
+@register.simple_tag
+def get_pagination_html(pager):
+    return pager.to_html()
+
+
 # Regex for adding classes to html snippets
 class_re = re.compile(r'(?<=class=["\'])(.*)(?=["\'])')
 

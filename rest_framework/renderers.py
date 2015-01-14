@@ -592,6 +592,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             'description': self.get_description(view),
             'name': self.get_name(view),
             'version': VERSION,
+            'pager': getattr(view, 'pager', None),
             'breadcrumblist': self.get_breadcrumbs(request),
             'allowed_methods': view.allowed_methods,
             'available_formats': [renderer_cls.format for renderer_cls in view.renderer_classes],

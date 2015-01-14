@@ -3,14 +3,18 @@ Pagination serializers determine the structure of the output that should
 be used for paginated responses.
 """
 from __future__ import unicode_literals
+from collections import namedtuple
 from django.core.paginator import InvalidPage, Paginator as DjangoPaginator
+from django.template import Context, loader
 from django.utils import six
 from django.utils.translation import ugettext as _
 from rest_framework.compat import OrderedDict
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.templatetags.rest_framework import replace_query_param
+from rest_framework.templatetags.rest_framework import (
+    replace_query_param, remove_query_param
+)
 
 
 def _strict_positive_int(integer_string, cutoff=None):
@@ -33,6 +37,49 @@ def _get_count(queryset):
         return queryset.count()
     except AttributeError:
         return len(queryset)
+
+
+def _get_displayed_page_numbers(current, final):
+    """
+    This utility function determines a list of page numbers to display.
+    This gives us a nice contextually relevant set of page numbers.
+
+    For example:
+    current=14, final=16 -> [1, None, 13, 14, 15, 16]
+    """
+    assert current >= 1
+    assert final >= current
+
+    # We always include the first two pages, last two pages, and
+    # two pages either side of the current page.
+    included = set((
+        1,
+        current - 1, current, current + 1,
+        final
+    ))
+
+    # If the break would only exclude a single page number then we
+    # may as well include the page number instead of the break.
+    if current == 4:
+        included.add(2)
+    if current == final - 3:
+        included.add(final - 1)
+
+    # Now sort the page numbers and drop anything outside the limits.
+    included = [
+        idx for idx in sorted(list(included))
+        if idx > 0 and idx <= final
+    ]
+
+    # Finally insert any `...` breaks
+    if current > 4:
+        included.insert(1, None)
+    if current < final - 3:
+        included.insert(len(included) - 1, None)
+    return included
+
+
+PageLink = namedtuple('PageLink', ['url', 'number', 'is_active', 'is_break'])
 
 
 class BasePagination(object):
@@ -65,6 +112,8 @@ class PageNumberPagination(BasePagination):
     # Set to an integer to limit the maximum page size the client may request.
     # Only relevant if 'paginate_by_param' has also been set.
     max_paginate_by = api_settings.MAX_PAGINATE_BY
+
+    template = 'rest_framework/pagination/numbers.html'
 
     def paginate_queryset(self, queryset, request, view):
         """
@@ -104,6 +153,8 @@ class PageNumberPagination(BasePagination):
             )
             raise NotFound(msg)
 
+        # Indicate that the browsable API should display pagination controls.
+        self.mark_as_used = True
         self.request = request
         return self.page
 
@@ -139,7 +190,44 @@ class PageNumberPagination(BasePagination):
             return None
         url = self.request.build_absolute_uri()
         page_number = self.page.previous_page_number()
+        if page_number == 1:
+            return remove_query_param(url, self.page_query_param)
         return replace_query_param(url, self.page_query_param, page_number)
+
+    def to_html(self):
+        current = self.page.number
+        final = self.page.paginator.num_pages
+
+        page_links = []
+        base_url = self.request.build_absolute_uri()
+        for page_number in _get_displayed_page_numbers(current, final):
+            if page_number is None:
+                page_link = PageLink(
+                    url=None,
+                    number=None,
+                    is_active=False,
+                    is_break=True
+                )
+            else:
+                if page_number == 1:
+                    url = remove_query_param(base_url, self.page_query_param)
+                else:
+                    url = replace_query_param(url, self.page_query_param, page_number)
+                page_link = PageLink(
+                    url=url,
+                    number=page_number,
+                    is_active=(page_number == current),
+                    is_break=False
+                )
+            page_links.append(page_link)
+
+        template = loader.get_template(self.template)
+        context = Context({
+            'previous_url': self.get_previous_link(),
+            'next_url': self.get_next_link(),
+            'page_links': page_links
+        })
+        return template.render(context)
 
 
 class LimitOffsetPagination(BasePagination):
