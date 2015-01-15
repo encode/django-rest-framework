@@ -81,17 +81,6 @@ class TestSource:
         assert serializer.is_valid()
         assert serializer.validated_data == {'other': 'abc'}
 
-    def test_redundant_source(self):
-        class ExampleSerializer(serializers.Serializer):
-            example_field = serializers.CharField(source='example_field')
-        with pytest.raises(AssertionError) as exc_info:
-            ExampleSerializer().fields
-        assert str(exc_info.value) == (
-            "It is redundant to specify `source='example_field'` on field "
-            "'CharField' in serializer 'ExampleSerializer', because it is the "
-            "same as the field name. Remove the `source` keyword argument."
-        )
-
 
 class TestReadOnly:
     def setup(self):
@@ -1078,16 +1067,3 @@ class TestSerializerMethodField:
         assert serializer.data == {
             'example_field': 'ran get_example_field(123)'
         }
-
-    def test_redundant_method_name(self):
-        class ExampleSerializer(serializers.Serializer):
-            example_field = serializers.SerializerMethodField('get_example_field')
-
-        with pytest.raises(AssertionError) as exc_info:
-            ExampleSerializer().fields
-        assert str(exc_info.value) == (
-            "It is redundant to specify `get_example_field` on "
-            "SerializerMethodField 'example_field' in serializer "
-            "'ExampleSerializer', because it is the same as the default "
-            "method name. Remove the `method_name` argument."
-        )

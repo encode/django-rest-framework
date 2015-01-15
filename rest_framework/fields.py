@@ -210,16 +210,6 @@ class Field(object):
         Called when a field is added to the parent serializer instance.
         """
 
-        # In order to enforce a consistent style, we error if a redundant
-        # 'source' argument has been used. For example:
-        # my_field = serializer.CharField(source='my_field')
-        assert self.source != field_name, (
-            "It is redundant to specify `source='%s'` on field '%s' in "
-            "serializer '%s', because it is the same as the field name. "
-            "Remove the `source` keyword argument." %
-            (field_name, self.__class__.__name__, parent.__class__.__name__)
-        )
-
         self.field_name = field_name
         self.parent = parent
 
@@ -1219,17 +1209,7 @@ class SerializerMethodField(Field):
         super(SerializerMethodField, self).__init__(**kwargs)
 
     def bind(self, field_name, parent):
-        # In order to enforce a consistent style, we error if a redundant
-        # 'method_name' argument has been used. For example:
-        # my_field = serializer.CharField(source='my_field')
         default_method_name = 'get_{field_name}'.format(field_name=field_name)
-        assert self.method_name != default_method_name, (
-            "It is redundant to specify `%s` on SerializerMethodField '%s' in "
-            "serializer '%s', because it is the same as the default method name. "
-            "Remove the `method_name` argument." %
-            (self.method_name, field_name, parent.__class__.__name__)
-        )
-
         # The method name should default to `get_{field_name}`.
         if self.method_name is None:
             self.method_name = default_method_name
