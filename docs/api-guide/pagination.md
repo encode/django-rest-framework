@@ -63,7 +63,7 @@ Or apply the style globally, using the `DEFAULT_PAGINATION_CLASS` settings key. 
 
 # Custom pagination styles
 
-To create a custom pagination serializer class you should subclass `pagination.BasePagination` and override the `paginate_queryset(self, queryset, request, view)` and `get_paginated_response(self, data)` methods:
+To create a custom pagination serializer class you should subclass `pagination.BasePagination` and override the `paginate_queryset(self, queryset, request, view=None)` and `get_paginated_response(self, data)` methods:
 
 * The `paginate_queryset` method is passed the initial queryset and should return an iterable object that contains only the data in the requested page.
 * The `get_paginated_response` method is passed the serialized page data and should return a `Response` instance.

@@ -3,8 +3,10 @@ import datetime
 from decimal import Decimal
 from django.test import TestCase
 from django.utils import unittest
-from rest_framework import generics, serializers, status, filters
+from rest_framework import generics, pagination, serializers, status, filters
 from rest_framework.compat import django_filters
+from rest_framework.request import Request
+from rest_framework.pagination import PageLink, PAGE_BREAK
 from rest_framework.test import APIRequestFactory
 from .models import BasicModel, FilterableItem
 
@@ -337,3 +339,116 @@ class TestMaxPaginateByParam(TestCase):
         request = factory.get('/')
         response = self.view(request).render()
         self.assertEqual(response.data['results'], self.data[:3])
+
+
+class TestLimitOffset:
+    def setup(self):
+        self.pagination = pagination.LimitOffsetPagination()
+        self.queryset = range(1, 101)
+
+    def paginate_queryset(self, request):
+        return self.pagination.paginate_queryset(self.queryset, request)
+
+    def get_paginated_content(self, queryset):
+        response = self.pagination.get_paginated_response(queryset)
+        return response.data
+
+    def get_html_context(self):
+        return self.pagination.get_html_context()
+
+    def test_no_offset(self):
+        request = Request(factory.get('/', {'limit': 5}))
+        queryset = self.paginate_queryset(request)
+        content = self.get_paginated_content(queryset)
+        context = self.get_html_context()
+        assert queryset == [1, 2, 3, 4, 5]
+        assert content == {
+            'results': [1, 2, 3, 4, 5],
+            'previous': None,
+            'next': 'http://testserver/?limit=5&offset=5',
+            'count': 100
+        }
+        assert context == {
+            'previous_url': None,
+            'next_url': 'http://testserver/?limit=5&offset=5',
+            'page_links': [
+                PageLink('http://testserver/?limit=5', 1, True, False),
+                PageLink('http://testserver/?limit=5&offset=5', 2, False, False),
+                PageLink('http://testserver/?limit=5&offset=10', 3, False, False),
+                PAGE_BREAK,
+                PageLink('http://testserver/?limit=5&offset=95', 20, False, False),
+            ]
+        }
+
+    def test_first_offset(self):
+        request = Request(factory.get('/', {'limit': 5, 'offset': 5}))
+        queryset = self.paginate_queryset(request)
+        content = self.get_paginated_content(queryset)
+        context = self.get_html_context()
+        assert queryset == [6, 7, 8, 9, 10]
+        assert content == {
+            'results': [6, 7, 8, 9, 10],
+            'previous': 'http://testserver/?limit=5',
+            'next': 'http://testserver/?limit=5&offset=10',
+            'count': 100
+        }
+        assert context == {
+            'previous_url': 'http://testserver/?limit=5',
+            'next_url': 'http://testserver/?limit=5&offset=10',
+            'page_links': [
+                PageLink('http://testserver/?limit=5', 1, False, False),
+                PageLink('http://testserver/?limit=5&offset=5', 2, True, False),
+                PageLink('http://testserver/?limit=5&offset=10', 3, False, False),
+                PAGE_BREAK,
+                PageLink('http://testserver/?limit=5&offset=95', 20, False, False),
+            ]
+        }
+
+    def test_middle_offset(self):
+        request = Request(factory.get('/', {'limit': 5, 'offset': 10}))
+        queryset = self.paginate_queryset(request)
+        content = self.get_paginated_content(queryset)
+        context = self.get_html_context()
+        assert queryset == [11, 12, 13, 14, 15]
+        assert content == {
+            'results': [11, 12, 13, 14, 15],
+            'previous': 'http://testserver/?limit=5&offset=5',
+            'next': 'http://testserver/?limit=5&offset=15',
+            'count': 100
+        }
+        assert context == {
+            'previous_url': 'http://testserver/?limit=5&offset=5',
+            'next_url': 'http://testserver/?limit=5&offset=15',
+            'page_links': [
+                PageLink('http://testserver/?limit=5', 1, False, False),
+                PageLink('http://testserver/?limit=5&offset=5', 2, False, False),
+                PageLink('http://testserver/?limit=5&offset=10', 3, True, False),
+                PageLink('http://testserver/?limit=5&offset=15', 4, False, False),
+                PAGE_BREAK,
+                PageLink('http://testserver/?limit=5&offset=95', 20, False, False),
+            ]
+        }
+
+    def test_ending_offset(self):
+        request = Request(factory.get('/', {'limit': 5, 'offset': 95}))
+        queryset = self.paginate_queryset(request)
+        content = self.get_paginated_content(queryset)
+        context = self.get_html_context()
+        assert queryset == [96, 97, 98, 99, 100]
+        assert content == {
+            'results': [96, 97, 98, 99, 100],
+            'previous': 'http://testserver/?limit=5&offset=90',
+            'next': None,
+            'count': 100
+        }
+        assert context == {
+            'previous_url': 'http://testserver/?limit=5&offset=90',
+            'next_url': None,
+            'page_links': [
+                PageLink('http://testserver/?limit=5', 1, False, False),
+                PAGE_BREAK,
+                PageLink('http://testserver/?limit=5&offset=85', 18, False, False),
+                PageLink('http://testserver/?limit=5&offset=90', 19, False, False),
+                PageLink('http://testserver/?limit=5&offset=95', 20, True, False),
+            ]
+        }

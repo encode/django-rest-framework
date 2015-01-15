@@ -44,7 +44,7 @@ def _get_count(queryset):
     """
     try:
         return queryset.count()
-    except AttributeError:
+    except (AttributeError, TypeError):
         return len(queryset)
 
 
@@ -111,12 +111,7 @@ def _get_page_links(page_numbers, current, url_func):
     page_links = []
     for page_number in page_numbers:
         if page_number is None:
-            page_link = PageLink(
-                url=None,
-                number=None,
-                is_active=False,
-                is_break=True
-            )
+            page_link = PAGE_BREAK
         else:
             page_link = PageLink(
                 url=url_func(page_number),
@@ -130,11 +125,13 @@ def _get_page_links(page_numbers, current, url_func):
 
 PageLink = namedtuple('PageLink', ['url', 'number', 'is_active', 'is_break'])
 
+PAGE_BREAK = PageLink(url=None, number=None, is_active=False, is_break=True)
+
 
 class BasePagination(object):
     display_page_controls = False
 
-    def paginate_queryset(self, queryset, request, view):
+    def paginate_queryset(self, queryset, request, view=None):
         raise NotImplemented('paginate_queryset() must be implemented.')
 
     def get_paginated_response(self, data):
@@ -167,9 +164,11 @@ class PageNumberPagination(BasePagination):
     # Only relevant if 'paginate_by_param' has also been set.
     max_paginate_by = api_settings.MAX_PAGINATE_BY
 
+    last_page_strings = ('last',)
+
     template = 'rest_framework/pagination/numbers.html'
 
-    def paginate_queryset(self, queryset, request, view):
+    def paginate_queryset(self, queryset, request, view=None):
         """
         Paginate a queryset if required, either returning a
         page object, or `None` if pagination is not configured for this view.
@@ -186,18 +185,9 @@ class PageNumberPagination(BasePagination):
             return None
 
         paginator = DjangoPaginator(queryset, page_size)
-        page_string = request.query_params.get(self.page_query_param, 1)
-        try:
-            page_number = paginator.validate_number(page_string)
-        except InvalidPage:
-            if page_string == 'last':
-                page_number = paginator.num_pages
-            else:
-                msg = _(
-                    'Choose a valid page number. Page numbers must be a '
-                    'whole number, or must be the string "last".'
-                )
-                raise NotFound(msg)
+        page_number = request.query_params.get(self.page_query_param, 1)
+        if page_number in self.last_page_strings:
+            page_number = paginator.num_pages
 
         try:
             self.page = paginator.page(page_number)
@@ -210,6 +200,7 @@ class PageNumberPagination(BasePagination):
         if paginator.count > 1:
             # The browsable API should display pagination controls.
             self.display_page_controls = True
+
         self.request = request
         return self.page
 
@@ -249,7 +240,7 @@ class PageNumberPagination(BasePagination):
             return remove_query_param(url, self.page_query_param)
         return replace_query_param(url, self.page_query_param, page_number)
 
-    def to_html(self):
+    def get_html_context(self):
         base_url = self.request.build_absolute_uri()
 
         def page_number_to_url(page_number):
@@ -263,12 +254,15 @@ class PageNumberPagination(BasePagination):
         page_numbers = _get_displayed_page_numbers(current, final)
         page_links = _get_page_links(page_numbers, current, page_number_to_url)
 
-        template = loader.get_template(self.template)
-        context = Context({
+        return {
             'previous_url': self.get_previous_link(),
             'next_url': self.get_next_link(),
             'page_links': page_links
-        })
+        }
+
+    def to_html(self):
+        template = loader.get_template(self.template)
+        context = Context(self.get_html_context())
         return template.render(context)
 
 
@@ -286,7 +280,7 @@ class LimitOffsetPagination(BasePagination):
 
     template = 'rest_framework/pagination/numbers.html'
 
-    def paginate_queryset(self, queryset, request, view):
+    def paginate_queryset(self, queryset, request, view=None):
         self.limit = self.get_limit(request)
         self.offset = self.get_offset(request)
         self.count = _get_count(queryset)
@@ -343,7 +337,7 @@ class LimitOffsetPagination(BasePagination):
         offset = self.offset - self.limit
         return replace_query_param(url, self.offset_query_param, offset)
 
-    def to_html(self):
+    def get_html_context(self):
         base_url = self.request.build_absolute_uri()
         current = _divide_with_ceil(self.offset, self.limit) + 1
         final = _divide_with_ceil(self.count, self.limit)
@@ -358,10 +352,13 @@ class LimitOffsetPagination(BasePagination):
         page_numbers = _get_displayed_page_numbers(current, final)
         page_links = _get_page_links(page_numbers, current, page_number_to_url)
 
-        template = loader.get_template(self.template)
-        context = Context({
+        return {
             'previous_url': self.get_previous_link(),
             'next_url': self.get_next_link(),
             'page_links': page_links
-        })
+        }
+
+    def to_html(self):
+        template = loader.get_template(self.template)
+        context = Context(self.get_html_context())
         return template.render(context)
