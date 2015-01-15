@@ -251,6 +251,7 @@ class PageNumberPagination(BasePagination):
 
     def to_html(self):
         base_url = self.request.build_absolute_uri()
+
         def page_number_to_url(page_number):
             if page_number == 1:
                 return remove_query_param(base_url, self.page_query_param)
