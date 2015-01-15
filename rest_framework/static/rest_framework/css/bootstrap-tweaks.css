@@ -60,6 +60,13 @@ a single block in the template.
   color: #C20000;
 }
 
+.pagination>.disabled>a,
+.pagination>.disabled>a:hover,
+.pagination>.disabled>a:focus {
+  cursor: default;
+  pointer-events: none;
+}
+
 /*=== dabapps bootstrap styles ====*/
 
 html {

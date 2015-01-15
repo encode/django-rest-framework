@@ -150,21 +150,21 @@ class GenericAPIView(views.APIView):
         return queryset
 
     @property
-    def pager(self):
-        if not hasattr(self, '_pager'):
+    def paginator(self):
+        if not hasattr(self, '_paginator'):
             if self.pagination_class is None:
-                self._pager = None
+                self._paginator = None
             else:
-                self._pager = self.pagination_class()
-        return self._pager
+                self._paginator = self.pagination_class()
+        return self._paginator
 
     def paginate_queryset(self, queryset):
-        if self.pager is None:
+        if self.paginator is None:
             return queryset
-        return self.pager.paginate_queryset(queryset, self.request, view=self)
+        return self.paginator.paginate_queryset(queryset, self.request, view=self)
 
     def get_paginated_response(self, data):
-        return self.pager.get_paginated_response(data)
+        return self.paginator.get_paginated_response(data)
 
 
 # Concrete view classes that provide method handlers

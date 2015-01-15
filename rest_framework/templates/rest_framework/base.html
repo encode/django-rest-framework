@@ -125,9 +125,9 @@
                     {% endblock %}
                     </div>
 
-                    {% if pager.mark_as_used %}
+                    {% if paginator %}
                         <nav style="float: right">
-                        {% get_pagination_html pager %}
+                        {% get_pagination_html paginator %}
                         </nav>
                     {% endif %}
 
