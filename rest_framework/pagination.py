@@ -131,13 +131,13 @@ PAGE_BREAK = PageLink(url=None, number=None, is_active=False, is_break=True)
 class BasePagination(object):
     display_page_controls = False
 
-    def paginate_queryset(self, queryset, request, view=None):
+    def paginate_queryset(self, queryset, request, view=None):  # pragma: no cover
         raise NotImplemented('paginate_queryset() must be implemented.')
 
-    def get_paginated_response(self, data):
+    def get_paginated_response(self, data):  # pragma: no cover
         raise NotImplemented('get_paginated_response() must be implemented.')
 
-    def to_html(self):
+    def to_html(self):  # pragma: no cover
         raise NotImplemented('to_html() must be implemented to display page controls.')
 
 
@@ -168,10 +168,11 @@ class PageNumberPagination(BasePagination):
 
     template = 'rest_framework/pagination/numbers.html'
 
-    def paginate_queryset(self, queryset, request, view=None):
+    def _handle_backwards_compat(self, view):
         """
-        Paginate a queryset if required, either returning a
-        page object, or `None` if pagination is not configured for this view.
+        Prior to version 3.1, pagination was handled in the view, and the
+        attributes were set there. The attributes should now be set on
+        the pagination class, but the old style is still pending deprecation.
         """
         for attr in (
             'paginate_by', 'page_query_param',
@@ -179,6 +180,13 @@ class PageNumberPagination(BasePagination):
         ):
             if hasattr(view, attr):
                 setattr(self, attr, getattr(view, attr))
+
+    def paginate_queryset(self, queryset, request, view=None):
+        """
+        Paginate a queryset if required, either returning a
+        page object, or `None` if pagination is not configured for this view.
+        """
+        self._handle_backwards_compat(view)
 
         page_size = self.get_page_size(request)
         if not page_size:
@@ -277,7 +285,6 @@ class LimitOffsetPagination(BasePagination):
     limit_query_param = 'limit'
     offset_query_param = 'offset'
     max_limit = None
-
     template = 'rest_framework/pagination/numbers.html'
 
     def paginate_queryset(self, queryset, request, view=None):
@@ -340,7 +347,15 @@ class LimitOffsetPagination(BasePagination):
     def get_html_context(self):
         base_url = self.request.build_absolute_uri()
         current = _divide_with_ceil(self.offset, self.limit) + 1
-        final = _divide_with_ceil(self.count, self.limit)
+        # The number of pages is a little bit fiddly.
+        # We need to sum both the number of pages from current offset to end
+        # plus the number of pages up to the current offset.
+        # When offset is not strictly divisible by the limit then we may
+        # end up introducing an extra page as an artifact.
+        final = (
+            _divide_with_ceil(self.count - self.offset, self.limit) +
+            _divide_with_ceil(self.offset, self.limit)
+        )
 
         def page_number_to_url(page_number):
             if page_number == 1:
