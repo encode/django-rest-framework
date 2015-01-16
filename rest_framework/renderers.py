@@ -584,6 +584,11 @@ class BrowsableAPIRenderer(BaseRenderer):
                 renderer_content_type += ' ;%s' % renderer.charset
         response_headers['Content-Type'] = renderer_content_type
 
+        if hasattr(view, 'paginator') and view.paginator.display_page_controls:
+            paginator = view.paginator
+        else:
+            paginator = None
+
         context = {
             'content': self.get_content(renderer, data, accepted_media_type, renderer_context),
             'view': view,
@@ -592,6 +597,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             'description': self.get_description(view),
             'name': self.get_name(view),
             'version': VERSION,
+            'paginator': paginator,
             'breadcrumblist': self.get_breadcrumbs(request),
             'allowed_methods': view.allowed_methods,
             'available_formats': [renderer_cls.format for renderer_cls in view.renderer_classes],
