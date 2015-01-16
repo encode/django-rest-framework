@@ -117,7 +117,7 @@ class TestPaginationDisabledIntegration:
         request = factory.get('/', {'page': 2})
         response = self.view(request)
         assert response.status_code == status.HTTP_200_OK
-        assert response.data == range(1, 101)
+        assert response.data == list(range(1, 101))
 
 
 class TestDeprecatedStylePagination:
@@ -268,7 +268,7 @@ class TestLimitOffset:
         self.queryset = range(1, 101)
 
     def paginate_queryset(self, request):
-        return self.pagination.paginate_queryset(self.queryset, request)
+        return list(self.pagination.paginate_queryset(self.queryset, request))
 
     def get_paginated_content(self, queryset):
         response = self.pagination.get_paginated_response(queryset)

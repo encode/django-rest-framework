@@ -12,7 +12,7 @@ from rest_framework.compat import OrderedDict
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.templatetags.rest_framework import (
+from rest_framework.utils.urls import (
     replace_query_param, remove_query_param
 )
 
@@ -34,8 +34,8 @@ def _divide_with_ceil(a, b):
     Returns 'a' divded by 'b', with any remainder rounded up.
     """
     if a % b:
-        return (a / b) + 1
-    return a / b
+        return (a // b) + 1
+    return a // b
 
 
 def _get_count(queryset):
@@ -70,7 +70,7 @@ def _get_displayed_page_numbers(current, final):
     assert final >= current
 
     if final <= 5:
-        return range(1, final + 1)
+        return list(range(1, final + 1))
 
     # We always include the first two pages, last two pages, and
     # two pages either side of the current page.
