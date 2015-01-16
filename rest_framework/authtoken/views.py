@@ -1,4 +1,4 @@
-from rest_framework.views import APIView
+from rest_framework import generics
 from rest_framework import parsers
 from rest_framework import renderers
 from rest_framework.response import Response
@@ -6,11 +6,12 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 
 
-class ObtainAuthToken(APIView):
+class ObtainAuthToken(generics.GenericAPIView):
     throttle_classes = ()
     permission_classes = ()
     parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
     renderer_classes = (renderers.JSONRenderer,)
+    serializer_class = AuthTokenSerializer
 
     def post(self, request):
         serializer = AuthTokenSerializer(data=request.data)
