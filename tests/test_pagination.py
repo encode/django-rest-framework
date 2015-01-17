@@ -422,6 +422,94 @@ class TestLimitOffset:
         assert queryset == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 
+class TestCursorPagination:
+    """
+    Unit tests for `pagination.CursorPagination`.
+    """
+
+    def setup(self):
+        class MockObject(object):
+            def __init__(self, idx):
+                self.created = idx
+
+        class MockQuerySet(object):
+            def __init__(self, items):
+                self.items = items
+
+            def filter(self, created__gt):
+                return [
+                    item for item in self.items
+                    if item.created > int(created__gt)
+                ]
+
+            def __getitem__(self, sliced):
+                return self.items[sliced]
+
+        self.pagination = pagination.CursorPagination()
+        self.queryset = MockQuerySet(
+            [MockObject(idx) for idx in range(1, 21)]
+        )
+
+    def paginate_queryset(self, request):
+        return list(self.pagination.paginate_queryset(self.queryset, request))
+
+    # def get_paginated_content(self, queryset):
+    #     response = self.pagination.get_paginated_response(queryset)
+    #     return response.data
+
+    # def get_html_context(self):
+    #     return self.pagination.get_html_context()
+
+    def test_following_cursor(self):
+        request = Request(factory.get('/'))
+        queryset = self.paginate_queryset(request)
+        assert [item.created for item in queryset] == [1, 2, 3, 4, 5]
+
+        next_url = self.pagination.get_next_link()
+        assert next_url
+
+        request = Request(factory.get(next_url))
+        queryset = self.paginate_queryset(request)
+        assert [item.created for item in queryset] == [6, 7, 8, 9, 10]
+
+        next_url = self.pagination.get_next_link()
+        assert next_url
+
+        request = Request(factory.get(next_url))
+        queryset = self.paginate_queryset(request)
+        assert [item.created for item in queryset] == [11, 12, 13, 14, 15]
+
+        next_url = self.pagination.get_next_link()
+        assert next_url
+
+        request = Request(factory.get(next_url))
+        queryset = self.paginate_queryset(request)
+        assert [item.created for item in queryset] == [16, 17, 18, 19, 20]
+
+        next_url = self.pagination.get_next_link()
+        assert next_url is None
+
+        # assert content == {
+        #     'results': [1, 2, 3, 4, 5],
+        #     'previous': None,
+        #     'next': 'http://testserver/?limit=5&offset=5',
+        #     'count': 100
+        # }
+        # assert context == {
+        #     'previous_url': None,
+        #     'next_url': 'http://testserver/?limit=5&offset=5',
+        #     'page_links': [
+        #         PageLink('http://testserver/?limit=5', 1, True, False),
+        #         PageLink('http://testserver/?limit=5&offset=5', 2, False, False),
+        #         PageLink('http://testserver/?limit=5&offset=10', 3, False, False),
+        #         PAGE_BREAK,
+        #         PageLink('http://testserver/?limit=5&offset=95', 20, False, False),
+        #     ]
+        # }
+        # assert self.pagination.display_page_controls
+        # assert isinstance(self.pagination.to_html(), type(''))
+
+
 def test_get_displayed_page_numbers():
     """
     Test our contextual page display function.

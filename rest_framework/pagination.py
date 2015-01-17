@@ -3,10 +3,12 @@ Pagination serializers determine the structure of the output that should
 be used for paginated responses.
 """
 from __future__ import unicode_literals
+from base64 import b64encode, b64decode
 from collections import namedtuple
 from django.core.paginator import InvalidPage, Paginator as DjangoPaginator
 from django.template import Context, loader
 from django.utils import six
+from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext as _
 from rest_framework.compat import OrderedDict
 from rest_framework.exceptions import NotFound
@@ -377,3 +379,52 @@ class LimitOffsetPagination(BasePagination):
         template = loader.get_template(self.template)
         context = Context(self.get_html_context())
         return template.render(context)
+
+
+class CursorPagination(BasePagination):
+    # reverse
+    # limit
+    # multiple orderings
+    cursor_query_param = 'cursor'
+    page_size = 5
+
+    def paginate_queryset(self, queryset, request, view=None):
+        self.base_url = request.build_absolute_uri()
+        self.ordering = self.get_ordering()
+        encoded = request.query_params.get(self.cursor_query_param)
+
+        if encoded is None:
+            cursor = None
+        else:
+            cursor = self.decode_cursor(encoded, self.ordering)
+
+        if cursor is not None:
+            kwargs = {self.ordering + '__gt': cursor}
+            queryset = queryset.filter(**kwargs)
+
+        results = list(queryset[:self.page_size + 1])
+        self.page = results[:self.page_size]
+        self.has_next = len(results) > len(self.page)
+        return self.page
+
+    def get_next_link(self):
+        if not self.has_next:
+            return None
+        last_item = self.page[-1]
+        cursor = self.get_cursor_from_instance(last_item, self.ordering)
+        encoded = self.encode_cursor(cursor, self.ordering)
+        return replace_query_param(self.base_url, self.cursor_query_param, encoded)
+
+    def get_ordering(self):
+        return 'created'
+
+    def get_cursor_from_instance(self, instance, ordering):
+        return getattr(instance, ordering)
+
+    def decode_cursor(self, encoded, ordering):
+        items = urlparse.parse_qs(b64decode(encoded))
+        return items.get(ordering)[0]
+
+    def encode_cursor(self, cursor, ordering):
+        items = [(ordering, cursor)]
+        return b64encode(urlparse.urlencode(items, doseq=True))
