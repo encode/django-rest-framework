@@ -381,10 +381,33 @@ class LimitOffsetPagination(BasePagination):
         return template.render(context)
 
 
+Cursor = namedtuple('Cursor', ['offset', 'reverse', 'position'])
+
+
+def decode_cursor(encoded):
+    tokens = urlparse.parse_qs(b64decode(encoded))
+    try:
+        offset = int(tokens['offset'][0])
+        reverse = bool(int(tokens['reverse'][0]))
+        position = tokens['position'][0]
+    except (TypeError, ValueError):
+        return None
+
+    return Cursor(offset=offset, reverse=reverse, position=position)
+
+
+def encode_cursor(cursor):
+    tokens = {
+        'offset': str(cursor.offset),
+        'reverse': '1' if cursor.reverse else '0',
+        'position': cursor.position
+    }
+    return b64encode(urlparse.urlencode(tokens, doseq=True))
+
+
 class CursorPagination(BasePagination):
     # reverse
     # limit
-    # multiple orderings
     cursor_query_param = 'cursor'
     page_size = 5
 
@@ -396,10 +419,11 @@ class CursorPagination(BasePagination):
         if encoded is None:
             cursor = None
         else:
-            cursor = self.decode_cursor(encoded, self.ordering)
+            cursor = decode_cursor(encoded)
+            # TODO: Invalid cursors should 404
 
         if cursor is not None:
-            kwargs = {self.ordering + '__gt': cursor}
+            kwargs = {self.ordering + '__gt': cursor.position}
             queryset = queryset.filter(**kwargs)
 
         results = list(queryset[:self.page_size + 1])
@@ -411,20 +435,21 @@ class CursorPagination(BasePagination):
         if not self.has_next:
             return None
         last_item = self.page[-1]
-        cursor = self.get_cursor_from_instance(last_item, self.ordering)
-        encoded = self.encode_cursor(cursor, self.ordering)
+        position = self.get_position_from_instance(last_item, self.ordering)
+        cursor = Cursor(offset=0, reverse=False, position=position)
+        encoded = encode_cursor(cursor)
         return replace_query_param(self.base_url, self.cursor_query_param, encoded)
 
     def get_ordering(self):
         return 'created'
 
-    def get_cursor_from_instance(self, instance, ordering):
-        return getattr(instance, ordering)
+    def get_position_from_instance(self, instance, ordering):
+        return str(getattr(instance, ordering))
 
-    def decode_cursor(self, encoded, ordering):
-        items = urlparse.parse_qs(b64decode(encoded))
-        return items.get(ordering)[0]
+    # def decode_cursor(self, encoded, ordering):
+    #     items = urlparse.parse_qs(b64decode(encoded))
+    #     return items.get(ordering)[0]
 
-    def encode_cursor(self, cursor, ordering):
-        items = [(ordering, cursor)]
-        return b64encode(urlparse.urlencode(items, doseq=True))
+    # def encode_cursor(self, cursor, ordering):
+    #     items = [(ordering, cursor)]
+    #     return b64encode(urlparse.urlencode(items, doseq=True))
