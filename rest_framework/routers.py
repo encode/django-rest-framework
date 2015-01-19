@@ -65,13 +65,13 @@ class BaseRouter(object):
         If `base_name` is not specified, attempt to automatically determine
         it from the viewset.
         """
-        raise NotImplemented('get_default_base_name must be overridden')
+        raise NotImplementedError('get_default_base_name must be overridden')
 
     def get_urls(self):
         """
         Return a list of URL patterns, given the registered viewsets.
         """
-        raise NotImplemented('get_urls must be overridden')
+        raise NotImplementedError('get_urls must be overridden')
 
     @property
     def urls(self):
