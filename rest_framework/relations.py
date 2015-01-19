@@ -303,7 +303,7 @@ class SlugRelatedField(RelatedField):
 
     def to_internal_value(self, data):
         try:
-            return self.get_queryset().get(**{self.slug_field: data})
+            return self.get_queryset().only(self.slug_field).get(**{self.slug_field: data})
         except ObjectDoesNotExist:
             self.fail('does_not_exist', slug_name=self.slug_field, value=smart_text(data))
         except (TypeError, ValueError):

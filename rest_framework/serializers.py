@@ -727,6 +727,7 @@ class ModelSerializer(Serializer):
         models.URLField: URLField,
     })
     _related_class = PrimaryKeyRelatedField
+    _related_to_field_class = SlugRelatedField
 
     def create(self, validated_data):
         """
@@ -1002,8 +1003,15 @@ class ModelSerializer(Serializer):
                     field_cls = self._get_nested_class(depth, relation_info)
                     kwargs = get_nested_relation_kwargs(relation_info)
                 else:
-                    field_cls = self._related_class
                     kwargs = get_relation_kwargs(field_name, relation_info)
+                    to_field = kwargs.get('to_field', False)
+                    if to_field:
+                        # using the slug field for now
+                        kwargs.pop('to_field', None)
+                        kwargs['slug_field'] = to_field
+                        field_cls = self._related_to_field_class
+                    else:
+                        field_cls = self._related_class
                     # `view_name` is only valid for hyperlinked relationships.
                     if not issubclass(field_cls, HyperlinkedRelatedField):
                         kwargs.pop('view_name', None)

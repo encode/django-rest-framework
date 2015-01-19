@@ -26,6 +26,7 @@ RelationInfo = namedtuple('RelationInfo', [
     'model_field',
     'related',
     'to_many',
+    'to_field',
     'has_through_model'
 ])
 
@@ -96,10 +97,13 @@ def _get_forward_relationships(opts):
     """
     forward_relations = OrderedDict()
     for field in [field for field in opts.fields if field.serialize and field.rel]:
+
         forward_relations[field.name] = RelationInfo(
             model_field=field,
             related=_resolve_model(field.rel.to),
             to_many=False,
+            # to_fields is an array but django lets you only set one to_field
+            to_field=field.to_fields[0] if len(field.to_fields) else None,
             has_through_model=False
         )
 
@@ -109,6 +113,8 @@ def _get_forward_relationships(opts):
             model_field=field,
             related=_resolve_model(field.rel.to),
             to_many=True,
+            # to_fields is an array but django lets you only set one to_field
+            to_field=field.to_fields[0] if len(field.to_fields) else None,
             has_through_model=(
                 not field.rel.through._meta.auto_created
             )
