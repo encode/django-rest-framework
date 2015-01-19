@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
 from django.utils.encoding import force_text
-from django.utils.six.moves.urllib import parse as urlparse
+from django.utils.six.moves.urllib.parse import urlparse as _urlparse
 from django.utils import six
 import django
 import inspect
@@ -38,10 +38,18 @@ def unicode_http_header(value):
     return value
 
 
+def total_seconds(timedelta):
+    # TimeDelta.total_seconds() is only available in Python 2.7
+    if hasattr(timedelta, 'total_seconds'):
+        return timedelta.total_seconds()
+    else:
+        return (timedelta.days * 86400.0) + float(timedelta.seconds) + (timedelta.microseconds / 1000000.0)
+
+
 # OrderedDict only available in Python 2.7.
 # This will always be the case in Django 1.7 and above, as these versions
 # no longer support Python 2.6.
-# For Django <= 1.6 and Python 2.6 fall back to OrderedDict.
+# For Django <= 1.6 and Python 2.6 fall back to SortedDict.
 try:
     from collections import OrderedDict
 except ImportError:
@@ -187,7 +195,7 @@ except ImportError:
 class RequestFactory(DjangoRequestFactory):
     def generic(self, method, path,
             data='', content_type='application/octet-stream', **extra):
-        parsed = urlparse.urlparse(path)
+        parsed = _urlparse(path)
         data = force_bytes_or_smart_bytes(data, settings.DEFAULT_CHARSET)
         r = {
             'PATH_INFO': self._get_path(parsed),
@@ -227,6 +235,8 @@ except ImportError:
 if six.PY3:
     SHORT_SEPARATORS = (',', ':')
     LONG_SEPARATORS = (', ', ': ')
+    INDENT_SEPARATORS = (',', ': ')
 else:
     SHORT_SEPARATORS = (b',', b':')
     LONG_SEPARATORS = (b', ', b': ')
+    INDENT_SEPARATORS = (b',', b': ')

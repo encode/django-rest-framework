@@ -17,7 +17,7 @@ class BaseVersioning(object):
 
     def determine_version(self, request, *args, **kwargs):
         msg = '{cls}.determine_version() must be implemented.'
-        raise NotImplemented(msg.format(
+        raise NotImplementedError(msg.format(
             cls=self.__class__.__name__
         ))
 

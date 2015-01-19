@@ -176,7 +176,7 @@ class APISettings(object):
     For example:
 
         from rest_framework.settings import api_settings
-        print api_settings.DEFAULT_RENDERER_CLASSES
+        print(api_settings.DEFAULT_RENDERER_CLASSES)
 
     Any setting with string import paths will be automatically resolved
     and return the class, rather than the string literal.

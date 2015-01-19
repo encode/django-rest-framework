@@ -67,6 +67,7 @@ setup(
     packages=get_packages('rest_framework'),
     package_data=get_package_data('rest_framework'),
     install_requires=[],
+    zip_safe=False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',

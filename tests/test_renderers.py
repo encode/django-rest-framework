@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 from django.conf.urls import patterns, url, include
 from django.core.cache import cache
 from django.db import models
@@ -8,6 +7,7 @@ from django.test import TestCase
 from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import status, permissions
+from rest_framework.compat import OrderedDict
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, BrowsableAPIRenderer
@@ -489,3 +489,25 @@ class CacheRenderTest(TestCase):
         cached_resp = cache.get(self.cache_key)
         self.assertIsInstance(cached_resp, Response)
         self.assertEqual(cached_resp.content, resp.content)
+
+
+class TestJSONIndentationStyles:
+    def test_indented(self):
+        renderer = JSONRenderer()
+        data = OrderedDict([('a', 1), ('b', 2)])
+        assert renderer.render(data) == b'{"a":1,"b":2}'
+
+    def test_compact(self):
+        renderer = JSONRenderer()
+        data = OrderedDict([('a', 1), ('b', 2)])
+        context = {'indent': 4}
+        assert (
+            renderer.render(data, renderer_context=context) ==
+            b'{\n    "a": 1,\n    "b": 2\n}'
+        )
+
+    def test_long_form(self):
+        renderer = JSONRenderer()
+        renderer.compact = False
+        data = OrderedDict([('a', 1), ('b', 2)])
+        assert renderer.render(data) == b'{"a": 1, "b": 2}'

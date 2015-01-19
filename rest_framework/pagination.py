@@ -135,13 +135,13 @@ class BasePagination(object):
     display_page_controls = False
 
     def paginate_queryset(self, queryset, request, view=None):  # pragma: no cover
-        raise NotImplemented('paginate_queryset() must be implemented.')
+        raise NotImplementedError('paginate_queryset() must be implemented.')
 
     def get_paginated_response(self, data):  # pragma: no cover
-        raise NotImplemented('get_paginated_response() must be implemented.')
+        raise NotImplementedError('get_paginated_response() must be implemented.')
 
     def to_html(self):  # pragma: no cover
-        raise NotImplemented('to_html() must be implemented to display page controls.')
+        raise NotImplementedError('to_html() must be implemented to display page controls.')
 
 
 class PageNumberPagination(BasePagination):
