@@ -375,6 +375,26 @@ class JSONRendererTests(TestCase):
         content = renderer.render(obj, 'application/json; indent=2')
         self.assertEqual(strip_trailing_whitespace(content.decode('utf-8')), _indented_repr)
 
+    def test_with_content_type_args(self):
+        """
+        Test JSON rendering with additional content type arguments supplied.
+        """
+        obj = {'foo': ['bar', 'baz']}
+        renderer = JSONRenderer()
+        content = renderer.render(obj, 'application/json; indent=2')
+        self.assertEqual(strip_trailing_whitespace(content.decode('utf-8')),
+                         _indented_repr)
+
+    def test_with_trailing_whitespace(self):
+        """
+        Test JSON rendering with additional content type arguments supplied.
+        """
+        obj = {'foo': ['bar', 'baz']}
+        renderer = JSONRenderer()
+        content = renderer.render(obj, 'application/json; indent=2')
+        self.assertEqual((content.decode('utf-8')),
+                         _indented_repr)
+
 
 class UnicodeJSONRendererTests(TestCase):
     """
