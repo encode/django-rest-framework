@@ -34,7 +34,7 @@ The value of `request.user` and `request.auth` for unauthenticated requests can 
 
 ## Setting the authentication scheme
 
-The default authentication schemes may be set globally, using the `DEFAULT_AUTHENTICATION` setting.  For example.
+The default authentication schemes may be set globally, using the `DEFAULT_AUTHENTICATION_CLASSES` setting.  For example.
 
     REST_FRAMEWORK = {
         'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -125,7 +125,6 @@ To use the `TokenAuthentication` scheme you'll need to [configure the authentica
         ...
         'rest_framework.authtoken'
     )
-
 
 ---
 
@@ -248,8 +247,6 @@ If successfully authenticated, `SessionAuthentication` provides the following cr
 Unauthenticated responses that are denied permission will result in an `HTTP 403 Forbidden` response.
 
 If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `PATCH`, `POST` or `DELETE` requests.  See the [Django CSRF documentation][csrf-ajax] for more details.
-
----
 
 # Custom authentication
 

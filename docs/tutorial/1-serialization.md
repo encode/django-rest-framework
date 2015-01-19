@@ -191,7 +191,7 @@ Our `SnippetSerializer` class is replicating a lot of information that's also co
 In the same way that Django provides both `Form` classes and `ModelForm` classes, REST framework includes both `Serializer` classes, and `ModelSerializer` classes.
 
 Let's look at refactoring our serializer using the `ModelSerializer` class.
-Open the file `snippets/serializers.py` again, and edit the `SnippetSerializer` class.
+Open the file `snippets/serializers.py` again, and replace the `SnippetSerializer` class with the following.
 
     class SnippetSerializer(serializers.ModelSerializer):
         class Meta:
