@@ -1005,7 +1005,10 @@ class ModelSerializer(Serializer):
                 else:
                     kwargs = get_relation_kwargs(field_name, relation_info)
                     to_field = kwargs.get('to_field', False)
-                    if to_field:
+                    kwargs.pop('to_field', None)
+                    # it seems that some tests/django initializers are setting
+                    # to_field where it is totally unnecessary
+                    if to_field and to_field != 'id':
                         # using the slug field for now
                         kwargs.pop('to_field', None)
                         kwargs['slug_field'] = to_field

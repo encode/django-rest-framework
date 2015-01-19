@@ -303,7 +303,14 @@ class SlugRelatedField(RelatedField):
 
     def to_internal_value(self, data):
         try:
-            return self.get_queryset().only(self.slug_field).get(**{self.slug_field: data})
+            # Some tests do not have the full QuerySet API
+            # But we optimize SlugRelatedFields by only loading what we need
+            qs = self.get_queryset()
+            if hasattr(qs, 'only'):
+                return self.get_queryset().only(self.slug_field).get(**{self.slug_field: data})
+            else:
+                return self.get_queryset().get(**{self.slug_field: data})
+
         except ObjectDoesNotExist:
             self.fail('does_not_exist', slug_name=self.slug_field, value=smart_text(data))
         except (TypeError, ValueError):
