@@ -227,6 +227,8 @@ except ImportError:
 if six.PY3:
     SHORT_SEPARATORS = (',', ':')
     LONG_SEPARATORS = (', ', ': ')
+    INDENT_SEPARATORS = (',', ': ')
 else:
     SHORT_SEPARATORS = (b',', b':')
     LONG_SEPARATORS = (b', ', b': ')
+    INDENT_SEPARATORS = (b',', b': ')

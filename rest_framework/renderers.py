@@ -18,7 +18,7 @@ from django.template import Context, RequestContext, loader, Template
 from django.test.client import encode_multipart
 from django.utils import six
 from rest_framework import exceptions, serializers, status, VERSION
-from rest_framework.compat import SHORT_SEPARATORS, LONG_SEPARATORS
+from rest_framework.compat import SHORT_SEPARATORS, LONG_SEPARATORS, INDENT_SEPARATORS
 from rest_framework.exceptions import ParseError
 from rest_framework.settings import api_settings
 from rest_framework.request import is_form_media_type, override_method
@@ -87,7 +87,11 @@ class JSONRenderer(BaseRenderer):
 
         renderer_context = renderer_context or {}
         indent = self.get_indent(accepted_media_type, renderer_context)
-        separators = SHORT_SEPARATORS if (indent is None and self.compact) else LONG_SEPARATORS
+
+        if indent is None:
+            separators = SHORT_SEPARATORS if self.compact else LONG_SEPARATORS
+        else:
+            separators = INDENT_SEPARATORS
 
         ret = json.dumps(
             data, cls=self.encoder_class,
