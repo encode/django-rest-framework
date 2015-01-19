@@ -1,3 +1,4 @@
+# coding: utf-8
 """
 Pagination serializers determine the structure of the output that should
 be used for paginated responses.
@@ -385,7 +386,7 @@ Cursor = namedtuple('Cursor', ['offset', 'reverse', 'position'])
 
 
 def decode_cursor(encoded):
-    tokens = urlparse.parse_qs(b64decode(encoded))
+    tokens = urlparse.parse_qs(b64decode(encoded), keep_blank_values=True)
     try:
         offset = int(tokens['offset'][0])
         reverse = bool(int(tokens['reverse'][0]))
@@ -406,8 +407,7 @@ def encode_cursor(cursor):
 
 
 class CursorPagination(BasePagination):
-    # reverse
-    # limit
+    # TODO: reverse cursors
     cursor_query_param = 'cursor'
     page_size = 5
 
@@ -417,26 +417,63 @@ class CursorPagination(BasePagination):
         encoded = request.query_params.get(self.cursor_query_param)
 
         if encoded is None:
-            cursor = None
+            self.cursor = None
         else:
-            cursor = decode_cursor(encoded)
+            self.cursor = decode_cursor(encoded)
             # TODO: Invalid cursors should 404
 
-        if cursor is not None:
-            kwargs = {self.ordering + '__gt': cursor.position}
+        if self.cursor is not None and self.cursor.position != '':
+            kwargs = {self.ordering + '__gt': self.cursor.position}
             queryset = queryset.filter(**kwargs)
 
-        results = list(queryset[:self.page_size + 1])
+        # The offset is used in order to deal with cases where we have
+        # items with an identical position. This allows the cursors
+        # to gracefully deal with non-unique fields as the ordering.
+        offset = 0 if (self.cursor is None) else self.cursor.offset
+
+        # We fetch an extra item in order to determine if there is a next page.
+        results = list(queryset[offset:offset + self.page_size + 1])
         self.page = results[:self.page_size]
         self.has_next = len(results) > len(self.page)
+        self.next_item = results[-1] if self.has_next else None
         return self.page
 
     def get_next_link(self):
         if not self.has_next:
             return None
-        last_item = self.page[-1]
-        position = self.get_position_from_instance(last_item, self.ordering)
-        cursor = Cursor(offset=0, reverse=False, position=position)
+
+        compare = self.get_position_from_instance(self.next_item, self.ordering)
+        offset = 0
+        for item in reversed(self.page):
+            position = self.get_position_from_instance(item, self.ordering)
+            if position != compare:
+                # The item in this position and the item following it
+                # have different positions. We can use this position as
+                # our marker.
+                break
+
+            # The item in this postion has the same position as the item
+            # following it, we can't use it as a marker position, so increment
+            # the offset and keep seeking to the previous item.
+            compare = position
+            offset += 1
+
+        else:
+            if self.cursor is None:
+                # There were no unique positions in the page, and we were
+                # on the first page, ie. there was no existing cursor.
+                # Our cursor will have an offset equal to the page size,
+                # but no position to filter against yet.
+                offset = self.page_size
+                position = ''
+            else:
+                # There were no unique positions in the page.
+                # Use the position from the existing cursor and increment
+                # it's offset by the page size.
+                offset = self.cursor.offset + self.page_size
+                position = self.cursor.position
+
+        cursor = Cursor(offset=offset, reverse=False, position=position)
         encoded = encode_cursor(cursor)
         return replace_query_param(self.base_url, self.cursor_query_param, encoded)
 
@@ -445,11 +482,3 @@ class CursorPagination(BasePagination):
 
     def get_position_from_instance(self, instance, ordering):
         return str(getattr(instance, ordering))
-
-    # def decode_cursor(self, encoded, ordering):
-    #     items = urlparse.parse_qs(b64decode(encoded))
-    #     return items.get(ordering)[0]
-
-    # def encode_cursor(self, cursor, ordering):
-    #     items = [(ordering, cursor)]
-    #     return b64encode(urlparse.urlencode(items, doseq=True))

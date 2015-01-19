@@ -447,7 +447,7 @@ class TestCursorPagination:
 
         self.pagination = pagination.CursorPagination()
         self.queryset = MockQuerySet(
-            [MockObject(idx) for idx in range(1, 21)]
+            [MockObject(idx) for idx in range(1, 16)]
         )
 
     def paginate_queryset(self, request):
@@ -480,15 +480,73 @@ class TestCursorPagination:
         assert [item.created for item in queryset] == [11, 12, 13, 14, 15]
 
         next_url = self.pagination.get_next_link()
+        assert next_url is None
+
+
+class TestCrazyCursorPagination:
+    """
+    Unit tests for `pagination.CursorPagination`.
+    """
+
+    def setup(self):
+        class MockObject(object):
+            def __init__(self, idx):
+                self.created = idx
+
+        class MockQuerySet(object):
+            def __init__(self, items):
+                self.items = items
+
+            def filter(self, created__gt):
+                return [
+                    item for item in self.items
+                    if item.created > int(created__gt)
+                ]
+
+            def __getitem__(self, sliced):
+                return self.items[sliced]
+
+        self.pagination = pagination.CursorPagination()
+        self.queryset = MockQuerySet([
+            MockObject(idx) for idx in [
+                1, 1, 1, 1, 1,
+                1, 1, 1, 1, 1,
+                1, 1, 2, 3, 4,
+                5, 6, 7, 8, 9
+            ]
+        ])
+
+    def paginate_queryset(self, request):
+        return list(self.pagination.paginate_queryset(self.queryset, request))
+
+    def test_following_cursor_identical_items(self):
+        request = Request(factory.get('/'))
+        queryset = self.paginate_queryset(request)
+        assert [item.created for item in queryset] == [1, 1, 1, 1, 1]
+
+        next_url = self.pagination.get_next_link()
         assert next_url
 
         request = Request(factory.get(next_url))
         queryset = self.paginate_queryset(request)
-        assert [item.created for item in queryset] == [16, 17, 18, 19, 20]
+        assert [item.created for item in queryset] == [1, 1, 1, 1, 1]
+
+        next_url = self.pagination.get_next_link()
+        assert next_url
+
+        request = Request(factory.get(next_url))
+        queryset = self.paginate_queryset(request)
+        assert [item.created for item in queryset] == [1, 1, 2, 3, 4]
+
+        next_url = self.pagination.get_next_link()
+        assert next_url
+
+        request = Request(factory.get(next_url))
+        queryset = self.paginate_queryset(request)
+        assert [item.created for item in queryset] == [5, 6, 7, 8, 9]
 
         next_url = self.pagination.get_next_link()
         assert next_url is None
-
         # assert content == {
         #     'results': [1, 2, 3, 4, 5],
         #     'previous': None,
