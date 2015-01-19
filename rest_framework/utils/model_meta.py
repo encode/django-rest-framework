@@ -97,13 +97,18 @@ def _get_forward_relationships(opts):
     """
     forward_relations = OrderedDict()
     for field in [field for field in opts.fields if field.serialize and field.rel]:
+        # For < django 1.6
+        if hasattr(field, 'to_fields'):
+            to_field = field.to_fields[0] if len(field.to_fields) else None
+        else:
+            to_field = None
 
         forward_relations[field.name] = RelationInfo(
             model_field=field,
             related=_resolve_model(field.rel.to),
             to_many=False,
             # to_fields is an array but django lets you only set one to_field
-            to_field=field.to_fields[0] if len(field.to_fields) else None,
+            to_field=to_field,
             has_through_model=False
         )
 
@@ -130,11 +135,17 @@ def _get_reverse_relationships(opts):
     reverse_relations = OrderedDict()
     for relation in opts.get_all_related_objects():
         accessor_name = relation.get_accessor_name()
+        # For < django 1.6
+        if hasattr(relation.field, 'to_fields'):
+            to_field = relation.field.to_fields[0] if len(relation.field.to_fields) else None
+        else:
+            to_field = None
+
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
             related=relation.model,
             to_many=relation.field.rel.multiple,
-            to_field=relation.field.to_fields[0] if len(relation.field.to_fields) else None,
+            to_field=to_field,
             has_through_model=False
         )
 
