@@ -12,6 +12,7 @@ import datetime
 import decimal
 import types
 import json
+import uuid
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -45,6 +46,8 @@ class JSONEncoder(json.JSONEncoder):
         elif isinstance(obj, decimal.Decimal):
             # Serializers will coerce decimals to strings by default.
             return float(obj)
+        elif isinstance(obj, uuid.UUID):
+            return six.text_type(obj)
         elif isinstance(obj, QuerySet):
             return tuple(obj)
         elif hasattr(obj, 'tolist'):
