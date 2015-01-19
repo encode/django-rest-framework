@@ -90,7 +90,9 @@ class JSONRenderer(BaseRenderer):
 
         renderer_context = renderer_context or {}
         indent = self.get_indent(accepted_media_type, renderer_context)
-        separators = SHORT_SEPARATORS if (indent is None and self.compact) else LONG_SEPARATORS
+        separators = renderer_context.get(
+            'separators',
+            SHORT_SEPARATORS if (indent is None and self.compact) else LONG_SEPARATORS)
 
         ret = json.dumps(
             data, cls=self.encoder_class,
