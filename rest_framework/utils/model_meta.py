@@ -113,8 +113,8 @@ def _get_forward_relationships(opts):
             model_field=field,
             related=_resolve_model(field.rel.to),
             to_many=True,
-            # to_fields is an array but django lets you only set one to_field
-            to_field=field.to_fields[0] if len(field.to_fields) else None,
+            # manytomany do not have to_fields
+            to_field=None,
             has_through_model=(
                 not field.rel.through._meta.auto_created
             )
@@ -134,6 +134,7 @@ def _get_reverse_relationships(opts):
             model_field=None,
             related=relation.model,
             to_many=relation.field.rel.multiple,
+            to_field=relation.field.to_fields[0] if len(relation.field.to_fields) else None,
             has_through_model=False
         )
 
@@ -144,6 +145,8 @@ def _get_reverse_relationships(opts):
             model_field=None,
             related=relation.model,
             to_many=True,
+            # manytomany do not have to_fields
+            to_field=None,
             has_through_model=(
                 (getattr(relation.field.rel, 'through', None) is not None)
                 and not relation.field.rel.through._meta.auto_created
