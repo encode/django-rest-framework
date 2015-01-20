@@ -158,7 +158,7 @@ if django.VERSION >= (1, 6):
         return field.to_fields[0] if len(field.to_fields) else None
 else:
     def get_to_field(field):
-        return field.field_name
+        return field.rel.field_name
 
 
 # URLValidator only accepts `message` in 1.6+
