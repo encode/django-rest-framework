@@ -46,7 +46,7 @@ class BaseRenderer(object):
     render_style = 'text'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
-        raise NotImplemented('Renderer class requires .render() to be implemented')
+        raise NotImplementedError('Renderer class requires .render() to be implemented')
 
 
 class JSONRenderer(BaseRenderer):

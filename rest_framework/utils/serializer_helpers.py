@@ -16,6 +16,9 @@ class ReturnDict(OrderedDict):
     def copy(self):
         return ReturnDict(self, serializer=self.serializer)
 
+    def __repr__(self):
+        return dict.__repr__(self)
+
 
 class ReturnList(list):
     """
@@ -26,6 +29,9 @@ class ReturnList(list):
     def __init__(self, *args, **kwargs):
         self.serializer = kwargs.pop('serializer')
         super(ReturnList, self).__init__(*args, **kwargs)
+
+    def __repr__(self):
+        return list.__repr__(self)
 
 
 class BoundField(object):

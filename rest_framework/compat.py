@@ -33,6 +33,14 @@ def unicode_to_repr(value):
     return value
 
 
+def total_seconds(timedelta):
+    # TimeDelta.total_seconds() is only available in Python 2.7
+    if hasattr(timedelta, 'total_seconds'):
+        return timedelta.total_seconds()
+    else:
+        return (timedelta.days * 86400.0) + float(timedelta.seconds) + (timedelta.microseconds / 1000000.0)
+
+
 # OrderedDict only available in Python 2.7.
 # This will always be the case in Django 1.7 and above, as these versions
 # no longer support Python 2.6.
