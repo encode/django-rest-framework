@@ -253,7 +253,7 @@ class SerializerMetaclass(type):
         # If this class is subclassing another Serializer, add that Serializer's
         # fields.  Note that we loop over the bases in *reverse*. This is necessary
         # in order to maintain the correct order of fields.
-        for base in bases[::-1]:
+        for base in reversed(bases):
             if hasattr(base, '_declared_fields'):
                 fields = list(base._declared_fields.items()) + fields
 
@@ -880,8 +880,8 @@ class ModelSerializer(Serializer):
         # Retrieve metadata about fields & relationships on the model class.
         info = model_meta.get_field_info(model)
 
-        # Use the default set of field names if none is supplied explicitly.
         if fields is None:
+            # Use the default set of field names if none is supplied explicitly.
             fields = self._get_default_field_names(declared_fields, info)
             exclude = getattr(self.Meta, 'exclude', None)
             if exclude is not None:
@@ -891,6 +891,23 @@ class ModelSerializer(Serializer):
                         field_name
                     )
                     fields.remove(field_name)
+        else:
+            # Check that any fields declared on the class are
+            # also explicitly included in `Meta.fields`.
+
+            # Note that we ignore any fields that were declared on a parent
+            # class, in order to support only including a subset of fields
+            # when subclassing serializers.
+            declared_field_names = set(declared_fields.keys())
+            for cls in self.__class__.__bases__:
+                declared_field_names -= set(getattr(cls, '_declared_fields', []))
+
+            missing_fields = declared_field_names - set(fields)
+            assert not missing_fields, (
+                'Field `%s` has been declared on serializer `%s`, but '
+                'is missing from `Meta.fields`.' %
+                (list(missing_fields)[0], self.__class__.__name__)
+            )
 
         # Determine the set of model fields, and the fields that they map to.
         # We actually only need this to deal with the slightly awkward case
@@ -1022,17 +1039,6 @@ class ModelSerializer(Serializer):
                 raise ImproperlyConfigured(
                     'Field name `%s` is not valid for model `%s`.' %
                     (field_name, model.__class__.__name__)
-                )
-
-            # Check that any fields declared on the class are
-            # also explicitly included in `Meta.fields`.
-            missing_fields = set(declared_fields.keys()) - set(fields)
-            if missing_fields:
-                missing_field = list(missing_fields)[0]
-                raise ImproperlyConfigured(
-                    'Field `%s` has been declared on serializer `%s`, but '
-                    'is missing from `Meta.fields`.' %
-                    (missing_field, self.__class__.__name__)
                 )
 
             # Populate any kwargs defined in `Meta.extra_kwargs`

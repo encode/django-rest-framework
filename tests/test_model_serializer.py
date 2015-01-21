@@ -5,11 +5,14 @@ shortcuts for automatically creating serializers based on a given model class.
 These tests deal with ensuring that we correctly map the model fields onto
 an appropriate set of serializer fields for each case.
 """
+from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured
 from django.core.validators import MaxValueValidator, MinValueValidator, MinLengthValidator
 from django.db import models
 from django.test import TestCase
+from django.utils import six
 from rest_framework import serializers
+from rest_framework.compat import unicode_repr
 
 
 def dedent(blocktext):
@@ -124,7 +127,7 @@ class TestRegularFieldMappings(TestCase):
                 url_field = URLField(max_length=100)
                 custom_field = ModelField(model_field=<tests.test_model_serializer.CustomField: custom_field>)
         """)
-        self.assertEqual(repr(TestSerializer()), expected)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
 
     def test_field_options(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -142,7 +145,14 @@ class TestRegularFieldMappings(TestCase):
                 descriptive_field = IntegerField(help_text='Some help text', label='A label')
                 choices_field = ChoiceField(choices=[('red', 'Red'), ('blue', 'Blue'), ('green', 'Green')])
         """)
-        self.assertEqual(repr(TestSerializer()), expected)
+        if six.PY2:
+            # This particular case is too awkward to resolve fully across
+            # both py2 and py3.
+            expected = expected.replace(
+                "('red', 'Red'), ('blue', 'Blue'), ('green', 'Green')",
+                "(u'red', u'Red'), (u'blue', u'Blue'), (u'green', u'Green')"
+            )
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
 
     def test_method_field(self):
         """
@@ -221,13 +231,33 @@ class TestRegularFieldMappings(TestCase):
                 model = RegularFieldsModel
                 fields = ('auto_field',)
 
-        with self.assertRaises(ImproperlyConfigured) as excinfo:
+        with self.assertRaises(AssertionError) as excinfo:
             TestSerializer().fields
         expected = (
             'Field `missing` has been declared on serializer '
             '`TestSerializer`, but is missing from `Meta.fields`.'
         )
         assert str(excinfo.exception) == expected
+
+    def test_missing_superclass_field(self):
+        """
+        Fields that have been declared on a parent of the serializer class may
+        be excluded from the `Meta.fields` option.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            missing = serializers.ReadOnlyField()
+
+            class Meta:
+                model = RegularFieldsModel
+
+        class ChildSerializer(TestSerializer):
+            missing = serializers.ReadOnlyField()
+
+            class Meta:
+                model = RegularFieldsModel
+                fields = ('auto_field',)
+
+        ChildSerializer().fields
 
 
 # Tests for relational field mappings.
@@ -276,7 +306,7 @@ class TestRelationalFieldMappings(TestCase):
                 many_to_many = PrimaryKeyRelatedField(many=True, queryset=ManyToManyTargetModel.objects.all())
                 through = PrimaryKeyRelatedField(many=True, read_only=True)
         """)
-        self.assertEqual(repr(TestSerializer()), expected)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
 
     def test_nested_relations(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -300,7 +330,7 @@ class TestRelationalFieldMappings(TestCase):
                     id = IntegerField(label='ID', read_only=True)
                     name = CharField(max_length=100)
         """)
-        self.assertEqual(repr(TestSerializer()), expected)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
 
     def test_hyperlinked_relations(self):
         class TestSerializer(serializers.HyperlinkedModelSerializer):
@@ -315,7 +345,7 @@ class TestRelationalFieldMappings(TestCase):
                 many_to_many = HyperlinkedRelatedField(many=True, queryset=ManyToManyTargetModel.objects.all(), view_name='manytomanytargetmodel-detail')
                 through = HyperlinkedRelatedField(many=True, read_only=True, view_name='throughtargetmodel-detail')
         """)
-        self.assertEqual(repr(TestSerializer()), expected)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
 
     def test_nested_hyperlinked_relations(self):
         class TestSerializer(serializers.HyperlinkedModelSerializer):
@@ -339,7 +369,7 @@ class TestRelationalFieldMappings(TestCase):
                     url = HyperlinkedIdentityField(view_name='throughtargetmodel-detail')
                     name = CharField(max_length=100)
         """)
-        self.assertEqual(repr(TestSerializer()), expected)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
 
     def test_pk_reverse_foreign_key(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -353,7 +383,7 @@ class TestRelationalFieldMappings(TestCase):
                 name = CharField(max_length=100)
                 reverse_foreign_key = PrimaryKeyRelatedField(many=True, queryset=RelationalModel.objects.all())
         """)
-        self.assertEqual(repr(TestSerializer()), expected)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
 
     def test_pk_reverse_one_to_one(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -367,7 +397,7 @@ class TestRelationalFieldMappings(TestCase):
                 name = CharField(max_length=100)
                 reverse_one_to_one = PrimaryKeyRelatedField(queryset=RelationalModel.objects.all())
         """)
-        self.assertEqual(repr(TestSerializer()), expected)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
 
     def test_pk_reverse_many_to_many(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -381,7 +411,7 @@ class TestRelationalFieldMappings(TestCase):
                 name = CharField(max_length=100)
                 reverse_many_to_many = PrimaryKeyRelatedField(many=True, queryset=RelationalModel.objects.all())
         """)
-        self.assertEqual(repr(TestSerializer()), expected)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
 
     def test_pk_reverse_through(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -395,7 +425,7 @@ class TestRelationalFieldMappings(TestCase):
                 name = CharField(max_length=100)
                 reverse_through = PrimaryKeyRelatedField(many=True, read_only=True)
         """)
-        self.assertEqual(repr(TestSerializer()), expected)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
 
 
 class TestIntegration(TestCase):
