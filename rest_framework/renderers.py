@@ -410,6 +410,9 @@ class HTMLFormRenderer(BaseRenderer):
     })
 
     def render_field(self, field, parent_style):
+        if isinstance(field, serializers.HiddenField):
+            return ''
+
         style = dict(self.default_style[field])
         style.update(field.style)
         if 'template_pack' not in style:
