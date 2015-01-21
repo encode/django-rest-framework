@@ -12,7 +12,7 @@ response content is handled by parsers and renderers.
 """
 from __future__ import unicode_literals
 from django.db import models
-from django.db.models.fields import FieldDoesNotExist, Field
+from django.db.models.fields import FieldDoesNotExist, Field as DjangoField
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.compat import unicode_to_repr
 from rest_framework.utils import model_meta
@@ -939,7 +939,7 @@ class ModelSerializer(Serializer):
             except FieldDoesNotExist:
                 continue
 
-            if not isinstance(model_field, Field):
+            if not isinstance(model_field, DjangoField):
                 continue
 
             # Include each of the `unique_for_*` field names.
