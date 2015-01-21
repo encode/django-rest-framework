@@ -18,7 +18,7 @@ def unicode_repr(instance):
     # Get the repr of an instance, but ensure it is a unicode string
     # on both python 3 (already the case) and 2 (not the case).
     if six.PY2:
-        repr(instance).decode('utf-8')
+        return repr(instance).decode('utf-8')
     return repr(instance)
 
 

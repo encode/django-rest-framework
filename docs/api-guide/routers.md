@@ -60,7 +60,7 @@ For example, you can append `router.urls` to a list of existing views…
     router.register(r'accounts', AccountViewSet)
     
     urlpatterns = [
-        url(r'^forgot-password/$, ForgotPasswordFormView.as_view(),
+        url(r'^forgot-password/$', ForgotPasswordFormView.as_view(),
     ]
     
     urlpatterns += router.urls
@@ -68,14 +68,14 @@ For example, you can append `router.urls` to a list of existing views…
 Alternatively you can use Django's `include` function, like so…
 
     urlpatterns = [
-        url(r'^forgot-password/$, ForgotPasswordFormView.as_view(),
+        url(r'^forgot-password/$', ForgotPasswordFormView.as_view(),
         url(r'^', include(router.urls))
     ]
 
 Router URL patterns can also be namespaces.
 
     urlpatterns = [
-        url(r'^forgot-password/$, ForgotPasswordFormView.as_view(),
+        url(r'^forgot-password/$', ForgotPasswordFormView.as_view(),
         url(r'^api/', include(router.urls, namespace='api'))
     ]
 
