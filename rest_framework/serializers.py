@@ -253,7 +253,7 @@ class SerializerMetaclass(type):
         # If this class is subclassing another Serializer, add that Serializer's
         # fields.  Note that we loop over the bases in *reverse*. This is necessary
         # in order to maintain the correct order of fields.
-        for base in bases[::-1]:
+        for base in reversed(bases):
             if hasattr(base, '_declared_fields'):
                 fields = list(base._declared_fields.items()) + fields
 
@@ -899,7 +899,15 @@ class ModelSerializer(Serializer):
         if fields is not None:
             # Ensure that all declared fields have also been included in the
             # `Meta.fields` option.
-            for field_name in declared_fields:
+
+            # Do not require any fields that are declared a parent class,
+            # in order to allow serializer subclasses to only include
+            # a subset of fields.
+            required_field_names = set(declared_fields)
+            for cls in self.__class__.__bases__:
+                required_field_names -= set(getattr(cls, '_declared_fields', []))
+
+            for field_name in required_field_names:
                 assert field_name in fields, (
                     "The field '{field_name}' was declared on serializer "
                     "{serializer_class}, but has not been included in the "

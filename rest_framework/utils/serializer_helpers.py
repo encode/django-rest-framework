@@ -105,3 +105,6 @@ class BindingDict(collections.MutableMapping):
 
     def __len__(self):
         return len(self.fields)
+
+    def __repr__(self):
+        return dict.__repr__(self.fields)
