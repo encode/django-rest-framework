@@ -198,7 +198,7 @@ Open the file `snippets/serializers.py` again, and replace the `SnippetSerialize
             model = Snippet
             fields = ('id', 'title', 'code', 'linenos', 'language', 'style')
 
-One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing it's representation. Open the Django shell with `python manage.py shell`, then try the following:
+One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing its representation. Open the Django shell with `python manage.py shell`, then try the following:
 
     >>> from snippets.serializers import SnippetSerializer
     >>> serializer = SnippetSerializer()
