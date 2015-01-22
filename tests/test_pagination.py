@@ -451,171 +451,127 @@ class TestCursorPagination:
 
             def order_by(self, ordering):
                 if ordering.startswith('-'):
-                    return MockQuerySet(reversed(self.items))
+                    return MockQuerySet(list(reversed(self.items)))
                 return self
 
             def __getitem__(self, sliced):
                 return self.items[sliced]
 
-        self.pagination = pagination.CursorPagination()
-        self.queryset = MockQuerySet(
-            [MockObject(idx) for idx in range(1, 16)]
-        )
+        class ExamplePagination(pagination.CursorPagination):
+            page_size = 5
 
-    def paginate_queryset(self, request):
-        return list(self.pagination.paginate_queryset(self.queryset, request))
-
-    # def get_paginated_content(self, queryset):
-    #     response = self.pagination.get_paginated_response(queryset)
-    #     return response.data
-
-    # def get_html_context(self):
-    #     return self.pagination.get_html_context()
-
-    def test_following_cursor(self):
-        request = Request(factory.get('/'))
-        queryset = self.paginate_queryset(request)
-        assert [item.created for item in queryset] == [1, 2, 3, 4, 5]
-
-        next_url = self.pagination.get_next_link()
-        assert next_url
-
-        request = Request(factory.get(next_url))
-        queryset = self.paginate_queryset(request)
-        assert [item.created for item in queryset] == [6, 7, 8, 9, 10]
-
-        next_url = self.pagination.get_next_link()
-        assert next_url
-
-        request = Request(factory.get(next_url))
-        queryset = self.paginate_queryset(request)
-        assert [item.created for item in queryset] == [11, 12, 13, 14, 15]
-
-        next_url = self.pagination.get_next_link()
-        assert next_url is None
-
-        # Now page back again
-
-        previous_url = self.pagination.get_previous_link()
-        assert previous_url
-
-        request = Request(factory.get(previous_url))
-        queryset = self.paginate_queryset(request)
-        assert [item.created for item in queryset] == [6, 7, 8, 9, 10]
-
-        previous_url = self.pagination.get_previous_link()
-        assert previous_url
-
-        request = Request(factory.get(previous_url))
-        queryset = self.paginate_queryset(request)
-        assert [item.created for item in queryset] == [1, 2, 3, 4, 5]
-
-        previous_url = self.pagination.get_previous_link()
-        assert previous_url is None
-
-
-class TestCrazyCursorPagination:
-    """
-    Unit tests for `pagination.CursorPagination`.
-    """
-
-    def setup(self):
-        class MockObject(object):
-            def __init__(self, idx):
-                self.created = idx
-
-        class MockQuerySet(object):
-            def __init__(self, items):
-                self.items = items
-
-            def filter(self, created__gt=None, created__lt=None):
-                if created__gt is not None:
-                    return MockQuerySet([
-                        item for item in self.items
-                        if item.created > int(created__gt)
-                    ])
-
-                assert created__lt is not None
-                return MockQuerySet([
-                    item for item in self.items
-                    if item.created < int(created__lt)
-                ])
-
-            def order_by(self, ordering):
-                if ordering.startswith('-'):
-                    return MockQuerySet(reversed(self.items))
-                return self
-
-            def __getitem__(self, sliced):
-                return self.items[sliced]
-
-        self.pagination = pagination.CursorPagination()
+        self.pagination = ExamplePagination()
         self.queryset = MockQuerySet([
             MockObject(idx) for idx in [
                 1, 1, 1, 1, 1,
-                1, 1, 1, 1, 1,
-                1, 1, 2, 3, 4,
-                5, 6, 7, 8, 9
+                1, 2, 3, 4, 4,
+                4, 4, 5, 6, 7,
+                7, 7, 7, 7, 7,
+                7, 7, 7, 8, 9,
+                9, 9, 9, 9, 9
             ]
         ])
 
-    def paginate_queryset(self, request):
-        return list(self.pagination.paginate_queryset(self.queryset, request))
+    def get_pages(self, url):
+        """
+        Given a URL return a tuple of:
 
-    def test_following_cursor_identical_items(self):
-        request = Request(factory.get('/'))
-        queryset = self.paginate_queryset(request)
-        assert [item.created for item in queryset] == [1, 1, 1, 1, 1]
-
-        next_url = self.pagination.get_next_link()
-        assert next_url
-
-        request = Request(factory.get(next_url))
-        queryset = self.paginate_queryset(request)
-        assert [item.created for item in queryset] == [1, 1, 1, 1, 1]
+        (previous page, current page, next page, previous url, next url)
+        """
+        request = Request(factory.get(url))
+        queryset = self.pagination.paginate_queryset(self.queryset, request)
+        current = [item.created for item in queryset]
 
         next_url = self.pagination.get_next_link()
-        assert next_url
-
-        request = Request(factory.get(next_url))
-        queryset = self.paginate_queryset(request)
-        assert [item.created for item in queryset] == [1, 1, 2, 3, 4]
-
-        next_url = self.pagination.get_next_link()
-        assert next_url
-
-        request = Request(factory.get(next_url))
-        queryset = self.paginate_queryset(request)
-        assert [item.created for item in queryset] == [5, 6, 7, 8, 9]
-
-        next_url = self.pagination.get_next_link()
-        assert next_url is None
-
-        # Now page back again
-
         previous_url = self.pagination.get_previous_link()
-        assert previous_url
 
-        request = Request(factory.get(previous_url))
-        queryset = self.paginate_queryset(request)
-        assert [item.created for item in queryset] == [1, 1, 2, 3, 4]
+        if next_url is not None:
+            request = Request(factory.get(next_url))
+            queryset = self.pagination.paginate_queryset(self.queryset, request)
+            next = [item.created for item in queryset]
+        else:
+            next = None
 
-        previous_url = self.pagination.get_previous_link()
-        assert previous_url
+        if previous_url is not None:
+            request = Request(factory.get(previous_url))
+            queryset = self.pagination.paginate_queryset(self.queryset, request)
+            previous = [item.created for item in queryset]
+        else:
+            previous = None
 
-        request = Request(factory.get(previous_url))
-        queryset = self.paginate_queryset(request)
-        assert [item.created for item in queryset] == [1, 1, 1, 1, 1]
+        return (previous, current, next, previous_url, next_url)
 
-        previous_url = self.pagination.get_previous_link()
-        assert previous_url
+    def test_invalid_cursor(self):
+        request = Request(factory.get('/', {'cursor': '123'}))
+        with pytest.raises(exceptions.NotFound):
+            self.pagination.paginate_queryset(self.queryset, request)
 
-        request = Request(factory.get(previous_url))
-        queryset = self.paginate_queryset(request)
-        assert [item.created for item in queryset] == [1, 1, 1, 1, 1]
+    def test_cursor_pagination(self):
+        (previous, current, next, previous_url, next_url) = self.get_pages('/')
 
-        previous_url = self.pagination.get_previous_link()
-        assert previous_url is None
+        assert previous is None
+        assert current == [1, 1, 1, 1, 1]
+        assert next == [1, 2, 3, 4, 4]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [1, 1, 1, 1, 1]
+        assert current == [1, 2, 3, 4, 4]
+        assert next == [4, 4, 5, 6, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [1, 2, 3, 4, 4]
+        assert current == [4, 4, 5, 6, 7]
+        assert next == [7, 7, 7, 7, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [4, 4, 4, 5, 6]  # Paging artifact
+        assert current == [7, 7, 7, 7, 7]
+        assert next == [7, 7, 7, 8, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [7, 7, 7, 7, 7]
+        assert current == [7, 7, 7, 8, 9]
+        assert next == [9, 9, 9, 9, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [7, 7, 7, 8, 9]
+        assert current == [9, 9, 9, 9, 9]
+        assert next is None
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [7, 7, 7, 7, 7]
+        assert current == [7, 7, 7, 8, 9]
+        assert next == [9, 9, 9, 9, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [4, 4, 5, 6, 7]
+        assert current == [7, 7, 7, 7, 7]
+        assert next == [8, 9, 9, 9, 9]  # Paging artifact
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [1, 2, 3, 4, 4]
+        assert current == [4, 4, 5, 6, 7]
+        assert next == [7, 7, 7, 7, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [1, 1, 1, 1, 1]
+        assert current == [1, 2, 3, 4, 4]
+        assert next == [4, 4, 5, 6, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous is None
+        assert current == [1, 1, 1, 1, 1]
+        assert next == [1, 2, 3, 4, 4]
 
 
 def test_get_displayed_page_numbers():

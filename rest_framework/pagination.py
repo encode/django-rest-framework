@@ -171,6 +171,8 @@ class PageNumberPagination(BasePagination):
 
     template = 'rest_framework/pagination/numbers.html'
 
+    invalid_page_message = _('Invalid page "{page_number}": {message}.')
+
     def _handle_backwards_compat(self, view):
         """
         Prior to version 3.1, pagination was handled in the view, and the
@@ -203,7 +205,7 @@ class PageNumberPagination(BasePagination):
         try:
             self.page = paginator.page(page_number)
         except InvalidPage as exc:
-            msg = _('Invalid page "{page_number}": {message}.').format(
+            msg = self.invalid_page_message.format(
                 page_number=page_number, message=six.text_type(exc)
             )
             raise NotFound(msg)
@@ -386,8 +388,8 @@ Cursor = namedtuple('Cursor', ['offset', 'reverse', 'position'])
 
 
 def decode_cursor(encoded):
-    tokens = urlparse.parse_qs(b64decode(encoded), keep_blank_values=True)
     try:
+        tokens = urlparse.parse_qs(b64decode(encoded), keep_blank_values=True)
         offset = int(tokens['offset'][0])
         reverse = bool(int(tokens['reverse'][0]))
         position = tokens['position'][0]
@@ -411,7 +413,8 @@ class CursorPagination(BasePagination):
     # Support case where ordering is already negative
     # Support tuple orderings
     cursor_query_param = 'cursor'
-    page_size = 5
+    page_size = api_settings.PAGINATE_BY
+    invalid_cursor_message = _('Invalid cursor')
 
     def paginate_queryset(self, queryset, request, view=None):
         self.base_url = request.build_absolute_uri()
@@ -424,8 +427,9 @@ class CursorPagination(BasePagination):
             (offset, reverse, current_position) = (0, False, '')
         else:
             self.cursor = decode_cursor(encoded)
+            if self.cursor is None:
+                raise NotFound(self.invalid_cursor_message)
             (offset, reverse, current_position) = self.cursor
-            # TODO: Invalid cursors should 404
 
         # Cursor pagination always enforces an ordering.
         if reverse:
@@ -458,7 +462,7 @@ class CursorPagination(BasePagination):
         # If we have a reverse queryset, then the query ordering was in reverse
         # so we need to reverse the items again before returning them to the user.
         if reverse:
-            self.page = reversed(self.page)
+            self.page = list(reversed(self.page))
 
         if reverse:
             # Determine next and previous positions for reverse cursors.
@@ -483,8 +487,14 @@ class CursorPagination(BasePagination):
         if not self.has_next:
             return None
 
-        compare = self.next_position
+        if self.cursor and self.cursor.reverse and self.cursor.offset != 0:
+            # If we're reversing direction and we have an offset cursor
+            # then we cannot use the first position we find as a marker.
+            compare = self._get_position_from_instance(self.page[-1], self.ordering)
+        else:
+            compare = self.next_position
         offset = 0
+
         for item in reversed(self.page):
             position = self._get_position_from_instance(item, self.ordering)
             if position != compare:
@@ -526,8 +536,14 @@ class CursorPagination(BasePagination):
         if not self.has_previous:
             return None
 
-        compare = self.previous_position
+        if self.cursor and not self.cursor.reverse and self.cursor.offset != 0:
+            # If we're reversing direction and we have an offset cursor
+            # then we cannot use the first position we find as a marker.
+            compare = self._get_position_from_instance(self.page[0], self.ordering)
+        else:
+            compare = self.previous_position
         offset = 0
+
         for item in self.page:
             position = self._get_position_from_instance(item, self.ordering)
             if position != compare:
