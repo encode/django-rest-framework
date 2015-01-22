@@ -427,7 +427,7 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [oauth]: http://oauth.net/2/
 [permission]: permissions.md
 [throttling]: throttling.md
-[csrf-ajax]: https://docs.djangoproject.com/en/dev/ref/contrib/csrf/#ajax
+[csrf-ajax]: https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
 [mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization
 [custom-user-model]: https://docs.djangoproject.com/en/dev/topics/auth/customizing/#specifying-a-custom-user-model
 [south-dependencies]: http://south.readthedocs.org/en/latest/dependencies.html
