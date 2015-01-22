@@ -407,45 +407,84 @@ def encode_cursor(cursor):
 
 
 class CursorPagination(BasePagination):
-    # TODO: reverse cursors
+    # TODO: handle queries with '' as a legitimate position
     cursor_query_param = 'cursor'
     page_size = 5
 
     def paginate_queryset(self, queryset, request, view=None):
         self.base_url = request.build_absolute_uri()
         self.ordering = self.get_ordering()
-        encoded = request.query_params.get(self.cursor_query_param)
 
+        # Determine if we have a cursor, and if so then decode it.
+        encoded = request.query_params.get(self.cursor_query_param)
         if encoded is None:
             self.cursor = None
+            (offset, reverse, current_position) = (0, False, '')
         else:
             self.cursor = decode_cursor(encoded)
+            (offset, reverse, current_position) = self.cursor
             # TODO: Invalid cursors should 404
 
-        if self.cursor is not None and self.cursor.position != '':
-            kwargs = {self.ordering + '__gt': self.cursor.position}
+        # Cursor pagination always enforces an ordering.
+        if reverse:
+            queryset = queryset.order_by('-' + self.ordering)
+        else:
+            queryset = queryset.order_by(self.ordering)
+
+        # If we have a cursor with a fixed position then filter by that.
+        if current_position != '':
+            if self.cursor.reverse:
+                kwargs = {self.ordering + '__lt': current_position}
+            else:
+                kwargs = {self.ordering + '__gt': current_position}
             queryset = queryset.filter(**kwargs)
 
-        # The offset is used in order to deal with cases where we have
-        # items with an identical position. This allows the cursors
-        # to gracefully deal with non-unique fields as the ordering.
-        offset = 0 if (self.cursor is None) else self.cursor.offset
-
-        # We fetch an extra item in order to determine if there is a next page.
+        # If we have an offset cursor then offset the entire page by that amount.
+        # We also always fetch an extra item in order to determine if there is a
+        # page following on from this one.
         results = list(queryset[offset:offset + self.page_size + 1])
         self.page = results[:self.page_size]
-        self.has_next = len(results) > len(self.page)
-        self.next_item = results[-1] if self.has_next else None
+
+        # Determine the position of the final item following the page.
+        if len(results) > len(self.page):
+            has_following_postion = True
+            following_position = self._get_position_from_instance(results[-1], self.ordering)
+        else:
+            has_following_postion = False
+            following_position = None
+
+        # If we have a reverse queryset, then the query ordering was in reverse
+        # so we need to reverse the items again before returning them to the user.
+        if reverse:
+            self.page = reversed(self.page)
+
+        if reverse:
+            # Determine next and previous positions for reverse cursors.
+            self.has_next = current_position != '' or offset > 0
+            self.has_previous = has_following_postion
+            if self.has_next:
+                self.next_position = current_position
+            if self.has_previous:
+                self.previous_position = following_position
+        else:
+            # Determine next and previous positions for forward cursors.
+            self.has_next = has_following_postion
+            self.has_previous = current_position != '' or offset > 0
+            if self.has_next:
+                self.next_position = following_position
+            if self.has_previous:
+                self.previous_position = current_position
+
         return self.page
 
     def get_next_link(self):
         if not self.has_next:
             return None
 
-        compare = self.get_position_from_instance(self.next_item, self.ordering)
+        compare = self.next_position
         offset = 0
         for item in reversed(self.page):
-            position = self.get_position_from_instance(item, self.ordering)
+            position = self._get_position_from_instance(item, self.ordering)
             if position != compare:
                 # The item in this position and the item following it
                 # have different positions. We can use this position as
@@ -459,26 +498,73 @@ class CursorPagination(BasePagination):
             offset += 1
 
         else:
-            if self.cursor is None:
-                # There were no unique positions in the page, and we were
-                # on the first page, ie. there was no existing cursor.
+            # There were no unique positions in the page.
+            if not self.has_previous:
+                # We are on the first page.
                 # Our cursor will have an offset equal to the page size,
                 # but no position to filter against yet.
                 offset = self.page_size
                 position = ''
+            elif self.cursor.reverse:
+                # The change in direction will introduce a paging artifact,
+                # where we end up skipping forward a few extra items.
+                offset = 0
+                position = self.previous_position
             else:
-                # There were no unique positions in the page.
                 # Use the position from the existing cursor and increment
                 # it's offset by the page size.
                 offset = self.cursor.offset + self.page_size
-                position = self.cursor.position
+                position = self.previous_position
 
         cursor = Cursor(offset=offset, reverse=False, position=position)
+        encoded = encode_cursor(cursor)
+        return replace_query_param(self.base_url, self.cursor_query_param, encoded)
+
+    def get_previous_link(self):
+        if not self.has_previous:
+            return None
+
+        compare = self.previous_position
+        offset = 0
+        for item in self.page:
+            position = self._get_position_from_instance(item, self.ordering)
+            if position != compare:
+                # The item in this position and the item following it
+                # have different positions. We can use this position as
+                # our marker.
+                break
+
+            # The item in this postion has the same position as the item
+            # following it, we can't use it as a marker position, so increment
+            # the offset and keep seeking to the previous item.
+            compare = position
+            offset += 1
+
+        else:
+            # There were no unique positions in the page.
+            if not self.has_next:
+                # We are on the final page.
+                # Our cursor will have an offset equal to the page size,
+                # but no position to filter against yet.
+                offset = self.page_size
+                position = ''
+            elif self.cursor.reverse:
+                # Use the position from the existing cursor and increment
+                # it's offset by the page size.
+                offset = self.cursor.offset + self.page_size
+                position = self.next_position
+            else:
+                # The change in direction will introduce a paging artifact,
+                # where we end up skipping back a few extra items.
+                offset = 0
+                position = self.next_position
+
+        cursor = Cursor(offset=offset, reverse=True, position=position)
         encoded = encode_cursor(cursor)
         return replace_query_param(self.base_url, self.cursor_query_param, encoded)
 
     def get_ordering(self):
         return 'created'
 
-    def get_position_from_instance(self, instance, ordering):
+    def _get_position_from_instance(self, instance, ordering):
         return str(getattr(instance, ordering))

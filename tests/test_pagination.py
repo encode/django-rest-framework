@@ -442,6 +442,9 @@ class TestCursorPagination:
                     if item.created > int(created__gt)
                 ]
 
+            def order_by(self, ordering):
+                return self
+
             def __getitem__(self, sliced):
                 return self.items[sliced]
 
@@ -502,6 +505,9 @@ class TestCrazyCursorPagination:
                     item for item in self.items
                     if item.created > int(created__gt)
                 ]
+
+            def order_by(self, ordering):
+                return self
 
             def __getitem__(self, sliced):
                 return self.items[sliced]
