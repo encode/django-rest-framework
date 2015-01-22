@@ -408,6 +408,8 @@ def encode_cursor(cursor):
 
 class CursorPagination(BasePagination):
     # TODO: handle queries with '' as a legitimate position
+    # Support case where ordering is already negative
+    # Support tuple orderings
     cursor_query_param = 'cursor'
     page_size = 5
 

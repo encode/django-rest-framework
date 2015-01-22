@@ -436,13 +436,22 @@ class TestCursorPagination:
             def __init__(self, items):
                 self.items = items
 
-            def filter(self, created__gt):
-                return [
+            def filter(self, created__gt=None, created__lt=None):
+                if created__gt is not None:
+                    return MockQuerySet([
+                        item for item in self.items
+                        if item.created > int(created__gt)
+                    ])
+
+                assert created__lt is not None
+                return MockQuerySet([
                     item for item in self.items
-                    if item.created > int(created__gt)
-                ]
+                    if item.created < int(created__lt)
+                ])
 
             def order_by(self, ordering):
+                if ordering.startswith('-'):
+                    return MockQuerySet(reversed(self.items))
                 return self
 
             def __getitem__(self, sliced):
@@ -485,6 +494,25 @@ class TestCursorPagination:
         next_url = self.pagination.get_next_link()
         assert next_url is None
 
+        # Now page back again
+
+        previous_url = self.pagination.get_previous_link()
+        assert previous_url
+
+        request = Request(factory.get(previous_url))
+        queryset = self.paginate_queryset(request)
+        assert [item.created for item in queryset] == [6, 7, 8, 9, 10]
+
+        previous_url = self.pagination.get_previous_link()
+        assert previous_url
+
+        request = Request(factory.get(previous_url))
+        queryset = self.paginate_queryset(request)
+        assert [item.created for item in queryset] == [1, 2, 3, 4, 5]
+
+        previous_url = self.pagination.get_previous_link()
+        assert previous_url is None
+
 
 class TestCrazyCursorPagination:
     """
@@ -500,13 +528,22 @@ class TestCrazyCursorPagination:
             def __init__(self, items):
                 self.items = items
 
-            def filter(self, created__gt):
-                return [
+            def filter(self, created__gt=None, created__lt=None):
+                if created__gt is not None:
+                    return MockQuerySet([
+                        item for item in self.items
+                        if item.created > int(created__gt)
+                    ])
+
+                assert created__lt is not None
+                return MockQuerySet([
                     item for item in self.items
-                    if item.created > int(created__gt)
-                ]
+                    if item.created < int(created__lt)
+                ])
 
             def order_by(self, ordering):
+                if ordering.startswith('-'):
+                    return MockQuerySet(reversed(self.items))
                 return self
 
             def __getitem__(self, sliced):
@@ -553,25 +590,32 @@ class TestCrazyCursorPagination:
 
         next_url = self.pagination.get_next_link()
         assert next_url is None
-        # assert content == {
-        #     'results': [1, 2, 3, 4, 5],
-        #     'previous': None,
-        #     'next': 'http://testserver/?limit=5&offset=5',
-        #     'count': 100
-        # }
-        # assert context == {
-        #     'previous_url': None,
-        #     'next_url': 'http://testserver/?limit=5&offset=5',
-        #     'page_links': [
-        #         PageLink('http://testserver/?limit=5', 1, True, False),
-        #         PageLink('http://testserver/?limit=5&offset=5', 2, False, False),
-        #         PageLink('http://testserver/?limit=5&offset=10', 3, False, False),
-        #         PAGE_BREAK,
-        #         PageLink('http://testserver/?limit=5&offset=95', 20, False, False),
-        #     ]
-        # }
-        # assert self.pagination.display_page_controls
-        # assert isinstance(self.pagination.to_html(), type(''))
+
+        # Now page back again
+
+        previous_url = self.pagination.get_previous_link()
+        assert previous_url
+
+        request = Request(factory.get(previous_url))
+        queryset = self.paginate_queryset(request)
+        assert [item.created for item in queryset] == [1, 1, 2, 3, 4]
+
+        previous_url = self.pagination.get_previous_link()
+        assert previous_url
+
+        request = Request(factory.get(previous_url))
+        queryset = self.paginate_queryset(request)
+        assert [item.created for item in queryset] == [1, 1, 1, 1, 1]
+
+        previous_url = self.pagination.get_previous_link()
+        assert previous_url
+
+        request = Request(factory.get(previous_url))
+        queryset = self.paginate_queryset(request)
+        assert [item.created for item in queryset] == [1, 1, 1, 1, 1]
+
+        previous_url = self.pagination.get_previous_link()
+        assert previous_url is None
 
 
 def test_get_displayed_page_numbers():
