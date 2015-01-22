@@ -63,8 +63,18 @@ a single block in the template.
 .pagination>.disabled>a,
 .pagination>.disabled>a:hover,
 .pagination>.disabled>a:focus {
-  cursor: default;
+  cursor: not-allowed;
   pointer-events: none;
+}
+
+.pager>.disabled>a,
+.pager>.disabled>a:hover,
+.pager>.disabled>a:focus {
+  pointer-events: none;
+}
+
+.pager .next {
+  margin-left: 10px;
 }
 
 /*=== dabapps bootstrap styles ====*/

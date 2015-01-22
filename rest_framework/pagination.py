@@ -1,12 +1,15 @@
+# coding: utf-8
 """
 Pagination serializers determine the structure of the output that should
 be used for paginated responses.
 """
 from __future__ import unicode_literals
+from base64 import b64encode, b64decode
 from collections import namedtuple
 from django.core.paginator import InvalidPage, Paginator as DjangoPaginator
 from django.template import Context, loader
 from django.utils import six
+from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext as _
 from rest_framework.compat import OrderedDict
 from rest_framework.exceptions import NotFound
@@ -17,12 +20,12 @@ from rest_framework.utils.urls import (
 )
 
 
-def _strict_positive_int(integer_string, cutoff=None):
+def _positive_int(integer_string, strict=False, cutoff=None):
     """
     Cast a string to a strictly positive integer.
     """
     ret = int(integer_string)
-    if ret <= 0:
+    if ret < 0 or (ret == 0 and strict):
         raise ValueError()
     if cutoff:
         ret = min(ret, cutoff)
@@ -123,6 +126,53 @@ def _get_page_links(page_numbers, current, url_func):
     return page_links
 
 
+def _decode_cursor(encoded):
+    """
+    Given a string representing an encoded cursor, return a `Cursor` instance.
+    """
+    try:
+        querystring = b64decode(encoded.encode('ascii')).decode('ascii')
+        tokens = urlparse.parse_qs(querystring, keep_blank_values=True)
+
+        offset = tokens.get('o', ['0'])[0]
+        offset = _positive_int(offset)
+
+        reverse = tokens.get('r', ['0'])[0]
+        reverse = bool(int(reverse))
+
+        position = tokens.get('p', [None])[0]
+    except (TypeError, ValueError):
+        return None
+
+    return Cursor(offset=offset, reverse=reverse, position=position)
+
+
+def _encode_cursor(cursor):
+    """
+    Given a Cursor instance, return an encoded string representation.
+    """
+    tokens = {}
+    if cursor.offset != 0:
+        tokens['o'] = str(cursor.offset)
+    if cursor.reverse:
+        tokens['r'] = '1'
+    if cursor.position is not None:
+        tokens['p'] = cursor.position
+
+    querystring = urlparse.urlencode(tokens, doseq=True)
+    return b64encode(querystring.encode('ascii')).decode('ascii')
+
+
+def _reverse_ordering(ordering_tuple):
+    """
+    Given an order_by tuple such as `('-created', 'uuid')` reverse the
+    ordering and return a new tuple, eg. `('created', '-uuid')`.
+    """
+    invert = lambda x: x[1:] if (x.startswith('-')) else '-' + x
+    return tuple([invert(item) for item in ordering_tuple])
+
+
+Cursor = namedtuple('Cursor', ['offset', 'reverse', 'position'])
 PageLink = namedtuple('PageLink', ['url', 'number', 'is_active', 'is_break'])
 
 PAGE_BREAK = PageLink(url=None, number=None, is_active=False, is_break=True)
@@ -168,6 +218,8 @@ class PageNumberPagination(BasePagination):
 
     template = 'rest_framework/pagination/numbers.html'
 
+    invalid_page_message = _('Invalid page "{page_number}": {message}.')
+
     def _handle_backwards_compat(self, view):
         """
         Prior to version 3.1, pagination was handled in the view, and the
@@ -200,7 +252,7 @@ class PageNumberPagination(BasePagination):
         try:
             self.page = paginator.page(page_number)
         except InvalidPage as exc:
-            msg = _('Invalid page "{page_number}": {message}.').format(
+            msg = self.invalid_page_message.format(
                 page_number=page_number, message=six.text_type(exc)
             )
             raise NotFound(msg)
@@ -223,8 +275,9 @@ class PageNumberPagination(BasePagination):
     def get_page_size(self, request):
         if self.paginate_by_param:
             try:
-                return _strict_positive_int(
+                return _positive_int(
                     request.query_params[self.paginate_by_param],
+                    strict=True,
                     cutoff=self.max_paginate_by
                 )
             except (KeyError, ValueError):
@@ -307,7 +360,7 @@ class LimitOffsetPagination(BasePagination):
     def get_limit(self, request):
         if self.limit_query_param:
             try:
-                return _strict_positive_int(
+                return _positive_int(
                     request.query_params[self.limit_query_param],
                     cutoff=self.max_limit
                 )
@@ -318,7 +371,7 @@ class LimitOffsetPagination(BasePagination):
 
     def get_offset(self, request):
         try:
-            return _strict_positive_int(
+            return _positive_int(
                 request.query_params[self.offset_query_param],
             )
         except (KeyError, ValueError):
@@ -371,6 +424,256 @@ class LimitOffsetPagination(BasePagination):
             'previous_url': self.get_previous_link(),
             'next_url': self.get_next_link(),
             'page_links': page_links
+        }
+
+    def to_html(self):
+        template = loader.get_template(self.template)
+        context = Context(self.get_html_context())
+        return template.render(context)
+
+
+class CursorPagination(BasePagination):
+    # Determine how/if True, False and None positions work - do the string
+    # encodings work with Django queryset filters?
+    # Consider a max offset cap.
+    # Tidy up the `get_ordering` API (eg remove queryset from it)
+    cursor_query_param = 'cursor'
+    page_size = api_settings.PAGINATE_BY
+    invalid_cursor_message = _('Invalid cursor')
+    ordering = None
+    template = 'rest_framework/pagination/previous_and_next.html'
+
+    def paginate_queryset(self, queryset, request, view=None):
+        self.base_url = request.build_absolute_uri()
+        self.ordering = self.get_ordering(request, queryset, view)
+
+        # Determine if we have a cursor, and if so then decode it.
+        encoded = request.query_params.get(self.cursor_query_param)
+        if encoded is None:
+            self.cursor = None
+            (offset, reverse, current_position) = (0, False, None)
+        else:
+            self.cursor = _decode_cursor(encoded)
+            if self.cursor is None:
+                raise NotFound(self.invalid_cursor_message)
+            (offset, reverse, current_position) = self.cursor
+
+        # Cursor pagination always enforces an ordering.
+        if reverse:
+            queryset = queryset.order_by(*_reverse_ordering(self.ordering))
+        else:
+            queryset = queryset.order_by(*self.ordering)
+
+        # If we have a cursor with a fixed position then filter by that.
+        if current_position is not None:
+            order = self.ordering[0]
+            is_reversed = order.startswith('-')
+            order_attr = order.lstrip('-')
+
+            # Test for: (cursor reversed) XOR (queryset reversed)
+            if self.cursor.reverse != is_reversed:
+                kwargs = {order_attr + '__lt': current_position}
+            else:
+                kwargs = {order_attr + '__gt': current_position}
+
+            queryset = queryset.filter(**kwargs)
+
+        # If we have an offset cursor then offset the entire page by that amount.
+        # We also always fetch an extra item in order to determine if there is a
+        # page following on from this one.
+        results = list(queryset[offset:offset + self.page_size + 1])
+        self.page = results[:self.page_size]
+
+        # Determine the position of the final item following the page.
+        if len(results) > len(self.page):
+            has_following_postion = True
+            following_position = self._get_position_from_instance(results[-1], self.ordering)
+        else:
+            has_following_postion = False
+            following_position = None
+
+        # If we have a reverse queryset, then the query ordering was in reverse
+        # so we need to reverse the items again before returning them to the user.
+        if reverse:
+            self.page = list(reversed(self.page))
+
+        if reverse:
+            # Determine next and previous positions for reverse cursors.
+            self.has_next = (current_position is not None) or (offset > 0)
+            self.has_previous = has_following_postion
+            if self.has_next:
+                self.next_position = current_position
+            if self.has_previous:
+                self.previous_position = following_position
+        else:
+            # Determine next and previous positions for forward cursors.
+            self.has_next = has_following_postion
+            self.has_previous = (current_position is not None) or (offset > 0)
+            if self.has_next:
+                self.next_position = following_position
+            if self.has_previous:
+                self.previous_position = current_position
+
+        # Display page controls in the browsable API if there is more
+        # than one page.
+        if self.has_previous or self.has_next:
+            self.display_page_controls = True
+
+        return self.page
+
+    def get_next_link(self):
+        if not self.has_next:
+            return None
+
+        if self.cursor and self.cursor.reverse and self.cursor.offset != 0:
+            # If we're reversing direction and we have an offset cursor
+            # then we cannot use the first position we find as a marker.
+            compare = self._get_position_from_instance(self.page[-1], self.ordering)
+        else:
+            compare = self.next_position
+        offset = 0
+
+        for item in reversed(self.page):
+            position = self._get_position_from_instance(item, self.ordering)
+            if position != compare:
+                # The item in this position and the item following it
+                # have different positions. We can use this position as
+                # our marker.
+                break
+
+            # The item in this postion has the same position as the item
+            # following it, we can't use it as a marker position, so increment
+            # the offset and keep seeking to the previous item.
+            compare = position
+            offset += 1
+
+        else:
+            # There were no unique positions in the page.
+            if not self.has_previous:
+                # We are on the first page.
+                # Our cursor will have an offset equal to the page size,
+                # but no position to filter against yet.
+                offset = self.page_size
+                position = None
+            elif self.cursor.reverse:
+                # The change in direction will introduce a paging artifact,
+                # where we end up skipping forward a few extra items.
+                offset = 0
+                position = self.previous_position
+            else:
+                # Use the position from the existing cursor and increment
+                # it's offset by the page size.
+                offset = self.cursor.offset + self.page_size
+                position = self.previous_position
+
+        cursor = Cursor(offset=offset, reverse=False, position=position)
+        encoded = _encode_cursor(cursor)
+        return replace_query_param(self.base_url, self.cursor_query_param, encoded)
+
+    def get_previous_link(self):
+        if not self.has_previous:
+            return None
+
+        if self.cursor and not self.cursor.reverse and self.cursor.offset != 0:
+            # If we're reversing direction and we have an offset cursor
+            # then we cannot use the first position we find as a marker.
+            compare = self._get_position_from_instance(self.page[0], self.ordering)
+        else:
+            compare = self.previous_position
+        offset = 0
+
+        for item in self.page:
+            position = self._get_position_from_instance(item, self.ordering)
+            if position != compare:
+                # The item in this position and the item following it
+                # have different positions. We can use this position as
+                # our marker.
+                break
+
+            # The item in this postion has the same position as the item
+            # following it, we can't use it as a marker position, so increment
+            # the offset and keep seeking to the previous item.
+            compare = position
+            offset += 1
+
+        else:
+            # There were no unique positions in the page.
+            if not self.has_next:
+                # We are on the final page.
+                # Our cursor will have an offset equal to the page size,
+                # but no position to filter against yet.
+                offset = self.page_size
+                position = None
+            elif self.cursor.reverse:
+                # Use the position from the existing cursor and increment
+                # it's offset by the page size.
+                offset = self.cursor.offset + self.page_size
+                position = self.next_position
+            else:
+                # The change in direction will introduce a paging artifact,
+                # where we end up skipping back a few extra items.
+                offset = 0
+                position = self.next_position
+
+        cursor = Cursor(offset=offset, reverse=True, position=position)
+        encoded = _encode_cursor(cursor)
+        return replace_query_param(self.base_url, self.cursor_query_param, encoded)
+
+    def get_ordering(self, request, queryset, view):
+        """
+        Return a tuple of strings, that may be used in an `order_by` method.
+        """
+        ordering_filters = [
+            filter_cls for filter_cls in getattr(view, 'filter_backends', [])
+            if hasattr(filter_cls, 'get_ordering')
+        ]
+
+        if ordering_filters:
+            # If a filter exists on the view that implements `get_ordering`
+            # then we defer to that filter to determine the ordering.
+            filter_cls = ordering_filters[0]
+            filter_instance = filter_cls()
+            ordering = filter_instance.get_ordering(request, queryset, view)
+            assert ordering is not None, (
+                'Using cursor pagination, but filter class {filter_cls} '
+                'returned a `None` ordering.'.format(
+                    filter_cls=filter_cls.__name__
+                )
+            )
+        else:
+            # The default case is to check for an `ordering` attribute,
+            # first on the view instance, and then on this pagination instance.
+            ordering = getattr(view, 'ordering', getattr(self, 'ordering', None))
+            assert ordering is not None, (
+                'Using cursor pagination, but no ordering attribute was declared '
+                'on the view or on the pagination class.'
+            )
+
+        assert isinstance(ordering, (six.string_types, list, tuple)), (
+            'Invalid ordering. Expected string or tuple, but got {type}'.format(
+                type=type(ordering).__name__
+            )
+        )
+
+        if isinstance(ordering, six.string_types):
+            return (ordering,)
+        return tuple(ordering)
+
+    def _get_position_from_instance(self, instance, ordering):
+        attr = getattr(instance, ordering[0].lstrip('-'))
+        return six.text_type(attr)
+
+    def get_paginated_response(self, data):
+        return Response(OrderedDict([
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('results', data)
+        ]))
+
+    def get_html_context(self):
+        return {
+            'previous_url': self.get_previous_link(),
+            'next_url': self.get_next_link()
         }
 
     def to_html(self):
