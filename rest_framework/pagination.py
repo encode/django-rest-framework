@@ -427,8 +427,9 @@ class LimitOffsetPagination(BasePagination):
 
 
 class CursorPagination(BasePagination):
-    # Support usage with OrderingFilter
-    # Determine how/if True, False and None positions work
+    # Determine how/if True, False and None positions work - do the string
+    # encodings work with Django queryset filters?
+    # Consider a max offset cap.
     cursor_query_param = 'cursor'
     page_size = api_settings.PAGINATE_BY
     invalid_cursor_message = _('Invalid cursor')
@@ -436,7 +437,7 @@ class CursorPagination(BasePagination):
 
     def paginate_queryset(self, queryset, request, view=None):
         self.base_url = request.build_absolute_uri()
-        self.ordering = self.get_ordering(view)
+        self.ordering = self.get_ordering(request, queryset, view)
 
         # Determine if we have a cursor, and if so then decode it.
         encoded = request.query_params.get(self.cursor_query_param)
@@ -600,16 +601,36 @@ class CursorPagination(BasePagination):
         encoded = _encode_cursor(cursor)
         return replace_query_param(self.base_url, self.cursor_query_param, encoded)
 
-    def get_ordering(self, view):
+    def get_ordering(self, request, queryset, view):
         """
         Return a tuple of strings, that may be used in an `order_by` method.
         """
-        ordering = getattr(view, 'ordering', getattr(self, 'ordering', None))
+        ordering_filters = [
+            filter_cls for filter_cls in getattr(view, 'filter_backends', [])
+            if hasattr(filter_cls, 'get_ordering')
+        ]
 
-        assert ordering is not None, (
-            'Using cursor pagination, but no ordering attribute was declared '
-            'on the view or on the pagination class.'
-        )
+        if ordering_filters:
+            # If a filter exists on the view that implements `get_ordering`
+            # then we defer to that filter to determine the ordering.
+            filter_cls = ordering_filters[0]
+            filter_instance = filter_cls()
+            ordering = filter_instance.get_ordering(request, queryset, view)
+            assert ordering is not None, (
+                'Using cursor pagination, but filter class {filter_cls} '
+                'returned a `None` ordering.'.format(
+                    filter_cls=filter_cls.__name__
+                )
+            )
+        else:
+            # The default case is to check for an `ordering` attribute,
+            # first on the view instance, and then on this pagination instance.
+            ordering = getattr(view, 'ordering', getattr(self, 'ordering', None))
+            assert ordering is not None, (
+                'Using cursor pagination, but no ordering attribute was declared '
+                'on the view or on the pagination class.'
+            )
+
         assert isinstance(ordering, (six.string_types, list, tuple)), (
             'Invalid ordering. Expected string or tuple, but got {type}'.format(
                 type=type(ordering).__name__
@@ -618,7 +639,7 @@ class CursorPagination(BasePagination):
 
         if isinstance(ordering, six.string_types):
             return (ordering,)
-        return ordering
+        return tuple(ordering)
 
     def _get_position_from_instance(self, instance, ordering):
         attr = getattr(instance, ordering[0])
