@@ -20,12 +20,12 @@ from rest_framework.utils.urls import (
 )
 
 
-def _strict_positive_int(integer_string, cutoff=None):
+def _positive_int(integer_string, strict=False, cutoff=None):
     """
     Cast a string to a strictly positive integer.
     """
     ret = int(integer_string)
-    if ret <= 0:
+    if ret < 0 or (ret == 0 and strict):
         raise ValueError()
     if cutoff:
         ret = min(ret, cutoff)
@@ -126,6 +126,47 @@ def _get_page_links(page_numbers, current, url_func):
     return page_links
 
 
+def _decode_cursor(encoded):
+    """
+    Given a string representing an encoded cursor, return a `Cursor` instance.
+    """
+    try:
+        querystring = b64decode(encoded.encode('ascii')).decode('ascii')
+        tokens = urlparse.parse_qs(querystring, keep_blank_values=True)
+        offset = _positive_int(tokens['offset'][0])
+        reverse = bool(int(tokens['reverse'][0]))
+        position = tokens.get('position', [None])[0]
+    except (TypeError, ValueError):
+        return None
+
+    return Cursor(offset=offset, reverse=reverse, position=position)
+
+
+def _encode_cursor(cursor):
+    """
+    Given a Cursor instance, return an encoded string representation.
+    """
+    tokens = {
+        'offset': str(cursor.offset),
+        'reverse': '1' if cursor.reverse else '0',
+    }
+    if cursor.position is not None:
+        tokens['position'] = cursor.position
+
+    querystring = urlparse.urlencode(tokens, doseq=True)
+    return b64encode(querystring.encode('ascii')).decode('ascii')
+
+
+def _reverse_ordering(ordering_tuple):
+    """
+    Given an order_by tuple such as `('-created', 'uuid')` reverse the
+    ordering and return a new tuple, eg. `('created', '-uuid')`.
+    """
+    invert = lambda x: x[1:] if (x.startswith('-')) else '-' + x
+    return tuple([invert(item) for item in ordering_tuple])
+
+
+Cursor = namedtuple('Cursor', ['offset', 'reverse', 'position'])
 PageLink = namedtuple('PageLink', ['url', 'number', 'is_active', 'is_break'])
 
 PAGE_BREAK = PageLink(url=None, number=None, is_active=False, is_break=True)
@@ -228,8 +269,9 @@ class PageNumberPagination(BasePagination):
     def get_page_size(self, request):
         if self.paginate_by_param:
             try:
-                return _strict_positive_int(
+                return _positive_int(
                     request.query_params[self.paginate_by_param],
+                    strict=True,
                     cutoff=self.max_paginate_by
                 )
             except (KeyError, ValueError):
@@ -312,7 +354,7 @@ class LimitOffsetPagination(BasePagination):
     def get_limit(self, request):
         if self.limit_query_param:
             try:
-                return _strict_positive_int(
+                return _positive_int(
                     request.query_params[self.limit_query_param],
                     cutoff=self.max_limit
                 )
@@ -323,7 +365,7 @@ class LimitOffsetPagination(BasePagination):
 
     def get_offset(self, request):
         try:
-            return _strict_positive_int(
+            return _positive_int(
                 request.query_params[self.offset_query_param],
             )
         except (KeyError, ValueError):
@@ -384,36 +426,10 @@ class LimitOffsetPagination(BasePagination):
         return template.render(context)
 
 
-Cursor = namedtuple('Cursor', ['offset', 'reverse', 'position'])
-
-
-def decode_cursor(encoded):
-    try:
-        querystring = b64decode(encoded.encode('ascii')).decode('ascii')
-        tokens = urlparse.parse_qs(querystring, keep_blank_values=True)
-        offset = int(tokens['offset'][0])
-        reverse = bool(int(tokens['reverse'][0]))
-        position = tokens['position'][0]
-    except (TypeError, ValueError):
-        return None
-
-    return Cursor(offset=offset, reverse=reverse, position=position)
-
-
-def encode_cursor(cursor):
-    tokens = {
-        'offset': str(cursor.offset),
-        'reverse': '1' if cursor.reverse else '0',
-        'position': cursor.position
-    }
-    querystring = urlparse.urlencode(tokens, doseq=True)
-    return b64encode(querystring.encode('ascii')).decode('ascii')
-
-
 class CursorPagination(BasePagination):
-    # TODO: handle queries with '' as a legitimate position
     # Support case where ordering is already negative
     # Support tuple orderings
+    # Determine how/if True, False and None positions work
     cursor_query_param = 'cursor'
     page_size = api_settings.PAGINATE_BY
     invalid_cursor_message = _('Invalid cursor')
@@ -426,25 +442,26 @@ class CursorPagination(BasePagination):
         encoded = request.query_params.get(self.cursor_query_param)
         if encoded is None:
             self.cursor = None
-            (offset, reverse, current_position) = (0, False, '')
+            (offset, reverse, current_position) = (0, False, None)
         else:
-            self.cursor = decode_cursor(encoded)
+            self.cursor = _decode_cursor(encoded)
             if self.cursor is None:
                 raise NotFound(self.invalid_cursor_message)
             (offset, reverse, current_position) = self.cursor
 
         # Cursor pagination always enforces an ordering.
         if reverse:
-            queryset = queryset.order_by('-' + self.ordering)
+            queryset = queryset.order_by(_reverse_ordering(self.ordering))
         else:
             queryset = queryset.order_by(self.ordering)
 
         # If we have a cursor with a fixed position then filter by that.
-        if current_position != '':
+        if current_position is not None:
+            primary_ordering_attr = self.ordering[0].lstrip('-')
             if self.cursor.reverse:
-                kwargs = {self.ordering + '__lt': current_position}
+                kwargs = {primary_ordering_attr + '__lt': current_position}
             else:
-                kwargs = {self.ordering + '__gt': current_position}
+                kwargs = {primary_ordering_attr + '__gt': current_position}
             queryset = queryset.filter(**kwargs)
 
         # If we have an offset cursor then offset the entire page by that amount.
@@ -468,7 +485,7 @@ class CursorPagination(BasePagination):
 
         if reverse:
             # Determine next and previous positions for reverse cursors.
-            self.has_next = current_position != '' or offset > 0
+            self.has_next = (current_position is not None) or (offset > 0)
             self.has_previous = has_following_postion
             if self.has_next:
                 self.next_position = current_position
@@ -477,7 +494,7 @@ class CursorPagination(BasePagination):
         else:
             # Determine next and previous positions for forward cursors.
             self.has_next = has_following_postion
-            self.has_previous = current_position != '' or offset > 0
+            self.has_previous = (current_position is not None) or (offset > 0)
             if self.has_next:
                 self.next_position = following_position
             if self.has_previous:
@@ -518,7 +535,7 @@ class CursorPagination(BasePagination):
                 # Our cursor will have an offset equal to the page size,
                 # but no position to filter against yet.
                 offset = self.page_size
-                position = ''
+                position = None
             elif self.cursor.reverse:
                 # The change in direction will introduce a paging artifact,
                 # where we end up skipping forward a few extra items.
@@ -531,7 +548,7 @@ class CursorPagination(BasePagination):
                 position = self.previous_position
 
         cursor = Cursor(offset=offset, reverse=False, position=position)
-        encoded = encode_cursor(cursor)
+        encoded = _encode_cursor(cursor)
         return replace_query_param(self.base_url, self.cursor_query_param, encoded)
 
     def get_previous_link(self):
@@ -567,7 +584,7 @@ class CursorPagination(BasePagination):
                 # Our cursor will have an offset equal to the page size,
                 # but no position to filter against yet.
                 offset = self.page_size
-                position = ''
+                position = None
             elif self.cursor.reverse:
                 # Use the position from the existing cursor and increment
                 # it's offset by the page size.
@@ -580,11 +597,15 @@ class CursorPagination(BasePagination):
                 position = self.next_position
 
         cursor = Cursor(offset=offset, reverse=True, position=position)
-        encoded = encode_cursor(cursor)
+        encoded = _encode_cursor(cursor)
         return replace_query_param(self.base_url, self.cursor_query_param, encoded)
 
     def get_ordering(self):
-        return 'created'
+        """
+        Return a tuple of strings, that may be used in an `order_by` method.
+        """
+        return ('created',)
 
     def _get_position_from_instance(self, instance, ordering):
-        return str(getattr(instance, ordering))
+        attr = getattr(instance, ordering[0])
+        return six.text_type(attr)

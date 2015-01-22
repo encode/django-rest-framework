@@ -450,7 +450,7 @@ class TestCursorPagination:
                 ])
 
             def order_by(self, ordering):
-                if ordering.startswith('-'):
+                if ordering[0].startswith('-'):
                     return MockQuerySet(list(reversed(self.items)))
                 return self
 
