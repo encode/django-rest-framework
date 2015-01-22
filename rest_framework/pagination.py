@@ -133,9 +133,14 @@ def _decode_cursor(encoded):
     try:
         querystring = b64decode(encoded.encode('ascii')).decode('ascii')
         tokens = urlparse.parse_qs(querystring, keep_blank_values=True)
-        offset = _positive_int(tokens['offset'][0])
-        reverse = bool(int(tokens['reverse'][0]))
-        position = tokens.get('position', [None])[0]
+
+        offset = tokens.get('o', ['0'])[0]
+        offset = _positive_int(offset)
+
+        reverse = tokens.get('r', ['0'])[0]
+        reverse = bool(int(reverse))
+
+        position = tokens.get('p', [None])[0]
     except (TypeError, ValueError):
         return None
 
@@ -146,12 +151,13 @@ def _encode_cursor(cursor):
     """
     Given a Cursor instance, return an encoded string representation.
     """
-    tokens = {
-        'offset': str(cursor.offset),
-        'reverse': '1' if cursor.reverse else '0',
-    }
+    tokens = {}
+    if cursor.offset != 0:
+        tokens['o'] = str(cursor.offset)
+    if cursor.reverse:
+        tokens['r'] = '1'
     if cursor.position is not None:
-        tokens['position'] = cursor.position
+        tokens['p'] = cursor.position
 
     querystring = urlparse.urlencode(tokens, doseq=True)
     return b64encode(querystring.encode('ascii')).decode('ascii')
@@ -430,10 +436,12 @@ class CursorPagination(BasePagination):
     # Determine how/if True, False and None positions work - do the string
     # encodings work with Django queryset filters?
     # Consider a max offset cap.
+    # Tidy up the `get_ordering` API (eg remove queryset from it)
     cursor_query_param = 'cursor'
     page_size = api_settings.PAGINATE_BY
     invalid_cursor_message = _('Invalid cursor')
     ordering = None
+    template = 'rest_framework/pagination/previous_and_next.html'
 
     def paginate_queryset(self, queryset, request, view=None):
         self.base_url = request.build_absolute_uri()
@@ -452,17 +460,22 @@ class CursorPagination(BasePagination):
 
         # Cursor pagination always enforces an ordering.
         if reverse:
-            queryset = queryset.order_by(_reverse_ordering(self.ordering))
+            queryset = queryset.order_by(*_reverse_ordering(self.ordering))
         else:
-            queryset = queryset.order_by(self.ordering)
+            queryset = queryset.order_by(*self.ordering)
 
         # If we have a cursor with a fixed position then filter by that.
         if current_position is not None:
-            primary_ordering_attr = self.ordering[0].lstrip('-')
-            if self.cursor.reverse:
-                kwargs = {primary_ordering_attr + '__lt': current_position}
+            order = self.ordering[0]
+            is_reversed = order.startswith('-')
+            order_attr = order.lstrip('-')
+
+            # Test for: (cursor reversed) XOR (queryset reversed)
+            if self.cursor.reverse != is_reversed:
+                kwargs = {order_attr + '__lt': current_position}
             else:
-                kwargs = {primary_ordering_attr + '__gt': current_position}
+                kwargs = {order_attr + '__gt': current_position}
+
             queryset = queryset.filter(**kwargs)
 
         # If we have an offset cursor then offset the entire page by that amount.
@@ -500,6 +513,11 @@ class CursorPagination(BasePagination):
                 self.next_position = following_position
             if self.has_previous:
                 self.previous_position = current_position
+
+        # Display page controls in the browsable API if there is more
+        # than one page.
+        if self.has_previous or self.has_next:
+            self.display_page_controls = True
 
         return self.page
 
@@ -642,5 +660,23 @@ class CursorPagination(BasePagination):
         return tuple(ordering)
 
     def _get_position_from_instance(self, instance, ordering):
-        attr = getattr(instance, ordering[0])
+        attr = getattr(instance, ordering[0].lstrip('-'))
         return six.text_type(attr)
+
+    def get_paginated_response(self, data):
+        return Response(OrderedDict([
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('results', data)
+        ]))
+
+    def get_html_context(self):
+        return {
+            'previous_url': self.get_previous_link(),
+            'next_url': self.get_next_link()
+        }
+
+    def to_html(self):
+        template = loader.get_template(self.template)
+        context = Context(self.get_html_context())
+        return template.render(context)

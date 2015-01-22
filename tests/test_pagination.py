@@ -1,3 +1,4 @@
+# coding: utf-8
 from __future__ import unicode_literals
 from rest_framework import exceptions, generics, pagination, serializers, status, filters
 from rest_framework.request import Request
@@ -471,7 +472,7 @@ class TestCursorPagination:
                     if item.created < int(created__lt)
                 ])
 
-            def order_by(self, ordering):
+            def order_by(self, *ordering):
                 if ordering[0].startswith('-'):
                     return MockQuerySet(list(reversed(self.items)))
                 return self
@@ -613,6 +614,8 @@ class TestCursorPagination:
         assert previous is None
         assert current == [1, 1, 1, 1, 1]
         assert next == [1, 2, 3, 4, 4]
+
+        assert isinstance(self.pagination.to_html(), type(''))
 
 
 def test_get_displayed_page_numbers():
