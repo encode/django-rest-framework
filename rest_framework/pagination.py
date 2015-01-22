@@ -427,16 +427,16 @@ class LimitOffsetPagination(BasePagination):
 
 
 class CursorPagination(BasePagination):
-    # Support case where ordering is already negative
-    # Support tuple orderings
+    # Support usage with OrderingFilter
     # Determine how/if True, False and None positions work
     cursor_query_param = 'cursor'
     page_size = api_settings.PAGINATE_BY
     invalid_cursor_message = _('Invalid cursor')
+    ordering = None
 
     def paginate_queryset(self, queryset, request, view=None):
         self.base_url = request.build_absolute_uri()
-        self.ordering = self.get_ordering()
+        self.ordering = self.get_ordering(view)
 
         # Determine if we have a cursor, and if so then decode it.
         encoded = request.query_params.get(self.cursor_query_param)
@@ -600,11 +600,25 @@ class CursorPagination(BasePagination):
         encoded = _encode_cursor(cursor)
         return replace_query_param(self.base_url, self.cursor_query_param, encoded)
 
-    def get_ordering(self):
+    def get_ordering(self, view):
         """
         Return a tuple of strings, that may be used in an `order_by` method.
         """
-        return ('created',)
+        ordering = getattr(view, 'ordering', getattr(self, 'ordering', None))
+
+        assert ordering is not None, (
+            'Using cursor pagination, but no ordering attribute was declared '
+            'on the view or on the pagination class.'
+        )
+        assert isinstance(ordering, (six.string_types, list, tuple)), (
+            'Invalid ordering. Expected string or tuple, but got {type}'.format(
+                type=type(ordering).__name__
+            )
+        )
+
+        if isinstance(ordering, six.string_types):
+            return (ordering,)
+        return ordering
 
     def _get_position_from_instance(self, instance, ordering):
         attr = getattr(instance, ordering[0])

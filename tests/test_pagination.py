@@ -459,6 +459,7 @@ class TestCursorPagination:
 
         class ExamplePagination(pagination.CursorPagination):
             page_size = 5
+            ordering = 'created'
 
         self.pagination = ExamplePagination()
         self.queryset = MockQuerySet([
