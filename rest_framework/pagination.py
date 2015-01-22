@@ -389,7 +389,7 @@ Cursor = namedtuple('Cursor', ['offset', 'reverse', 'position'])
 
 def decode_cursor(encoded):
     try:
-        tokens = urlparse.parse_qs(b64decode(encoded), keep_blank_values=True)
+        tokens = urlparse.parse_qs(b64decode(encoded).decode('ascii'), keep_blank_values=True)
         offset = int(tokens['offset'][0])
         reverse = bool(int(tokens['reverse'][0]))
         position = tokens['position'][0]
@@ -405,7 +405,7 @@ def encode_cursor(cursor):
         'reverse': '1' if cursor.reverse else '0',
         'position': cursor.position
     }
-    return b64encode(urlparse.urlencode(tokens, doseq=True))
+    return b64encode(urlparse.urlencode(tokens, doseq=True).encode('ascii'))
 
 
 class CursorPagination(BasePagination):
