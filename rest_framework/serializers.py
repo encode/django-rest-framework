@@ -702,6 +702,7 @@ class ModelSerializer(Serializer):
     you need you should either declare the extra/differing fields explicitly on
     the serializer class, or simply use a `Serializer` class.
     """
+
     _field_mapping = ClassLookupDict({
         models.AutoField: IntegerField,
         models.BigIntegerField: IntegerField,
@@ -724,7 +725,8 @@ class ModelSerializer(Serializer):
         models.SmallIntegerField: IntegerField,
         models.TextField: CharField,
         models.TimeField: TimeField,
-        models.URLField: URLField,
+        models.URLField: URLField
+        # Note: Some version-specific mappings also defined below.
     })
     _related_class = PrimaryKeyRelatedField
 
@@ -1130,6 +1132,10 @@ class ModelSerializer(Serializer):
                 depth = nested_depth - 1
 
         return NestedSerializer
+
+
+if hasattr(models, 'UUIDField'):
+    ModelSerializer._field_mapping[models.UUIDField] = UUIDField
 
 
 class HyperlinkedModelSerializer(ModelSerializer):

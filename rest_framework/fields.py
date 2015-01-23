@@ -23,6 +23,7 @@ import datetime
 import decimal
 import inspect
 import re
+import uuid
 
 
 class empty:
@@ -630,6 +631,23 @@ class URLField(CharField):
         super(URLField, self).__init__(**kwargs)
         validator = URLValidator(message=self.error_messages['invalid'])
         self.validators.append(validator)
+
+
+class UUIDField(Field):
+    default_error_messages = {
+        'invalid': _('"{value}" is not a valid UUID.'),
+    }
+
+    def to_internal_value(self, data):
+        if not isinstance(data, uuid.UUID):
+            try:
+                return uuid.UUID(data)
+            except (ValueError, TypeError):
+                self.fail('invalid', value=data)
+        return data
+
+    def to_representation(self, value):
+        return str(value)
 
 
 # Number types...

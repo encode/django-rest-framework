@@ -182,6 +182,12 @@ Corresponds to `django.db.models.fields.URLField`.  Uses Django's `django.core.v
 
 **Signature:** `URLField(max_length=200, min_length=None, allow_blank=False)`
 
+## UUIDField
+
+A field that ensures the input is a valid UUID string. The `to_internal_value` method will return a `uuid.UUID` instance. On output the field will return a string in the canonical hyphenated format, for example:
+
+    "de305d54-75b4-431b-adb2-eb6b9e546013"
+
 ---
 
 # Numeric fields
@@ -320,7 +326,7 @@ Both the `allow_blank` and `allow_null` are valid options on `ChoiceField`, alth
 
 ## MultipleChoiceField
 
-A field that can accept a set of zero, one or many values, chosen from a limited set of choices. Takes a single mandatory argument. `to_internal_representation` returns a `set` containing the selected values.
+A field that can accept a set of zero, one or many values, chosen from a limited set of choices. Takes a single mandatory argument. `to_internal_value` returns a `set` containing the selected values.
 
 **Signature:** `MultipleChoiceField(choices)`
 
