@@ -200,7 +200,7 @@ class FileUploadParser(BaseParser):
             if 'filename*' in filename_parm:
                 return self.get_encoded_filename(filename_parm)
             return force_text(filename_parm['filename'])
-        except (AttributeError, KeyError):
+        except (AttributeError, KeyError, ValueError):
             pass
 
     def get_encoded_filename(self, filename_parm):

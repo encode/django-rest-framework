@@ -19,6 +19,11 @@ class ReturnDict(OrderedDict):
     def __repr__(self):
         return dict.__repr__(self)
 
+    def __reduce__(self):
+        # Pickling these objects will drop the .serializer backlink,
+        # but preserve the raw data.
+        return (dict, (dict(self),))
+
 
 class ReturnList(list):
     """
@@ -32,6 +37,11 @@ class ReturnList(list):
 
     def __repr__(self):
         return list.__repr__(self)
+
+    def __reduce__(self):
+        # Pickling these objects will drop the .serializer backlink,
+        # but preserve the raw data.
+        return (list, (list(self),))
 
 
 class BoundField(object):

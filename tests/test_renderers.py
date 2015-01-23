@@ -15,7 +15,6 @@ from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from collections import MutableMapping
 import json
-import pickle
 import re
 
 
@@ -408,87 +407,27 @@ class CacheRenderTest(TestCase):
 
     urls = 'tests.test_renderers'
 
-    cache_key = 'just_a_cache_key'
-
-    @classmethod
-    def _get_pickling_errors(cls, obj, seen=None):
-        """ Return any errors that would be raised if `obj' is pickled
-        Courtesy of koffie @ http://stackoverflow.com/a/7218986/109897
-        """
-        if seen is None:
-            seen = []
-        try:
-            state = obj.__getstate__()
-        except AttributeError:
-            return
-        if state is None:
-            return
-        if isinstance(state, tuple):
-            if not isinstance(state[0], dict):
-                state = state[1]
-            else:
-                state = state[0].update(state[1])
-        result = {}
-        for i in state:
-            try:
-                pickle.dumps(state[i], protocol=2)
-            except pickle.PicklingError:
-                if not state[i] in seen:
-                    seen.append(state[i])
-                    result[i] = cls._get_pickling_errors(state[i], seen)
-        return result
-
-    def http_resp(self, http_method, url):
-        """
-        Simple wrapper for Client http requests
-        Removes the `client' and `request' attributes from as they are
-        added by django.test.client.Client and not part of caching
-        responses outside of tests.
-        """
-        method = getattr(self.client, http_method)
-        resp = method(url)
-        resp._closable_objects = []
-        del resp.client, resp.request
-        try:
-            del resp.wsgi_request
-        except AttributeError:
-            pass
-        return resp
-
-    def test_obj_pickling(self):
-        """
-        Test that responses are properly pickled
-        """
-        resp = self.http_resp('get', '/cache')
-
-        # Make sure that no pickling errors occurred
-        self.assertEqual(self._get_pickling_errors(resp), {})
-
-        # Unfortunately LocMem backend doesn't raise PickleErrors but returns
-        # None instead.
-        cache.set(self.cache_key, resp)
-        self.assertTrue(cache.get(self.cache_key) is not None)
-
     def test_head_caching(self):
         """
         Test caching of HEAD requests
         """
-        resp = self.http_resp('head', '/cache')
-        cache.set(self.cache_key, resp)
-
-        cached_resp = cache.get(self.cache_key)
-        self.assertIsInstance(cached_resp, Response)
+        response = self.client.head('/cache')
+        cache.set('key', response)
+        cached_response = cache.get('key')
+        assert isinstance(cached_response, Response)
+        assert cached_response.content == response.content
+        assert cached_response.status_code == response.status_code
 
     def test_get_caching(self):
         """
         Test caching of GET requests
         """
-        resp = self.http_resp('get', '/cache')
-        cache.set(self.cache_key, resp)
-
-        cached_resp = cache.get(self.cache_key)
-        self.assertIsInstance(cached_resp, Response)
-        self.assertEqual(cached_resp.content, resp.content)
+        response = self.client.get('/cache')
+        cache.set('key', response)
+        cached_response = cache.get('key')
+        assert isinstance(cached_response, Response)
+        assert cached_response.content == response.content
+        assert cached_response.status_code == response.status_code
 
 
 class TestJSONIndentationStyles:

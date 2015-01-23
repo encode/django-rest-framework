@@ -467,6 +467,7 @@ class DjangoFilterOrderingTests(TestCase):
         for d in data:
             DjangoFilterOrderingModel.objects.create(**d)
 
+    @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_default_ordering(self):
         class DjangoFilterOrderingView(generics.ListAPIView):
             serializer_class = DjangoFilterOrderingSerializer
