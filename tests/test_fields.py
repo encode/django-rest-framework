@@ -4,6 +4,7 @@ from rest_framework import serializers
 import datetime
 import django
 import pytest
+import uuid
 
 
 # Tests for field keyword arguments and core functionality.
@@ -465,6 +466,23 @@ class TestURLField(FieldValues):
     }
     outputs = {}
     field = serializers.URLField()
+
+
+class TestUUIDField(FieldValues):
+    """
+    Valid and invalid values for `UUIDField`.
+    """
+    valid_inputs = {
+        '825d7aeb-05a9-45b5-a5b7-05df87923cda': uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda'),
+        '825d7aeb05a945b5a5b705df87923cda': uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda')
+    }
+    invalid_inputs = {
+        '825d7aeb-05a9-45b5-a5b7': ['"825d7aeb-05a9-45b5-a5b7" is not a valid UUID.']
+    }
+    outputs = {
+        uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda'): '825d7aeb-05a9-45b5-a5b7-05df87923cda'
+    }
+    field = serializers.UUIDField()
 
 
 # Number types...
