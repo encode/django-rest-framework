@@ -380,7 +380,7 @@ A field class that validates a list of objects.
 
 **Signature**: `ListField(child)`
 
-- `child` - A field instance that should be used for validating the objects in the list.
+- `child` - A field instance that should be used for validating the objects in the list. If this argument is not provided then objects in the list will not be validated.
 
 For example, to validate a list of integers you might use something like the following:
 
@@ -394,6 +394,23 @@ The `ListField` class also supports a declarative style that allows you to write
         child = serializers.CharField()
 
 We can now reuse our custom `StringListField` class throughout our application, without having to provide a `child` argument to it.
+
+## DictField
+
+A field class that validates a dictionary of objects. The keys in `DictField` are always assumed to be string values.
+
+**Signature**: `DictField(child)`
+
+- `child` - A field instance that should be used for validating the values in the dictionary. If this argument is not provided then values in the mapping will not be validated.
+
+For example, to create a field that validates a mapping of strings to strings, you would write something like this:
+
+    document = DictField(child=CharField())
+
+You can also use the declarative style, as with `ListField`. For example:
+
+    class DocumentField(DictField):
+        child = CharField()
 
 ---
 

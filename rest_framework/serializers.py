@@ -14,7 +14,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.db.models.fields import FieldDoesNotExist, Field as DjangoField
 from django.utils.translation import ugettext_lazy as _
-from rest_framework.compat import unicode_to_repr
+from rest_framework.compat import postgres_fields, unicode_to_repr
 from rest_framework.utils import model_meta
 from rest_framework.utils.field_mapping import (
     get_url_kwargs, get_field_kwargs,
@@ -1136,6 +1136,12 @@ class ModelSerializer(Serializer):
 
 if hasattr(models, 'UUIDField'):
     ModelSerializer._field_mapping[models.UUIDField] = UUIDField
+
+if postgres_fields:
+    class CharMappingField(DictField):
+        child = CharField()
+
+    ModelSerializer._field_mapping[postgres_fields.HStoreField] = CharMappingField
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
