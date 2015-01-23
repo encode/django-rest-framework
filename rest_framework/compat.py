@@ -58,6 +58,13 @@ except ImportError:
     from django.http import HttpResponse as HttpResponseBase
 
 
+# contrib.postgres only supported from 1.8 onwards.
+try:
+    from django.contrib.postgres import fields as postgres_fields
+except ImportError:
+    postgres_fields = None
+
+
 # request only provides `resolver_match` from 1.5 onwards.
 def get_resolver_match(request):
     try:
