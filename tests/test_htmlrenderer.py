@@ -56,7 +56,13 @@ class TemplateHTMLRendererTests(TestCase):
                 return Template("example: {{ object }}")
             raise TemplateDoesNotExist(template_name)
 
+        def select_template(template_name_list, dirs=None, using=None):
+            if template_name_list == ['example.html']:
+                return Template("example: {{ object }}")
+            raise TemplateDoesNotExist(template_name_list[0])
+
         django.template.loader.get_template = get_template
+        django.template.loader.select_template = select_template
 
     def tearDown(self):
         """
