@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from rest_framework.test import APIClient
-from .models import Foo, Bar
 
 
 class DropdownWithAuthTests(TestCase):
@@ -17,8 +16,6 @@ class DropdownWithAuthTests(TestCase):
         self.email = 'lennon@thebeatles.com'
         self.password = 'password'
         self.user = User.objects.create_user(self.username, self.email, self.password)
-        foo = Foo.objects.create(name='Foo')
-        Bar.objects.create(foo=foo)
 
     def tearDown(self):
         self.client.logout()
@@ -27,13 +24,6 @@ class DropdownWithAuthTests(TestCase):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
         self.assertContains(response, 'john')
-
-    def test_bug_2455_clone_request(self):
-        self.client.login(username=self.username, password=self.password)
-        json_response = self.client.get('/foo/1/?format=json')
-        self.assertEqual(json_response.status_code, 200)
-        browsable_api_response = self.client.get('/foo/1/')
-        self.assertEqual(browsable_api_response.status_code, 200)
 
     def test_logout_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
