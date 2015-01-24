@@ -86,7 +86,7 @@ def clone_request(request, method):
     Internal helper method to clone a request, replacing with a different
     HTTP method.  Used for checking permissions against other methods.
     """
-    ret = Request(request=request._request,
+    ret = Request(request=request,
                   parsers=request.parsers,
                   authenticators=request.authenticators,
                   negotiator=request.negotiator,
