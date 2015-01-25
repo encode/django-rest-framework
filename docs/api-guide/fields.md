@@ -461,7 +461,7 @@ This is a read-only field. It gets its value by calling a method on the serializ
 
 **Signature**: `SerializerMethodField(method_name=None)`
 
-- `method-name` - The name of the method on the serializer to be called. If not included this defaults to `get_<field_name>`.
+- `method_name` - The name of the method on the serializer to be called. If not included this defaults to `get_<field_name>`.
 
 The serializer method referred to by the `method_name` argument should accept a single argument (in addition to `self`), which is the object being serialized. It should return whatever you want to be included in the serialized representation of the object. For example:
 
