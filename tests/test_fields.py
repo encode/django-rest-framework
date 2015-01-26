@@ -312,7 +312,7 @@ class TestRecursiveField:
             'name': 'first',
             'next': {
                 'name': 'second',
-                'next':{
+                'next': {
                     'name': 'third',
                     'next': None,
                 }
@@ -327,17 +327,17 @@ class TestRecursiveField:
         # test deserialization
         serializer = self.link_serializer(data=value)
         assert serializer.is_valid(), \
-            'cannot validate on deserialization'
+            'cannot validate on deserialization: %s' % dict(serializer.errors)
         assert serializer.validated_data == value, \
             'deserialized data does not match input'
 
     def test_node_serializer(self):
         value = {
-            'name': 'root', 
+            'name': 'root',
             'children': [{
                 'name': 'first child',
                 'children': [],
-            },{
+            }, {
                 'name': 'second child',
                 'children': [],
             }]
@@ -349,9 +349,9 @@ class TestRecursiveField:
             'serialized data does not match input'
 
         # deserialization
-        serializer = self.link_serializer(data=value)
+        serializer = self.node_serializer(data=value)
         assert serializer.is_valid(), \
-            'cannot validate on deserialization'
+            'cannot validate on deserialization: %s' % dict(serializer.errors)
         assert serializer.validated_data == value, \
             'deserialized data does not match input'
 

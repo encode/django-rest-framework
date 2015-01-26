@@ -1196,6 +1196,7 @@ class HiddenField(Field):
     def to_internal_value(self, data):
         return data
 
+
 class RecursiveField(Field):
     """
     A field that gets its representation from its parent.
@@ -1208,13 +1209,18 @@ class RecursiveField(Field):
     Above all, beware of cyclical references.
 
     Examples:
-    
+
     class TreeSerializer(self):
         children = ListField(child=RecursiveField())
 
     class ListSerializer(self):
-        next = RecursiveField(allow_null=True)
+        next = RecursiveField()
     """
+        
+    def __init__(self, *args, **kwargs):
+        kwargz = {'required': False}
+        kwargz.update(kwargs)
+        super(RecursiveField, self).__init__(*args, **kwargz)
 
     def _get_parent(self):
         if hasattr(self.parent, 'child') and self.parent.child is self:
@@ -1228,6 +1234,7 @@ class RecursiveField(Field):
 
     def to_internal_value(self, data):
         return self._get_parent().to_internal_value(data)
+
 
 class SerializerMethodField(Field):
     """
