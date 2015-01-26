@@ -1216,7 +1216,7 @@ class RecursiveField(Field):
     class ListSerializer(self):
         next = RecursiveField()
     """
-        
+
     def __init__(self, *args, **kwargs):
         kwargz = {'required': False}
         kwargz.update(kwargs)
@@ -1228,7 +1228,7 @@ class RecursiveField(Field):
             return self.parent.parent
         else:
             return self.parent
-        
+
     def to_representation(self, value):
         return self._get_parent().to_representation(value)
 
