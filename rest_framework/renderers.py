@@ -510,8 +510,11 @@ class BrowsableAPIRenderer(BaseRenderer):
 
     def show_form_for_method(self, view, method, request, obj):
         """
-        Returns True if a form should be shown for this method.
+        Returns True if a form should be shown for this method, or can be show at all.
         """
+        if not api_settings.SHOW_FORM:
+            return False
+
         if method not in view.allowed_methods:
             return  # Not a valid method
 
