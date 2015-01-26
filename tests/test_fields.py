@@ -295,32 +295,67 @@ class TestCreateOnlyDefault:
 
 # Tests for RecursiveField.
 # -------------------------
+
 class TestRecursiveField:
     def setup(self):
-        class ListSerializer(serializers.Serializer):
+        class LinkSerializer(serializers.Serializer):
             name = serializers.CharField()
             next = serializers.RecursiveField(allow_null=True)
-        self.list_serializer = ListSerializer
+        self.link_serializer = LinkSerializer
 
-        class TreeSerializer(serializers.Serializer):
+        class NodeSerializer(serializers.Serializer):
             name = serializers.CharField()
             children = serializers.ListField(child=serializers.RecursiveField())
-        self.tree_serializer = TreeSerializer
+        self.node_serializer = NodeSerializer
 
-    def test_serialize_list(self):
+    def test_link_serializer(self):
         value = {
-            'name':'first',
+            'name': 'first',
             'next': {
-                'name':'second',
+                'name': 'second',
                 'next':{
-                    'name':'third',
-                    'next':None,
+                    'name': 'third',
+                    'next': None,
                 }
             }
         }
 
-        serializer = self.list_serializer(value)
-        assert serializer.data == value
+        # test serialization
+        serializer = self.link_serializer(value)
+        assert serializer.data == value, \
+            'serialized data does not match input'
+
+        # test deserialization
+        serializer = self.link_serializer(data=value)
+        assert serializer.is_valid(), \
+            'cannot validate on deserialization'
+        assert serializer.validated_data == value, \
+            'deserialized data does not match input'
+
+    def test_node_serializer(self):
+        value = {
+            'name': 'root', 
+            'children': [{
+                'name': 'first child',
+                'children': [],
+            },{
+                'name': 'second child',
+                'children': [],
+            }]
+        }
+
+        # serialization
+        serializer = self.node_serializer(value)
+        assert serializer.data == value, \
+            'serialized data does not match input'
+
+        # deserialization
+        serializer = self.link_serializer(data=value)
+        assert serializer.is_valid(), \
+            'cannot validate on deserialization'
+        assert serializer.validated_data == value, \
+            'deserialized data does not match input'
+
 
 # Tests for field input and output values.
 # ----------------------------------------
