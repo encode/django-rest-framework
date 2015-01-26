@@ -253,6 +253,12 @@ The name of a URL parameter that may be used to override the default `Accept` he
 
 Default: `'format'`
 
+#### SHOW_FORM
+
+Show the form in the BrowsableAPIRenderer.
+
+Default: `True`
+
 ---
 
 ## Date and time formatting
