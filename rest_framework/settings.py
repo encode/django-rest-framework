@@ -18,6 +18,8 @@ REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
 from __future__ import unicode_literals
+from collections import Iterable
+from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
 from django.utils import importlib, six
 from rest_framework import ISO_8601
@@ -187,6 +189,29 @@ class APISettings(object):
         except KeyError:
             # Fall back to defaults
             val = self.defaults[attr]
+        else:
+            # Verify that the user hasn't accidentally given a string instead
+            #  of an iterable, or vice-versa
+            default = self.defaults[attr]
+            if issubclass(val.__class__, Iterable) \
+                    and (not issubclass(default.__class__, Iterable)
+                         or isinstance(val, six.string_types)):
+                raise ImproperlyConfigured(
+                    'The "{settings_key}" setting must be a list or tuple, but '
+                    'got type "{type_name}" with value "{value}".'.format(
+                        settings_key=attr, type_name=val.__class__.__name__,
+                        value=val
+                    )
+                )
+            elif isinstance(default, six.string_types) and not \
+                    isinstance(val, six.string_types):
+                raise ImproperlyConfigured(
+                    'The "{settings_key}" setting must be a string, but '
+                    'got type "{type_name}" with value "{value}".'.format(
+                        settings_key=attr, type_name=val.__class__.__name__,
+                        value=val
+                    )
+                )
 
         # Coerce import strings into classes
         if val and attr in self.import_strings:
