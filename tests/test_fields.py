@@ -308,12 +308,12 @@ class TestRecursiveField:
 
     def test_serialize_list(self):
         value = {
-            'name':'first',
+            'name': 'first',
             'next': {
-                'name':'second',
+                'name': 'second',
                 'next':{
-                    'name':'third',
-                    'next':None,
+                    'name': 'third',
+                    'next': None,
                 }
             }
         }
