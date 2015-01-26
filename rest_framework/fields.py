@@ -1196,6 +1196,38 @@ class HiddenField(Field):
     def to_internal_value(self, data):
         return data
 
+class RecursiveField(Field):
+    """
+    A field that gets its representation from its parent.
+
+    This method could be used to serialize a tree structure, a linked list, or
+    even a directed acyclic graph. As with all recursive things, it is
+    important to keep the base case in mind. In the case of the tree serializer
+    example below, the base case is a node with an empty list of children. In
+    the case of the list serializer below, the base case is when `next==None`.
+    Above all, beware of cyclical references.
+
+    Examples:
+    
+    class TreeSerializer(self):
+        children = ListField(child=RecursiveField())
+
+    class ListSerializer(self):
+        next = RecursiveField(allow_null=True)
+    """
+
+    def _get_parent(self):
+        if hasattr(self.parent, 'child') and self.parent.child is self:
+            # Recursive field nested inside of some kind of composite list field
+            return self.parent.parent
+        else:
+            return self.parent
+        
+    def to_representation(self, value):
+        return self._get_parent().to_representation(value)
+
+    def to_internal_value(self, data):
+        return self._get_parent().to_internal_value(data)
 
 class SerializerMethodField(Field):
     """

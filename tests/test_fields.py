@@ -292,6 +292,35 @@ class TestCreateOnlyDefault:
         }
 
 
+# Tests for RecursiveField.
+# -------------------------
+class TestRecursiveField:
+    def setup(self):
+        class ListSerializer(serializers.Serializer):
+            name = serializers.CharField()
+            next = serializers.RecursiveField(allow_null=True)
+        self.list_serializer = ListSerializer
+
+        class TreeSerializer(serializers.Serializer):
+            name = serializers.CharField()
+            children = serializers.ListField(child=serializers.RecursiveField())
+        self.tree_serializer = TreeSerializer
+
+    def test_serialize_list(self):
+        value = {
+            'name':'first',
+            'next': {
+                'name':'second',
+                'next':{
+                    'name':'third',
+                    'next':None,
+                }
+            }
+        }
+
+        serializer = self.list_serializer(value)
+        assert serializer.data == value
+
 # Tests for field input and output values.
 # ----------------------------------------
 
@@ -1044,7 +1073,6 @@ class TestListField(FieldValues):
         (['1', '2', '3'], [1, 2, 3])
     ]
     field = serializers.ListField(child=serializers.IntegerField())
-
 
 # Tests for FieldField.
 # ---------------------
