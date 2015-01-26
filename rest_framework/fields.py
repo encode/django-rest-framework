@@ -1287,7 +1287,7 @@ class RecursiveField(Field):
         children = ListField(child=RecursiveField())
 
     class ListSerializer(self):
-        next = RecursiveField()
+        next = RecursiveField(allow_null=True)
     """
 
     def __init__(self, *args, **kwargs):
