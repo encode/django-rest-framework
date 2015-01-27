@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from rest_framework import exceptions, serializers, status, views
 from rest_framework.request import Request
+from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.test import APIRequestFactory
 
 request = Request(APIRequestFactory().options('/'))
@@ -168,3 +169,17 @@ class TestMetadata:
         response = view(request=request)
         assert response.status_code == status.HTTP_200_OK
         assert list(response.data['actions'].keys()) == ['POST']
+
+    def test_bug_2455_clone_request(self):
+        class ExampleView(views.APIView):
+            renderer_classes = (BrowsableAPIRenderer,)
+
+            def post(self, request):
+                pass
+
+            def get_serializer(self):
+                assert hasattr(self.request, 'version')
+                return serializers.Serializer()
+
+        view = ExampleView.as_view()
+        view(request=request)

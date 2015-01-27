@@ -107,6 +107,8 @@ def clone_request(request, method):
         ret.accepted_renderer = request.accepted_renderer
     if hasattr(request, 'accepted_media_type'):
         ret.accepted_media_type = request.accepted_media_type
+    if hasattr(request, 'version'):
+        ret.version = request.version
     return ret
 
 
