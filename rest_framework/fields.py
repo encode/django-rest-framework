@@ -21,6 +21,7 @@ import collections
 import copy
 import datetime
 import decimal
+import importlib
 import inspect
 import re
 import uuid
@@ -1311,7 +1312,9 @@ class RecursiveField(Field):
     # __init__ on both the RecursiveField and the proxied field using the exact
     # same arguments.
 
-    def __init__(self, **kwargs):
+    def __init__(self, to='self', to_module=None, **kwargs):
+        self.to = to
+        self.to_module = to_module
         field_kwargs = dict(
             (key, kwargs[key])
             for key in kwargs
@@ -1323,9 +1326,17 @@ class RecursiveField(Field):
         super(RecursiveField, self).bind(field_name, parent)
 
         if hasattr(parent, 'child') and parent.child is self:
-            proxy_class = parent.parent.__class__
+            parent_class = parent.parent.__class__
         else:
-            proxy_class = parent.__class__
+            parent_class = parent.__class__
+
+        if self.to == 'self':
+            proxy_class = parent_class
+        else:
+            ref = importlib.import_module(self.to_module or parent_class.__module__)
+            for part in self.to.split('.'):
+                ref = getattr(ref, part)
+            proxy_class = ref 
 
         proxy = proxy_class(**self._kwargs)
         proxy.bind(field_name, parent)
