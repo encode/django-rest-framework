@@ -1,13 +1,13 @@
-import pytest
+from .utils import mock_reverse, fail_reverse, BadType, MockObject, MockQueryset
 
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.datastructures import MultiValueDict
 
 from rest_framework import serializers
 from rest_framework.fields import empty
-from rest_framework.test import APISimpleTestCase
 
-from .utils import mock_reverse, fail_reverse, BadType, MockObject, MockQueryset
+from rest_framework.test import APISimpleTestCase
+import pytest
 
 
 class TestStringRelatedField(APISimpleTestCase):
