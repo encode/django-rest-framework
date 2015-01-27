@@ -483,21 +483,21 @@ router.register(r'users', UserViewSet)
 router.register(r'accounts', AccountViewSet)
 
 urlpatterns = [
-    url(r'^forgot-password/$', ForgotPasswordFormView.as_view(),
+    url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
 ]
 
 urlpatterns += router.urls
 </code></pre>
 <p>Alternatively you can use Django's <code>include</code> function, like so…</p>
 <pre><code>urlpatterns = [
-    url(r'^forgot-password/$', ForgotPasswordFormView.as_view(),
-    url(r'^', include(router.urls))
+    url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
+    url(r'^', include(router.urls)),
 ]
 </code></pre>
 <p>Router URL patterns can also be namespaces.</p>
 <pre><code>urlpatterns = [
-    url(r'^forgot-password/$', ForgotPasswordFormView.as_view(),
-    url(r'^api/', include(router.urls, namespace='api'))
+    url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
+    url(r'^api/', include(router.urls, namespace='api')),
 ]
 </code></pre>
 <p>If using namespacing with hyperlinked serializers you'll also need to ensure that any <code>view_name</code> parameters on the serializers correctly reflect the namespace. In the example above you'd need to include a parameter such as <code>view_name='api:user-detail'</code> for serializer fields hyperlinked to the user detail view.</p>
