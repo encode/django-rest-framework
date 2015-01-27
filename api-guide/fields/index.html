@@ -405,6 +405,10 @@
                       <a href="#urlfield">URLField</a>
                     </li>
                   
+                    <li>
+                      <a href="#uuidfield">UUIDField</a>
+                    </li>
+                  
 
                 
 
@@ -491,6 +495,10 @@
                   
                     <li>
                       <a href="#listfield">ListField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#dictfield">DictField</a>
                     </li>
                   
 
@@ -674,6 +682,10 @@ color_channel = serializers.ChoiceField(
 <p>A <code>RegexField</code> that validates the input against a URL matching pattern. Expects fully qualified URLs of the form <code>http://&lt;host&gt;/&lt;path&gt;</code>.</p>
 <p>Corresponds to <code>django.db.models.fields.URLField</code>.  Uses Django's <code>django.core.validators.URLValidator</code> for validation.</p>
 <p><strong>Signature:</strong> <code>URLField(max_length=200, min_length=None, allow_blank=False)</code></p>
+<h2 id="uuidfield">UUIDField</h2>
+<p>A field that ensures the input is a valid UUID string. The <code>to_internal_value</code> method will return a <code>uuid.UUID</code> instance. On output the field will return a string in the canonical hyphenated format, for example:</p>
+<pre><code>"de305d54-75b4-431b-adb2-eb6b9e546013"
+</code></pre>
 <hr />
 <h1 id="numeric-fields">Numeric fields</h1>
 <h2 id="integerfield">IntegerField</h2>
@@ -767,7 +779,7 @@ color_channel = serializers.ChoiceField(
 </ul>
 <p>Both the <code>allow_blank</code> and <code>allow_null</code> are valid options on <code>ChoiceField</code>, although it is highly recommended that you only use one and not both. <code>allow_blank</code> should be preferred for textual choices, and <code>allow_null</code> should be preferred for numeric or other non-textual choices.</p>
 <h2 id="multiplechoicefield">MultipleChoiceField</h2>
-<p>A field that can accept a set of zero, one or many values, chosen from a limited set of choices. Takes a single mandatory argument. <code>to_internal_representation</code> returns a <code>set</code> containing the selected values.</p>
+<p>A field that can accept a set of zero, one or many values, chosen from a limited set of choices. Takes a single mandatory argument. <code>to_internal_value</code> returns a <code>set</code> containing the selected values.</p>
 <p><strong>Signature:</strong> <code>MultipleChoiceField(choices)</code></p>
 <ul>
 <li><code>choices</code> - A list of valid values, or a list of <code>(key, display_name)</code> tuples.</li>
@@ -804,7 +816,7 @@ Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#st
 <p>A field class that validates a list of objects.</p>
 <p><strong>Signature</strong>: <code>ListField(child)</code></p>
 <ul>
-<li><code>child</code> - A field instance that should be used for validating the objects in the list.</li>
+<li><code>child</code> - A field instance that should be used for validating the objects in the list. If this argument is not provided then objects in the list will not be validated.</li>
 </ul>
 <p>For example, to validate a list of integers you might use something like the following:</p>
 <pre><code>scores = serializers.ListField(
@@ -816,6 +828,19 @@ Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#st
     child = serializers.CharField()
 </code></pre>
 <p>We can now reuse our custom <code>StringListField</code> class throughout our application, without having to provide a <code>child</code> argument to it.</p>
+<h2 id="dictfield">DictField</h2>
+<p>A field class that validates a dictionary of objects. The keys in <code>DictField</code> are always assumed to be string values.</p>
+<p><strong>Signature</strong>: <code>DictField(child)</code></p>
+<ul>
+<li><code>child</code> - A field instance that should be used for validating the values in the dictionary. If this argument is not provided then values in the mapping will not be validated.</li>
+</ul>
+<p>For example, to create a field that validates a mapping of strings to strings, you would write something like this:</p>
+<pre><code>document = DictField(child=CharField())
+</code></pre>
+<p>You can also use the declarative style, as with <code>ListField</code>. For example:</p>
+<pre><code>class DocumentField(DictField):
+    child = CharField()
+</code></pre>
 <hr />
 <h1 id="miscellaneous-fields">Miscellaneous fields</h1>
 <h2 id="readonlyfield">ReadOnlyField</h2>
@@ -845,7 +870,7 @@ Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#st
 <p>This is a read-only field. It gets its value by calling a method on the serializer class it is attached to. It can be used to add any sort of data to the serialized representation of your object.</p>
 <p><strong>Signature</strong>: <code>SerializerMethodField(method_name=None)</code></p>
 <ul>
-<li><code>method-name</code> - The name of the method on the serializer to be called. If not included this defaults to <code>get_&lt;field_name&gt;</code>.</li>
+<li><code>method_name</code> - The name of the method on the serializer to be called. If not included this defaults to <code>get_&lt;field_name&gt;</code>.</li>
 </ul>
 <p>The serializer method referred to by the <code>method_name</code> argument should accept a single argument (in addition to <code>self</code>), which is the object being serialized. It should return whatever you want to be included in the serialized representation of the object. For example:</p>
 <pre><code>from django.contrib.auth.models import User

@@ -565,13 +565,13 @@ serializer.data
 <p>Our <code>SnippetSerializer</code> class is replicating a lot of information that's also contained in the <code>Snippet</code> model.  It would be nice if we could keep our code a bit  more concise.</p>
 <p>In the same way that Django provides both <code>Form</code> classes and <code>ModelForm</code> classes, REST framework includes both <code>Serializer</code> classes, and <code>ModelSerializer</code> classes.</p>
 <p>Let's look at refactoring our serializer using the <code>ModelSerializer</code> class.
-Open the file <code>snippets/serializers.py</code> again, and edit the <code>SnippetSerializer</code> class.</p>
+Open the file <code>snippets/serializers.py</code> again, and replace the <code>SnippetSerializer</code> class with the following.</p>
 <pre><code>class SnippetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Snippet
         fields = ('id', 'title', 'code', 'linenos', 'language', 'style')
 </code></pre>
-<p>One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing it's representation. Open the Django shell with <code>python manage.py shell</code>, then try the following:</p>
+<p>One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing its representation. Open the Django shell with <code>python manage.py shell</code>, then try the following:</p>
 <pre><code>&gt;&gt;&gt; from snippets.serializers import SnippetSerializer
 &gt;&gt;&gt; serializer = SnippetSerializer()
 &gt;&gt;&gt; print(repr(serializer))

@@ -439,6 +439,23 @@
 </code></pre>
 <hr />
 <h2 id="30x-series">3.0.x series</h2>
+<h3 id="304">3.0.4</h3>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.4+Release%22">28th January 2015</a>.</p>
+<ul>
+<li>Django 1.8a1 support. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2425">#2425</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2446">#2446</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2441">#2441</a>)</li>
+<li>Add <code>DictField</code> and support Django 1.8 <code>HStoreField</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2451">#2451</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2106">#2106</a>)</li>
+<li>Add <code>UUIDField</code> and support Django 1.8 <code>UUIDField</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2448">#2448</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2433">#2433</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2432">#2432</a>)</li>
+<li><code>BaseRenderer.render</code> now raises <code>NotImplementedError</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2434">#2434</a>)</li>
+<li>Fix timedelta JSON serialization on Python 2.6. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2430">#2430</a>)</li>
+<li><code>ResultDict</code> and <code>ResultList</code> now appear as standard dict/list. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2421">#2421</a>)</li>
+<li>Fix visible <code>HiddenField</code> in the HTML form of the web browsable API page. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2410">#2410</a>)</li>
+<li>Use <code>OrderedDict</code> for <code>RelatedField.choices</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2408">#2408</a>)</li>
+<li>Fix ident format when using <code>HTTP_X_FORWARDED_FOR</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2401">#2401</a>)</li>
+<li>Fix invalid key with memcached while using throttling. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2400">#2400</a>)</li>
+<li>Fix <code>FileUploadParser</code> with version 3.x. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2399">#2399</a>)</li>
+<li>Fix the serializer inheritance. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2388">#2388</a>)</li>
+<li>Fix caching issues with <code>ReturnDict</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2360">#2360</a>)</li>
+</ul>
 <h3 id="303">3.0.3</h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.3+Release%22">8th January 2015</a>.</p>
 <ul>
@@ -1003,7 +1020,8 @@
 <!-- 3.0.1 -->
 
 <p><!-- 3.0.2 -->
-<!-- 3.0.3 --></p>
+<!-- 3.0.3 -->
+<!-- 3.0.4 --></p>
 
           </div>
           <!--/span-->

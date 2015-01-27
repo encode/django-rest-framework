@@ -648,7 +648,7 @@ python manage.py createsuperuser
 <li><code>request.auth</code> will be <code>None</code>.</li>
 </ul>
 <p>Unauthenticated responses that are denied permission will result in an <code>HTTP 403 Forbidden</code> response.</p>
-<p>If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as <code>PUT</code>, <code>PATCH</code>, <code>POST</code> or <code>DELETE</code> requests.  See the <a href="https://docs.djangoproject.com/en/dev/ref/contrib/csrf/#ajax">Django CSRF documentation</a> for more details.</p>
+<p>If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as <code>PUT</code>, <code>PATCH</code>, <code>POST</code> or <code>DELETE</code> requests.  See the <a href="https://docs.djangoproject.com/en/dev/ref/csrf/#ajax">Django CSRF documentation</a> for more details.</p>
 <h2 id="oauthauthentication">OAuthAuthentication</h2>
 <p>This authentication uses <a href="http://oauth.net/core/1.0a">OAuth 1.0a</a> authentication scheme.  OAuth 1.0a provides signature validation which provides a reasonable level of security over plain non-HTTPS connections.  However, it may also be considered more complicated than OAuth2, as it requires clients to sign their requests.</p>
 <p>This authentication class depends on the optional <code>django-oauth-plus</code> and <code>oauth2</code> packages.  In order to make it work you must install these packages and add <code>oauth_provider</code> to your <code>INSTALLED_APPS</code>:</p>

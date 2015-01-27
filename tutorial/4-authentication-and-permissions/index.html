@@ -543,7 +543,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         # Write permissions are only allowed to the owner of the snippet.
         return obj.owner == request.user
 </code></pre>
-<p>Now we can add that custom permission to our snippet instance endpoint, by editing the <code>permission_classes</code> property on the <code>SnippetDetail</code> class:</p>
+<p>Now we can add that custom permission to our snippet instance endpoint, by editing the <code>permission_classes</code> property on the <code>SnippetDetail</code> view class:</p>
 <pre><code>permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                       IsOwnerOrReadOnly,)
 </code></pre>
