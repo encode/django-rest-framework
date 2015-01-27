@@ -41,6 +41,24 @@ You can determine your currently installed version using `pip freeze`:
 ## 3.0.x series
 
 
+### 3.0.4
+
+**Date**: [28th January 2015][3.0.4-milestone].
+
+* Django 1.8a1 support. ([#2425][gh2425], [#2446][gh2446], [#2441][gh2441])
+* Add `DictField` and support Django 1.8 `HStoreField`. ([#2451][gh2451], [#2106][gh2106])
+* Add `UUIDField` and support Django 1.8 `UUIDField`. ([#2448][gh2448], [#2433][gh2433], [#2432][gh2432])
+* `BaseRenderer.render` now raises `NotImplementedError`. ([#2434][gh2434])
+* Fix timedelta JSON serialization on Python 2.6. ([#2430][gh2430])
+* `ResultDict` and `ResultList` now appear as standard dict/list. ([#2421][gh2421])
+* Fix visible `HiddenField` in the HTML form of the web browsable API page. ([#2410][gh2410])
+* Use `OrderedDict` for `RelatedField.choices`. ([#2408][gh2408])
+* Fix ident format when using `HTTP_X_FORWARDED_FOR`. ([#2401][gh2401])
+* Fix invalid key with memcached while using throttling. ([#2400][gh2400])
+* Fix `FileUploadParser` with version 3.x. ([#2399][gh2399])
+* Fix the serializer inheritance. ([#2388][gh2388])
+* Fix caching issues with `ReturnDict`. ([#2360][gh2360])
+
 ### 3.0.3
 
 **Date**: [8th January 2015][3.0.3-milestone].
@@ -702,6 +720,7 @@ For older release notes, [please see the GitHub repo](old-release-notes).
 [3.0.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.1+Release%22
 [3.0.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.2+Release%22
 [3.0.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.3+Release%22
+[3.0.4-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.4+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -770,3 +789,22 @@ For older release notes, [please see the GitHub repo](old-release-notes).
 [gh2355]: https://github.com/tomchristie/django-rest-framework/issues/2355
 [gh2369]: https://github.com/tomchristie/django-rest-framework/issues/2369
 [gh2386]: https://github.com/tomchristie/django-rest-framework/issues/2386
+<!-- 3.0.4 -->
+[gh2425]: https://github.com/tomchristie/django-rest-framework/issues/2425
+[gh2446]: https://github.com/tomchristie/django-rest-framework/issues/2446
+[gh2441]: https://github.com/tomchristie/django-rest-framework/issues/2441
+[gh2451]: https://github.com/tomchristie/django-rest-framework/issues/2451
+[gh2106]: https://github.com/tomchristie/django-rest-framework/issues/2106
+[gh2448]: https://github.com/tomchristie/django-rest-framework/issues/2448
+[gh2433]: https://github.com/tomchristie/django-rest-framework/issues/2433
+[gh2432]: https://github.com/tomchristie/django-rest-framework/issues/2432
+[gh2434]: https://github.com/tomchristie/django-rest-framework/issues/2434
+[gh2430]: https://github.com/tomchristie/django-rest-framework/issues/2430
+[gh2421]: https://github.com/tomchristie/django-rest-framework/issues/2421
+[gh2410]: https://github.com/tomchristie/django-rest-framework/issues/2410
+[gh2408]: https://github.com/tomchristie/django-rest-framework/issues/2408
+[gh2401]: https://github.com/tomchristie/django-rest-framework/issues/2401
+[gh2400]: https://github.com/tomchristie/django-rest-framework/issues/2400
+[gh2399]: https://github.com/tomchristie/django-rest-framework/issues/2399
+[gh2388]: https://github.com/tomchristie/django-rest-framework/issues/2388
+[gh2360]: https://github.com/tomchristie/django-rest-framework/issues/2360
