@@ -295,3 +295,32 @@ class TestCacheSerializerData:
         pickled = pickle.dumps(serializer.data)
         data = pickle.loads(pickled)
         assert data == {'field1': 'a', 'field2': 'b'}
+
+
+class TestReadOnlyMetaVsFields:
+    def setup(self):
+        class ReadOnlyMetaSerializer(serializers.Serializer):
+            foo = serializers.CharField()
+            class Meta:
+                read_only_fields = (
+                    'foo',
+                )
+
+        class ReadOnlyFieldSerializer(serializers.Serializer):
+            foo = serializers.CharField(read_only=True)
+
+        self.MetaSerializer = ReadOnlyMetaSerializer
+        self.FieldSerializer = ReadOnlyFieldSerializer
+
+    def test_deserialize_is_equivalent(self):
+        data = {
+            'foo': 'bar'
+        }
+        meta_serializer = self.MetaSerializer(data=data)
+        assert meta_serializer.is_valid()
+        field_serializer = self.FieldSerializer(data=data)
+        assert field_serializer.is_valid()
+
+        assert 'foo' in meta_serializer.validated_data
+        assert 'foo' in field_serializer.validated_data
+        assert meta_serializer.validated_data['foo'] == field_serializer.validated_data['foo']
