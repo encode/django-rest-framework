@@ -1302,8 +1302,6 @@ class RecursiveField(Field):
         super(RecursiveField, self).__init__(**field_kwargs)
 
     def bind(self, field_name, parent):
-        real_dict = object.__getattribute__(self, '__dict__')
-
         if hasattr(parent, 'child') and parent.child is self:
             proxy_class = parent.parent.__class__
         else:
@@ -1311,21 +1309,24 @@ class RecursiveField(Field):
 
         proxy = proxy_class(**self._kwargs)
         proxy.bind(field_name, parent)
-        real_dict['proxy'] = proxy
+        self.proxy = proxy
 
     def __getattribute__(self, name):
-        real_dict = object.__getattribute__(self, '__dict__')
-        if 'proxy' in real_dict and name != 'fields' and not (name.startswith('__') and name.endswith('__')):
-            return object.__getattribute__(real_dict['proxy'], name)
+        d = object.__getattribute__(self, '__dict__')
+
+        # do not alias the fields parameter to prevent __repr__ from
+        # infinite recursion
+        if 'proxy' in d and name != 'fields' and name != 'proxy' and \
+                not (name.startswith('__') and name.endswith('__')):
+            return object.__getattribute__(d['proxy'], name)
         else:
             return object.__getattribute__(self, name)
 
     def __setattr__(self, name, value):
-        real_dict = object.__getattribute__(self, '__dict__')
-        if 'proxy' in real_dict:
-            setattr(real_dict['proxy'], name, value)
+        if 'proxy' in self.__dict__ and name is not 'proxy':
+            setattr(self.__dict__['proxy'], name, value)
         else:
-            real_dict[name] = value
+            self.__dict__[name] = value
 
 
 class SerializerMethodField(Field):
