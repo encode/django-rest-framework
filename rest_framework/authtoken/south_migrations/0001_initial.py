@@ -40,7 +40,7 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         "%s.%s" % (User._meta.app_label, User._meta.module_name): {
-            'Meta': {'object_name': User._meta.module_name},
+            'Meta': {'object_name': User._meta.module_name, 'db_table': repr(User._meta.db_table)},
         },
         'authtoken.token': {
             'Meta': {'object_name': 'Token'},
