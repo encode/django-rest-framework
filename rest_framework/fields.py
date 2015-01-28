@@ -1318,7 +1318,7 @@ class RecursiveField(Field):
         # infinite recursion
         if 'proxy' in d and name != 'fields' and name != 'proxy' and \
                 not (name.startswith('__') and name.endswith('__')):
-            return object.__getattribute__(d['proxy'], name)
+            return getattr(d['proxy'], name)
         else:
             return object.__getattribute__(self, name)
 
