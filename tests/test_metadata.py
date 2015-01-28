@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from rest_framework import exceptions, serializers, status, views
+from rest_framework import exceptions, serializers, status, views, versioning
 from rest_framework.request import Request
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.test import APIRequestFactory
@@ -182,4 +182,19 @@ class TestMetadata:
                 return serializers.Serializer()
 
         view = ExampleView.as_view()
+        view(request=request)
+
+    def test_bug_2477_clone_request(self):
+        class ExampleView(views.APIView):
+            renderer_classes = (BrowsableAPIRenderer,)
+
+            def post(self, request):
+                pass
+
+            def get_serializer(self):
+                assert hasattr(self.request, 'versioning_scheme')
+                return serializers.Serializer()
+
+        scheme = versioning.QueryParameterVersioning
+        view = ExampleView.as_view(versioning_class=scheme)
         view(request=request)
