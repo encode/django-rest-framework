@@ -1295,8 +1295,8 @@ class RecursiveField(Field):
 
     def __init__(self, **kwargs):
         field_kwargs = dict(
-            (key, value)
-            for key in kwargs 
+            (key, kwargs[key])
+            for key in kwargs
             if key in inspect.getargspec(Field.__init__)
         )
         super(RecursiveField, self).__init__(**field_kwargs)
@@ -1305,7 +1305,7 @@ class RecursiveField(Field):
         super(RecursiveField, self).bind(field_name, parent)
 
         real_dict = object.__getattribute__(self, '__dict__')
-        
+
         if hasattr(parent, 'child') and parent.child is self:
             proxy_class = parent.parent.__class__
         else:
@@ -1328,6 +1328,7 @@ class RecursiveField(Field):
             setattr(real_dict['proxy'], name, value)
         else:
             real_dict[name] = value
+
 
 class SerializerMethodField(Field):
     """

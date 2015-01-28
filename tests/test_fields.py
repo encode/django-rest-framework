@@ -358,6 +358,7 @@ class TestRecursiveField:
         assert serializer.validated_data == value, \
             'deserialized data does not match input'
 
+
 # Tests for field input and output values.
 # ----------------------------------------
 
