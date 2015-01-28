@@ -30,6 +30,7 @@ class SillySerializer(serializers.Serializer):
     links = serializers.RecursiveField('LinkSerializer')
     self = serializers.RecursiveField(required=False)
 
+
 class TestRecursiveField:
     @staticmethod
     def serialize(serializer_class, value):
