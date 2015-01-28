@@ -1156,6 +1156,9 @@ class ListField(Field):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         super(ListField, self).__init__(*args, **kwargs)
+
+    def bind(self, field_name, parent):
+        super(ListField, self).bind(field_name, parent)
         self.child.bind(field_name='', parent=self)
 
     def get_value(self, dictionary):
@@ -1290,24 +1293,41 @@ class RecursiveField(Field):
         next = RecursiveField(allow_null=True)
     """
 
-    def __init__(self, *args, **kwargs):
-        kwargz = {'required': False}
-        kwargz.update(kwargs)
-        super(RecursiveField, self).__init__(*args, **kwargz)
+    def __init__(self, **kwargs):
+        field_kwargs = dict(
+            (key, value)
+            for key in kwargs 
+            if key in inspect.getargspec(Field.__init__)
+        )
+        super(RecursiveField, self).__init__(**field_kwargs)
 
-    def _get_parent(self):
-        if hasattr(self.parent, 'child') and self.parent.child is self:
-            # Recursive field nested inside of some kind of composite list field
-            return self.parent.parent
+    def bind(self, field_name, parent):
+        super(RecursiveField, self).bind(field_name, parent)
+
+        real_dict = object.__getattribute__(self, '__dict__')
+        
+        if hasattr(parent, 'child') and parent.child is self:
+            proxy_class = parent.parent.__class__
         else:
-            return self.parent
+            proxy_class = parent.__class__
 
-    def to_representation(self, value):
-        return self._get_parent().to_representation(value)
+        proxy = proxy_class(**self._kwargs)
+        proxy.bind(field_name, parent)
+        real_dict['proxy'] = proxy
 
-    def to_internal_value(self, data):
-        return self._get_parent().to_internal_value(data)
+    def __getattribute__(self, name):
+        real_dict = object.__getattribute__(self, '__dict__')
+        if 'proxy' in real_dict and name != 'fields' and not (name.startswith('__') and name.endswith('__')):
+            return object.__getattribute__(real_dict['proxy'], name)
+        else:
+            return object.__getattribute__(self, name)
 
+    def __setattr__(self, name, value):
+        real_dict = object.__getattribute__(self, '__dict__')
+        if 'proxy' in real_dict:
+            setattr(real_dict['proxy'], name, value)
+        else:
+            real_dict[name] = value
 
 class SerializerMethodField(Field):
     """

@@ -300,7 +300,7 @@ class TestRecursiveField:
     def setup(self):
         class LinkSerializer(serializers.Serializer):
             name = serializers.CharField()
-            next = serializers.RecursiveField(allow_null=True)
+            next = serializers.RecursiveField(required=False, allow_null=True)
         self.link_serializer = LinkSerializer
 
         class NodeSerializer(serializers.Serializer):
@@ -322,11 +322,13 @@ class TestRecursiveField:
 
         # test serialization
         serializer = self.link_serializer(value)
+
         assert serializer.data == value, \
             'serialized data does not match input'
 
         # test deserialization
         serializer = self.link_serializer(data=value)
+
         assert serializer.is_valid(), \
             'cannot validate on deserialization: %s' % dict(serializer.errors)
         assert serializer.validated_data == value, \
@@ -355,7 +357,6 @@ class TestRecursiveField:
             'cannot validate on deserialization: %s' % dict(serializer.errors)
         assert serializer.validated_data == value, \
             'deserialized data does not match input'
-
 
 # Tests for field input and output values.
 # ----------------------------------------
