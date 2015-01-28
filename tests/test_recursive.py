@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+
 class LinkSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=25)
     next = serializers.RecursiveField(required=False, allow_null=True)
@@ -47,7 +48,7 @@ class TestRecursiveField:
             'cannot validate on deserialization: %s' % dict(serializer.errors)
         assert serializer.validated_data == data, \
             'deserialized data does not match input'
-        
+
     def test_link_serializer(self):
         value = {
             'name': 'first',

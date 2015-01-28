@@ -1294,24 +1294,6 @@ class RecursiveField(Field):
         next = RecursiveField(allow_null=True)
     """
 
-    # Implementation notes
-    # 
-    # Only use __getattribute__ to forward the bound methods. Stop short of
-    # forwarding all attributes for the following reasons:
-    # - if you forward the __class__ attribute then deepcopy will give you back
-    #   the wrong class 
-    # - if you forward the fields attribute then __repr__ will enter into an
-    #   infinite recursion 
-    # - who knows what other infinite recursions are possible
-    # 
-    # We only forward bound methods, but there are some attributes that must be
-    # accessible on both the RecursiveField and the proxied serializer, namely:
-    # field_name, read_only, default, source_attrs, write_attrs, source. As far
-    # as I can tell, the cleanest way to make these fields availabe without
-    # piecemeal forwarding them through __getattribute__ is to call bind and
-    # __init__ on both the RecursiveField and the proxied field using the exact
-    # same arguments.
-
     def __init__(self, to='self', to_module=None, **kwargs):
         self.to = to
         self.to_module = to_module
@@ -1336,7 +1318,7 @@ class RecursiveField(Field):
             ref = importlib.import_module(self.to_module or parent_class.__module__)
             for part in self.to.split('.'):
                 ref = getattr(ref, part)
-            proxy_class = ref 
+            proxy_class = ref
 
         proxy = proxy_class(**self._kwargs)
         proxy.bind(field_name, parent)
@@ -1348,7 +1330,7 @@ class RecursiveField(Field):
         if 'proxy' in d:
             try:
                 attr = getattr(d['proxy'], name)
-                
+
                 if hasattr(attr, '__self__'):
                     return attr
             except AttributeError:
