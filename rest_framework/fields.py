@@ -1302,8 +1302,6 @@ class RecursiveField(Field):
         super(RecursiveField, self).__init__(**field_kwargs)
 
     def bind(self, field_name, parent):
-        super(RecursiveField, self).bind(field_name, parent)
-
         real_dict = object.__getattribute__(self, '__dict__')
 
         if hasattr(parent, 'child') and parent.child is self:
