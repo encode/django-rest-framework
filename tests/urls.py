@@ -1,6 +1,6 @@
 """
 Blank URLConf just to keep the test suite happy
 """
-from django.conf.urls import patterns
+from tests import test_relations
 
-urlpatterns = patterns('')
+urlpatterns = test_relations.urlpatterns
