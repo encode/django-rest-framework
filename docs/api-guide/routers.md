@@ -28,7 +28,7 @@ There are two mandatory arguments to the `register()` method:
 
 Optionally, you may also specify an additional argument:
 
-* `base_name` - The base to use for the URL names that are created.  If unset the basename will be automatically generated based on the `model` or `queryset` attribute on the viewset, if it has one.  Note that if the viewset does not include a `model` or `queryset` attribute then you must set `base_name` when registering the viewset.
+* `base_name` - The base to use for the URL names that are created.  If unset the basename will be automatically generated based on the `queryset` attribute of the viewset, if it has one.  Note that if the viewset does not include a `queryset` attribute then you must set `base_name` when registering the viewset.
 
 The example above would generate the following URL patterns:
 

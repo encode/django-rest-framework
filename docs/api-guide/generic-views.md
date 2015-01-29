@@ -93,17 +93,13 @@ The following attributes are used to control pagination when used with list view
 
 * `filter_backends` - A list of filter backend classes that should be used for filtering the queryset.  Defaults to the same value as the `DEFAULT_FILTER_BACKENDS` setting.
 
-**Deprecated attributes**:
-
-* `model` - This shortcut may be used instead of setting either (or both) of the `queryset`/`serializer_class` attributes. The explicit style is preferred over the `.model` shortcut, and usage of this attribute is now deprecated.
-
 ### Methods
 
 **Base methods**:
 
 #### `get_queryset(self)`
 
-Returns the queryset that should be used for list views, and that should be used as the base for lookups in detail views.  Defaults to returning the queryset specified by the `queryset` attribute, or the default queryset for the model if the `model` shortcut is being used.
+Returns the queryset that should be used for list views, and that should be used as the base for lookups in detail views.  Defaults to returning the queryset specified by the `queryset` attribute.
 
 This method should always be used rather than accessing `self.queryset` directly, as `self.queryset` gets evaluated only once, and those results are cached for all subsequent requests.
 
@@ -153,7 +149,7 @@ For example:
 
 #### `get_serializer_class(self)`
 
-Returns the class that should be used for the serializer.  Defaults to returning the `serializer_class` attribute, or dynamically generating a serializer class if the `model` shortcut is being used.
+Returns the class that should be used for the serializer.  Defaults to returning the `serializer_class` attribute.
 
 May be overridden to provide dynamic behavior, such as using different serializers for read and write operations, or providing different serializers to different types of users.
 
