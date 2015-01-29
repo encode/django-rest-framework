@@ -130,19 +130,13 @@ class SimpleRouter(BaseRouter):
         If `base_name` is not specified, attempt to automatically determine
         it from the viewset.
         """
-        # Note that `.model` attribute on views is deprecated, although we
-        # enforce the deprecation on the view `get_serializer_class()` and
-        # `get_queryset()` methods, rather than here.
-        model_cls = getattr(viewset, 'model', None)
         queryset = getattr(viewset, 'queryset', None)
-        if model_cls is None and queryset is not None:
-            model_cls = queryset.model
 
-        assert model_cls, '`base_name` argument not specified, and could ' \
+        assert queryset is not None, '`base_name` argument not specified, and could ' \
             'not automatically determine the name from the viewset, as ' \
             'it does not have a `.queryset` attribute.'
 
-        return model_cls._meta.object_name.lower()
+        return queryset.model._meta.object_name.lower()
 
     def get_routes(self, viewset):
         """
