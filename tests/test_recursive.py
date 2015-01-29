@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 class LinkSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=25)
-    next = serializers.RecursiveField(required=False, allow_null=True)
+    next = serializers.RecursiveField(allow_null=True)
 
 
 class NodeSerializer(serializers.Serializer):
@@ -104,6 +104,7 @@ class TestRecursiveField:
                 'name': 'something',
                 'next': {
                     'name': 'inner something',
+                    'next': None,
                 }
             }
         }
@@ -116,6 +117,7 @@ class TestRecursiveField:
             'nullable': 'not null',
             'links': {
                 'name': 'something',
+                'next': None,
             }
         }
         serializer = SillySerializer(data=max_length)
@@ -128,6 +130,7 @@ class TestRecursiveField:
             'nullable': 'not null',
             'links': {
                 'name': 'something',
+                'next': None,
             }
         }
         serializer = SillySerializer(data=nulled_out)
@@ -142,6 +145,7 @@ class TestRecursiveField:
                 'name': 'something',
                 'next': {
                     'name': 'inner something that is much too long',
+                    'next': None,
                 }
             }
         }
