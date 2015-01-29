@@ -23,11 +23,11 @@ class PongSerializer(serializers.Serializer):
 
 class SillySerializer(serializers.Serializer):
     name = serializers.RecursiveField(
-        'CharField', 'rest_framework.fields', max_length=5)
+        'rest_framework.fields.CharField', max_length=5)
     blankable = serializers.RecursiveField(
-        'CharField', 'rest_framework.fields', allow_blank=True)
+        'rest_framework.fields.CharField', allow_blank=True)
     nullable = serializers.RecursiveField(
-        'CharField', 'rest_framework.fields', allow_null=True)
+        'rest_framework.fields.CharField', allow_null=True)
     links = serializers.RecursiveField('LinkSerializer')
     self = serializers.RecursiveField(required=False)
 
