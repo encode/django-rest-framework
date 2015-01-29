@@ -1296,7 +1296,7 @@ class RecursiveField(Field):
     # This list of attributes determined by the attributes that
     # `rest_framework.serializers` calls to on a field object
     PROXIED_ATTRS = (
-        # bound fields
+        # methods
         'get_value',
         'get_initial',
         'run_validation',
@@ -1313,13 +1313,22 @@ class RecursiveField(Field):
     )
 
     def __init__(self, to=None, **kwargs):
+        """
+        arguments:
+        to - `None`, the name of another serializer defined in the same module
+             as this serializer, or the fully qualified import path to another
+             serializer. e.g. `ExampleSerializer` or
+             `path.to.module.ExampleSerializer`
+        """
         self.to = to
         self.kwargs = kwargs
 
     def bind(self, field_name, parent):
         if hasattr(parent, 'child') and parent.child is self:
+            # RecursiveField nested inside of a ListField
             parent_class = parent.parent.__class__
         else:
+            # RecursiveField directly inside a Serializer
             parent_class = parent.__class__
 
         if self.to is None:
@@ -1337,6 +1346,7 @@ class RecursiveField(Field):
                 raise ImportError(
                     'could not locate serializer %s' % self.to, e)
 
+        # Create a new serializer instance and proxy it
         proxied = proxied_class(**self.kwargs)
         proxied.bind(field_name, parent)
         self.proxied = proxied
