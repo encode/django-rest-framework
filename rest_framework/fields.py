@@ -1296,14 +1296,14 @@ class RecursiveField(Field):
     # This list of attributes determined by the attributes that
     # `rest_framework.serializers` calls to on a field object
     PROXIED_ATTRS = (
-        # bound fields 
+        # bound fields
         'get_value',
         'get_initial',
         'run_validation',
         'get_attribute',
         'to_representation',
-        
-        # attributes 
+
+        # attributes
         'field_name',
         'source',
         'read_only',
@@ -1348,7 +1348,7 @@ class RecursiveField(Field):
                 return getattr(proxied, name)
             except AttributeError:
                 pass
-            
+
         return object.__getattribute__(self, name)
 
 
