@@ -1,136 +1,137 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+# 
+# Translators:
+# Zoltan Szalai <defaultdict@gmail.com>, 2015
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-30 16:40+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2015-01-30 16:23+0000\n"
+"PO-Revision-Date: 2015-01-30 16:27+0000\n"
+"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"Language-Team: Hungarian (http://www.transifex.com/projects/p/django-rest-framework/language/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: hu\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: authentication.py:69
 msgid "Invalid basic header. No credentials provided."
-msgstr ""
+msgstr "Érvénytelen basic fejlécmező. Nem voltak megadva azonosítók."
 
 #: authentication.py:72
 msgid "Invalid basic header. Credentials string should not contain spaces."
-msgstr ""
+msgstr "Érvénytelen basic fejlécmező. Az azonosító karakterlánc nem tartalmazhat szóközöket."
 
 #: authentication.py:78
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
-msgstr ""
+msgstr "Érvénytelen basic fejlécmező. Az azonosítók base64 kódolása nem megfelelő."
 
 #: authentication.py:90
 msgid "Invalid username/password."
-msgstr ""
+msgstr "Érvénytelen felhasználónév/jelszó."
 
 #: authentication.py:156
 msgid "Invalid token header. No credentials provided."
-msgstr ""
+msgstr "Érvénytelen token fejlécmező. Nem voltak megadva azonosítók."
 
 #: authentication.py:159
 msgid "Invalid token header. Token string should not contain spaces."
-msgstr ""
+msgstr "Érvénytelen token fejlécmező. A token karakterlánc nem tartalmazhat szóközöket."
 
 #: authentication.py:168
 msgid "Invalid token."
-msgstr ""
+msgstr "Érvénytelen token."
 
 #: authentication.py:171
 msgid "User inactive or deleted."
-msgstr ""
+msgstr "A felhasználó nincs aktiválva vagy törölve lett."
 
 #: exceptions.py:38
 msgid "A server error occurred."
-msgstr ""
+msgstr "Szerver oldali hiba történt."
 
 #: exceptions.py:73
 msgid "Malformed request."
-msgstr ""
+msgstr "Hibás kérés."
 
 #: exceptions.py:78
 msgid "Incorrect authentication credentials."
-msgstr ""
+msgstr "Hibás azonosítók."
 
 #: exceptions.py:83
 msgid "Authentication credentials were not provided."
-msgstr ""
+msgstr "Nem voltak megadva azonosítók."
 
 #: exceptions.py:88
 msgid "You do not have permission to perform this action."
-msgstr ""
+msgstr "Nincs jogosultsága a művelet végrehajtásához."
 
-#: exceptions.py:93 views.py:77
+#: exceptions.py:93
 msgid "Not found."
-msgstr ""
+msgstr "Nem található."
 
 #: exceptions.py:98
 msgid "Method \"{method}\" not allowed."
-msgstr ""
+msgstr "A \"{method}\" metódus nem megengedett."
 
 #: exceptions.py:109
 msgid "Could not satisfy the request Accept header."
-msgstr ""
+msgstr "A kérés Accept fejlécmezőjét nem lehetett kiszolgálni."
 
 #: exceptions.py:121
 msgid "Unsupported media type \"{media_type}\" in request."
-msgstr ""
+msgstr "Nem támogatott média típus \"{media_type}\" a kérésben."
 
 #: exceptions.py:134
 msgid "Request was throttled."
-msgstr ""
+msgstr "A kérés korlátozva lett."
 
 #: fields.py:153 relations.py:132 relations.py:156 validators.py:77
 #: validators.py:155
 msgid "This field is required."
-msgstr ""
+msgstr "Ennek a mezőnek a megadása kötelező."
 
 #: fields.py:154
 msgid "This field may not be null."
-msgstr ""
+msgstr "Ez a mező nem lehet null értékű."
 
 #: fields.py:487 fields.py:515
 msgid "\"{input}\" is not a valid boolean."
-msgstr ""
+msgstr "Az \"{input}\" nem egy érvényes logikai érték."
 
 #: fields.py:550
 msgid "This field may not be blank."
-msgstr ""
+msgstr "Ez a mező nem lehet üres."
 
 #: fields.py:551 fields.py:1324
 msgid "Ensure this field has no more than {max_length} characters."
-msgstr ""
+msgstr "Bizonyosodjon meg arról, hogy ez a mező legfeljebb {max_length} karakterből áll."
 
 #: fields.py:552
 msgid "Ensure this field has at least {min_length} characters."
-msgstr ""
+msgstr "Bizonyosodjon meg arról, hogy ez a mező legalább {min_length} karakterből áll."
 
 #: fields.py:587
 msgid "Enter a valid email address."
-msgstr ""
+msgstr "Adjon meg egy érvényes e-mail címet!"
 
 #: fields.py:604
 msgid "This value does not match the required pattern."
-msgstr ""
+msgstr "Ez az érték nem illeszkedik a szükséges mintázatra."
 
 #: fields.py:615
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
-msgstr ""
+msgstr "Az URL barát cím csak betűket, számokat, aláhúzásokat és kötőjeleket tartalmazhat."
 
 #: fields.py:627
 msgid "Enter a valid URL."
-msgstr ""
+msgstr "Adjon meg egy érvényes URL-t!"
 
 #: fields.py:638
 msgid "\"{value}\" is not a valid UUID."
@@ -138,92 +139,94 @@ msgstr ""
 
 #: fields.py:657
 msgid "A valid integer is required."
-msgstr ""
+msgstr "Egy érvényes egész szám megadása szükséges."
 
 #: fields.py:658 fields.py:692 fields.py:725
 msgid "Ensure this value is less than or equal to {max_value}."
-msgstr ""
+msgstr "Bizonyosodjon meg arról, hogy ez az érték legfeljebb {max_value}."
 
 #: fields.py:659 fields.py:693 fields.py:726
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr ""
+msgstr "Bizonyosodjon meg arról, hogy ez az érték legalább {min_value}."
 
 #: fields.py:660 fields.py:694 fields.py:730
 msgid "String value too large."
-msgstr ""
+msgstr "A karakterlánc túl hosszú."
 
 #: fields.py:691 fields.py:724
 msgid "A valid number is required."
-msgstr ""
+msgstr "Egy érvényes szám megadása szükséges."
 
 #: fields.py:727
 msgid "Ensure that there are no more than {max_digits} digits in total."
-msgstr ""
+msgstr "Bizonyosodjon meg arról, hogy a számjegyek száma összesen legfeljebb {max_digits}."
 
 #: fields.py:728
-msgid "Ensure that there are no more than {max_decimal_places} decimal places."
-msgstr ""
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "Bizonyosodjon meg arról, hogy a tizedes tört törtrészében levő számjegyek száma összesen legfeljebb {max_decimal_places}."
 
 #: fields.py:729
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
-msgstr ""
+msgstr "Bizonyosodjon meg arról, hogy a tizedes tört egész részében levő számjegyek száma összesen legfeljebb {max_whole_digits}."
 
 #: fields.py:813
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "A dátum formátuma hibás. Használja ezek valamelyikét helyette: {format}."
 
 #: fields.py:814
 msgid "Expected a datetime but got a date."
-msgstr ""
+msgstr "Időt is tartalmazó dátum helyett egy időt nem tartalmazó dátum lett elküldve."
 
 #: fields.py:878
 msgid "Date has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "A dátum formátuma hibás. Használja ezek valamelyikét helyette: {format}."
 
 #: fields.py:879
 msgid "Expected a date but got a datetime."
-msgstr ""
+msgstr "Időt nem tartalmazó dátum helyett egy időt is tartalmazó dátum lett elküldve."
 
 #: fields.py:936
 msgid "Time has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Az idő formátuma hibás. Használja ezek valamelyikét helyette: {format}."
 
 #: fields.py:992 fields.py:1036
 msgid "\"{input}\" is not a valid choice."
-msgstr ""
+msgstr "Az \"{input}\" nem egy érvényes elem."
 
 #: fields.py:1037 fields.py:1151 serializers.py:482
 msgid "Expected a list of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Elemek listája helyett \"{input_type}\" lett elküldve."
 
 #: fields.py:1067
 msgid "No file was submitted."
-msgstr ""
+msgstr "Semmilyen fájl sem került feltöltésre."
 
 #: fields.py:1068
-msgid "The submitted data was not a file. Check the encoding type on the form."
-msgstr ""
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "Az elküldött adat nem egy fájl volt. Ellenőrizze a kódolás típusát az űrlapon!"
 
 #: fields.py:1069
 msgid "No filename could be determined."
-msgstr ""
+msgstr "A fájlnév nem megállapítható."
 
 #: fields.py:1070
 msgid "The submitted file is empty."
-msgstr ""
+msgstr "A küldött fájl üres."
 
 #: fields.py:1071
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
-msgstr ""
+msgstr "Bizonyosodjon meg arról, hogy a fájlnév legfeljebb {max_length} karakterből áll (jelenlegi hossza: {length})."
 
 #: fields.py:1113
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
-msgstr ""
+msgstr "Töltsön fel egy érvényes képfájlt! A feltöltött fájl nem kép volt, vagy megsérült."
 
 #: fields.py:1188
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
@@ -231,7 +234,7 @@ msgstr ""
 
 #: pagination.py:221
 msgid "Invalid page \"{page_number}\": {message}."
-msgstr ""
+msgstr "Érvénytelen oldal \"{page_number}\": {message}."
 
 #: pagination.py:442
 msgid "Invalid cursor"
@@ -239,88 +242,84 @@ msgstr ""
 
 #: relations.py:133
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
-msgstr ""
+msgstr "Érvénytelen pk \"{pk_value}\" - az objektum nem létezik."
 
 #: relations.py:134
 msgid "Incorrect type. Expected pk value, received {data_type}."
-msgstr ""
+msgstr "Helytelen típus. pk érték helyett {data_type} lett elküldve."
 
 #: relations.py:157
 msgid "Invalid hyperlink - No URL match."
-msgstr ""
+msgstr "Érvénytelen link - Nem illeszkedő URL."
 
 #: relations.py:158
 msgid "Invalid hyperlink - Incorrect URL match."
-msgstr ""
+msgstr "Érvénytelen link. - Eltérő URL illeszkedés."
 
 #: relations.py:159
 msgid "Invalid hyperlink - Object does not exist."
-msgstr ""
+msgstr "Érvénytelen link - Az objektum nem létezik."
 
 #: relations.py:160
 msgid "Incorrect type. Expected URL string, received {data_type}."
-msgstr ""
+msgstr "Helytelen típus. URL karakterlánc helyett {data_type} lett elküldve."
 
 #: relations.py:295
 msgid "Object with {slug_name}={value} does not exist."
-msgstr ""
+msgstr "Nem létezik olyan objektum, amelynél {slug_name}={value}."
 
 #: relations.py:296
 msgid "Invalid value."
-msgstr ""
+msgstr "Érvénytelen érték."
 
 #: serializers.py:299
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
-msgstr ""
+msgstr "Érvénytelen adat. Egy dictionary helyett {datatype} lett elküldve."
 
 #: validators.py:22
 msgid "This field must be unique."
-msgstr ""
+msgstr "Ennek a mezőnek egyedinek kell lennie."
 
 #: validators.py:76
 msgid "The fields {field_names} must make a unique set."
-msgstr ""
+msgstr "A {field_names} mezőnevek nem tartalmazhatnak duplikátumot."
 
 #: validators.py:219
 msgid "This field must be unique for the \"{date_field}\" date."
-msgstr ""
+msgstr "A mezőnek egyedinek kell lennie a \"{date_field}\" dátumra."
 
 #: validators.py:234
 msgid "This field must be unique for the \"{date_field}\" month."
-msgstr ""
+msgstr "A mezőnek egyedinek kell lennie a \"{date_field}\" hónapra."
 
 #: validators.py:247
 msgid "This field must be unique for the \"{date_field}\" year."
-msgstr ""
+msgstr "A mezőnek egyedinek kell lennie a \"{date_field}\" évre."
 
 #: versioning.py:39
 msgid "Invalid version in \"Accept\" header."
-msgstr ""
+msgstr "Érvénytelen verzió az \"Accept\" fejlécmezőben."
 
 #: versioning.py:70 versioning.py:112
 msgid "Invalid version in URL path."
-msgstr ""
+msgstr "Érvénytelen verzió az URL elérési útban."
 
 #: versioning.py:138
 msgid "Invalid version in hostname."
-msgstr ""
+msgstr "Érvénytelen verzió a hosztnévben."
 
 #: versioning.py:160
 msgid "Invalid version in query parameter."
-msgstr ""
-
-#: views.py:81
-msgid "Permission denied."
-msgstr ""
+msgstr "Érvénytelen verzió a lekérdezési paraméterben."
 
 #: authtoken/serializers.py:20
 msgid "User account is disabled."
-msgstr ""
+msgstr "A felhasználó tiltva van."
 
 #: authtoken/serializers.py:23
 msgid "Unable to log in with provided credentials."
-msgstr ""
+msgstr "A megadott azonosítókkal nem lehet bejelentkezni."
 
 #: authtoken/serializers.py:26
 msgid "Must include \"username\" and \"password\"."
-msgstr ""
+msgstr "Tartalmaznia kell a \"felhasználónevet\" és a \"jelszót\"."

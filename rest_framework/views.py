@@ -2,12 +2,10 @@
 Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
-import inspect
-import warnings
-
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.encoding import smart_text
+from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, exceptions
 from rest_framework.compat import HttpResponseBase, View
@@ -15,6 +13,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
+import inspect
+import warnings
 
 
 def get_view_name(view_cls, suffix=None):
@@ -74,11 +74,11 @@ def exception_handler(exc, context):
         return Response(data, status=exc.status_code, headers=headers)
 
     elif isinstance(exc, Http404):
-        data = {'detail': 'Not found'}
+        data = {'detail': _('Not found.')}
         return Response(data, status=status.HTTP_404_NOT_FOUND)
 
     elif isinstance(exc, PermissionDenied):
-        data = {'detail': 'Permission denied'}
+        data = {'detail': _('Permission denied.')}
         return Response(data, status=status.HTTP_403_FORBIDDEN)
 
     # Note: Unhandled exceptions will raise a 500 error.
