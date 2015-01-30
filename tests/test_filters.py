@@ -5,13 +5,15 @@ from django.db import models
 from django.conf.urls import patterns, url
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.test.utils import override_settings
 from django.utils import unittest
 from django.utils.dateparse import parse_date
+from django.utils.six.moves import reload_module
 from rest_framework import generics, serializers, status, filters
 from rest_framework.compat import django_filters
 from rest_framework.test import APIRequestFactory
 from .models import BaseFilterableItem, FilterableItem, BasicModel
-from .utils import temporary_setting
+
 
 factory = APIRequestFactory()
 
@@ -404,7 +406,9 @@ class SearchFilterTests(TestCase):
         )
 
     def test_search_with_nonstandard_search_param(self):
-        with temporary_setting('SEARCH_PARAM', 'query', module=filters):
+        with override_settings(REST_FRAMEWORK={'SEARCH_PARAM': 'query'}):
+            reload_module(filters)
+
             class SearchListView(generics.ListAPIView):
                 queryset = SearchFilterModel.objects.all()
                 serializer_class = SearchFilterSerializer
@@ -421,6 +425,8 @@ class SearchFilterTests(TestCase):
                     {'id': 2, 'title': 'zz', 'text': 'bcd'}
                 ]
             )
+
+        reload_module(filters)
 
 
 class OrderingFilterModel(models.Model):
@@ -642,7 +648,9 @@ class OrderingFilterTests(TestCase):
         )
 
     def test_ordering_with_nonstandard_ordering_param(self):
-        with temporary_setting('ORDERING_PARAM', 'order', filters):
+        with override_settings(REST_FRAMEWORK={'ORDERING_PARAM': 'order'}):
+            reload_module(filters)
+
             class OrderingListView(generics.ListAPIView):
                 queryset = OrderingFilterModel.objects.all()
                 serializer_class = OrderingFilterSerializer
@@ -661,6 +669,8 @@ class OrderingFilterTests(TestCase):
                     {'id': 3, 'title': 'xwv', 'text': 'cde'},
                 ]
             )
+
+        reload_module(filters)
 
 
 class SensitiveOrderingFilterModel(models.Model):

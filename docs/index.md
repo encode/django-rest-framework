@@ -55,7 +55,7 @@ REST framework requires the following:
 The following packages are optional:
 
 * [Markdown][markdown] (2.1.0+) - Markdown support for the browsable API.
-* [django-filter][django-filter] (0.5.4+) - Filtering support.
+* [django-filter][django-filter] (0.9.2+) - Filtering support.
 * [django-guardian][django-guardian] (1.1.1+) - Object level permissions support.
 
 ## Installation

@@ -108,7 +108,7 @@ If the view used with `FileUploadParser` is called with a `filename` URL keyword
         def put(self, request, filename, format=None):
             file_obj = request.data['file']
             # ...
-            # do some staff with uploaded file
+            # do some stuff with uploaded file
             # ...
             return Response(status=204)
 

@@ -10,7 +10,7 @@ flake8==2.2.2
 # Optional packages
 markdown>=2.1.0
 django-guardian==1.2.4
-django-filter>=0.5.4
+django-filter>=0.9.2
 
 # wheel for PyPI installs
 wheel==0.24.0

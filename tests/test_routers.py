@@ -180,7 +180,7 @@ class TestLookupValueRegex(TestCase):
 class TestTrailingSlashIncluded(TestCase):
     def setUp(self):
         class NoteViewSet(viewsets.ModelViewSet):
-            model = RouterTestModel
+            queryset = RouterTestModel.objects.all()
 
         self.router = SimpleRouter()
         self.router.register(r'notes', NoteViewSet)
@@ -195,7 +195,7 @@ class TestTrailingSlashIncluded(TestCase):
 class TestTrailingSlashRemoved(TestCase):
     def setUp(self):
         class NoteViewSet(viewsets.ModelViewSet):
-            model = RouterTestModel
+            queryset = RouterTestModel.objects.all()
 
         self.router = SimpleRouter(trailing_slash=False)
         self.router.register(r'notes', NoteViewSet)
@@ -210,7 +210,8 @@ class TestTrailingSlashRemoved(TestCase):
 class TestNameableRoot(TestCase):
     def setUp(self):
         class NoteViewSet(viewsets.ModelViewSet):
-            model = RouterTestModel
+            queryset = RouterTestModel.objects.all()
+
         self.router = DefaultRouter()
         self.router.root_view_name = 'nameable-root'
         self.router.register(r'notes', NoteViewSet)

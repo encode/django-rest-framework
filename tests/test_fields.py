@@ -4,6 +4,7 @@ from rest_framework import serializers
 import datetime
 import django
 import pytest
+import uuid
 
 
 # Tests for field keyword arguments and core functionality.
@@ -465,6 +466,23 @@ class TestURLField(FieldValues):
     }
     outputs = {}
     field = serializers.URLField()
+
+
+class TestUUIDField(FieldValues):
+    """
+    Valid and invalid values for `UUIDField`.
+    """
+    valid_inputs = {
+        '825d7aeb-05a9-45b5-a5b7-05df87923cda': uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda'),
+        '825d7aeb05a945b5a5b705df87923cda': uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda')
+    }
+    invalid_inputs = {
+        '825d7aeb-05a9-45b5-a5b7': ['"825d7aeb-05a9-45b5-a5b7" is not a valid UUID.']
+    }
+    outputs = {
+        uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda'): '825d7aeb-05a9-45b5-a5b7-05df87923cda'
+    }
+    field = serializers.UUIDField()
 
 
 # Number types...
@@ -1029,7 +1047,7 @@ class TestValidImageField(FieldValues):
 
 class TestListField(FieldValues):
     """
-    Values for `ListField`.
+    Values for `ListField` with IntegerField as child.
     """
     valid_inputs = [
         ([1, 2, 3], [1, 2, 3]),
@@ -1044,6 +1062,55 @@ class TestListField(FieldValues):
         (['1', '2', '3'], [1, 2, 3])
     ]
     field = serializers.ListField(child=serializers.IntegerField())
+
+
+class TestUnvalidatedListField(FieldValues):
+    """
+    Values for `ListField` with no `child` argument.
+    """
+    valid_inputs = [
+        ([1, '2', True, [4, 5, 6]], [1, '2', True, [4, 5, 6]]),
+    ]
+    invalid_inputs = [
+        ('not a list', ['Expected a list of items but got type "str".']),
+    ]
+    outputs = [
+        ([1, '2', True, [4, 5, 6]], [1, '2', True, [4, 5, 6]]),
+    ]
+    field = serializers.ListField()
+
+
+class TestDictField(FieldValues):
+    """
+    Values for `ListField` with CharField as child.
+    """
+    valid_inputs = [
+        ({'a': 1, 'b': '2', 3: 3}, {'a': '1', 'b': '2', '3': '3'}),
+    ]
+    invalid_inputs = [
+        ({'a': 1, 'b': None}, ['This field may not be null.']),
+        ('not a dict', ['Expected a dictionary of items but got type "str".']),
+    ]
+    outputs = [
+        ({'a': 1, 'b': '2', 3: 3}, {'a': '1', 'b': '2', '3': '3'}),
+    ]
+    field = serializers.DictField(child=serializers.CharField())
+
+
+class TestUnvalidatedDictField(FieldValues):
+    """
+    Values for `ListField` with no `child` argument.
+    """
+    valid_inputs = [
+        ({'a': 1, 'b': [4, 5, 6], 1: 123}, {'a': 1, 'b': [4, 5, 6], '1': 123}),
+    ]
+    invalid_inputs = [
+        ('not a dict', ['Expected a dictionary of items but got type "str".']),
+    ]
+    outputs = [
+        ({'a': 1, 'b': [4, 5, 6]}, {'a': 1, 'b': [4, 5, 6]}),
+    ]
+    field = serializers.DictField()
 
 
 # Tests for FieldField.

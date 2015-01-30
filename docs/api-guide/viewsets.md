@@ -146,7 +146,7 @@ The decorators can additionally take extra arguments that will be set for the ro
         def set_password(self, request, pk=None):
            ...
 
-Theses decorators will route `GET` requests by default, but may also accept other HTTP methods, by using the `methods` argument.  For example:
+These decorators will route `GET` requests by default, but may also accept other HTTP methods, by using the `methods` argument.  For example:
 
         @detail_route(methods=['post', 'delete'])
         def unset_password(self, request, pk=None):

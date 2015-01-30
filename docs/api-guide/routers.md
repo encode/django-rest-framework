@@ -28,7 +28,7 @@ There are two mandatory arguments to the `register()` method:
 
 Optionally, you may also specify an additional argument:
 
-* `base_name` - The base to use for the URL names that are created.  If unset the basename will be automatically generated based on the `model` or `queryset` attribute on the viewset, if it has one.  Note that if the viewset does not include a `model` or `queryset` attribute then you must set `base_name` when registering the viewset.
+* `base_name` - The base to use for the URL names that are created.  If unset the basename will be automatically generated based on the `queryset` attribute of the viewset, if it has one.  Note that if the viewset does not include a `queryset` attribute then you must set `base_name` when registering the viewset.
 
 The example above would generate the following URL patterns:
 
@@ -60,7 +60,7 @@ For example, you can append `router.urls` to a list of existing views…
     router.register(r'accounts', AccountViewSet)
     
     urlpatterns = [
-        url(r'^forgot-password/$', ForgotPasswordFormView.as_view(),
+        url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
     ]
     
     urlpatterns += router.urls
@@ -68,15 +68,15 @@ For example, you can append `router.urls` to a list of existing views…
 Alternatively you can use Django's `include` function, like so…
 
     urlpatterns = [
-        url(r'^forgot-password/$', ForgotPasswordFormView.as_view(),
-        url(r'^', include(router.urls))
+        url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
+        url(r'^', include(router.urls)),
     ]
 
 Router URL patterns can also be namespaces.
 
     urlpatterns = [
-        url(r'^forgot-password/$', ForgotPasswordFormView.as_view(),
-        url(r'^api/', include(router.urls, namespace='api'))
+        url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
+        url(r'^api/', include(router.urls, namespace='api')),
     ]
 
 If using namespacing with hyperlinked serializers you'll also need to ensure that any `view_name` parameters on the serializers correctly reflect the namespace. In the example above you'd need to include a parameter such as `view_name='api:user-detail'` for serializer fields hyperlinked to the user detail view.

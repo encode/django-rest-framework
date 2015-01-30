@@ -38,6 +38,9 @@ class ClassLookupDict(object):
                 return self.mapping[cls]
         raise KeyError('Class %s not found in lookup.', cls.__name__)
 
+    def __setitem__(self, key, value):
+        self.mapping[key] = value
+
 
 def needs_label(model_field, field_name):
     """

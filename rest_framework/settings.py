@@ -18,6 +18,7 @@ REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
 from __future__ import unicode_literals
+from django.test.signals import setting_changed
 from django.conf import settings
 from django.utils import importlib, six
 from rest_framework import ISO_8601
@@ -207,3 +208,13 @@ class APISettings(object):
 
 
 api_settings = APISettings(USER_SETTINGS, DEFAULTS, IMPORT_STRINGS)
+
+
+def reload_api_settings(*args, **kwargs):
+    global api_settings
+    setting, value = kwargs['setting'], kwargs['value']
+    if setting == 'REST_FRAMEWORK':
+        api_settings = APISettings(value, DEFAULTS, IMPORT_STRINGS)
+
+
+setting_changed.connect(reload_api_settings)

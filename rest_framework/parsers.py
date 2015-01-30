@@ -152,7 +152,7 @@ class FileUploadParser(BaseParser):
                                               None,
                                               encoding)
             if result is not None:
-                return DataAndFiles(None, {'file': result[1]})
+                return DataAndFiles({}, {'file': result[1]})
 
         # This is the standard case.
         possible_sizes = [x.chunk_size for x in upload_handlers if x.chunk_size]

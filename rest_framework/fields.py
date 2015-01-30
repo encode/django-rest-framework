@@ -23,6 +23,7 @@ import datetime
 import decimal
 import inspect
 import re
+import uuid
 
 
 class empty:
@@ -632,6 +633,23 @@ class URLField(CharField):
         self.validators.append(validator)
 
 
+class UUIDField(Field):
+    default_error_messages = {
+        'invalid': _('"{value}" is not a valid UUID.'),
+    }
+
+    def to_internal_value(self, data):
+        if not isinstance(data, uuid.UUID):
+            try:
+                return uuid.UUID(data)
+            except (ValueError, TypeError):
+                self.fail('invalid', value=data)
+        return data
+
+    def to_representation(self, value):
+        return str(value)
+
+
 # Number types...
 
 class IntegerField(Field):
@@ -1113,8 +1131,21 @@ class ImageField(FileField):
 
 # Composite field types...
 
+class _UnvalidatedField(Field):
+    def __init__(self, *args, **kwargs):
+        super(_UnvalidatedField, self).__init__(*args, **kwargs)
+        self.allow_blank = True
+        self.allow_null = True
+
+    def to_internal_value(self, data):
+        return data
+
+    def to_representation(self, value):
+        return value
+
+
 class ListField(Field):
-    child = None
+    child = _UnvalidatedField()
     initial = []
     default_error_messages = {
         'not_a_list': _('Expected a list of items but got type "{input_type}".')
@@ -1122,7 +1153,6 @@ class ListField(Field):
 
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
-        assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         super(ListField, self).__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
@@ -1149,6 +1179,49 @@ class ListField(Field):
         List of object instances -> List of dicts of primitive datatypes.
         """
         return [self.child.to_representation(item) for item in data]
+
+
+class DictField(Field):
+    child = _UnvalidatedField()
+    initial = []
+    default_error_messages = {
+        'not_a_dict': _('Expected a dictionary of items but got type "{input_type}".')
+    }
+
+    def __init__(self, *args, **kwargs):
+        self.child = kwargs.pop('child', copy.deepcopy(self.child))
+        assert not inspect.isclass(self.child), '`child` has not been instantiated.'
+        super(DictField, self).__init__(*args, **kwargs)
+        self.child.bind(field_name='', parent=self)
+
+    def get_value(self, dictionary):
+        # We override the default field access in order to support
+        # lists in HTML forms.
+        if html.is_html_input(dictionary):
+            return html.parse_html_list(dictionary, prefix=self.field_name)
+        return dictionary.get(self.field_name, empty)
+
+    def to_internal_value(self, data):
+        """
+        Dicts of native values <- Dicts of primitive datatypes.
+        """
+        if html.is_html_input(data):
+            data = html.parse_html_dict(data)
+        if not isinstance(data, dict):
+            self.fail('not_a_dict', input_type=type(data).__name__)
+        return dict([
+            (six.text_type(key), self.child.run_validation(value))
+            for key, value in data.items()
+        ])
+
+    def to_representation(self, value):
+        """
+        List of object instances -> List of dicts of primitive datatypes.
+        """
+        return dict([
+            (six.text_type(key), self.child.to_representation(val))
+            for key, val in value.items()
+        ])
 
 
 # Miscellaneous field types...
