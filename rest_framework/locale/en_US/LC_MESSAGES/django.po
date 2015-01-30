@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-07 18:21+0000\n"
+"POT-Creation-Date: 2015-01-30 16:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,18 +47,6 @@ msgstr ""
 
 #: authentication.py:171
 msgid "User inactive or deleted."
-msgstr ""
-
-#: authtoken/serializers.py:20
-msgid "User account is disabled."
-msgstr ""
-
-#: authtoken/serializers.py:23
-msgid "Unable to log in with provided credentials."
-msgstr ""
-
-#: authtoken/serializers.py:26
-msgid "Must include \"username\" and \"password\"."
 msgstr ""
 
 #: exceptions.py:38
@@ -101,28 +89,28 @@ msgstr ""
 msgid "Request was throttled."
 msgstr ""
 
-#: fields.py:152 relations.py:131 relations.py:155 validators.py:77
+#: fields.py:153 relations.py:132 relations.py:156 validators.py:77
 #: validators.py:155
 msgid "This field is required."
 msgstr ""
 
-#: fields.py:153
+#: fields.py:154
 msgid "This field may not be null."
 msgstr ""
 
-#: fields.py:480 fields.py:508
+#: fields.py:487 fields.py:515
 msgid "\"{input}\" is not a valid boolean."
 msgstr ""
 
-#: fields.py:543
+#: fields.py:550
 msgid "This field may not be blank."
 msgstr ""
 
-#: fields.py:544 fields.py:1252
+#: fields.py:551 fields.py:1324
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr ""
 
-#: fields.py:545
+#: fields.py:552
 msgid "Ensure this field has at least {min_length} characters."
 msgstr ""
 
@@ -144,134 +132,140 @@ msgstr ""
 msgid "Enter a valid URL."
 msgstr ""
 
-#: fields.py:640
+#: fields.py:638
+msgid "\"{value}\" is not a valid UUID."
+msgstr ""
+
+#: fields.py:657
 msgid "A valid integer is required."
 msgstr ""
 
-#: fields.py:641 fields.py:675 fields.py:708
+#: fields.py:658 fields.py:692 fields.py:725
 msgid "Ensure this value is less than or equal to {max_value}."
 msgstr ""
 
-#: fields.py:642 fields.py:676 fields.py:709
+#: fields.py:659 fields.py:693 fields.py:726
 msgid "Ensure this value is greater than or equal to {min_value}."
 msgstr ""
 
-#: fields.py:643 fields.py:677 fields.py:713
+#: fields.py:660 fields.py:694 fields.py:730
 msgid "String value too large."
 msgstr ""
 
-#: fields.py:674 fields.py:707
+#: fields.py:691 fields.py:724
 msgid "A valid number is required."
 msgstr ""
 
-#: fields.py:710
+#: fields.py:727
 msgid "Ensure that there are no more than {max_digits} digits in total."
 msgstr ""
 
-#: fields.py:711
+#: fields.py:728
 msgid "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr ""
 
-#: fields.py:712
+#: fields.py:729
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
 msgstr ""
 
-#: fields.py:796
+#: fields.py:813
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
-#: fields.py:797
+#: fields.py:814
 msgid "Expected a datetime but got a date."
 msgstr ""
 
-#: fields.py:861
+#: fields.py:878
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
-#: fields.py:862
+#: fields.py:879
 msgid "Expected a date but got a datetime."
 msgstr ""
 
-#: fields.py:919
+#: fields.py:936
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
-#: fields.py:975 fields.py:1019
+#: fields.py:992 fields.py:1036
 msgid "\"{input}\" is not a valid choice."
 msgstr ""
 
-#: fields.py:1020 fields.py:1121 serializers.py:476
+#: fields.py:1037 fields.py:1151 serializers.py:482
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr ""
 
-#: fields.py:1050
+#: fields.py:1067
 msgid "No file was submitted."
 msgstr ""
 
-#: fields.py:1051
+#: fields.py:1068
 msgid "The submitted data was not a file. Check the encoding type on the form."
 msgstr ""
 
-#: fields.py:1052
+#: fields.py:1069
 msgid "No filename could be determined."
 msgstr ""
 
-#: fields.py:1053
+#: fields.py:1070
 msgid "The submitted file is empty."
 msgstr ""
 
-#: fields.py:1054
+#: fields.py:1071
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr ""
 
-#: fields.py:1096
+#: fields.py:1113
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr ""
 
-#: generics.py:123
-msgid ""
-"Choose a valid page number. Page numbers must be a whole number, or must be "
-"the string \"last\"."
+#: fields.py:1188
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
 msgstr ""
 
-#: generics.py:128
+#: pagination.py:221
 msgid "Invalid page \"{page_number}\": {message}."
 msgstr ""
 
-#: relations.py:132
-msgid "Invalid pk \"{pk_value}\" - object does not exist."
+#: pagination.py:442
+msgid "Invalid cursor"
 msgstr ""
 
 #: relations.py:133
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr ""
+
+#: relations.py:134
 msgid "Incorrect type. Expected pk value, received {data_type}."
 msgstr ""
 
-#: relations.py:156
+#: relations.py:157
 msgid "Invalid hyperlink - No URL match."
 msgstr ""
 
-#: relations.py:157
+#: relations.py:158
 msgid "Invalid hyperlink - Incorrect URL match."
 msgstr ""
 
-#: relations.py:158
+#: relations.py:159
 msgid "Invalid hyperlink - Object does not exist."
 msgstr ""
 
-#: relations.py:159
+#: relations.py:160
 msgid "Incorrect type. Expected URL string, received {data_type}."
 msgstr ""
 
-#: relations.py:294
+#: relations.py:295
 msgid "Object with {slug_name}={value} does not exist."
 msgstr ""
 
-#: relations.py:295
+#: relations.py:296
 msgid "Invalid value."
 msgstr ""
 
@@ -313,4 +307,16 @@ msgstr ""
 
 #: versioning.py:160
 msgid "Invalid version in query parameter."
+msgstr ""
+
+#: authtoken/serializers.py:20
+msgid "User account is disabled."
+msgstr ""
+
+#: authtoken/serializers.py:23
+msgid "Unable to log in with provided credentials."
+msgstr ""
+
+#: authtoken/serializers.py:26
+msgid "Must include \"username\" and \"password\"."
 msgstr ""
