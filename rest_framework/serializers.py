@@ -1330,13 +1330,13 @@ class ModelSerializer(Serializer):
 
 
 if hasattr(models, 'UUIDField'):
-    ModelSerializer._field_mapping[models.UUIDField] = UUIDField
+    ModelSerializer.serializer_field_mapping[models.UUIDField] = UUIDField
 
 if postgres_fields:
     class CharMappingField(DictField):
         child = CharField()
 
-    ModelSerializer._field_mapping[postgres_fields.HStoreField] = CharMappingField
+    ModelSerializer.serializer_field_mapping[postgres_fields.HStoreField] = CharMappingField
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
