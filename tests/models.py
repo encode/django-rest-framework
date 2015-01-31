@@ -15,6 +15,7 @@ class RESTFrameworkModel(models.Model):
 
 class BasicModel(RESTFrameworkModel):
     text = models.CharField(max_length=100, verbose_name=_("Text comes here"), help_text=_("Text description."))
+    number = models.IntegerField(null=True, blank=True)
 
 
 class BaseFilterableItem(RESTFrameworkModel):
