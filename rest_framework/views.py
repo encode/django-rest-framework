@@ -4,6 +4,7 @@ Provides an APIView class that is the base of all views in REST framework.
 from __future__ import unicode_literals
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
+from django.utils import six
 from django.utils.encoding import smart_text
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
@@ -74,11 +75,13 @@ def exception_handler(exc, context):
         return Response(data, status=exc.status_code, headers=headers)
 
     elif isinstance(exc, Http404):
-        data = {'detail': _('Not found.')}
+        msg = _('Not found.')
+        data = {'detail': six.text_type(msg)}
         return Response(data, status=status.HTTP_404_NOT_FOUND)
 
     elif isinstance(exc, PermissionDenied):
-        data = {'detail': _('Permission denied.')}
+        msg = _('Permission denied.')
+        data = {'detail': six.text_type(msg)}
         return Response(data, status=status.HTTP_403_FORBIDDEN)
 
     # Note: Unhandled exceptions will raise a 500 error.
