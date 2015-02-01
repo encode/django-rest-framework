@@ -1337,6 +1337,7 @@ if postgres_fields:
         child = CharField()
 
     ModelSerializer.serializer_field_mapping[postgres_fields.HStoreField] = CharMappingField
+    ModelSerializer.serializer_field_mapping[postgres_fields.ArrayField] = ListField
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
