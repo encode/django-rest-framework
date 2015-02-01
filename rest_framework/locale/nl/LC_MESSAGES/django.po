@@ -1,21 +1,21 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+# 
+# Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-30 16:40+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2015-01-30 16:23+0000\n"
+"PO-Revision-Date: 2015-01-30 16:27+0000\n"
+"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"Language-Team: Dutch (http://www.transifex.com/projects/p/django-rest-framework/language/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: authentication.py:69
 msgid "Invalid basic header. No credentials provided."
@@ -69,7 +69,7 @@ msgstr ""
 msgid "You do not have permission to perform this action."
 msgstr ""
 
-#: exceptions.py:93 views.py:77
+#: exceptions.py:93
 msgid "Not found."
 msgstr ""
 
@@ -161,7 +161,8 @@ msgid "Ensure that there are no more than {max_digits} digits in total."
 msgstr ""
 
 #: fields.py:728
-msgid "Ensure that there are no more than {max_decimal_places} decimal places."
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr ""
 
 #: fields.py:729
@@ -203,7 +204,8 @@ msgid "No file was submitted."
 msgstr ""
 
 #: fields.py:1068
-msgid "The submitted data was not a file. Check the encoding type on the form."
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
 msgstr ""
 
 #: fields.py:1069
@@ -307,10 +309,6 @@ msgstr ""
 
 #: versioning.py:160
 msgid "Invalid version in query parameter."
-msgstr ""
-
-#: views.py:81
-msgid "Permission denied."
 msgstr ""
 
 #: authtoken/serializers.py:20
