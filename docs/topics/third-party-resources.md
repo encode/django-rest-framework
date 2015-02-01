@@ -237,7 +237,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-rest-framework-proxy][django-rest-framework-proxy] - Proxy to redirect incoming request to another API server.
 * [gaiarestframework][gaiarestframework] - Utils for django-rest-framewok
 * [drf-extensions][drf-extensions] - A collection of custom extensions
-* [ember-data-django-rest-adapter][ember-data-django-rest-adapter] - An ember-data adapter
+* [ember-django-adapter][ember-django-adapter] - An adapter for working with Ember.js
 
 ## Other Resources
 
@@ -309,7 +309,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-framework-proxy]: https://github.com/eofs/django-rest-framework-proxy
 [gaiarestframework]: https://github.com/AppsFuel/gaiarestframework
 [drf-extensions]: https://github.com/chibisov/drf-extensions
-[ember-data-django-rest-adapter]: https://github.com/toranb/ember-data-django-rest-adapter
+[ember-django-adapter]: https://github.com/dustinfarris/ember-django-adapter
 [beginners-guide-to-the-django-rest-framework]: http://code.tutsplus.com/tutorials/beginners-guide-to-the-django-rest-framework--cms-19786
 [getting-started-with-django-rest-framework-and-angularjs]: http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html
 [end-to-end-web-app-with-django-rest-framework-angularjs]: http://blog.mourafiq.com/post/55034504632/end-to-end-web-app-with-django-rest-framework
