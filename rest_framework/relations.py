@@ -365,7 +365,7 @@ class ManyRelatedField(Field):
     @property
     def choices(self):
         queryset = self.child_relation.queryset
-        iterable = queryset.all() if (hasattr(queryset, 'all')) else queryset
+        iterable = queryset.all() if (hasattr(queryset, 'all')) else queryset or []
         items_and_representations = [
             (item, self.child_relation.to_representation(item))
             for item in iterable
