@@ -1,3 +1,4 @@
+from django.db import models
 from rest_framework import serializers
 
 
@@ -30,6 +31,19 @@ class SillySerializer(serializers.Serializer):
         'rest_framework.fields.CharField', allow_null=True)
     links = serializers.RecursiveField('LinkSerializer')
     self = serializers.RecursiveField(required=False)
+
+
+class RecursiveModel(models.Model):
+    name = models.CharField(max_length=255)
+    parent = models.ForeignKey('self', null=True)
+
+
+class RecursiveModelSerializer(serializers.ModelSerializer):
+    parent = serializers.RecursiveField(allow_null=True)
+
+    class Meta:
+        model = RecursiveModel
+        fields = ('name', 'parent')
 
 
 class TestRecursiveField:
@@ -152,3 +166,23 @@ class TestRecursiveField:
         serializer = SillySerializer(data=way_too_long)
         assert not serializer.is_valid(), \
             'validation should fail on inner link validation'
+
+    def test_model_serializer(self):
+        one = RecursiveModel(name='one')
+        two = RecursiveModel(name='two', parent=one)
+
+        #serialization
+        representation = {
+            'name': 'two',
+            'parent': {
+                'name': 'one',
+                'parent': None,
+            }
+        }
+
+        s = RecursiveModelSerializer(two)
+        assert s.data == representation
+
+        #deserialization
+        self.deserialize(RecursiveModelSerializer, representation)
+

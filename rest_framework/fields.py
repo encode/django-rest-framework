@@ -1323,6 +1323,15 @@ class RecursiveField(Field):
         self.to = to
         self.kwargs = kwargs
 
+        # Need to properly initialize by calling super-constructor for
+        # ModelSerializers
+        super_kwargs = dict(
+            (key, kwargs[key])
+            for key in kwargs
+            if key in inspect.getargspec(Field.__init__)
+        )
+        super(RecursiveField, self).__init__(**super_kwargs)
+
     def bind(self, field_name, parent):
         if hasattr(parent, 'child') and parent.child is self:
             # RecursiveField nested inside of a ListField
