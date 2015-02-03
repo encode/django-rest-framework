@@ -27,7 +27,7 @@ data = {
 }
 
 
-@mark.bench('renderers.JSONRenderer.render', iterations=10000)
+@mark.bench('renderers.JSONRenderer.render', iterations=1000000)
 def test_json_renderer():
     renderer = renderers.JSONRenderer()
     renderer.render(data)
