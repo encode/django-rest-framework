@@ -32,7 +32,7 @@ data = {
 class TestSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegularFieldsModel
-        fields = data.keys() + ['method']
+        fields = list(data.keys()) + ['method']
 
 
 class TestNestedSerializer(serializers.ModelSerializer):
@@ -40,7 +40,7 @@ class TestNestedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RegularFieldsAndFKModel
-        fields = data.keys() + ['method', 'fk']
+        fields = list(data.keys()) + ['method', 'fk']
 
 
 @mark.bench('serializers.ModelSerializer.get_fields')
