@@ -1,26 +1,10 @@
 from .utils import mock_reverse, fail_reverse, BadType, MockObject, MockQueryset
-from django.conf.urls import patterns, url, include
-from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
+from django.core.exceptions import ImproperlyConfigured
 from django.utils.datastructures import MultiValueDict
 from rest_framework import serializers
 from rest_framework.fields import empty
-from rest_framework.test import APISimpleTestCase, APIRequestFactory
-from rest_framework.versioning import NamespaceVersioning
+from rest_framework.test import APISimpleTestCase
 import pytest
-
-factory = APIRequestFactory()
-
-dummy_view = lambda request, pk: None
-
-included_patterns = [
-    url(r'^example/(?P<pk>\d+)/$', dummy_view, name='example-detail')
-]
-
-urlpatterns = patterns(
-    '',
-    url(r'^v1/', include(included_patterns, namespace='v1')),
-    url(r'^example/(?P<pk>\d+)/$', dummy_view, name='example-detail')
-)
 
 
 class TestStringRelatedField(APISimpleTestCase):
@@ -62,35 +46,6 @@ class TestPrimaryKeyRelatedField(APISimpleTestCase):
     def test_pk_representation(self):
         representation = self.field.to_representation(self.instance)
         assert representation == self.instance.pk
-
-
-class TestHyperlinkedRelatedField(APISimpleTestCase):
-    urls = 'tests.test_relations'
-
-    def setUp(self):
-        class HyperlinkedMockQueryset(MockQueryset):
-            def get(self, **lookup):
-                for item in self.items:
-                    if item.pk == int(lookup.get('pk', -1)):
-                        return item
-                raise ObjectDoesNotExist()
-
-        self.queryset = HyperlinkedMockQueryset([
-            MockObject(pk=1, name='foo'),
-            MockObject(pk=2, name='bar'),
-            MockObject(pk=3, name='baz')
-        ])
-        self.field = serializers.HyperlinkedRelatedField(
-            view_name='example-detail',
-            queryset=self.queryset
-        )
-        request = factory.post('/')
-        request.versioning_scheme = NamespaceVersioning()
-        self.field._context = {'request': request}
-
-    def test_bug_2489(self):
-        self.field.to_internal_value('/example/3/')
-        self.field.to_internal_value('/v1/example/3/')
 
 
 class TestHyperlinkedIdentityField(APISimpleTestCase):
