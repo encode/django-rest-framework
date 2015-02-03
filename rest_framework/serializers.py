@@ -177,7 +177,7 @@ class BaseSerializer(Field):
         )
 
         assert hasattr(self, 'initial_data'), (
-            'Cannot call `.is_valid()` as no `data=` keyword argument was'
+            'Cannot call `.is_valid()` as no `data=` keyword argument was '
             'passed when instantiating the serializer instance.'
         )
 
