@@ -9,7 +9,6 @@ from rest_framework.versioning import NamespaceVersioning
 import pytest
 
 factory = APIRequestFactory()
-request = factory.get('/')  # Just to ensure we have a request in the serializer context
 
 dummy_view = lambda request, pk: None
 
