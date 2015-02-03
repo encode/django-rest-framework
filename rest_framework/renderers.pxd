@@ -11,7 +11,7 @@ cdef class BaseRenderer(object):
     """
 
     @cython.locals(indent=int, separators=tuple)
-    cpdef object render(self, dict data, accepted_media_type=?, renderer_context=?)
+    cpdef bytes render(self, dict data, accepted_media_type=?, renderer_context=?)
 
 @cython.locals(compact=bool, ensure_ascii=bool, charset=unicode)
 cdef class JSONRenderer(BaseRenderer):
