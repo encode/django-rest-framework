@@ -80,7 +80,7 @@ class TestRootView(TestCase):
             BasicModel(text=item).save()
         self.objects = BasicModel.objects
         self.data = [
-            {'id': obj.id, 'text': obj.text}
+            {'id': obj.id, 'text': obj.text, 'number': obj.number}
             for obj in self.objects.all()
         ]
         self.view = RootView.as_view()
@@ -104,9 +104,18 @@ class TestRootView(TestCase):
         with self.assertNumQueries(1):
             response = self.view(request).render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, {'id': 4, 'text': 'foobar'})
+        self.assertEqual(response.data, {'id': 4, 'text': 'foobar', 'number': None})
         created = self.objects.get(id=4)
         self.assertEqual(created.text, 'foobar')
+
+    def test_post_null_integer_as_form_data(self):
+        """
+        None should resolve when a model's field has null=True.
+        """
+        data = {'text': 'foobar', 'number': None}
+        request = factory.post('/', data)
+        response = self.view(request).render()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_put_root_view(self):
         """
@@ -138,7 +147,7 @@ class TestRootView(TestCase):
         with self.assertNumQueries(1):
             response = self.view(request).render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, {'id': 4, 'text': 'foobar'})
+        self.assertEqual(response.data, {'id': 4, 'text': 'foobar', 'number': None})
         created = self.objects.get(id=4)
         self.assertEqual(created.text, 'foobar')
 
@@ -156,7 +165,7 @@ class TestInstanceView(TestCase):
             BasicModel(text=item).save()
         self.objects = BasicModel.objects.exclude(text='filtered out')
         self.data = [
-            {'id': obj.id, 'text': obj.text}
+            {'id': obj.id, 'text': obj.text, 'number': obj.number}
             for obj in self.objects.all()
         ]
         self.view = InstanceView.as_view()
@@ -192,7 +201,7 @@ class TestInstanceView(TestCase):
         with self.assertNumQueries(EXPECTED_QUERIES_FOR_PUT):
             response = self.view(request, pk='1').render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(dict(response.data), {'id': 1, 'text': 'foobar'})
+        self.assertEqual(dict(response.data), {'id': 1, 'text': 'foobar', 'number': None})
         updated = self.objects.get(id=1)
         self.assertEqual(updated.text, 'foobar')
 
@@ -206,7 +215,7 @@ class TestInstanceView(TestCase):
         with self.assertNumQueries(EXPECTED_QUERIES_FOR_PUT):
             response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
+        self.assertEqual(response.data, {'id': 1, 'text': 'foobar', 'number': None})
         updated = self.objects.get(id=1)
         self.assertEqual(updated.text, 'foobar')
 
@@ -241,7 +250,7 @@ class TestInstanceView(TestCase):
         with self.assertNumQueries(EXPECTED_QUERIES_FOR_PUT):
             response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
+        self.assertEqual(response.data, {'id': 1, 'text': 'foobar', 'number': None})
         updated = self.objects.get(id=1)
         self.assertEqual(updated.text, 'foobar')
 
@@ -314,7 +323,7 @@ class TestOverriddenGetObject(TestCase):
             BasicModel(text=item).save()
         self.objects = BasicModel.objects
         self.data = [
-            {'id': obj.id, 'text': obj.text}
+            {'id': obj.id, 'text': obj.text, 'number': obj.number}
             for obj in self.objects.all()
         ]
 
@@ -450,7 +459,7 @@ class TestFilterBackendAppliedToViews(TestCase):
             BasicModel(text=item).save()
         self.objects = BasicModel.objects
         self.data = [
-            {'id': obj.id, 'text': obj.text}
+            {'id': obj.id, 'text': obj.text, 'number': obj.number}
             for obj in self.objects.all()
         ]
 
@@ -463,7 +472,7 @@ class TestFilterBackendAppliedToViews(TestCase):
         response = root_view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data, [{'id': 1, 'text': 'foo'}])
+        self.assertEqual(response.data, [{'id': 1, 'text': 'foo', 'number': None}])
 
     def test_get_root_view_filters_out_all_models_with_exclusive_filter_backend(self):
         """
@@ -493,7 +502,7 @@ class TestFilterBackendAppliedToViews(TestCase):
         request = factory.get('/1')
         response = instance_view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {'id': 1, 'text': 'foo'})
+        self.assertEqual(response.data, {'id': 1, 'text': 'foo', 'number': None})
 
     def test_dynamic_serializer_form_in_browsable_api(self):
         """

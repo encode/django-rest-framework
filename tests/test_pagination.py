@@ -82,7 +82,7 @@ class IntegrationTestPagination(TestCase):
             BasicModel(text=char * 3).save()
         self.objects = BasicModel.objects
         self.data = [
-            {'id': obj.id, 'text': obj.text}
+            {'id': obj.id, 'text': obj.text, 'number': obj.number}
             for obj in self.objects.all()
         ]
         self.view = RootView.as_view()
@@ -290,7 +290,7 @@ class TestUnpaginated(TestCase):
             BasicModel(text=i).save()
         self.objects = BasicModel.objects
         self.data = [
-            {'id': obj.id, 'text': obj.text}
+            {'id': obj.id, 'text': obj.text, 'number': obj.number}
             for obj in self.objects.all()
         ]
         self.view = DefaultPageSizeKwargView.as_view()
@@ -318,7 +318,7 @@ class TestCustomPaginateByParam(TestCase):
             BasicModel(text=i).save()
         self.objects = BasicModel.objects
         self.data = [
-            {'id': obj.id, 'text': obj.text}
+            {'id': obj.id, 'text': obj.text, 'number': obj.number}
             for obj in self.objects.all()
         ]
         self.view = PaginateByParamView.as_view()
@@ -355,7 +355,7 @@ class TestMaxPaginateByParam(TestCase):
             BasicModel(text=i).save()
         self.objects = BasicModel.objects
         self.data = [
-            {'id': obj.id, 'text': obj.text}
+            {'id': obj.id, 'text': obj.text, 'number': obj.number}
             for obj in self.objects.all()
         ]
         self.view = MaxPaginateByView.as_view()
