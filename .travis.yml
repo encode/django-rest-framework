@@ -29,6 +29,30 @@ env:
     - TOX_ENV=py33-djangomaster
     - TOX_ENV=py32-djangomaster
     - TOX_ENV=py27-djangomaster
+    - TOX_ENV=py34-django17-cython
+    - TOX_ENV=py33-django17-cython
+    - TOX_ENV=py32-django17-cython
+    - TOX_ENV=py27-django17-cython
+    - TOX_ENV=py34-django16-cython
+    - TOX_ENV=py33-django16-cython
+    - TOX_ENV=py32-django16-cython
+    - TOX_ENV=py27-django16-cython
+    - TOX_ENV=py26-django16-cython
+    - TOX_ENV=py34-django15-cython
+    - TOX_ENV=py33-django15-cython
+    - TOX_ENV=py32-django15-cython
+    - TOX_ENV=py27-django15-cython
+    - TOX_ENV=py26-django15-cython
+    - TOX_ENV=py27-django14-cython
+    - TOX_ENV=py26-django14-cython
+    - TOX_ENV=py34-django18alpha-cython
+    - TOX_ENV=py33-django18alpha-cython
+    - TOX_ENV=py32-django18alpha-cython
+    - TOX_ENV=py27-django18alpha-cython
+    - TOX_ENV=py34-djangomaster-cython
+    - TOX_ENV=py33-djangomaster-cython
+    - TOX_ENV=py32-djangomaster-cython
+    - TOX_ENV=py27-djangomaster-cython
 
 matrix:
   fast_finish: true
@@ -37,6 +61,10 @@ matrix:
     - env: TOX_ENV=py33-djangomaster
     - env: TOX_ENV=py32-djangomaster
     - env: TOX_ENV=py27-djangomaster
+    - env: TOX_ENV=py34-djangomaster-cython
+    - env: TOX_ENV=py33-djangomaster-cython
+    - env: TOX_ENV=py32-djangomaster-cython
+    - env: TOX_ENV=py27-djangomaster-cython
 
 install:
   - pip install tox
