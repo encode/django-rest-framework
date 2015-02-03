@@ -28,6 +28,10 @@ data = {
     'url_field': 'https://overtherainbow.com'
 }
 
+data_list = [data for _ in range(100)]
+
+instances_list = [RegularFieldsModel(**data) for _ in range(100)]
+
 
 class TestSerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,7 +47,7 @@ class TestNestedSerializer(serializers.ModelSerializer):
         fields = list(data.keys()) + ['method', 'fk']
 
 
-@mark.bench('serializers.ModelSerializer.get_fields')
+@mark.bench('serializers.ModelSerializer.get_fields', iterations=1000)
 def test_get_fields():
     instance = RegularFieldsModel(**data)
     serializer = TestSerializer(instance=instance)
@@ -51,7 +55,7 @@ def test_get_fields():
     assert serializer.get_fields()
 
 
-@mark.bench('serializers.ModelSerializer.get_fields')
+@mark.bench('serializers.ModelSerializer.get_fields', iterations=1000)
 def test_get_fields_twice():
     instance = RegularFieldsModel(**data)
     serializer = TestSerializer(instance=instance)
@@ -60,7 +64,7 @@ def test_get_fields_twice():
     assert serializer.get_fields()
 
 
-@mark.bench('serializers.ModelSerializer.to_representation')
+@mark.bench('serializers.ModelSerializer.to_representation', iterations=1000)
 def test_object_serialization():
     instance = RegularFieldsModel(**data)
     serializer = TestSerializer(instance=instance)
@@ -68,7 +72,7 @@ def test_object_serialization():
     assert serializer.data, serializer.errors
 
 
-@mark.bench('serializers.ModelSerializer.to_representation')
+@mark.bench('serializers.ModelSerializer.to_representation', iterations=1000)
 def test_nested_object_serialization():
     nested_instance = RegularFieldsModel(**data)
     instance = RegularFieldsAndFKModel(fk=nested_instance, **data)
@@ -77,15 +81,14 @@ def test_nested_object_serialization():
     assert serializer.data, serializer.errors
 
 
-@mark.bench('serializers.ModelSerializer.to_representation')
+@mark.bench('serializers.ListSerializer.to_representation', iterations=1000)
 def test_object_list_serialization():
-    instance = [RegularFieldsModel(**data) for _ in range(100)]
-    serializer = TestSerializer(instance=instance, many=True)
+    serializer = TestSerializer(instance=instances_list, many=True)
 
     assert serializer.data, serializer.errors
 
 
-@mark.bench('serializers.ModelSerializer.to_representation')
+@mark.bench('serializers.ModelSerializer.to_representation', iterations=10000)
 def test_object_serialization_with_partial_update():
     instance = RegularFieldsModel(**data)
     serializer = TestSerializer(instance=instance, data={'char_field': 'b'}, partial=True)
@@ -94,7 +97,7 @@ def test_object_serialization_with_partial_update():
     assert serializer.data, serializer.errors
 
 
-@mark.bench('serializers.ModelSerializer.to_representation')
+@mark.bench('serializers.ModelSerializer.to_representation', iterations=10000)
 def test_object_serialization_with_update():
     instance = RegularFieldsModel(**data)
     new_data = data.copy()
@@ -105,20 +108,20 @@ def test_object_serialization_with_update():
     assert serializer.data, serializer.errors
 
 
-@mark.bench('serializers.ModelSerializer.to_internal_value')
+@mark.bench('serializers.ModelSerializer.to_internal_value', iterations=1000)
 def test_object_deserialization():
     serializer = TestSerializer(data=data)
 
     assert serializer.is_valid(), serializer.errors
 
 
-@mark.bench('serializers.ModelSerializer.to_internal_value')
+@mark.bench('serializers.ListSerializer.to_internal_value', iterations=1000)
 def test_object_list_deserialization():
-    serializer = TestSerializer(data=[data for _ in range(100)], many=True)
+    serializer = TestSerializer(data=data_list, many=True)
 
     assert serializer.is_valid(), serializer.errors
 
 
-@mark.bench('serializers.ModelSerializer.__init__')
+@mark.bench('serializers.ModelSerializer.__init__', iterations=10000)
 def test_serializer_initialization():
     TestSerializer(data=data)
