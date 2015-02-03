@@ -6,13 +6,16 @@ These tests deal with ensuring that we correctly map the model fields onto
 an appropriate set of serializer fields for each case.
 """
 from __future__ import unicode_literals
+
 from django.core.exceptions import ImproperlyConfigured
 from django.core.validators import MaxValueValidator, MinValueValidator, MinLengthValidator
 from django.db import models
 from django.test import TestCase
 from django.utils import six
+
 from rest_framework import serializers
 from rest_framework.compat import unicode_repr
+from .models import RegularFieldsModel
 
 
 def dedent(blocktext):
@@ -22,44 +25,9 @@ def dedent(blocktext):
 # Tests for regular field mappings.
 # ---------------------------------
 
-class CustomField(models.Field):
-    """
-    A custom model field simply for testing purposes.
-    """
-    pass
-
 
 class OneFieldModel(models.Model):
     char_field = models.CharField(max_length=100)
-
-
-class RegularFieldsModel(models.Model):
-    """
-    A model class for testing regular flat fields.
-    """
-    auto_field = models.AutoField(primary_key=True)
-    big_integer_field = models.BigIntegerField()
-    boolean_field = models.BooleanField(default=False)
-    char_field = models.CharField(max_length=100)
-    comma_separated_integer_field = models.CommaSeparatedIntegerField(max_length=100)
-    date_field = models.DateField()
-    datetime_field = models.DateTimeField()
-    decimal_field = models.DecimalField(max_digits=3, decimal_places=1)
-    email_field = models.EmailField(max_length=100)
-    float_field = models.FloatField()
-    integer_field = models.IntegerField()
-    null_boolean_field = models.NullBooleanField()
-    positive_integer_field = models.PositiveIntegerField()
-    positive_small_integer_field = models.PositiveSmallIntegerField()
-    slug_field = models.SlugField(max_length=100)
-    small_integer_field = models.SmallIntegerField()
-    text_field = models.TextField()
-    time_field = models.TimeField()
-    url_field = models.URLField(max_length=100)
-    custom_field = CustomField()
-
-    def method(self):
-        return 'method'
 
 
 COLOR_CHOICES = (('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'))
@@ -125,7 +93,7 @@ class TestRegularFieldMappings(TestCase):
                 text_field = CharField(style={'base_template': 'textarea.html'})
                 time_field = TimeField()
                 url_field = URLField(max_length=100)
-                custom_field = ModelField(model_field=<tests.test_model_serializer.CustomField: custom_field>)
+                custom_field = ModelField(model_field=<tests.fields.CustomField: custom_field>)
         """)
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 

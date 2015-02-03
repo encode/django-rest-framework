@@ -8,8 +8,8 @@ import subprocess
 
 
 PYTEST_ARGS = {
-    'default': ['tests', '--tb=short'],
-    'fast': ['tests', '--tb=short', '-q'],
+    'default': ['tests', '--tb=short', '--bench'],
+    'fast': ['tests', '--tb=short', '-q', '--bench'],
 }
 
 FLAKE8_ARGS = ['rest_framework', 'tests', '--ignore=E501']
