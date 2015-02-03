@@ -171,7 +171,7 @@ class TestRecursiveField:
         one = RecursiveModel(name='one')
         two = RecursiveModel(name='two', parent=one)
 
-        #serialization
+        # serialization
         representation = {
             'name': 'two',
             'parent': {
@@ -183,6 +183,5 @@ class TestRecursiveField:
         s = RecursiveModelSerializer(two)
         assert s.data == representation
 
-        #deserialization
+        # deserialization
         self.deserialize(RecursiveModelSerializer, representation)
-
