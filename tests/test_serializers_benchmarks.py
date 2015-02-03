@@ -43,6 +43,14 @@ class TestNestedSerializer(serializers.ModelSerializer):
         fields = data.keys() + ['method', 'fk']
 
 
+@mark.bench('serializers.ModelSerializer.get_fields')
+def test_get_fields():
+    instance = RegularFieldsModel(**data)
+    serializer = TestSerializer(instance=instance)
+
+    assert serializer.get_fields()
+
+
 @mark.bench('serializers.ModelSerializer.to_representation')
 def test_object_serialization():
     instance = RegularFieldsModel(**data)
