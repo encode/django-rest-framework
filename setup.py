@@ -1,11 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup
-from setuptools.command.test import test as TestCommand
+try:
+    from Cython.Build import cythonize
+except ImportError:
+    ext_modules = None
+else:
+    from setuptools import Extension
+    ext_modules = cythonize(Extension('speedups', ['rest_framework/renderers.py',
+                                                   'rest_framework/__init__.py']))
+
 import re
 import os
 import sys
+
+from setuptools import setup
 
 
 def get_version(package):
@@ -43,7 +52,6 @@ def get_package_data(package):
 
 version = get_version('rest_framework')
 
-
 if sys.argv[-1] == 'publish':
     if os.system("pip freeze | grep wheel"):
         print("wheel not installed.\nUse `pip install wheel`.\nExiting.")
@@ -54,7 +62,6 @@ if sys.argv[-1] == 'publish':
     print("  git tag -a %s -m 'version %s'" % (version, version))
     print("  git push --tags")
     sys.exit()
-
 
 setup(
     name='djangorestframework',
@@ -68,6 +75,7 @@ setup(
     package_data=get_package_data('rest_framework'),
     install_requires=[],
     zip_safe=False,
+    ext_modules=ext_modules,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
@@ -82,7 +90,7 @@ setup(
 )
 
 # (*) Please direct queries to the discussion group, rather than to me directly
-#     Doing so helps ensure your question is helpful to other users.
-#     Queries directly to my email are likely to receive a canned response.
+# Doing so helps ensure your question is helpful to other users.
+# Queries directly to my email are likely to receive a canned response.
 #
 #     Many thanks for your understanding.
