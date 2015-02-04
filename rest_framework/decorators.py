@@ -18,7 +18,7 @@ def api_view(http_method_names=None):
     Decorator that converts a function-based view into an APIView subclass.
     Takes a list of allowed methods for the view as an argument.
     """
-    http_method_names = ['GET'] if http_method_names is None else http_method_names
+    http_method_names = ['GET'] if (http_method_names is None) else http_method_names
 
     def decorator(func):
 
@@ -112,7 +112,7 @@ def detail_route(methods=None, **kwargs):
     """
     Used to mark a method on a ViewSet that should be routed for detail requests.
     """
-    methods = ['get'] if methods is None else methods
+    methods = ['get'] if (methods is None) else methods
 
     def decorator(func):
         func.bind_to_methods = methods
@@ -126,7 +126,7 @@ def list_route(methods=None, **kwargs):
     """
     Used to mark a method on a ViewSet that should be routed for list requests.
     """
-    methods = ['get'] if methods is None else methods
+    methods = ['get'] if (methods is None) else methods
 
     def decorator(func):
         func.bind_to_methods = methods
