@@ -60,7 +60,7 @@ class GenericAPIView(views.APIView):
     paginate_by_param = api_settings.PAGINATE_BY_PARAM
     max_paginate_by = api_settings.MAX_PAGINATE_BY
     pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
-    page_kwarg = 'page'
+    page_kwarg = api_settings.PAGINATE_KWARG
 
     # The filter backend classes to use for queryset filtering
     filter_backends = api_settings.DEFAULT_FILTER_BACKENDS
