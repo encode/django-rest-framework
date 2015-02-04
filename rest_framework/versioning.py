@@ -1,6 +1,8 @@
 # coding: utf-8
 from __future__ import unicode_literals
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import resolve as django_resolve
+from django.core.urlresolvers import ResolverMatch
 from rest_framework import exceptions
 from rest_framework.compat import unicode_http_header
 from rest_framework.reverse import _reverse
@@ -23,6 +25,9 @@ class BaseVersioning(object):
 
     def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
         return _reverse(viewname, args, kwargs, request, format, **extra)
+
+    def resolve(self, path, urlconf=None):
+        return django_resolve(path, urlconf)
 
     def is_allowed_version(self, version):
         if not self.allowed_versions:
@@ -126,6 +131,17 @@ class NamespaceVersioning(BaseVersioning):
         return super(NamespaceVersioning, self).reverse(
             viewname, args, kwargs, request, format, **extra
         )
+
+    def resolve(self, path, urlconf=None, request=None):
+        match = django_resolve(path, urlconf)
+        if match.namespace:
+            _, view_name = match.view_name.split(':')
+            return ResolverMatch(func=match.func,
+                                 args=match.args,
+                                 kwargs=match.kwargs,
+                                 url_name=view_name,
+                                 app_name=match.app_name)
+        return match
 
 
 class HostNameVersioning(BaseVersioning):
