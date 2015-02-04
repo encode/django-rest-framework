@@ -86,8 +86,13 @@ class BasicAuthentication(BaseAuthentication):
         Authenticate the userid and password against username and password.
         """
         user = authenticate(username=userid, password=password)
-        if user is None or not user.is_active:
+
+        if user is None:
             raise exceptions.AuthenticationFailed(_('Invalid username/password.'))
+
+        if not user.is_active:
+            raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
+
         return (user, None)
 
     def authenticate_header(self, request):
