@@ -5,6 +5,7 @@ from rest_framework import serializers
 from tests.models import (
     ManyToManyTarget, ManyToManySource, ForeignKeyTarget, ForeignKeySource,
     NullableForeignKeySource, OneToOneTarget, NullableOneToOneSource,
+    ManyToManyBlankedSource,
 )
 
 
@@ -19,6 +20,12 @@ class ManyToManySourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ManyToManySource
         fields = ('id', 'name', 'targets')
+
+
+class ManyToManyBlankedSourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ManyToManyBlankedSource
+        fields = ('id', 'name', 'surname', 'story', 'targets')
 
 
 # ForeignKey
@@ -105,6 +112,17 @@ class PKManyToManyTests(TestCase):
             {'id': 3, 'name': 'source-3', 'targets': [1, 2, 3]}
         ]
         self.assertEqual(serializer.data, expected)
+
+    def test_many_to_many_blanked_retrieve(self):
+        data = {'id': 1, 'name': 'source-1-updated'}
+        instance = ManyToManyBlankedSource(name='source-%d' % data['id'])
+        instance.save()
+        serializer = ManyToManyBlankedSourceSerializer(instance, data=data)
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+        # set default values
+        data.update({'targets': [], 'surname': '', 'story': ''})
+        self.assertEqual(serializer.data, data)
 
     def test_reverse_many_to_many_update(self):
         data = {'id': 1, 'name': 'target-1', 'sources': [1]}

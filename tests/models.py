@@ -40,6 +40,17 @@ class ManyToManySource(RESTFrameworkModel):
     targets = models.ManyToManyField(ManyToManyTarget, related_name='sources')
 
 
+class ManyToManyBlankedSource(RESTFrameworkModel):
+    """
+    Some fields can be blank without being null
+    """
+    name = models.CharField(max_length=100)
+    surname = models.CharField(max_length=100, blank=True)
+    story = models.TextField(blank=True)
+    targets = models.ManyToManyField(ManyToManyTarget, blank=True,
+                                     related_name='blank_sources')
+
+
 # ForeignKey
 class ForeignKeyTarget(RESTFrameworkModel):
     name = models.CharField(max_length=100)
