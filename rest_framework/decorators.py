@@ -109,10 +109,12 @@ def permission_classes(permission_classes):
     return decorator
 
 
-def detail_route(methods=['get'], **kwargs):
+def detail_route(methods=None, **kwargs):
     """
     Used to mark a method on a ViewSet that should be routed for detail requests.
     """
+    if methods is None:
+        methods = ['get']
     def decorator(func):
         func.bind_to_methods = methods
         func.detail = True
@@ -121,10 +123,12 @@ def detail_route(methods=['get'], **kwargs):
     return decorator
 
 
-def list_route(methods=['get'], **kwargs):
+def list_route(methods=None, **kwargs):
     """
     Used to mark a method on a ViewSet that should be routed for list requests.
     """
+    if methods is None:
+        methods = ['get']
     def decorator(func):
         func.bind_to_methods = methods
         func.detail = False
