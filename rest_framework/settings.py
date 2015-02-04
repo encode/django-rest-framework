@@ -61,6 +61,7 @@ DEFAULTS = {
 
     # Pagination
     'PAGINATE_BY': None,
+    'PAGINATE_KWARG': 'page',
     'PAGINATE_BY_PARAM': None,
     'MAX_PAGINATE_BY': None,
 
