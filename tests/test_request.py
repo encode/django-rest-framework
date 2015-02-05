@@ -96,6 +96,18 @@ class TestContentParsing(TestCase):
         request.parsers = (FormParser(), MultiPartParser())
         self.assertEqual(list(request.DATA.items()), list(data.items()))
 
+    def test_request_data_with_form_array_content(self):
+        """
+        Ensure request.data returns content for POST request with form content
+        which contains array (list) values.
+        """
+        data = {'qwerty': ['uiop', 'blah', ]}
+        request = Request(factory.post('/', data))
+        request.parsers = (FormParser(), MultiPartParser())
+        # QueryDict().items() return only one item from list. To get all items
+        # have to use getlist() method. e.g. `request.data.getlist('qwerty')`
+        self.assertEqual(request.data, data)
+
     def test_request_DATA_with_text_content(self):
         """
         Ensure request.DATA returns content for POST request with
