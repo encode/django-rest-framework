@@ -1,21 +1,24 @@
 #!/usr/bin/env python
 # coding: utf-8
-from pytest import mark
-from datetime import datetime
 from decimal import Decimal
+
+from pytest import mark
+
+from datetime import datetime
 from rest_framework import viewsets, serializers
 from rest_framework.reverse import reverse
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APITransactionTestCase
 from tests.models import RegularFieldsAndFKModel2, RegularFieldsModel2
 
+
 data = {
     'big_integer_field': 100000,
     'char_field': 'a',
     'comma_separated_integer_field': '1,2',
-    'date_field': datetime.now().date(),
-    'datetime_field': datetime.now(),
-    'decimal_field': Decimal('1.5'),
+    'date_field': str(datetime.now().date()),
+    'datetime_field': str(datetime.now()),
+    'decimal_field': str(Decimal('1.5')),
     'email_field': 'somewhere@overtherainbow.com',
     'float_field': 0.443,
     'integer_field': 55,
@@ -25,7 +28,7 @@ data = {
     'slug_field': 'slug-friendly-text',
     'small_integer_field': 1,
     'text_field': 'lorem ipsum',
-    'time_field': datetime.now().time(),
+    'time_field': str(datetime.now().time()),
     'url_field': 'https://overtherainbow.com'
 }
 
@@ -44,6 +47,28 @@ class TestNestedSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegularFieldsAndFKModel2
         fields = list(data.keys()) + ['fk', 'method']
+
+    def create(self, validated_data):
+        fk = RegularFieldsModel2.objects.create(**validated_data['fk'])
+        validated_data['fk'] = fk
+
+        return RegularFieldsAndFKModel2.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        fk_data = validated_data.pop('fk')
+        fk_pk = fk_data.pop('auto_field', None)
+
+        if not fk_pk:
+            fk_pk = instance.fk_id
+
+        RegularFieldsModel2.objects.filter(pk=fk_pk).update(**fk_data)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.fk_id = fk_pk
+        instance.save()
+
+        return instance
 
 
 class RegularFieldsAndFKViewSet(viewsets.ModelViewSet):
@@ -90,7 +115,7 @@ class FullStackBenchmarksTestCase(APITransactionTestCase):
         new_data = data.copy()
         new_data['fk'] = data.copy()
 
-        response = self.client.post(url, data=new_data)
+        response = self.client.post(url, data=new_data, format='json')
         assert response.status_code == 201, (response.rendered_content, url)
 
     @mark.bench('viewsets.ModelViewSet.update', iterations=1000)
@@ -103,7 +128,7 @@ class FullStackBenchmarksTestCase(APITransactionTestCase):
         new_fk_data['auto_field'] = new_fk.pk
         new_data['fk'] = new_fk_data
 
-        response = self.client.put(url, data=new_data)
+        response = self.client.put(url, data=new_data, format='json')
         assert response.status_code == 200, (response.rendered_content, url)
 
     @mark.bench('viewsets.ModelViewSet.partial_update', iterations=1000)
