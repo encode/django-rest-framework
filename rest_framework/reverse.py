@@ -3,21 +3,8 @@ Provide urlresolver functions that return fully qualified URLs or view names
 """
 from __future__ import unicode_literals
 from django.core.urlresolvers import reverse as django_reverse
-from django.core.urlresolvers import resolve as django_resolve
 from django.utils import six
 from django.utils.functional import lazy
-
-
-def resolve(path, urlconf=None, request=None):
-    """
-    If versioning is being used then we pass any `resolve` calls through
-    to the versioning scheme instance, so that the resulting view name
-    can be modified if needed.
-    """
-    scheme = getattr(request, 'versioning_scheme', None)
-    if scheme is not None:
-        return scheme.resolve(path, urlconf, request)
-    return django_resolve(path, urlconf)
 
 
 def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra):
