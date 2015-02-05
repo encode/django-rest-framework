@@ -986,14 +986,24 @@ class ModelSerializer(Serializer):
             # Fields with choices get coerced into `ChoiceField`
             # instead of using their regular typed field.
             field_class = ChoiceField
+
         if not issubclass(field_class, ModelField):
             # `model_field` is only valid for the fallback case of
             # `ModelField`, which is used when no other typed field
             # matched to the model field.
             field_kwargs.pop('model_field', None)
+
         if not issubclass(field_class, CharField) and not issubclass(field_class, ChoiceField):
             # `allow_blank` is only valid for textual fields.
             field_kwargs.pop('allow_blank', None)
+
+        if postgres_fields and isinstance(model_field, postgres_fields.ArrayField):
+            child_model_field = model_field.base_field.base_field
+            child_field_class, child_field_kwargs = self.build_standard_field(
+                'child', child_model_field
+            )
+
+            field_kwargs['child'] = child_field_class(**child_field_kwargs)
 
         return field_class, field_kwargs
 
