@@ -122,10 +122,13 @@ class NamespaceVersioning(BaseVersioning):
 
     def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
         if request.version is not None:
-            viewname = request.version + ':' + viewname
+            viewname = self.get_versioned_viewname(viewname, request)
         return super(NamespaceVersioning, self).reverse(
             viewname, args, kwargs, request, format, **extra
         )
+
+    def get_versioned_viewname(self, viewname, request):
+        return request.version + ':' + viewname
 
 
 class HostNameVersioning(BaseVersioning):
