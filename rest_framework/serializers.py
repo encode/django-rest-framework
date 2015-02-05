@@ -998,7 +998,7 @@ class ModelSerializer(Serializer):
             field_kwargs.pop('allow_blank', None)
 
         if postgres_fields and isinstance(model_field, postgres_fields.ArrayField):
-            child_model_field = model_field.base_field.base_field
+            child_model_field = model_field.base_field
             child_field_class, child_field_kwargs = self.build_standard_field(
                 'child', child_model_field
             )
