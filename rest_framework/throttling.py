@@ -191,7 +191,7 @@ class UserRateThrottle(SimpleRateThrottle):
 
     def get_cache_key(self, request, view):
         if request.user.is_authenticated():
-            ident = request.user.id
+            ident = request.user.pk
         else:
             ident = self.get_ident(request)
 
@@ -239,7 +239,7 @@ class ScopedRateThrottle(SimpleRateThrottle):
         with the '.throttle_scope` property of the view.
         """
         if request.user.is_authenticated():
-            ident = request.user.id
+            ident = request.user.pk
         else:
             ident = self.get_ident(request)
 
