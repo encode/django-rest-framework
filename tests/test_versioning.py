@@ -1,6 +1,5 @@
-from .utils import MockObject, MockQueryset, UsingURLPatterns
+from .utils import UsingURLPatterns
 from django.conf.urls import include, url
-from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from rest_framework import status, versioning
 from rest_framework.decorators import APIView
@@ -33,8 +32,8 @@ class RequestInvalidVersionView(APIView):
 
 factory = APIRequestFactory()
 
-mock_view = lambda request: None
-dummy_view = lambda request, pk: None
+dummy_view = lambda request: None
+dummy_pk_view = lambda request, pk: None
 
 
 class TestRequestVersion:
@@ -112,14 +111,14 @@ class TestRequestVersion:
 
 class TestURLReversing(UsingURLPatterns, APITestCase):
     included = [
-        url(r'^namespaced/$', mock_view, name='another'),
-        url(r'^example/(?P<pk>\d+)/$', dummy_view, name='example-detail')
+        url(r'^namespaced/$', dummy_view, name='another'),
+        url(r'^example/(?P<pk>\d+)/$', dummy_pk_view, name='example-detail')
     ]
 
     urlpatterns = [
         url(r'^v1/', include(included, namespace='v1')),
-        url(r'^another/$', mock_view, name='another'),
-        url(r'^(?P<version>[^/]+)/another/$', mock_view, name='another'),
+        url(r'^another/$', dummy_view, name='another'),
+        url(r'^(?P<version>[^/]+)/another/$', dummy_view, name='another'),
     ]
 
     def test_reverse_unversioned(self):
@@ -230,7 +229,7 @@ class TestInvalidVersion:
 
 class TestHyperlinkedRelatedField(UsingURLPatterns, APITestCase):
     included = [
-        url(r'^namespaced/(?P<pk>\d+)/$', mock_view, name='namespaced'),
+        url(r'^namespaced/(?P<pk>\d+)/$', dummy_view, name='namespaced'),
     ]
 
     urlpatterns = [
@@ -241,28 +240,20 @@ class TestHyperlinkedRelatedField(UsingURLPatterns, APITestCase):
     def setUp(self):
         super(TestHyperlinkedRelatedField, self).setUp()
 
-        class HyperlinkedMockQueryset(MockQueryset):
-            def get(self, **lookup):
-                for item in self.items:
-                    if item.pk == int(lookup.get('pk', -1)):
-                        return item
-                raise ObjectDoesNotExist()
+        class MockQueryset(object):
+            def get(self, pk):
+                return 'object %s' % pk
 
-        self.queryset = HyperlinkedMockQueryset([
-            MockObject(pk=1, name='foo'),
-            MockObject(pk=2, name='bar'),
-            MockObject(pk=3, name='baz')
-        ])
         self.field = serializers.HyperlinkedRelatedField(
             view_name='namespaced',
-            queryset=self.queryset
+            queryset=MockQueryset()
         )
-        request = factory.post('/', urlconf='tests.test_versioning')
+        request = factory.get('/')
         request.versioning_scheme = NamespaceVersioning()
         request.version = 'v1'
         self.field._context = {'request': request}
 
     def test_bug_2489(self):
-        self.field.to_internal_value('/v1/namespaced/3/')
+        assert self.field.to_internal_value('/v1/namespaced/3/') == 'object 3'
         with pytest.raises(serializers.ValidationError):
             self.field.to_internal_value('/v2/namespaced/3/')
