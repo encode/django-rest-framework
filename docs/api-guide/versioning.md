@@ -150,7 +150,7 @@ In the following example we're giving a set of views two different possible URL 
         url(r'^v2/bookings/', include('bookings.urls', namespace='v2'))
     ]
 
-Both `URLParameterVersioning` and `NamespaceVersioning` are reasonable if you just need a simple versioning scheme. The `URLParameterVersioning` approach might be better suitable for small ad-hoc projects, and the `NaemspaceVersioning` is probably easier to manage for larger projects.
+Both `URLParameterVersioning` and `NamespaceVersioning` are reasonable if you just need a simple versioning scheme. The `URLParameterVersioning` approach might be better suitable for small ad-hoc projects, and the `NamespaceVersioning` is probably easier to manage for larger projects.
 
 ## HostNameVersioning
 
