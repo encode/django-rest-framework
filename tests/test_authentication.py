@@ -49,6 +49,8 @@ urlpatterns = patterns(
     (r'^session/$', MockView.as_view(authentication_classes=[SessionAuthentication])),
     (r'^basic/$', MockView.as_view(authentication_classes=[BasicAuthentication])),
     (r'^token/$', MockView.as_view(authentication_classes=[TokenAuthentication])),
+    (r'^token2/$', MockView.as_view(authentication_classes=[TokenAuthentication, SessionAuthentication])),
+    (r'^token3/$', MockView.as_view(authentication_classes=[SessionAuthentication, TokenAuthentication])),
     (r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
     (r'^oauth/$', MockView.as_view(authentication_classes=[OAuthAuthentication])),
     (
@@ -216,6 +218,22 @@ class TokenAuthTests(TestCase):
     def test_post_json_failing_token_auth(self):
         """Ensure POSTing json over token auth without correct credentials fails"""
         response = self.csrf_client.post('/token/', {'example': 'example'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_post_failing_token_auth_when_token_is_first_auth_class(self):
+        """
+        Ensure POSTing with token auth without correct credentials fails with 401
+        when TokenSession is the first in authentication_classes
+        """
+        response = self.csrf_client.post('/token2/', {'example': 'example'})
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_post_failing_token_auth_when_token_is_second_auth_class(self):
+        """
+        Ensure POSTing with token auth without correct credentials fails with 401
+        when TokenSession is not the first in authentication_classes
+        """
+        response = self.csrf_client.post('/token3/', {'example': 'example'})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_token_has_auto_assigned_key_if_none_provided(self):
