@@ -409,7 +409,7 @@ class APIView(View):
             warnings.warn(
                 'The `exception_handler(exc)` call signature is deprecated. '
                 'Use `exception_handler(exc, context) instead.',
-                PendingDeprecationWarning
+                DeprecationWarning
             )
             response = exception_handler(exc)
         else:

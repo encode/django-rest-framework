@@ -1103,9 +1103,9 @@ class ModelSerializer(Serializer):
         write_only_fields = getattr(self.Meta, 'write_only_fields', None)
         if write_only_fields is not None:
             warnings.warn(
-                "The `Meta.write_only_fields` option is pending deprecation. "
+                "The `Meta.write_only_fields` option is deprecated. "
                 "Use `Meta.extra_kwargs={<field_name>: {'write_only': True}}` instead.",
-                PendingDeprecationWarning,
+                DeprecationWarning,
                 stacklevel=3
             )
             for field_name in write_only_fields:
@@ -1116,9 +1116,9 @@ class ModelSerializer(Serializer):
         view_name = getattr(self.Meta, 'view_name', None)
         if view_name is not None:
             warnings.warn(
-                "The `Meta.view_name` option is pending deprecation. "
+                "The `Meta.view_name` option is deprecated. "
                 "Use `Meta.extra_kwargs={'url': {'view_name': ...}}` instead.",
-                PendingDeprecationWarning,
+                DeprecationWarning,
                 stacklevel=3
             )
             kwargs = extra_kwargs.get(api_settings.URL_FIELD_NAME, {})
@@ -1128,9 +1128,9 @@ class ModelSerializer(Serializer):
         lookup_field = getattr(self.Meta, 'lookup_field', None)
         if lookup_field is not None:
             warnings.warn(
-                "The `Meta.lookup_field` option is pending deprecation. "
+                "The `Meta.lookup_field` option is deprecated. "
                 "Use `Meta.extra_kwargs={'url': {'lookup_field': ...}}` instead.",
-                PendingDeprecationWarning,
+                DeprecationWarning,
                 stacklevel=3
             )
             kwargs = extra_kwargs.get(api_settings.URL_FIELD_NAME, {})
