@@ -138,11 +138,12 @@ A text representation. Optionally validates the text to be shorter than `max_len
 
 Corresponds to `django.db.models.fields.CharField` or `django.db.models.fields.TextField`.
 
-**Signature:** `CharField(max_length=None, min_length=None, allow_blank=False)`
+**Signature:** `CharField(max_length=None, min_length=None, allow_blank=False, trim_whitespace=True)`
 
 - `max_length` - Validates that the input contains no more than this number of characters.
 - `min_length` - Validates that the input contains no fewer than this number of characters.
 - `allow_blank` - If set to `True` then the empty string should be considered a valid value. If set to `False` then the empty string is considered invalid and will raise a validation error. Defaults to `False`.
+- `trim_whitespace` - If set to `True` then leading and trailing whitespace is trimmed. Defaults to `True`.
 
 The `allow_null` option is also available for string fields, although its usage is discouraged in favor of `allow_blank`. It is valid to set both `allow_blank=True` and `allow_null=True`, but doing so means that there will be two differing types of empty value permissible for string representations, which can lead to data inconsistencies and subtle application bugs.
 
@@ -524,7 +525,7 @@ As an example, let's create a field that can be used represent the class name of
             # We pass the object instance onto `to_representation`,
             # not just the field attribute.
             return obj
- 
+
         def to_representation(self, obj):
             """
             Serialize the object's class name.

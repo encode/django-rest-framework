@@ -555,6 +555,7 @@ class CharField(Field):
 
     def __init__(self, **kwargs):
         self.allow_blank = kwargs.pop('allow_blank', False)
+        self.trim_whitespace = kwargs.pop('trim_whitespace', True)
         max_length = kwargs.pop('max_length', None)
         min_length = kwargs.pop('min_length', None)
         super(CharField, self).__init__(**kwargs)
@@ -576,10 +577,20 @@ class CharField(Field):
         return super(CharField, self).run_validation(data)
 
     def to_internal_value(self, data):
-        return six.text_type(data)
+        value = six.text_type(data)
+
+        if self.trim_whitespace:
+            return value.strip()
+
+        return value
 
     def to_representation(self, value):
-        return six.text_type(value)
+        representation = six.text_type(value)
+
+        if self.trim_whitespace:
+            return representation.strip()
+
+        return representation
 
 
 class EmailField(CharField):
