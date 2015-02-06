@@ -96,7 +96,7 @@ Notice that we're no longer explicitly tying our requests or responses to a give
 
 ## Adding optional format suffixes to our URLs
 
-To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints.  Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as [http://example.com/api/items/4.json][json-url].
+To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints.  Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as [http://example.com/api/items/4/.json][json-url].
 
 Start by adding a `format` keyword argument to both of the views, like so.
 
