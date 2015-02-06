@@ -728,7 +728,9 @@ class ModelSerializer(Serializer):
         models.TimeField: TimeField,
         models.URLField: URLField,
     }
-    serializer_related_class = PrimaryKeyRelatedField
+    serializer_related_field = PrimaryKeyRelatedField
+    serializer_url_field = HyperlinkedIdentityField
+    serializer_choice_field = ChoiceField
 
     # Default `create` and `update` behavior...
 
@@ -985,7 +987,7 @@ class ModelSerializer(Serializer):
         if 'choices' in field_kwargs:
             # Fields with choices get coerced into `ChoiceField`
             # instead of using their regular typed field.
-            field_class = ChoiceField
+            field_class = self.serializer_choice_field
 
         if not issubclass(field_class, ModelField):
             # `model_field` is only valid for the fallback case of
@@ -998,11 +1000,12 @@ class ModelSerializer(Serializer):
             field_kwargs.pop('allow_blank', None)
 
         if postgres_fields and isinstance(model_field, postgres_fields.ArrayField):
+            # Populate the `child` argument on `ListField` instances generated
+            # for the PostgrSQL specfic `ArrayField`.
             child_model_field = model_field.base_field
             child_field_class, child_field_kwargs = self.build_standard_field(
                 'child', child_model_field
             )
-
             field_kwargs['child'] = child_field_class(**child_field_kwargs)
 
         return field_class, field_kwargs
@@ -1011,7 +1014,7 @@ class ModelSerializer(Serializer):
         """
         Create fields for forward and reverse relationships.
         """
-        field_class = self.serializer_related_class
+        field_class = self.serializer_related_field
         field_kwargs = get_relation_kwargs(field_name, relation_info)
 
         # `view_name` is only valid for hyperlinked relationships.
@@ -1047,7 +1050,7 @@ class ModelSerializer(Serializer):
         """
         Create a field representing the object's own URL.
         """
-        field_class = HyperlinkedIdentityField
+        field_class = self.serializer_url_field
         field_kwargs = get_url_kwargs(model_class)
 
         return field_class, field_kwargs
@@ -1358,7 +1361,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
     * A 'url' field is included instead of the 'id' field.
     * Relationships to other instances are hyperlinks, instead of primary keys.
     """
-    serializer_related_class = HyperlinkedRelatedField
+    serializer_related_field = HyperlinkedRelatedField
 
     def get_default_field_names(self, declared_fields, model_info):
         """

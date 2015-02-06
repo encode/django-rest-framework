@@ -577,9 +577,25 @@ Normally if a `ModelSerializer` does not generate the fields you need by default
 
 A mapping of Django model classes to REST framework serializer classes. You can override this mapping to alter the default serializer classes that should be used for each model class.
 
-### `.serializer_relational_field`
+### `.serializer_related_field`
 
-This property should be the serializer field class, that is used for relational fields by default. For `ModelSerializer` this defaults to `PrimaryKeyRelatedField`. For `HyperlinkedModelSerializer` this defaults to `HyperlinkedRelatedField`.
+This property should be the serializer field class, that is used for relational fields by default.
+
+For `ModelSerializer` this defaults to `PrimaryKeyRelatedField`.
+
+For `HyperlinkedModelSerializer` this defaults to `serializers.HyperlinkedRelatedField`.
+
+### `serializer_url_field`
+
+The serializer field class that should be used for any `url` field on the serializer.
+
+Defaults to `serializers.HyperlinkedIdentityField`
+
+### `serializer_choice_field`
+
+The serializer field class that should be used for any choice fields on the serializer.
+
+Defaults to `serializers.ChoiceField`
 
 ### The field_class and field_kwargs API
 
