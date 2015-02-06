@@ -410,6 +410,14 @@ class TestCharField(FieldValues):
     }
     field = serializers.CharField()
 
+    def test_trim_whitespace_default(self):
+        field = serializers.CharField()
+        assert field.to_representation(' abc ') == 'abc'
+
+    def test_trim_whitespace_disabled(self):
+        field = serializers.CharField(trim_whitespace=False)
+        assert field.to_representation(' abc ') == ' abc '
+
 
 class TestEmailField(FieldValues):
     """
