@@ -855,8 +855,9 @@ class ModelSerializer(Serializer):
             )
 
             # Include any kwargs defined in `Meta.extra_kwargs`
-            field_kwargs = self.build_field_kwargs(
-                field_kwargs, extra_kwargs, field_name
+            extra_field_kwargs = extra_kwargs.get(field_name, {})
+            field_kwargs = self.include_extra_kwargs(
+                field_kwargs, extra_field_kwargs
             )
 
             # Create the serializer field.
@@ -1064,14 +1065,12 @@ class ModelSerializer(Serializer):
             (field_name, model_class.__name__)
         )
 
-    def build_field_kwargs(self, kwargs, extra_kwargs, field_name):
+    def include_extra_kwargs(self, kwargs, extra_kwargs):
         """
-        Include an 'extra_kwargs' that have been included for this field,
+        Include any 'extra_kwargs' that have been included for this field,
         possibly removing any incompatible existing keyword arguments.
         """
-        extras = extra_kwargs.get(field_name, {})
-
-        if extras.get('read_only', False):
+        if extra_kwargs.get('read_only', False):
             for attr in [
                 'required', 'default', 'allow_blank', 'allow_null',
                 'min_length', 'max_length', 'min_value', 'max_value',
@@ -1079,10 +1078,10 @@ class ModelSerializer(Serializer):
             ]:
                 kwargs.pop(attr, None)
 
-        if extras.get('default') and kwargs.get('required') is False:
+        if extra_kwargs.get('default') and kwargs.get('required') is False:
             kwargs.pop('required')
 
-        kwargs.update(extras)
+        kwargs.update(extra_kwargs)
 
         return kwargs
 
