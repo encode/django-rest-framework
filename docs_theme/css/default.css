@@ -186,6 +186,10 @@ body{
     margin-top: 15px
 }
 
+#main-content img {
+    display: block;
+    margin: 40px auto;
+}
 /* custom navigation styles */
 
 .navbar .navbar-inner{
