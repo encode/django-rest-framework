@@ -4,6 +4,7 @@ from rest_framework import serializers
 import datetime
 import django
 import pytest
+import uuid
 
 
 # Tests for field keyword arguments and core functionality.
@@ -223,8 +224,8 @@ class MockHTMLDict(dict):
     getlist = None
 
 
-class TestCharHTMLInput:
-    def test_empty_html_checkbox(self):
+class TestHTMLInput:
+    def test_empty_html_charfield(self):
         class TestSerializer(serializers.Serializer):
             message = serializers.CharField(default='happy')
 
@@ -232,23 +233,31 @@ class TestCharHTMLInput:
         assert serializer.is_valid()
         assert serializer.validated_data == {'message': 'happy'}
 
-    def test_empty_html_checkbox_allow_null(self):
+    def test_empty_html_charfield_allow_null(self):
         class TestSerializer(serializers.Serializer):
             message = serializers.CharField(allow_null=True)
 
-        serializer = TestSerializer(data=MockHTMLDict())
+        serializer = TestSerializer(data=MockHTMLDict({'message': ''}))
         assert serializer.is_valid()
         assert serializer.validated_data == {'message': None}
 
-    def test_empty_html_checkbox_allow_null_allow_blank(self):
+    def test_empty_html_datefield_allow_null(self):
+        class TestSerializer(serializers.Serializer):
+            expiry = serializers.DateField(allow_null=True)
+
+        serializer = TestSerializer(data=MockHTMLDict({'expiry': ''}))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'expiry': None}
+
+    def test_empty_html_charfield_allow_null_allow_blank(self):
         class TestSerializer(serializers.Serializer):
             message = serializers.CharField(allow_null=True, allow_blank=True)
 
-        serializer = TestSerializer(data=MockHTMLDict({}))
+        serializer = TestSerializer(data=MockHTMLDict({'message': ''}))
         assert serializer.is_valid()
         assert serializer.validated_data == {'message': ''}
 
-    def test_empty_html_required_false(self):
+    def test_empty_html_charfield_required_false(self):
         class TestSerializer(serializers.Serializer):
             message = serializers.CharField(required=False)
 
@@ -338,7 +347,7 @@ class TestBooleanField(FieldValues):
         False: False,
     }
     invalid_inputs = {
-        'foo': ['`foo` is not a valid boolean.'],
+        'foo': ['"foo" is not a valid boolean.'],
         None: ['This field may not be null.']
     }
     outputs = {
@@ -368,7 +377,7 @@ class TestNullBooleanField(FieldValues):
         None: None
     }
     invalid_inputs = {
-        'foo': ['`foo` is not a valid boolean.'],
+        'foo': ['"foo" is not a valid boolean.'],
     }
     outputs = {
         'true': True,
@@ -439,7 +448,7 @@ class TestSlugField(FieldValues):
         'slug-99': 'slug-99',
     }
     invalid_inputs = {
-        'slug 99': ["Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."]
+        'slug 99': ['Enter a valid "slug" consisting of letters, numbers, underscores or hyphens.']
     }
     outputs = {}
     field = serializers.SlugField()
@@ -457,6 +466,23 @@ class TestURLField(FieldValues):
     }
     outputs = {}
     field = serializers.URLField()
+
+
+class TestUUIDField(FieldValues):
+    """
+    Valid and invalid values for `UUIDField`.
+    """
+    valid_inputs = {
+        '825d7aeb-05a9-45b5-a5b7-05df87923cda': uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda'),
+        '825d7aeb05a945b5a5b705df87923cda': uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda')
+    }
+    invalid_inputs = {
+        '825d7aeb-05a9-45b5-a5b7': ['"825d7aeb-05a9-45b5-a5b7" is not a valid UUID.']
+    }
+    outputs = {
+        uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda'): '825d7aeb-05a9-45b5-a5b7-05df87923cda'
+    }
+    field = serializers.UUIDField()
 
 
 # Number types...
@@ -640,8 +666,8 @@ class TestDateField(FieldValues):
         datetime.date(2001, 1, 1): datetime.date(2001, 1, 1),
     }
     invalid_inputs = {
-        'abc': ['Date has wrong format. Use one of these formats instead: YYYY[-MM[-DD]]'],
-        '2001-99-99': ['Date has wrong format. Use one of these formats instead: YYYY[-MM[-DD]]'],
+        'abc': ['Date has wrong format. Use one of these formats instead: YYYY[-MM[-DD]].'],
+        '2001-99-99': ['Date has wrong format. Use one of these formats instead: YYYY[-MM[-DD]].'],
         datetime.datetime(2001, 1, 1, 12, 00): ['Expected a date but got a datetime.'],
     }
     outputs = {
@@ -658,7 +684,7 @@ class TestCustomInputFormatDateField(FieldValues):
         '1 Jan 2001': datetime.date(2001, 1, 1),
     }
     invalid_inputs = {
-        '2001-01-01': ['Date has wrong format. Use one of these formats instead: DD [Jan-Dec] YYYY']
+        '2001-01-01': ['Date has wrong format. Use one of these formats instead: DD [Jan-Dec] YYYY.']
     }
     outputs = {}
     field = serializers.DateField(input_formats=['%d %b %Y'])
@@ -702,8 +728,8 @@ class TestDateTimeField(FieldValues):
         '2001-01-01T14:00+01:00' if (django.VERSION > (1, 4)) else '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC())
     }
     invalid_inputs = {
-        'abc': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]'],
-        '2001-99-99T99:00': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]'],
+        'abc': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].'],
+        '2001-99-99T99:00': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].'],
         datetime.date(2001, 1, 1): ['Expected a datetime but got a date.'],
     }
     outputs = {
@@ -721,7 +747,7 @@ class TestCustomInputFormatDateTimeField(FieldValues):
         '1:35pm, 1 Jan 2001': datetime.datetime(2001, 1, 1, 13, 35, tzinfo=timezone.UTC()),
     }
     invalid_inputs = {
-        '2001-01-01T20:50': ['Datetime has wrong format. Use one of these formats instead: hh:mm[AM|PM], DD [Jan-Dec] YYYY']
+        '2001-01-01T20:50': ['Datetime has wrong format. Use one of these formats instead: hh:mm[AM|PM], DD [Jan-Dec] YYYY.']
     }
     outputs = {}
     field = serializers.DateTimeField(default_timezone=timezone.UTC(), input_formats=['%I:%M%p, %d %b %Y'])
@@ -773,8 +799,8 @@ class TestTimeField(FieldValues):
         datetime.time(13, 00): datetime.time(13, 00),
     }
     invalid_inputs = {
-        'abc': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss[.uuuuuu]]'],
-        '99:99': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss[.uuuuuu]]'],
+        'abc': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss[.uuuuuu]].'],
+        '99:99': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss[.uuuuuu]].'],
     }
     outputs = {
         datetime.time(13, 00): '13:00:00'
@@ -790,7 +816,7 @@ class TestCustomInputFormatTimeField(FieldValues):
         '1:00pm': datetime.time(13, 00),
     }
     invalid_inputs = {
-        '13:00': ['Time has wrong format. Use one of these formats instead: hh:mm[AM|PM]'],
+        '13:00': ['Time has wrong format. Use one of these formats instead: hh:mm[AM|PM].'],
     }
     outputs = {}
     field = serializers.TimeField(input_formats=['%I:%M%p'])
@@ -832,7 +858,7 @@ class TestChoiceField(FieldValues):
         'good': 'good',
     }
     invalid_inputs = {
-        'amazing': ['`amazing` is not a valid choice.']
+        'amazing': ['"amazing" is not a valid choice.']
     }
     outputs = {
         'good': 'good',
@@ -872,8 +898,8 @@ class TestChoiceFieldWithType(FieldValues):
         3: 3,
     }
     invalid_inputs = {
-        5: ['`5` is not a valid choice.'],
-        'abc': ['`abc` is not a valid choice.']
+        5: ['"5" is not a valid choice.'],
+        'abc': ['"abc" is not a valid choice.']
     }
     outputs = {
         '1': 1,
@@ -899,7 +925,7 @@ class TestChoiceFieldWithListChoices(FieldValues):
         'good': 'good',
     }
     invalid_inputs = {
-        'awful': ['`awful` is not a valid choice.']
+        'awful': ['"awful" is not a valid choice.']
     }
     outputs = {
         'good': 'good'
@@ -917,8 +943,8 @@ class TestMultipleChoiceField(FieldValues):
         ('aircon', 'manual'): set(['aircon', 'manual']),
     }
     invalid_inputs = {
-        'abc': ['Expected a list of items but got type `str`.'],
-        ('aircon', 'incorrect'): ['`incorrect` is not a valid choice.']
+        'abc': ['Expected a list of items but got type "str".'],
+        ('aircon', 'incorrect'): ['"incorrect" is not a valid choice.']
     }
     outputs = [
         (['aircon', 'manual'], set(['aircon', 'manual']))
@@ -1021,14 +1047,14 @@ class TestValidImageField(FieldValues):
 
 class TestListField(FieldValues):
     """
-    Values for `ListField`.
+    Values for `ListField` with IntegerField as child.
     """
     valid_inputs = [
         ([1, 2, 3], [1, 2, 3]),
         (['1', '2', '3'], [1, 2, 3])
     ]
     invalid_inputs = [
-        ('not a list', ['Expected a list of items but got type `str`']),
+        ('not a list', ['Expected a list of items but got type "str".']),
         ([1, 2, 'error'], ['A valid integer is required.'])
     ]
     outputs = [
@@ -1036,6 +1062,55 @@ class TestListField(FieldValues):
         (['1', '2', '3'], [1, 2, 3])
     ]
     field = serializers.ListField(child=serializers.IntegerField())
+
+
+class TestUnvalidatedListField(FieldValues):
+    """
+    Values for `ListField` with no `child` argument.
+    """
+    valid_inputs = [
+        ([1, '2', True, [4, 5, 6]], [1, '2', True, [4, 5, 6]]),
+    ]
+    invalid_inputs = [
+        ('not a list', ['Expected a list of items but got type "str".']),
+    ]
+    outputs = [
+        ([1, '2', True, [4, 5, 6]], [1, '2', True, [4, 5, 6]]),
+    ]
+    field = serializers.ListField()
+
+
+class TestDictField(FieldValues):
+    """
+    Values for `ListField` with CharField as child.
+    """
+    valid_inputs = [
+        ({'a': 1, 'b': '2', 3: 3}, {'a': '1', 'b': '2', '3': '3'}),
+    ]
+    invalid_inputs = [
+        ({'a': 1, 'b': None}, ['This field may not be null.']),
+        ('not a dict', ['Expected a dictionary of items but got type "str".']),
+    ]
+    outputs = [
+        ({'a': 1, 'b': '2', 3: 3}, {'a': '1', 'b': '2', '3': '3'}),
+    ]
+    field = serializers.DictField(child=serializers.CharField())
+
+
+class TestUnvalidatedDictField(FieldValues):
+    """
+    Values for `ListField` with no `child` argument.
+    """
+    valid_inputs = [
+        ({'a': 1, 'b': [4, 5, 6], 1: 123}, {'a': 1, 'b': [4, 5, 6], '1': 123}),
+    ]
+    invalid_inputs = [
+        ('not a dict', ['Expected a dictionary of items but got type "str".']),
+    ]
+    outputs = [
+        ({'a': 1, 'b': [4, 5, 6]}, {'a': 1, 'b': [4, 5, 6]}),
+    ]
+    field = serializers.DictField()
 
 
 # Tests for FieldField.

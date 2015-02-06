@@ -17,7 +17,7 @@ class BaseVersioning(object):
 
     def determine_version(self, request, *args, **kwargs):
         msg = '{cls}.determine_version() must be implemented.'
-        raise NotImplemented(msg.format(
+        raise NotImplementedError(msg.format(
             cls=self.__class__.__name__
         ))
 
@@ -36,7 +36,7 @@ class AcceptHeaderVersioning(BaseVersioning):
     Host: example.com
     Accept: application/json; version=1.0
     """
-    invalid_version_message = _("Invalid version in 'Accept' header.")
+    invalid_version_message = _('Invalid version in "Accept" header.')
 
     def determine_version(self, request, *args, **kwargs):
         media_type = _MediaType(request.accepted_media_type)
@@ -122,10 +122,13 @@ class NamespaceVersioning(BaseVersioning):
 
     def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
         if request.version is not None:
-            viewname = request.version + ':' + viewname
+            viewname = self.get_versioned_viewname(viewname, request)
         return super(NamespaceVersioning, self).reverse(
             viewname, args, kwargs, request, format, **extra
         )
+
+    def get_versioned_viewname(self, viewname, request):
+        return request.version + ':' + viewname
 
 
 class HostNameVersioning(BaseVersioning):

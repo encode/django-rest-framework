@@ -81,10 +81,13 @@ class Response(SimpleTemplateResponse):
 
     def __getstate__(self):
         """
-        Remove attributes from the response that shouldn't be cached
+        Remove attributes from the response that shouldn't be cached.
         """
         state = super(Response, self).__getstate__()
-        for key in ('accepted_renderer', 'renderer_context', 'data'):
+        for key in (
+            'accepted_renderer', 'renderer_context', 'resolver_match',
+            'client', 'request', 'wsgi_request', '_closable_objects'
+        ):
             if key in state:
                 del state[key]
         return state

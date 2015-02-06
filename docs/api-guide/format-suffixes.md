@@ -55,6 +55,18 @@ The name of the kwarg used may be modified by using the `FORMAT_SUFFIX_KWARG` se
 
 Also note that `format_suffix_patterns` does not support descending into `include` URL patterns.
 
+### Using with `i18n_patterns`
+
+If using the `i18n_patterns` function provided by Django, as well as `format_suffix_patterns` you should make sure that the `i18n_patterns` function is applied as the final, or outermost function. For example:
+
+    url patterns = [
+        …
+    ]
+
+    urlpatterns = i18n_patterns(
+        format_suffix_patterns(urlpatterns, allowed=['json', 'html'])
+    )
+
 ---
 
 ## Accept headers vs. format suffixes

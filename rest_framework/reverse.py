@@ -1,5 +1,5 @@
 """
-Provide reverse functions that return fully qualified URLs
+Provide urlresolver functions that return fully qualified URLs or view names
 """
 from __future__ import unicode_literals
 from django.core.urlresolvers import reverse as django_reverse

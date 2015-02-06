@@ -28,13 +28,12 @@ For more details see the [3.0 release notes][3.0-announcement].
 <img alt="Django REST Framework" title="Logo by Jake 'Sid' Smith" src="img/logo.png" width="600px" style="display: block; margin: 0 auto 0 auto">
 </p>
 
-
 Django REST framework is a powerful and flexible toolkit that makes it easy to build Web APIs.
 
 Some reasons you might want to use REST framework:
 
 * The [Web browsable API][sandbox] is a huge usability win for your developers.
-* [Authentication policies][authentication] including optional packages for [OAuth1a][oauth1-section] and [OAuth2][oauth2-section].
+* [Authentication policies][authentication] including packages for [OAuth1a][oauth1-section] and [OAuth2][oauth2-section].
 * [Serialization][serializers] that supports both [ORM][modelserializer-section] and [non-ORM][serializer-section] data sources.
 * Customizable all the way down - just use [regular function-based views][functionview-section] if you don't need the [more][generic-views] [powerful][viewsets] [features][routers].
 * [Extensive documentation][index], and [great community support][group].
@@ -51,13 +50,12 @@ Some reasons you might want to use REST framework:
 REST framework requires the following:
 
 * Python (2.6.5+, 2.7, 3.2, 3.3, 3.4)
-* Django (1.4.11+, 1.5.5+, 1.6, 1.7)
+* Django (1.4.11+, 1.5.6+, 1.6.3+, 1.7)
 
 The following packages are optional:
 
 * [Markdown][markdown] (2.1.0+) - Markdown support for the browsable API.
-* [django-filter][django-filter] (0.5.4+) - Filtering support.
-* [django-restframework-oauth][django-restframework-oauth] package for OAuth 1.0a and 2.0 support.
+* [django-filter][django-filter] (0.9.2+) - Filtering support.
 * [django-guardian][django-guardian] (1.1.1+) - Object level permissions support.
 
 ## Installation
@@ -197,14 +195,10 @@ General guides to using REST framework.
 * [Third Party Resources][third-party-resources]
 * [Contributing to REST framework][contributing]
 * [Project management][project-management]
-* [2.0 Announcement][rest-framework-2-announcement]
-* [2.2 Announcement][2.2-announcement]
-* [2.3 Announcement][2.3-announcement]
-* [2.4 Announcement][2.4-announcement]
 * [3.0 Announcement][3.0-announcement]
+* [3.1 Announcement][3.1-announcement]
 * [Kickstarter Announcement][kickstarter-announcement]
 * [Release Notes][release-notes]
-* [Credits][credits]
 
 ## Development
 
@@ -231,7 +225,7 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 
 ## License
 
-Copyright (c) 2011-2014, Tom Christie
+Copyright (c) 2011-2015, Tom Christie
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -260,13 +254,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [eventbrite]: https://www.eventbrite.co.uk/about/
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [django-filter]: http://pypi.python.org/pypi/django-filter
-[django-restframework-oauth]: https://github.com/jlafon/django-rest-framework-oauth
 [django-guardian]: https://github.com/lukaszb/django-guardian
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [image]: img/quickstart.png
 [index]: .
-[oauth1-section]: api-guide/authentication#oauthauthentication
-[oauth2-section]: api-guide/authentication#oauth2authentication
+[oauth1-section]: api-guide/authentication/#django-rest-framework-oauth
+[oauth2-section]: api-guide/authentication/#django-oauth-toolkit
 [serializer-section]: api-guide/serializers#serializers
 [modelserializer-section]: api-guide/serializers#modelserializer
 [functionview-section]: api-guide/views#function-based-views
@@ -308,6 +301,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [settings]: api-guide/settings.md
 
 [documenting-your-api]: topics/documenting-your-api.md
+[internationalization]: topics/documenting-your-api.md
 [ajax-csrf-cors]: topics/ajax-csrf-cors.md
 [browser-enhancements]: topics/browser-enhancements.md
 [browsableapi]: topics/browsable-api.md
@@ -315,14 +309,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [contributing]: topics/contributing.md
 [project-management]: topics/project-management.md
 [third-party-resources]: topics/third-party-resources.md
-[rest-framework-2-announcement]: topics/rest-framework-2-announcement.md
-[2.2-announcement]: topics/2.2-announcement.md
-[2.3-announcement]: topics/2.3-announcement.md
-[2.4-announcement]: topics/2.4-announcement.md
 [3.0-announcement]: topics/3.0-announcement.md
+[3.1-announcement]: topics/3.1-announcement.md
 [kickstarter-announcement]: topics/kickstarter-announcement.md
 [release-notes]: topics/release-notes.md
-[credits]: topics/credits.md
 
 [tox]: http://testrun.org/tox/latest/
 

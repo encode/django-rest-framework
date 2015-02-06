@@ -24,7 +24,7 @@ FieldInfo = namedtuple('FieldResult', [
 
 RelationInfo = namedtuple('RelationInfo', [
     'model_field',
-    'related',
+    'related_model',
     'to_many',
     'has_through_model'
 ])
@@ -35,7 +35,7 @@ def _resolve_model(obj):
     Resolve supplied `obj` to a Django model class.
 
     `obj` must be a Django model class itself, or a string
-    representation of one.  Useful in situtations like GH #1225 where
+    representation of one.  Useful in situations like GH #1225 where
     Django may not have resolved a string-based reference to a model in
     another model's foreign key definition.
 
@@ -56,28 +56,49 @@ def _resolve_model(obj):
 
 def get_field_info(model):
     """
-    Given a model class, returns a `FieldInfo` instance containing metadata
-    about the various field types on the model.
+    Given a model class, returns a `FieldInfo` instance, which is a
+    `namedtuple`, containing metadata about the various field types on the model
+    including information about their relationships.
     """
     opts = model._meta.concrete_model._meta
 
-    # Deal with the primary key.
+    pk = _get_pk(opts)
+    fields = _get_fields(opts)
+    forward_relations = _get_forward_relationships(opts)
+    reverse_relations = _get_reverse_relationships(opts)
+    fields_and_pk = _merge_fields_and_pk(pk, fields)
+    relationships = _merge_relationships(forward_relations, reverse_relations)
+
+    return FieldInfo(pk, fields, forward_relations, reverse_relations,
+                     fields_and_pk, relationships)
+
+
+def _get_pk(opts):
     pk = opts.pk
     while pk.rel and pk.rel.parent_link:
-        # If model is a child via multitable inheritance, use parent's pk.
+        # If model is a child via multi-table inheritance, use parent's pk.
         pk = pk.rel.to._meta.pk
 
-    # Deal with regular fields.
+    return pk
+
+
+def _get_fields(opts):
     fields = OrderedDict()
     for field in [field for field in opts.fields if field.serialize and not field.rel]:
         fields[field.name] = field
 
-    # Deal with forward relationships.
+    return fields
+
+
+def _get_forward_relationships(opts):
+    """
+    Returns an `OrderedDict` of field names to `RelationInfo`.
+    """
     forward_relations = OrderedDict()
     for field in [field for field in opts.fields if field.serialize and field.rel]:
         forward_relations[field.name] = RelationInfo(
             model_field=field,
-            related=_resolve_model(field.rel.to),
+            related_model=_resolve_model(field.rel.to),
             to_many=False,
             has_through_model=False
         )
@@ -86,20 +107,31 @@ def get_field_info(model):
     for field in [field for field in opts.many_to_many if field.serialize]:
         forward_relations[field.name] = RelationInfo(
             model_field=field,
-            related=_resolve_model(field.rel.to),
+            related_model=_resolve_model(field.rel.to),
             to_many=True,
             has_through_model=(
                 not field.rel.through._meta.auto_created
             )
         )
 
-    # Deal with reverse relationships.
+    return forward_relations
+
+
+def _get_reverse_relationships(opts):
+    """
+    Returns an `OrderedDict` of field names to `RelationInfo`.
+    """
+    # Note that we have a hack here to handle internal API differences for
+    # this internal API across Django 1.7 -> Django 1.8.
+    # See: https://code.djangoproject.com/ticket/24208
+
     reverse_relations = OrderedDict()
     for relation in opts.get_all_related_objects():
         accessor_name = relation.get_accessor_name()
+        related = getattr(relation, 'related_model', relation.model)
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
-            related=relation.model,
+            related_model=related,
             to_many=relation.field.rel.multiple,
             has_through_model=False
         )
@@ -107,9 +139,10 @@ def get_field_info(model):
     # Deal with reverse many-to-many relationships.
     for relation in opts.get_all_related_many_to_many_objects():
         accessor_name = relation.get_accessor_name()
+        related = getattr(relation, 'related_model', relation.model)
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
-            related=relation.model,
+            related_model=related,
             to_many=True,
             has_through_model=(
                 (getattr(relation.field.rel, 'through', None) is not None)
@@ -117,18 +150,20 @@ def get_field_info(model):
             )
         )
 
-    # Shortcut that merges both regular fields and the pk,
-    # for simplifying regular field lookup.
+    return reverse_relations
+
+
+def _merge_fields_and_pk(pk, fields):
     fields_and_pk = OrderedDict()
     fields_and_pk['pk'] = pk
     fields_and_pk[pk.name] = pk
     fields_and_pk.update(fields)
 
-    # Shortcut that merges both forward and reverse relationships
+    return fields_and_pk
 
-    relations = OrderedDict(
+
+def _merge_relationships(forward_relations, reverse_relations):
+    return OrderedDict(
         list(forward_relations.items()) +
         list(reverse_relations.items())
     )
-
-    return FieldInfo(pk, fields, forward_relations, reverse_relations, fields_and_pk, relations)

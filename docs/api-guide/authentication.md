@@ -34,7 +34,7 @@ The value of `request.user` and `request.auth` for unauthenticated requests can 
 
 ## Setting the authentication scheme
 
-The default authentication schemes may be set globally, using the `DEFAULT_AUTHENTICATION` setting.  For example.
+The default authentication schemes may be set globally, using the `DEFAULT_AUTHENTICATION_CLASSES` setting.  For example.
 
     REST_FRAMEWORK = {
         'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -125,7 +125,6 @@ To use the `TokenAuthentication` scheme you'll need to [configure the authentica
         ...
         'rest_framework.authtoken'
     )
-
 
 ---
 
@@ -249,8 +248,6 @@ Unauthenticated responses that are denied permission will result in an `HTTP 403
 
 If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `PATCH`, `POST` or `DELETE` requests.  See the [Django CSRF documentation][csrf-ajax] for more details.
 
----
-
 # Custom authentication
 
 To implement a custom authentication scheme, subclass `BaseAuthentication` and override the `.authenticate(self, request)` method.  The method should return a two-tuple of `(user, auth)` if authentication succeeds, or `None` otherwise.
@@ -293,13 +290,48 @@ The following example will authenticate any incoming request as the user given b
 
 The following third party packages are also available.
 
+## Django OAuth Toolkit
+
+The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support, and works with Python 2.7 and Python 3.3+. The package is maintained by [Evonove][evonove] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
+
+#### Installation & configuration
+
+Install using `pip`.
+
+    pip install django-oauth-toolkit
+
+Add the package to your `INSTALLED_APPS` and modify your REST framework settings.
+
+    INSTALLED_APPS = (
+        ...
+        'oauth2_provider',
+    )
+
+    REST_FRAMEWORK = {
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+        )
+    }
+
+For more details see the [Django REST framework - Getting started][django-oauth-toolkit-getting-started] documentation.
+
+## Django REST framework OAuth
+
+The [Django REST framework OAuth][django-rest-framework-oauth] package provides both OAuth1 and OAuth2 support for REST framework.
+
+This package was previously included directly in REST framework but is now supported and maintained as a third party package.
+
+#### Installation & configuration
+
+Install the package using `pip`.
+
+    pip install djangorestframework-oauth
+
+For details on configuration and usage see the Django REST framework OAuth documentation for [authentication][django-rest-framework-oauth-authentication] and [permissions][django-rest-framework-oauth-permissions].
+
 ## Digest Authentication
 
 HTTP digest authentication is a widely implemented scheme that was intended to replace HTTP basic authentication, and which provides a simple encrypted authentication mechanism. [Juan Riaza][juanriaza] maintains the [djangorestframework-digestauth][djangorestframework-digestauth] package which provides HTTP digest authentication support for REST framework.
-
-## Django OAuth Toolkit
-
-The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support, and works with Python 2.7 and Python 3.3+.  The package is maintained by [Evonove][evonove] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and comes as a recommended alternative for OAuth 2.0 support.
 
 ## Django OAuth2 Consumer
 
@@ -328,10 +360,14 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [oauth]: http://oauth.net/2/
 [permission]: permissions.md
 [throttling]: throttling.md
-[csrf-ajax]: https://docs.djangoproject.com/en/dev/ref/contrib/csrf/#ajax
+[csrf-ajax]: https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
 [mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization
 [custom-user-model]: https://docs.djangoproject.com/en/dev/topics/auth/customizing/#specifying-a-custom-user-model
 [south-dependencies]: http://south.readthedocs.org/en/latest/dependencies.html
+[django-oauth-toolkit-getting-started]: https://django-oauth-toolkit.readthedocs.org/en/latest/rest-framework/getting_started.html
+[django-rest-framework-oauth]: http://jpadilla.github.io/django-rest-framework-oauth/
+[django-rest-framework-oauth-authentication]: http://jpadilla.github.io/django-rest-framework-oauth/authentication/
+[django-rest-framework-oauth-permissions]: http://jpadilla.github.io/django-rest-framework-oauth/permissions/
 [juanriaza]: https://github.com/juanriaza
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [oauth-1.0a]: http://oauth.net/core/1.0a

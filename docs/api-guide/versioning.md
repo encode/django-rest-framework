@@ -10,6 +10,8 @@ API versioning allows you to alter behavior between different clients. REST fram
 
 Versioning is determined by the incoming client request, and may either be based on the request URL, or based on the request headers.
 
+There are a number of valid approaches to approaching versioning. [Non-versioned systems can also be appropriate][roy-fielding-on-versioning], particularly if you're engineering for very long-term systems with multiple clients outside of your control.
+
 ## Versioning with REST framework
 
 When API versioning is enabled, the `request.version` attribute will contain a string that corresponds to the version requested in the incoming client request.
@@ -195,6 +197,7 @@ The following example uses a custom `X-API-Version` header to determine the requ
 If your versioning scheme is based on the request URL, you will also want to alter how versioned URLs are determined. In order to do so you should override the `.reverse()` method on the class. See the source code for examples.
 
 [cite]: http://www.slideshare.net/evolve_conference/201308-fielding-evolve/31
+[roy-fielding-on-versioning]: http://www.infoq.com/articles/roy-fielding-on-versioning
 [klabnik-guidelines]: http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http#i_want_my_api_to_be_versioned
 [heroku-guidelines]: https://github.com/interagent/http-api-design#version-with-accepts-header
 [json-parameters]: http://tools.ietf.org/html/rfc4627#section-6

@@ -124,7 +124,7 @@ The first part of the serializer class defines the fields that get serialized/de
 
 A serializer class is very similar to a Django `Form` class, and includes similar validation flags on the various fields, such as `required`, `max_length` and `default`.
 
-The field flags can also control how the serializer should be displayed in certain circumstances, such as when rendering to HTML. The `style={'type': 'textarea'}` flag above is equivelent to using `widget=widgets.Textarea` on a Django `Form` class. This is particularly useful for controlling how the browsable API should be displayed, as we'll see later in the tutorial.
+The field flags can also control how the serializer should be displayed in certain circumstances, such as when rendering to HTML. The `{'base_template': 'textarea.html'}` flag above is equivelent to using `widget=widgets.Textarea` on a Django `Form` class. This is particularly useful for controlling how the browsable API should be displayed, as we'll see later in the tutorial.
 
 We can actually also save ourselves some time by using the `ModelSerializer` class, as we'll see later, but for now we'll keep our serializer definition explicit.
 
@@ -191,14 +191,14 @@ Our `SnippetSerializer` class is replicating a lot of information that's also co
 In the same way that Django provides both `Form` classes and `ModelForm` classes, REST framework includes both `Serializer` classes, and `ModelSerializer` classes.
 
 Let's look at refactoring our serializer using the `ModelSerializer` class.
-Open the file `snippets/serializers.py` again, and edit the `SnippetSerializer` class.
+Open the file `snippets/serializers.py` again, and replace the `SnippetSerializer` class with the following.
 
     class SnippetSerializer(serializers.ModelSerializer):
         class Meta:
             model = Snippet
             fields = ('id', 'title', 'code', 'linenos', 'language', 'style')
 
-One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing it's representation. Open the Django shell with `python manage.py shell`, then try the following:
+One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing its representation. Open the Django shell with `python manage.py shell`, then try the following:
 
     >>> from snippets.serializers import SnippetSerializer
     >>> serializer = SnippetSerializer()
@@ -206,7 +206,7 @@ One nice property that serializers have is that you can inspect all the fields i
     SnippetSerializer():
         id = IntegerField(label='ID', read_only=True)
         title = CharField(allow_blank=True, max_length=100, required=False)
-        code = CharField(style={'type': 'textarea'})
+        code = CharField(style={'base_template': 'textarea.html'})
         linenos = BooleanField(required=False)
         language = ChoiceField(choices=[('Clipper', 'FoxPro'), ('Cucumber', 'Gherkin'), ('RobotFramework', 'RobotFramework'), ('abap', 'ABAP'), ('ada', 'Ada')...
         style = ChoiceField(choices=[('autumn', 'autumn'), ('borland', 'borland'), ('bw', 'bw'), ('colorful', 'colorful')...

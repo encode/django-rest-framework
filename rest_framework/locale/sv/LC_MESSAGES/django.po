@@ -1,0 +1,325 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Joakim Soderlund, 2015
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-01-30 16:23+0000\n"
+"PO-Revision-Date: 2015-01-30 16:27+0000\n"
+"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"Language-Team: Swedish (http://www.transifex.com/projects/p/django-rest-framework/language/sv/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: sv\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: authentication.py:69
+msgid "Invalid basic header. No credentials provided."
+msgstr "Ogiltig \"basic\"-header. Inga användaruppgifter tillhandahölls."
+
+#: authentication.py:72
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "Ogiltig \"basic\"-header. Strängen för användaruppgifterna ska inte innehålla mellanslag."
+
+#: authentication.py:78
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "Ogiltig \"basic\"-header. Användaruppgifterna är inte korrekt base64-kodade."
+
+#: authentication.py:90
+msgid "Invalid username/password."
+msgstr "Ogiltigt användarnamn/lösenord."
+
+#: authentication.py:156
+msgid "Invalid token header. No credentials provided."
+msgstr "Ogiltig \"token\"-header. Inga användaruppgifter tillhandahölls."
+
+#: authentication.py:159
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "Ogiltig \"token\"-header. Strängen för referensen ska inte innehålla mellanslag."
+
+#: authentication.py:168
+msgid "Invalid token."
+msgstr "Ogiltig \"token\"."
+
+#: authentication.py:171
+msgid "User inactive or deleted."
+msgstr "Användaren borttagen eller inaktiv."
+
+#: exceptions.py:38
+msgid "A server error occurred."
+msgstr "Ett serverfel inträffade."
+
+#: exceptions.py:73
+msgid "Malformed request."
+msgstr "Ogiltig förfrågan."
+
+#: exceptions.py:78
+msgid "Incorrect authentication credentials."
+msgstr "Ogiltiga inloggningsuppgifter. "
+
+#: exceptions.py:83
+msgid "Authentication credentials were not provided."
+msgstr "Autentiseringsuppgifter ej tillhandahållna."
+
+#: exceptions.py:88
+msgid "You do not have permission to perform this action."
+msgstr "Du har inte tillåtelse att utföra denna förfrågan."
+
+#: exceptions.py:93
+msgid "Not found."
+msgstr "Hittades inte."
+
+#: exceptions.py:98
+msgid "Method \"{method}\" not allowed."
+msgstr "Metoden \"{method}\" tillåts inte."
+
+#: exceptions.py:109
+msgid "Could not satisfy the request Accept header."
+msgstr "Kunde inte tillfredsställa förfrågans \"Accept\"-header."
+
+#: exceptions.py:121
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "Medietypen \"{media_type}\" stöds inte."
+
+#: exceptions.py:134
+msgid "Request was throttled."
+msgstr "Förfrågan stoppades eftersom du har skickat för många."
+
+#: fields.py:153 relations.py:132 relations.py:156 validators.py:77
+#: validators.py:155
+msgid "This field is required."
+msgstr "Det här fältet är obligatoriskt."
+
+#: fields.py:154
+msgid "This field may not be null."
+msgstr "Det här fältet får inte vara null."
+
+#: fields.py:487 fields.py:515
+msgid "\"{input}\" is not a valid boolean."
+msgstr "\"{input}\" är inte ett giltigt booleskt värde."
+
+#: fields.py:550
+msgid "This field may not be blank."
+msgstr "Det här fältet får inte vara blankt."
+
+#: fields.py:551 fields.py:1324
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "Se till att detta fält inte har fler än {max_length} tecken."
+
+#: fields.py:552
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "Se till att detta fält har minst {min_length} tecken."
+
+#: fields.py:587
+msgid "Enter a valid email address."
+msgstr "Ange en giltig mejladress."
+
+#: fields.py:604
+msgid "This value does not match the required pattern."
+msgstr "Det här värdet matchar inte mallen."
+
+#: fields.py:615
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "Ange en giltig \"slug\" bestående av bokstäver, nummer, understreck eller bindestreck."
+
+#: fields.py:627
+msgid "Enter a valid URL."
+msgstr "Ange en giltig URL."
+
+#: fields.py:638
+msgid "\"{value}\" is not a valid UUID."
+msgstr ""
+
+#: fields.py:657
+msgid "A valid integer is required."
+msgstr "Ett giltigt heltal krävs."
+
+#: fields.py:658 fields.py:692 fields.py:725
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "Se till att detta värde är mindre än eller lika med {max_value}."
+
+#: fields.py:659 fields.py:693 fields.py:726
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "Se till att detta värde är större än eller lika med {min_value}."
+
+#: fields.py:660 fields.py:694 fields.py:730
+msgid "String value too large."
+msgstr "Textvärdet är för långt."
+
+#: fields.py:691 fields.py:724
+msgid "A valid number is required."
+msgstr "Ett giltigt nummer krävs."
+
+#: fields.py:727
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "Se till att det inte finns fler än totalt {max_digits} siffror."
+
+#: fields.py:728
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "Se till att det inte finns fler än {max_decimal_places} decimaler."
+
+#: fields.py:729
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "Se till att det inte finns fler än {max_whole_digits} siffror före decimalpunkten."
+
+#: fields.py:813
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "Datumtiden har fel format. Använd ett av dessa format istället: {format}."
+
+#: fields.py:814
+msgid "Expected a datetime but got a date."
+msgstr "Förväntade en datumtid men fick ett datum."
+
+#: fields.py:878
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "Datumet har fel format. Använde ett av dessa format istället: {format}."
+
+#: fields.py:879
+msgid "Expected a date but got a datetime."
+msgstr "Förväntade ett datum men fick en datumtid."
+
+#: fields.py:936
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "Tiden har fel format. Använd ett av dessa format istället: {format}."
+
+#: fields.py:992 fields.py:1036
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" är inte ett giltigt val."
+
+#: fields.py:1037 fields.py:1151 serializers.py:482
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "Förväntade en lista med element men fick typen \"{input_type}\"."
+
+#: fields.py:1067
+msgid "No file was submitted."
+msgstr "Ingen fil skickades."
+
+#: fields.py:1068
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "Den skickade informationen var inte en fil. Kontrollera formulärets kodningstyp."
+
+#: fields.py:1069
+msgid "No filename could be determined."
+msgstr "Inget filnamn kunde bestämmas."
+
+#: fields.py:1070
+msgid "The submitted file is empty."
+msgstr "Den skickade filen var tom."
+
+#: fields.py:1071
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "Se till att det här filnamnet har högst {max_length} tecken (det har {length})."
+
+#: fields.py:1113
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Ladda upp en giltig bild. Filen du laddade upp var antingen inte en bild eller en skadad bild."
+
+#: fields.py:1188
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr ""
+
+#: pagination.py:221
+msgid "Invalid page \"{page_number}\": {message}."
+msgstr "Ogiltigt sida \"{page_number}\": {message}."
+
+#: pagination.py:442
+msgid "Invalid cursor"
+msgstr ""
+
+#: relations.py:133
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "Ogiltigt pk \"{pk_value}\" - Objektet finns inte."
+
+#: relations.py:134
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "Felaktig typ. Förväntade pk-värde, fick {data_type}."
+
+#: relations.py:157
+msgid "Invalid hyperlink - No URL match."
+msgstr "Ogiltig hyperlänk - Ingen URL matchade."
+
+#: relations.py:158
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "Ogiltig hyperlänk - Felaktig URL-matching."
+
+#: relations.py:159
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "Ogiltig hyperlänk - Objektet finns inte."
+
+#: relations.py:160
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "Felaktig typ. Förväntade URL-sträng, fick {data_type}."
+
+#: relations.py:295
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "Objekt med {slug_name}={value} finns inte."
+
+#: relations.py:296
+msgid "Invalid value."
+msgstr "Ogiltigt värde."
+
+#: serializers.py:299
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "Ogiltig data. Förväntade en dictionary, men fick {datatype}."
+
+#: validators.py:22
+msgid "This field must be unique."
+msgstr "Det här fältet måste vara unikt."
+
+#: validators.py:76
+msgid "The fields {field_names} must make a unique set."
+msgstr "Fälten {field_names} måste skapa ett unikt set."
+
+#: validators.py:219
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "Det här fältet måste vara unikt för datumet \"{date_field}\"."
+
+#: validators.py:234
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "Det här fältet måste vara unikt för månaden \"{date_field}\"."
+
+#: validators.py:247
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "Det här fältet måste vara unikt för året \"{date_field}\"."
+
+#: versioning.py:39
+msgid "Invalid version in \"Accept\" header."
+msgstr "Ogiltig version i \"Accept\"-headern."
+
+#: versioning.py:70 versioning.py:112
+msgid "Invalid version in URL path."
+msgstr "Ogiltig version i URL-resursen."
+
+#: versioning.py:138
+msgid "Invalid version in hostname."
+msgstr "Ogiltig version i värdnamnet."
+
+#: versioning.py:160
+msgid "Invalid version in query parameter."
+msgstr "Ogiltig version i förfrågningsparametern."
+
+#: authtoken/serializers.py:20
+msgid "User account is disabled."
+msgstr "Användarkontot är borttaget."
+
+#: authtoken/serializers.py:23
+msgid "Unable to log in with provided credentials."
+msgstr "Kunde inte logga in med de angivna inloggningsuppgifterna."
+
+#: authtoken/serializers.py:26
+msgid "Must include \"username\" and \"password\"."
+msgstr "Användarnamn och lösenord måste anges."

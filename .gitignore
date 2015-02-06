@@ -15,6 +15,7 @@ bin/
 include/
 lib/
 local/
+env/
 
 !.gitignore
 !.travis.yml

@@ -23,6 +23,7 @@ import datetime
 import decimal
 import inspect
 import re
+import uuid
 
 
 class empty:
@@ -273,7 +274,11 @@ class Field(object):
                     return empty
                 return self.default_empty_html
             ret = dictionary[self.field_name]
-            return self.default_empty_html if (ret == '') else ret
+            if ret == '' and self.allow_null:
+                # If the field is blank, and null is a valid value then
+                # determine if we should use null instead.
+                return '' if getattr(self, 'allow_blank', False) else None
+            return ret
         return dictionary.get(self.field_name, empty)
 
     def get_attribute(self, instance):
@@ -284,6 +289,8 @@ class Field(object):
         try:
             return get_attribute(instance, self.source_attrs)
         except (KeyError, AttributeError) as exc:
+            if not self.required and self.default is empty:
+                raise SkipField()
             msg = (
                 'Got {exc_type} when attempting to get a value for field '
                 '`{field}` on serializer `{serializer}`.\nThe serializer '
@@ -477,7 +484,7 @@ class Field(object):
 
 class BooleanField(Field):
     default_error_messages = {
-        'invalid': _('`{input}` is not a valid boolean.')
+        'invalid': _('"{input}" is not a valid boolean.')
     }
     default_empty_html = False
     initial = False
@@ -505,7 +512,7 @@ class BooleanField(Field):
 
 class NullBooleanField(Field):
     default_error_messages = {
-        'invalid': _('`{input}` is not a valid boolean.')
+        'invalid': _('"{input}" is not a valid boolean.')
     }
     initial = None
     TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
@@ -545,8 +552,6 @@ class CharField(Field):
         'min_length': _('Ensure this field has at least {min_length} characters.')
     }
     initial = ''
-    coerce_blank_to_null = False
-    default_empty_html = ''
 
     def __init__(self, **kwargs):
         self.allow_blank = kwargs.pop('allow_blank', False)
@@ -559,11 +564,6 @@ class CharField(Field):
         if min_length is not None:
             message = self.error_messages['min_length'].format(min_length=min_length)
             self.validators.append(MinLengthValidator(min_length, message=message))
-
-        if self.allow_null and (not self.allow_blank) and (self.default is empty):
-            # HTML input cannot represent `None` values, so we need to
-            # forcibly coerce empty HTML values to `None` if `allow_null=True`.
-            self.default_empty_html = None
 
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,
@@ -612,7 +612,7 @@ class RegexField(CharField):
 
 class SlugField(CharField):
     default_error_messages = {
-        'invalid': _("Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens.")
+        'invalid': _('Enter a valid "slug" consisting of letters, numbers, underscores or hyphens.')
     }
 
     def __init__(self, **kwargs):
@@ -624,13 +624,30 @@ class SlugField(CharField):
 
 class URLField(CharField):
     default_error_messages = {
-        'invalid': _("Enter a valid URL.")
+        'invalid': _('Enter a valid URL.')
     }
 
     def __init__(self, **kwargs):
         super(URLField, self).__init__(**kwargs)
         validator = URLValidator(message=self.error_messages['invalid'])
         self.validators.append(validator)
+
+
+class UUIDField(Field):
+    default_error_messages = {
+        'invalid': _('"{value}" is not a valid UUID.'),
+    }
+
+    def to_internal_value(self, data):
+        if not isinstance(data, uuid.UUID):
+            try:
+                return uuid.UUID(data)
+            except (ValueError, TypeError):
+                self.fail('invalid', value=data)
+        return data
+
+    def to_representation(self, value):
+        return str(value)
 
 
 # Number types...
@@ -640,7 +657,7 @@ class IntegerField(Field):
         'invalid': _('A valid integer is required.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
-        'max_string_length': _('String value too large')
+        'max_string_length': _('String value too large.')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
@@ -671,10 +688,10 @@ class IntegerField(Field):
 
 class FloatField(Field):
     default_error_messages = {
-        'invalid': _("A valid number is required."),
+        'invalid': _('A valid number is required.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
-        'max_string_length': _('String value too large')
+        'max_string_length': _('String value too large.')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
@@ -710,7 +727,7 @@ class DecimalField(Field):
         'max_digits': _('Ensure that there are no more than {max_digits} digits in total.'),
         'max_decimal_places': _('Ensure that there are no more than {max_decimal_places} decimal places.'),
         'max_whole_digits': _('Ensure that there are no more than {max_whole_digits} digits before the decimal point.'),
-        'max_string_length': _('String value too large')
+        'max_string_length': _('String value too large.')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
@@ -793,7 +810,7 @@ class DecimalField(Field):
 
 class DateTimeField(Field):
     default_error_messages = {
-        'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}'),
+        'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}.'),
         'date': _('Expected a datetime but got a date.'),
     }
     format = api_settings.DATETIME_FORMAT
@@ -858,7 +875,7 @@ class DateTimeField(Field):
 
 class DateField(Field):
     default_error_messages = {
-        'invalid': _('Date has wrong format. Use one of these formats instead: {format}'),
+        'invalid': _('Date has wrong format. Use one of these formats instead: {format}.'),
         'datetime': _('Expected a date but got a datetime.'),
     }
     format = api_settings.DATE_FORMAT
@@ -916,7 +933,7 @@ class DateField(Field):
 
 class TimeField(Field):
     default_error_messages = {
-        'invalid': _('Time has wrong format. Use one of these formats instead: {format}'),
+        'invalid': _('Time has wrong format. Use one of these formats instead: {format}.'),
     }
     format = api_settings.TIME_FORMAT
     input_formats = api_settings.TIME_INPUT_FORMATS
@@ -972,7 +989,7 @@ class TimeField(Field):
 
 class ChoiceField(Field):
     default_error_messages = {
-        'invalid_choice': _('`{input}` is not a valid choice.')
+        'invalid_choice': _('"{input}" is not a valid choice.')
     }
 
     def __init__(self, choices, **kwargs):
@@ -1016,8 +1033,8 @@ class ChoiceField(Field):
 
 class MultipleChoiceField(ChoiceField):
     default_error_messages = {
-        'invalid_choice': _('`{input}` is not a valid choice.'),
-        'not_a_list': _('Expected a list of items but got type `{input_type}`.')
+        'invalid_choice': _('"{input}" is not a valid choice.'),
+        'not_a_list': _('Expected a list of items but got type "{input_type}".')
     }
     default_empty_html = []
 
@@ -1047,10 +1064,10 @@ class MultipleChoiceField(ChoiceField):
 
 class FileField(Field):
     default_error_messages = {
-        'required': _("No file was submitted."),
-        'invalid': _("The submitted data was not a file. Check the encoding type on the form."),
-        'no_name': _("No filename could be determined."),
-        'empty': _("The submitted file is empty."),
+        'required': _('No file was submitted.'),
+        'invalid': _('The submitted data was not a file. Check the encoding type on the form.'),
+        'no_name': _('No filename could be determined.'),
+        'empty': _('The submitted file is empty.'),
         'max_length': _('Ensure this filename has at most {max_length} characters (it has {length}).'),
     }
     use_url = api_settings.UPLOADED_FILES_USE_URL
@@ -1093,8 +1110,7 @@ class FileField(Field):
 class ImageField(FileField):
     default_error_messages = {
         'invalid_image': _(
-            'Upload a valid image. The file you uploaded was either not an '
-            'image or a corrupted image.'
+            'Upload a valid image. The file you uploaded was either not an image or a corrupted image.'
         ),
     }
 
@@ -1115,16 +1131,28 @@ class ImageField(FileField):
 
 # Composite field types...
 
+class _UnvalidatedField(Field):
+    def __init__(self, *args, **kwargs):
+        super(_UnvalidatedField, self).__init__(*args, **kwargs)
+        self.allow_blank = True
+        self.allow_null = True
+
+    def to_internal_value(self, data):
+        return data
+
+    def to_representation(self, value):
+        return value
+
+
 class ListField(Field):
-    child = None
+    child = _UnvalidatedField()
     initial = []
     default_error_messages = {
-        'not_a_list': _('Expected a list of items but got type `{input_type}`')
+        'not_a_list': _('Expected a list of items but got type "{input_type}".')
     }
 
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
-        assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         super(ListField, self).__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
@@ -1151,6 +1179,49 @@ class ListField(Field):
         List of object instances -> List of dicts of primitive datatypes.
         """
         return [self.child.to_representation(item) for item in data]
+
+
+class DictField(Field):
+    child = _UnvalidatedField()
+    initial = []
+    default_error_messages = {
+        'not_a_dict': _('Expected a dictionary of items but got type "{input_type}".')
+    }
+
+    def __init__(self, *args, **kwargs):
+        self.child = kwargs.pop('child', copy.deepcopy(self.child))
+        assert not inspect.isclass(self.child), '`child` has not been instantiated.'
+        super(DictField, self).__init__(*args, **kwargs)
+        self.child.bind(field_name='', parent=self)
+
+    def get_value(self, dictionary):
+        # We override the default field access in order to support
+        # lists in HTML forms.
+        if html.is_html_input(dictionary):
+            return html.parse_html_list(dictionary, prefix=self.field_name)
+        return dictionary.get(self.field_name, empty)
+
+    def to_internal_value(self, data):
+        """
+        Dicts of native values <- Dicts of primitive datatypes.
+        """
+        if html.is_html_input(data):
+            data = html.parse_html_dict(data)
+        if not isinstance(data, dict):
+            self.fail('not_a_dict', input_type=type(data).__name__)
+        return dict([
+            (six.text_type(key), self.child.run_validation(value))
+            for key, value in data.items()
+        ])
+
+    def to_representation(self, value):
+        """
+        List of object instances -> List of dicts of primitive datatypes.
+        """
+        return dict([
+            (six.text_type(key), self.child.to_representation(val))
+            for key, val in value.items()
+        ])
 
 
 # Miscellaneous field types...

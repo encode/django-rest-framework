@@ -18,6 +18,7 @@ REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
 from __future__ import unicode_literals
+from django.test.signals import setting_changed
 from django.conf import settings
 from django.utils import importlib, six
 from rest_framework import ISO_8601
@@ -49,7 +50,7 @@ DEFAULTS = {
     'DEFAULT_VERSIONING_CLASS': None,
 
     # Generic view behavior
-    'DEFAULT_PAGINATION_SERIALIZER_CLASS': 'rest_framework.pagination.PaginationSerializer',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'DEFAULT_FILTER_BACKENDS': (),
 
     # Throttling
@@ -130,7 +131,7 @@ IMPORT_STRINGS = (
     'DEFAULT_CONTENT_NEGOTIATION_CLASS',
     'DEFAULT_METADATA_CLASS',
     'DEFAULT_VERSIONING_CLASS',
-    'DEFAULT_PAGINATION_SERIALIZER_CLASS',
+    'DEFAULT_PAGINATION_CLASS',
     'DEFAULT_FILTER_BACKENDS',
     'EXCEPTION_HANDLER',
     'TEST_REQUEST_RENDERER_CLASSES',
@@ -176,7 +177,7 @@ class APISettings(object):
     For example:
 
         from rest_framework.settings import api_settings
-        print api_settings.DEFAULT_RENDERER_CLASSES
+        print(api_settings.DEFAULT_RENDERER_CLASSES)
 
     Any setting with string import paths will be automatically resolved
     and return the class, rather than the string literal.
@@ -207,3 +208,13 @@ class APISettings(object):
 
 
 api_settings = APISettings(USER_SETTINGS, DEFAULTS, IMPORT_STRINGS)
+
+
+def reload_api_settings(*args, **kwargs):
+    global api_settings
+    setting, value = kwargs['setting'], kwargs['value']
+    if setting == 'REST_FRAMEWORK':
+        api_settings = APISettings(value, DEFAULTS, IMPORT_STRINGS)
+
+
+setting_changed.connect(reload_api_settings)
