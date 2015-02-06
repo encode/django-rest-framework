@@ -195,11 +195,8 @@ General guides to using REST framework.
 * [Third Party Resources][third-party-resources]
 * [Contributing to REST framework][contributing]
 * [Project management][project-management]
-* [2.0 Announcement][rest-framework-2-announcement]
-* [2.2 Announcement][2.2-announcement]
-* [2.3 Announcement][2.3-announcement]
-* [2.4 Announcement][2.4-announcement]
 * [3.0 Announcement][3.0-announcement]
+* [3.1 Announcement][3.1-announcement]
 * [Kickstarter Announcement][kickstarter-announcement]
 * [Release Notes][release-notes]
 * [Credits][credits]
@@ -313,11 +310,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [contributing]: topics/contributing.md
 [project-management]: topics/project-management.md
 [third-party-resources]: topics/third-party-resources.md
-[rest-framework-2-announcement]: topics/rest-framework-2-announcement.md
-[2.2-announcement]: topics/2.2-announcement.md
-[2.3-announcement]: topics/2.3-announcement.md
-[2.4-announcement]: topics/2.4-announcement.md
 [3.0-announcement]: topics/3.0-announcement.md
+[3.1-announcement]: topics/3.1-announcement.md
 [kickstarter-announcement]: topics/kickstarter-announcement.md
 [release-notes]: topics/release-notes.md
 [credits]: topics/credits.md
