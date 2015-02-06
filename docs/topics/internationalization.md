@@ -11,11 +11,52 @@ Doing so will allow you to:
 * Select a language other than English as the default, using the standard `LANGUAGE_CODE` Django setting.
 * Allow clients to choose a language themselves, using the `LocaleMiddleware` included with Django. A typical usage for API clients would be to include an `Accept-Language` request header.
 
+## Enabling internationalized APIs
+
+You can change the default language by using the standard Django `LANGUAGE_CODE` setting:
+
+    LANGUAGE_CODE = "es-es"
+
+You can turn on per-request language requests by adding `LocalMiddleware` to your `MIDDLEWARE_CLASSES` setting:
+
+    MIDDLEWARE_CLASSES = [
+        ...
+        'django.middleware.locale.LocaleMiddleware'
+    ]
+
+When per-request internationalization is enabled, client requests will respect the `Accept-Language` header where possible. For example, let's make a request for an unsupported media type:
+
+**Request**
+
+    GET /api/users HTTP/1.1
+    Accept: application/xml
+    Accept-Language: es-es
+    Host: example.org
+
+**Response**
+
+    HTTP/1.0 406 NOT ACCEPTABLE
+
+    {"detail": "No se ha podido satisfacer la solicitud de cabecera de Accept."}
+
+REST framework includes these built-in translations both for standard exception cases, and for serializer validation errors.
+
 Note that the translations only apply to the error strings themselves. The format of error messages, and the keys of field names will remain the same. An example `400 Bad Request` response body might look like this:
 
     {"detail": {"username": ["Esse campo deve ser unico."]}}
 
 If you want to use different string for parts of the response such as `detail` and `non_field_errors` then you can modify this behavior by using a [custom exception handler][custom-exception-handler].
+
+#### Specifying the set of supported languages.
+
+By default all available languages will be supported.
+
+If you only wish to support a subset of the available languages, use Django's standard `LANGUAGES` setting:
+
+    LANGUAGES = [
+        ('de', _('German')),
+        ('en', _('English')),
+    ]
 
 ## Adding new translations
 

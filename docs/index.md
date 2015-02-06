@@ -199,7 +199,6 @@ General guides to using REST framework.
 * [3.1 Announcement][3.1-announcement]
 * [Kickstarter Announcement][kickstarter-announcement]
 * [Release Notes][release-notes]
-* [Credits][credits]
 
 ## Development
 
@@ -314,7 +313,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [3.1-announcement]: topics/3.1-announcement.md
 [kickstarter-announcement]: topics/kickstarter-announcement.md
 [release-notes]: topics/release-notes.md
-[credits]: topics/credits.md
 
 [tox]: http://testrun.org/tox/latest/
 
