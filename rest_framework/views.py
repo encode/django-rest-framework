@@ -7,6 +7,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.encoding import smart_text
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.six.moves import filter as ifilter
 from rest_framework import status, exceptions
 from rest_framework.compat import HttpResponseBase, View
 from rest_framework.request import Request
@@ -155,7 +156,8 @@ class APIView(View):
         """
         authenticators = self.get_authenticators()
         if authenticators:
-            return authenticators[0].authenticate_header(request)
+            headers = (authenticator.authenticate_header(request) for authenticator in authenticators)
+            return next(ifilter(lambda x: x, headers), None)
 
     def get_parser_context(self, http_request):
         """
