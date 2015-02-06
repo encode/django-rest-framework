@@ -578,19 +578,10 @@ class CharField(Field):
 
     def to_internal_value(self, data):
         value = six.text_type(data)
-
-        if self.trim_whitespace:
-            return value.strip()
-
-        return value
+        return value.strip() if self.trim_whitespace else value
 
     def to_representation(self, value):
-        representation = six.text_type(value)
-
-        if self.trim_whitespace:
-            return representation.strip()
-
-        return representation
+        return six.text_type(value)
 
 
 class EmailField(CharField):
@@ -602,12 +593,6 @@ class EmailField(CharField):
         super(EmailField, self).__init__(**kwargs)
         validator = EmailValidator(message=self.error_messages['invalid'])
         self.validators.append(validator)
-
-    def to_internal_value(self, data):
-        return six.text_type(data).strip()
-
-    def to_representation(self, value):
-        return six.text_type(value).strip()
 
 
 class RegexField(CharField):
