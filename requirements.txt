@@ -19,6 +19,7 @@ django-oauth2-provider>=0.2.4
 
 # wheel for PyPI installs
 wheel==0.24.0
+# twine for secured PyPI uploads
 twine==1.4.0
 
 # MkDocs for documentation previews/deploys
