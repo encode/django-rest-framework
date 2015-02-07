@@ -65,9 +65,10 @@ class DjangoFilterBackend(BaseFilterBackend):
         filter_class = self.get_filter_class(view, queryset)
 
         if filter_class:
-            # Using solution by @leo-the-manic goo.gl/3LoFIj
+            # Inspired by @leo-the-manic goo.gl/3LoFIj
             return filter_class(
-                {k: v[0] if len(v) == 1 else v for k, v in request.query_params.lists()},
+                dict([(param[0], len(param[1]) == 1 and param[1][0] or param[1])
+                     for param in request.query_params.lists()]),
                 queryset=queryset
             ).qs
 
