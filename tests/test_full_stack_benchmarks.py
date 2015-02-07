@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 from decimal import Decimal
+from datetime import datetime
+from django.utils import unittest
 
 from pytest import mark
 
-from datetime import datetime
 from rest_framework import viewsets, serializers
+from rest_framework.filters import DjangoFilterBackend
 from rest_framework.reverse import reverse
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APITransactionTestCase
@@ -76,8 +78,14 @@ class RegularFieldsAndFKViewSet(viewsets.ModelViewSet):
     serializer_class = TestNestedSerializer
 
 
+class FilteredRegularFieldsAndFKViewSet(RegularFieldsAndFKViewSet):
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ('big_integer_field',)
+
+
 router = DefaultRouter()
 router.register('benchmark', RegularFieldsAndFKViewSet, base_name='benchmark')
+router.register('benchmark2', FilteredRegularFieldsAndFKViewSet, base_name='benchmark-filter')
 
 urlpatterns = router.urls
 
@@ -152,3 +160,45 @@ class FullStackBenchmarksTestCase(APITransactionTestCase):
 
         response = self.client.delete(url)
         assert response.status_code == 204, (response.rendered_content, url)
+
+
+class FullStackFilteredBenchmarksTestCase(APITransactionTestCase):
+    urls = 'tests.test_full_stack_benchmarks'
+
+    def setUp(self):
+        RegularFieldsModel2.objects.bulk_create([RegularFieldsModel2(**d) for d in data_list])
+
+        RegularFieldsAndFKModel2.objects.bulk_create(
+            [RegularFieldsAndFKModel2(fk=o, **data) for o in RegularFieldsModel2.objects.all()])
+
+        self.first_pk = RegularFieldsAndFKModel2.objects.only('pk').first().pk
+        self.last_pk = RegularFieldsAndFKModel2.objects.only('pk').last().pk
+
+    @mark.bench('viewsets.ModelViewSet.list', iterations=1000)
+    def test_viewset_list(self):
+        url = reverse('benchmark-filter-list')
+
+        response = self.client.get(url, data={'big_integer_field': 100000})
+        assert response.status_code == 200, (response.rendered_content, url)
+
+    @mark.bench('viewsets.ModelViewSet.retrieve', iterations=10000)
+    def test_viewset_retrieve(self):
+        url = reverse('benchmark-filter-detail', args=[self.first_pk])
+
+        response = self.client.get(url, data={'big_integer_field': 100000})
+        assert response.status_code == 200, (response.rendered_content, url)
+
+    @mark.bench('viewsets.ModelViewSet.list', iterations=1000)
+    def test_viewset_list_nothing(self):
+        url = reverse('benchmark-filter-list')
+
+        response = self.client.get(url, data={'big_integer_field': 100001})
+        assert response.rendered_content == '[]', (response.rendered_content, url)
+
+    @mark.bench('viewsets.ModelViewSet.retrieve', iterations=10000)
+    @unittest.skip('pytest-bench cannot benchmark operations that raise exceptions')
+    def test_viewset_retrieve_nothing(self):
+        url = reverse('benchmark-filter-detail', args=[self.first_pk])
+
+        response = self.client.get(url, data={'big_integer_field': 100001})
+        assert response.status_code == 404, (response.rendered_content, url)
