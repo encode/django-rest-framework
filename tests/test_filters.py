@@ -34,11 +34,17 @@ if django_filters:
     class SeveralFieldsFilter(django_filters.FilterSet):
         text = django_filters.CharFilter(lookup_type='icontains')
         decimal = django_filters.NumberFilter(lookup_type='lt')
+        decimal_in = django_filters.MethodFilter(action="filter_decimal_in")
         date = django_filters.DateFilter(lookup_type='gt')
 
         class Meta:
             model = FilterableItem
-            fields = ['text', 'decimal', 'date']
+            fields = ['text', 'decimal', 'decimal_in', 'date']
+
+        def filter_decimal_in(self, qs, values):
+            if not hasattr(values, '__iter__'):
+                values = (values,)
+            return qs.filter(decimal__in=values)
 
     class FilterClassRootView(generics.ListCreateAPIView):
         queryset = FilterableItem.objects.all()
@@ -205,6 +211,16 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected_data = [f for f in self.data if Decimal(f['decimal']) < search_decimal]
+        self.assertEqual(response.data, expected_data)
+
+        # Tests that the decimal_in filter set with 'in' in the filter class works
+        search_decimal_in = ['1.25', '2.25']
+        request = factory.get('/', {
+            'decimal_in': search_decimal_in,
+        })
+        response = view(request).render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected_data = [f for f in self.data if f['decimal'] in search_decimal_in]
         self.assertEqual(response.data, expected_data)
 
         # Tests that the date filter set with 'gt' in the filter class works.
