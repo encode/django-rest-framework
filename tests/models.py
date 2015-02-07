@@ -185,4 +185,3 @@ class RegularFieldsAndFKModel2(models.Model):
 
     def method(self):
         return 'method'
-
