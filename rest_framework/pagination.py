@@ -168,7 +168,9 @@ def _reverse_ordering(ordering_tuple):
     Given an order_by tuple such as `('-created', 'uuid')` reverse the
     ordering and return a new tuple, eg. `('created', '-uuid')`.
     """
-    invert = lambda x: x[1:] if (x.startswith('-')) else '-' + x
+    def invert(x):
+        return x[1:] if (x.startswith('-')) else '-' + x
+
     return tuple([invert(item) for item in ordering_tuple])
 
 

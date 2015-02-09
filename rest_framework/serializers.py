@@ -177,7 +177,7 @@ class BaseSerializer(Field):
         )
 
         assert hasattr(self, 'initial_data'), (
-            'Cannot call `.is_valid()` as no `data=` keyword argument was'
+            'Cannot call `.is_valid()` as no `data=` keyword argument was '
             'passed when instantiating the serializer instance.'
         )
 
@@ -635,11 +635,11 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     If we don't do this explicitly they'd get a less helpful error when
     calling `.save()` on the serializer.
 
-    We don't *automatically* support these sorts of nested writes brecause
+    We don't *automatically* support these sorts of nested writes because
     there are too many ambiguities to define a default behavior.
 
     Eg. Suppose we have a `UserSerializer` with a nested profile. How should
-    we handle the case of an update, where the `profile` realtionship does
+    we handle the case of an update, where the `profile` relationship does
     not exist? Any of the following might be valid:
 
     * Raise an application error.

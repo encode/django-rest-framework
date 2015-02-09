@@ -32,8 +32,13 @@ class RequestInvalidVersionView(APIView):
 
 factory = APIRequestFactory()
 
-dummy_view = lambda request: None
-dummy_pk_view = lambda request, pk: None
+
+def dummy_view(request):
+    pass
+
+
+def dummy_pk_view(request, pk):
+    pass
 
 
 class TestRequestVersion:

@@ -86,8 +86,9 @@ class Response(SimpleTemplateResponse):
         state = super(Response, self).__getstate__()
         for key in (
             'accepted_renderer', 'renderer_context', 'resolver_match',
-            'client', 'request', 'wsgi_request', '_closable_objects'
+            'client', 'request', 'wsgi_request'
         ):
             if key in state:
                 del state[key]
+        state['_closable_objects'] = []
         return state

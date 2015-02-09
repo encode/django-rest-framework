@@ -138,7 +138,7 @@ After adding all those names into our URLconf, our final `snippets/urls.py` file
 
 The list views for users and code snippets could end up returning quite a lot of instances, so really we'd like to make sure we paginate the results, and allow the API client to step through each of the individual pages.
 
-We can change the default list style to use pagination, by modifying our `settings.py` file slightly.  Add the following setting:
+We can change the default list style to use pagination, by modifying our `tutorial/settings.py` file slightly.  Add the following setting:
 
     REST_FRAMEWORK = {
         'PAGINATE_BY': 10

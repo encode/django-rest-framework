@@ -14,6 +14,8 @@ django-filter>=0.9.2
 
 # wheel for PyPI installs
 wheel==0.24.0
+# twine for secured PyPI uploads
+twine==1.4.0
 
 # MkDocs for documentation previews/deploys
 mkdocs==0.11.1

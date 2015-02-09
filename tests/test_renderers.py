@@ -21,8 +21,13 @@ import re
 DUMMYSTATUS = status.HTTP_200_OK
 DUMMYCONTENT = 'dummycontent'
 
-RENDERER_A_SERIALIZER = lambda x: ('Renderer A: %s' % x).encode('ascii')
-RENDERER_B_SERIALIZER = lambda x: ('Renderer B: %s' % x).encode('ascii')
+
+def RENDERER_A_SERIALIZER(x):
+    return ('Renderer A: %s' % x).encode('ascii')
+
+
+def RENDERER_B_SERIALIZER(x):
+    return ('Renderer B: %s' % x).encode('ascii')
 
 
 expected_results = [
