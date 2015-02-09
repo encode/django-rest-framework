@@ -18,6 +18,7 @@ from django.utils.six import BytesIO
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
 from rest_framework.settings import api_settings
+import sys
 import warnings
 
 
@@ -485,8 +486,16 @@ class Request(object):
         else:
             self.auth = None
 
-    def __getattr__(self, attr):
+    def __getattribute__(self, attr):
         """
-        Proxy other attributes to the underlying HttpRequest object.
+        If an attribute does not exist on this instance, then we also attempt
+        to proxy it to the underlying HttpRequest object.
         """
-        return getattr(self._request, attr)
+        try:
+            return super(Request, self).__getattribute__(attr)
+        except AttributeError:
+            info = sys.exc_info()
+            try:
+                return getattr(self._request, attr)
+            except AttributeError:
+                raise info[0], info[1], info[2].tb_next
