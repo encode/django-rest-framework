@@ -3,18 +3,14 @@
 *~
 .*
 
-site/
-htmlcov/
-coverage/
-build/
-dist/
-*.egg-info/
+/site/
+/htmlcov/
+/coverage/
+/build/
+/dist/
+/*.egg-info/
+/env/
 MANIFEST
-
-bin/
-include/
-lib/
-local/
 
 !.gitignore
 !.travis.yml
