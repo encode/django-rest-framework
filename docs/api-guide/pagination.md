@@ -53,11 +53,21 @@ Or apply the style globally, using the `DEFAULT_PAGINATION_CLASS` settings key. 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.StandardResultsSetPagination'    }
 
+---
+
 # API Reference
 
 ## PageNumberPagination
 
+**TODO**
+
 ## LimitOffsetPagination
+
+**TODO**
+
+## CursorPagination
+
+**TODO**
 
 ---
 
@@ -108,6 +118,12 @@ API responses for list endpoints will now include a `Link` header, instead of in
 ![Link Header][link-header]
 
 *A custom pagination style, using the 'Link' header'*
+
+---
+
+# HTML pagination controls
+
+## Customizing the controls
 
 ---
 
