@@ -12,9 +12,9 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.http import QueryDict
 from django.http.multipartparser import parse_header
+from django.utils import six
 from django.utils.datastructures import MultiValueDict
 from django.utils.datastructures import MergeDict as DjangoMergeDict
-from django.utils.six import BytesIO
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
 from rest_framework.settings import api_settings
@@ -363,7 +363,7 @@ class Request(object):
         elif hasattr(self._request, 'read'):
             self._stream = self._request
         else:
-            self._stream = BytesIO(self.raw_post_data)
+            self._stream = six.BytesIO(self.raw_post_data)
 
     def _perform_form_overloading(self):
         """
@@ -405,7 +405,7 @@ class Request(object):
             self._CONTENTTYPE_PARAM in self._data
         ):
             self._content_type = self._data[self._CONTENTTYPE_PARAM]
-            self._stream = BytesIO(self._data[self._CONTENT_PARAM].encode(self.parser_context['encoding']))
+            self._stream = six.BytesIO(self._data[self._CONTENT_PARAM].encode(self.parser_context['encoding']))
             self._data, self._files, self._full_data = (Empty, Empty, Empty)
 
     def _parse(self):
@@ -498,4 +498,4 @@ class Request(object):
             try:
                 return getattr(self._request, attr)
             except AttributeError:
-                raise info[0], info[1], info[2].tb_next
+                six.reraise(info[0], info[1], info[2].tb_next)
