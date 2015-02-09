@@ -205,7 +205,10 @@ class TokenAuthTests(TestCase):
     def test_post_json_makes_one_db_query(self):
         """Ensure that authenticating a user using a token performs only one DB query"""
         auth = "Token " + self.key
-        func_to_test = lambda: self.csrf_client.post('/token/', {'example': 'example'}, format='json', HTTP_AUTHORIZATION=auth)
+
+        def func_to_test():
+            return self.csrf_client.post('/token/', {'example': 'example'}, format='json', HTTP_AUTHORIZATION=auth)
+
         self.assertNumQueries(1, func_to_test)
 
     def test_post_form_failing_token_auth(self):
