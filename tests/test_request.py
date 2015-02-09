@@ -270,8 +270,8 @@ class TestUserSetter(TestCase):
         else:
             assert False, 'AttributeError not raised'
 
-class TestAuthSetter(TestCase):
 
+class TestAuthSetter(TestCase):
     def test_auth_can_be_set(self):
         request = Request(factory.get('/'))
         request.auth = 'DUMMY'
