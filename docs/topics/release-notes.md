@@ -41,6 +41,19 @@ You can determine your currently installed version using `pip freeze`:
 ## 3.0.x series
 
 
+### 3.0.5
+
+**Date**: [10th February 2015][3.0.5-milestone].
+
+* Fix a bug where `_closable_objects` breaks pickling. ([#1850][gh1850], [#2492][gh2492])
+* Allow non-standard `User` models with `Throttling`. ([#2524][gh2524])
+* Support custom `User.db_table` in TokenAuthentication migration. ([#2479][gh2479])
+* Fix misleading `AttributeError` tracebacks on `Request` objects. ([#2530][gh2530], [#2108][gh2108])
+* `ManyRelatedField.get_value` clearing field on partial update. ([#2475][gh2475])
+* Removed '.model' shortcut from code. ([#2486][gh2486])
+* Fix `detail_route` and `list_route` mutable argument. ([#2518][gh2518])
+* Prefetching the user object when getting the token in `TokenAuthentication`. ([#2519][gh2519])
+
 ### 3.0.4
 
 **Date**: [28th January 2015][3.0.4-milestone].
@@ -721,6 +734,7 @@ For older release notes, [please see the GitHub repo](old-release-notes).
 [3.0.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.2+Release%22
 [3.0.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.3+Release%22
 [3.0.4-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.4+Release%22
+[3.0.5-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.5+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -808,3 +822,14 @@ For older release notes, [please see the GitHub repo](old-release-notes).
 [gh2399]: https://github.com/tomchristie/django-rest-framework/issues/2399
 [gh2388]: https://github.com/tomchristie/django-rest-framework/issues/2388
 [gh2360]: https://github.com/tomchristie/django-rest-framework/issues/2360
+<!-- 3.0.5 -->
+[gh1850]: https://github.com/tomchristie/django-rest-framework/issues/1850
+[gh2108]: https://github.com/tomchristie/django-rest-framework/issues/2108
+[gh2475]: https://github.com/tomchristie/django-rest-framework/issues/2475
+[gh2479]: https://github.com/tomchristie/django-rest-framework/issues/2479
+[gh2486]: https://github.com/tomchristie/django-rest-framework/issues/2486
+[gh2492]: https://github.com/tomchristie/django-rest-framework/issues/2492
+[gh2518]: https://github.com/tomchristie/django-rest-framework/issues/2518
+[gh2519]: https://github.com/tomchristie/django-rest-framework/issues/2519
+[gh2524]: https://github.com/tomchristie/django-rest-framework/issues/2524
+[gh2530]: https://github.com/tomchristie/django-rest-framework/issues/2530
