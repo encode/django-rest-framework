@@ -104,7 +104,7 @@ class SearchFilter(BaseFilterBackend):
         for search_term in self.get_search_terms(request):
             or_queries = [models.Q(**{orm_lookup: search_term})
                           for orm_lookup in orm_lookups]
-            queryset = queryset.filter(reduce(operator.or_, or_queries))
+            queryset = queryset.filter(reduce(operator.or_, or_queries)).distinct()
 
         return queryset
 
