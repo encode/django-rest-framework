@@ -310,3 +310,89 @@ class ObjectPermissionsIntegrationTests(TestCase):
         response = object_permissions_list_view(request)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertListEqual(response.data, [])
+
+
+class BasicPerm(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return False
+
+
+class BasicPermWithDetail(permissions.BasePermission):
+    message = 'Custom: You cannot post to this resource'
+
+    def has_permission(self, request, view):
+        return False
+
+
+class BasicObjectPerm(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return False
+
+
+class BasicObjectPermWithDetail(permissions.BasePermission):
+    message = 'Custom: You cannot post to this resource'
+
+    def has_object_permission(self, request, view, obj):
+        return False
+
+
+class PermissionInstanceView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
+
+
+class DeniedView(PermissionInstanceView):
+    permission_classes = (BasicPerm,)
+
+
+class DeniedViewWithDetail(PermissionInstanceView):
+    permission_classes = (BasicPermWithDetail,)
+
+
+class DeniedObjectView(PermissionInstanceView):
+    permission_classes = (BasicObjectPerm,)
+
+
+class DeniedObjectViewWithDetail(PermissionInstanceView):
+    permission_classes = (BasicObjectPermWithDetail,)
+
+denied_view = DeniedView.as_view()
+
+denied_view_with_detail = DeniedViewWithDetail.as_view()
+
+denied_object_view = DeniedObjectView.as_view()
+
+denied_object_view_with_detail = DeniedObjectViewWithDetail.as_view()
+
+
+class CustomPermissionsTests(TestCase):
+    def setUp(self):
+        BasicModel(text='foo').save()
+        User.objects.create_user('username', 'username@example.com', 'password')
+        credentials = basic_auth_header('username', 'password')
+        self.request = factory.get('/1', format='json', HTTP_AUTHORIZATION=credentials)
+        self.custom_message = 'Custom: You cannot post to this resource'
+
+    def test_permission_denied(self):
+            response = denied_view(self.request, pk=1)
+            detail = response.data.get('detail')
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+            self.assertNotEqual(detail, self.custom_message)
+
+    def test_permission_denied_with_custom_detail(self):
+            response = denied_view_with_detail(self.request, pk=1)
+            detail = response.data.get('detail')
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+            self.assertEqual(detail, self.custom_message)
+
+    def test_permission_denied_for_object(self):
+            response = denied_object_view(self.request, pk=1)
+            detail = response.data.get('detail')
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+            self.assertNotEqual(detail, self.custom_message)
+
+    def test_permission_denied_for_object_with_custom_detail(self):
+            response = denied_object_view_with_detail(self.request, pk=1)
+            detail = response.data.get('detail')
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+            self.assertEqual(detail, self.custom_message)

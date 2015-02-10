@@ -205,6 +205,16 @@ If you need to test if a request is a read operation or a write operation, you s
 
 ---
 
+Custom permissions will raise a `PermissionDenied` exception if the test fails. To change the error message associated with the exception, implement a `message` attribute directly on your custom permission. Otherwise the `default_detail` attribute from `PermissionDenied` will be used.
+    
+    from rest_framework import permissions
+
+    class CustomerAccessPermission(permissions.BasePermission):
+        message = 'Adding customers not allowed.'
+        
+        def has_permission(self, request, view):
+             ...
+        
 ## Examples
 
 The following is an example of a permission class that checks the incoming request's IP address against a blacklist, and denies the request if the IP has been blacklisted.
