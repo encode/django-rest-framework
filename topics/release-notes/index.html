@@ -439,6 +439,18 @@
 </code></pre>
 <hr />
 <h2 id="30x-series">3.0.x series</h2>
+<h3 id="305">3.0.5</h3>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.5+Release%22">10th February 2015</a>.</p>
+<ul>
+<li>Fix a bug where <code>_closable_objects</code> breaks pickling. (<a href="https://github.com/tomchristie/django-rest-framework/issues/1850">#1850</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2492">#2492</a>)</li>
+<li>Allow non-standard <code>User</code> models with <code>Throttling</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2524">#2524</a>)</li>
+<li>Support custom <code>User.db_table</code> in TokenAuthentication migration. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2479">#2479</a>)</li>
+<li>Fix misleading <code>AttributeError</code> tracebacks on <code>Request</code> objects. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2530">#2530</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2108">#2108</a>)</li>
+<li><code>ManyRelatedField.get_value</code> clearing field on partial update. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2475">#2475</a>)</li>
+<li>Removed '.model' shortcut from code. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2486">#2486</a>)</li>
+<li>Fix <code>detail_route</code> and <code>list_route</code> mutable argument. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2518">#2518</a>)</li>
+<li>Prefetching the user object when getting the token in <code>TokenAuthentication</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2519">#2519</a>)</li>
+</ul>
 <h3 id="304">3.0.4</h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.4+Release%22">28th January 2015</a>.</p>
 <ul>
@@ -1021,7 +1033,8 @@
 
 <p><!-- 3.0.2 -->
 <!-- 3.0.3 -->
-<!-- 3.0.4 --></p>
+<!-- 3.0.4 -->
+<!-- 3.0.5 --></p>
 
           </div>
           <!--/span-->

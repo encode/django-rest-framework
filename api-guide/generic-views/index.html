@@ -577,14 +577,10 @@ class UserList(generics.ListCreateAPIView):
 <ul>
 <li><code>filter_backends</code> - A list of filter backend classes that should be used for filtering the queryset.  Defaults to the same value as the <code>DEFAULT_FILTER_BACKENDS</code> setting.</li>
 </ul>
-<p><strong>Deprecated attributes</strong>:</p>
-<ul>
-<li><code>model</code> - This shortcut may be used instead of setting either (or both) of the <code>queryset</code>/<code>serializer_class</code> attributes. The explicit style is preferred over the <code>.model</code> shortcut, and usage of this attribute is now deprecated.</li>
-</ul>
 <h3 id="methods">Methods</h3>
 <p><strong>Base methods</strong>:</p>
 <h4 id="get_querysetself"><code>get_queryset(self)</code></h4>
-<p>Returns the queryset that should be used for list views, and that should be used as the base for lookups in detail views.  Defaults to returning the queryset specified by the <code>queryset</code> attribute, or the default queryset for the model if the <code>model</code> shortcut is being used.</p>
+<p>Returns the queryset that should be used for list views, and that should be used as the base for lookups in detail views.  Defaults to returning the queryset specified by the <code>queryset</code> attribute.</p>
 <p>This method should always be used rather than accessing <code>self.queryset</code> directly, as <code>self.queryset</code> gets evaluated only once, and those results are cached for all subsequent requests.</p>
 <p>May be overridden to provide dynamic behavior, such as returning a queryset, that is specific to the user making the request.</p>
 <p>For example:</p>
@@ -620,7 +616,7 @@ class UserList(generics.ListCreateAPIView):
     return (CategoryFilter,)
 </code></pre>
 <h4 id="get_serializer_classself"><code>get_serializer_class(self)</code></h4>
-<p>Returns the class that should be used for the serializer.  Defaults to returning the <code>serializer_class</code> attribute, or dynamically generating a serializer class if the <code>model</code> shortcut is being used.</p>
+<p>Returns the class that should be used for the serializer.  Defaults to returning the <code>serializer_class</code> attribute.</p>
 <p>May be overridden to provide dynamic behavior, such as using different serializers for read and write operations, or providing different serializers to different types of users.</p>
 <p>For example:</p>
 <pre><code>def get_serializer_class(self):

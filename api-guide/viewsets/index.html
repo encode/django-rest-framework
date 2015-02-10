@@ -587,7 +587,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.request.user.accounts.all()
 </code></pre>
-<p>Note however that upon removal of the <code>queryset</code> property from your <code>ViewSet</code>, any associated <a href="../routers">router</a> will be unable to derive the base_name of your Model automatically, and so you you will have to specify the <code>base_name</code> kwarg as part of your <a href="../routers">router registration</a>.</p>
+<p>Note however that upon removal of the <code>queryset</code> property from your <code>ViewSet</code>, any associated <a href="../routers">router</a> will be unable to derive the base_name of your Model automatically, and so you will have to specify the <code>base_name</code> kwarg as part of your <a href="../routers">router registration</a>.</p>
 <p>Also note that although this class provides the complete set of create/list/retrieve/update/destroy actions by default, you can restrict the available operations by using the standard permission classes.</p>
 <h2 id="readonlymodelviewset">ReadOnlyModelViewSet</h2>
 <p>The <code>ReadOnlyModelViewSet</code> class also inherits from <code>GenericAPIView</code>.  As with <code>ModelViewSet</code> it also includes implementations for various actions, but unlike <code>ModelViewSet</code> only provides the 'read-only' actions, <code>.list()</code> and <code>.retrieve()</code>.</p>

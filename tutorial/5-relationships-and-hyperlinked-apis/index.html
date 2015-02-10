@@ -512,7 +512,7 @@ urlpatterns += [
 </code></pre>
 <h2 id="adding-pagination">Adding pagination</h2>
 <p>The list views for users and code snippets could end up returning quite a lot of instances, so really we'd like to make sure we paginate the results, and allow the API client to step through each of the individual pages.</p>
-<p>We can change the default list style to use pagination, by modifying our <code>settings.py</code> file slightly.  Add the following setting:</p>
+<p>We can change the default list style to use pagination, by modifying our <code>tutorial/settings.py</code> file slightly.  Add the following setting:</p>
 <pre><code>REST_FRAMEWORK = {
     'PAGINATE_BY': 10
 }

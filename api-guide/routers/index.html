@@ -459,7 +459,7 @@ urlpatterns = router.urls
 </ul>
 <p>Optionally, you may also specify an additional argument:</p>
 <ul>
-<li><code>base_name</code> - The base to use for the URL names that are created.  If unset the basename will be automatically generated based on the <code>model</code> or <code>queryset</code> attribute on the viewset, if it has one.  Note that if the viewset does not include a <code>model</code> or <code>queryset</code> attribute then you must set <code>base_name</code> when registering the viewset.</li>
+<li><code>base_name</code> - The base to use for the URL names that are created.  If unset the basename will be automatically generated based on the <code>queryset</code> attribute of the viewset, if it has one.  Note that if the viewset does not include a <code>queryset</code> attribute then you must set <code>base_name</code> when registering the viewset.</li>
 </ul>
 <p>The example above would generate the following URL patterns:</p>
 <ul>
@@ -534,7 +534,7 @@ class UserViewSet(ModelViewSet):
 <ul>
 <li>URL pattern: <code>^users/{pk}/change-password/$</code>  Name: <code>'user-change-password'</code></li>
 </ul>
-<p>For more information see the viewset documentation on <a href="../../viewsets.html#marking-extra-actions-for-routing">marking extra actions for routing</a>.</p>
+<p>For more information see the viewset documentation on <a href="../viewsets#marking-extra-actions-for-routing">marking extra actions for routing</a>.</p>
 <h1 id="api-guide">API Guide</h1>
 <h2 id="simplerouter">SimpleRouter</h2>
 <p>This router includes routes for the standard set of <code>list</code>, <code>create</code>, <code>retrieve</code>, <code>update</code>, <code>partial_update</code> and <code>destroy</code> actions.  The viewset can also mark additional methods to be routed, using the <code>@detail_route</code> or <code>@list_route</code> decorators.</p>

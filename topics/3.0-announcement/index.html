@@ -936,7 +936,7 @@ def to_representation(self, value):
     class Meta:
         model = Account
 </code></pre>
-<p>However this code <em>would not be valid</em> in <code>2.4.3</code>:</p>
+<p>However this code <em>would not be valid</em> in <code>3.0</code>:</p>
 <pre><code># Missing `queryset`
 class AccountSerializer(serializers.Serializer):
     organizations = serializers.SlugRelatedField(slug_field='name')
@@ -1051,7 +1051,7 @@ class OrganizationSerializer(serializers.Serializer):
 <p>The <code>style</code> keyword argument can be used to pass through additional information from a serializer field, to the renderer class. In particular, the <code>HTMLFormRenderer</code> uses the <code>base_template</code> key to determine which template to render the field with.</p>
 <p>For example, to use a <code>textarea</code> control instead of the default <code>input</code> control, you would use the following…</p>
 <pre><code>additional_notes = serializers.CharField(
-    style={'base_template': 'text_area.html'}
+    style={'base_template': 'textarea.html'}
 )
 </code></pre>
 <p>Similarly, to use a radio button control instead of the default <code>select</code> control, you would use the following…</p>
