@@ -429,6 +429,56 @@ class SearchFilterTests(TestCase):
         reload_module(filters)
 
 
+class AttributeModel(models.Model):
+    label = models.CharField(max_length=32)
+
+
+class SearchFilterModelM2M(models.Model):
+    title = models.CharField(max_length=20)
+    text = models.CharField(max_length=100)
+    attributes = models.ManyToManyField(AttributeModel)
+
+
+class SearchFilterM2MSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SearchFilterModelM2M
+
+
+class SearchFilterM2MTests(TestCase):
+    def setUp(self):
+        # Sequence of title/text/attributes is:
+        #
+        # z   abc [1, 2, 3]
+        # zz  bcd [1, 2, 3]
+        # zzz cde [1, 2, 3]
+        # ...
+        for idx in range(3):
+            label = 'w' * (idx + 1)
+            AttributeModel(label=label)
+
+        for idx in range(10):
+            title = 'z' * (idx + 1)
+            text = (
+                chr(idx + ord('a')) +
+                chr(idx + ord('b')) +
+                chr(idx + ord('c'))
+            )
+            SearchFilterModelM2M(title=title, text=text).save()
+        SearchFilterModelM2M.objects.get(title='zz').attributes.add(1, 2, 3)
+
+    def test_m2m_search(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModelM2M.objects.all()
+            serializer_class = SearchFilterM2MSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('=title', 'text', 'attributes__label')
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'zz'})
+        response = view(request)
+        self.assertEqual(len(response.data), 1)
+
+
 class OrderingFilterModel(models.Model):
     title = models.CharField(max_length=20)
     text = models.CharField(max_length=100)
