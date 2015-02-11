@@ -201,6 +201,22 @@ class HyperlinkedRelatedField(RelatedField):
             return None
 
         lookup_value = getattr(obj, self.lookup_field)
+
+        import numbers
+        from django.utils import six
+
+        if lookup_value is not None and not isinstance(lookup_value, six.string_types) and not isinstance(lookup_value,
+                                                                                                          numbers.Number):
+
+            try:
+                lookup_value = getattr(lookup_value, self.lookup_url_kwarg)
+            except Exception:
+                lookup_value = getattr(lookup_value, 'pk')
+
+        if lookup_value is None or (not isinstance(lookup_value, six.string_types) and not isinstance(lookup_value,
+                                                                                                      numbers.Number)) or '' == lookup_value:
+            return None
+
         kwargs = {self.lookup_url_kwarg: lookup_value}
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
 
