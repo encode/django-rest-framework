@@ -318,7 +318,7 @@ class BasicPerm(permissions.BasePermission):
 
 
 class BasicPermWithDetail(permissions.BasePermission):
-    message = 'Custom: You cannot post to this resource'
+    message = 'Custom: You cannot access this resource'
 
     def has_permission(self, request, view):
         return False
@@ -330,7 +330,7 @@ class BasicObjectPerm(permissions.BasePermission):
 
 
 class BasicObjectPermWithDetail(permissions.BasePermission):
-    message = 'Custom: You cannot post to this resource'
+    message = 'Custom: You cannot access this resource'
 
     def has_object_permission(self, request, view, obj):
         return False
@@ -371,7 +371,7 @@ class CustomPermissionsTests(TestCase):
         User.objects.create_user('username', 'username@example.com', 'password')
         credentials = basic_auth_header('username', 'password')
         self.request = factory.get('/1', format='json', HTTP_AUTHORIZATION=credentials)
-        self.custom_message = 'Custom: You cannot post to this resource'
+        self.custom_message = 'Custom: You cannot access this resource'
 
     def test_permission_denied(self):
             response = denied_view(self.request, pk=1)
