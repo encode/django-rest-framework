@@ -140,9 +140,7 @@ class APIView(View):
         """
         if not request.successful_authenticator:
             raise exceptions.NotAuthenticated()
-        if message is not None:
-            raise exceptions.PermissionDenied(message)
-        raise exceptions.PermissionDenied()
+        raise exceptions.PermissionDenied(detail=message)
 
     def throttled(self, request, wait):
         """
@@ -282,9 +280,9 @@ class APIView(View):
         """
         for permission in self.get_permissions():
             if not permission.has_permission(request, self):
-                if hasattr(permission, 'message'):
-                    self.permission_denied(request, permission.message)
-                self.permission_denied(request)
+                self.permission_denied(
+                    request, message=getattr(permission, 'message', None)
+                )
 
     def check_object_permissions(self, request, obj):
         """
@@ -293,9 +291,9 @@ class APIView(View):
         """
         for permission in self.get_permissions():
             if not permission.has_object_permission(request, self, obj):
-                if hasattr(permission, 'message'):
-                    self.permission_denied(request, permission.message)
-                self.permission_denied(request)
+                self.permission_denied(
+                    request, message=getattr(permission, 'message', None)
+                )
 
     def check_throttles(self, request):
         """
