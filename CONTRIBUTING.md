@@ -10,9 +10,9 @@ There are many ways you can contribute to Django REST framework.  We'd like it t
 
 The most important thing you can do to help push the REST framework project forward is to be actively involved wherever possible.  Code contributions are often overvalued as being the primary way to get involved in a project, we don't believe that needs to be the case.
 
-If you use REST framework, we'd love you to be vocal about your experiences with it - you might consider writing a blog post about using REST framework, or publishing a tutorial about building a project with a particular Javascript framework.  Experiences from beginners can be particularly helpful because you'll be in the best position to assess which bits of REST framework are more difficult to understand and work with.
+If you use REST framework, we'd love you to be vocal about your experiences with it - you might consider writing a blog post about using REST framework, or publishing a tutorial about building a project with a particular JavaScript framework.  Experiences from beginners can be particularly helpful because you'll be in the best position to assess which bits of REST framework are more difficult to understand and work with.
 
-Other really great ways you can help move the community forward include helping answer questions on the [discussion group][google-group], or setting up an [email alert on StackOverflow][so-filter] so that you get notified of any new questions with the `django-rest-framework` tag.
+Other really great ways you can help move the community forward include helping to answer questions on the [discussion group][google-group], or setting up an [email alert on StackOverflow][so-filter] so that you get notified of any new questions with the `django-rest-framework` tag.
 
 When answering questions make sure to help future contributors find their way around by hyperlinking wherever possible to related threads and tickets, and include backlinks from those items if relevant.
 
@@ -52,7 +52,7 @@ To start developing on Django REST framework, clone the repo:
 
     git clone git@github.com:tomchristie/django-rest-framework.git
 
-Changes should broadly follow the [PEP 8][pep-8] style conventions, and we recommend you setup your editor to automatically indicated non-conforming styles.
+Changes should broadly follow the [PEP 8][pep-8] style conventions, and we recommend you set up your editor to automatically indicate non-conforming styles.
 
 ## Testing
 
@@ -60,13 +60,47 @@ To run the tests, clone the repository, and then:
 
     # Setup the virtual environment
     virtualenv env
-    env/bin/activate
+    source env/bin/activate
     pip install -r requirements.txt
 
     # Run the tests
     ./runtests.py
 
-You can also use the excellent [`tox`][tox] testing tool to run the tests against all supported versions of Python and Django.  Install `tox` globally, and then simply run:
+### Test options
+
+Run using a more concise output style.
+
+    ./runtests.py -q
+
+Run the tests using a more concise output style, no coverage, no flake8.
+
+    ./runtests.py --fast
+
+Don't run the flake8 code linting.
+
+    ./runtests.py --nolint
+
+Only run the flake8 code linting, don't run the tests.
+
+    ./runtests.py --lintonly
+
+Run the tests for a given test case.
+
+    ./runtests.py MyTestCase
+
+Run the tests for a given test method.
+
+    ./runtests.py MyTestCase.test_this_method
+
+Shorter form to run the tests for a given test method.
+
+    ./runtests.py test_this_method
+
+Note: The test case and test method matching is fuzzy and will sometimes run other tests that contain a partial string match to the given  command line input.
+
+### Running against multiple environments
+
+You can also use the excellent [tox][tox] testing tool to run the tests against all supported versions of Python and Django.  Install `tox` globally, and then simply run:
 
     tox
 
@@ -82,7 +116,7 @@ GitHub's documentation for working on pull requests is [available here][pull-req
 
 Always run the tests before submitting pull requests, and ideally run `tox` in order to check that your modifications are compatible with both Python 2 and Python 3, and that they run properly on all supported versions of Django.
 
-Once you've made a pull request take a look at the travis build status in the GitHub interface and make sure the tests are running as you'd expect.
+Once you've made a pull request take a look at the Travis build status in the GitHub interface and make sure the tests are running as you'd expect.
 
 ![Travis status][travis-status]
 
@@ -96,7 +130,7 @@ Sometimes, in order to ensure your code works on various different versions of D
 
 The documentation for REST framework is built from the [Markdown][markdown] source files in [the docs directory][docs].
 
-There are many great markdown editors that make working with the documentation really easy.  The [Mou editor for Mac][mou] is one such editor that comes highly recommended.
+There are many great Markdown editors that make working with the documentation really easy.  The [Mou editor for Mac][mou] is one such editor that comes highly recommended.
 
 ## Building the documentation
 
@@ -104,7 +138,7 @@ To build the documentation, install MkDocs with `pip install mkdocs` and then ru
 
     mkdocs build
 
-This will build the html output into the `html` directory.
+This will build the documentation into the `site` directory.
 
 You can build the documentation and open a preview in a browser window by using the `serve` command.
 
@@ -117,8 +151,7 @@ Documentation should be in American English.  The tone of the documentation is v
 Some other tips:
 
 * Keep paragraphs reasonably short.
-* Use double spacing after the end of sentences.
-* Don't use the abbreviations such as 'e.g.' but instead use long form, such as 'For example'.
+* Don't use abbreviations such as 'e.g.' but instead use the long form, such as 'For example'.
 
 ## Markdown style
 
@@ -151,7 +184,7 @@ If you are hyperlinking to another REST framework document, you should use a rel
 
     [authentication]: ../api-guide/authentication.md
 
-Linking in this style means you'll be able to click the hyperlink in your markdown editor to open the referenced document.  When the documentation is built, these links will be converted into regular links to HTML pages.
+Linking in this style means you'll be able to click the hyperlink in your Markdown editor to open the referenced document.  When the documentation is built, these links will be converted into regular links to HTML pages.
 
 ##### 3. Notes
 
@@ -163,19 +196,6 @@ If you want to draw attention to a note or warning, use a pair of enclosing line
 
     ---
 
-# Third party packages
-
-New features to REST framework are generally recommended to be implemented as third party libraries that are developed outside of the core framework.  Ideally third party libraries should be properly documented and packaged, and made available on PyPI.
-
-## Getting started
-
-If you have some functionality that you would like to implement as a third party package it's worth contacting the [discussion group][google-group] as others may be willing to get involved.  We strongly encourage third party package development and will always try to prioritize time spent helping their development, documentation and packaging.
-
-We recommend the [`django-reusable-app`][django-reusable-app] template as a good resource for getting up and running with implementing a third party Django package.
-
-## Linking to your package
-
-Once your package is decently documented and available on PyPI open a pull request or issue, and we'll add a link to it from the main REST framework documentation.
 
 [cite]: http://www.w3.org/People/Berners-Lee/FAQ.html
 [code-of-conduct]: https://www.djangoproject.com/conduct/
@@ -183,10 +203,9 @@ Once your package is decently documented and available on PyPI open a pull reque
 [so-filter]: http://stackexchange.com/filters/66475/rest-framework
 [issues]: https://github.com/tomchristie/django-rest-framework/issues?state=open
 [pep-8]: http://www.python.org/dev/peps/pep-0008/
-[travis-status]: https://raw.github.com/tomchristie/django-rest-framework/master/docs/img/travis-status.png
+[travis-status]: ../img/travis-status.png
 [pull-requests]: https://help.github.com/articles/using-pull-requests
 [tox]: http://tox.readthedocs.org/en/latest/
 [markdown]: http://daringfireball.net/projects/markdown/basics
 [docs]: https://github.com/tomchristie/django-rest-framework/tree/master/docs
 [mou]: http://mouapp.com/
-[django-reusable-app]: https://github.com/dabapps/django-reusable-app

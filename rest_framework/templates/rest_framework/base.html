@@ -119,9 +119,18 @@
                     <div class="page-header">
                         <h1>{{ name }}</h1>
                     </div>
+                    <div style="float:left">
                     {% block description %}
                         {{ description }}
                     {% endblock %}
+                    </div>
+
+                    {% if paginator %}
+                        <nav style="float: right">
+                        {% get_pagination_html paginator %}
+                        </nav>
+                    {% endif %}
+
                     <div class="request-info" style="clear: both" >
                         <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
                     </div>

@@ -114,7 +114,7 @@ class OrderingFilter(BaseFilterBackend):
     ordering_param = api_settings.ORDERING_PARAM
     ordering_fields = None
 
-    def get_ordering(self, request):
+    def get_ordering(self, request, queryset, view):
         """
         Ordering is set by a comma delimited ?ordering=... query parameter.
 
@@ -124,7 +124,13 @@ class OrderingFilter(BaseFilterBackend):
         """
         params = request.query_params.get(self.ordering_param)
         if params:
-            return [param.strip() for param in params.split(',')]
+            fields = [param.strip() for param in params.split(',')]
+            ordering = self.remove_invalid_fields(queryset, fields, view)
+            if ordering:
+                return ordering
+
+        # No ordering was included, or all the ordering fields were invalid
+        return self.get_default_ordering(view)
 
     def get_default_ordering(self, view):
         ordering = getattr(view, 'ordering', None)
@@ -132,7 +138,7 @@ class OrderingFilter(BaseFilterBackend):
             return (ordering,)
         return ordering
 
-    def remove_invalid_fields(self, queryset, ordering, view):
+    def remove_invalid_fields(self, queryset, fields, view):
         valid_fields = getattr(view, 'ordering_fields', self.ordering_fields)
 
         if valid_fields is None:
@@ -152,18 +158,10 @@ class OrderingFilter(BaseFilterBackend):
             valid_fields = [field.name for field in queryset.model._meta.fields]
             valid_fields += queryset.query.aggregates.keys()
 
-        return [term for term in ordering if term.lstrip('-') in valid_fields]
+        return [term for term in fields if term.lstrip('-') in valid_fields]
 
     def filter_queryset(self, request, queryset, view):
-        ordering = self.get_ordering(request)
-
-        if ordering:
-            # Skip any incorrect parameters
-            ordering = self.remove_invalid_fields(queryset, ordering, view)
-
-        if not ordering:
-            # Use 'ordering' attribute by default
-            ordering = self.get_default_ordering(view)
+        ordering = self.get_ordering(request, queryset, view)
 
         if ordering:
             return queryset.order_by(*ordering)

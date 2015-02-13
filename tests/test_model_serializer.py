@@ -216,7 +216,7 @@ class TestRegularFieldMappings(TestCase):
 
         with self.assertRaises(ImproperlyConfigured) as excinfo:
             TestSerializer().fields
-        expected = 'Field name `invalid` is not valid for model `ModelBase`.'
+        expected = 'Field name `invalid` is not valid for model `RegularFieldsModel`.'
         assert str(excinfo.exception) == expected
 
     def test_missing_field(self):
@@ -234,8 +234,8 @@ class TestRegularFieldMappings(TestCase):
         with self.assertRaises(AssertionError) as excinfo:
             TestSerializer().fields
         expected = (
-            'Field `missing` has been declared on serializer '
-            '`TestSerializer`, but is missing from `Meta.fields`.'
+            "The field 'missing' was declared on serializer TestSerializer, "
+            "but has not been included in the 'fields' option."
         )
         assert str(excinfo.exception) == expected
 
@@ -637,5 +637,5 @@ class TestSerializerMetaClass(TestCase):
         exception = result.exception
         self.assertEqual(
             str(exception),
-            "Cannot set both 'fields' and 'exclude'."
+            "Cannot set both 'fields' and 'exclude' options on serializer ExampleSerializer."
         )

@@ -1,26 +1,19 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
-from decimal import Decimal
 from django.conf.urls import patterns, url, include
 from django.core.cache import cache
 from django.db import models
 from django.test import TestCase
-from django.utils import six, unittest
-from django.utils.six import BytesIO
-from django.utils.six.moves import StringIO
+from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import status, permissions
-from rest_framework.compat import yaml, etree
+from rest_framework.compat import OrderedDict
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
-    XMLRenderer, JSONPRenderer, BrowsableAPIRenderer
-from rest_framework.parsers import YAMLParser, XMLParser
+from rest_framework.renderers import BaseRenderer, JSONRenderer, BrowsableAPIRenderer
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from collections import MutableMapping
-import datetime
 import json
 import re
 
@@ -112,8 +105,6 @@ urlpatterns = patterns(
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
     url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
     url(r'^cache$', MockGETView.as_view()),
-    url(r'^jsonp/jsonrenderer$', MockGETView.as_view(renderer_classes=[JSONRenderer, JSONPRenderer])),
-    url(r'^jsonp/nojsonrenderer$', MockGETView.as_view(renderer_classes=[JSONPRenderer])),
     url(r'^parseerror$', MockPOSTView.as_view(renderer_classes=[JSONRenderer, BrowsableAPIRenderer])),
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
@@ -413,207 +404,6 @@ class AsciiJSONRendererTests(TestCase):
         self.assertEqual(content, '{"countries":["United Kingdom","France","Espa\\u00f1a"]}'.encode('utf-8'))
 
 
-class JSONPRendererTests(TestCase):
-    """
-    Tests specific to the JSONP Renderer
-    """
-
-    urls = 'tests.test_renderers'
-
-    def test_without_callback_with_json_renderer(self):
-        """
-        Test JSONP rendering with View JSON Renderer.
-        """
-        resp = self.client.get(
-            '/jsonp/jsonrenderer',
-            HTTP_ACCEPT='application/javascript'
-        )
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=utf-8')
-        self.assertEqual(
-            resp.content,
-            ('callback(%s);' % _flat_repr).encode('ascii')
-        )
-
-    def test_without_callback_without_json_renderer(self):
-        """
-        Test JSONP rendering without View JSON Renderer.
-        """
-        resp = self.client.get(
-            '/jsonp/nojsonrenderer',
-            HTTP_ACCEPT='application/javascript'
-        )
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=utf-8')
-        self.assertEqual(
-            resp.content,
-            ('callback(%s);' % _flat_repr).encode('ascii')
-        )
-
-    def test_with_callback(self):
-        """
-        Test JSONP rendering with callback function name.
-        """
-        callback_func = 'myjsonpcallback'
-        resp = self.client.get(
-            '/jsonp/nojsonrenderer?callback=' + callback_func,
-            HTTP_ACCEPT='application/javascript'
-        )
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=utf-8')
-        self.assertEqual(
-            resp.content,
-            ('%s(%s);' % (callback_func, _flat_repr)).encode('ascii')
-        )
-
-
-if yaml:
-    _yaml_repr = 'foo: [bar, baz]\n'
-
-    class YAMLRendererTests(TestCase):
-        """
-        Tests specific to the YAML Renderer
-        """
-
-        def test_render(self):
-            """
-            Test basic YAML rendering.
-            """
-            obj = {'foo': ['bar', 'baz']}
-            renderer = YAMLRenderer()
-            content = renderer.render(obj, 'application/yaml')
-            self.assertEqual(content.decode('utf-8'), _yaml_repr)
-
-        def test_render_and_parse(self):
-            """
-            Test rendering and then parsing returns the original object.
-            IE obj -> render -> parse -> obj.
-            """
-            obj = {'foo': ['bar', 'baz']}
-
-            renderer = YAMLRenderer()
-            parser = YAMLParser()
-
-            content = renderer.render(obj, 'application/yaml')
-            data = parser.parse(BytesIO(content))
-            self.assertEqual(obj, data)
-
-        def test_render_decimal(self):
-            """
-            Test YAML decimal rendering.
-            """
-            renderer = YAMLRenderer()
-            content = renderer.render({'field': Decimal('111.2')}, 'application/yaml')
-            self.assertYAMLContains(content.decode('utf-8'), "field: '111.2'")
-
-        def assertYAMLContains(self, content, string):
-            self.assertTrue(string in content, '%r not in %r' % (string, content))
-
-        def test_proper_encoding(self):
-            obj = {'countries': ['United Kingdom', 'France', 'España']}
-            renderer = YAMLRenderer()
-            content = renderer.render(obj, 'application/yaml')
-            self.assertEqual(content.strip(), 'countries: [United Kingdom, France, España]'.encode('utf-8'))
-
-
-class XMLRendererTestCase(TestCase):
-    """
-    Tests specific to the XML Renderer
-    """
-
-    _complex_data = {
-        "creation_date": datetime.datetime(2011, 12, 25, 12, 45, 00),
-        "name": "name",
-        "sub_data_list": [
-            {
-                "sub_id": 1,
-                "sub_name": "first"
-            },
-            {
-                "sub_id": 2,
-                "sub_name": "second"
-            }
-        ]
-    }
-
-    def test_render_string(self):
-        """
-        Test XML rendering.
-        """
-        renderer = XMLRenderer()
-        content = renderer.render({'field': 'astring'}, 'application/xml')
-        self.assertXMLContains(content, '<field>astring</field>')
-
-    def test_render_integer(self):
-        """
-        Test XML rendering.
-        """
-        renderer = XMLRenderer()
-        content = renderer.render({'field': 111}, 'application/xml')
-        self.assertXMLContains(content, '<field>111</field>')
-
-    def test_render_datetime(self):
-        """
-        Test XML rendering.
-        """
-        renderer = XMLRenderer()
-        content = renderer.render({
-            'field': datetime.datetime(2011, 12, 25, 12, 45, 00)
-        }, 'application/xml')
-        self.assertXMLContains(content, '<field>2011-12-25 12:45:00</field>')
-
-    def test_render_float(self):
-        """
-        Test XML rendering.
-        """
-        renderer = XMLRenderer()
-        content = renderer.render({'field': 123.4}, 'application/xml')
-        self.assertXMLContains(content, '<field>123.4</field>')
-
-    def test_render_decimal(self):
-        """
-        Test XML rendering.
-        """
-        renderer = XMLRenderer()
-        content = renderer.render({'field': Decimal('111.2')}, 'application/xml')
-        self.assertXMLContains(content, '<field>111.2</field>')
-
-    def test_render_none(self):
-        """
-        Test XML rendering.
-        """
-        renderer = XMLRenderer()
-        content = renderer.render({'field': None}, 'application/xml')
-        self.assertXMLContains(content, '<field></field>')
-
-    def test_render_complex_data(self):
-        """
-        Test XML rendering.
-        """
-        renderer = XMLRenderer()
-        content = renderer.render(self._complex_data, 'application/xml')
-        self.assertXMLContains(content, '<sub_name>first</sub_name>')
-        self.assertXMLContains(content, '<sub_name>second</sub_name>')
-
-    @unittest.skipUnless(etree, 'defusedxml not installed')
-    def test_render_and_parse_complex_data(self):
-        """
-        Test XML rendering.
-        """
-        renderer = XMLRenderer()
-        content = StringIO(renderer.render(self._complex_data, 'application/xml'))
-
-        parser = XMLParser()
-        complex_data_out = parser.parse(content)
-        error_msg = "complex data differs!IN:\n %s \n\n OUT:\n %s" % (repr(self._complex_data), repr(complex_data_out))
-        self.assertEqual(self._complex_data, complex_data_out, error_msg)
-
-    def assertXMLContains(self, xml, string):
-        self.assertTrue(xml.startswith('<?xml version="1.0" encoding="utf-8"?>\n<root>'))
-        self.assertTrue(xml.endswith('</root>'))
-        self.assertTrue(string in xml, '%r not in %r' % (string, xml))
-
-
 # Tests for caching issue, #346
 class CacheRenderTest(TestCase):
     """
@@ -643,3 +433,25 @@ class CacheRenderTest(TestCase):
         assert isinstance(cached_response, Response)
         assert cached_response.content == response.content
         assert cached_response.status_code == response.status_code
+
+
+class TestJSONIndentationStyles:
+    def test_indented(self):
+        renderer = JSONRenderer()
+        data = OrderedDict([('a', 1), ('b', 2)])
+        assert renderer.render(data) == b'{"a":1,"b":2}'
+
+    def test_compact(self):
+        renderer = JSONRenderer()
+        data = OrderedDict([('a', 1), ('b', 2)])
+        context = {'indent': 4}
+        assert (
+            renderer.render(data, renderer_context=context) ==
+            b'{\n    "a": 1,\n    "b": 2\n}'
+        )
+
+    def test_long_form(self):
+        renderer = JSONRenderer()
+        renderer.compact = False
+        data = OrderedDict([('a', 1), ('b', 2)])
+        assert renderer.render(data) == b'{"a": 1, "b": 2}'

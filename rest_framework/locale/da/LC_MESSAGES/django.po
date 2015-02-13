@@ -1,0 +1,325 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Mikkel Munch Mortensen <3xm@detfalskested.dk>, 2015
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-01-30 16:23+0000\n"
+"PO-Revision-Date: 2015-01-30 16:27+0000\n"
+"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"Language-Team: Danish (http://www.transifex.com/projects/p/django-rest-framework/language/da/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: da\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: authentication.py:69
+msgid "Invalid basic header. No credentials provided."
+msgstr "Ugyldig basic header. Ingen legitimation angivet."
+
+#: authentication.py:72
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "Ugyldig basic header. Legitimationsstrenge må ikke indeholde mellemrum."
+
+#: authentication.py:78
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "Ugyldig basic header. Legitimationen er ikke base64 encoded på korrekt vis."
+
+#: authentication.py:90
+msgid "Invalid username/password."
+msgstr "Ugyldigt brugernavn/kodeord."
+
+#: authentication.py:156
+msgid "Invalid token header. No credentials provided."
+msgstr "Ugyldig token header."
+
+#: authentication.py:159
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "Ugyldig token header. Token-strenge må ikke indeholde mellemrum."
+
+#: authentication.py:168
+msgid "Invalid token."
+msgstr "Ugyldigt token."
+
+#: authentication.py:171
+msgid "User inactive or deleted."
+msgstr "Inaktiv eller slettet bruger."
+
+#: exceptions.py:38
+msgid "A server error occurred."
+msgstr "Der er sket en serverfejl."
+
+#: exceptions.py:73
+msgid "Malformed request."
+msgstr "Misdannet forespørgsel."
+
+#: exceptions.py:78
+msgid "Incorrect authentication credentials."
+msgstr "Ugyldig legitimation til autentificering."
+
+#: exceptions.py:83
+msgid "Authentication credentials were not provided."
+msgstr "Legitimation til autentificering blev ikke angivet."
+
+#: exceptions.py:88
+msgid "You do not have permission to perform this action."
+msgstr "Du har ikke lov til at udføre denne handling."
+
+#: exceptions.py:93
+msgid "Not found."
+msgstr "Ikke fundet."
+
+#: exceptions.py:98
+msgid "Method \"{method}\" not allowed."
+msgstr "Metoden \"{method}\" er ikke tilladt."
+
+#: exceptions.py:109
+msgid "Could not satisfy the request Accept header."
+msgstr "Kunne ikke efterkomme forespørgslens Accept header."
+
+#: exceptions.py:121
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "Forespørgslens media type, \"{media_type}\", er ikke understøttet."
+
+#: exceptions.py:134
+msgid "Request was throttled."
+msgstr "Forespørgslen blev neddroslet."
+
+#: fields.py:153 relations.py:132 relations.py:156 validators.py:77
+#: validators.py:155
+msgid "This field is required."
+msgstr "Dette felt er påkrævet."
+
+#: fields.py:154
+msgid "This field may not be null."
+msgstr "Dette felt må ikke være null."
+
+#: fields.py:487 fields.py:515
+msgid "\"{input}\" is not a valid boolean."
+msgstr "\"{input}\" er ikke en tilladt boolsk værdi."
+
+#: fields.py:550
+msgid "This field may not be blank."
+msgstr "Dette felt må ikke være tomt."
+
+#: fields.py:551 fields.py:1324
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "Tjek at dette felt ikke indeholder flere end {max_length} tegn."
+
+#: fields.py:552
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "Tjek at dette felt indeholder mindst {min_length} tegn."
+
+#: fields.py:587
+msgid "Enter a valid email address."
+msgstr "Angiv en gyldig e-mailadresse."
+
+#: fields.py:604
+msgid "This value does not match the required pattern."
+msgstr "Denne værdi passer ikke med det påkrævede mønster."
+
+#: fields.py:615
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "Indtast en gyldig \"slug\", bestående af bogstaver, tal, bund- og bindestreger."
+
+#: fields.py:627
+msgid "Enter a valid URL."
+msgstr "Indtast en gyldig URL."
+
+#: fields.py:638
+msgid "\"{value}\" is not a valid UUID."
+msgstr ""
+
+#: fields.py:657
+msgid "A valid integer is required."
+msgstr "Et gyldigt heltal er påkrævet."
+
+#: fields.py:658 fields.py:692 fields.py:725
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "Tjek at værdien er mindre end eller lig med {max_value}."
+
+#: fields.py:659 fields.py:693 fields.py:726
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "Tjek at værdien er større end eller lig med {min_value}."
+
+#: fields.py:660 fields.py:694 fields.py:730
+msgid "String value too large."
+msgstr "Strengværdien er for stor."
+
+#: fields.py:691 fields.py:724
+msgid "A valid number is required."
+msgstr "Et gyldigt tal er påkrævet."
+
+#: fields.py:727
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "Tjek at der ikke er flere end {max_digits} cifre i alt."
+
+#: fields.py:728
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "Tjek at der ikke er flere end {max_decimal_places} cifre efter kommaet."
+
+#: fields.py:729
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "Tjek at der ikke er flere end {max_whole_digits} cifre før kommaet."
+
+#: fields.py:813
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "Datotid har et forkert format. Brug i stedet et af disse formater: {format}."
+
+#: fields.py:814
+msgid "Expected a datetime but got a date."
+msgstr "Forventede en datotid, men fik en dato."
+
+#: fields.py:878
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "Dato har et forkert format. Brug i stedet et af disse formater: {format}."
+
+#: fields.py:879
+msgid "Expected a date but got a datetime."
+msgstr "Forventede en dato men fik en datotid."
+
+#: fields.py:936
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "Klokkeslæt har forkert format. Brug i stedet et af disse formater: {format}. "
+
+#: fields.py:992 fields.py:1036
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" er ikke et gyldigt valg."
+
+#: fields.py:1037 fields.py:1151 serializers.py:482
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "Forventede en liste, men fik noget af typen \"{input_type}\"."
+
+#: fields.py:1067
+msgid "No file was submitted."
+msgstr "Ingen medsendt fil."
+
+#: fields.py:1068
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "Det medsendte data var ikke en fil. Tjek typen af indkodning på formularen."
+
+#: fields.py:1069
+msgid "No filename could be determined."
+msgstr "Filnavnet kunne ikke afgøres."
+
+#: fields.py:1070
+msgid "The submitted file is empty."
+msgstr "Den medsendte fil er tom."
+
+#: fields.py:1071
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "Sørg for at filnavnet er højst {max_length} langt (det er {length})."
+
+#: fields.py:1113
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Medsend et gyldigt billede. Den medsendte fil var enten ikke et billede eller billedfilen var ødelagt."
+
+#: fields.py:1188
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr ""
+
+#: pagination.py:221
+msgid "Invalid page \"{page_number}\": {message}."
+msgstr "Ugyldig side \"{page_number}\": {message}."
+
+#: pagination.py:442
+msgid "Invalid cursor"
+msgstr ""
+
+#: relations.py:133
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "Ugyldig primærnøgle \"{pk_value}\" - objektet findes ikke."
+
+#: relations.py:134
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "Ugyldig type. Forventet værdi er primærnøgle, fik {data_type}."
+
+#: relations.py:157
+msgid "Invalid hyperlink - No URL match."
+msgstr "Ugyldigt hyperlink - intet URL match."
+
+#: relations.py:158
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "Ugyldigt hyperlink - forkert URL match."
+
+#: relations.py:159
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "Ugyldigt hyperlink - objektet findes ikke."
+
+#: relations.py:160
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "Forkert type. Forventede en URL-streng, fik {data_type}."
+
+#: relations.py:295
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "Object med {slug_name}={value} findes ikke."
+
+#: relations.py:296
+msgid "Invalid value."
+msgstr "Ugyldig værdi."
+
+#: serializers.py:299
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "Ugyldig data. Forventede en dictionary, men fik {datatype}."
+
+#: validators.py:22
+msgid "This field must be unique."
+msgstr "Dette felt skal være unikt."
+
+#: validators.py:76
+msgid "The fields {field_names} must make a unique set."
+msgstr "Felterne {field_names} skal udgøre et unikt sæt."
+
+#: validators.py:219
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "Dette felt skal være unikt for \"{date_field}\"-datoen."
+
+#: validators.py:234
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "Dette felt skal være unikt for \"{date_field}\"-måneden."
+
+#: validators.py:247
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "Dette felt skal være unikt for \"{date_field}\"-året."
+
+#: versioning.py:39
+msgid "Invalid version in \"Accept\" header."
+msgstr "Ugyldig version i \"Accept\" headeren."
+
+#: versioning.py:70 versioning.py:112
+msgid "Invalid version in URL path."
+msgstr "Ugyldig version i URL-stien."
+
+#: versioning.py:138
+msgid "Invalid version in hostname."
+msgstr "Ugyldig version i hostname."
+
+#: versioning.py:160
+msgid "Invalid version in query parameter."
+msgstr "Ugyldig version i forespørgselsparameteren."
+
+#: authtoken/serializers.py:20
+msgid "User account is disabled."
+msgstr "Brugerkontoen er deaktiveret."
+
+#: authtoken/serializers.py:23
+msgid "Unable to log in with provided credentials."
+msgstr "Kunne ikke logge ind med den angivne legitimation."
+
+#: authtoken/serializers.py:26
+msgid "Must include \"username\" and \"password\"."
+msgstr "Skal indeholde \"username\" og \"password\"."

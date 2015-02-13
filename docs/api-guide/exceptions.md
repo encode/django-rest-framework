@@ -61,10 +61,10 @@ In order to alter the style of the response, you could write the following custo
 
     from rest_framework.views import exception_handler
 
-    def custom_exception_handler(exc):
+    def custom_exception_handler(exc, context):
         # Call REST framework's default exception handler first,
         # to get the standard error response.
-        response = exception_handler(exc)
+        response = exception_handler(exc, context)
 
         # Now add the HTTP status code to the response.
         if response is not None:
@@ -138,6 +138,14 @@ Raised when an authenticated request fails the permission checks.
 
 By default this exception results in a response with the HTTP status code "403 Forbidden".
 
+## NotFound
+
+**Signature:** `NotFound(detail=None)`
+
+Raised when a resource does not exists at the given URL. This exception is equivalent to the standard `Http404` Django exception.
+
+By default this exception results in a response with the HTTP status code "404 Not Found".
+
 ## MethodNotAllowed
 
 **Signature:** `MethodNotAllowed(method, detail=None)`
@@ -145,6 +153,14 @@ By default this exception results in a response with the HTTP status code "403 F
 Raised when an incoming request occurs that does not map to a handler method on the view.
 
 By default this exception results in a response with the HTTP status code "405 Method Not Allowed".
+
+## NotAcceptable
+
+**Signature:** `NotAcceptable(detail=None)`
+
+Raised when an incoming request occurs with an `Accept` header that cannot be satisfied by any of the available renderers.
+
+By default this exception results in a response with the HTTP status code "406 Not Acceptable".
 
 ## UnsupportedMediaType
 

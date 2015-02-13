@@ -171,6 +171,25 @@ body{
   background-attachment: fixed;
 }
 
+
+#main-content h1:first-of-type {
+    margin-top: 0
+}
+
+#main-content h1, #main-content h2 {
+    font-weight: 300;
+    margin-top: 20px
+}
+
+#main-content h3, #main-content h4, #main-content h5 {
+    font-weight: 500;
+    margin-top: 15px
+}
+
+#main-content img {
+    display: block;
+    margin: 40px auto;
+}
 /* custom navigation styles */
 
 .navbar .navbar-inner{
@@ -237,6 +256,10 @@ body a:hover{
      .navbar .navbar-inner .container-fluid{
       max-width: 1110px;
      }
+}
+
+h1 code, h2 code, h3 code, h4 code, h5 code {
+  color: #333;
 }
 
 /* sticky footer and footer */

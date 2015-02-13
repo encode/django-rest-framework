@@ -1,7 +1,7 @@
 # coding: utf-8
 from __future__ import unicode_literals
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
-from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch, Resolver404
+from django.core.urlresolvers import get_script_prefix, resolve, NoReverseMatch, Resolver404
 from django.db.models.query import QuerySet
 from django.utils import six
 from django.utils.encoding import smart_text
@@ -130,7 +130,7 @@ class StringRelatedField(RelatedField):
 class PrimaryKeyRelatedField(RelatedField):
     default_error_messages = {
         'required': _('This field is required.'),
-        'does_not_exist': _("Invalid pk '{pk_value}' - object does not exist."),
+        'does_not_exist': _('Invalid pk "{pk_value}" - object does not exist.'),
         'incorrect_type': _('Incorrect type. Expected pk value, received {data_type}.'),
     }
 
@@ -154,7 +154,7 @@ class HyperlinkedRelatedField(RelatedField):
 
     default_error_messages = {
         'required': _('This field is required.'),
-        'no_match': _('Invalid hyperlink - No URL match'),
+        'no_match': _('Invalid hyperlink - No URL match.'),
         'incorrect_match': _('Invalid hyperlink - Incorrect URL match.'),
         'does_not_exist': _('Invalid hyperlink - Object does not exist.'),
         'incorrect_type': _('Incorrect type. Expected URL string, received {data_type}.'),
@@ -167,11 +167,10 @@ class HyperlinkedRelatedField(RelatedField):
         self.lookup_url_kwarg = kwargs.pop('lookup_url_kwarg', self.lookup_field)
         self.format = kwargs.pop('format', None)
 
-        # We include these simply for dependency injection in tests.
-        # We can't add them as class attributes or they would expect an
+        # We include this simply for dependency injection in tests.
+        # We can't add it as a class attributes or it would expect an
         # implicit `self` argument to be passed.
         self.reverse = reverse
-        self.resolve = resolve
 
         super(HyperlinkedRelatedField, self).__init__(**kwargs)
 
@@ -205,6 +204,7 @@ class HyperlinkedRelatedField(RelatedField):
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
 
     def to_internal_value(self, data):
+        request = self.context.get('request', None)
         try:
             http_prefix = data.startswith(('http:', 'https:'))
         except AttributeError:
@@ -218,11 +218,18 @@ class HyperlinkedRelatedField(RelatedField):
                 data = '/' + data[len(prefix):]
 
         try:
-            match = self.resolve(data)
+            match = resolve(data)
         except Resolver404:
             self.fail('no_match')
 
-        if match.view_name != self.view_name:
+        try:
+            expected_viewname = request.versioning_scheme.get_versioned_viewname(
+                self.view_name, request
+            )
+        except AttributeError:
+            expected_viewname = self.view_name
+
+        if match.view_name != expected_viewname:
             self.fail('incorrect_match')
 
         try:
@@ -292,7 +299,7 @@ class SlugRelatedField(RelatedField):
     """
 
     default_error_messages = {
-        'does_not_exist': _("Object with {slug_name}={value} does not exist."),
+        'does_not_exist': _('Object with {slug_name}={value} does not exist.'),
         'invalid': _('Invalid value.'),
     }
 

@@ -1,9 +1,8 @@
 from __future__ import unicode_literals
-
-from rest_framework import exceptions, serializers, views
+from rest_framework import exceptions, serializers, status, views, versioning
 from rest_framework.request import Request
+from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.test import APIRequestFactory
-import pytest
 
 request = Request(APIRequestFactory().options('/'))
 
@@ -17,7 +16,8 @@ class TestMetadata:
             """Example view."""
             pass
 
-        response = ExampleView().options(request=request)
+        view = ExampleView.as_view()
+        response = view(request=request)
         expected = {
             'name': 'Example',
             'description': 'Example view.',
@@ -31,7 +31,7 @@ class TestMetadata:
                 'multipart/form-data'
             ]
         }
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
         assert response.data == expected
 
     def test_none_metadata(self):
@@ -42,8 +42,10 @@ class TestMetadata:
         class ExampleView(views.APIView):
             metadata_class = None
 
-        with pytest.raises(exceptions.MethodNotAllowed):
-            ExampleView().options(request=request)
+        view = ExampleView.as_view()
+        response = view(request=request)
+        assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+        assert response.data == {'detail': 'Method "OPTIONS" not allowed.'}
 
     def test_actions(self):
         """
@@ -63,7 +65,8 @@ class TestMetadata:
             def get_serializer(self):
                 return ExampleSerializer()
 
-        response = ExampleView().options(request=request)
+        view = ExampleView.as_view()
+        response = view(request=request)
         expected = {
             'name': 'Example',
             'description': 'Example view.',
@@ -104,7 +107,7 @@ class TestMetadata:
                 }
             }
         }
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
         assert response.data == expected
 
     def test_global_permissions(self):
@@ -132,8 +135,9 @@ class TestMetadata:
                 if request.method == 'POST':
                     raise exceptions.PermissionDenied()
 
-        response = ExampleView().options(request=request)
-        assert response.status_code == 200
+        view = ExampleView.as_view()
+        response = view(request=request)
+        assert response.status_code == status.HTTP_200_OK
         assert list(response.data['actions'].keys()) == ['PUT']
 
     def test_object_permissions(self):
@@ -161,6 +165,36 @@ class TestMetadata:
                 if self.request.method == 'PUT':
                     raise exceptions.PermissionDenied()
 
-        response = ExampleView().options(request=request)
-        assert response.status_code == 200
+        view = ExampleView.as_view()
+        response = view(request=request)
+        assert response.status_code == status.HTTP_200_OK
         assert list(response.data['actions'].keys()) == ['POST']
+
+    def test_bug_2455_clone_request(self):
+        class ExampleView(views.APIView):
+            renderer_classes = (BrowsableAPIRenderer,)
+
+            def post(self, request):
+                pass
+
+            def get_serializer(self):
+                assert hasattr(self.request, 'version')
+                return serializers.Serializer()
+
+        view = ExampleView.as_view()
+        view(request=request)
+
+    def test_bug_2477_clone_request(self):
+        class ExampleView(views.APIView):
+            renderer_classes = (BrowsableAPIRenderer,)
+
+            def post(self, request):
+                pass
+
+            def get_serializer(self):
+                assert hasattr(self.request, 'versioning_scheme')
+                return serializers.Serializer()
+
+        scheme = versioning.QueryParameterVersioning
+        view = ExampleView.as_view(versioning_class=scheme)
+        view(request=request)
