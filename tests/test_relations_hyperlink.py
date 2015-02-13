@@ -12,7 +12,9 @@ factory = APIRequestFactory()
 request = factory.get('/')  # Just to ensure we have a request in the serializer context
 
 
-dummy_view = lambda request, pk: None
+def dummy_view(request, pk):
+    pass
+
 
 urlpatterns = patterns(
     '',
