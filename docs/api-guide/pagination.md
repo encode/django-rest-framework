@@ -85,12 +85,13 @@ We could now use our pagination serializer in a view like this.
 
 The generic class based views `ListAPIView` and `ListCreateAPIView` provide pagination of the returned querysets by default.  You can customise this behaviour by altering the pagination style, by modifying the default number of results, by allowing clients to override the page size using a query parameter, or by turning pagination off completely.
 
-The default pagination style may be set globally, using the `DEFAULT_PAGINATION_SERIALIZER_CLASS`, `PAGINATE_BY`, `PAGINATE_BY_PARAM`, and `MAX_PAGINATE_BY` settings.  For example.
+The default pagination style may be set globally, using the `DEFAULT_PAGINATION_SERIALIZER_CLASS`, `PAGINATE_BY`, `PAGINATE_BY_PARAM`, `MAX_PAGINATE_BY`, and `PAGINATE_KWARG` settings.  For example.
 
     REST_FRAMEWORK = {
         'PAGINATE_BY': 10,                 # Default to 10
         'PAGINATE_BY_PARAM': 'page_size',  # Allow client to override, using `?page_size=xxx`.
         'MAX_PAGINATE_BY': 100             # Maximum limit allowed when using `?page_size=xxx`.
+        'PAGINATE_KWARG': 'p'             # Use `p` rather than `page` when paginating
     }
 
 You can also set the pagination style on a per-view basis, using the `ListAPIView` generic class-based view.

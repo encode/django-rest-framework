@@ -5,13 +5,14 @@ be used for paginated responses.
 from __future__ import unicode_literals
 from rest_framework import serializers
 from rest_framework.templatetags.rest_framework import replace_query_param
+from rest_framework.settings import api_settings
 
 
 class NextPageField(serializers.Field):
     """
     Field that returns a link to the next page in paginated results.
     """
-    page_field = 'page'
+    page_field = api_settings.PAGINATE_KWARG
 
     def to_representation(self, value):
         if not value.has_next():
@@ -26,7 +27,7 @@ class PreviousPageField(serializers.Field):
     """
     Field that returns a link to the previous page in paginated results.
     """
-    page_field = 'page'
+    page_field = api_settings.PAGINATE_KWARG
 
     def to_representation(self, value):
         if not value.has_previous():
