@@ -166,6 +166,16 @@ When a translator has finished translating their work needs to be downloaded fro
 
 ---
 
+## Project requirements
+
+All our test requirements are pinned to exact versions, in order to ensure that our test runs are reproducible. We maintain the requirements in the `requirements` directory. The requirements files are referenced from the `tox.ini` configuration file, ensuring we have a single source of truth for package versions used in testing.
+
+You can check if there are any packages available at a newer version, by using the `pip-review` tool.
+
+Package upgrades should generally be treated as isolated pull requests. Also note that the `pip-dump` command does not work gracefully with our requirements layout style, so any edits should be made manually.
+
+---
+
 ## Project ownership
 
 The PyPI package is owned by `@tomchristie`. As a backup `@j4mie` also has ownership of the package.
