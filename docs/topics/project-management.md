@@ -170,9 +170,7 @@ When a translator has finished translating their work needs to be downloaded fro
 
 All our test requirements are pinned to exact versions, in order to ensure that our test runs are reproducible. We maintain the requirements in the `requirements` directory. The requirements files are referenced from the `tox.ini` configuration file, ensuring we have a single source of truth for package versions used in testing.
 
-You can check if there are any packages available at a newer version, by using the `pip list --outdated`.
-
-Package upgrades should generally be treated as isolated pull requests. Also note that the `pip-dump` command does not work gracefully with our requirements layout style, so any edits should be made manually.
+Package upgrades should generally be treated as isolated pull requests. You can check if there are any packages available at a newer version, by using the `pip list --outdated`.
 
 ---
 
