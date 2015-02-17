@@ -1,5 +1,5 @@
 language: python
-
+cache: pip
 sudo: false
 
 env:
