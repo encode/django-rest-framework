@@ -6,6 +6,3 @@ twine==1.4.0
 
 # Transifex client for managing translation resources.
 transifex-client==0.10
-
-# The pip-review tool for checking package upgrades.
-pip-tools==0.3.5
