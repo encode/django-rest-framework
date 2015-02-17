@@ -12,7 +12,10 @@ from django.utils.six.moves.urllib.parse import urlparse as _urlparse
 from django.utils import six
 import django
 import inspect
-
+try:
+    import importlib
+except ImportError:
+    from django.utils import importlib
 
 def unicode_repr(instance):
     # Get the repr of an instance, but ensure it is a unicode string
