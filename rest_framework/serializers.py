@@ -336,8 +336,8 @@ class Serializer(BaseSerializer):
             return OrderedDict([
                 (field_name, field.get_value(self.initial_data))
                 for field_name, field in self.fields.items()
-                if field.get_value(self.initial_data) is not empty
-                and not field.read_only
+                if (field.get_value(self.initial_data) is not empty) and
+                not field.read_only
             ])
 
         return OrderedDict([
@@ -653,8 +653,9 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     #     ...
     #     profile = ProfileSerializer()
     assert not any(
-        isinstance(field, BaseSerializer) and (key in validated_data)
-        and isinstance(validated_data[key], (list, dict))
+        isinstance(field, BaseSerializer) and
+        (key in validated_data) and
+        isinstance(validated_data[key], (list, dict))
         for key, field in serializer.fields.items()
     ), (
         'The `.{method_name}()` method does not support writable nested'
@@ -673,8 +674,9 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     #     ...
     #     address = serializer.CharField('profile.address')
     assert not any(
-        '.' in field.source and (key in validated_data)
-        and isinstance(validated_data[key], (list, dict))
+        '.' in field.source and
+        (key in validated_data) and
+        isinstance(validated_data[key], (list, dict))
         for key, field in serializer.fields.items()
     ), (
         'The `.{method_name}()` method does not support writable dotted-source '

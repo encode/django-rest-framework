@@ -145,8 +145,8 @@ def _get_reverse_relationships(opts):
             related_model=related,
             to_many=True,
             has_through_model=(
-                (getattr(relation.field.rel, 'through', None) is not None)
-                and not relation.field.rel.through._meta.auto_created
+                (getattr(relation.field.rel, 'through', None) is not None) and
+                not relation.field.rel.through._meta.auto_created
             )
         )
 

@@ -458,8 +458,8 @@ class BrowsableAPIRenderer(BaseRenderer):
                 return True  # Don't actually need to return a form
 
             if (
-                not getattr(view, 'get_serializer', None)
-                or not any(is_form_media_type(parser.media_type) for parser in view.parser_classes)
+                not getattr(view, 'get_serializer', None) or
+                not any(is_form_media_type(parser.media_type) for parser in view.parser_classes)
             ):
                 return
 
@@ -503,8 +503,8 @@ class BrowsableAPIRenderer(BaseRenderer):
             # If we're not using content overloading there's no point in
             # supplying a generic form, as the view won't treat the form's
             # value as the content of the request.
-            if not (api_settings.FORM_CONTENT_OVERRIDE
-                    and api_settings.FORM_CONTENTTYPE_OVERRIDE):
+            if not (api_settings.FORM_CONTENT_OVERRIDE and
+                    api_settings.FORM_CONTENTTYPE_OVERRIDE):
                 return None
 
             # Check permissions

@@ -383,9 +383,9 @@ class Request(object):
 
         # We only need to use form overloading on form POST requests.
         if (
-            not USE_FORM_OVERLOADING
-            or self._request.method != 'POST'
-            or not is_form_media_type(self._content_type)
+            self._request.method != 'POST' or
+            not USE_FORM_OVERLOADING or
+            not is_form_media_type(self._content_type)
         ):
             return
 
