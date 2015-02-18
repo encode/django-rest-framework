@@ -910,7 +910,7 @@ class DateField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
-        if self.format is None:
+        if self.format or value is None:
             return value
 
         # Applying a `DateField` to a datetime value is almost always
@@ -1024,8 +1024,10 @@ class ChoiceField(Field):
     def to_representation(self, value):
         if value in ('', None):
             return value
-        return self.choice_strings_to_values[six.text_type(value)]
-
+        try:
+            return self.choice_strings_to_values[six.text_type(value)]
+        except KeyError:
+            return value
 
 class MultipleChoiceField(ChoiceField):
     default_error_messages = {
@@ -1051,10 +1053,12 @@ class MultipleChoiceField(ChoiceField):
         ])
 
     def to_representation(self, value):
-        return set([
-            self.choice_strings_to_values[six.text_type(item)] for item in value
-        ])
-
+        if value in ('', None):
+            return value
+        try:
+            return self.choice_strings_to_values[six.text_type(value)]
+        except KeyError:
+            return value
 
 # File types...
 
