@@ -1024,8 +1024,10 @@ class ChoiceField(Field):
     def to_representation(self, value):
         if value in ('', None):
             return value
-        return self.choice_strings_to_values[six.text_type(value)]
-
+        try:
+            return self.choice_strings_to_values[six.text_type(value)]
+        except KeyError:
+            return value
 
 class MultipleChoiceField(ChoiceField):
     default_error_messages = {
