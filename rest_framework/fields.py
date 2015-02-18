@@ -910,7 +910,7 @@ class DateField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
-        if self.format is None:
+        if self.format or value is None:
             return value
 
         # Applying a `DateField` to a datetime value is almost always
