@@ -1051,10 +1051,12 @@ class MultipleChoiceField(ChoiceField):
         ])
 
     def to_representation(self, value):
-        return set([
-            self.choice_strings_to_values[six.text_type(item)] for item in value
-        ])
-
+        if value in ('', None):
+            return value
+        try:
+            return self.choice_strings_to_values[six.text_type(value)]
+        except KeyError:
+            return value
 
 # File types...
 
