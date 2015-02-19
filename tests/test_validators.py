@@ -76,8 +76,8 @@ class TestUniquenessValidation(TestCase):
 # -----------------------------------
 
 class UniquenessTogetherModel(models.Model):
-    race_name = models.CharField(max_length=100, null=True)
-    position = models.IntegerField(null=True)
+    race_name = models.CharField(max_length=100)
+    position = models.IntegerField()
 
     class Meta:
         unique_together = ('race_name', 'position')
@@ -134,8 +134,8 @@ class TestUniquenessTogetherValidation(TestCase):
         expected = dedent("""
             UniquenessTogetherSerializer():
                 id = IntegerField(label='ID', read_only=True)
-                race_name = CharField(allow_null=True, max_length=100, required=True)
-                position = IntegerField(allow_null=True, required=True)
+                race_name = CharField(max_length=100, required=True)
+                position = IntegerField(required=True)
                 class Meta:
                     validators = [<UniqueTogetherValidator(queryset=UniquenessTogetherModel.objects.all(), fields=('race_name', 'position'))>]
         """)
@@ -204,7 +204,7 @@ class TestUniquenessTogetherValidation(TestCase):
         expected = dedent("""
             ExcludedFieldSerializer():
                 id = IntegerField(label='ID', read_only=True)
-                race_name = CharField(allow_null=True, max_length=100, required=False)
+                race_name = CharField(max_length=100)
         """)
         assert repr(serializer) == expected
 
