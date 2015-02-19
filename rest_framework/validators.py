@@ -140,7 +140,10 @@ class UniqueTogetherValidator:
         queryset = self.exclude_current_instance(attrs, queryset)
 
         # Ignore validation if any field is None
-        if None not in attrs.values() and queryset.exists():
+        checked_values = [
+            value for field, value in attrs.items() if field in self.fields
+        ]
+        if None not in checked_values and queryset.exists():
             field_names = ', '.join(self.fields)
             raise ValidationError(self.message.format(field_names=field_names))
 
