@@ -54,8 +54,12 @@ class TestMetadata:
         """
         class ExampleSerializer(serializers.Serializer):
             choice_field = serializers.ChoiceField(['red', 'green', 'blue'])
-            integer_field = serializers.IntegerField(max_value=10)
-            char_field = serializers.CharField(required=False)
+            integer_field = serializers.IntegerField(
+                min_value=1, max_value=1000
+            )
+            char_field = serializers.CharField(
+                required=False, min_length=3, max_length=40
+            )
 
         class ExampleView(views.APIView):
             """Example view."""
@@ -96,13 +100,18 @@ class TestMetadata:
                         'type': 'integer',
                         'required': True,
                         'read_only': False,
-                        'label': 'Integer field'
+                        'label': 'Integer field',
+                        'min_value': 1,
+                        'max_value': 1000,
+
                     },
                     'char_field': {
                         'type': 'string',
                         'required': False,
                         'read_only': False,
-                        'label': 'Char field'
+                        'label': 'Char field',
+                        'min_length': 3,
+                        'max_length': 40
                     }
                 }
             }

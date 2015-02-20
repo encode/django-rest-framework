@@ -738,10 +738,10 @@ class DecimalField(Field):
         super(DecimalField, self).__init__(**kwargs)
         if self.max_value is not None:
             message = self.error_messages['max_value'].format(max_value=self.max_value)
-            self.validators.append(MaxValueValidator(max_value, message=message))
+            self.validators.append(MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
             message = self.error_messages['min_value'].format(min_value=self.min_value)
-            self.validators.append(MinValueValidator(min_value, message=message))
+            self.validators.append(MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, data):
         """
