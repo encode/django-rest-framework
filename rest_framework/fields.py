@@ -556,15 +556,15 @@ class CharField(Field):
     def __init__(self, **kwargs):
         self.allow_blank = kwargs.pop('allow_blank', False)
         self.trim_whitespace = kwargs.pop('trim_whitespace', True)
-        max_length = kwargs.pop('max_length', None)
-        min_length = kwargs.pop('min_length', None)
+        self.max_length = kwargs.pop('max_length', None)
+        self.min_length = kwargs.pop('min_length', None)
         super(CharField, self).__init__(**kwargs)
-        if max_length is not None:
-            message = self.error_messages['max_length'].format(max_length=max_length)
-            self.validators.append(MaxLengthValidator(max_length, message=message))
-        if min_length is not None:
-            message = self.error_messages['min_length'].format(min_length=min_length)
-            self.validators.append(MinLengthValidator(min_length, message=message))
+        if self.max_length is not None:
+            message = self.error_messages['max_length'].format(max_length=self.max_length)
+            self.validators.append(MaxLengthValidator(self.max_length, message=message))
+        if self.min_length is not None:
+            message = self.error_messages['min_length'].format(min_length=self.min_length)
+            self.validators.append(MinLengthValidator(self.min_length, message=message))
 
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,
@@ -658,15 +658,15 @@ class IntegerField(Field):
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
     def __init__(self, **kwargs):
-        max_value = kwargs.pop('max_value', None)
-        min_value = kwargs.pop('min_value', None)
+        self.max_value = kwargs.pop('max_value', None)
+        self.min_value = kwargs.pop('min_value', None)
         super(IntegerField, self).__init__(**kwargs)
-        if max_value is not None:
-            message = self.error_messages['max_value'].format(max_value=max_value)
-            self.validators.append(MaxValueValidator(max_value, message=message))
-        if min_value is not None:
-            message = self.error_messages['min_value'].format(min_value=min_value)
-            self.validators.append(MinValueValidator(min_value, message=message))
+        if self.max_value is not None:
+            message = self.error_messages['max_value'].format(max_value=self.max_value)
+            self.validators.append(MaxValueValidator(self.max_value, message=message))
+        if self.min_value is not None:
+            message = self.error_messages['min_value'].format(min_value=self.min_value)
+            self.validators.append(MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, data):
         if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
@@ -692,15 +692,15 @@ class FloatField(Field):
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
     def __init__(self, **kwargs):
-        max_value = kwargs.pop('max_value', None)
-        min_value = kwargs.pop('min_value', None)
+        self.max_value = kwargs.pop('max_value', None)
+        self.min_value = kwargs.pop('min_value', None)
         super(FloatField, self).__init__(**kwargs)
-        if max_value is not None:
-            message = self.error_messages['max_value'].format(max_value=max_value)
-            self.validators.append(MaxValueValidator(max_value, message=message))
-        if min_value is not None:
-            message = self.error_messages['min_value'].format(min_value=min_value)
-            self.validators.append(MinValueValidator(min_value, message=message))
+        if self.max_value is not None:
+            message = self.error_messages['max_value'].format(max_value=self.max_value)
+            self.validators.append(MaxValueValidator(self.max_value, message=message))
+        if self.min_value is not None:
+            message = self.error_messages['min_value'].format(min_value=self.min_value)
+            self.validators.append(MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, data):
         if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
@@ -733,12 +733,14 @@ class DecimalField(Field):
         self.max_digits = max_digits
         self.decimal_places = decimal_places
         self.coerce_to_string = coerce_to_string if (coerce_to_string is not None) else self.coerce_to_string
+        self.max_value = kwargs.pop('max_value', None)
+        self.min_value = kwargs.pop('min_value', None)
         super(DecimalField, self).__init__(**kwargs)
-        if max_value is not None:
-            message = self.error_messages['max_value'].format(max_value=max_value)
+        if self.max_value is not None:
+            message = self.error_messages['max_value'].format(max_value=self.max_value)
             self.validators.append(MaxValueValidator(max_value, message=message))
-        if min_value is not None:
-            message = self.error_messages['min_value'].format(min_value=min_value)
+        if self.min_value is not None:
+            message = self.error_messages['min_value'].format(min_value=self.min_value)
             self.validators.append(MinValueValidator(min_value, message=message))
 
     def to_internal_value(self, data):
