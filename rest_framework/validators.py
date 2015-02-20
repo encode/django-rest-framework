@@ -134,7 +134,7 @@ class UniqueTogetherValidator:
         """
         if self.instance is not None:
             if isinstance(self.instance, QuerySet):
-                return queryset.exclude(pk__in=self.instance.values_list('pk', flat=True))
+                return queryset.exclude(pk__in=self.instance.all())
             else:
                 return queryset.exclude(pk=self.instance.pk)
         return queryset
