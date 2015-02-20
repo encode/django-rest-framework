@@ -8,6 +8,7 @@ object creation, and makes it possible to switch between using the implicit
 """
 from __future__ import unicode_literals
 from django.db import models
+from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.compat import unicode_to_repr
 from rest_framework.exceptions import ValidationError
@@ -132,7 +133,7 @@ class UniqueTogetherValidator:
         that instance itself as a uniqueness conflict.
         """
         if self.instance is not None:
-            if isinstance(self.instance, models.QuerySet):
+            if isinstance(self.instance, QuerySet):
                 return queryset.exclude(pk__in=self.instance.values_list('pk', flat=True))
             else:
                 return queryset.exclude(pk=self.instance.pk)
