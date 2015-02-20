@@ -14,7 +14,7 @@ Extends [Django's existing `RequestFactory` class][requestfactory].
 
 ## Creating test requests
 
-The `APIRequestFactory` class supports an almost identical API to Django's standard `RequestFactory` class.  This means the that standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.
+The `APIRequestFactory` class supports an almost identical API to Django's standard `RequestFactory` class.  This means that standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.
 
     from rest_framework.test import APIRequestFactory
 
