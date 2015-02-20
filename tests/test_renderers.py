@@ -10,7 +10,10 @@ from rest_framework import status, permissions
 from rest_framework.compat import OrderedDict
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.renderers import BaseRenderer, JSONRenderer, BrowsableAPIRenderer
+from rest_framework import serializers
+from rest_framework.renderers import (
+    BaseRenderer, JSONRenderer, BrowsableAPIRenderer, HTMLFormRenderer
+)
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from collections import MutableMapping
@@ -455,3 +458,16 @@ class TestJSONIndentationStyles:
         renderer.compact = False
         data = OrderedDict([('a', 1), ('b', 2)])
         assert renderer.render(data) == b'{"a": 1, "b": 2}'
+
+
+class TestHiddenFieldHTMLFormRenderer(TestCase):
+    def test_hidden_field_rendering(self):
+        class TestSerializer(serializers.Serializer):
+            published = serializers.HiddenField(default=True)
+
+        serializer = TestSerializer(data={})
+        serializer.is_valid()
+        renderer = HTMLFormRenderer()
+        field = serializer['published']
+        rendered = renderer.render_field(field, {})
+        assert rendered == ''

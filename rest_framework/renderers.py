@@ -305,7 +305,7 @@ class HTMLFormRenderer(BaseRenderer):
     })
 
     def render_field(self, field, parent_style):
-        if isinstance(field, serializers.HiddenField):
+        if isinstance(field._field, serializers.HiddenField):
             return ''
 
         style = dict(self.default_style[field])
