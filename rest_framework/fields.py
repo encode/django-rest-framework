@@ -733,9 +733,12 @@ class DecimalField(Field):
         self.max_digits = max_digits
         self.decimal_places = decimal_places
         self.coerce_to_string = coerce_to_string if (coerce_to_string is not None) else self.coerce_to_string
-        self.max_value = kwargs.pop('max_value', None)
-        self.min_value = kwargs.pop('min_value', None)
+
+        self.max_value = max_value
+        self.min_value = min_value
+
         super(DecimalField, self).__init__(**kwargs)
+
         if self.max_value is not None:
             message = self.error_messages['max_value'].format(max_value=self.max_value)
             self.validators.append(MaxValueValidator(self.max_value, message=message))
