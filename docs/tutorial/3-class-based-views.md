@@ -16,8 +16,10 @@ We'll start by rewriting the root view as a class based view.  All this involves
 
     class SnippetList(APIView):
         """
-        List all snippets, or create a new snippet.
+        List all snippets or create a new snippet.
         """
+	queryset = Snippet.objects.all()
+
         def get(self, request, format=None):
             snippets = Snippet.objects.all()
             serializer = SnippetSerializer(snippets, many=True)
@@ -28,14 +30,17 @@ We'll start by rewriting the root view as a class based view.  All this involves
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 So far, so good.  It looks pretty similar to the previous case, but we've got better separation between the different HTTP methods.  We'll also need to update the instance view in `views.py`.
 
     class SnippetDetail(APIView):
         """
-        Retrieve, update or delete a snippet instance.
+        Retrieve, update, or delete a snippet instance.
         """
+	queryset = Snippet.objects.all()
+
         def get_object(self, pk):
             try:
                 return Snippet.objects.get(pk=pk)
@@ -53,7 +58,8 @@ So far, so good.  It looks pretty similar to the previous case, but we've got be
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         def delete(self, request, pk, format=None):
             snippet = self.get_object(pk)
