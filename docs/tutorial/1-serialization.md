@@ -104,7 +104,7 @@ The first thing we need to get started on our Web API is to provide a way of ser
 
         def create(self, validated_data):
             """
-            Create and return a new `Snippet` instance, given the validated data.
+            Create and return a new `Snippet` instance given the validated data.
             """
             return Snippet.objects.create(**validated_data)
 
@@ -246,7 +246,7 @@ The root of our API is going to be a view that supports listing all the existing
     @csrf_exempt
     def snippet_list(request):
         """
-        List all code snippets, or create a new snippet.
+        List all code snippets or create a new snippet.
         """
         if request.method == 'GET':
             snippets = Snippet.objects.all()
@@ -259,7 +259,8 @@ The root of our API is going to be a view that supports listing all the existing
             if serializer.is_valid():
                 serializer.save()
                 return JSONResponse(serializer.data, status=201)
-            return JSONResponse(serializer.errors, status=400)
+	    else:
+            	return JSONResponse(serializer.errors, status=400)
 
 Note that because we want to be able to POST to this view from clients that won't have a CSRF token we need to mark the view as `csrf_exempt`.  This isn't something that you'd normally want to do, and REST framework views actually use more sensible behavior than this, but it'll do for our purposes right now.
 
@@ -268,7 +269,7 @@ We'll also need a view which corresponds to an individual snippet, and can be us
     @csrf_exempt
     def snippet_detail(request, pk):
         """
-        Retrieve, update or delete a code snippet.
+        Retrieve, update, or delete a code snippet.
         """
         try:
             snippet = Snippet.objects.get(pk=pk)
@@ -285,7 +286,8 @@ We'll also need a view which corresponds to an individual snippet, and can be us
             if serializer.is_valid():
                 serializer.save()
                 return JSONResponse(serializer.data)
-            return JSONResponse(serializer.errors, status=400)
+            else:
+		return JSONResponse(serializer.errors, status=400)
 
         elif request.method == 'DELETE':
             snippet.delete()
