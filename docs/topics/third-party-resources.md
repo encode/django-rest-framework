@@ -325,3 +325,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-framework-and-angularjs-video]: http://www.youtube.com/watch?v=q8frbgtj020
 [web-api-performance-profiling-django-rest-framework]: http://dabapps.com/blog/api-performance-profiling-django-rest-framework/
 [api-development-with-django-and-django-rest-framework]: https://bnotions.com/api-development-with-django-and-django-rest-framework/
+[django-rest-auth]: https://github.com/Tivix/django-rest-auth/
