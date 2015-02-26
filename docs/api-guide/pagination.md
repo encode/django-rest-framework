@@ -32,14 +32,14 @@ You can also set the pagination class on an individual view by using the `pagina
 If you want to modify particular aspects of the pagination style, you'll want to override one of the pagination classes, and set the attributes that you want to change.
 
     class LargeResultsSetPagination(PageNumberPagination):
-        paginate_by = 1000
-        paginate_by_param = 'page_size'
-        max_paginate_by = 10000
+        page_size = 1000
+        page_size_query_param = 'page_size'
+        max_page_size = 10000
 
     class StandardResultsSetPagination(PageNumberPagination):
-        paginate_by = 100
-        paginate_by_param = 'page_size'
-        max_paginate_by = 1000
+        page_size = 100
+        page_size_query_param = 'page_size'
+        max_page_size = 1000
 
 You can then apply your new style to a view using the `.pagination_class` attribute:
 
@@ -59,15 +59,141 @@ Or apply the style globally, using the `DEFAULT_PAGINATION_CLASS` settings key. 
 
 ## PageNumberPagination
 
-**TODO**
+This pagination style accepts a single number page number in the request query parameters.
+
+**Request**:
+
+    GET https://api.example.org/accounts/?page=4
+
+**Response**:
+
+    HTTP 200 OK
+    {
+        "count": 1023
+        "next": "https://api.example.org/accounts/?page=5",
+        "previous": "https://api.example.org/accounts/?page=3",
+        "results": [
+           …
+        ]
+    }
+
+#### Setup
+
+To enable the `PageNumberPagination` style globally, use the following configuration, modifying the `DEFAULT_PAGE_SIZE` as desired:
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+        'DEFAULT_PAGE_SIZE': 100
+    }
+
+On `GenericAPIView` subclasses you may also set the `pagination_class` attribute to select `PageNumberPagination` on a per-view basis.
+
+#### Configuration
+
+The `PageNumberPagination` class includes a number of attributes that may be overridden to modify the pagination style.
+
+To set these attributes you should override the `PageNumberPagination` class, and then enable your custom pagination class as above.
+
+* `page_size` - A numeric value indicating the page size. If set, this overrides the `DEFAULT_PAGE_SIZE` setting. Defaults to the same value as the `DEFAULT_PAGE_SIZE` settings key.
+* `page_query_param` - A string value indicating the name of the query parameter to use for the pagination control.
+* `page_size_query_param` - If set, this is a string value indicating the name of a query parameter that allows the client to set the page size on a per-request basis. Defaults to `None`, indicating that the client may not control the requested page size.
+* `max_page_size` - If set, this is a numeric value indicating the maximum allowable requested page size. This attribute is only valid if `page_size_query_param` is also set.
+* `last_page_strings` - A list or tuple of string values indicating values that may be used with the `page_query_param` to request the final page in the set. Defaults to `('last',)`
+* `template` - The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to `None` to disable HTML pagination controls completely. Defaults to `"rest_framework/pagination/numbers.html"`.
+
+---
 
 ## LimitOffsetPagination
 
-**TODO**
+This pagination style mirrors the syntax used when looking up multiple database records. The client includes both a "limit" and an 
+"offset" query parameter. The limit indicates the maximum number of items to return, and is equivalent to the `page_size` in other styles. The offset indicates the starting position of the query in relation to the complete set of unpaginated items.
+
+**Request**:
+
+    GET https://api.example.org/accounts/?limit=100&offset=400
+
+**Response**:
+
+    HTTP 200 OK
+    {
+        "count": 1023
+        "next": "https://api.example.org/accounts/?limit=100&offset=500",
+        "previous": "https://api.example.org/accounts/?limit=100&offset=300",
+        "results": [
+           …
+        ]
+    }
+
+#### Setup
+
+To enable the `PageNumberPagination` style globally, use the following configuration:
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
+    }
+
+Optionally, you may also set a `DEFAULT_PAGE_SIZE` key. If the `DEFAULT_PAGE_SIZE` parameter is also used then the `limit` query parameter will be optional, and may be omitted by the client.
+
+On `GenericAPIView` subclasses you may also set the `pagination_class` attribute to select `LimitOffsetPagination` on a per-view basis.
+
+#### Configuration
+
+The `LimitOffsetPagination` class includes a number of attributes that may be overridden to modify the pagination style.
+
+To set these attributes you should override the `LimitOffsetPagination` class, and then enable your custom pagination class as above.
+
+* `default_limit` - A numeric value indicating the limit to use if one is not provided by the client in a query parameter. Defaults to the same value as the `DEFAULT_PAGE_SIZE` settings key.
+* `limit_query_param` - A string value indicating the name of the "limit" query parameter. Defaults to `'limit'`.
+* `offset_query_param` - A string value indicating the name of the "offset" query parameter. Defaults to `'offset'`.
+* `max_limit` - If set this is a numeric value indicating the maximum allowable limit that may be requested by the client. Defaults to `None`.
+* `template` - The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to `None` to disable HTML pagination controls completely. Defaults to `"rest_framework/pagination/numbers.html"`.
+
+---
 
 ## CursorPagination
 
-**TODO**
+The cursor-based pagination presents an opaque "cursor" indicator that the client may use to page through the result set. This pagination style only presents forward and reverse controls, and does not allow the client to navigate to arbitrary positions.
+
+Cursor based pagination requires that there is a unique, unchanging ordering of items in the result set. This ordering might typically be a creation timestamp on the records, as this presents a consistent ordering to paginate against.
+
+Cursor based pagination is more complex than other schemes. It also requires that the result set presents a fixed ordering, and does not allow the client to arbitrarily index into the result set. However it does provide the following benefits:
+
+* Provides a consistent pagination view. When used properly `CursorPagination` ensures that the client will never see the same item twice when paging through records.
+* Supports usage with very large datasets. With extremely large datasets pagination using offset-based pagination styles may become inefficient or unusable. Cursor based pagination schemes instead have fixed-time properties, and do not slow down as the dataset size increases.
+
+#### Details and limitations
+
+This implementation of cursor pagination uses a smart "position plus offset" style that allows it to properly support not-strictly-unique values as the ordering.
+
+It should be noted that using non-unique values the ordering does introduce the possibility of paging artifacts, where pagination consistency is no longer 100% guaranteed.
+
+**TODO**: Notes on `None`.
+
+The implementation also supports both forward and reverse pagination, which is often not supported in other implementations.
+
+For more technical details on the implementation we use for cursor pagination, the ["Building cursors for the Disqus API"][disqus-cursor-api] blog post gives a good overview of the basic approach.
+
+#### Setup
+
+To enable the `CursorPagination` style globally, use the following configuration, modifying the `DEFAULT_PAGE_SIZE` as desired:
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
+        'DEFAULT_PAGE_SIZE': 100
+    }
+
+On `GenericAPIView` subclasses you may also set the `pagination_class` attribute to select `CursorPagination` on a per-view basis.
+
+#### Configuration
+
+The `CursorPagination` class includes a number of attributes that may be overridden to modify the pagination style.
+
+To set these attributes you should override the `CursorPagination` class, and then enable your custom pagination class as above.
+
+* `page_size` = A numeric value indicating the page size. If set, this overrides the `DEFAULT_PAGE_SIZE` setting. Defaults to the same value as the `DEFAULT_PAGE_SIZE` settings key.
+* `cursor_query_param` = A string value indicating the name of the "cursor" query parameter. Defaults to `'cursor'`.
+* `ordering` = This should be a string, or list of strings, indicating the field against which the cursor based pagination will be applied. For example: `ordering = 'created'`. Any filters on the view which define a `get_ordering` will override this attribute. Defaults to `None`.
+* `template` = The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to `None` to disable HTML pagination controls completely. Defaults to `"rest_framework/pagination/previous_and_next.html"`.
 
 ---
 
@@ -108,7 +234,7 @@ To have your custom pagination class be used by default, use the `DEFAULT_PAGINA
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.LinkHeaderPagination',
-        'PAGINATE_BY': 10
+        'DEFAULT_PAGE_SIZE': 10
     }
 
 API responses for list endpoints will now include a `Link` header, instead of including the pagination links as part of the body of the response, for example:
@@ -123,7 +249,24 @@ API responses for list endpoints will now include a `Link` header, instead of in
 
 # HTML pagination controls
 
+By default using the pagination classes will cause HTML pagination controls to be displayed in the browsable API. There are two built-in display styles. The `PageNumberPagination` and `LimitOffsetPagination` classes display a list of page numbers with previous and next controls. The `CursorPagination` class displays a simpler style that only displays a previous and next control.
+
 ## Customizing the controls
+
+You can override the templates that render the HTML pagination controls. The two built-in styles are:
+
+* `rest_framework/pagination/numbers.html`
+* `rest_framework/pagination/previous_and_next.html`
+
+Providing a template with either of these paths in a global template directory will override the default rendering for the relevant pagination classes.
+
+Alternatively you can disable HTML pagination controls completely by subclassing on of the existing classes, setting `template = None` as an attribute on the class. You'll then need to configure your `DEFAULT_PAGINATION_CLASS` settings key to use your custom class as the default pagination style.
+
+#### Low-level API
+
+The low-level API for determining if a pagination class should display the controls or not is exposed as a `display_page_controls` attribute on the pagination instance. Custom pagination classes should be set to `True` in the `paginate_queryset` method if they require the HTML pagination controls to be displayed.
+
+The `.to_html()` and `.get_html_context()` methods may also be overridden in a custom pagination class in order to further customize how the controls are rendered.
 
 ---
 
@@ -140,3 +283,4 @@ The [`DRF-extensions` package][drf-extensions] includes a [`PaginateByMaxMixin` 
 [link-header]: ../img/link-header-pagination.png
 [drf-extensions]: http://chibisov.github.io/drf-extensions/docs/
 [paginate-by-max-mixin]: http://chibisov.github.io/drf-extensions/docs/#paginatebymaxmixin
+[disqus-cursor-api]: http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api/
