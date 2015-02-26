@@ -101,9 +101,10 @@ class TestFileUploadParser(TestCase):
 
         self.__replace_content_disposition('inline; filename=fallback.txt; filename*=utf-8--ÀĥƦ.txt')
         filename = parser.get_filename(self.stream, None, self.parser_context)
-        # Malformed. Either None or 'fallback.txt' will be acceptable.
+
+        # Malformed. Either None, 'ÀĥƦ.txt' or 'fallback.txt' will be acceptable.
         # See also https://code.djangoproject.com/ticket/24209
-        self.assertIn(filename, ('fallback.txt', None))
+        self.assertIn(filename, ('fallback.txt', 'ÀĥƦ.txt', None))
 
     def __replace_content_disposition(self, disposition):
         self.parser_context['request'].META['HTTP_CONTENT_DISPOSITION'] = disposition
