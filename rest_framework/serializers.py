@@ -13,6 +13,7 @@ response content is handled by parsers and renderers.
 from __future__ import unicode_literals
 from django.db import models
 from django.db.models.fields import FieldDoesNotExist, Field as DjangoModelField
+from django.db.models import query
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.compat import postgres_fields, unicode_to_repr
 from rest_framework.utils import model_meta
@@ -562,7 +563,7 @@ class ListSerializer(BaseSerializer):
         """
         # Dealing with nested relationships, data can be a Manager,
         # so, first get a queryset from the Manager if needed
-        iterable = data.all() if isinstance(data, models.Manager) else data
+        iterable = data.all() if isinstance(data, (models.Manager, query.QuerySet)) else data
         return [
             self.child.to_representation(item) for item in iterable
         ]
