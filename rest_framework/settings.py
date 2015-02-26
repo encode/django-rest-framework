@@ -117,7 +117,10 @@ DEFAULTS = {
     'UNICODE_JSON': True,
     'COMPACT_JSON': True,
     'COERCE_DECIMAL_TO_STRING': True,
-    'UPLOADED_FILES_USE_URL': True
+    'UPLOADED_FILES_USE_URL': True,
+
+    # Markdown
+    'MARKDOWN_EXTENSIONS': ['headerid(level=2)']
 }
 
 
