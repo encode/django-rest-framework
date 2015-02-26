@@ -21,10 +21,10 @@ env:
     - TOX_ENV=py26-django15
     - TOX_ENV=py27-django14
     - TOX_ENV=py26-django14
-    - TOX_ENV=py34-django18alpha
-    - TOX_ENV=py33-django18alpha
-    - TOX_ENV=py32-django18alpha
-    - TOX_ENV=py27-django18alpha
+    - TOX_ENV=py34-django18beta
+    - TOX_ENV=py33-django18beta
+    - TOX_ENV=py32-django18beta
+    - TOX_ENV=py27-django18beta
 
 install:
   - pip install tox
