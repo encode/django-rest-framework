@@ -93,18 +93,18 @@ Let's modify the built-in `PageNumberPagination` style, so that instead of inclu
 
     class LinkHeaderPagination(pagination.PageNumberPagination):
         def get_paginated_response(self, data):
+            first_url = self.get_first_link()
+            prev_url = self.get_previous_link()
+            next_url = self.get_next_link()
+            last_url = self.get_last_link()
+
             link = '<{}>; rel="{}"'
 
-            first = self.get_first_link()
-            prev = self.get_previous_link()
-            next = self.get_next_link()
-            last = self.get_last_link()
-
             links = [
-                link.format(first, 'first'),
-                link.format(prev, 'prev') if prev else None,
-                link.format(next, 'next') if next else None,
-                link.format(last, 'last'),
+                link.format(first_url, 'first'),
+                link.format(prev_url, 'prev') if prev_url else None,
+                link.format(next_url, 'next') if next_url else None,
+                link.format(last_url, 'last'),
             ]
 
             headers = {
