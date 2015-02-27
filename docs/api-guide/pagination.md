@@ -86,42 +86,42 @@ Note that the `paginate_queryset` method may set state on the pagination instanc
 Let's modify the built-in `PageNumberPagination` style, so that instead of include the pagination links in the body of the response, we'll instead include a `Link` header, in a [similar style to the GitHub API][github-link-pagination].
 
 ```py
-    from rest_framework.pagination import PageNumberPagination
-    from rest_framework.response import Response
-    from rest_framework.utils.urls import remove_query_param, replace_query_param
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+from rest_framework.utils.urls import remove_query_param, replace_query_param
 
 
-    class LinkHeaderPagination(pagination.PageNumberPagination):
-        def get_paginated_response(self, data):
-            first_url = self.get_first_link()
-            prev_url = self.get_previous_link()
-            next_url = self.get_next_link()
-            last_url = self.get_last_link()
+class LinkHeaderPagination(pagination.PageNumberPagination):
+    def get_paginated_response(self, data):
+        first_url = self.get_first_link()
+        prev_url = self.get_previous_link()
+        next_url = self.get_next_link()
+        last_url = self.get_last_link()
 
-            link = '<{}>; rel="{}"'
+        link = '<{}>; rel="{}"'
 
-            links = [
-                link.format(first_url, 'first'),
-                link.format(prev_url, 'prev') if prev_url else None,
-                link.format(next_url, 'next') if next_url else None,
-                link.format(last_url, 'last'),
-            ]
+        links = [
+            link.format(first_url, 'first'),
+            link.format(prev_url, 'prev') if prev_url else None,
+            link.format(next_url, 'next') if next_url else None,
+            link.format(last_url, 'last'),
+        ]
 
-            headers = {
-                'Link': ", ".join([link for link in links if link]),
-                'X-Total-Count': self.page.paginator.count
-            }
+        headers = {
+            'Link': ", ".join([link for link in links if link]),
+            'X-Total-Count': self.page.paginator.count
+        }
 
-            return Response(data, headers=headers)
+        return Response(data, headers=headers)
 
-        def get_first_link(self):
-            url = self.request.build_absolute_uri()
-            return remove_query_param(url, self.page_query_param)
+    def get_first_link(self):
+        url = self.request.build_absolute_uri()
+        return remove_query_param(url, self.page_query_param)
 
-        def get_last_link(self):
-            url = self.request.build_absolute_uri()
-            page_number = self.page.paginator.num_pages
-            return replace_query_param(url, self.page_query_param, page_number)
+    def get_last_link(self):
+        url = self.request.build_absolute_uri()
+        page_number = self.page.paginator.num_pages
+        return replace_query_param(url, self.page_query_param, page_number)
 ```
 
 ## Using your custom pagination class
