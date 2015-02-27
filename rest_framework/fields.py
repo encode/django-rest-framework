@@ -612,6 +612,18 @@ class RegexField(CharField):
         validator = RegexValidator(regex, message=self.error_messages['invalid'])
         self.validators.append(validator)
 
+    def __deepcopy__(self, memo):
+        # Handling case when regex is not passed in kwargs.
+        args = self._args[:1] + copy.deepcopy(self._args[1:])
+        kwargs = dict(self._kwargs)
+
+        # deepcopy doesn't work on compiled regex pattern
+        regex = kwargs.pop('regex', None)
+        kwargs = copy.deepcopy(kwargs)
+        if regex is not None:
+            kwargs['regex'] = regex
+        return self.__class__(*args, **kwargs)
+
 
 class SlugField(CharField):
     default_error_messages = {
