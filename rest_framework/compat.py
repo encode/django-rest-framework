@@ -232,7 +232,7 @@ try:
         of '#' style headers to <h2>.
         """
 
-        extensions = ['headerid(level=2)']
+        extensions = settings.MARKDOWN_EXTENSIONS
         safe_mode = False
         md = markdown.Markdown(extensions=extensions, safe_mode=safe_mode)
         return md.convert(text)
