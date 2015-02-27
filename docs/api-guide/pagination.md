@@ -101,35 +101,30 @@ from rest_framework.utils.urls import remove_query_param, replace_query_param
 
 class LinkHeaderPagination(pagination.PageNumberPagination):
     def get_paginated_response(self, data):
+        headers = {
+            'X-Page': self.page.number,
+            'X-Per-Page': self.page.paginator.per_page,
+            'X-Total': self.page.paginator.count,
+            'X-Total-Pages': self.page.paginator.num_pages
+        }
+
         first_url = self.get_first_link()
         prev_url = self.get_previous_link()
         next_url = self.get_next_link()
         last_url = self.get_last_link()
 
         link = '<{}>; rel="{}"'
+        links = []
 
-        links = [
-            link.format(first_url, 'first'),
-            link.format(prev_url, 'prev') if prev_url else None,
-            link.format(next_url, 'next') if next_url else None,
-            link.format(last_url, 'last'),
-        ]
+        if first_url: links.append(link.format(first_url, 'first'))
+        if prev_url: links.append(link.format(prev_url, 'prev'))
+        if next_url: links.append(link.format(next_url, 'next'))
+        if last_url: links.append(link.format(last_url, 'last'))
 
-        headers = {
-            'Link': ", ".join([link for link in links if link]),
-            'X-Total-Count': self.page.paginator.count
-        }
+        if links:
+            headers['Link'] = ", ".join(links)
 
         return Response(data, headers=headers)
-
-    def get_first_link(self):
-        url = self.request.build_absolute_uri()
-        return remove_query_param(url, self.page_query_param)
-
-    def get_last_link(self):
-        url = self.request.build_absolute_uri()
-        page_number = self.page.paginator.num_pages
-        return replace_query_param(url, self.page_query_param, page_number)
 ```
 
 ## Using your custom pagination class
