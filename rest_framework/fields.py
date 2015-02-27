@@ -1191,7 +1191,7 @@ class ListField(Field):
 
 class DictField(Field):
     child = _UnvalidatedField()
-    initial = []
+    initial = {}
     default_error_messages = {
         'not_a_dict': _('Expected a dictionary of items but got type "{input_type}".')
     }
