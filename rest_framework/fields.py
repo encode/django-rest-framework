@@ -71,7 +71,14 @@ def get_attribute(instance, attrs):
         except ObjectDoesNotExist:
             return None
         if is_simple_callable(instance):
-            instance = instance()
+            try:
+                instance = instance()
+            except (AttributeError, KeyError) as exc:
+                # If we raised an Attribute or KeyError here it'd get treated
+                # as an omitted field in `Field.get_attribute()`. Instead we
+                # raise a ValueError to ensure the exception is not masked.
+                raise ValueError('Exception raised in callable attribute "{0}"; original exception was: {1}'.format(attr, exc))
+
     return instance
 
 
