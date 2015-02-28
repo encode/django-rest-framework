@@ -725,7 +725,8 @@ class ModelSerializer(Serializer):
         models.SmallIntegerField: IntegerField,
         models.TextField: CharField,
         models.TimeField: TimeField,
-        models.URLField: URLField
+        models.URLField: URLField,
+        models.GenericIPAddressField: IPAddressField,
         # Note: Some version-specific mappings also defined below.
     })
     _related_class = PrimaryKeyRelatedField
@@ -1136,6 +1137,10 @@ class ModelSerializer(Serializer):
 
 if hasattr(models, 'UUIDField'):
     ModelSerializer._field_mapping[models.UUIDField] = UUIDField
+
+# IPAddressField is deprecated in Django
+if hasattr(models, 'IPAddressField'):
+    ModelSerializer._field_mapping[models.IPAddressField] = IPAddressField
 
 if postgres_fields:
     class CharMappingField(DictField):
