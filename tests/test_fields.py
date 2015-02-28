@@ -318,7 +318,10 @@ class TestCreateOnlyDefault:
         }
 
     def test_create_only_default_callable_sets_context(self):
-        """ CreateOnlyDefault instances with a callable default should set_context on the callable if possible """
+        """
+        CreateOnlyDefault instances with a callable default should set_context
+        on the callable if possible
+        """
         class TestCallableDefault:
             def set_context(self, serializer_field):
                 self.field = serializer_field
