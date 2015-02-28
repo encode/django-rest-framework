@@ -188,6 +188,17 @@ A field that ensures the input is a valid UUID string. The `to_internal_value` m
 
     "de305d54-75b4-431b-adb2-eb6b9e546013"
 
+## IPAddressField
+
+A field that ensures the input is a valid IPv4 or IPv6 string.
+
+Corresponds to `django.forms.fields.IPAddressField` and `django.forms.fields.GenericIPAddressField`.
+
+**Signature**: `IPAddressField(protocol='both', unpack_ipv4=False, **options)`
+
+- `protocol` Limits valid inputs to the specified protocol. Accepted values are 'both' (default), 'IPv4' or 'IPv6'. Matching is case insensitive.
+- `unpack_ipv4` Unpacks IPv4 mapped addresses like ::ffff:192.0.2.1. If this option is enabled that address would be unpacked to 192.0.2.1. Default is disabled. Can only be used when protocol is set to 'both'.
+
 ---
 
 # Numeric fields
@@ -524,7 +535,7 @@ As an example, let's create a field that can be used represent the class name of
             # We pass the object instance onto `to_representation`,
             # not just the field attribute.
             return obj
- 
+
         def to_representation(self, obj):
             """
             Serialize the object's class name.
