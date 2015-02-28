@@ -457,7 +457,7 @@ To do so, open the Django shell, using `python manage.py shell`, then import the
         name = CharField(allow_blank=True, max_length=100, required=False)
         owner = PrimaryKeyRelatedField(queryset=User.objects.all())
 
-## Specifying which fields should be included
+## Specifying which fields to include
 
 If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`.
 
@@ -499,7 +499,7 @@ You can add extra fields to a `ModelSerializer` or override the default fields b
 
 Extra fields can correspond to any property or callable on the model.
 
-## Specifying which fields should be read-only
+## Specifying read only fields
 
 You may wish to specify multiple fields as read-only. Instead of adding each field explicitly with the `read_only=True` attribute, you may use the shortcut Meta option, `read_only_fields`.
 
@@ -528,7 +528,7 @@ Please review the [Validators Documentation](/api-guide/validators/) for details
 ---
 
 
-## Specifying additional keyword arguments for fields.
+## Additional keyword arguments
 
 There is also a shortcut allowing you to specify arbitrary additional keyword arguments on fields, using the `extra_kwargs` option. Similarly to `read_only_fields` this means you do not need to explicitly declare the field on the serializer.
 
@@ -566,6 +566,79 @@ The inner `Meta` class on serializers is not inherited from parent classes by de
             model = Account
 
 Typically we would recommend *not* using inheritance on inner Meta classes, but instead declaring all options explicitly.
+
+## Customizing field mappings
+
+The ModelSerializer class also exposes an API that you can override in order to alter how serializer fields are automatically determined when instantiating the serializer.
+
+Normally if a `ModelSerializer` does not generate the fields you need by default the you should either add them to the class explicitly, or simply use a regular `Serializer` class instead. However in some cases you may want to create a new base class that defines how the serializer fields are created for any given model.
+
+### `.serializer_field_mapping`
+
+A mapping of Django model classes to REST framework serializer classes. You can override this mapping to alter the default serializer classes that should be used for each model class.
+
+### `.serializer_related_field`
+
+This property should be the serializer field class, that is used for relational fields by default.
+
+For `ModelSerializer` this defaults to `PrimaryKeyRelatedField`.
+
+For `HyperlinkedModelSerializer` this defaults to `serializers.HyperlinkedRelatedField`.
+
+### `serializer_url_field`
+
+The serializer field class that should be used for any `url` field on the serializer.
+
+Defaults to `serializers.HyperlinkedIdentityField`
+
+### `serializer_choice_field`
+
+The serializer field class that should be used for any choice fields on the serializer.
+
+Defaults to `serializers.ChoiceField`
+
+### The field_class and field_kwargs API
+
+The following methods are called to determine the class and keyword arguments for each field that should be automatically included on the serializer. Each of these methods should return a two tuple of `(field_class, field_kwargs)`.
+
+### `.build_standard_field(self, field_name, model_field)`
+
+Called to generate a serializer field that maps to a standard model field.
+
+The default implementation returns a serializer class based on the `serializer_field_mapping` attribute.
+
+### `.build_relational_field(self, field_name, relation_info)`
+
+Called to generate a serializer field that maps to a relational model field.
+
+The default implementation returns a serializer class based on the `serializer_relational_field` attribute.
+
+The `relation_info` argument is a named tuple, that contains `model_field`, `related_model`, `to_many` and `has_through_model` properties.
+
+### `.build_nested_field(self, field_name, relation_info, nested_depth)`
+
+Called to generate a serializer field that maps to a relational model field, when the `depth` option has been set.
+
+The default implementation dynamically creates a nested serializer class based on either `ModelSerializer` or `HyperlinkedModelSerializer`.
+
+The `nested_depth` will be the value of the `depth` option, minus one.
+
+The `relation_info` argument is a named tuple, that contains `model_field`, `related_model`, `to_many` and `has_through_model` properties.
+
+### `.build_property_field(self, field_name, model_class)`
+
+Called to generate a serializer field that maps to a property or zero-argument method on the model class.
+
+The default implementation returns a `ReadOnlyField` class.
+
+### `.build_url_field(self, field_name, model_class)`
+
+Called to generate a serializer field for the serializer's own `url` field. The default implementation returns a `HyperlinkedIdentityField` class.
+
+### `.build_unknown_field(self, field_name, model_class)`
+
+Called when the field name did not map to any model field or model property.
+The default implementation raises an error, although subclasses may customize this behavior.
 
 ---
 

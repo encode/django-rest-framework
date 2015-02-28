@@ -1,0 +1,328 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Ertaç Paprat <epaprat@gmail.com>, 2015
+# Mesut Can Gürle <mesutcang@gmail.com>, 2015
+# Recep KIRMIZI <rkirmizi@gmail.com>, 2015
+# Ülgen Sarıkavak <ulgensrkvk@gmail.com>, 2015
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-01-30 16:23+0000\n"
+"PO-Revision-Date: 2015-01-30 16:27+0000\n"
+"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"Language-Team: Turkish (http://www.transifex.com/projects/p/django-rest-framework/language/tr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: tr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: authentication.py:69
+msgid "Invalid basic header. No credentials provided."
+msgstr ""
+
+#: authentication.py:72
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr ""
+
+#: authentication.py:78
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr ""
+
+#: authentication.py:90
+msgid "Invalid username/password."
+msgstr "Geçersiz kullanıcı adı/parola"
+
+#: authentication.py:156
+msgid "Invalid token header. No credentials provided."
+msgstr "Geçersiz token başlığı. Kimlik bilgileri eksik."
+
+#: authentication.py:159
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "Geçersiz token başlığı. Token'da boşluk olmamalı."
+
+#: authentication.py:168
+msgid "Invalid token."
+msgstr "Geçersiz token."
+
+#: authentication.py:171
+msgid "User inactive or deleted."
+msgstr "Kullanıcı aktif değil ya da silinmiş."
+
+#: exceptions.py:38
+msgid "A server error occurred."
+msgstr "Sunucu hatası oluştu."
+
+#: exceptions.py:73
+msgid "Malformed request."
+msgstr "Bozuk istek."
+
+#: exceptions.py:78
+msgid "Incorrect authentication credentials."
+msgstr "Giriş bilgileri hatalı."
+
+#: exceptions.py:83
+msgid "Authentication credentials were not provided."
+msgstr "Giriş bilgileri verilmedi."
+
+#: exceptions.py:88
+msgid "You do not have permission to perform this action."
+msgstr "Bu işlemi yapmak için izniniz bulunmuyor."
+
+#: exceptions.py:93
+msgid "Not found."
+msgstr "Bulunamadı."
+
+#: exceptions.py:98
+msgid "Method \"{method}\" not allowed."
+msgstr "\"{method}\" metoduna izin verilmiyor."
+
+#: exceptions.py:109
+msgid "Could not satisfy the request Accept header."
+msgstr ""
+
+#: exceptions.py:121
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "İstekte desteklenmeyen medya tipi: \"{media_type}\"."
+
+#: exceptions.py:134
+msgid "Request was throttled."
+msgstr ""
+
+#: fields.py:153 relations.py:132 relations.py:156 validators.py:77
+#: validators.py:155
+msgid "This field is required."
+msgstr "Bu alan zorunlu."
+
+#: fields.py:154
+msgid "This field may not be null."
+msgstr "Bu alan boş bırakılmamalı."
+
+#: fields.py:487 fields.py:515
+msgid "\"{input}\" is not a valid boolean."
+msgstr "\"{input}\" geçerli bir boolean değil."
+
+#: fields.py:550
+msgid "This field may not be blank."
+msgstr "Bu alan boş bırakılmamalı."
+
+#: fields.py:551 fields.py:1324
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "Bu alanın {max_length} karakterden fazla karakter barındırmadığından emin olun."
+
+#: fields.py:552
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "Bu alanın en az {min_length} karakter barındırdığından emin olun."
+
+#: fields.py:587
+msgid "Enter a valid email address."
+msgstr "Geçerli bir e-posta adresi girin."
+
+#: fields.py:604
+msgid "This value does not match the required pattern."
+msgstr "Bu değer gereken düzenli ifade deseni ile uyuşmuyor."
+
+#: fields.py:615
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "Harf, rakam, altçizgi veya tireden oluşan geçerli bir \"slug\" giriniz."
+
+#: fields.py:627
+msgid "Enter a valid URL."
+msgstr "Geçerli bir URL girin."
+
+#: fields.py:638
+msgid "\"{value}\" is not a valid UUID."
+msgstr ""
+
+#: fields.py:657
+msgid "A valid integer is required."
+msgstr "Geçerli bir tam sayı girin."
+
+#: fields.py:658 fields.py:692 fields.py:725
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "Değerin {max_value} değerinden küçük ya da eşit olduğundan emin olun."
+
+#: fields.py:659 fields.py:693 fields.py:726
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "Değerin {min_value} değerinden büyük ya da eşit olduğundan emin olun."
+
+#: fields.py:660 fields.py:694 fields.py:730
+msgid "String value too large."
+msgstr "String değeri çok uzun."
+
+#: fields.py:691 fields.py:724
+msgid "A valid number is required."
+msgstr "Geçerli bir numara gerekiyor."
+
+#: fields.py:727
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "Toplamda {max_digits} haneden fazla hane olmadığından emin olun."
+
+#: fields.py:728
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "Ondalık basamak değerinin {max_decimal_places} haneden fazla olmadığından emin olun."
+
+#: fields.py:729
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "Ondalık ayracından önce {max_whole_digits} basamaktan fazla olmadığından emin olun."
+
+#: fields.py:813
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "Datetime alanı yanlış biçimde. {format} biçimlerinden birini kullanın."
+
+#: fields.py:814
+msgid "Expected a datetime but got a date."
+msgstr "Datetime değeri bekleniyor, ama date değeri geldi."
+
+#: fields.py:878
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "Tarih biçimi yanlış. {format} biçimlerinden birini kullanın."
+
+#: fields.py:879
+msgid "Expected a date but got a datetime."
+msgstr "Date tipi beklenmekteydi, fakat datetime tipi geldi."
+
+#: fields.py:936
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "Time biçimi yanlış. {format} biçimlerinden birini kullanın."
+
+#: fields.py:992 fields.py:1036
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" geçerli bir seçim değil."
+
+#: fields.py:1037 fields.py:1151 serializers.py:482
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "Elemanların listesi beklenirken \"{input_type}\" alındı."
+
+#: fields.py:1067
+msgid "No file was submitted."
+msgstr "Hiçbir dosya verilmedi."
+
+#: fields.py:1068
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "Gönderilen veri dosya değil. Formdaki kodlama tipini kontrol edin."
+
+#: fields.py:1069
+msgid "No filename could be determined."
+msgstr "Hiçbir dosya adı belirlenemedi."
+
+#: fields.py:1070
+msgid "The submitted file is empty."
+msgstr "Gönderilen dosya boş."
+
+#: fields.py:1071
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "Bu dosya adının en fazla {max_length} karakter uzunluğunda olduğundan emin olun. (şu anda {length} karakter)."
+
+#: fields.py:1113
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Geçerli bir resim yükleyin. Yüklediğiniz dosya resim değil ya da bozuk."
+
+#: fields.py:1188
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr ""
+
+#: pagination.py:221
+msgid "Invalid page \"{page_number}\": {message}."
+msgstr "Geçersiz sayfa \"{page_number}\":{message}."
+
+#: pagination.py:442
+msgid "Invalid cursor"
+msgstr ""
+
+#: relations.py:133
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "Geçersiz pk \"{pk_value}\" - obje bulunamadı."
+
+#: relations.py:134
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "Hatalı tip. Pk değeri beklenirken, alınan {data_type}."
+
+#: relations.py:157
+msgid "Invalid hyperlink - No URL match."
+msgstr "Geçersiz bağlantı - Hiçbir URL eşleşmedi."
+
+#: relations.py:158
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "Geçersiz bağlantı - Yanlış URL eşleşmesi."
+
+#: relations.py:159
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "Geçersiz bağlantı - Obje bulunamadı."
+
+#: relations.py:160
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "Hatalı tip. URL metni bekleniyor, {data_type} alındı."
+
+#: relations.py:295
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "{slug_name}={value} değerini taşıyan obje bulunamadı."
+
+#: relations.py:296
+msgid "Invalid value."
+msgstr "Geçersiz değer."
+
+#: serializers.py:299
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "Geçersiz veri. Sözlük bekleniyordu fakat {datatype} geldi. "
+
+#: validators.py:22
+msgid "This field must be unique."
+msgstr "Bu alan eşsiz olmalı."
+
+#: validators.py:76
+msgid "The fields {field_names} must make a unique set."
+msgstr "{field_names} hep birlikte eşsiz bir küme oluşturmalılar."
+
+#: validators.py:219
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "Bu alan \"{date_field}\" tarihine göre eşsiz olmalı."
+
+#: validators.py:234
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "Bu alan \"{date_field}\" ayına göre eşsiz olmalı."
+
+#: validators.py:247
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "Bu alan \"{date_field}\" yılına göre eşsiz olmalı."
+
+#: versioning.py:39
+msgid "Invalid version in \"Accept\" header."
+msgstr "\"Accept\" başlığındaki sürüm geçersiz."
+
+#: versioning.py:70 versioning.py:112
+msgid "Invalid version in URL path."
+msgstr "URL dizininde geçersiz versiyon."
+
+#: versioning.py:138
+msgid "Invalid version in hostname."
+msgstr "Host adında geçersiz versiyon."
+
+#: versioning.py:160
+msgid "Invalid version in query parameter."
+msgstr "Sorgu parametresinde geçersiz versiyon."
+
+#: authtoken/serializers.py:20
+msgid "User account is disabled."
+msgstr "Kullanıcı hesabı devre dışı bırakılmış."
+
+#: authtoken/serializers.py:23
+msgid "Unable to log in with provided credentials."
+msgstr "Verilen bilgiler ile giriş sağlanamadı."
+
+#: authtoken/serializers.py:26
+msgid "Must include \"username\" and \"password\"."
+msgstr "\"Kullanıcı Adı\" ve \"Parola\" eklenmeli."

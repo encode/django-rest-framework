@@ -1,36 +1,25 @@
 from __future__ import unicode_literals, absolute_import
 from django import template
 from django.core.urlresolvers import reverse, NoReverseMatch
-from django.http import QueryDict
 from django.utils import six
-from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.encoding import iri_to_uri, force_text
 from django.utils.html import escape
 from django.utils.safestring import SafeData, mark_safe
 from django.utils.html import smart_urlquote
 from rest_framework.renderers import HTMLFormRenderer
+from rest_framework.utils.urls import replace_query_param
 import re
 
 register = template.Library()
-
-
-def replace_query_param(url, key, val):
-    """
-    Given a URL and a key/val pair, set or replace an item in the query
-    parameters of the URL, and return the new URL.
-    """
-    (scheme, netloc, path, query, fragment) = urlparse.urlsplit(url)
-    query_dict = QueryDict(query).copy()
-    query_dict[key] = val
-    query = query_dict.urlencode()
-    return urlparse.urlunsplit((scheme, netloc, path, query, fragment))
-
 
 # Regex for adding classes to html snippets
 class_re = re.compile(r'(?<=class=["\'])(.*)(?=["\'])')
 
 
-# And the template tags themselves...
+@register.simple_tag
+def get_pagination_html(pager):
+    return pager.to_html()
+
 
 @register.simple_tag
 def render_field(field, style=None):
@@ -173,8 +162,8 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
                     lead = lead + opening
                 # Keep parentheses at the end only if they're balanced.
                 if (
-                    middle.endswith(closing)
-                    and middle.count(closing) == middle.count(opening) + 1
+                    middle.endswith(closing) and
+                    middle.count(closing) == middle.count(opening) + 1
                 ):
                     middle = middle[:-len(closing)]
                     trail = closing + trail

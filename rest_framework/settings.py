@@ -5,11 +5,11 @@ For example your project's `settings.py` file might look like this:
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.YAMLRenderer',
+        'rest_framework.renderers.TemplateHTMLRenderer',
     )
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
-        'rest_framework.parsers.YAMLParser',
+        'rest_framework.parsers.TemplateHTMLRenderer',
     )
 }
 
@@ -20,9 +20,9 @@ back to the defaults.
 from __future__ import unicode_literals
 from django.test.signals import setting_changed
 from django.conf import settings
-from django.utils import importlib, six
+from django.utils import six
 from rest_framework import ISO_8601
-
+from rest_framework.compat import importlib
 
 USER_SETTINGS = getattr(settings, 'REST_FRAMEWORK', None)
 
@@ -47,9 +47,10 @@ DEFAULTS = {
     'DEFAULT_THROTTLE_CLASSES': (),
     'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'rest_framework.negotiation.DefaultContentNegotiation',
     'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
+    'DEFAULT_VERSIONING_CLASS': None,
 
     # Generic view behavior
-    'DEFAULT_PAGINATION_SERIALIZER_CLASS': 'rest_framework.pagination.PaginationSerializer',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'DEFAULT_FILTER_BACKENDS': (),
 
     # Throttling
@@ -67,6 +68,11 @@ DEFAULTS = {
     # Filtering
     'SEARCH_PARAM': 'search',
     'ORDERING_PARAM': 'ordering',
+
+    # Versioning
+    'DEFAULT_VERSION': None,
+    'ALLOWED_VERSIONS': None,
+    'VERSION_PARAM': 'version',
 
     # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
@@ -124,7 +130,8 @@ IMPORT_STRINGS = (
     'DEFAULT_THROTTLE_CLASSES',
     'DEFAULT_CONTENT_NEGOTIATION_CLASS',
     'DEFAULT_METADATA_CLASS',
-    'DEFAULT_PAGINATION_SERIALIZER_CLASS',
+    'DEFAULT_VERSIONING_CLASS',
+    'DEFAULT_PAGINATION_CLASS',
     'DEFAULT_FILTER_BACKENDS',
     'EXCEPTION_HANDLER',
     'TEST_REQUEST_RENDERER_CLASSES',
@@ -140,7 +147,9 @@ def perform_import(val, setting_name):
     If the given setting is a string import notation,
     then perform the necessary import or imports.
     """
-    if isinstance(val, six.string_types):
+    if val is None:
+        return None
+    elif isinstance(val, six.string_types):
         return import_from_string(val, setting_name)
     elif isinstance(val, (list, tuple)):
         return [import_from_string(item, setting_name) for item in val]

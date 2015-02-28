@@ -108,6 +108,10 @@ def clone_request(request, method):
         ret.accepted_renderer = request.accepted_renderer
     if hasattr(request, 'accepted_media_type'):
         ret.accepted_media_type = request.accepted_media_type
+    if hasattr(request, 'version'):
+        ret.version = request.version
+    if hasattr(request, 'versioning_scheme'):
+        ret.versioning_scheme = request.versioning_scheme
     return ret
 
 
@@ -216,8 +220,8 @@ class Request(object):
         Synonym for `.query_params`, for backwards compatibility.
         """
         warnings.warn(
-            "`request.QUERY_PARAMS` is pending deprecation. Use `request.query_params` instead.",
-            PendingDeprecationWarning,
+            "`request.QUERY_PARAMS` is deprecated. Use `request.query_params` instead.",
+            DeprecationWarning,
             stacklevel=1
         )
         return self._request.GET
@@ -237,8 +241,8 @@ class Request(object):
         arbitrary parsers, and also works on methods other than POST (eg PUT).
         """
         warnings.warn(
-            "`request.DATA` is pending deprecation. Use `request.data` instead.",
-            PendingDeprecationWarning,
+            "`request.DATA` is deprecated. Use `request.data` instead.",
+            DeprecationWarning,
             stacklevel=1
         )
         if not _hasattr(self, '_data'):
@@ -254,8 +258,8 @@ class Request(object):
         arbitrary parsers, and also works on methods other than POST (eg PUT).
         """
         warnings.warn(
-            "`request.FILES` is pending deprecation. Use `request.data` instead.",
-            PendingDeprecationWarning,
+            "`request.FILES` is deprecated. Use `request.data` instead.",
+            DeprecationWarning,
             stacklevel=1
         )
         if not _hasattr(self, '_files'):
@@ -379,9 +383,9 @@ class Request(object):
 
         # We only need to use form overloading on form POST requests.
         if (
-            not USE_FORM_OVERLOADING
-            or self._request.method != 'POST'
-            or not is_form_media_type(self._content_type)
+            self._request.method != 'POST' or
+            not USE_FORM_OVERLOADING or
+            not is_form_media_type(self._content_type)
         ):
             return
 

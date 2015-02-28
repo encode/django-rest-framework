@@ -13,7 +13,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.utils.representation import smart_repr
 
 
-class UniqueValidator:
+class UniqueValidator(object):
     """
     Validator that corresponds to `unique=True` on a model field.
 
@@ -67,7 +67,7 @@ class UniqueValidator:
         ))
 
 
-class UniqueTogetherValidator:
+class UniqueTogetherValidator(object):
     """
     Validator that corresponds to `unique_together = (...)` on a model class.
 
@@ -155,7 +155,7 @@ class UniqueTogetherValidator:
         ))
 
 
-class BaseUniqueForValidator:
+class BaseUniqueForValidator(object):
     message = None
     missing_message = _('This field is required.')
 

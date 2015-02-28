@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.test import APIRequestFactory
@@ -16,8 +16,7 @@ def dummy_view(request, pk):
     pass
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^dummyurl/(?P<pk>[0-9]+)/$', dummy_view, name='dummy-url'),
     url(r'^manytomanysource/(?P<pk>[0-9]+)/$', dummy_view, name='manytomanysource-detail'),
     url(r'^manytomanytarget/(?P<pk>[0-9]+)/$', dummy_view, name='manytomanytarget-detail'),
@@ -26,7 +25,7 @@ urlpatterns = patterns(
     url(r'^nullableforeignkeysource/(?P<pk>[0-9]+)/$', dummy_view, name='nullableforeignkeysource-detail'),
     url(r'^onetoonetarget/(?P<pk>[0-9]+)/$', dummy_view, name='onetoonetarget-detail'),
     url(r'^nullableonetoonesource/(?P<pk>[0-9]+)/$', dummy_view, name='nullableonetoonesource-detail'),
-)
+]
 
 
 # ManyToMany

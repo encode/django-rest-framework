@@ -126,7 +126,6 @@ To use the `TokenAuthentication` scheme you'll need to [configure the authentica
         'rest_framework.authtoken'
     )
 
-
 ---
 
 **Note:** Make sure to run `manage.py syncdb` after changing your settings. The `rest_framework.authtoken` app provides both Django (from v1.7) and South database migrations. See [Schema migrations](#schema-migrations) below.
@@ -249,107 +248,6 @@ Unauthenticated responses that are denied permission will result in an `HTTP 403
 
 If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `PATCH`, `POST` or `DELETE` requests.  See the [Django CSRF documentation][csrf-ajax] for more details.
 
-## OAuthAuthentication
-
-This authentication uses [OAuth 1.0a][oauth-1.0a] authentication scheme.  OAuth 1.0a provides signature validation which provides a reasonable level of security over plain non-HTTPS connections.  However, it may also be considered more complicated than OAuth2, as it requires clients to sign their requests.
-
-This authentication class depends on the optional `django-oauth-plus` and `oauth2` packages.  In order to make it work you must install these packages and add `oauth_provider` to your `INSTALLED_APPS`:
-
-    INSTALLED_APPS = (
-        ...
-        `oauth_provider`,
-    )
-
-Don't forget to run `syncdb` once you've added the package.
-
-    python manage.py syncdb
-
-#### Getting started with django-oauth-plus
-
-The OAuthAuthentication class only provides token verification and signature validation for requests.  It doesn't provide authorization flow for your clients.  You still need to implement your own views for accessing and authorizing tokens.
-
-The `django-oauth-plus` package provides simple foundation for classic 'three-legged' oauth flow.  Please refer to [the documentation][django-oauth-plus] for more details.
-
-## OAuth2Authentication
-
-This authentication uses [OAuth 2.0][rfc6749] authentication scheme.  OAuth2 is more simple to work with than OAuth1, and provides much better security than simple token authentication.  It is an unauthenticated scheme, and requires you to use an HTTPS connection.
-
-This authentication class depends on the optional [django-oauth2-provider][django-oauth2-provider] project.  In order to make it work you must install this package and add `provider` and `provider.oauth2` to your `INSTALLED_APPS`:
-
-    INSTALLED_APPS = (
-        ...
-        'provider',
-        'provider.oauth2',
-    )
-
-Then add `OAuth2Authentication` to your global `DEFAULT_AUTHENTICATION_CLASSES` setting:
-
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.OAuth2Authentication',
-    ),
-
-You must also include the following in your root `urls.py` module:
-
-    url(r'^oauth2/', include('provider.oauth2.urls', namespace='oauth2')),
-
-Note that the `namespace='oauth2'` argument is required.
-
-Finally, sync your database.
-
-    python manage.py syncdb
-    python manage.py migrate
-
----
-
-**Note:** If you use `OAuth2Authentication` in production you must ensure that your API is only available over `https`.
-
----
-
-#### Getting started with django-oauth2-provider
-
-The `OAuth2Authentication` class only provides token verification for requests.  It doesn't provide authorization flow for your clients.
-
-The OAuth 2 authorization flow is taken care by the [django-oauth2-provider][django-oauth2-provider] dependency.  A walkthrough is given here, but for more details you should refer to [the documentation][django-oauth2-provider-docs].
-
-To get started:
-
-##### 1. Create a client
-
-You can create a client, either through the shell, or by using the Django admin.
-
-Go to the admin panel and create a new `Provider.Client` entry.  It will create the `client_id` and `client_secret` properties for you.
-
-##### 2. Request an access token
-
-To request an access token, submit a `POST` request to the url `/oauth2/access_token` with the following fields:
-
-* `client_id` the client id you've just configured at the previous step.
-* `client_secret` again configured at the previous step.
-* `username` the username with which you want to log in.
-* `password` well, that speaks for itself.
-
-You can use the command line to test that your local configuration is working:
-
-    curl -X POST -d "client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&grant_type=password&username=YOUR_USERNAME&password=YOUR_PASSWORD" http://localhost:8000/oauth2/access_token/
-
-You should get a response that looks something like this:
-
-    {"access_token": "<your-access-token>", "scope": "read", "expires_in": 86399, "refresh_token": "<your-refresh-token>"}
-
-##### 3. Access the API
-
-The only thing needed to make the `OAuth2Authentication` class work is to insert the `access_token` you've received in the `Authorization` request header.
-
-The command line to test the authentication looks like:
-
-    curl -H "Authorization: Bearer <your-access-token>" http://localhost:8000/api/
-
-### Alternative OAuth 2 implementations
-
-Note that [Django OAuth Toolkit][django-oauth-toolkit] is an alternative external package that also includes OAuth 2.0 support for REST framework.
-
----
-
 # Custom authentication
 
 To implement a custom authentication scheme, subclass `BaseAuthentication` and override the `.authenticate(self, request)` method.  The method should return a two-tuple of `(user, auth)` if authentication succeeds, or `None` otherwise.
@@ -392,13 +290,48 @@ The following example will authenticate any incoming request as the user given b
 
 The following third party packages are also available.
 
+## Django OAuth Toolkit
+
+The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support, and works with Python 2.7 and Python 3.3+. The package is maintained by [Evonove][evonove] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
+
+#### Installation & configuration
+
+Install using `pip`.
+
+    pip install django-oauth-toolkit
+
+Add the package to your `INSTALLED_APPS` and modify your REST framework settings.
+
+    INSTALLED_APPS = (
+        ...
+        'oauth2_provider',
+    )
+
+    REST_FRAMEWORK = {
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+        )
+    }
+
+For more details see the [Django REST framework - Getting started][django-oauth-toolkit-getting-started] documentation.
+
+## Django REST framework OAuth
+
+The [Django REST framework OAuth][django-rest-framework-oauth] package provides both OAuth1 and OAuth2 support for REST framework.
+
+This package was previously included directly in REST framework but is now supported and maintained as a third party package.
+
+#### Installation & configuration
+
+Install the package using `pip`.
+
+    pip install djangorestframework-oauth
+
+For details on configuration and usage see the Django REST framework OAuth documentation for [authentication][django-rest-framework-oauth-authentication] and [permissions][django-rest-framework-oauth-permissions].
+
 ## Digest Authentication
 
 HTTP digest authentication is a widely implemented scheme that was intended to replace HTTP basic authentication, and which provides a simple encrypted authentication mechanism. [Juan Riaza][juanriaza] maintains the [djangorestframework-digestauth][djangorestframework-digestauth] package which provides HTTP digest authentication support for REST framework.
-
-## Django OAuth Toolkit
-
-The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support, and works with Python 2.7 and Python 3.3+.  The package is maintained by [Evonove][evonove] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and comes as a recommended alternative for OAuth 2.0 support.
 
 ## Django OAuth2 Consumer
 
@@ -420,6 +353,10 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 
 [Djoser][djoser] library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and it uses token based authentication. This is a ready to use REST implementation of Django authentication system.
 
+## django-rest-auth
+
+[Django-rest-auth][django-rest-auth] library provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc. By having these API endpoints, your client apps such as AngularJS, iOS, Android, and others can communicate to your Django backend site independently via REST APIs for user management.
+
 [cite]: http://jacobian.org/writing/rest-worst-practices/
 [http401]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
 [http403]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
@@ -431,6 +368,10 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization
 [custom-user-model]: https://docs.djangoproject.com/en/dev/topics/auth/customizing/#specifying-a-custom-user-model
 [south-dependencies]: http://south.readthedocs.org/en/latest/dependencies.html
+[django-oauth-toolkit-getting-started]: https://django-oauth-toolkit.readthedocs.org/en/latest/rest-framework/getting_started.html
+[django-rest-framework-oauth]: http://jpadilla.github.io/django-rest-framework-oauth/
+[django-rest-framework-oauth-authentication]: http://jpadilla.github.io/django-rest-framework-oauth/authentication/
+[django-rest-framework-oauth-permissions]: http://jpadilla.github.io/django-rest-framework-oauth/permissions/
 [juanriaza]: https://github.com/juanriaza
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [oauth-1.0a]: http://oauth.net/core/1.0a
@@ -455,3 +396,4 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [mohawk]: http://mohawk.readthedocs.org/en/latest/
 [mac]: http://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05
 [djoser]: https://github.com/sunscrapers/djoser
+[django-rest-auth]: https://github.com/Tivix/django-rest-auth
