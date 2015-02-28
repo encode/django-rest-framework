@@ -114,6 +114,8 @@ class CreateOnlyDefault:
 
     def set_context(self, serializer_field):
         self.is_update = serializer_field.parent.instance is not None
+        if callable(self.default) and hasattr(self.default, 'set_context'):
+            self.default.set_context(serializer_field)
 
     def __call__(self):
         if self.is_update:
