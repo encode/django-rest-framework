@@ -92,11 +92,11 @@ Here is the view for an individual snippet, in the `views.py` module.
 
 This should all feel very familiar - it is not a lot different from working with regular Django views.
 
-Notice that we're no longer explicitly tying our requests or responses to a given content type.  `request.data` can handle incoming `json` requests, but it can also handle `yaml` and other formats.  Similarly we're returning response objects with data, but allowing REST framework to render the response into the correct content type for us.
+Notice that we're no longer explicitly tying our requests or responses to a given content type.  `request.data` can handle incoming `json` requests, but it can also handle other formats.  Similarly we're returning response objects with data, but allowing REST framework to render the response into the correct content type for us.
 
 ## Adding optional format suffixes to our URLs
 
-To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints.  Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as [http://example.com/api/items/4.json][json-url].
+To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints.  Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as [http://example.com/api/items/4/.json][json-url].
 
 Start by adding a `format` keyword argument to both of the views, like so.
 

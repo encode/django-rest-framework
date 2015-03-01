@@ -12,12 +12,13 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.http import QueryDict
 from django.http.multipartparser import parse_header
+from django.utils import six
 from django.utils.datastructures import MultiValueDict
 from django.utils.datastructures import MergeDict as DjangoMergeDict
-from django.utils.six import BytesIO
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
 from rest_framework.settings import api_settings
+import sys
 import warnings
 
 
@@ -107,6 +108,10 @@ def clone_request(request, method):
         ret.accepted_renderer = request.accepted_renderer
     if hasattr(request, 'accepted_media_type'):
         ret.accepted_media_type = request.accepted_media_type
+    if hasattr(request, 'version'):
+        ret.version = request.version
+    if hasattr(request, 'versioning_scheme'):
+        ret.versioning_scheme = request.versioning_scheme
     return ret
 
 
@@ -215,8 +220,8 @@ class Request(object):
         Synonym for `.query_params`, for backwards compatibility.
         """
         warnings.warn(
-            "`request.QUERY_PARAMS` is pending deprecation. Use `request.query_params` instead.",
-            PendingDeprecationWarning,
+            "`request.QUERY_PARAMS` is deprecated. Use `request.query_params` instead.",
+            DeprecationWarning,
             stacklevel=1
         )
         return self._request.GET
@@ -236,8 +241,8 @@ class Request(object):
         arbitrary parsers, and also works on methods other than POST (eg PUT).
         """
         warnings.warn(
-            "`request.DATA` is pending deprecation. Use `request.data` instead.",
-            PendingDeprecationWarning,
+            "`request.DATA` is deprecated. Use `request.data` instead.",
+            DeprecationWarning,
             stacklevel=1
         )
         if not _hasattr(self, '_data'):
@@ -253,8 +258,8 @@ class Request(object):
         arbitrary parsers, and also works on methods other than POST (eg PUT).
         """
         warnings.warn(
-            "`request.FILES` is pending deprecation. Use `request.data` instead.",
-            PendingDeprecationWarning,
+            "`request.FILES` is deprecated. Use `request.data` instead.",
+            DeprecationWarning,
             stacklevel=1
         )
         if not _hasattr(self, '_files'):
@@ -362,7 +367,7 @@ class Request(object):
         elif hasattr(self._request, 'read'):
             self._stream = self._request
         else:
-            self._stream = BytesIO(self.raw_post_data)
+            self._stream = six.BytesIO(self.raw_post_data)
 
     def _perform_form_overloading(self):
         """
@@ -378,9 +383,9 @@ class Request(object):
 
         # We only need to use form overloading on form POST requests.
         if (
-            not USE_FORM_OVERLOADING
-            or self._request.method != 'POST'
-            or not is_form_media_type(self._content_type)
+            self._request.method != 'POST' or
+            not USE_FORM_OVERLOADING or
+            not is_form_media_type(self._content_type)
         ):
             return
 
@@ -404,7 +409,7 @@ class Request(object):
             self._CONTENTTYPE_PARAM in self._data
         ):
             self._content_type = self._data[self._CONTENTTYPE_PARAM]
-            self._stream = BytesIO(self._data[self._CONTENT_PARAM].encode(self.parser_context['encoding']))
+            self._stream = six.BytesIO(self._data[self._CONTENT_PARAM].encode(self.parser_context['encoding']))
             self._data, self._files, self._full_data = (Empty, Empty, Empty)
 
     def _parse(self):
@@ -485,8 +490,16 @@ class Request(object):
         else:
             self.auth = None
 
-    def __getattr__(self, attr):
+    def __getattribute__(self, attr):
         """
-        Proxy other attributes to the underlying HttpRequest object.
+        If an attribute does not exist on this instance, then we also attempt
+        to proxy it to the underlying HttpRequest object.
         """
-        return getattr(self._request, attr)
+        try:
+            return super(Request, self).__getattribute__(attr)
+        except AttributeError:
+            info = sys.exc_info()
+            try:
+                return getattr(self._request, attr)
+            except AttributeError:
+                six.reraise(info[0], info[1], info[2].tb_next)

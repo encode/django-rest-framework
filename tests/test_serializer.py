@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from .utils import MockObject
 from rest_framework import serializers
 from rest_framework.compat import unicode_repr
+import pickle
 import pytest
 
 
@@ -278,3 +279,19 @@ class TestNotRequiredOutput:
         serializer = ExampleSerializer(instance)
         with pytest.raises(AttributeError):
             serializer.data
+
+
+class TestCacheSerializerData:
+    def test_cache_serializer_data(self):
+        """
+        Caching serializer data with pickle will drop the serializer info,
+        but does preserve the data itself.
+        """
+        class ExampleSerializer(serializers.Serializer):
+            field1 = serializers.CharField()
+            field2 = serializers.CharField()
+
+        serializer = ExampleSerializer({'field1': 'a', 'field2': 'b'})
+        pickled = pickle.dumps(serializer.data)
+        data = pickle.loads(pickled)
+        assert data == {'field1': 'a', 'field2': 'b'}

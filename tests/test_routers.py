@@ -180,7 +180,7 @@ class TestLookupValueRegex(TestCase):
 class TestTrailingSlashIncluded(TestCase):
     def setUp(self):
         class NoteViewSet(viewsets.ModelViewSet):
-            model = RouterTestModel
+            queryset = RouterTestModel.objects.all()
 
         self.router = SimpleRouter()
         self.router.register(r'notes', NoteViewSet)
@@ -195,7 +195,7 @@ class TestTrailingSlashIncluded(TestCase):
 class TestTrailingSlashRemoved(TestCase):
     def setUp(self):
         class NoteViewSet(viewsets.ModelViewSet):
-            model = RouterTestModel
+            queryset = RouterTestModel.objects.all()
 
         self.router = SimpleRouter(trailing_slash=False)
         self.router.register(r'notes', NoteViewSet)
@@ -210,7 +210,8 @@ class TestTrailingSlashRemoved(TestCase):
 class TestNameableRoot(TestCase):
     def setUp(self):
         class NoteViewSet(viewsets.ModelViewSet):
-            model = RouterTestModel
+            queryset = RouterTestModel.objects.all()
+
         self.router = DefaultRouter()
         self.router.root_view_name = 'nameable-root'
         self.router.register(r'notes', NoteViewSet)
@@ -301,12 +302,16 @@ class DynamicListAndDetailViewSet(viewsets.ViewSet):
         return Response({'method': 'link2'})
 
 
+class SubDynamicListAndDetailViewSet(DynamicListAndDetailViewSet):
+    pass
+
+
 class TestDynamicListAndDetailRouter(TestCase):
     def setUp(self):
         self.router = SimpleRouter()
 
-    def test_list_and_detail_route_decorators(self):
-        routes = self.router.get_routes(DynamicListAndDetailViewSet)
+    def _test_list_and_detail_route_decorators(self, viewset):
+        routes = self.router.get_routes(viewset)
         decorator_routes = [r for r in routes if not (r.name.endswith('-list') or r.name.endswith('-detail'))]
 
         MethodNamesMap = namedtuple('MethodNamesMap', 'method_name url_path')
@@ -335,3 +340,9 @@ class TestDynamicListAndDetailRouter(TestCase):
             else:
                 method_map = 'get'
             self.assertEqual(route.mapping[method_map], method_name)
+
+    def test_list_and_detail_route_decorators(self):
+        self._test_list_and_detail_route_decorators(DynamicListAndDetailViewSet)
+
+    def test_inherited_list_and_detail_route_decorators(self):
+        self._test_list_and_detail_route_decorators(SubDynamicListAndDetailViewSet)

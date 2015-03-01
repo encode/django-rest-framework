@@ -97,7 +97,7 @@ The first thing we need to get started on our Web API is to provide a way of ser
     class SnippetSerializer(serializers.Serializer):
         pk = serializers.IntegerField(read_only=True)
         title = serializers.CharField(required=False, allow_blank=True, max_length=100)
-        code = serializers.CharField(style={'type': 'textarea'})
+        code = serializers.CharField(style={'base_template': 'textarea.html'})
         linenos = serializers.BooleanField(required=False)
         language = serializers.ChoiceField(choices=LANGUAGE_CHOICES, default='python')
         style = serializers.ChoiceField(choices=STYLE_CHOICES, default='friendly')
@@ -198,7 +198,7 @@ Open the file `snippets/serializers.py` again, and replace the `SnippetSerialize
             model = Snippet
             fields = ('id', 'title', 'code', 'linenos', 'language', 'style')
 
-One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing it's representation. Open the Django shell with `python manage.py shell`, then try the following:
+One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing its representation. Open the Django shell with `python manage.py shell`, then try the following:
 
     >>> from snippets.serializers import SnippetSerializer
     >>> serializer = SnippetSerializer()

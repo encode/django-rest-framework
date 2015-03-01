@@ -14,7 +14,7 @@ Extends [Django's existing `RequestFactory` class][requestfactory].
 
 ## Creating test requests
 
-The `APIRequestFactory` class supports an almost identical API to Django's standard `RequestFactory` class.  This means the that standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.
+The `APIRequestFactory` class supports an almost identical API to Django's standard `RequestFactory` class.  This means that the standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.
 
     from rest_framework.test import APIRequestFactory
 
@@ -65,6 +65,8 @@ When testing views directly using a request factory, it's often convenient to be
 
 To forcibly authenticate a request, use the `force_authenticate()` method.
 
+    from rest_framework.tests import force_authenticate
+
     factory = APIRequestFactory()
     user = User.objects.get(username='olivia')
     view = AccountDetail.as_view()
@@ -113,7 +115,7 @@ Extends [Django's existing `Client` class][client].
 
 ## Making requests
 
-The `APIClient` class supports the same request interface as `APIRequestFactory`.  This means the that standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.  For example:
+The `APIClient` class supports the same request interface as Django's standard `Client` class.  This means the that standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.  For example:
 
     from rest_framework.test import APIClient
 
@@ -255,18 +257,18 @@ The default format used to make test requests may be set using the `TEST_REQUEST
 
 If you need to test requests using something other than multipart or json requests, you can do so by setting the `TEST_REQUEST_RENDERER_CLASSES` setting.
 
-For example, to add support for using `format='yaml'` in test requests, you might have something like this in your `settings.py` file.
+For example, to add support for using `format='html'` in test requests, you might have something like this in your `settings.py` file.
 
     REST_FRAMEWORK = {
         ...
         'TEST_REQUEST_RENDERER_CLASSES': (
             'rest_framework.renderers.MultiPartRenderer',
             'rest_framework.renderers.JSONRenderer',
-            'rest_framework.renderers.YAMLRenderer'
+            'rest_framework.renderers.TemplateHTMLRenderer'
         )
     }
 
 [cite]: http://jacobian.org/writing/django-apps-with-buildout/#s-create-a-test-wrapper
-[client]: https://docs.djangoproject.com/en/dev/topics/testing/overview/#module-django.test.client
+[client]: https://docs.djangoproject.com/en/dev/topics/testing/tools/#the-test-client
 [requestfactory]: https://docs.djangoproject.com/en/dev/topics/testing/advanced/#django.test.client.RequestFactory
 [configuration]: #configuration

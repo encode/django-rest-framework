@@ -209,7 +209,8 @@ class APIClient(APIRequestFactory, DjangoClient):
         self.handler._force_user = None
         self.handler._force_token = None
 
-        return super(APIClient, self).logout()
+        if self.session:
+            super(APIClient, self).logout()
 
 
 class APITransactionTestCase(testcases.TransactionTestCase):

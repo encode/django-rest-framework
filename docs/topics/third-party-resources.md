@@ -188,6 +188,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [hawkrest][hawkrest] - Provides Hawk HTTP Authorization.
 * [djangorestframework-httpsignature][djangorestframework-httpsignature] - Provides an easy to use HTTP Signature Authentication mechanism.
 * [djoser][djoser] - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.
+* [django-rest-auth][django-rest-auth] - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.
 
 ### Permissions
 
@@ -237,7 +238,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-rest-framework-proxy][django-rest-framework-proxy] - Proxy to redirect incoming request to another API server.
 * [gaiarestframework][gaiarestframework] - Utils for django-rest-framewok
 * [drf-extensions][drf-extensions] - A collection of custom extensions
-* [ember-data-django-rest-adapter][ember-data-django-rest-adapter] - An ember-data adapter
+* [ember-django-adapter][ember-django-adapter] - An adapter for working with Ember.js
 
 ## Other Resources
 
@@ -309,7 +310,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-framework-proxy]: https://github.com/eofs/django-rest-framework-proxy
 [gaiarestframework]: https://github.com/AppsFuel/gaiarestframework
 [drf-extensions]: https://github.com/chibisov/drf-extensions
-[ember-data-django-rest-adapter]: https://github.com/toranb/ember-data-django-rest-adapter
+[ember-django-adapter]: https://github.com/dustinfarris/ember-django-adapter
 [beginners-guide-to-the-django-rest-framework]: http://code.tutsplus.com/tutorials/beginners-guide-to-the-django-rest-framework--cms-19786
 [getting-started-with-django-rest-framework-and-angularjs]: http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html
 [end-to-end-web-app-with-django-rest-framework-angularjs]: http://blog.mourafiq.com/post/55034504632/end-to-end-web-app-with-django-rest-framework
@@ -324,3 +325,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-framework-and-angularjs-video]: http://www.youtube.com/watch?v=q8frbgtj020
 [web-api-performance-profiling-django-rest-framework]: http://dabapps.com/blog/api-performance-profiling-django-rest-framework/
 [api-development-with-django-and-django-rest-framework]: https://bnotions.com/api-development-with-django-and-django-rest-framework/
+[django-rest-auth]: https://github.com/Tivix/django-rest-auth/

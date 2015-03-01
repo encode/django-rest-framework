@@ -12,10 +12,10 @@ For example your project's `settings.py` file might include something like this:
 
     REST_FRAMEWORK = {
         'DEFAULT_RENDERER_CLASSES': (
-            'rest_framework.renderers.YAMLRenderer',
+            'rest_framework.renderers.JSONRenderer',
         ),
         'DEFAULT_PARSER_CLASSES': (
-            'rest_framework.parsers.YAMLParser',
+            'rest_framework.parsers.JSONParser',
         )
     }
 
@@ -163,6 +163,28 @@ Default: `search`
 The name of a query parameter, which can be used to specify the ordering of results returned by `OrderingFilter`.
 
 Default: `ordering`
+
+---
+
+## Versioning settings
+
+#### DEFAULT_VERSION
+
+The value that should be used for `request.version` when no versioning information is present.
+
+Default: `None`
+
+#### ALLOWED_VERSIONS
+
+If set, this value will restrict the set of versions that may be returned by the versioning scheme, and will raise an error if the provided version if not in this set.
+
+Default: `None`
+
+#### VERSION_PARAMETER
+
+The string that should used for any versioning parameters, such as in the media type or URL query parameters.
+
+Default: `'version'`
 
 ---
 
@@ -393,7 +415,7 @@ This setting can be changed to support error responses other than the default `{
 
 This should be a function with the following signature:
 
-    exception_handler(exc)
+    exception_handler(exc, context)
 
 * `exc`: The exception.
 
