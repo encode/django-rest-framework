@@ -790,10 +790,11 @@ class ModelSerializer(Serializer):
 
     def update(self, instance, validated_data):
         raise_errors_on_nested_writes('update', self, validated_data)
-
+        fields = []
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-        instance.save()
+            fields.append(attr)
+        instance.save(update_fields=fields)
 
         return instance
 
