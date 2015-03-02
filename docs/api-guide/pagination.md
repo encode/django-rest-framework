@@ -96,10 +96,9 @@ Let's modify the built-in `PageNumberPagination` style, so that instead of inclu
 ```py
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
-from rest_framework.utils.urls import remove_query_param, replace_query_param
 
 
-class LinkHeaderPagination(pagination.PageNumberPagination):
+class LinkHeaderPagination(PageNumberPagination):
     def get_paginated_response(self, data):
         headers = {
             'X-Page': self.page.number,
