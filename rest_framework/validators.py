@@ -13,7 +13,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.utils.representation import smart_repr
 
 
-class UniqueValidator:
+class UniqueValidator(object):
     """
     Validator that corresponds to `unique=True` on a model field.
 
@@ -67,7 +67,7 @@ class UniqueValidator:
         ))
 
 
-class UniqueTogetherValidator:
+class UniqueTogetherValidator(object):
     """
     Validator that corresponds to `unique_together = (...)` on a model class.
 
@@ -138,7 +138,12 @@ class UniqueTogetherValidator:
         queryset = self.queryset
         queryset = self.filter_queryset(attrs, queryset)
         queryset = self.exclude_current_instance(attrs, queryset)
-        if queryset.exists():
+
+        # Ignore validation if any field is None
+        checked_values = [
+            value for field, value in attrs.items() if field in self.fields
+        ]
+        if None not in checked_values and queryset.exists():
             field_names = ', '.join(self.fields)
             raise ValidationError(self.message.format(field_names=field_names))
 
@@ -150,7 +155,7 @@ class UniqueTogetherValidator:
         ))
 
 
-class BaseUniqueForValidator:
+class BaseUniqueForValidator(object):
     message = None
     missing_message = _('This field is required.')
 

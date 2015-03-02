@@ -93,6 +93,31 @@ class TestSource:
             "same as the field name. Remove the `source` keyword argument."
         )
 
+    def test_callable_source(self):
+        class ExampleSerializer(serializers.Serializer):
+            example_field = serializers.CharField(source='example_callable')
+
+        class ExampleInstance(object):
+            def example_callable(self):
+                return 'example callable value'
+
+        serializer = ExampleSerializer(ExampleInstance())
+        assert serializer.data['example_field'] == 'example callable value'
+
+    def test_callable_source_raises(self):
+        class ExampleSerializer(serializers.Serializer):
+            example_field = serializers.CharField(source='example_callable', read_only=True)
+
+        class ExampleInstance(object):
+            def example_callable(self):
+                raise AttributeError('method call failed')
+
+        with pytest.raises(ValueError) as exc_info:
+            serializer = ExampleSerializer(ExampleInstance())
+            serializer.data.items()
+
+        assert 'method call failed' in str(exc_info.value)
+
 
 class TestReadOnly:
     def setup(self):
@@ -291,6 +316,25 @@ class TestCreateOnlyDefault:
         assert serializer.validated_data == {
             'text': 'example',
         }
+
+    def test_create_only_default_callable_sets_context(self):
+        """
+        CreateOnlyDefault instances with a callable default should set_context
+        on the callable if possible
+        """
+        class TestCallableDefault:
+            def set_context(self, serializer_field):
+                self.field = serializer_field
+
+            def __call__(self):
+                return "success" if hasattr(self, 'field') else "failure"
+
+        class TestSerializer(serializers.Serializer):
+            context_set = serializers.CharField(default=serializers.CreateOnlyDefault(TestCallableDefault()))
+
+        serializer = TestSerializer(data={})
+        assert serializer.is_valid()
+        assert serializer.validated_data['context_set'] == 'success'
 
 
 # Tests for field input and output values.

@@ -71,7 +71,14 @@ def get_attribute(instance, attrs):
         except ObjectDoesNotExist:
             return None
         if is_simple_callable(instance):
-            instance = instance()
+            try:
+                instance = instance()
+            except (AttributeError, KeyError) as exc:
+                # If we raised an Attribute or KeyError here it'd get treated
+                # as an omitted field in `Field.get_attribute()`. Instead we
+                # raise a ValueError to ensure the exception is not masked.
+                raise ValueError('Exception raised in callable attribute "{0}"; original exception was: {1}'.format(attr, exc))
+
     return instance
 
 
@@ -107,6 +114,8 @@ class CreateOnlyDefault:
 
     def set_context(self, serializer_field):
         self.is_update = serializer_field.parent.instance is not None
+        if callable(self.default) and hasattr(self.default, 'set_context'):
+            self.default.set_context(serializer_field)
 
     def __call__(self):
         if self.is_update:
@@ -1184,7 +1193,7 @@ class ListField(Field):
 
 class DictField(Field):
     child = _UnvalidatedField()
-    initial = []
+    initial = {}
     default_error_messages = {
         'not_a_dict': _('Expected a dictionary of items but got type "{input_type}".')
     }

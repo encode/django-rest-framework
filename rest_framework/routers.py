@@ -165,34 +165,30 @@ class SimpleRouter(BaseRouter):
                 else:
                     list_routes.append((httpmethods, methodname))
 
+        def _get_dynamic_routes(route, dynamic_routes):
+            ret = []
+            for httpmethods, methodname in dynamic_routes:
+                method_kwargs = getattr(viewset, methodname).kwargs
+                initkwargs = route.initkwargs.copy()
+                initkwargs.update(method_kwargs)
+                url_path = initkwargs.pop("url_path", None) or methodname
+                ret.append(Route(
+                    url=replace_methodname(route.url, url_path),
+                    mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
+                    name=replace_methodname(route.name, url_path),
+                    initkwargs=initkwargs,
+                ))
+
+            return ret
+
         ret = []
         for route in self.routes:
             if isinstance(route, DynamicDetailRoute):
                 # Dynamic detail routes (@detail_route decorator)
-                for httpmethods, methodname in detail_routes:
-                    method_kwargs = getattr(viewset, methodname).kwargs
-                    url_path = method_kwargs.pop("url_path", None) or methodname
-                    initkwargs = route.initkwargs.copy()
-                    initkwargs.update(method_kwargs)
-                    ret.append(Route(
-                        url=replace_methodname(route.url, url_path),
-                        mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
-                        name=replace_methodname(route.name, url_path),
-                        initkwargs=initkwargs,
-                    ))
+                ret += _get_dynamic_routes(route, detail_routes)
             elif isinstance(route, DynamicListRoute):
                 # Dynamic list routes (@list_route decorator)
-                for httpmethods, methodname in list_routes:
-                    method_kwargs = getattr(viewset, methodname).kwargs
-                    url_path = method_kwargs.pop("url_path", None) or methodname
-                    initkwargs = route.initkwargs.copy()
-                    initkwargs.update(method_kwargs)
-                    ret.append(Route(
-                        url=replace_methodname(route.url, url_path),
-                        mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
-                        name=replace_methodname(route.name, url_path),
-                        initkwargs=initkwargs,
-                    ))
+                ret += _get_dynamic_routes(route, list_routes)
             else:
                 # Standard route
                 ret.append(route)

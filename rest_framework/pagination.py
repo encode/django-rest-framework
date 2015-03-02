@@ -259,7 +259,7 @@ class PageNumberPagination(BasePagination):
             )
             raise NotFound(msg)
 
-        if paginator.count > 1:
+        if paginator.count > 1 and self.template is not None:
             # The browsable API should display pagination controls.
             self.display_page_controls = True
 
@@ -347,7 +347,7 @@ class LimitOffsetPagination(BasePagination):
         self.offset = self.get_offset(request)
         self.count = _get_count(queryset)
         self.request = request
-        if self.count > self.limit:
+        if self.count > self.limit and self.template is not None:
             self.display_page_controls = True
         return queryset[self.offset:self.offset + self.limit]
 
@@ -518,7 +518,7 @@ class CursorPagination(BasePagination):
 
         # Display page controls in the browsable API if there is more
         # than one page.
-        if self.has_previous or self.has_next:
+        if (self.has_previous or self.has_next) and self.template is not None:
             self.display_page_controls = True
 
         return self.page
