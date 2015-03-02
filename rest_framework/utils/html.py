@@ -1,6 +1,7 @@
 """
 Helpers for dealing with HTML input.
 """
+import json
 import re
 from django.utils.datastructures import MultiValueDict
 
