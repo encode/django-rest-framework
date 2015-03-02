@@ -21,9 +21,11 @@ Pagination is only performed automatically if you're using the generic views or 
 
 The default pagination style may be set globally, using the `DEFAULT_PAGINATION_CLASS` settings key. For example, to use the built-in limit/offset pagination, you would do:
 
-    REST_FRAMEWORK = {
-        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
-    }
+```py
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
+}
+```
 
 You can also set the pagination class on an individual view by using the `pagination_class` attribute. Typically you'll want to use the same pagination style throughout your API, although you might want to vary individual aspects of the pagination, such as default or maximum page size, on a per-view basis.
 
@@ -31,27 +33,34 @@ You can also set the pagination class on an individual view by using the `pagina
 
 If you want to modify particular aspects of the pagination style, you'll want to override one of the pagination classes, and set the attributes that you want to change.
 
-    class LargeResultsSetPagination(PageNumberPagination):
-        paginate_by = 1000
-        paginate_by_param = 'page_size'
-        max_paginate_by = 10000
+```py
+class LargeResultsSetPagination(PageNumberPagination):
+    paginate_by = 1000
+    paginate_by_param = 'page_size'
+    max_paginate_by = 10000
 
-    class StandardResultsSetPagination(PageNumberPagination):
-        paginate_by = 100
-        paginate_by_param = 'page_size'
-        max_paginate_by = 1000
+class StandardResultsSetPagination(PageNumberPagination):
+    paginate_by = 100
+    paginate_by_param = 'page_size'
+    max_paginate_by = 1000
+```
 
 You can then apply your new style to a view using the `.pagination_class` attribute:
 
-    class BillingRecordsView(generics.ListAPIView):
-        queryset = Billing.objects.all()
-        serializer = BillingRecordsSerializer
-        pagination_class = LargeResultsSetPagination
+```py
+class BillingRecordsView(generics.ListAPIView):
+    queryset = Billing.objects.all()
+    serializer = BillingRecordsSerializer
+    pagination_class = LargeResultsSetPagination
+```
 
 Or apply the style globally, using the `DEFAULT_PAGINATION_CLASS` settings key. For example:
 
-    REST_FRAMEWORK = {
-        'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.StandardResultsSetPagination'    }
+```py
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.StandardResultsSetPagination'
+}
+```
 
 ---
 
@@ -84,32 +93,49 @@ Note that the `paginate_queryset` method may set state on the pagination instanc
 
 Let's modify the built-in `PageNumberPagination` style, so that instead of include the pagination links in the body of the response, we'll instead include a `Link` header, in a [similar style to the GitHub API][github-link-pagination].
 
-    class LinkHeaderPagination(pagination.PageNumberPagination):
-        def get_paginated_response(self, data):
-            next_url = self.get_next_link()            previous_url = self.get_previous_link()
+```py
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
 
-            if next_url is not None and previous_url is not None:
-                link = '<{next_url}; rel="next">, <{previous_url}; rel="prev">'
-            elif next_url is not None:
-                link = '<{next_url}; rel="next">'
-            elif previous_url is not None:
-                link = '<{previous_url}; rel="prev">'
-            else:
-                link = ''
 
-            link = link.format(next_url=next_url, previous_url=previous_url)
-            headers = {'Link': link} if link else {}
+class LinkHeaderPagination(PageNumberPagination):
+    def get_paginated_response(self, data):
+        headers = {
+            'X-Page': self.page.number,
+            'X-Per-Page': self.page.paginator.per_page,
+            'X-Total': self.page.paginator.count,
+            'X-Total-Pages': self.page.paginator.num_pages
+        }
 
-            return Response(data, headers=headers)
+        first_url = self.get_first_link()
+        prev_url = self.get_previous_link()
+        next_url = self.get_next_link()
+        last_url = self.get_last_link()
+
+        link = '<{}>; rel="{}"'
+        links = []
+
+        if first_url: links.append(link.format(first_url, 'first'))
+        if prev_url: links.append(link.format(prev_url, 'prev'))
+        if next_url: links.append(link.format(next_url, 'next'))
+        if last_url: links.append(link.format(last_url, 'last'))
+
+        if links:
+            headers['Link'] = ", ".join(links)
+
+        return Response(data, headers=headers)
+```
 
 ## Using your custom pagination class
 
 To have your custom pagination class be used by default, use the `DEFAULT_PAGINATION_CLASS` setting:
 
-    REST_FRAMEWORK = {
-        'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.LinkHeaderPagination',
-        'PAGINATE_BY': 10
-    }
+```py
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.LinkHeaderPagination',
+    'PAGINATE_BY': 10
+}
+```
 
 API responses for list endpoints will now include a `Link` header, instead of including the pagination links as part of the body of the response, for example:
 
