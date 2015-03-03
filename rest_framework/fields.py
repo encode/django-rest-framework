@@ -672,9 +672,9 @@ class FilePathField(CharField):
         )
 
         self.choices = OrderedDict(field.choices)
-        self.choice_strings_to_values = {
-            six.text_type(key): key for key in self.choices.keys()
-        }
+        self.choice_strings_to_values = dict([
+            (six.text_type(key), key) for key in self.choices.keys()
+        ])
 
     def to_internal_value(self, data):
         if data == '' and self.allow_blank:
