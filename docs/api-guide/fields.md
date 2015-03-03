@@ -189,6 +189,20 @@ A field that ensures the input is a valid UUID string. The `to_internal_value` m
 
     "de305d54-75b4-431b-adb2-eb6b9e546013"
 
+## FilePathField
+
+A field whose choices are limited to the filenames in a certain directory on the filesystem
+
+Corresponds to `django.forms.fields.FilePathField`.
+
+**Signature:** `FilePathField(path, match=None, recursive=False, allow_files=True, allow_folders=False, required=None, **kwargs)`
+
+- `path` - The absolute filesystem path to a directory from which this FilePathField should get its choice.
+- `match` - A regular expression, as a string, that FilePathField will use to filter filenames.
+- `recursive` - Specifies whether all subdirectories of path should be included.  Default is `False`.
+- `allow_files` - Specifies whether files in the specified location should be included. Default is `True`. Either this or `allow_folders` must be `True`.
+- `allow_folders` - Specifies whether folders in the specified location should be included. Default is `False`. Either this or `allow_files` must be `True`.
+
 ---
 
 # Numeric fields

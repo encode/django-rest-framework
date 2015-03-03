@@ -1,10 +1,12 @@
-from decimal import Decimal
-from django.utils import timezone
-from rest_framework import serializers
 import datetime
+import os
+import uuid
+from decimal import Decimal
+
 import django
 import pytest
-import uuid
+from django.utils import timezone
+from rest_framework import serializers
 
 
 # Tests for field keyword arguments and core functionality.
@@ -516,6 +518,24 @@ class TestUUIDField(FieldValues):
         uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda'): '825d7aeb-05a9-45b5-a5b7-05df87923cda'
     }
     field = serializers.UUIDField()
+
+
+class TestFilePathField(FieldValues):
+    """
+    Valid and invalid values for `FilePathField`
+    """
+
+    valid_inputs = {
+        __file__: __file__,
+    }
+    invalid_inputs = {
+        'wrong_path': ['"wrong_path" is not a valid path choice.']
+    }
+    outputs = {
+    }
+    field = serializers.FilePathField(
+        path=os.path.abspath(os.path.dirname(__file__))
+    )
 
 
 # Number types...

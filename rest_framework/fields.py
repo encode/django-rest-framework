@@ -3,7 +3,9 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import RegexValidator
-from django.forms import ImageField as DjangoImageField
+from django.forms import (
+    ImageField as DjangoImageField, FilePathField as DjangoFilePathField
+)
 from django.utils import six, timezone
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import is_protected_type, smart_text
@@ -651,6 +653,40 @@ class UUIDField(Field):
 
     def to_representation(self, value):
         return str(value)
+
+
+class FilePathField(CharField):
+    default_error_messages = {
+        'invalid_choice': _('"{input}" is not a valid path choice.')
+    }
+
+    def __init__(self, path, match=None, recursive=False, allow_files=True,
+                 allow_folders=False, required=None, **kwargs):
+        super(FilePathField, self).__init__(**kwargs)
+        # create field and get options to avoid code duplication
+        field = DjangoFilePathField(
+            path, match=match, recursive=recursive, allow_files=allow_files,
+            allow_folders=allow_folders, required=required
+        )
+
+        self.choices = OrderedDict(field.choices)
+        self.choice_strings_to_values = {
+            six.text_type(key): key for key in self.choices.keys()
+        }
+
+    def to_internal_value(self, data):
+        if data == '' and self.allow_blank:
+            return ''
+
+        try:
+            return self.choice_strings_to_values[six.text_type(data)]
+        except KeyError:
+            self.fail('invalid_choice', input=data)
+
+    def to_representation(self, value):
+        if value in ('', None):
+            return value
+        return self.choice_strings_to_values[six.text_type(value)]
 
 
 # Number types...
