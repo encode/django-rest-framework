@@ -7,6 +7,8 @@ object creation, and makes it possible to switch between using the implicit
 `ModelSerializer` class and an equivalent explicit `Serializer` class.
 """
 from __future__ import unicode_literals
+from django.db import models
+from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.compat import unicode_to_repr
 from rest_framework.exceptions import ValidationError
@@ -112,7 +114,7 @@ class UniqueTogetherValidator(object):
         """
         # If this is an update, then any unprovided field should
         # have it's value set based on the existing instance attribute.
-        if self.instance is not None:
+        if self.instance is not None and isinstance(self.instance, models.Model):
             for field_name in self.fields:
                 if field_name not in attrs:
                     attrs[field_name] = getattr(self.instance, field_name)
@@ -121,6 +123,7 @@ class UniqueTogetherValidator(object):
         filter_kwargs = dict([
             (field_name, attrs[field_name])
             for field_name in self.fields
+            if field_name in attrs
         ])
         return queryset.filter(**filter_kwargs)
 
@@ -130,7 +133,10 @@ class UniqueTogetherValidator(object):
         that instance itself as a uniqueness conflict.
         """
         if self.instance is not None:
-            return queryset.exclude(pk=self.instance.pk)
+            if isinstance(self.instance, QuerySet):
+                return queryset.exclude(pk__in=self.instance.all())
+            else:
+                return queryset.exclude(pk=self.instance.pk)
         return queryset
 
     def __call__(self, attrs):
