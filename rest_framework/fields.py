@@ -23,6 +23,7 @@ import collections
 import copy
 import datetime
 import decimal
+import django
 import inspect
 import re
 import uuid
@@ -665,11 +666,18 @@ class FilePathField(CharField):
     def __init__(self, path, match=None, recursive=False, allow_files=True,
                  allow_folders=False, required=None, **kwargs):
         super(FilePathField, self).__init__(**kwargs)
+
         # create field and get options to avoid code duplication
-        field = DjangoFilePathField(
-            path, match=match, recursive=recursive, allow_files=allow_files,
-            allow_folders=allow_folders, required=required
-        )
+        if django.VERSION < (1, 5):
+            # django field doesn't have allow_folders, allow_files kwargs
+            field = DjangoFilePathField(
+                path, match=match, recursive=recursive, required=required
+            )
+        else:
+            field = DjangoFilePathField(
+                path, match=match, recursive=recursive, allow_files=allow_files,
+                allow_folders=allow_folders, required=required
+            )
 
         self.choices = OrderedDict(field.choices)
         self.choice_strings_to_values = dict([
