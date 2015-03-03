@@ -319,6 +319,25 @@ class TestCreateOnlyDefault:
             'text': 'example',
         }
 
+    def test_create_only_default_callable_sets_context(self):
+        """
+        CreateOnlyDefault instances with a callable default should set_context
+        on the callable if possible
+        """
+        class TestCallableDefault:
+            def set_context(self, serializer_field):
+                self.field = serializer_field
+
+            def __call__(self):
+                return "success" if hasattr(self, 'field') else "failure"
+
+        class TestSerializer(serializers.Serializer):
+            context_set = serializers.CharField(default=serializers.CreateOnlyDefault(TestCallableDefault()))
+
+        serializer = TestSerializer(data={})
+        assert serializer.is_valid()
+        assert serializer.validated_data['context_set'] == 'success'
+
 
 # Tests for field input and output values.
 # ----------------------------------------
