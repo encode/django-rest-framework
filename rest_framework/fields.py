@@ -669,17 +669,13 @@ class IPAddressField(CharField):
         self.validators.extend(validators)
 
     def to_internal_value(self, data):
-        if data == '' and self.allow_blank:
-            return ''
-        data = data.strip()
-
         if data and ':' in data:
             try:
                 return clean_ipv6_address(data, self.unpack_ipv4)
             except DjangoValidationError:
                 self.fail('invalid', value=data)
 
-        return data
+        return super(IPAddressField, self).to_internal_value(data)
 
 
 # Number types...
