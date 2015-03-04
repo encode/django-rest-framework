@@ -84,10 +84,9 @@ The following attributes control the basic view behavior.
 
 The following attributes are used to control pagination when used with list views.
 
-* `paginate_by` - The size of pages to use with paginated data.  If set to `None` then pagination is turned off.  If unset this uses the same value as the `PAGINATE_BY` setting, which defaults to `None`.
-* `paginate_by_param` - The name of a query parameter, which can be used by the client to override the default page size to use for pagination.  If unset this uses the same value as the `PAGINATE_BY_PARAM` setting, which defaults to `None`.
-* `pagination_serializer_class` - The pagination serializer class to use when determining the style of paginated responses.  Defaults to the same value as the `DEFAULT_PAGINATION_SERIALIZER_CLASS` setting.
-* `page_kwarg` - The name of a URL kwarg or URL query parameter which can be used by the client to control which page is requested.  Defaults to `'page'`.
+* `pagination_class` - The pagination class that should be used when paginating list results. Defaults to the same value as the `DEFAULT_PAGINATION_CLASS` setting, which is `'rest_framework.pagination.PageNumberPagination'`.
+
+Note that usage of the `paginate_by`, `paginate_by_param` and `page_kwarg` attributes are now pending deprecation. The `pagination_serializer_class` attribute and `DEFAULT_PAGINATION_SERIALIZER_CLASS` setting have been removed completely. Pagination settings should instead be controlled by overriding a pagination class and setting any configuration attributes there. See the pagination documentation for more details.
 
 **Filtering**:
 

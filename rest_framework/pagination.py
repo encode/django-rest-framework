@@ -18,6 +18,7 @@ from rest_framework.settings import api_settings
 from rest_framework.utils.urls import (
     replace_query_param, remove_query_param
 )
+import warnings
 
 
 def _positive_int(integer_string, strict=False, cutoff=None):
@@ -203,18 +204,18 @@ class PageNumberPagination(BasePagination):
     """
     # The default page size.
     # Defaults to `None`, meaning pagination is disabled.
-    paginate_by = api_settings.PAGINATE_BY
+    page_size = api_settings.PAGE_SIZE
 
     # Client can control the page using this query parameter.
     page_query_param = 'page'
 
     # Client can control the page size using this query parameter.
     # Default is 'None'. Set to eg 'page_size' to enable usage.
-    paginate_by_param = api_settings.PAGINATE_BY_PARAM
+    page_size_query_param = None
 
     # Set to an integer to limit the maximum page size the client may request.
-    # Only relevant if 'paginate_by_param' has also been set.
-    max_paginate_by = api_settings.MAX_PAGINATE_BY
+    # Only relevant if 'page_size_query_param' has also been set.
+    max_page_size = None
 
     last_page_strings = ('last',)
 
@@ -228,12 +229,48 @@ class PageNumberPagination(BasePagination):
         attributes were set there. The attributes should now be set on
         the pagination class, but the old style is still pending deprecation.
         """
-        for attr in (
-            'paginate_by', 'page_query_param',
-            'paginate_by_param', 'max_paginate_by'
+        assert not (
+            getattr(view, 'pagination_serializer_class', None) or
+            getattr(api_settings, 'DEFAULT_PAGINATION_SERIALIZER_CLASS', None)
+        ), (
+            "The pagination_serializer_class attribute and "
+            "DEFAULT_PAGINATION_SERIALIZER_CLASS setting have been removed as "
+            "part of the 3.1 pagination API improvement. See the pagination "
+            "documentation for details on the new API."
+        )
+
+        for (settings_key, attr_name) in (
+            ('PAGINATE_BY', 'page_size'),
+            ('PAGINATE_BY_PARAM', 'page_size_query_param'),
+            ('MAX_PAGINATE_BY', 'max_page_size')
         ):
-            if hasattr(view, attr):
-                setattr(self, attr, getattr(view, attr))
+            value = getattr(api_settings, settings_key, None)
+            if value is not None:
+                setattr(self, attr_name, value)
+                warnings.warn(
+                    "The `%s` settings key is pending deprecation. "
+                    "Use the `%s` attribute on the pagination class instead." % (
+                        settings_key, attr_name
+                    ),
+                    PendingDeprecationWarning,
+                )
+
+        for (view_attr, attr_name) in (
+            ('paginate_by', 'page_size'),
+            ('page_query_param', 'page_query_param'),
+            ('paginate_by_param', 'page_size_query_param'),
+            ('max_paginate_by', 'max_page_size')
+        ):
+            value = getattr(view, view_attr, None)
+            if value is not None:
+                setattr(self, attr_name, value)
+                warnings.warn(
+                    "The `%s` view attribute is pending deprecation. "
+                    "Use the `%s` attribute on the pagination class instead." % (
+                        view_attr, attr_name
+                    ),
+                    PendingDeprecationWarning,
+                )
 
     def paginate_queryset(self, queryset, request, view=None):
         """
@@ -264,7 +301,7 @@ class PageNumberPagination(BasePagination):
             self.display_page_controls = True
 
         self.request = request
-        return self.page
+        return list(self.page)
 
     def get_paginated_response(self, data):
         return Response(OrderedDict([
@@ -275,17 +312,17 @@ class PageNumberPagination(BasePagination):
         ]))
 
     def get_page_size(self, request):
-        if self.paginate_by_param:
+        if self.page_size_query_param:
             try:
                 return _positive_int(
-                    request.query_params[self.paginate_by_param],
+                    request.query_params[self.page_size_query_param],
                     strict=True,
-                    cutoff=self.max_paginate_by
+                    cutoff=self.max_page_size
                 )
             except (KeyError, ValueError):
                 pass
 
-        return self.paginate_by
+        return self.page_size
 
     def get_next_link(self):
         if not self.page.has_next():
@@ -336,7 +373,7 @@ class LimitOffsetPagination(BasePagination):
     http://api.example.org/accounts/?limit=100
     http://api.example.org/accounts/?offset=400&limit=100
     """
-    default_limit = api_settings.PAGINATE_BY
+    default_limit = api_settings.PAGE_SIZE
     limit_query_param = 'limit'
     offset_query_param = 'offset'
     max_limit = None
@@ -349,7 +386,7 @@ class LimitOffsetPagination(BasePagination):
         self.request = request
         if self.count > self.limit and self.template is not None:
             self.display_page_controls = True
-        return queryset[self.offset:self.offset + self.limit]
+        return list(queryset[self.offset:self.offset + self.limit])
 
     def get_paginated_response(self, data):
         return Response(OrderedDict([
@@ -440,7 +477,7 @@ class CursorPagination(BasePagination):
     # Consider a max offset cap.
     # Tidy up the `get_ordering` API (eg remove queryset from it)
     cursor_query_param = 'cursor'
-    page_size = api_settings.PAGINATE_BY
+    page_size = api_settings.PAGE_SIZE
     invalid_cursor_message = _('Invalid cursor')
     ordering = None
     template = 'rest_framework/pagination/previous_and_next.html'
@@ -484,7 +521,7 @@ class CursorPagination(BasePagination):
         # We also always fetch an extra item in order to determine if there is a
         # page following on from this one.
         results = list(queryset[offset:offset + self.page_size + 1])
-        self.page = results[:self.page_size]
+        self.page = list(results[:self.page_size])
 
         # Determine the position of the final item following the page.
         if len(results) > len(self.page):
