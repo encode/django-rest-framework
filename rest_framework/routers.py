@@ -172,10 +172,11 @@ class SimpleRouter(BaseRouter):
                 initkwargs = route.initkwargs.copy()
                 initkwargs.update(method_kwargs)
                 url_path = initkwargs.pop("url_path", None) or methodname
+                name = replace_methodname(route.name, initkwargs.pop("name", url_path))
                 ret.append(Route(
                     url=replace_methodname(route.url, url_path),
                     mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
-                    name=replace_methodname(route.name, url_path),
+                    name=name,
                     initkwargs=initkwargs,
                 ))
 
