@@ -1,20 +1,36 @@
+{% load i18n %}
+
 <div class="form-group">
     {% if field.label %}
         <label class="col-sm-2 control-label {% if style.hide_label %}sr-only{% endif %}">{{ field.label }}</label>
     {% endif %}
     <div class="col-sm-10">
     {% if style.inline %}
+        {% if field.allow_null or field.allow_blank %}
+            <label class="radio-inline">
+                <input type="radio" name="{{ field.name }}" value="" {% if not field.value %}checked{% endif %} />
+                {% trans "None" %}
+            </label>
+        {% endif %}
         {% for key, text in field.choices.items %}
             <label class="radio-inline">
-                <input type="radio" name="{{ field.name }}" value="{{ key }}" {% if key == field.value %}checked{% endif %}>
+                <input type="radio" name="{{ field.name }}" value="{{ key }}" {% if key == field.value %}checked{% endif %} />
                 {{ text }}
             </label>
         {% endfor %}
     {% else %}
+        {% if field.allow_null or field.allow_blank %}
+            <div class="radio">
+                <label>
+                    <input type="radio" name="{{ field.name }}" value="" {% if not field.value %}checked{% endif %} />
+                    {% trans "None" %}
+                </label>
+            </div>
+        {% endif %}
         {% for key, text in field.choices.items %}
             <div class="radio">
                 <label>
-                    <input type="radio" name="{{ field.name }}" value="{{ key }}" {% if key == field.value %}checked{% endif %}>
+                    <input type="radio" name="{{ field.name }}" value="{{ key }}" {% if key == field.value %}checked{% endif %} />
                     {{ text }}
                 </label>
             </div>
