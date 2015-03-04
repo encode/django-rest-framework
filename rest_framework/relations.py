@@ -360,6 +360,10 @@ class ManyRelatedField(Field):
         ]
 
     def get_attribute(self, instance):
+        # Can't have any relationships if not created
+        if not instance.pk:
+            return []
+
         relationship = get_attribute(instance, self.source_attrs)
         return relationship.all() if (hasattr(relationship, 'all')) else relationship
 
