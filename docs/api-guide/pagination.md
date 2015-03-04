@@ -208,6 +208,30 @@ Note that the `paginate_queryset` method may set state on the pagination instanc
 
 ## Example
 
+Suppose we want to replace the default pagination output style with a modified format that  includes the next and previous links under in a nested 'links' key. We could specify a custom pagination class like so:
+
+    class CustomPagination(pagination.PageNumberPagination):
+        def get_paginated_response(self, data):
+            return Response({
+                'links': {
+                   'next': self.get_next_link(),
+                   'previous': self.get_previous_link()
+                },
+                'count': self.page.paginator.count,
+                'results': data
+            })
+
+We'd then need to setup the custom class in our configuration:
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.CustomPagination',
+        'PAGE_SIZE': 100
+    }
+
+Note that if you care about how the ordering of keys is displayed in responses in the browsable API you might choose to use an `OrderedDict` when constructing the body of paginated responses, but this is optional.
+
+## Header based pagination
+
 Let's modify the built-in `PageNumberPagination` style, so that instead of include the pagination links in the body of the response, we'll instead include a `Link` header, in a [similar style to the GitHub API][github-link-pagination].
 
     class LinkHeaderPagination(pagination.PageNumberPagination):
@@ -234,7 +258,7 @@ To have your custom pagination class be used by default, use the `DEFAULT_PAGINA
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.LinkHeaderPagination',
-        'DEFAULT_PAGE_SIZE': 10
+        'PAGE_SIZE': 100
     }
 
 API responses for list endpoints will now include a `Link` header, instead of including the pagination links as part of the body of the response, for example:
