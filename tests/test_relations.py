@@ -1,3 +1,4 @@
+import six
 from .utils import mock_reverse, fail_reverse, BadType, MockObject, MockQueryset
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.datastructures import MultiValueDict
@@ -136,6 +137,40 @@ class TestSlugRelatedField(APISimpleTestCase):
     def test_representation(self):
         representation = self.field.to_representation(self.instance)
         assert representation == self.instance.name
+
+
+class TestMultipleSlugRelatedField(APISimpleTestCase):
+    def setUp(self):
+        self.queryset = MockQueryset([
+            MockObject(pk=1, name='foo', code='hamster'),
+            MockObject(pk=2, name='bar', code='bazinga'),
+            MockObject(pk=3, name='bar', code='cheeseshop')
+        ])
+        self.instance = self.queryset.items[2]
+        self.field = serializers.MultipleSlugRelatedField(
+            slug_field=('name', 'code'), queryset=self.queryset, separator='-'
+        )
+
+    def test_slug_related_lookup_exists(self):
+        data = '{}-{}'.format(self.instance.name, self.instance.code)
+        instance = self.field.to_internal_value(data)
+        assert instance is self.instance
+
+    def test_slug_related_lookup_does_not_exist(self):
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.field.to_internal_value('doesnotexist')
+        msg = excinfo.value.detail[0]
+        assert msg == 'Object with (\'name\', \'code\')=doesnotexist does not exist.'
+
+    def test_slug_related_lookup_invalid_type(self):
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.field.to_internal_value(BadType())
+        msg = excinfo.value.detail[0]
+        assert msg == 'Invalid value.'
+
+    def test_representation(self):
+        representation = self.field.to_representation(self.instance)
+        assert representation == six.text_type(self.instance)
 
 
 class TestManyRelatedField(APISimpleTestCase):
