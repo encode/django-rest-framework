@@ -320,6 +320,24 @@ class SlugRelatedField(RelatedField):
         return getattr(obj, self.slug_field)
 
 
+class MultipleSlugRelatedField(SlugRelatedField):
+    def __init__(self, separator=None, **kwargs):
+        assert separator is not None, 'The `separator` argument is required.'
+        self.separator = separator
+        super(MultipleSlugRelatedField, self).__init__(**kwargs)
+
+    def to_internal_value(self, data):
+        try:
+            return self.get_queryset().get(**dict(zip(self.slug_field, data.split(self.separator, len(self.slug_field)))))
+        except ObjectDoesNotExist:
+            self.fail('does_not_exist', slug_name=self.slug_field, value=smart_text(data))
+        except (TypeError, ValueError):
+            self.fail('invalid')
+
+    def to_representation(self, obj):
+        return six.text_type(obj)
+
+
 class ManyRelatedField(Field):
     """
     Relationships with `many=True` transparently get coerced into instead being
