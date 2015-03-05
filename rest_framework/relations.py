@@ -331,7 +331,7 @@ class MultipleSlugRelatedField(SlugRelatedField):
             return self.get_queryset().get(**dict(zip(self.slug_field, data.split(self.separator, len(self.slug_field)))))
         except ObjectDoesNotExist:
             self.fail('does_not_exist', slug_name=self.slug_field, value=smart_text(data))
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, AttributeError):
             self.fail('invalid')
 
     def to_representation(self, obj):
