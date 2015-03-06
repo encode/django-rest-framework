@@ -51,7 +51,8 @@ You can then apply your new style to a view using the `.pagination_class` attrib
 Or apply the style globally, using the `DEFAULT_PAGINATION_CLASS` settings key. For example:
 
     REST_FRAMEWORK = {
-        'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.StandardResultsSetPagination'    }
+        'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.StandardResultsSetPagination'
+        }
 
 ---
 
@@ -163,6 +164,10 @@ Cursor based pagination is more complex than other schemes. It also requires tha
 
 #### Details and limitations
 
+Cursor based pagination requires a specified ordering to be applied to the queryset. This will default to `'-created'`, which requires the model being paged against to have a `'created'` field.
+
+
+
 This implementation of cursor pagination uses a smart "position plus offset" style that allows it to properly support not-strictly-unique values as the ordering.
 
 It should be noted that using non-unique values the ordering does introduce the possibility of paging artifacts, where pagination consistency is no longer 100% guaranteed.
@@ -192,7 +197,7 @@ To set these attributes you should override the `CursorPagination` class, and th
 
 * `page_size` = A numeric value indicating the page size. If set, this overrides the `DEFAULT_PAGE_SIZE` setting. Defaults to the same value as the `DEFAULT_PAGE_SIZE` settings key.
 * `cursor_query_param` = A string value indicating the name of the "cursor" query parameter. Defaults to `'cursor'`.
-* `ordering` = This should be a string, or list of strings, indicating the field against which the cursor based pagination will be applied. For example: `ordering = 'created'`. Any filters on the view which define a `get_ordering` will override this attribute. Defaults to `None`.
+* `ordering` = This should be a string, or list of strings, indicating the field against which the cursor based pagination will be applied. For example: `ordering = '-created'`. Any filters on the view which define a `get_ordering` will override this attribute. Defaults to `None`.
 * `template` = The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to `None` to disable HTML pagination controls completely. Defaults to `"rest_framework/pagination/previous_and_next.html"`.
 
 ---
@@ -236,7 +241,8 @@ Let's modify the built-in `PageNumberPagination` style, so that instead of inclu
 
     class LinkHeaderPagination(pagination.PageNumberPagination):
         def get_paginated_response(self, data):
-            next_url = self.get_next_link()            previous_url = self.get_previous_link()
+            next_url = self.get_next_link()
+            previous_url = self.get_previous_link()
 
             if next_url is not None and previous_url is not None:
                 link = '<{next_url}; rel="next">, <{previous_url}; rel="prev">'

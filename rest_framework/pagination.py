@@ -131,12 +131,19 @@ def _decode_cursor(encoded):
     """
     Given a string representing an encoded cursor, return a `Cursor` instance.
     """
+
+    # The offset in the cursor is used in situations where we have a
+    # nearly-unique index. (Eg millisecond precision creation timestamps)
+    # We guard against malicious users attempting to cause expensive database
+    # queries, by having a hard cap on the maximum possible size of the offset.
+    OFFSET_CUTOFF = 1000
+
     try:
         querystring = b64decode(encoded.encode('ascii')).decode('ascii')
         tokens = urlparse.parse_qs(querystring, keep_blank_values=True)
 
         offset = tokens.get('o', ['0'])[0]
-        offset = _positive_int(offset)
+        offset = _positive_int(offset, cutoff=OFFSET_CUTOFF)
 
         reverse = tokens.get('r', ['0'])[0]
         reverse = bool(int(reverse))
@@ -472,14 +479,15 @@ class LimitOffsetPagination(BasePagination):
 
 
 class CursorPagination(BasePagination):
-    # Determine how/if True, False and None positions work - do the string
-    # encodings work with Django queryset filters?
-    # Consider a max offset cap.
-    # Tidy up the `get_ordering` API (eg remove queryset from it)
+    """
+    The cursor pagination implementation is neccessarily complex.
+    For an overview of the position/offset style we use, see this post:
+    http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api/
+    """
     cursor_query_param = 'cursor'
     page_size = api_settings.PAGE_SIZE
     invalid_cursor_message = _('Invalid cursor')
-    ordering = None
+    ordering = '-created'
     template = 'rest_framework/pagination/previous_and_next.html'
 
     def paginate_queryset(self, queryset, request, view=None):
@@ -680,12 +688,12 @@ class CursorPagination(BasePagination):
                 )
             )
         else:
-            # The default case is to check for an `ordering` attribute,
-            # first on the view instance, and then on this pagination instance.
-            ordering = getattr(view, 'ordering', getattr(self, 'ordering', None))
+            # The default case is to check for an `ordering` attribute
+            # on this pagination instance.
+            ordering = self.ordering
             assert ordering is not None, (
                 'Using cursor pagination, but no ordering attribute was declared '
-                'on the view or on the pagination class.'
+                'on the pagination class.'
             )
 
         assert isinstance(ordering, (six.string_types, list, tuple)), (
