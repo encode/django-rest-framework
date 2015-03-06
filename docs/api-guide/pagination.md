@@ -159,22 +159,23 @@ Cursor based pagination requires that there is a unique, unchanging ordering of 
 
 Cursor based pagination is more complex than other schemes. It also requires that the result set presents a fixed ordering, and does not allow the client to arbitrarily index into the result set. However it does provide the following benefits:
 
-* Provides a consistent pagination view. When used properly `CursorPagination` ensures that the client will never see the same item twice when paging through records.
+* Provides a consistent pagination view. When used properly `CursorPagination` ensures that the client will never see the same item twice when paging through records, even when new items are being inserted by other clients during the pagination process.
 * Supports usage with very large datasets. With extremely large datasets pagination using offset-based pagination styles may become inefficient or unusable. Cursor based pagination schemes instead have fixed-time properties, and do not slow down as the dataset size increases.
 
 #### Details and limitations
 
-Cursor based pagination requires a specified ordering to be applied to the queryset. This will default to `'-created'`, which requires the model being paged against to have a `'created'` field.
+Proper use of cursor based pagination a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against. The default is to order by `"-created"`. This assumes that **there must be a 'created' timestamp field** on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.
 
+You can modify the ordering by overriding the `'ordering'` attribute on the pagination class, or by using the `OrderingFilter` filter class together with `CursorPagination`. When used with `OrderingFilter` you should strongly consider restricting the fields that the user may order by.
 
+Proper usage of cursor pagination should have an ordering field that satisfies the following:
 
-This implementation of cursor pagination uses a smart "position plus offset" style that allows it to properly support not-strictly-unique values as the ordering.
+* Should be an unchanging value, such as a timestamp, slug, or other field that is only set once, on creation.
+* Should be unique, or nearly unique. Millisecond precision timestamps are a good example. This implementation of cursor pagination uses a smart "position plus offset" style that allows it to properly support not-strictly-unique values as the ordering.
+* Should be a non-nullable value that can be coerced to a string.
+* The field should have a database index.
 
-It should be noted that using non-unique values the ordering does introduce the possibility of paging artifacts, where pagination consistency is no longer 100% guaranteed.
-
-**TODO**: Notes on `None`.
-
-The implementation also supports both forward and reverse pagination, which is often not supported in other implementations.
+Using an ordering field that does not satisfy these constraints will generally still work, but you'll be loosing some of the benefits of cursor pagination.
 
 For more technical details on the implementation we use for cursor pagination, the ["Building cursors for the Disqus API"][disqus-cursor-api] blog post gives a good overview of the basic approach.
 
@@ -197,7 +198,7 @@ To set these attributes you should override the `CursorPagination` class, and th
 
 * `page_size` = A numeric value indicating the page size. If set, this overrides the `DEFAULT_PAGE_SIZE` setting. Defaults to the same value as the `DEFAULT_PAGE_SIZE` settings key.
 * `cursor_query_param` = A string value indicating the name of the "cursor" query parameter. Defaults to `'cursor'`.
-* `ordering` = This should be a string, or list of strings, indicating the field against which the cursor based pagination will be applied. For example: `ordering = '-created'`. Any filters on the view which define a `get_ordering` will override this attribute. Defaults to `None`.
+* `ordering` = This should be a string, or list of strings, indicating the field against which the cursor based pagination will be applied. For example: `ordering = 'slug'`. Defaults to `-created`. This value may also be overridden by using `OrderingFilter` on the view.
 * `template` = The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to `None` to disable HTML pagination controls completely. Defaults to `"rest_framework/pagination/previous_and_next.html"`.
 
 ---
