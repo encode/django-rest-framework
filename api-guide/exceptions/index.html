@@ -189,6 +189,10 @@
                   </li>
                   
                   <li >
+                    <a href="../versioning">Versioning</a>
+                  </li>
+                  
+                  <li >
                     <a href="../content-negotiation">Content negotiation</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/internationalization">Internationalization</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
                   </li>
                   
@@ -260,23 +268,11 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/rest-framework-2-announcement">2.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.2-announcement">2.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.3-announcement">2.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.4-announcement">2.4 Announcement</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/3.0-announcement">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.1-announcement">3.1 Announcement</a>
                   </li>
                   
                   <li >
@@ -285,10 +281,6 @@
                   
                   <li >
                     <a href="../../topics/release-notes">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/credits">Credits</a>
                   </li>
                   
                 </ul>
@@ -394,7 +386,15 @@
                     </li>
                   
                     <li>
+                      <a href="#notfound">NotFound</a>
+                    </li>
+                  
+                    <li>
                       <a href="#methodnotallowed">MethodNotAllowed</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#notacceptable">NotAcceptable</a>
                     </li>
                   
                     <li>
@@ -464,7 +464,7 @@ Content-Length: 94
 </code></pre>
 <h2 id="custom-exception-handling">Custom exception handling</h2>
 <p>You can implement custom exception handling by creating a handler function that converts exceptions raised in your API views into response objects.  This allows you to control the style of error responses used by your API.</p>
-<p>The function must take a single argument, which is the exception to be handled, and should either return a <code>Response</code> object, or return <code>None</code> if the exception cannot be handled.  If the handler returns <code>None</code> then the exception will be re-raised and Django will return a standard HTTP 500 'server error' response.</p>
+<p>The function must take a pair of arguments, this first is the exception to be handled, and the second is a dictionary containing any extra context such as the view currently being handled. The exception handler function should either return a <code>Response</code> object, or return <code>None</code> if the exception cannot be handled.  If the handler returns <code>None</code> then the exception will be re-raised and Django will return a standard HTTP 500 'server error' response.</p>
 <p>For example, you might want to ensure that all error responses include the HTTP status code in the body of the response, like so:</p>
 <pre><code>HTTP/1.1 405 Method Not Allowed
 Content-Type: application/json
@@ -475,10 +475,10 @@ Content-Length: 62
 <p>In order to alter the style of the response, you could write the following custom exception handler:</p>
 <pre><code>from rest_framework.views import exception_handler
 
-def custom_exception_handler(exc):
+def custom_exception_handler(exc, context):
     # Call REST framework's default exception handler first,
     # to get the standard error response.
-    response = exception_handler(exc)
+    response = exception_handler(exc, context)
 
     # Now add the HTTP status code to the response.
     if response is not None:
@@ -486,6 +486,7 @@ def custom_exception_handler(exc):
 
     return response
 </code></pre>
+<p>The context argument is not used by the default handler, but can be useful if the exception handler needs further information such as the view currently being handled, which can be accessed as <code>context['view']</code>.</p>
 <p>The exception handler must also be configured in your settings, using the <code>EXCEPTION_HANDLER</code> setting key. For example:</p>
 <pre><code>REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'my_project.my_app.utils.custom_exception_handler'
@@ -526,10 +527,18 @@ class ServiceUnavailable(APIException):
 <p><strong>Signature:</strong> <code>PermissionDenied(detail=None)</code></p>
 <p>Raised when an authenticated request fails the permission checks.</p>
 <p>By default this exception results in a response with the HTTP status code "403 Forbidden".</p>
+<h2 id="notfound">NotFound</h2>
+<p><strong>Signature:</strong> <code>NotFound(detail=None)</code></p>
+<p>Raised when a resource does not exists at the given URL. This exception is equivalent to the standard <code>Http404</code> Django exception.</p>
+<p>By default this exception results in a response with the HTTP status code "404 Not Found".</p>
 <h2 id="methodnotallowed">MethodNotAllowed</h2>
 <p><strong>Signature:</strong> <code>MethodNotAllowed(method, detail=None)</code></p>
 <p>Raised when an incoming request occurs that does not map to a handler method on the view.</p>
 <p>By default this exception results in a response with the HTTP status code "405 Method Not Allowed".</p>
+<h2 id="notacceptable">NotAcceptable</h2>
+<p><strong>Signature:</strong> <code>NotAcceptable(detail=None)</code></p>
+<p>Raised when an incoming request occurs with an <code>Accept</code> header that cannot be satisfied by any of the available renderers.</p>
+<p>By default this exception results in a response with the HTTP status code "406 Not Acceptable".</p>
 <h2 id="unsupportedmediatype">UnsupportedMediaType</h2>
 <p><strong>Signature:</strong> <code>UnsupportedMediaType(media_type, detail=None)</code></p>
 <p>Raised if there are no parsers that can handle the content type of the request data when accessing <code>request.data</code>.</p>

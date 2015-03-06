@@ -189,6 +189,10 @@
                   </li>
                   
                   <li >
+                    <a href="api-guide/versioning/">Versioning</a>
+                  </li>
+                  
+                  <li >
                     <a href="api-guide/content-negotiation/">Content negotiation</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   </li>
                   
                   <li >
+                    <a href="topics/internationalization/">Internationalization</a>
+                  </li>
+                  
+                  <li >
                     <a href="topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
                   </li>
                   
@@ -260,23 +268,11 @@
                   </li>
                   
                   <li >
-                    <a href="topics/rest-framework-2-announcement/">2.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="topics/2.2-announcement/">2.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="topics/2.3-announcement/">2.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="topics/2.4-announcement/">2.4 Announcement</a>
-                  </li>
-                  
-                  <li >
                     <a href="topics/3.0-announcement/">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="topics/3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
                   <li >
@@ -285,10 +281,6 @@
                   
                   <li >
                     <a href="topics/release-notes/">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="topics/credits/">Credits</a>
                   </li>
                   
                 </ul>
@@ -489,7 +481,7 @@
 <p>Some reasons you might want to use REST framework:</p>
 <ul>
 <li>The <a href="http://restframework.herokuapp.com/">Web browsable API</a> is a huge usability win for your developers.</li>
-<li><a href="api-guide/authentication/">Authentication policies</a> including <a href="./api-guide/authentication#oauthauthentication">OAuth1a</a> and <a href="./api-guide/authentication#oauth2authentication">OAuth2</a> out of the box.</li>
+<li><a href="api-guide/authentication/">Authentication policies</a> including packages for <a href="./api-guide/authentication/#django-rest-framework-oauth">OAuth1a</a> and <a href="./api-guide/authentication/#django-oauth-toolkit">OAuth2</a>.</li>
 <li><a href="api-guide/serializers/">Serialization</a> that supports both <a href="./api-guide/serializers#modelserializer">ORM</a> and <a href="./api-guide/serializers#serializers">non-ORM</a> data sources.</li>
 <li>Customizable all the way down - just use <a href="./api-guide/views#function-based-views">regular function-based views</a> if you don't need the <a href="api-guide/generic-views/">more</a> <a href="api-guide/viewsets/">powerful</a> <a href="api-guide/routers/">features</a>.</li>
 <li><a href="./.">Extensive documentation</a>, and <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">great community support</a>.</li>
@@ -502,19 +494,14 @@
 <p>REST framework requires the following:</p>
 <ul>
 <li>Python (2.6.5+, 2.7, 3.2, 3.3, 3.4)</li>
-<li>Django (1.4.11+, 1.5.6+, 1.6.3+, 1.7)</li>
+<li>Django (1.4.11+, 1.5.6+, 1.6.3+, 1.7, 1.8-beta)</li>
 </ul>
 <p>The following packages are optional:</p>
 <ul>
 <li><a href="http://pypi.python.org/pypi/Markdown/">Markdown</a> (2.1.0+) - Markdown support for the browsable API.</li>
-<li><a href="http://pypi.python.org/pypi/PyYAML">PyYAML</a> (3.10+) - YAML content-type support.</li>
-<li><a href="https://pypi.python.org/pypi/defusedxml">defusedxml</a> (0.3+) - XML content-type support.</li>
 <li><a href="http://pypi.python.org/pypi/django-filter">django-filter</a> (0.9.2+) - Filtering support.</li>
-<li><a href="https://bitbucket.org/david/django-oauth-plus/wiki/Home">django-oauth-plus</a> (2.0+) and <a href="https://github.com/simplegeo/python-oauth2">oauth2</a> (1.5.211+) - OAuth 1.0a support.</li>
-<li><a href="https://github.com/caffeinehit/django-oauth2-provider">django-oauth2-provider</a> (0.2.3+) - OAuth 2.0 support.</li>
 <li><a href="https://github.com/lukaszb/django-guardian">django-guardian</a> (1.1.1+) - Object level permissions support.</li>
 </ul>
-<p><strong>Note</strong>: The <code>oauth2</code> Python package is badly misnamed, and actually provides OAuth 1.0a support.  Also note that packages required for both OAuth 1.0a, and OAuth 2.0 are not yet Python 3 compatible.</p>
 <h2 id="installation">Installation</h2>
 <p>Install using <code>pip</code>, including any optional packages you want...</p>
 <pre><code>pip install djangorestframework
@@ -612,6 +599,7 @@ urlpatterns = [
 <li><a href="api-guide/throttling/">Throttling</a></li>
 <li><a href="api-guide/filtering/">Filtering</a></li>
 <li><a href="api-guide/pagination/">Pagination</a></li>
+<li><a href="api-guide/versioning/">Versioning</a></li>
 <li><a href="api-guide/content-negotiation/">Content negotiation</a></li>
 <li><a href="api-guide/metadata/">Metadata</a></li>
 <li><a href="api-guide/format-suffixes/">Format suffixes</a></li>
@@ -632,14 +620,10 @@ urlpatterns = [
 <li><a href="topics/third-party-resources/">Third Party Resources</a></li>
 <li><a href="topics/contributing/">Contributing to REST framework</a></li>
 <li><a href="topics/project-management/">Project management</a></li>
-<li><a href="topics/rest-framework-2-announcement/">2.0 Announcement</a></li>
-<li><a href="topics/2.2-announcement/">2.2 Announcement</a></li>
-<li><a href="topics/2.3-announcement/">2.3 Announcement</a></li>
-<li><a href="topics/2.4-announcement/">2.4 Announcement</a></li>
 <li><a href="topics/3.0-announcement/">3.0 Announcement</a></li>
+<li><a href="topics/3.1-announcement/">3.1 Announcement</a></li>
 <li><a href="topics/kickstarter-announcement/">Kickstarter Announcement</a></li>
 <li><a href="topics/release-notes/">Release Notes</a></li>
-<li><a href="topics/credits/">Credits</a></li>
 </ul>
 <h2 id="development">Development</h2>
 <p>See the <a href="topics/contributing/">Contribution guidelines</a> for information on how to clone

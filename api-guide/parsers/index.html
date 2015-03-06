@@ -189,6 +189,10 @@
                   </li>
                   
                   <li >
+                    <a href="../versioning">Versioning</a>
+                  </li>
+                  
+                  <li >
                     <a href="../content-negotiation">Content negotiation</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/internationalization">Internationalization</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
                   </li>
                   
@@ -260,23 +268,11 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/rest-framework-2-announcement">2.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.2-announcement">2.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.3-announcement">2.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.4-announcement">2.4 Announcement</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/3.0-announcement">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.1-announcement">3.1 Announcement</a>
                   </li>
                   
                   <li >
@@ -285,10 +281,6 @@
                   
                   <li >
                     <a href="../../topics/release-notes">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/credits">Credits</a>
                   </li>
                   
                 </ul>
@@ -378,14 +370,6 @@
                     </li>
                   
                     <li>
-                      <a href="#yamlparser">YAMLParser</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#xmlparser">XMLParser</a>
-                    </li>
-                  
-                    <li>
                       <a href="#formparser">FormParser</a>
                     </li>
                   
@@ -430,6 +414,14 @@
 
                   
                     <li>
+                      <a href="#yaml">YAML</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#xml">XML</a>
+                    </li>
+                  
+                    <li>
                       <a href="#messagepack">MessagePack</a>
                     </li>
                   
@@ -472,34 +464,34 @@ sending more complex data than simple forms</p>
 <p>As an example, if you are sending <code>json</code> encoded data using jQuery with the <a href="http://api.jquery.com/jQuery.ajax/">.ajax() method</a>, you should make sure to include the <code>contentType: 'application/json'</code> setting.</p>
 <hr />
 <h2 id="setting-the-parsers">Setting the parsers</h2>
-<p>The default set of parsers may be set globally, using the <code>DEFAULT_PARSER_CLASSES</code> setting.  For example, the following settings would allow requests with <code>YAML</code> content.</p>
+<p>The default set of parsers may be set globally, using the <code>DEFAULT_PARSER_CLASSES</code> setting. For example, the following settings would allow only requests with <code>JSON</code> content, instead of the default of JSON or form data.</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': (
-        'rest_framework.parsers.YAMLParser',
+        'rest_framework.parsers.JSONParser',
     )
 }
 </code></pre>
 <p>You can also set the parsers used for an individual view, or viewset,
 using the <code>APIView</code> class based views.</p>
-<pre><code>from rest_framework.parsers import YAMLParser
+<pre><code>from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 class ExampleView(APIView):
     """
-    A view that can accept POST requests with YAML content.
+    A view that can accept POST requests with JSON content.
     """
-    parser_classes = (YAMLParser,)
+    parser_classes = (JSONParser,)
 
     def post(self, request, format=None):
         return Response({'received data': request.data})
 </code></pre>
 <p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
 <pre><code>@api_view(['POST'])
-@parser_classes((YAMLParser,))
+@parser_classes((JSONParser,))
 def example_view(request, format=None):
     """
-    A view that can accept POST requests with YAML content.
+    A view that can accept POST requests with JSON content.
     """
     return Response({'received data': request.data})
 </code></pre>
@@ -508,16 +500,6 @@ def example_view(request, format=None):
 <h2 id="jsonparser">JSONParser</h2>
 <p>Parses <code>JSON</code> request content.</p>
 <p><strong>.media_type</strong>: <code>application/json</code></p>
-<h2 id="yamlparser">YAMLParser</h2>
-<p>Parses <code>YAML</code> request content.</p>
-<p>Requires the <code>pyyaml</code> package to be installed.</p>
-<p><strong>.media_type</strong>: <code>application/yaml</code></p>
-<h2 id="xmlparser">XMLParser</h2>
-<p>Parses REST framework's default style of <code>XML</code> request content.</p>
-<p>Note that the <code>XML</code> markup language is typically used as the base language for more strictly defined domain-specific languages, such as <code>RSS</code>, <code>Atom</code>, and <code>XHTML</code>.</p>
-<p>If you are considering using <code>XML</code> for your API, you may want to consider implementing a custom renderer and parser for your specific requirements, and using an existing domain-specific media-type, or creating your own custom XML-based media-type.</p>
-<p>Requires the <code>defusedxml</code> package to be installed.</p>
-<p><strong>.media_type</strong>: <code>application/xml</code></p>
 <h2 id="formparser">FormParser</h2>
 <p>Parses HTML form content.  <code>request.data</code> will be populated with a <code>QueryDict</code> of data.</p>
 <p>You will typically want to use both <code>FormParser</code> and <code>MultiPartParser</code> together in order to fully support HTML form data.</p>
@@ -561,7 +543,7 @@ def example_view(request, format=None):
 <p>Optional.  If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.</p>
 <p>By default this will include the following keys: <code>view</code>, <code>request</code>, <code>args</code>, <code>kwargs</code>.</p>
 <h2 id="example">Example</h2>
-<p>The following is an example plaintext parser that will populate the <code>request.data</code> property with a string representing the body of the request. </p>
+<p>The following is an example plaintext parser that will populate the <code>request.data</code> property with a string representing the body of the request.</p>
 <pre><code>class PlainTextParser(BaseParser):
 """
 Plain text parser.
@@ -578,6 +560,38 @@ def parse(self, stream, media_type=None, parser_context=None):
 <hr />
 <h1 id="third-party-packages">Third party packages</h1>
 <p>The following third party packages are also available.</p>
+<h2 id="yaml">YAML</h2>
+<p><a href="http://jpadilla.github.io/django-rest-framework-yaml/">REST framework YAML</a> provides <a href="http://www.yaml.org/">YAML</a> parsing and rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.</p>
+<h4 id="installation-configuration">Installation &amp; configuration</h4>
+<p>Install using pip.</p>
+<pre><code>$ pip install djangorestframework-yaml
+</code></pre>
+<p>Modify your REST framework settings.</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework_yaml.parsers.YAMLParser',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework_yaml.renderers.YAMLRenderer',
+    ),
+}
+</code></pre>
+<h2 id="xml">XML</h2>
+<p><a href="http://jpadilla.github.io/django-rest-framework-xml/">REST Framework XML</a> provides a simple informal XML format. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.</p>
+<h4 id="installation-configuration_1">Installation &amp; configuration</h4>
+<p>Install using pip.</p>
+<pre><code>$ pip install djangorestframework-xml
+</code></pre>
+<p>Modify your REST framework settings.</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework_xml.parsers.XMLParser',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework_xml.renderers.XMLRenderer',
+    ),
+}
+</code></pre>
 <h2 id="messagepack">MessagePack</h2>
 <p><a href="https://github.com/juanriaza/django-rest-framework-msgpack">MessagePack</a> is a fast, efficient binary serialization format.  <a href="https://github.com/juanriaza">Juan Riaza</a> maintains the <a href="https://github.com/juanriaza/django-rest-framework-msgpack">djangorestframework-msgpack</a> package which provides MessagePack renderer and parser support for REST framework.</p>
 <h2 id="camelcase-json">CamelCase JSON</h2>

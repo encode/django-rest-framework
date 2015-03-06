@@ -62,7 +62,7 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../rest-framework-2-announcement">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../3.0-announcement">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
           <a class="repo-link btn btn-inverse btn-small " rel="next" href="../contributing">
@@ -189,6 +189,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../api-guide/versioning">Versioning</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../api-guide/content-negotiation">Content negotiation</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   </li>
                   
                   <li >
+                    <a href="../internationalization">Internationalization</a>
+                  </li>
+                  
+                  <li >
                     <a href="../ajax-csrf-cors">AJAX, CSRF & CORS</a>
                   </li>
                   
@@ -260,23 +268,11 @@
                   </li>
                   
                   <li >
-                    <a href="../rest-framework-2-announcement">2.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../2.2-announcement">2.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../2.3-announcement">2.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../2.4-announcement">2.4 Announcement</a>
-                  </li>
-                  
-                  <li >
                     <a href="../3.0-announcement">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.1-announcement">3.1 Announcement</a>
                   </li>
                   
                   <li >
@@ -285,10 +281,6 @@
                   
                   <li >
                     <a href="../release-notes">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../credits">Credits</a>
                   </li>
                   
                 </ul>
@@ -366,6 +358,14 @@
                     </li>
                   
                     <li>
+                      <a href="#translations">Translations</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#project-requirements">Project requirements</a>
+                    </li>
+                  
+                    <li>
                       <a href="#project-ownership">Project ownership</a>
                     </li>
                   
@@ -438,10 +438,11 @@ To modify this process for future maintenance cycles make a pull request to the 
 <h4 id="responsibilities-of-team-members">Responsibilities of team members</h4>
 <p>Team members have the following responsibilities.</p>
 <ul>
-<li>Add triage labels and milestones to tickets.</li>
 <li>Close invalid or resolved tickets.</li>
+<li>Add triage labels and milestones to tickets.</li>
 <li>Merge finalized pull requests.</li>
 <li>Build and deploy the documentation, using <code>mkdocs gh-deploy</code>.</li>
+<li>Build and update the included translation packs.</li>
 </ul>
 <p>Further notes for maintainers:</p>
 <ul>
@@ -481,6 +482,48 @@ Checklist:
 To modify this process for future releases make a pull request to the [project management](http://www.django-rest-framework.org/topics/project-management/) documentation.
 </code></pre>
 <p>When pushing the release to PyPI ensure that your environment has been installed from our development <code>requirement.txt</code>, so that documentation and PyPI installs are consistently being built against a pinned set of packages.</p>
+<hr />
+<h2 id="translations">Translations</h2>
+<p>The maintenance team are responsible for managing the translation packs include in REST framework. Translating the source strings into multiple languages is managed through the <a href="https://www.transifex.com/projects/p/django-rest-framework/">transifex service</a>.</p>
+<h3 id="managing-transifex">Managing Transifex</h3>
+<p>The <a href="https://pypi.python.org/pypi/transifex-client">official Transifex client</a> is used to upload and download translations to Transifex. The client is installed using pip:</p>
+<pre><code>pip install transifex-client
+</code></pre>
+<p>To use it you'll need a login to Transifex which has a password, and you'll need to have administrative access to the Transifex project. You'll need to create a <code>~/.transifexrc</code> file which contains your credentials.</p>
+<pre><code>[https://www.transifex.com]
+username = ***
+token = ***
+password = ***
+hostname = https://www.transifex.com
+</code></pre>
+<h3 id="upload-new-source-files">Upload new source files</h3>
+<p>When any user visible strings are changed, they should be uploaded to Transifex so that the translators can start to translate them. To do this, just run:</p>
+<pre><code># 1. Update the source django.po file, which is the US English version.
+cd rest_framework
+django-admin.py makemessages -l en_US
+# 2. Push the source django.po file to Transifex.
+cd ..
+tx push -s
+</code></pre>
+<p>When pushing source files, Transifex will update the source strings of a resource to match those from the new source file.</p>
+<p>Here's how differences between the old and new source files will be handled:</p>
+<ul>
+<li>New strings will be added.</li>
+<li>Modified strings will be added as well.</li>
+<li>Strings which do not exist in the new source file will be removed from the database, along with their translations. If that source strings gets re-added later then <a href="http://docs.transifex.com/guides/tm#let-tm-automatically-populate-translations">Transifex Translation Memory</a> will automatically include the translation string.</li>
+</ul>
+<h3 id="download-translations">Download translations</h3>
+<p>When a translator has finished translating their work needs to be downloaded from Transifex into the REST framework repository. To do this, run:</p>
+<pre><code># 3. Pull the translated django.po files from Transifex.
+tx pull -a
+cd rest_framework
+# 4. Compile the binary .mo files for all supported languages.
+django-admin.py compilemessages
+</code></pre>
+<hr />
+<h2 id="project-requirements">Project requirements</h2>
+<p>All our test requirements are pinned to exact versions, in order to ensure that our test runs are reproducible. We maintain the requirements in the <code>requirements</code> directory. The requirements files are referenced from the <code>tox.ini</code> configuration file, ensuring we have a single source of truth for package versions used in testing.</p>
+<p>Package upgrades should generally be treated as isolated pull requests. You can check if there are any packages available at a newer version, by using the <code>pip list --outdated</code>.</p>
 <hr />
 <h2 id="project-ownership">Project ownership</h2>
 <p>The PyPI package is owned by <code>@tomchristie</code>. As a backup <code>@j4mie</code> also has ownership of the package.</p>

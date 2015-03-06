@@ -4,11 +4,11 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <title>2.2 Announcement - Django REST framework</title>
+  <title>3.1 Announcement - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/topics/2.2-announcement/" />
+  <link rel="canonical" href="http://www.django-rest-framework.org/topics/3.1-announcement/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, 2.2 Announcement">
+  <meta name="description" content="Django, API, REST, 3.1 Announcement">
   <meta name="author" content="Tom Christie">
 
   <!-- Le styles -->
@@ -62,10 +62,10 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../2.3-announcement">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../kickstarter-announcement">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../rest-framework-2-announcement">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3.0-announcement">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
@@ -189,6 +189,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../api-guide/versioning">Versioning</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../api-guide/content-negotiation">Content negotiation</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   </li>
                   
                   <li >
+                    <a href="../internationalization">Internationalization</a>
+                  </li>
+                  
+                  <li >
                     <a href="../ajax-csrf-cors">AJAX, CSRF & CORS</a>
                   </li>
                   
@@ -260,23 +268,11 @@
                   </li>
                   
                   <li >
-                    <a href="../rest-framework-2-announcement">2.0 Announcement</a>
+                    <a href="../3.0-announcement">3.0 Announcement</a>
                   </li>
                   
                   <li class="active" >
-                    <a href=".">2.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../2.3-announcement">2.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../2.4-announcement">2.4 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../3.0-announcement">3.0 Announcement</a>
+                    <a href=".">3.1 Announcement</a>
                   </li>
                   
                   <li >
@@ -285,10 +281,6 @@
                   
                   <li >
                     <a href="../release-notes">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../credits">Credits</a>
                   </li>
                   
                 </ul>
@@ -353,24 +345,40 @@
                 
 
                   <li class="main">
-                    <a href="#django-rest-framework-22">Django REST framework 2.2</a>
+                    <a href="#django-rest-framework-31">Django REST framework 3.1</a>
                   </li>
 
                   
                     <li>
-                      <a href="#python-3-support">Python 3 support</a>
+                      <a href="#pagination">Pagination</a>
                     </li>
                   
                     <li>
-                      <a href="#deprecation-policy">Deprecation policy</a>
+                      <a href="#versioning">Versioning</a>
                     </li>
                   
                     <li>
-                      <a href="#community">Community</a>
+                      <a href="#internationalization">Internationalization</a>
                     </li>
                   
                     <li>
-                      <a href="#api-changes">API changes</a>
+                      <a href="#new-field-types">New field types</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#modelserializer-api">ModelSerializer API</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#moving-packages-out-of-core">Moving packages out of core</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#deprecations">Deprecations</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#whats-next">What's next?</a>
                     </li>
                   
 
@@ -386,114 +394,148 @@
           <div id="main-content" class="span9">
             
 
-            <h1 id="django-rest-framework-22">Django REST framework 2.2</h1>
-<p>The 2.2 release represents an important point for REST framework, with the addition of Python 3 support, and the introduction of an official deprecation policy.</p>
-<h2 id="python-3-support">Python 3 support</h2>
-<p>Thanks to some fantastic work from <a href="https://github.com/xordoquy">Xavier Ordoquy</a>, Django REST framework 2.2 now supports Python 3.  You'll need to be running Django 1.5, and it's worth keeping in mind that Django's Python 3 support is currently <a href="https://docs.djangoproject.com/en/dev/faq/install/#can-i-use-django-with-python-3">considered experimental</a>.</p>
-<p>Django 1.6's Python 3 support is expected to be officially labeled as 'production-ready'.</p>
-<p>If you want to start ensuring that your own projects are Python 3 ready, we can highly recommend Django's <a href="https://docs.djangoproject.com/en/dev/topics/python3/">Porting to Python 3</a> documentation.</p>
-<p>Django REST framework's Python 2.6 support now requires 2.6.5 or above, in line with <a href="https://docs.djangoproject.com/en/dev/releases/1.5/#python-compatibility">Django 1.5's Python compatibility</a>.</p>
-<h2 id="deprecation-policy">Deprecation policy</h2>
-<p>We've now introduced an official deprecation policy, which is in line with <a href="https://docs.djangoproject.com/en/dev/internals/release-process/#internal-release-deprecation-policy">Django's deprecation policy</a>.  This policy will make it easy for you to continue to track the latest, greatest version of REST framework.</p>
-<p>The timeline for deprecation works as follows:</p>
+            <h1 id="django-rest-framework-31">Django REST framework 3.1</h1>
+<p>The 3.1 release is an intermediate step in the Kickstarter project releases, and includes a range of new functionality.</p>
+<p>Some highlights include:</p>
 <ul>
-<li>
-<p>Version 2.2 introduces some API changes as detailed in the release notes.  It remains fully backwards compatible with 2.1, but will raise <code>PendingDeprecationWarning</code> warnings if you use bits of API that are due to be deprecated.  These warnings are silent by default, but can be explicitly enabled when you're ready to start migrating any required changes.  For example if you start running your tests using <code>python -Wd manage.py test</code>, you'll be warned of any API changes you need to make.</p>
-</li>
-<li>
-<p>Version 2.3 will escalate these warnings to <code>DeprecationWarning</code>, which is loud by default.</p>
-</li>
-<li>
-<p>Version 2.4 will remove the deprecated bits of API entirely.</p>
-</li>
+<li>A super-smart cursor pagination scheme.</li>
+<li>An improved pagination API, supporting header or in-body pagination styles.</li>
+<li>Pagination controls rendering in the browsable API.</li>
+<li>Better support for API versioning.</li>
+<li>Built-in internationalization support.</li>
+<li>Support for Django 1.8's <code>HStoreField</code> and <code>ArrayField</code>.</li>
 </ul>
-<p>Note that in line with Django's policy, any parts of the framework not mentioned in the documentation should generally be considered private API, and may be subject to change.</p>
-<h2 id="community">Community</h2>
-<p>As of the 2.2 merge, we've also hit an impressive milestone.  The number of committers listed in <a href="http://www.django-rest-framework.org/topics/credits">the credits</a>, is now at over <strong>one hundred individuals</strong>.  Each name on that list represents at least one merged pull request, however large or small.</p>
-<p>Our <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">mailing list</a> and #restframework IRC channel are also very active, and we've got a really impressive rate of development both on REST framework itself, and on third party packages such as the great <a href="https://github.com/marcgibbons/django-rest-framework-docs">django-rest-framework-docs</a> package from <a href="https://github.com/marcgibbons/">Marc Gibbons</a>.</p>
 <hr />
-<h2 id="api-changes">API changes</h2>
-<p>The 2.2 release makes a few changes to the API, in order to make it more consistent, simple, and easier to use.</p>
-<h3 id="cleaner-to-many-related-fields">Cleaner to-many related fields</h3>
-<p>The <code>ManyRelatedField()</code> style is being deprecated in favor of a new <code>RelatedField(many=True)</code> syntax.</p>
-<p>For example, if a user is associated with multiple questions, which we want to represent using a primary key relationship, we might use something like the following:</p>
-<pre><code>class UserSerializer(serializers.HyperlinkedModelSerializer):
-    questions = serializers.PrimaryKeyRelatedField(many=True)
-
-    class Meta:
-        fields = ('username', 'questions')
-</code></pre>
-<p>The new syntax is cleaner and more obvious, and the change will also make the documentation cleaner, simplify the internal API, and make writing custom relational fields easier.</p>
-<p>The change also applies to serializers.  If you have a nested serializer, you should start using <code>many=True</code> for to-many relationships.  For example, a serializer representation of an Album that can contain many Tracks might look something like this:</p>
-<pre><code>class TrackSerializer(serializer.ModelSerializer):
-    class Meta:
-        model = Track
-        fields = ('name', 'duration')
-
-class AlbumSerializer(serializer.ModelSerializer):
-    tracks = TrackSerializer(many=True)
-
-    class Meta:
-        model = Album
-        fields = ('album_name', 'artist', 'tracks')
-</code></pre>
-<p>Additionally, the change also applies when serializing or deserializing data.  For example to serialize a queryset of models you should now use the <code>many=True</code> flag.</p>
-<pre><code>serializer = SnippetSerializer(Snippet.objects.all(), many=True)
-serializer.data
-</code></pre>
-<p>This more explicit behavior on serializing and deserializing data <a href="https://github.com/tomchristie/django-rest-framework/issues/564">makes integration with non-ORM backends such as MongoDB easier</a>, as instances to be serialized can include the <code>__iter__</code> method, without incorrectly triggering list-based serialization, or requiring workarounds.</p>
-<p>The implicit to-many behavior on serializers, and the <code>ManyRelatedField</code> style classes will continue to function, but will raise a <code>PendingDeprecationWarning</code>, which can be made visible using the <code>-Wd</code> flag.</p>
-<p><strong>Note</strong>: If you need to forcibly turn off the implicit "<code>many=True</code> for <code>__iter__</code> objects" behavior, you can now do so by specifying <code>many=False</code>.  This will become the default (instead of the current default of <code>None</code>) once the deprecation of the implicit behavior is finalised in version 2.4.</p>
-<h3 id="cleaner-optional-relationships">Cleaner optional relationships</h3>
-<p>Serializer relationships for nullable Foreign Keys will change from using the current <code>null=True</code> flag, to instead using <code>required=False</code>.</p>
-<p>For example, is a user account has an optional foreign key to a company, that you want to express using a hyperlink, you might use the following field in a <code>Serializer</code> class:</p>
-<pre><code>current_company = serializers.HyperlinkedRelatedField(required=False)
-</code></pre>
-<p>This is in line both with the rest of the serializer fields API, and with Django's <code>Form</code> and <code>ModelForm</code> API.</p>
-<p>Using <code>required</code> throughout the serializers API means you won't need to consider if a particular field should take <code>blank</code> or <code>null</code> arguments instead of <code>required</code>, and also means there will be more consistent behavior for how fields are treated when they are not present in the incoming data.</p>
-<p>The <code>null=True</code> argument will continue to function, and will imply <code>required=False</code>, but will raise a <code>PendingDeprecationWarning</code>.</p>
-<h3 id="cleaner-charfield-syntax">Cleaner CharField syntax</h3>
-<p>The <code>CharField</code> API previously took an optional <code>blank=True</code> argument, which was intended to differentiate between null CharField input, and blank CharField input.</p>
-<p>In keeping with Django's CharField API, REST framework's <code>CharField</code> will only ever return the empty string, for missing or <code>None</code> inputs.  The <code>blank</code> flag will no longer be in use, and you should instead just use the <code>required=&lt;bool&gt;</code> flag.  For example:</p>
-<pre><code>extra_details = CharField(required=False)
-</code></pre>
-<p>The <code>blank</code> keyword argument will continue to function, but will raise a <code>PendingDeprecationWarning</code>.</p>
-<h3 id="simpler-object-level-permissions">Simpler object-level permissions</h3>
-<p>Custom permissions classes previously used the signature <code>.has_permission(self, request, view, obj=None)</code>.  This method would be called twice, firstly for the global permissions check, with the <code>obj</code> parameter set to <code>None</code>, and again for the object-level permissions check when appropriate, with the <code>obj</code> parameter set to the relevant model instance.</p>
-<p>The global permissions check and object-level permissions check are now separated into two separate methods, which gives a cleaner, more obvious API.</p>
+<h2 id="pagination">Pagination</h2>
+<p>The pagination API has been improved, making it both easier to use, and more powerful.</p>
+<p>A guide to the headline features follows. For full details, see <a href="../../api-guide/pagination">the pagination documentation</a>.</p>
+<p>Note that as a result of this work a number of settings keys and generic view attributes are now moved to pending deprecation. Controlling pagination styles is now largely handled by overriding a pagination class and modifying its configuration attributes.</p>
 <ul>
-<li>Global permission checks now use the <code>.has_permission(self, request, view)</code> signature.</li>
-<li>Object-level permission checks use a new method <code>.has_object_permission(self, request, view, obj)</code>.</li>
+<li>The <code>PAGINATE_BY</code> settings key will continue to work but is now pending deprecation. The more obviously named <code>PAGE_SIZE</code> settings key should now be used instead.</li>
+<li>The <code>PAGINATE_BY_PARAM</code>, <code>MAX_PAGINATE_BY</code> settings keys will continue to work but are now pending deprecation, in favor of setting configuration attributes on the configured pagination class.</li>
+<li>The <code>paginate_by</code>, <code>page_query_param</code>, <code>paginate_by_param</code> and <code>max_paginate_by</code> generic view attributes will continue to work but are now pending deprecation, in favor of setting configuration attributes on the configured pagination class.</li>
+<li>The <code>pagination_serializer_class</code> view attribute and <code>DEFAULT_PAGINATION_SERIALIZER_CLASS</code> settings key <strong>are no longer valid</strong>. The pagination API does not use serializers to determine the output format, and you'll need to instead override the <code>get_paginated_response</code> method on a pagination class in order to specify how the output format is controlled.</li>
 </ul>
-<p>For example, the following custom permission class:</p>
-<pre><code>class IsOwner(permissions.BasePermission):
-    """
-    Custom permission to only allow owners of an object to view or edit it.
-    Model instances are expected to include an `owner` attribute.
-    """
-
-    def has_permission(self, request, view, obj=None):
-        if obj is None:
-            # Ignore global permissions check
-            return True
-
-        return obj.owner == request.user
+<h4 id="new-pagination-schemes">New pagination schemes.</h4>
+<p>Until now, there has only been a single built-in pagination style in REST framework. We now have page, limit/offset and cursor based schemes included by default.</p>
+<p>The cursor based pagination scheme is particularly smart, and is a better approach for clients iterating through large or frequently changing result sets. The scheme supports paging against non-unique indexes, by using both cursor and limit/offset information. It also allows for both forward and reverse cursor pagination. Much credit goes to David Cramer for <a href="http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api/">this blog post</a> on the subject.</p>
+<h4 id="pagination-controls-in-the-browsable-api">Pagination controls in the browsable API.</h4>
+<p>Paginated results now include controls that render directly in the browsable API. If you're using the page or limit/offset style, then you'll see a page based control displayed in the browsable API:</p>
+<p><img alt="page number based pagination" src="../../../img/pages-pagination.png" /></p>
+<p>The cursor based pagination renders a more simple style of control:</p>
+<p><img alt="cursor based pagination" src="../../../img/cursor-pagination.png" /></p>
+<h4 id="support-for-header-based-pagination">Support for header-based pagination.</h4>
+<p>The pagination API was previously only able to alter the pagination style in the body of the response. The API now supports being able to write pagination information in response headers, making it possible to use pagination schemes that use the <code>Link</code> or <code>Content-Range</code> headers.</p>
+<p>For more information, see the <a href="../../../api-guide/pagination/#custom-pagination-styles">custom pagination styles</a> documentation.</p>
+<hr />
+<h2 id="versioning">Versioning</h2>
+<p>We've made it easier to build versioned APIs. Built-in schemes for versioning include both URL based and Accept header based variations.</p>
+<p>When using a URL based scheme, hyperlinked serializers will resolve relationships to the same API version as used on the incoming request.</p>
+<p>For example, when using <code>NamespaceVersioning</code>, and the following hyperlinked serializer:</p>
+<pre><code>class AccountsSerializer(serializer.HyperlinkedModelSerializer):
+    class Meta:
+        model = Accounts
+        fields = ('account_name', 'users')
 </code></pre>
-<p>Now becomes:</p>
-<pre><code>class IsOwner(permissions.BasePermission):
-    """
-    Custom permission to only allow owners of an object to view or edit it.
-    Model instances are expected to include an `owner` attribute.
-    """
+<p>The output representation would match the version used on the incoming request. Like so:</p>
+<pre><code>GET http://example.org/v2/accounts/10  # Version 'v2'
 
-    def has_object_permission(self, request, view, obj):
-        return obj.owner == request.user
+{
+    "account_name": "europa",
+    "users": [
+        "http://example.org/v2/users/12",  # Version 'v2'
+        "http://example.org/v2/users/54",
+        "http://example.org/v2/users/87"
+    ]
+}
 </code></pre>
-<p>If you're overriding the <code>BasePermission</code> class, the old-style signature will continue to function, and will correctly handle both global and object-level permissions checks, but its use will raise a <code>PendingDeprecationWarning</code>.</p>
-<p>Note also that the usage of the internal APIs for permission checking on the <code>View</code> class has been cleaned up slightly, and is now documented and subject to the deprecation policy in all future versions.</p>
-<h3 id="more-explicit-hyperlink-relations-behavior">More explicit hyperlink relations behavior</h3>
-<p>When using a serializer with a <code>HyperlinkedRelatedField</code> or <code>HyperlinkedIdentityField</code>, the hyperlinks would previously use absolute URLs if the serializer context included a <code>'request'</code> key, and fall back to using relative URLs otherwise.  This could lead to non-obvious behavior, as it might not be clear why some serializers generated absolute URLs, and others do not.</p>
-<p>From version 2.2 onwards, serializers with hyperlinked relationships <em>always</em> require a <code>'request'</code> key to be supplied in the context dictionary.  The implicit behavior will continue to function, but its use will raise a <code>PendingDeprecationWarning</code>.</p>
+<hr />
+<h2 id="internationalization">Internationalization</h2>
+<p>REST framework now includes a built-in set of translations, and supports internationalized error responses. This allows you to either change the default language, or to allow clients to specify the language via the <code>Accept-Language</code> header.</p>
+<p>You can change the default language by using the standard Django <code>LANGUAGE_CODE</code> setting:</p>
+<pre><code>LANGUAGE_CODE = "es-es"
+</code></pre>
+<p>You can turn on per-request language requests by adding <code>LocalMiddleware</code> to your <code>MIDDLEWARE_CLASSES</code> setting:</p>
+<pre><code>MIDDLEWARE_CLASSES = [
+    ...
+    'django.middleware.locale.LocaleMiddleware'
+]
+</code></pre>
+<p>When per-request internationalization is enabled, client requests will respect the <code>Accept-Language</code> header where possible. For example, let's make a request for an unsupported media type:</p>
+<p><strong>Request</strong></p>
+<pre><code>GET /api/users HTTP/1.1
+Accept: application/xml
+Accept-Language: es-es
+Host: example.org
+</code></pre>
+<p><strong>Response</strong></p>
+<pre><code>HTTP/1.0 406 NOT ACCEPTABLE
+
+{
+    "detail": "No se ha podido satisfacer la solicitud de cabecera de Accept."
+}
+</code></pre>
+<p>Note that the structure of the error responses is still the same. We still have a <code>details</code> key in the response. If needed you can modify this behavior too, by using a <a href="../../api-guide/exceptions#custom-exception-handling">custom exception handler</a>.</p>
+<p>We include built-in translations both for standard exception cases, and for serializer validation errors.</p>
+<p>The full list of supported languages can be found on our <a href="https://www.transifex.com/projects/p/django-rest-framework/">Transifex project page</a>.</p>
+<p>If you only wish to support a subset of the supported languages, use Django's standard <code>LANGUAGES</code> setting:</p>
+<pre><code>LANGUAGES = [
+    ('de', _('German')),
+    ('en', _('English')),
+]
+</code></pre>
+<p>For more details, see the <a href="../internationalization">internationalization documentation</a>.</p>
+<p>Many thanks to <a href="https://github.com/jakul">Craig Blaszczyk</a> for helping push this through.</p>
+<hr />
+<h2 id="new-field-types">New field types</h2>
+<p>Django 1.8's new <code>ArrayField</code>, <code>HStoreField</code> and <code>UUIDField</code> are now all fully supported.</p>
+<p>This work also means that we now have both <code>serializers.DictField()</code>, and <code>serializers.ListField()</code> types, allowing you to express and validate a wider set of representations.</p>
+<p>If you're building a new 1.8 project, then you should probably consider using <code>UUIDField</code> as the primary keys for all your models. This style will work automatically with hyperlinked serializers, returning URLs in the following style:</p>
+<pre><code>http://example.org/api/purchases/9b1a433f-e90d-4948-848b-300fdc26365d
+</code></pre>
+<hr />
+<h2 id="modelserializer-api">ModelSerializer API</h2>
+<p>The serializer redesign in 3.0 did not include any public API for modifying how ModelSerializer classes automatically generate a set of fields from a given mode class. We've now re-introduced an API for this, allowing you to create new ModelSerializer base classes that behave differently, such as using a different default style for relationships.</p>
+<p>For more information, see the documentation on <a href="../../../api-guide/serializers/#customizing-field-mappings">customizing field mappings</a> for ModelSerializer classes.</p>
+<hr />
+<h2 id="moving-packages-out-of-core">Moving packages out of core</h2>
+<p>We've now moved a number of packages out of the core of REST framework, and into separately installable packages. If you're currently using these you don't need to worry, you simply need to <code>pip install</code> the new packages, and change any import paths.</p>
+<p>We're making this change in order to help distribute the maintainance workload, and keep better focus of the core essentials of the framework.</p>
+<p>The change also means we can be more flexible with which external packages we recommend. For example, the excellently maintained <a href="https://github.com/evonove/django-oauth-toolkit">Django OAuth toolkit</a> has now been promoted as our recommended option for integrating OAuth support.</p>
+<p>The following packages are now moved out of core and should be separately installed:</p>
+<ul>
+<li>OAuth - <a href="http://jpadilla.github.io/django-rest-framework-oauth/">djangorestframework-oauth</a></li>
+<li>XML - <a href="http://jpadilla.github.io/django-rest-framework-xml">djangorestframework-xml</a></li>
+<li>YAML - <a href="http://jpadilla.github.io/django-rest-framework-yaml">djangorestframework-yaml</a></li>
+<li>JSONP - <a href="http://jpadilla.github.io/django-rest-framework-jsonp">djangorestframework-jsonp</a></li>
+</ul>
+<p>It's worth reiterating that this change in policy shouldn't mean any work in your codebase other than adding a new requirement and modifying some import paths. For example to install XML rendering, you would now do:</p>
+<pre><code>pip install djangorestframework-xml
+</code></pre>
+<p>And modify your settings, like so:</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework_xml.renderers.XMLRenderer'
+    ]
+}
+</code></pre>
+<p>Thanks go to the latest member of our maintenance team, <a href="https://github.com/jpadilla/">José Padilla</a>, for handling this work and taking on ownership of these packages.</p>
+<hr />
+<h2 id="deprecations">Deprecations</h2>
+<p>The <code>request.DATA</code>, <code>request.FILES</code> and <code>request.QUERY_PARAMS</code> attributes move from pending deprecation, to deprecated. Use <code>request.data</code> and <code>request.query_params</code> instead, as discussed in the 3.0 release notes.</p>
+<p>The ModelSerializer Meta options for <code>write_only_fields</code>, <code>view_name</code> and <code>lookup_field</code> are also moved from pending deprecation, to deprecated. Use <code>extra_kwargs</code> instead, as discussed in the 3.0 release notes.</p>
+<p>All these attributes and options will still work in 3.1, but their usage will raise a warning. They will be fully removed in 3.2.</p>
+<hr />
+<h2 id="whats-next">What's next?</h2>
+<p>The next focus will be on HTML renderings of API output and will include:</p>
+<ul>
+<li>HTML form rendering of serializers.</li>
+<li>Filtering controls built-in to the browsable API.</li>
+<li>An alternative admin-style interface.</li>
+</ul>
+<p>This will either be made as a single 3.2 release, or split across two separate releases, with the HTML forms and filter controls coming in 3.2, and the admin-style interface coming in a 3.3 release.</p>
 
           </div>
           <!--/span-->

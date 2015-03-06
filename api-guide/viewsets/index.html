@@ -189,6 +189,10 @@
                   </li>
                   
                   <li >
+                    <a href="../versioning">Versioning</a>
+                  </li>
+                  
+                  <li >
                     <a href="../content-negotiation">Content negotiation</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/internationalization">Internationalization</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
                   </li>
                   
@@ -260,23 +268,11 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/rest-framework-2-announcement">2.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.2-announcement">2.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.3-announcement">2.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.4-announcement">2.4 Announcement</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/3.0-announcement">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.1-announcement">3.1 Announcement</a>
                   </li>
                   
                   <li >
@@ -285,10 +281,6 @@
                   
                   <li >
                     <a href="../../topics/release-notes">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/credits">Credits</a>
                   </li>
                   
                 </ul>
@@ -566,7 +558,7 @@ class UserViewSet(viewsets.ModelViewSet):
 <p>The <code>ModelViewSet</code> class inherits from <code>GenericAPIView</code> and includes implementations for various actions, by mixing in the behavior of the various mixin classes.</p>
 <p>The actions provided by the <code>ModelViewSet</code> class are <code>.list()</code>, <code>.retrieve()</code>,  <code>.create()</code>, <code>.update()</code>, and <code>.destroy()</code>.</p>
 <h4 id="example_1">Example</h4>
-<p>Because <code>ModelViewSet</code> extends <code>GenericAPIView</code>, you'll normally need to provide at least the <code>queryset</code> and <code>serializer_class</code> attributes, or the <code>model</code> attribute shortcut.  For example:</p>
+<p>Because <code>ModelViewSet</code> extends <code>GenericAPIView</code>, you'll normally need to provide at least the <code>queryset</code> and <code>serializer_class</code> attributes.  For example:</p>
 <pre><code>class AccountViewSet(viewsets.ModelViewSet):
     """
     A simple ViewSet for viewing and editing accounts.

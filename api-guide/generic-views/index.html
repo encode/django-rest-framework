@@ -189,6 +189,10 @@
                   </li>
                   
                   <li >
+                    <a href="../versioning">Versioning</a>
+                  </li>
+                  
+                  <li >
                     <a href="../content-negotiation">Content negotiation</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/internationalization">Internationalization</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
                   </li>
                   
@@ -260,23 +268,11 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/rest-framework-2-announcement">2.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.2-announcement">2.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.3-announcement">2.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.4-announcement">2.4 Announcement</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/3.0-announcement">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.1-announcement">3.1 Announcement</a>
                   </li>
                   
                   <li >
@@ -285,10 +281,6 @@
                   
                   <li >
                     <a href="../../topics/release-notes">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/credits">Credits</a>
                   </li>
                   
                 </ul>
@@ -568,11 +560,9 @@ class UserList(generics.ListCreateAPIView):
 <p><strong>Pagination</strong>:</p>
 <p>The following attributes are used to control pagination when used with list views.</p>
 <ul>
-<li><code>paginate_by</code> - The size of pages to use with paginated data.  If set to <code>None</code> then pagination is turned off.  If unset this uses the same value as the <code>PAGINATE_BY</code> setting, which defaults to <code>None</code>.</li>
-<li><code>paginate_by_param</code> - The name of a query parameter, which can be used by the client to override the default page size to use for pagination.  If unset this uses the same value as the <code>PAGINATE_BY_PARAM</code> setting, which defaults to <code>None</code>.</li>
-<li><code>pagination_serializer_class</code> - The pagination serializer class to use when determining the style of paginated responses.  Defaults to the same value as the <code>DEFAULT_PAGINATION_SERIALIZER_CLASS</code> setting.</li>
-<li><code>page_kwarg</code> - The name of a URL kwarg or URL query parameter which can be used by the client to control which page is requested.  Defaults to <code>'page'</code>.</li>
+<li><code>pagination_class</code> - The pagination class that should be used when paginating list results. Defaults to the same value as the <code>DEFAULT_PAGINATION_CLASS</code> setting, which is <code>'rest_framework.pagination.PageNumberPagination'</code>.</li>
 </ul>
+<p>Note that usage of the <code>paginate_by</code>, <code>paginate_by_param</code> and <code>page_kwarg</code> attributes are now pending deprecation. The <code>pagination_serializer_class</code> attribute and <code>DEFAULT_PAGINATION_SERIALIZER_CLASS</code> setting have been removed completely. Pagination settings should instead be controlled by overriding a pagination class and setting any configuration attributes there. See the pagination documentation for more details.</p>
 <p><strong>Filtering</strong>:</p>
 <ul>
 <li><code>filter_backends</code> - A list of filter backend classes that should be used for filtering the queryset.  Defaults to the same value as the <code>DEFAULT_FILTER_BACKENDS</code> setting.</li>

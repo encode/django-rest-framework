@@ -4,11 +4,11 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <title>Views - Django REST framework</title>
+  <title>Versioning - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/views/" />
+  <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/versioning/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Views">
+  <meta name="description" content="Django, API, REST, Versioning">
   <meta name="author" content="Tom Christie">
 
   <!-- Le styles -->
@@ -62,10 +62,10 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../generic-views">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../content-negotiation">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../responses">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../pagination">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
@@ -128,8 +128,8 @@
                     <a href="../responses">Responses</a>
                   </li>
                   
-                  <li class="active" >
-                    <a href=".">Views</a>
+                  <li >
+                    <a href="../views">Views</a>
                   </li>
                   
                   <li >
@@ -188,8 +188,8 @@
                     <a href="../pagination">Pagination</a>
                   </li>
                   
-                  <li >
-                    <a href="../versioning">Versioning</a>
+                  <li class="active" >
+                    <a href=".">Versioning</a>
                   </li>
                   
                   <li >
@@ -345,40 +345,56 @@
                 
 
                   <li class="main">
-                    <a href="#class-based-views">Class Based Views</a>
+                    <a href="#versioning">Versioning</a>
                   </li>
 
                   
                     <li>
-                      <a href="#api-policy-attributes">API policy attributes</a>
+                      <a href="#versioning-with-rest-framework">Versioning with REST framework</a>
                     </li>
                   
                     <li>
-                      <a href="#api-policy-instantiation-methods">API policy instantiation methods</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#api-policy-implementation-methods">API policy implementation methods</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#dispatch-methods">Dispatch methods</a>
+                      <a href="#configuring-the-versioning-scheme">Configuring the versioning scheme</a>
                     </li>
                   
 
                 
 
                   <li class="main">
-                    <a href="#function-based-views">Function Based Views</a>
+                    <a href="#api-reference">API Reference</a>
                   </li>
 
                   
                     <li>
-                      <a href="#api_view">@api_view()</a>
+                      <a href="#acceptheaderversioning">AcceptHeaderVersioning</a>
                     </li>
                   
                     <li>
-                      <a href="#api-policy-decorators">API policy decorators</a>
+                      <a href="#urlparameterversioning">URLParameterVersioning</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#namespaceversioning">NamespaceVersioning</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#hostnameversioning">HostNameVersioning</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#queryparameterversioning">QueryParameterVersioning</a>
+                    </li>
+                  
+
+                
+
+                  <li class="main">
+                    <a href="#custom-versioning-schemes">Custom versioning schemes</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#example">Example</a>
                     </li>
                   
 
@@ -394,137 +410,156 @@
           <div id="main-content" class="span9">
             
               
-                <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/decorators.py">
-                  <span class="label label-info">decorators.py</span>
-                </a>
-              
-                <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/views.py">
-                  <span class="label label-info">views.py</span>
+                <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/versioning.py">
+                  <span class="label label-info">versioning.py</span>
                 </a>
               
             
 
-            <h1 id="class-based-views">Class Based Views</h1>
+            <h1 id="versioning">Versioning</h1>
 <blockquote>
-<p>Django's class based views are a welcome departure from the old-style views.</p>
-<p>&mdash; <a href="http://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html">Reinout van Rees</a></p>
+<p>Versioning an interface is just a "polite" way to kill deployed clients.</p>
+<p>&mdash; <a href="http://www.slideshare.net/evolve_conference/201308-fielding-evolve/31">Roy Fielding</a>.</p>
 </blockquote>
-<p>REST framework provides an <code>APIView</code> class, which subclasses Django's <code>View</code> class.</p>
-<p><code>APIView</code> classes are different from regular <code>View</code> classes in the following ways:</p>
-<ul>
-<li>Requests passed to the handler methods will be REST framework's <code>Request</code> instances, not Django's <code>HttpRequest</code> instances.</li>
-<li>Handler methods may return REST framework's <code>Response</code>, instead of Django's <code>HttpResponse</code>.  The view will manage content negotiation and setting the correct renderer on the response.</li>
-<li>Any <code>APIException</code> exceptions will be caught and mediated into appropriate responses.</li>
-<li>Incoming requests will be authenticated and appropriate permission and/or throttle checks will be run before dispatching the request to the handler method.</li>
-</ul>
-<p>Using the <code>APIView</code> class is pretty much the same as using a regular <code>View</code> class, as usual, the incoming request is dispatched to an appropriate handler method such as <code>.get()</code> or <code>.post()</code>.  Additionally, a number of attributes may be set on the class that control various aspects of the API policy.</p>
-<p>For example:</p>
-<pre><code>from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import authentication, permissions
-
-class ListUsers(APIView):
-    """
-    View to list all users in the system.
-
-    * Requires token authentication.
-    * Only admin users are able to access this view.
-    """
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAdminUser,)
-
-    def get(self, request, format=None):
-        """
-        Return a list of all users.
-        """
-        usernames = [user.username for user in User.objects.all()]
-        return Response(usernames)
+<p>API versioning allows you to alter behavior between different clients. REST framework provides for a number of different versioning schemes.</p>
+<p>Versioning is determined by the incoming client request, and may either be based on the request URL, or based on the request headers.</p>
+<p>There are a number of valid approaches to approaching versioning. <a href="http://www.infoq.com/articles/roy-fielding-on-versioning">Non-versioned systems can also be appropriate</a>, particularly if you're engineering for very long-term systems with multiple clients outside of your control.</p>
+<h2 id="versioning-with-rest-framework">Versioning with REST framework</h2>
+<p>When API versioning is enabled, the <code>request.version</code> attribute will contain a string that corresponds to the version requested in the incoming client request.</p>
+<p>By default, versioning is not enabled, and <code>request.version</code> will always return <code>None</code>.</p>
+<h4 id="varying-behavior-based-on-the-version">Varying behavior based on the version</h4>
+<p>How you vary the API behavior is up to you, but one example you might typically want is to switch to a different serialization style in a newer version. For example:</p>
+<pre><code>def get_serializer_class(self):
+    if self.request.version == 'v1':
+        return AccountSerializerVersion1
+    return AccountSerializer
 </code></pre>
-<h2 id="api-policy-attributes">API policy attributes</h2>
-<p>The following attributes control the pluggable aspects of API views.</p>
-<h3 id="renderer_classes">.renderer_classes</h3>
-<h3 id="parser_classes">.parser_classes</h3>
-<h3 id="authentication_classes">.authentication_classes</h3>
-<h3 id="throttle_classes">.throttle_classes</h3>
-<h3 id="permission_classes">.permission_classes</h3>
-<h3 id="content_negotiation_class">.content_negotiation_class</h3>
-<h2 id="api-policy-instantiation-methods">API policy instantiation methods</h2>
-<p>The following methods are used by REST framework to instantiate the various pluggable API policies.  You won't typically need to override these methods.</p>
-<h3 id="get_renderersself">.get_renderers(self)</h3>
-<h3 id="get_parsersself">.get_parsers(self)</h3>
-<h3 id="get_authenticatorsself">.get_authenticators(self)</h3>
-<h3 id="get_throttlesself">.get_throttles(self)</h3>
-<h3 id="get_permissionsself">.get_permissions(self)</h3>
-<h3 id="get_content_negotiatorself">.get_content_negotiator(self)</h3>
-<h2 id="api-policy-implementation-methods">API policy implementation methods</h2>
-<p>The following methods are called before dispatching to the handler method.</p>
-<h3 id="check_permissionsself-request">.check_permissions(self, request)</h3>
-<h3 id="check_throttlesself-request">.check_throttles(self, request)</h3>
-<h3 id="perform_content_negotiationself-request-forcefalse">.perform_content_negotiation(self, request, force=False)</h3>
-<h2 id="dispatch-methods">Dispatch methods</h2>
-<p>The following methods are called directly by the view's <code>.dispatch()</code> method.
-These perform any actions that need to occur before or after calling the handler methods such as <code>.get()</code>, <code>.post()</code>, <code>put()</code>, <code>patch()</code> and <code>.delete()</code>.</p>
-<h3 id="initialself-request-42args-kwargs">.initial(self, request, *args, **kwargs)</h3>
-<p>Performs any actions that need to occur before the handler method gets called.
-This method is used to enforce permissions and throttling, and perform content negotiation.</p>
-<p>You won't typically need to override this method.</p>
-<h3 id="handle_exceptionself-exc">.handle_exception(self, exc)</h3>
-<p>Any exception thrown by the handler method will be passed to this method, which either returns a <code>Response</code> instance, or re-raises the exception.</p>
-<p>The default implementation handles any subclass of <code>rest_framework.exceptions.APIException</code>, as well as Django's <code>Http404</code> and <code>PermissionDenied</code> exceptions, and returns an appropriate error response.</p>
-<p>If you need to customize the error responses your API returns you should subclass this method.</p>
-<h3 id="initialize_requestself-request-42args-kwargs">.initialize_request(self, request, *args, **kwargs)</h3>
-<p>Ensures that the request object that is passed to the handler method is an instance of <code>Request</code>, rather than the usual Django <code>HttpRequest</code>.</p>
-<p>You won't typically need to override this method.</p>
-<h3 id="finalize_responseself-request-response-42args-kwargs">.finalize_response(self, request, response, *args, **kwargs)</h3>
-<p>Ensures that any <code>Response</code> object returned from the handler method will be rendered into the correct content type, as determined by the content negotiation.</p>
-<p>You won't typically need to override this method.</p>
+<h4 id="reversing-urls-for-versioned-apis">Reversing URLs for versioned APIs</h4>
+<p>The <code>reverse</code> function included by REST framework ties in with the versioning scheme. You need to make sure to include the current <code>request</code> as a keyword argument, like so.</p>
+<pre><code>reverse('bookings-list', request=request)
+</code></pre>
+<p>The above function will apply any URL transformations appropriate to the request version. For example:</p>
+<ul>
+<li>If <code>NamespacedVersioning</code> was being used, and the API version was 'v1', then the URL lookup used would be <code>'v1:bookings-list'</code>, which might resolve to a URL like <code>http://example.org/v1/bookings/</code>.</li>
+<li>If <code>QueryParameterVersioning</code> was being used, and the API version was <code>1.0</code>, then the returned URL might be something like <code>http://example.org/bookings/?version=1.0</code></li>
+</ul>
+<h4 id="versioned-apis-and-hyperlinked-serializers">Versioned APIs and hyperlinked serializers</h4>
+<p>When using hyperlinked serialization styles together with a URL based versioning scheme make sure to include the request as context to the serializer.</p>
+<pre><code>def get(self, request):
+    queryset = Booking.objects.all()
+    serializer = BookingsSerializer(queryset, many=True, context={'request': request})
+    return Response({'all_bookings': serializer.data})
+</code></pre>
+<p>Doing so will allow any returned URLs to include the appropriate versioning.</p>
+<h2 id="configuring-the-versioning-scheme">Configuring the versioning scheme</h2>
+<p>The versioning scheme is defined by the <code>DEFAULT_VERSIONING_CLASS</code> settings key.</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning'
+}
+</code></pre>
+<p>Unless it is explicitly set, the value for <code>DEFAULT_VERSIONING_CLASS</code> will be <code>None</code>. In this case the <code>request.version</code> attribute will always return <code>None</code>.</p>
+<p>You can also set the versioning scheme on an individual view. Typically you won't need to do this, as it makes more sense to have a single versioning scheme used globally. If you do need to do so, use the <code>versioning_class</code> attribute.</p>
+<pre><code>class ProfileList(APIView):
+    versioning_class = versioning.QueryParameterVersioning
+</code></pre>
+<h4 id="other-versioning-settings">Other versioning settings</h4>
+<p>The following settings keys are also used to control versioning:</p>
+<ul>
+<li><code>DEFAULT_VERSION</code>. The value that should be used for <code>request.version</code> when no versioning information is present. Defaults to <code>None</code>.</li>
+<li><code>ALLOWED_VERSIONS</code>. If set, this value will restrict the set of versions that may be returned by the versioning scheme, and will raise an error if the provided version if not in this set. Defaults to <code>None</code>.</li>
+<li><code>VERSION_PARAMETER</code>. The string that should used for any versioning parameters, such as in the media type or URL query parameters. Defaults to <code>'version'</code>.</li>
+</ul>
 <hr />
-<h1 id="function-based-views">Function Based Views</h1>
-<blockquote>
-<p>Saying [that Class based views] is always the superior solution is a mistake.</p>
-<p>&mdash; <a href="http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html">Nick Coghlan</a></p>
-</blockquote>
-<p>REST framework also allows you to work with regular function based views.  It provides a set of simple decorators that wrap your function based views to ensure they receive an instance of <code>Request</code> (rather than the usual Django <code>HttpRequest</code>) and allows them to return a <code>Response</code> (instead of a Django <code>HttpResponse</code>), and allow you to configure how the request is processed.</p>
-<h2 id="api_view">@api_view()</h2>
-<p><strong>Signature:</strong> <code>@api_view(http_method_names=['GET'])</code></p>
-<p>The core of this functionality is the <code>api_view</code> decorator, which takes a list of HTTP methods that your view should respond to. For example, this is how you would write a very simple view that just manually returns some data:</p>
-<pre><code>from rest_framework.decorators import api_view
-
-@api_view()
-def hello_world(request):
-    return Response({"message": "Hello, world!"})
+<h1 id="api-reference">API Reference</h1>
+<h2 id="acceptheaderversioning">AcceptHeaderVersioning</h2>
+<p>This scheme requires the client to specify the version as part of the media type in the <code>Accept</code> header. The version is included as a media type parameter, that supplements the main media type.</p>
+<p>Here's an example HTTP request using the accept header versioning style.</p>
+<pre><code>GET /bookings/ HTTP/1.1
+Host: example.com
+Accept: application/json; version=1.0
 </code></pre>
-<p>This view will use the default renderers, parsers, authentication classes etc specified in the <a href="../settings">settings</a>.</p>
-<p>By default only <code>GET</code> methods will be accepted. Other methods will respond with "405 Method Not Allowed". To alter this behavior, specify which methods the view allows, like so:</p>
-<pre><code>@api_view(['GET', 'POST'])
-def hello_world(request):
-    if request.method == 'POST':
-        return Response({"message": "Got some data!", "data": request.data})
-    return Response({"message": "Hello, world!"})
+<p>In the example request above <code>request.version</code> attribute would return the string <code>'1.0'</code>.</p>
+<p>Versioning based on accept headers is <a href="http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http#i_want_my_api_to_be_versioned">generally considered</a> as <a href="https://github.com/interagent/http-api-design#version-with-accepts-header">best practice</a>, although other styles may be suitable depending on your client requirements.</p>
+<h4 id="using-accept-headers-with-vendor-media-types">Using accept headers with vendor media types</h4>
+<p>Strictly speaking the <code>json</code> media type is not specified as <a href="http://tools.ietf.org/html/rfc4627#section-6">including additional parameters</a>. If you are building a well-specified public API you might consider using a <a href="http://en.wikipedia.org/wiki/Internet_media_type#Vendor_tree">vendor media type</a>. To do so, configure your renderers to use a JSON based renderer with a custom media type:</p>
+<pre><code>class BookingsAPIRenderer(JSONRenderer):
+    media_type = 'application/vnd.megacorp.bookings+json'
 </code></pre>
-<h2 id="api-policy-decorators">API policy decorators</h2>
-<p>To override the default settings, REST framework provides a set of additional decorators which can be added to your views.  These must come <em>after</em> (below) the <code>@api_view</code> decorator.  For example, to create a view that uses a <a href="../throttling">throttle</a> to ensure it can only be called once per day by a particular user, use the <code>@throttle_classes</code> decorator, passing a list of throttle classes:</p>
-<pre><code>from rest_framework.decorators import api_view, throttle_classes
-from rest_framework.throttling import UserRateThrottle
-
-class OncePerDayUserThrottle(UserRateThrottle):
-        rate = '1/day'
-
-@api_view(['GET'])
-@throttle_classes([OncePerDayUserThrottle])
-def view(request):
-    return Response({"message": "Hello for today! See you tomorrow!"})
+<p>Your client requests would now look like this:</p>
+<pre><code>GET /bookings/ HTTP/1.1
+Host: example.com
+Accept: application/vnd.megacorp.bookings+json; version=1.0
 </code></pre>
-<p>These decorators correspond to the attributes set on <code>APIView</code> subclasses, described above.</p>
-<p>The available decorators are:</p>
-<ul>
-<li><code>@renderer_classes(...)</code></li>
-<li><code>@parser_classes(...)</code></li>
-<li><code>@authentication_classes(...)</code></li>
-<li><code>@throttle_classes(...)</code></li>
-<li><code>@permission_classes(...)</code></li>
-</ul>
-<p>Each of these decorators takes a single argument which must be a list or tuple of classes.</p>
+<h2 id="urlparameterversioning">URLParameterVersioning</h2>
+<p>This scheme requires the client to specify the version as part of the URL path.</p>
+<pre><code>GET /v1/bookings/ HTTP/1.1
+Host: example.com
+Accept: application/json
+</code></pre>
+<p>Your URL conf must include a pattern that matches the version with a <code>'version'</code> keyword argument, so that this information is available to the versioning scheme.</p>
+<pre><code>urlpatterns = [
+    url(
+        r'^(?P&lt;version&gt;{v1,v2})/bookings/$',
+        bookings_list,
+        name='bookings-list'
+    ),
+    url(
+        r'^(?P&lt;version&gt;{v1,v2})/bookings/(?P&lt;pk&gt;[0-9]+)/$',
+        bookings_detail,
+        name='bookings-detail'
+    )
+]
+</code></pre>
+<h2 id="namespaceversioning">NamespaceVersioning</h2>
+<p>To the client, this scheme is the same as <code>URLParameterVersioning</code>. The only difference is how it is configured in your Django application, as it uses URL namespacing, instead of URL keyword arguments.</p>
+<pre><code>GET /v1/something/ HTTP/1.1
+Host: example.com
+Accept: application/json
+</code></pre>
+<p>With this scheme the <code>request.version</code> attribute is determined based on the <code>namespace</code> that matches the incoming request path.</p>
+<p>In the following example we're giving a set of views two different possible URL prefixes, each under a different namespace:</p>
+<pre><code># bookings/urls.py
+urlpatterns = [
+    url(r'^$', bookings_list, name='bookings-list'),
+    url(r'^(?P&lt;pk&gt;[0-9]+)/$', bookings_detail, name='bookings-detail')
+]
+
+# urls.py
+urlpatterns = [
+    url(r'^v1/bookings/', include('bookings.urls', namespace='v1')),
+    url(r'^v2/bookings/', include('bookings.urls', namespace='v2'))
+]
+</code></pre>
+<p>Both <code>URLParameterVersioning</code> and <code>NamespaceVersioning</code> are reasonable if you just need a simple versioning scheme. The <code>URLParameterVersioning</code> approach might be better suitable for small ad-hoc projects, and the <code>NamespaceVersioning</code> is probably easier to manage for larger projects.</p>
+<h2 id="hostnameversioning">HostNameVersioning</h2>
+<p>The hostname versioning scheme requires the client to specify the requested version as part of the hostname in the URL.</p>
+<p>For example the following is an HTTP request to the <code>http://v1.example.com/bookings/</code> URL:</p>
+<pre><code>GET /bookings/ HTTP/1.1
+Host: v1.example.com
+Accept: application/json
+</code></pre>
+<p>By default this implementation expects the hostname to match this simple regular expression:</p>
+<pre><code>^([a-zA-Z0-9]+)\.[a-zA-Z0-9]+\.[a-zA-Z0-9]+$
+</code></pre>
+<p>Note that the first group is enclosed in brackets, indicating that this is the matched portion of the hostname.</p>
+<p>The <code>HostNameVersioning</code> scheme can be awkward to use in debug mode as you will typically be accessing a raw IP address such as <code>127.0.0.1</code>. There are various online services which you to <a href="https://reinteractive.net/posts/199-developing-and-testing-rails-applications-with-subdomains">access localhost with a custom subdomain</a> which you may find helpful in this case.</p>
+<p>Hostname based versioning can be particularly useful if you have requirements to route incoming requests to different servers based on the version, as you can configure different DNS records for different API versions.</p>
+<h2 id="queryparameterversioning">QueryParameterVersioning</h2>
+<p>This scheme is a simple style that includes the version as a query parameter in the URL. For example:</p>
+<pre><code>GET /something/?version=0.1 HTTP/1.1
+Host: example.com
+Accept: application/json
+</code></pre>
+<hr />
+<h1 id="custom-versioning-schemes">Custom versioning schemes</h1>
+<p>To implement a custom versioning scheme, subclass <code>BaseVersioning</code> and override the <code>.determine_version</code> method.</p>
+<h2 id="example">Example</h2>
+<p>The following example uses a custom <code>X-API-Version</code> header to determine the requested version.</p>
+<pre><code>class XAPIVersionScheme(versioning.BaseVersioning):
+    def determine_version(self, request, *args, **kwargs):
+        return request.META.get('HTTP_X_API_VERSION', None)
+</code></pre>
+<p>If your versioning scheme is based on the request URL, you will also want to alter how versioned URLs are determined. In order to do so you should override the <code>.reverse()</code> method on the class. See the source code for examples.</p>
 
           </div>
           <!--/span-->

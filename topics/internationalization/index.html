@@ -4,11 +4,11 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <title>2.0 Announcement - Django REST framework</title>
+  <title>Internationalization - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/topics/rest-framework-2-announcement/" />
+  <link rel="canonical" href="http://www.django-rest-framework.org/topics/internationalization/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, 2.0 Announcement">
+  <meta name="description" content="Django, API, REST, Internationalization">
   <meta name="author" content="Tom Christie">
 
   <!-- Le styles -->
@@ -62,10 +62,10 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../2.2-announcement">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../ajax-csrf-cors">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../project-management">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../documenting-your-api">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
@@ -189,6 +189,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../api-guide/versioning">Versioning</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../api-guide/content-negotiation">Content negotiation</a>
                   </li>
                   
@@ -231,6 +235,10 @@
                     <a href="../documenting-your-api">Documenting your API</a>
                   </li>
                   
+                  <li class="active" >
+                    <a href=".">Internationalization</a>
+                  </li>
+                  
                   <li >
                     <a href="../ajax-csrf-cors">AJAX, CSRF & CORS</a>
                   </li>
@@ -259,24 +267,12 @@
                     <a href="../project-management">Project management</a>
                   </li>
                   
-                  <li class="active" >
-                    <a href=".">2.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../2.2-announcement">2.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../2.3-announcement">2.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../2.4-announcement">2.4 Announcement</a>
-                  </li>
-                  
                   <li >
                     <a href="../3.0-announcement">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.1-announcement">3.1 Announcement</a>
                   </li>
                   
                   <li >
@@ -285,10 +281,6 @@
                   
                   <li >
                     <a href="../release-notes">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../credits">Credits</a>
                   </li>
                   
                 </ul>
@@ -353,40 +345,20 @@
                 
 
                   <li class="main">
-                    <a href="#django-rest-framework-20">Django REST framework 2.0</a>
+                    <a href="#internationalization">Internationalization</a>
                   </li>
 
                   
                     <li>
-                      <a href="#user-feedback">User feedback</a>
+                      <a href="#enabling-internationalized-apis">Enabling internationalized APIs</a>
                     </li>
                   
                     <li>
-                      <a href="#serialization">Serialization</a>
+                      <a href="#adding-new-translations">Adding new translations</a>
                     </li>
                   
                     <li>
-                      <a href="#generic-views">Generic views</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#requests-responses-views">Requests, Responses &amp; Views</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#api-design">API Design</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#the-browsable-api">The Browsable API</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#documentation">Documentation</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#summary">Summary</a>
+                      <a href="#how-the-language-is-determined">How the language is determined</a>
                     </li>
                   
 
@@ -402,57 +374,95 @@
           <div id="main-content" class="span9">
             
 
-            <h1 id="django-rest-framework-20">Django REST framework 2.0</h1>
+            <h1 id="internationalization">Internationalization</h1>
 <blockquote>
-<p>Most people just make the mistake that it should be simple to design simple things.  In reality, the effort required to design something is inversely proportional to the simplicity of the result.</p>
-<p>&mdash; <a href="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven#comment-724">Roy Fielding</a></p>
+<p>Supporting internationalization is not optional. It must be a core feature.</p>
+<p>&mdash; <a href="http://youtu.be/Wa0VfS2q94Y">Jannis Leidel, speaking at Django Under the Hood, 2015</a>.</p>
 </blockquote>
-<hr />
-<p><strong>Announcement:</strong> REST framework 2 released - Tue 30th Oct 2012</p>
-<hr />
-<p>REST framework 2 is an almost complete reworking of the original framework, which comprehensively addresses some of the original design issues.</p>
-<p>Because the latest version should be considered a re-release, rather than an incremental improvement, we've skipped a version, and called this release Django REST framework 2.0.</p>
-<p>This article is intended to give you a flavor of what REST framework 2 is, and why you might want to give it a try.</p>
-<h2 id="user-feedback">User feedback</h2>
-<p>Before we get cracking, let's start with the hard sell, with a few bits of feedback from some early adopters…</p>
-<p>"Django REST framework 2 is beautiful.  Some of the API design is worthy of @kennethreitz." - <a href="https://twitter.com/kobutsu/status/261689665952833536">Kit La Touche</a></p>
-<p>"Since it's pretty much just Django, controlling things like URLs has been a breeze...  I think [REST framework 2] has definitely got the right approach here; even simple things like being able to override a function called post to do custom work during rather than having to intimately know what happens during a post make a huge difference to your productivity." - <a href="https://groups.google.com/d/msg/django-rest-framework/heRGHzG6BWQ/ooVURgpwVC0J">Ian Strachan</a></p>
-<p>"I switched to the 2.0 branch and I don't regret it - fully refactored my code in another &half; day and it's <em>much</em> more to my tastes" - <a href="https://groups.google.com/d/msg/django-rest-framework/flsXbvYqRoY/9lSyntOf5cUJ">Bruno Desthuilliers</a></p>
-<p>Sounds good, right?  Let's get into some details...</p>
-<h2 id="serialization">Serialization</h2>
-<p>REST framework 2 includes a totally re-worked serialization engine, that was initially intended as a replacement for Django's existing inflexible fixture serialization, and which meets the following design goals:</p>
+<p>REST framework ships with translatable error messages. You can make these appear in your language enabling <a href="https://docs.djangoproject.com/en/1.7/topics/i18n/translation">Django's standard translation mechanisms</a>.</p>
+<p>Doing so will allow you to:</p>
 <ul>
-<li>A declarative serialization API, that mirrors Django's <code>Forms</code>/<code>ModelForms</code> API.</li>
-<li>Structural concerns are decoupled from encoding concerns.</li>
-<li>Able to support rendering and parsing to many formats, including both machine-readable representations and HTML forms.</li>
-<li>Validation that can be mapped to obvious and comprehensive error responses.</li>
-<li>Serializers that support both nested, flat, and partially-nested representations.</li>
-<li>Relationships that can be expressed as primary keys, hyperlinks, slug fields, and other custom representations.</li>
+<li>Select a language other than English as the default, using the standard <code>LANGUAGE_CODE</code> Django setting.</li>
+<li>Allow clients to choose a language themselves, using the <code>LocaleMiddleware</code> included with Django. A typical usage for API clients would be to include an <code>Accept-Language</code> request header.</li>
 </ul>
-<p>Mapping between the internal state of the system and external representations of that state is the core concern of building Web APIs.  Designing serializers that allow the developer to do so in a flexible and obvious way is a deceptively difficult design task, and with the new serialization API we think we've pretty much nailed it.</p>
-<h2 id="generic-views">Generic views</h2>
-<p>When REST framework was initially released at the start of 2011, the current Django release was version 1.2.  REST framework included a backport of Django 1.3's upcoming <code>View</code> class, but it didn't take full advantage of the generic view implementations.</p>
-<p>With the new release the generic views in REST framework now tie in with Django's generic views.  The end result is that framework is clean, lightweight and easy to use.</p>
-<h2 id="requests-responses-views">Requests, Responses &amp; Views</h2>
-<p>REST framework 2 includes <code>Request</code> and <code>Response</code> classes, than are used in place of Django's existing <code>HttpRequest</code> and <code>HttpResponse</code> classes.  Doing so allows logic such as parsing the incoming request or rendering the outgoing response to be supported transparently by the framework.</p>
-<p>The <code>Request</code>/<code>Response</code> approach leads to a much cleaner API, less logic in the view itself, and a simple, obvious request-response cycle.</p>
-<p>REST framework 2 also allows you to work with both function-based and class-based views.  For simple API views all you need is a single <code>@api_view</code> decorator, and you're good to go.</p>
-<h2 id="api-design">API Design</h2>
-<p>Pretty much every aspect of REST framework has been reworked, with the aim of ironing out some of the design flaws of the previous versions.  Each of the components of REST framework are cleanly decoupled, and can be used independently of each-other, and there are no monolithic resource classes, overcomplicated mixin combinations, or opinionated serialization or URL routing decisions.</p>
-<h2 id="the-browsable-api">The Browsable API</h2>
-<p>Django REST framework's most unique feature is the way it is able to serve up both machine-readable representations, and a fully browsable HTML representation to the same endpoints.</p>
-<p>Browsable Web APIs are easier to work with, visualize and debug, and generally makes it easier and more frictionless to inspect and work with.</p>
-<p>With REST framework 2, the browsable API gets a snazzy new bootstrap-based theme that looks great and is even nicer to work with.</p>
-<p>There are also some functionality improvements - actions such as as <code>POST</code> and <code>DELETE</code> will only display if the user has the appropriate permissions.</p>
-<p><img alt="Browsable API" src="../../../img/quickstart.png" /></p>
-<p><strong>Image above</strong>: An example of the browsable API in REST framework 2</p>
-<h2 id="documentation">Documentation</h2>
-<p>As you can see the documentation for REST framework has been radically improved.  It gets a completely new style, using markdown for the documentation source, and a bootstrap-based theme for the styling.</p>
-<p>We're really pleased with how the docs style looks - it's simple and clean, is easy to navigate around, and we think it reads great.</p>
-<h2 id="summary">Summary</h2>
-<p>In short, we've engineered the hell outta this thing, and we're incredibly proud of the result.</p>
-<p>If you're interested please take a browse around the documentation.  <a href="../../tutorial/1-serialization">The tutorial</a> is a great place to get started.</p>
-<p>There's also a <a href="http://restframework.herokuapp.com/">live sandbox version of the tutorial API</a> available for testing.</p>
+<h2 id="enabling-internationalized-apis">Enabling internationalized APIs</h2>
+<p>You can change the default language by using the standard Django <code>LANGUAGE_CODE</code> setting:</p>
+<pre><code>LANGUAGE_CODE = "es-es"
+</code></pre>
+<p>You can turn on per-request language requests by adding <code>LocalMiddleware</code> to your <code>MIDDLEWARE_CLASSES</code> setting:</p>
+<pre><code>MIDDLEWARE_CLASSES = [
+    ...
+    'django.middleware.locale.LocaleMiddleware'
+]
+</code></pre>
+<p>When per-request internationalization is enabled, client requests will respect the <code>Accept-Language</code> header where possible. For example, let's make a request for an unsupported media type:</p>
+<p><strong>Request</strong></p>
+<pre><code>GET /api/users HTTP/1.1
+Accept: application/xml
+Accept-Language: es-es
+Host: example.org
+</code></pre>
+<p><strong>Response</strong></p>
+<pre><code>HTTP/1.0 406 NOT ACCEPTABLE
+
+{"detail": "No se ha podido satisfacer la solicitud de cabecera de Accept."}
+</code></pre>
+<p>REST framework includes these built-in translations both for standard exception cases, and for serializer validation errors.</p>
+<p>Note that the translations only apply to the error strings themselves. The format of error messages, and the keys of field names will remain the same. An example <code>400 Bad Request</code> response body might look like this:</p>
+<pre><code>{"detail": {"username": ["Esse campo deve ser unico."]}}
+</code></pre>
+<p>If you want to use different string for parts of the response such as <code>detail</code> and <code>non_field_errors</code> then you can modify this behavior by using a <a href="../../api-guide/exceptions#custom-exception-handling">custom exception handler</a>.</p>
+<h4 id="specifying-the-set-of-supported-languages">Specifying the set of supported languages.</h4>
+<p>By default all available languages will be supported.</p>
+<p>If you only wish to support a subset of the available languages, use Django's standard <code>LANGUAGES</code> setting:</p>
+<pre><code>LANGUAGES = [
+    ('de', _('German')),
+    ('en', _('English')),
+]
+</code></pre>
+<h2 id="adding-new-translations">Adding new translations</h2>
+<p>REST framework translations are managed online using <a href="https://www.transifex.com/projects/p/django-rest-framework/">Transifex</a>. You can use the Transifex service to add new translation languages. The maintenance team will then ensure that these translation strings are included in the REST framework package.</p>
+<p>Sometimes you may need to add translation strings to your project locally. You may need to do this if:</p>
+<ul>
+<li>You want to use REST Framework in a language which has not been translated yet on Transifex.</li>
+<li>Your project includes custom error messages, which are not part of REST framework's default translation strings.</li>
+</ul>
+<h4 id="translating-a-new-language-locally">Translating a new language locally</h4>
+<p>This guide assumes you are already familiar with how to translate a Django app.  If you're not, start by reading <a href="https://docs.djangoproject.com/en/1.7/topics/i18n/translation">Django's translation docs</a>.</p>
+<p>If you're translating a new language you'll need to translate the existing REST framework error messages:</p>
+<ol>
+<li>
+<p>Make a new folder where you want to store the internationalization resources. Add this path to your <a href="https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-LOCALE_PATHS"><code>LOCALE_PATHS</code></a> setting.</p>
+</li>
+<li>
+<p>Now create a subfolder for the language you want to translate. The folder should be named using <a href="https://docs.djangoproject.com/en/1.7/topics/i18n/#term-locale-name">locale name</a> notation. For example: <code>de</code>, <code>pt_BR</code>, <code>es_AR</code>.</p>
+</li>
+<li>
+<p>Now copy the <a href="https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/rest_framework/locale/en_US/LC_MESSAGES/django.po">base translations file</a> from the REST framework source code into your translations folder.</p>
+</li>
+<li>
+<p>Edit the <code>django.po</code> file you've just copied, translating all the error messages.</p>
+</li>
+<li>
+<p>Run <code>manage.py compilemessages -l pt_BR</code> to make the translations 
+available for Django to use. You should see a message like <code>processing file django.po in &lt;...&gt;/locale/pt_BR/LC_MESSAGES</code>.</p>
+</li>
+<li>
+<p>Restart your development server to see the changes take effect.</p>
+</li>
+</ol>
+<p>If you're only translating custom error messages that exist inside your project codebase you don't need to copy the REST framework source <code>django.po</code> file into a <code>LOCALE_PATHS</code> folder, and can instead simply run Django's standard <code>makemessages</code> process.</p>
+<h2 id="how-the-language-is-determined">How the language is determined</h2>
+<p>If you want to allow per-request language preferences you'll need to include <code>django.middleware.locale.LocaleMiddleware</code> in your <code>MIDDLEWARE_CLASSES</code> setting.</p>
+<p>You can find more information on how the language preference is determined in the <a href="https://docs.djangoproject.com/en/1.7/topics/i18n/translation/#how-django-discovers-language-preference">Django documentation</a>. For reference, the method is:</p>
+<ol>
+<li>First, it looks for the language prefix in the requested URL.</li>
+<li>Failing that, it looks for the <code>LANGUAGE_SESSION_KEY</code> key in the current user’s session.</li>
+<li>Failing that, it looks for a cookie.</li>
+<li>Failing that, it looks at the <code>Accept-Language</code> HTTP header.</li>
+<li>Failing that, it uses the global <code>LANGUAGE_CODE</code> setting.</li>
+</ol>
+<p>For API clients the most appropriate of these will typically be to use the <code>Accept-Language</code> header; Sessions and cookies will not be available unless using session authentication, and generally better practice to prefer an <code>Accept-Language</code> header for API clients rather than using language URL prefixes.</p>
 
           </div>
           <!--/span-->

@@ -189,6 +189,10 @@
                   </li>
                   
                   <li >
+                    <a href="../versioning">Versioning</a>
+                  </li>
+                  
+                  <li >
                     <a href="../content-negotiation">Content negotiation</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/internationalization">Internationalization</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
                   </li>
                   
@@ -260,23 +268,11 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/rest-framework-2-announcement">2.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.2-announcement">2.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.3-announcement">2.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.4-announcement">2.4 Announcement</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/3.0-announcement">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.1-announcement">3.1 Announcement</a>
                   </li>
                   
                   <li >
@@ -285,10 +281,6 @@
                   
                   <li >
                     <a href="../../topics/release-notes">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/credits">Credits</a>
                   </li>
                   
                 </ul>
@@ -469,7 +461,7 @@
 <h1 id="apirequestfactory">APIRequestFactory</h1>
 <p>Extends <a href="https://docs.djangoproject.com/en/dev/topics/testing/advanced/#django.test.client.RequestFactory">Django's existing <code>RequestFactory</code> class</a>.</p>
 <h2 id="creating-test-requests">Creating test requests</h2>
-<p>The <code>APIRequestFactory</code> class supports an almost identical API to Django's standard <code>RequestFactory</code> class.  This means the that standard <code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.patch()</code>, <code>.delete()</code>, <code>.head()</code> and <code>.options()</code> methods are all available.</p>
+<p>The <code>APIRequestFactory</code> class supports an almost identical API to Django's standard <code>RequestFactory</code> class.  This means that the standard <code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.patch()</code>, <code>.delete()</code>, <code>.head()</code> and <code>.options()</code> methods are all available.</p>
 <pre><code>from rest_framework.test import APIRequestFactory
 
 # Using the standard RequestFactory API to create a form POST request
@@ -506,7 +498,9 @@ request = factory.put('/notes/547/', content, content_type=content_type)
 <h2 id="forcing-authentication">Forcing authentication</h2>
 <p>When testing views directly using a request factory, it's often convenient to be able to directly authenticate the request, rather than having to construct the correct authentication credentials.</p>
 <p>To forcibly authenticate a request, use the <code>force_authenticate()</code> method.</p>
-<pre><code>factory = APIRequestFactory()
+<pre><code>from rest_framework.tests import force_authenticate
+
+factory = APIRequestFactory()
 user = User.objects.get(username='olivia')
 view = AccountDetail.as_view()
 
@@ -538,9 +532,9 @@ response = view(request)
 <p><strong>Note</strong>: It's worth noting that Django's standard <code>RequestFactory</code> doesn't need to include this option, because when using regular Django the CSRF validation takes place in middleware, which is not run when testing views directly.  When using REST framework, CSRF validation takes place inside the view, so the request factory needs to disable view-level CSRF checks.</p>
 <hr />
 <h1 id="apiclient">APIClient</h1>
-<p>Extends <a href="https://docs.djangoproject.com/en/dev/topics/testing/overview/#module-django.test.client">Django's existing <code>Client</code> class</a>.</p>
+<p>Extends <a href="https://docs.djangoproject.com/en/dev/topics/testing/tools/#the-test-client">Django's existing <code>Client</code> class</a>.</p>
 <h2 id="making-requests">Making requests</h2>
-<p>The <code>APIClient</code> class supports the same request interface as <code>APIRequestFactory</code>.  This means the that standard <code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.patch()</code>, <code>.delete()</code>, <code>.head()</code> and <code>.options()</code> methods are all available.  For example:</p>
+<p>The <code>APIClient</code> class supports the same request interface as Django's standard <code>Client</code> class.  This means the that standard <code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.patch()</code>, <code>.delete()</code>, <code>.head()</code> and <code>.options()</code> methods are all available.  For example:</p>
 <pre><code>from rest_framework.test import APIClient
 
 client = APIClient()
@@ -646,13 +640,13 @@ self.assertEqual(response.content, '{"username": "lauren", "id": 4}')
 </code></pre>
 <h2 id="setting-the-available-formats">Setting the available formats</h2>
 <p>If you need to test requests using something other than multipart or json requests, you can do so by setting the <code>TEST_REQUEST_RENDERER_CLASSES</code> setting.</p>
-<p>For example, to add support for using <code>format='yaml'</code> in test requests, you might have something like this in your <code>settings.py</code> file.</p>
+<p>For example, to add support for using <code>format='html'</code> in test requests, you might have something like this in your <code>settings.py</code> file.</p>
 <pre><code>REST_FRAMEWORK = {
     ...
     'TEST_REQUEST_RENDERER_CLASSES': (
         'rest_framework.renderers.MultiPartRenderer',
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.YAMLRenderer'
+        'rest_framework.renderers.TemplateHTMLRenderer'
     )
 }
 </code></pre>

@@ -189,6 +189,10 @@
                   </li>
                   
                   <li >
+                    <a href="../versioning">Versioning</a>
+                  </li>
+                  
+                  <li >
                     <a href="../content-negotiation">Content negotiation</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/internationalization">Internationalization</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
                   </li>
                   
@@ -260,23 +268,11 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/rest-framework-2-announcement">2.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.2-announcement">2.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.3-announcement">2.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.4-announcement">2.4 Announcement</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/3.0-announcement">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.1-announcement">3.1 Announcement</a>
                   </li>
                   
                   <li >
@@ -285,10 +281,6 @@
                   
                   <li >
                     <a href="../../topics/release-notes">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/credits">Credits</a>
                   </li>
                   
                 </ul>
@@ -403,10 +395,6 @@
                   
                     <li>
                       <a href="#djangoobjectpermissions">DjangoObjectPermissions</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#tokenhasreadwritescope">TokenHasReadWriteScope</a>
                     </li>
                   
 
@@ -575,16 +563,6 @@ def example_view(request, format=None):
 <hr />
 <p><strong>Note</strong>: If you need object level <code>view</code> permissions for <code>GET</code>, <code>HEAD</code> and <code>OPTIONS</code> requests, you'll want to consider also adding the <code>DjangoObjectPermissionsFilter</code> class to ensure that list endpoints only return results including objects for which the user has appropriate view permissions.</p>
 <hr />
-<h2 id="tokenhasreadwritescope">TokenHasReadWriteScope</h2>
-<p>This permission class is intended for use with either of the <code>OAuthAuthentication</code> and <code>OAuth2Authentication</code> classes, and ties into the scoping that their backends provide.</p>
-<p>Requests with a safe methods of <code>GET</code>, <code>OPTIONS</code> or <code>HEAD</code> will be allowed if the authenticated token has read permission.</p>
-<p>Requests for <code>POST</code>, <code>PUT</code>, <code>PATCH</code> and <code>DELETE</code> will be allowed if the authenticated token has write permission.</p>
-<p>This permission class relies on the implementations of the <a href="http://code.larlet.fr/django-oauth-plus">django-oauth-plus</a> and <a href="https://github.com/caffeinehit/django-oauth2-provider">django-oauth2-provider</a> libraries, which both provide limited support for controlling the scope of access tokens:</p>
-<ul>
-<li><code>django-oauth-plus</code>: Tokens are associated with a <code>Resource</code> class which has a <code>name</code>, <code>url</code> and <code>is_readonly</code> properties.</li>
-<li><code>django-oauth2-provider</code>: Tokens are associated with a bitwise <code>scope</code> attribute, that defaults to providing bitwise values for <code>read</code> and/or <code>write</code>.</li>
-</ul>
-<p>If you require more advanced scoping for your API, such as restricting tokens to accessing a subset of functionality of your API then you will need to provide a custom permission class.  See the source of the <code>django-oauth-plus</code> or <code>django-oauth2-provider</code> package for more details on scoping token access.</p>
 <hr />
 <h1 id="custom-permissions">Custom permissions</h1>
 <p>To implement a custom permission, override <code>BasePermission</code> and implement either, or both, of the following methods:</p>

@@ -189,6 +189,10 @@
                   </li>
                   
                   <li >
+                    <a href="../versioning">Versioning</a>
+                  </li>
+                  
+                  <li >
                     <a href="../content-negotiation">Content negotiation</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/internationalization">Internationalization</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
                   </li>
                   
@@ -260,23 +268,11 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/rest-framework-2-announcement">2.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.2-announcement">2.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.3-announcement">2.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.4-announcement">2.4 Announcement</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/3.0-announcement">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.1-announcement">3.1 Announcement</a>
                   </li>
                   
                   <li >
@@ -285,10 +281,6 @@
                   
                   <li >
                     <a href="../../topics/release-notes">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/credits">Credits</a>
                   </li>
                   
                 </ul>
@@ -378,6 +370,10 @@
                     </li>
                   
                     <li>
+                      <a href="#versioning-settings">Versioning settings</a>
+                    </li>
+                  
+                    <li>
                       <a href="#authentication-settings">Authentication settings</a>
                     </li>
                   
@@ -433,10 +429,10 @@
 <p>For example your project's <code>settings.py</code> file might include something like this:</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.YAMLRenderer',
+        'rest_framework.renderers.JSONRenderer',
     ),
     'DEFAULT_PARSER_CLASSES': (
-        'rest_framework.parsers.YAMLParser',
+        'rest_framework.parsers.JSONParser',
     )
 }
 </code></pre>
@@ -533,6 +529,17 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 <h4 id="ordering_param">ORDERING_PARAM</h4>
 <p>The name of a query parameter, which can be used to specify the ordering of results returned by <code>OrderingFilter</code>.</p>
 <p>Default: <code>ordering</code></p>
+<hr />
+<h2 id="versioning-settings">Versioning settings</h2>
+<h4 id="default_version">DEFAULT_VERSION</h4>
+<p>The value that should be used for <code>request.version</code> when no versioning information is present.</p>
+<p>Default: <code>None</code></p>
+<h4 id="allowed_versions">ALLOWED_VERSIONS</h4>
+<p>If set, this value will restrict the set of versions that may be returned by the versioning scheme, and will raise an error if the provided version if not in this set.</p>
+<p>Default: <code>None</code></p>
+<h4 id="version_parameter">VERSION_PARAMETER</h4>
+<p>The string that should used for any versioning parameters, such as in the media type or URL query parameters.</p>
+<p>Default: <code>'version'</code></p>
 <hr />
 <h2 id="authentication-settings">Authentication settings</h2>
 <p><em>The following settings control the behavior of unauthenticated requests.</em></p>
@@ -661,7 +668,7 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 <p>A string representing the function that should be used when returning a response for any given exception.  If the function returns <code>None</code>, a 500 error will be raised.</p>
 <p>This setting can be changed to support error responses other than the default <code>{"detail": "Failure..."}</code> responses.  For example, you can use it to provide API responses like <code>{"errors": [{"message": "Failure...", "code": ""} ...]}</code>.</p>
 <p>This should be a function with the following signature:</p>
-<pre><code>exception_handler(exc)
+<pre><code>exception_handler(exc, context)
 </code></pre>
 <ul>
 <li><code>exc</code>: The exception.</li>

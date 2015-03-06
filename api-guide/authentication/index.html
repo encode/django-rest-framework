@@ -189,6 +189,10 @@
                   </li>
                   
                   <li >
+                    <a href="../versioning">Versioning</a>
+                  </li>
+                  
+                  <li >
                     <a href="../content-negotiation">Content negotiation</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/internationalization">Internationalization</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
                   </li>
                   
@@ -260,23 +268,11 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/rest-framework-2-announcement">2.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.2-announcement">2.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.3-announcement">2.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.4-announcement">2.4 Announcement</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/3.0-announcement">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.1-announcement">3.1 Announcement</a>
                   </li>
                   
                   <li >
@@ -285,10 +281,6 @@
                   
                   <li >
                     <a href="../../topics/release-notes">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/credits">Credits</a>
                   </li>
                   
                 </ul>
@@ -393,14 +385,6 @@
                       <a href="#sessionauthentication">SessionAuthentication</a>
                     </li>
                   
-                    <li>
-                      <a href="#oauthauthentication">OAuthAuthentication</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#oauth2authentication">OAuth2Authentication</a>
-                    </li>
-                  
 
                 
 
@@ -422,11 +406,15 @@
 
                   
                     <li>
-                      <a href="#digest-authentication">Digest Authentication</a>
+                      <a href="#django-oauth-toolkit">Django OAuth Toolkit</a>
                     </li>
                   
                     <li>
-                      <a href="#django-oauth-toolkit">Django OAuth Toolkit</a>
+                      <a href="#django-rest-framework-oauth">Django REST framework OAuth</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#digest-authentication">Digest Authentication</a>
                     </li>
                   
                     <li>
@@ -447,6 +435,10 @@
                   
                     <li>
                       <a href="#djoser">Djoser</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#django-rest-auth">django-rest-auth</a>
                     </li>
                   
 
@@ -649,74 +641,6 @@ python manage.py createsuperuser
 </ul>
 <p>Unauthenticated responses that are denied permission will result in an <code>HTTP 403 Forbidden</code> response.</p>
 <p>If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as <code>PUT</code>, <code>PATCH</code>, <code>POST</code> or <code>DELETE</code> requests.  See the <a href="https://docs.djangoproject.com/en/dev/ref/csrf/#ajax">Django CSRF documentation</a> for more details.</p>
-<h2 id="oauthauthentication">OAuthAuthentication</h2>
-<p>This authentication uses <a href="http://oauth.net/core/1.0a">OAuth 1.0a</a> authentication scheme.  OAuth 1.0a provides signature validation which provides a reasonable level of security over plain non-HTTPS connections.  However, it may also be considered more complicated than OAuth2, as it requires clients to sign their requests.</p>
-<p>This authentication class depends on the optional <code>django-oauth-plus</code> and <code>oauth2</code> packages.  In order to make it work you must install these packages and add <code>oauth_provider</code> to your <code>INSTALLED_APPS</code>:</p>
-<pre><code>INSTALLED_APPS = (
-    ...
-    `oauth_provider`,
-)
-</code></pre>
-<p>Don't forget to run <code>syncdb</code> once you've added the package.</p>
-<pre><code>python manage.py syncdb
-</code></pre>
-<h4 id="getting-started-with-django-oauth-plus">Getting started with django-oauth-plus</h4>
-<p>The OAuthAuthentication class only provides token verification and signature validation for requests.  It doesn't provide authorization flow for your clients.  You still need to implement your own views for accessing and authorizing tokens.</p>
-<p>The <code>django-oauth-plus</code> package provides simple foundation for classic 'three-legged' oauth flow.  Please refer to <a href="http://code.larlet.fr/django-oauth-plus">the documentation</a> for more details.</p>
-<h2 id="oauth2authentication">OAuth2Authentication</h2>
-<p>This authentication uses <a href="http://tools.ietf.org/html/rfc6749">OAuth 2.0</a> authentication scheme.  OAuth2 is more simple to work with than OAuth1, and provides much better security than simple token authentication.  It is an unauthenticated scheme, and requires you to use an HTTPS connection.</p>
-<p>This authentication class depends on the optional <a href="https://github.com/caffeinehit/django-oauth2-provider">django-oauth2-provider</a> project.  In order to make it work you must install this package and add <code>provider</code> and <code>provider.oauth2</code> to your <code>INSTALLED_APPS</code>:</p>
-<pre><code>INSTALLED_APPS = (
-    ...
-    'provider',
-    'provider.oauth2',
-)
-</code></pre>
-<p>Then add <code>OAuth2Authentication</code> to your global <code>DEFAULT_AUTHENTICATION_CLASSES</code> setting:</p>
-<pre><code>'DEFAULT_AUTHENTICATION_CLASSES': (
-    'rest_framework.authentication.OAuth2Authentication',
-),
-</code></pre>
-<p>You must also include the following in your root <code>urls.py</code> module:</p>
-<pre><code>url(r'^oauth2/', include('provider.oauth2.urls', namespace='oauth2')),
-</code></pre>
-<p>Note that the <code>namespace='oauth2'</code> argument is required.</p>
-<p>Finally, sync your database.</p>
-<pre><code>python manage.py syncdb
-python manage.py migrate
-</code></pre>
-<hr />
-<p><strong>Note:</strong> If you use <code>OAuth2Authentication</code> in production you must ensure that your API is only available over <code>https</code>.</p>
-<hr />
-<h4 id="getting-started-with-django-oauth2-provider">Getting started with django-oauth2-provider</h4>
-<p>The <code>OAuth2Authentication</code> class only provides token verification for requests.  It doesn't provide authorization flow for your clients.</p>
-<p>The OAuth 2 authorization flow is taken care by the <a href="https://github.com/caffeinehit/django-oauth2-provider">django-oauth2-provider</a> dependency.  A walkthrough is given here, but for more details you should refer to <a href="https://django-oauth2-provider.readthedocs.org/en/latest/">the documentation</a>.</p>
-<p>To get started:</p>
-<h5 id="1-create-a-client">1. Create a client</h5>
-<p>You can create a client, either through the shell, or by using the Django admin.</p>
-<p>Go to the admin panel and create a new <code>Provider.Client</code> entry.  It will create the <code>client_id</code> and <code>client_secret</code> properties for you.</p>
-<h5 id="2-request-an-access-token">2. Request an access token</h5>
-<p>To request an access token, submit a <code>POST</code> request to the url <code>/oauth2/access_token</code> with the following fields:</p>
-<ul>
-<li><code>client_id</code> the client id you've just configured at the previous step.</li>
-<li><code>client_secret</code> again configured at the previous step.</li>
-<li><code>username</code> the username with which you want to log in.</li>
-<li><code>password</code> well, that speaks for itself.</li>
-</ul>
-<p>You can use the command line to test that your local configuration is working:</p>
-<pre><code>curl -X POST -d "client_id=YOUR_CLIENT_ID&amp;client_secret=YOUR_CLIENT_SECRET&amp;grant_type=password&amp;username=YOUR_USERNAME&amp;password=YOUR_PASSWORD" http://localhost:8000/oauth2/access_token/
-</code></pre>
-<p>You should get a response that looks something like this:</p>
-<pre><code>{"access_token": "&lt;your-access-token&gt;", "scope": "read", "expires_in": 86399, "refresh_token": "&lt;your-refresh-token&gt;"}
-</code></pre>
-<h5 id="3-access-the-api">3. Access the API</h5>
-<p>The only thing needed to make the <code>OAuth2Authentication</code> class work is to insert the <code>access_token</code> you've received in the <code>Authorization</code> request header.</p>
-<p>The command line to test the authentication looks like:</p>
-<pre><code>curl -H "Authorization: Bearer &lt;your-access-token&gt;" http://localhost:8000/api/
-</code></pre>
-<h3 id="alternative-oauth-2-implementations">Alternative OAuth 2 implementations</h3>
-<p>Note that <a href="https://github.com/evonove/django-oauth-toolkit">Django OAuth Toolkit</a> is an alternative external package that also includes OAuth 2.0 support for REST framework.</p>
-<hr />
 <h1 id="custom-authentication">Custom authentication</h1>
 <p>To implement a custom authentication scheme, subclass <code>BaseAuthentication</code> and override the <code>.authenticate(self, request)</code> method.  The method should return a two-tuple of <code>(user, auth)</code> if authentication succeeds, or <code>None</code> otherwise.</p>
 <p>In some circumstances instead of returning <code>None</code>, you may want to raise an <code>AuthenticationFailed</code> exception from the <code>.authenticate()</code> method.</p>
@@ -749,10 +673,35 @@ class ExampleAuthentication(authentication.BaseAuthentication):
 <hr />
 <h1 id="third-party-packages">Third party packages</h1>
 <p>The following third party packages are also available.</p>
+<h2 id="django-oauth-toolkit">Django OAuth Toolkit</h2>
+<p>The <a href="https://github.com/evonove/django-oauth-toolkit">Django OAuth Toolkit</a> package provides OAuth 2.0 support, and works with Python 2.7 and Python 3.3+. The package is maintained by <a href="https://github.com/evonove/">Evonove</a> and uses the excellent <a href="https://github.com/idan/oauthlib">OAuthLib</a>.  The package is well documented, and well supported and is currently our <strong>recommended package for OAuth 2.0 support</strong>.</p>
+<h4 id="installation-configuration">Installation &amp; configuration</h4>
+<p>Install using <code>pip</code>.</p>
+<pre><code>pip install django-oauth-toolkit
+</code></pre>
+<p>Add the package to your <code>INSTALLED_APPS</code> and modify your REST framework settings.</p>
+<pre><code>INSTALLED_APPS = (
+    ...
+    'oauth2_provider',
+)
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+    )
+}
+</code></pre>
+<p>For more details see the <a href="https://django-oauth-toolkit.readthedocs.org/en/latest/rest-framework/getting_started.html">Django REST framework - Getting started</a> documentation.</p>
+<h2 id="django-rest-framework-oauth">Django REST framework OAuth</h2>
+<p>The <a href="http://jpadilla.github.io/django-rest-framework-oauth/">Django REST framework OAuth</a> package provides both OAuth1 and OAuth2 support for REST framework.</p>
+<p>This package was previously included directly in REST framework but is now supported and maintained as a third party package.</p>
+<h4 id="installation-configuration_1">Installation &amp; configuration</h4>
+<p>Install the package using <code>pip</code>.</p>
+<pre><code>pip install djangorestframework-oauth
+</code></pre>
+<p>For details on configuration and usage see the Django REST framework OAuth documentation for <a href="http://jpadilla.github.io/django-rest-framework-oauth/authentication/">authentication</a> and <a href="http://jpadilla.github.io/django-rest-framework-oauth/permissions/">permissions</a>.</p>
 <h2 id="digest-authentication">Digest Authentication</h2>
 <p>HTTP digest authentication is a widely implemented scheme that was intended to replace HTTP basic authentication, and which provides a simple encrypted authentication mechanism. <a href="https://github.com/juanriaza">Juan Riaza</a> maintains the <a href="https://github.com/juanriaza/django-rest-framework-digestauth">djangorestframework-digestauth</a> package which provides HTTP digest authentication support for REST framework.</p>
-<h2 id="django-oauth-toolkit">Django OAuth Toolkit</h2>
-<p>The <a href="https://github.com/evonove/django-oauth-toolkit">Django OAuth Toolkit</a> package provides OAuth 2.0 support, and works with Python 2.7 and Python 3.3+.  The package is maintained by <a href="https://github.com/evonove/">Evonove</a> and uses the excellent <a href="https://github.com/idan/oauthlib">OAuthLib</a>.  The package is well documented, and comes as a recommended alternative for OAuth 2.0 support.</p>
 <h2 id="django-oauth2-consumer">Django OAuth2 Consumer</h2>
 <p>The <a href="https://github.com/Rediker-Software/doac">Django OAuth2 Consumer</a> library from <a href="https://github.com/Rediker-Software">Rediker Software</a> is another package that provides <a href="https://github.com/Rediker-Software/doac/blob/master/docs/integrations.md#">OAuth 2.0 support for REST framework</a>.  The package includes token scoping permissions on tokens, which allows finer-grained access to your API.</p>
 <h2 id="json-web-token-authentication">JSON Web Token Authentication</h2>
@@ -763,6 +712,8 @@ class ExampleAuthentication(authentication.BaseAuthentication):
 <p>HTTP Signature (currently a <a href="https://datatracker.ietf.org/doc/draft-cavage-http-signatures/">IETF draft</a>) provides a way to achieve origin authentication and message integrity for HTTP messages. Similar to <a href="http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html">Amazon's HTTP Signature scheme</a>, used by many of its services, it permits stateless, per-request authentication. <a href="https://github.com/etoccalino/">Elvio Toccalino</a> maintains the <a href="https://github.com/etoccalino/django-rest-framework-httpsignature">djangorestframework-httpsignature</a> package which provides an easy to use HTTP Signature Authentication mechanism.</p>
 <h2 id="djoser">Djoser</h2>
 <p><a href="https://github.com/sunscrapers/djoser">Djoser</a> library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and it uses token based authentication. This is a ready to use REST implementation of Django authentication system.</p>
+<h2 id="django-rest-auth">django-rest-auth</h2>
+<p><a href="https://github.com/Tivix/django-rest-auth">Django-rest-auth</a> library provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc. By having these API endpoints, your client apps such as AngularJS, iOS, Android, and others can communicate to your Django backend site independently via REST APIs for user management.</p>
 
           </div>
           <!--/span-->

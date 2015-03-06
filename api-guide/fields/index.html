@@ -189,6 +189,10 @@
                   </li>
                   
                   <li >
+                    <a href="../versioning">Versioning</a>
+                  </li>
+                  
+                  <li >
                     <a href="../content-negotiation">Content negotiation</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/internationalization">Internationalization</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
                   </li>
                   
@@ -260,23 +268,11 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/rest-framework-2-announcement">2.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.2-announcement">2.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.3-announcement">2.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.4-announcement">2.4 Announcement</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/3.0-announcement">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.1-announcement">3.1 Announcement</a>
                   </li>
                   
                   <li >
@@ -285,10 +281,6 @@
                   
                   <li >
                     <a href="../../topics/release-notes">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/credits">Credits</a>
                   </li>
                   
                 </ul>
@@ -661,11 +653,12 @@ color_channel = serializers.ChoiceField(
 <h2 id="charfield">CharField</h2>
 <p>A text representation. Optionally validates the text to be shorter than <code>max_length</code> and longer than <code>min_length</code>.</p>
 <p>Corresponds to <code>django.db.models.fields.CharField</code> or <code>django.db.models.fields.TextField</code>.</p>
-<p><strong>Signature:</strong> <code>CharField(max_length=None, min_length=None, allow_blank=False)</code></p>
+<p><strong>Signature:</strong> <code>CharField(max_length=None, min_length=None, allow_blank=False, trim_whitespace=True)</code></p>
 <ul>
 <li><code>max_length</code> - Validates that the input contains no more than this number of characters.</li>
 <li><code>min_length</code> - Validates that the input contains no fewer than this number of characters.</li>
 <li><code>allow_blank</code> - If set to <code>True</code> then the empty string should be considered a valid value. If set to <code>False</code> then the empty string is considered invalid and will raise a validation error. Defaults to <code>False</code>.</li>
+<li><code>trim_whitespace</code> - If set to <code>True</code> then leading and trailing whitespace is trimmed. Defaults to <code>True</code>.</li>
 </ul>
 <p>The <code>allow_null</code> option is also available for string fields, although its usage is discouraged in favor of <code>allow_blank</code>. It is valid to set both <code>allow_blank=True</code> and <code>allow_null=True</code>, but doing so means that there will be two differing types of empty value permissible for string representations, which can lead to data inconsistencies and subtle application bugs.</p>
 <h2 id="emailfield">EmailField</h2>

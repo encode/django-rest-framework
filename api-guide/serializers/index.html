@@ -189,6 +189,10 @@
                   </li>
                   
                   <li >
+                    <a href="../versioning">Versioning</a>
+                  </li>
+                  
+                  <li >
                     <a href="../content-negotiation">Content negotiation</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/internationalization">Internationalization</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
                   </li>
                   
@@ -260,23 +268,11 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/rest-framework-2-announcement">2.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.2-announcement">2.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.3-announcement">2.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/2.4-announcement">2.4 Announcement</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/3.0-announcement">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.1-announcement">3.1 Announcement</a>
                   </li>
                   
                   <li >
@@ -285,10 +281,6 @@
                   
                   <li >
                     <a href="../../topics/release-notes">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../../topics/credits">Credits</a>
                   </li>
                   
                 </ul>
@@ -414,7 +406,7 @@
                     </li>
                   
                     <li>
-                      <a href="#specifying-which-fields-should-be-included">Specifying which fields should be included</a>
+                      <a href="#specifying-which-fields-to-include">Specifying which fields to include</a>
                     </li>
                   
                     <li>
@@ -426,11 +418,11 @@
                     </li>
                   
                     <li>
-                      <a href="#specifying-which-fields-should-be-read-only">Specifying which fields should be read-only</a>
+                      <a href="#specifying-read-only-fields">Specifying read only fields</a>
                     </li>
                   
                     <li>
-                      <a href="#specifying-additional-keyword-arguments-for-fields">Specifying additional keyword arguments for fields.</a>
+                      <a href="#additional-keyword-arguments">Additional keyword arguments</a>
                     </li>
                   
                     <li>
@@ -439,6 +431,10 @@
                   
                     <li>
                       <a href="#inheritance-of-the-meta-class">Inheritance of the 'Meta' class</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#customizing-field-mappings">Customizing field mappings</a>
                     </li>
                   
 
@@ -920,7 +916,7 @@ AccountSerializer():
     name = CharField(allow_blank=True, max_length=100, required=False)
     owner = PrimaryKeyRelatedField(queryset=User.objects.all())
 </code></pre>
-<h2 id="specifying-which-fields-should-be-included">Specifying which fields should be included</h2>
+<h2 id="specifying-which-fields-to-include">Specifying which fields to include</h2>
 <p>If you only want a subset of the default fields to be used in a model serializer, you can do so using <code>fields</code> or <code>exclude</code> options, just as you would with a <code>ModelForm</code>.</p>
 <p>For example:</p>
 <pre><code>class AccountSerializer(serializers.ModelSerializer):
@@ -950,7 +946,7 @@ AccountSerializer():
         model = Account
 </code></pre>
 <p>Extra fields can correspond to any property or callable on the model.</p>
-<h2 id="specifying-which-fields-should-be-read-only">Specifying which fields should be read-only</h2>
+<h2 id="specifying-read-only-fields">Specifying read only fields</h2>
 <p>You may wish to specify multiple fields as read-only. Instead of adding each field explicitly with the <code>read_only=True</code> attribute, you may use the shortcut Meta option, <code>read_only_fields</code>.</p>
 <p>This option should be a list or tuple of field names, and is declared as follows:</p>
 <pre><code>class AccountSerializer(serializers.ModelSerializer):
@@ -968,7 +964,7 @@ AccountSerializer():
 </code></pre>
 <p>Please review the <a href="../..//api-guide/validators/">Validators Documentation</a> for details on the <a href="../..//api-guide/validators/#uniquetogethervalidator">UniqueTogetherValidator</a> and <a href="../..//api-guide/validators/#currentuserdefault">CurrentUserDefault</a> classes.</p>
 <hr />
-<h2 id="specifying-additional-keyword-arguments-for-fields">Specifying additional keyword arguments for fields.</h2>
+<h2 id="additional-keyword-arguments">Additional keyword arguments</h2>
 <p>There is also a shortcut allowing you to specify arbitrary additional keyword arguments on fields, using the <code>extra_kwargs</code> option. Similarly to <code>read_only_fields</code> this means you do not need to explicitly declare the field on the serializer.</p>
 <p>This option is a dictionary, mapping field names to a dictionary of keyword arguments. For example:</p>
 <pre><code>class CreateUserSerializer(serializers.ModelSerializer):
@@ -997,6 +993,43 @@ AccountSerializer():
         model = Account
 </code></pre>
 <p>Typically we would recommend <em>not</em> using inheritance on inner Meta classes, but instead declaring all options explicitly.</p>
+<h2 id="customizing-field-mappings">Customizing field mappings</h2>
+<p>The ModelSerializer class also exposes an API that you can override in order to alter how serializer fields are automatically determined when instantiating the serializer.</p>
+<p>Normally if a <code>ModelSerializer</code> does not generate the fields you need by default the you should either add them to the class explicitly, or simply use a regular <code>Serializer</code> class instead. However in some cases you may want to create a new base class that defines how the serializer fields are created for any given model.</p>
+<h3 id="serializer_field_mapping"><code>.serializer_field_mapping</code></h3>
+<p>A mapping of Django model classes to REST framework serializer classes. You can override this mapping to alter the default serializer classes that should be used for each model class.</p>
+<h3 id="serializer_related_field"><code>.serializer_related_field</code></h3>
+<p>This property should be the serializer field class, that is used for relational fields by default.</p>
+<p>For <code>ModelSerializer</code> this defaults to <code>PrimaryKeyRelatedField</code>.</p>
+<p>For <code>HyperlinkedModelSerializer</code> this defaults to <code>serializers.HyperlinkedRelatedField</code>.</p>
+<h3 id="serializer_url_field"><code>serializer_url_field</code></h3>
+<p>The serializer field class that should be used for any <code>url</code> field on the serializer.</p>
+<p>Defaults to <code>serializers.HyperlinkedIdentityField</code></p>
+<h3 id="serializer_choice_field"><code>serializer_choice_field</code></h3>
+<p>The serializer field class that should be used for any choice fields on the serializer.</p>
+<p>Defaults to <code>serializers.ChoiceField</code></p>
+<h3 id="the-field_class-and-field_kwargs-api">The field_class and field_kwargs API</h3>
+<p>The following methods are called to determine the class and keyword arguments for each field that should be automatically included on the serializer. Each of these methods should return a two tuple of <code>(field_class, field_kwargs)</code>.</p>
+<h3 id="build_standard_fieldself-field_name-model_field"><code>.build_standard_field(self, field_name, model_field)</code></h3>
+<p>Called to generate a serializer field that maps to a standard model field.</p>
+<p>The default implementation returns a serializer class based on the <code>serializer_field_mapping</code> attribute.</p>
+<h3 id="build_relational_fieldself-field_name-relation_info"><code>.build_relational_field(self, field_name, relation_info)</code></h3>
+<p>Called to generate a serializer field that maps to a relational model field.</p>
+<p>The default implementation returns a serializer class based on the <code>serializer_relational_field</code> attribute.</p>
+<p>The <code>relation_info</code> argument is a named tuple, that contains <code>model_field</code>, <code>related_model</code>, <code>to_many</code> and <code>has_through_model</code> properties.</p>
+<h3 id="build_nested_fieldself-field_name-relation_info-nested_depth"><code>.build_nested_field(self, field_name, relation_info, nested_depth)</code></h3>
+<p>Called to generate a serializer field that maps to a relational model field, when the <code>depth</code> option has been set.</p>
+<p>The default implementation dynamically creates a nested serializer class based on either <code>ModelSerializer</code> or <code>HyperlinkedModelSerializer</code>.</p>
+<p>The <code>nested_depth</code> will be the value of the <code>depth</code> option, minus one.</p>
+<p>The <code>relation_info</code> argument is a named tuple, that contains <code>model_field</code>, <code>related_model</code>, <code>to_many</code> and <code>has_through_model</code> properties.</p>
+<h3 id="build_property_fieldself-field_name-model_class"><code>.build_property_field(self, field_name, model_class)</code></h3>
+<p>Called to generate a serializer field that maps to a property or zero-argument method on the model class.</p>
+<p>The default implementation returns a <code>ReadOnlyField</code> class.</p>
+<h3 id="build_url_fieldself-field_name-model_class"><code>.build_url_field(self, field_name, model_class)</code></h3>
+<p>Called to generate a serializer field for the serializer's own <code>url</code> field. The default implementation returns a <code>HyperlinkedIdentityField</code> class.</p>
+<h3 id="build_unknown_fieldself-field_name-model_class"><code>.build_unknown_field(self, field_name, model_class)</code></h3>
+<p>Called when the field name did not map to any model field or model property.
+The default implementation raises an error, although subclasses may customize this behavior.</p>
 <hr />
 <h1 id="hyperlinkedmodelserializer">HyperlinkedModelSerializer</h1>
 <p>The <code>HyperlinkedModelSerializer</code> class is similar to the <code>ModelSerializer</code> class except that it uses hyperlinks to represent relationships, rather than primary keys.</p>
