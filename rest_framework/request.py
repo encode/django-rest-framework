@@ -14,7 +14,6 @@ from django.http import QueryDict
 from django.http.multipartparser import parse_header
 from django.utils import six
 from django.utils.datastructures import MultiValueDict
-from django.utils.datastructures import MergeDict as DjangoMergeDict
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
 from rest_framework.settings import api_settings
@@ -59,15 +58,6 @@ class override_method(object):
         self.view.request = self.request
         if self.action is not None:
             self.view.action = self.action
-
-
-class MergeDict(DjangoMergeDict, dict):
-    """
-    Using this as a workaround until the parsers API is properly
-    addressed in 3.1.
-    """
-    def __init__(self, *dicts):
-        self.dicts = dicts
 
 
 class Empty(object):
@@ -328,7 +318,8 @@ class Request(object):
         if not _hasattr(self, '_data'):
             self._data, self._files = self._parse()
             if self._files:
-                self._full_data = MergeDict(self._data, self._files)
+                self._full_data = self._data.copy()
+                self._full_data.update(self._files)
             else:
                 self._full_data = self._data
 
@@ -392,7 +383,8 @@ class Request(object):
         # At this point we're committed to parsing the request as form data.
         self._data = self._request.POST
         self._files = self._request.FILES
-        self._full_data = MergeDict(self._data, self._files)
+        self._full_data = self._data.copy()
+        self._full_data.update(self._files)
 
         # Method overloading - change the method and remove the param from the content.
         if (
