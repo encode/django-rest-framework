@@ -496,7 +496,7 @@ Host: example.org
 <hr />
 <h2 id="modelserializer-api">ModelSerializer API</h2>
 <p>The serializer redesign in 3.0 did not include any public API for modifying how ModelSerializer classes automatically generate a set of fields from a given mode class. We've now re-introduced an API for this, allowing you to create new ModelSerializer base classes that behave differently, such as using a different default style for relationships.</p>
-<p>For more information, see the documentation on <a href="../../../api-guide/serializers/#customizing-field-mappings">customizing field mappings</a> for ModelSerializer classes.</p>
+<p>For more information, see the documentation on <a href="../../../api-guide/serializers.md/#customizing-field-mappings">customizing field mappings</a> for ModelSerializer classes.</p>
 <hr />
 <h2 id="moving-packages-out-of-core">Moving packages out of core</h2>
 <p>We've now moved a number of packages out of the core of REST framework, and into separately installable packages. If you're currently using these you don't need to worry, you simply need to <code>pip install</code> the new packages, and change any import paths.</p>
