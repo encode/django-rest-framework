@@ -429,7 +429,7 @@
 <p>For more information, see the <a href="../../../api-guide/pagination/#custom-pagination-styles">custom pagination styles</a> documentation.</p>
 <hr />
 <h2 id="versioning">Versioning</h2>
-<p>We've made it easier to build versioned APIs. Built-in schemes for versioning include both URL based and Accept header based variations.</p>
+<p>We've made it <a href="../../api-guide/versioning">easier to build versioned APIs</a>. Built-in schemes for versioning include both URL based and Accept header based variations.</p>
 <p>When using a URL based scheme, hyperlinked serializers will resolve relationships to the same API version as used on the incoming request.</p>
 <p>For example, when using <code>NamespaceVersioning</code>, and the following hyperlinked serializer:</p>
 <pre><code>class AccountsSerializer(serializer.HyperlinkedModelSerializer):
@@ -451,7 +451,7 @@
 </code></pre>
 <hr />
 <h2 id="internationalization">Internationalization</h2>
-<p>REST framework now includes a built-in set of translations, and supports internationalized error responses. This allows you to either change the default language, or to allow clients to specify the language via the <code>Accept-Language</code> header.</p>
+<p>REST framework now includes a built-in set of translations, and <a href="../internationalization">supports internationalized error responses</a>. This allows you to either change the default language, or to allow clients to specify the language via the <code>Accept-Language</code> header.</p>
 <p>You can change the default language by using the standard Django <code>LANGUAGE_CODE</code> setting:</p>
 <pre><code>LANGUAGE_CODE = "es-es"
 </code></pre>
