@@ -1,4 +1,5 @@
 {% load i18n %}
+{% trans "None" as none_choice %}
 
 <div class="form-group">
     {% if field.label %}
@@ -9,7 +10,7 @@
         {% if field.allow_null or field.allow_blank %}
             <label class="radio-inline">
                 <input type="radio" name="{{ field.name }}" value="" {% if not field.value %}checked{% endif %} />
-                {% trans "None" %}
+                {{ none_choice }}
             </label>
         {% endif %}
         {% for key, text in field.choices.items %}
@@ -23,7 +24,7 @@
             <div class="radio">
                 <label>
                     <input type="radio" name="{{ field.name }}" value="" {% if not field.value %}checked{% endif %} />
-                    {% trans "None" %}
+                    {{ none_choice }}
                 </label>
             </div>
         {% endif %}
