@@ -1,12 +1,6 @@
 source: mixins.py
         generics.py
 
----
-
-**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
-
----
-
 # Generic views
 
 > Django’s generic views... were developed as a shortcut for common usage patterns... They take certain common idioms and patterns found in view development and abstract them so that you can quickly write common views of data without having to repeat yourself.
