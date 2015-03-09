@@ -80,11 +80,11 @@ This pagination style accepts a single number page number in the request query p
 
 #### Setup
 
-To enable the `PageNumberPagination` style globally, use the following configuration, modifying the `DEFAULT_PAGE_SIZE` as desired:
+To enable the `PageNumberPagination` style globally, use the following configuration, modifying the `PAGE_SIZE` as desired:
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-        'DEFAULT_PAGE_SIZE': 100
+        'PAGE_SIZE': 100
     }
 
 On `GenericAPIView` subclasses you may also set the `pagination_class` attribute to select `PageNumberPagination` on a per-view basis.
@@ -95,7 +95,7 @@ The `PageNumberPagination` class includes a number of attributes that may be ove
 
 To set these attributes you should override the `PageNumberPagination` class, and then enable your custom pagination class as above.
 
-* `page_size` - A numeric value indicating the page size. If set, this overrides the `DEFAULT_PAGE_SIZE` setting. Defaults to the same value as the `DEFAULT_PAGE_SIZE` settings key.
+* `page_size` - A numeric value indicating the page size. If set, this overrides the `PAGE_SIZE` setting. Defaults to the same value as the `PAGE_SIZE` settings key.
 * `page_query_param` - A string value indicating the name of the query parameter to use for the pagination control.
 * `page_size_query_param` - If set, this is a string value indicating the name of a query parameter that allows the client to set the page size on a per-request basis. Defaults to `None`, indicating that the client may not control the requested page size.
 * `max_page_size` - If set, this is a numeric value indicating the maximum allowable requested page size. This attribute is only valid if `page_size_query_param` is also set.
@@ -133,7 +133,7 @@ To enable the `PageNumberPagination` style globally, use the following configura
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
     }
 
-Optionally, you may also set a `DEFAULT_PAGE_SIZE` key. If the `DEFAULT_PAGE_SIZE` parameter is also used then the `limit` query parameter will be optional, and may be omitted by the client.
+Optionally, you may also set a `PAGE_SIZE` key. If the `PAGE_SIZE` parameter is also used then the `limit` query parameter will be optional, and may be omitted by the client.
 
 On `GenericAPIView` subclasses you may also set the `pagination_class` attribute to select `LimitOffsetPagination` on a per-view basis.
 
@@ -143,7 +143,7 @@ The `LimitOffsetPagination` class includes a number of attributes that may be ov
 
 To set these attributes you should override the `LimitOffsetPagination` class, and then enable your custom pagination class as above.
 
-* `default_limit` - A numeric value indicating the limit to use if one is not provided by the client in a query parameter. Defaults to the same value as the `DEFAULT_PAGE_SIZE` settings key.
+* `default_limit` - A numeric value indicating the limit to use if one is not provided by the client in a query parameter. Defaults to the same value as the `PAGE_SIZE` settings key.
 * `limit_query_param` - A string value indicating the name of the "limit" query parameter. Defaults to `'limit'`.
 * `offset_query_param` - A string value indicating the name of the "offset" query parameter. Defaults to `'offset'`.
 * `max_limit` - If set this is a numeric value indicating the maximum allowable limit that may be requested by the client. Defaults to `None`.
@@ -181,11 +181,11 @@ For more technical details on the implementation we use for cursor pagination, t
 
 #### Setup
 
-To enable the `CursorPagination` style globally, use the following configuration, modifying the `DEFAULT_PAGE_SIZE` as desired:
+To enable the `CursorPagination` style globally, use the following configuration, modifying the `PAGE_SIZE` as desired:
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
-        'DEFAULT_PAGE_SIZE': 100
+        'PAGE_SIZE': 100
     }
 
 On `GenericAPIView` subclasses you may also set the `pagination_class` attribute to select `CursorPagination` on a per-view basis.
