@@ -40,6 +40,11 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.0.x series
 
+### 3.1.0
+
+**Date**: [5th March 2015][3.1.0-milestone].
+
+For full details see the [3.1 release announcement](3.1-announcement.md).
 
 ### 3.0.5
 

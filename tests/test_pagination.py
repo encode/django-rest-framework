@@ -24,9 +24,9 @@ class TestPaginationIntegration:
                 return [item for item in queryset if item % 2 == 0]
 
         class BasicPagination(pagination.PageNumberPagination):
-            paginate_by = 5
-            paginate_by_param = 'page_size'
-            max_paginate_by = 20
+            page_size = 5
+            page_size_query_param = 'page_size'
+            max_page_size = 20
 
         self.view = generics.ListAPIView.as_view(
             serializer_class=PassThroughSerializer,
@@ -185,7 +185,7 @@ class TestPageNumberPagination:
 
     def setup(self):
         class ExamplePagination(pagination.PageNumberPagination):
-            paginate_by = 5
+            page_size = 5
         self.pagination = ExamplePagination()
         self.queryset = range(1, 101)
 

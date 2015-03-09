@@ -103,7 +103,7 @@ def set_value(dictionary, keys, value):
     dictionary[keys[-1]] = value
 
 
-class CreateOnlyDefault:
+class CreateOnlyDefault(object):
     """
     This class may be used to provide default values that are only used
     for create operations, but that do not return any value for update
@@ -114,7 +114,7 @@ class CreateOnlyDefault:
 
     def set_context(self, serializer_field):
         self.is_update = serializer_field.parent.instance is not None
-        if callable(self.default) and hasattr(self.default, 'set_context'):
+        if callable(self.default) and hasattr(self.default, 'set_context') and not self.is_update:
             self.default.set_context(serializer_field)
 
     def __call__(self):
@@ -130,7 +130,7 @@ class CreateOnlyDefault:
         )
 
 
-class CurrentUserDefault:
+class CurrentUserDefault(object):
     def set_context(self, serializer_field):
         self.user = serializer_field.context['request'].user
 

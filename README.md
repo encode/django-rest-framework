@@ -9,7 +9,9 @@ Full documentation for the project is available at [http://www.django-rest-frame
 
 ---
 
-**Note**: We have now released Django REST framework 3.0. For older codebases you may want to refer to the version 2.4.4 [source code](https://github.com/tomchristie/django-rest-framework/tree/version-2.4.x), and [documentation](http://tomchristie.github.io/rest-framework-2-docs/).
+**Note**: We have now released Django REST framework 3.1. For older codebases you may want to refer to the version 2.4.4 [source code](https://github.com/tomchristie/django-rest-framework/tree/version-2.4.x), and [documentation](http://tomchristie.github.io/rest-framework-2-docs/).
+
+For more details see the [3.1 release notes][3.1-announcement]
 
 ---
 
@@ -23,7 +25,7 @@ Some reasons you might want to use REST framework:
 * [Authentication policies][authentication] including optional packages for [OAuth1a][oauth1-section] and [OAuth2][oauth2-section].
 * [Serialization][serializers] that supports both [ORM][modelserializer-section] and [non-ORM][serializer-section] data sources.
 * Customizable all the way down - just use [regular function-based views][functionview-section] if you don't need the [more][generic-views] [powerful][viewsets] [features][routers].
-* [Extensive documentation][index], and [great community support][group].
+* [Extensive documentation][docs], and [great community support][group].
 
 There is a live example API for testing purposes, [available here][sandbox].
 
@@ -186,10 +188,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [pypi]: https://pypi.python.org/pypi/djangorestframework
 [twitter]: https://twitter.com/_tomchristie
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
-[0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [sandbox]: http://restframework.herokuapp.com/
 
-[index]: http://www.django-rest-framework.org/
 [oauth1-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
 [serializer-section]: http://www.django-rest-framework.org/api-guide/serializers/#serializers
@@ -200,18 +200,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [routers]: http://www.django-rest-framework.org/api-guide/routers/
 [serializers]: http://www.django-rest-framework.org/api-guide/serializers/
 [authentication]: http://www.django-rest-framework.org/api-guide/authentication/
-[rest-framework-2-announcement]: http://www.django-rest-framework.org/topics/rest-framework-2-announcement/
-[2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
 [image]: http://www.django-rest-framework.org/img/quickstart.png
 
-[tox]: http://testrun.org/tox/latest/
-
-[tehjones]: https://twitter.com/tehjones/status/294986071979196416
-[wlonk]: https://twitter.com/wlonk/status/261689665952833536
-[laserllama]: https://twitter.com/laserllama/status/328688333750407168
-
 [docs]: http://www.django-rest-framework.org/
-[urlobject]: https://github.com/zacharyvoase/urlobject
-[markdown]: http://pypi.python.org/pypi/Markdown/
-[django-filter]: http://pypi.python.org/pypi/django-filter
 [security-mail]: mailto:rest-framework-security@googlegroups.com
+[3.1-announcement]: http://www.django-rest-framework.org/topics/3.1-announcement/
