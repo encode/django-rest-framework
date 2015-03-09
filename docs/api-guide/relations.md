@@ -1,11 +1,5 @@
 source: relations.py
 
----
-
-**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
-
----
-
 # Serializer relations
 
 > Bad programmers worry about the code.

@@ -1,11 +1,5 @@
 source: metadata.py
 
----
-
-**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
-
----
-
 # Metadata
 
 > [The `OPTIONS`] method allows a client to determine the options and/or requirements associated with a resource, or the capabilities of a server, without implying a resource action or initiating a resource retrieval.
@@ -59,7 +53,7 @@ Or you can set the metadata class individually for a view:
 
     class APIRoot(APIView):
         metadata_class = APIRootMetadata
-        
+
         def get(self, request, format=None):
             return Response({
                 ...
