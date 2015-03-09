@@ -424,10 +424,7 @@
               
             
 
-            <hr />
-<p><strong>Note</strong>: This is the documentation for the <strong>version 3.0</strong> of REST framework. Documentation for <a href="http://tomchristie.github.io/rest-framework-2-docs/">version 2.4</a> is also available.</p>
-<hr />
-<h1 id="validators">Validators</h1>
+            <h1 id="validators">Validators</h1>
 <blockquote>
 <p>Validators can be useful for re-using validation logic between different types of fields.</p>
 <p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/validators/">Django documentation</a></p>
@@ -446,7 +443,7 @@
 <h4 id="example">Example</h4>
 <p>As an example of how REST framework uses explicit validation, we'll take a simple model class that has a field with a uniqueness constraint.</p>
 <pre><code>class CustomerReportRecord(models.Model):
-    time_raised = models.DateTimeField(default=timezone.now, editable=False) 
+    time_raised = models.DateTimeField(default=timezone.now, editable=False)
     reference = models.CharField(unique=True, max_length=20)
     description = models.TextField()
 </code></pre>
@@ -455,7 +452,7 @@
     class Meta:
         model = CustomerReportRecord
 </code></pre>
-<p>If we open up the Django shell using <code>manage.py shell</code> we can now </p>
+<p>If we open up the Django shell using <code>manage.py shell</code> we can now</p>
 <pre><code>&gt;&gt;&gt; from project.example.serializers import CustomerReportSerializer
 &gt;&gt;&gt; serializer = CustomerReportSerializer()
 &gt;&gt;&gt; print(repr(serializer))

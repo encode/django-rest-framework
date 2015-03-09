@@ -502,10 +502,10 @@ class StandardResultsSetPagination(PageNumberPagination):
 }
 </code></pre>
 <h4 id="setup">Setup</h4>
-<p>To enable the <code>PageNumberPagination</code> style globally, use the following configuration, modifying the <code>DEFAULT_PAGE_SIZE</code> as desired:</p>
+<p>To enable the <code>PageNumberPagination</code> style globally, use the following configuration, modifying the <code>PAGE_SIZE</code> as desired:</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'DEFAULT_PAGE_SIZE': 100
+    'PAGE_SIZE': 100
 }
 </code></pre>
 <p>On <code>GenericAPIView</code> subclasses you may also set the <code>pagination_class</code> attribute to select <code>PageNumberPagination</code> on a per-view basis.</p>
@@ -513,7 +513,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 <p>The <code>PageNumberPagination</code> class includes a number of attributes that may be overridden to modify the pagination style.</p>
 <p>To set these attributes you should override the <code>PageNumberPagination</code> class, and then enable your custom pagination class as above.</p>
 <ul>
-<li><code>page_size</code> - A numeric value indicating the page size. If set, this overrides the <code>DEFAULT_PAGE_SIZE</code> setting. Defaults to the same value as the <code>DEFAULT_PAGE_SIZE</code> settings key.</li>
+<li><code>page_size</code> - A numeric value indicating the page size. If set, this overrides the <code>PAGE_SIZE</code> setting. Defaults to the same value as the <code>PAGE_SIZE</code> settings key.</li>
 <li><code>page_query_param</code> - A string value indicating the name of the query parameter to use for the pagination control.</li>
 <li><code>page_size_query_param</code> - If set, this is a string value indicating the name of a query parameter that allows the client to set the page size on a per-request basis. Defaults to <code>None</code>, indicating that the client may not control the requested page size.</li>
 <li><code>max_page_size</code> - If set, this is a numeric value indicating the maximum allowable requested page size. This attribute is only valid if <code>page_size_query_param</code> is also set.</li>
@@ -544,13 +544,13 @@ class StandardResultsSetPagination(PageNumberPagination):
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
 }
 </code></pre>
-<p>Optionally, you may also set a <code>DEFAULT_PAGE_SIZE</code> key. If the <code>DEFAULT_PAGE_SIZE</code> parameter is also used then the <code>limit</code> query parameter will be optional, and may be omitted by the client.</p>
+<p>Optionally, you may also set a <code>PAGE_SIZE</code> key. If the <code>PAGE_SIZE</code> parameter is also used then the <code>limit</code> query parameter will be optional, and may be omitted by the client.</p>
 <p>On <code>GenericAPIView</code> subclasses you may also set the <code>pagination_class</code> attribute to select <code>LimitOffsetPagination</code> on a per-view basis.</p>
 <h4 id="configuration_1">Configuration</h4>
 <p>The <code>LimitOffsetPagination</code> class includes a number of attributes that may be overridden to modify the pagination style.</p>
 <p>To set these attributes you should override the <code>LimitOffsetPagination</code> class, and then enable your custom pagination class as above.</p>
 <ul>
-<li><code>default_limit</code> - A numeric value indicating the limit to use if one is not provided by the client in a query parameter. Defaults to the same value as the <code>DEFAULT_PAGE_SIZE</code> settings key.</li>
+<li><code>default_limit</code> - A numeric value indicating the limit to use if one is not provided by the client in a query parameter. Defaults to the same value as the <code>PAGE_SIZE</code> settings key.</li>
 <li><code>limit_query_param</code> - A string value indicating the name of the "limit" query parameter. Defaults to <code>'limit'</code>.</li>
 <li><code>offset_query_param</code> - A string value indicating the name of the "offset" query parameter. Defaults to <code>'offset'</code>.</li>
 <li><code>max_limit</code> - If set this is a numeric value indicating the maximum allowable limit that may be requested by the client. Defaults to <code>None</code>.</li>
@@ -566,7 +566,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 <li>Supports usage with very large datasets. With extremely large datasets pagination using offset-based pagination styles may become inefficient or unusable. Cursor based pagination schemes instead have fixed-time properties, and do not slow down as the dataset size increases.</li>
 </ul>
 <h4 id="details-and-limitations">Details and limitations</h4>
-<p>Proper use of cursor based pagination a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against. The default is to order by <code>"-created"</code>. This assumes that <strong>there must be a 'created' timestamp field</strong> on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.</p>
+<p>Proper use of cursor based pagination requires a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against. The default is to order by <code>"-created"</code>. This assumes that <strong>there must be a 'created' timestamp field</strong> on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.</p>
 <p>You can modify the ordering by overriding the <code>'ordering'</code> attribute on the pagination class, or by using the <code>OrderingFilter</code> filter class together with <code>CursorPagination</code>. When used with <code>OrderingFilter</code> you should strongly consider restricting the fields that the user may order by.</p>
 <p>Proper usage of cursor pagination should have an ordering field that satisfies the following:</p>
 <ul>
@@ -578,10 +578,10 @@ class StandardResultsSetPagination(PageNumberPagination):
 <p>Using an ordering field that does not satisfy these constraints will generally still work, but you'll be loosing some of the benefits of cursor pagination.</p>
 <p>For more technical details on the implementation we use for cursor pagination, the <a href="http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api/">"Building cursors for the Disqus API"</a> blog post gives a good overview of the basic approach.</p>
 <h4 id="setup_2">Setup</h4>
-<p>To enable the <code>CursorPagination</code> style globally, use the following configuration, modifying the <code>DEFAULT_PAGE_SIZE</code> as desired:</p>
+<p>To enable the <code>CursorPagination</code> style globally, use the following configuration, modifying the <code>PAGE_SIZE</code> as desired:</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
-    'DEFAULT_PAGE_SIZE': 100
+    'PAGE_SIZE': 100
 }
 </code></pre>
 <p>On <code>GenericAPIView</code> subclasses you may also set the <code>pagination_class</code> attribute to select <code>CursorPagination</code> on a per-view basis.</p>
