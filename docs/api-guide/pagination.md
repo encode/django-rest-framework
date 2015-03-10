@@ -127,7 +127,7 @@ This pagination style mirrors the syntax used when looking up multiple database 
 
 #### Setup
 
-To enable the `PageNumberPagination` style globally, use the following configuration:
+To enable the `LimitOffsetPagination` style globally, use the following configuration:
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
