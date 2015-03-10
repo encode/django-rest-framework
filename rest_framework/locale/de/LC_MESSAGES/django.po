@@ -147,7 +147,7 @@ msgstr "Stelle sicher, dass dieser Wert kleiner oder gleich {max_value} ist."
 
 #: fields.py:659 fields.py:693 fields.py:726
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr "Stelle sicher, dass dieser Wert größer oder gleich {max_value} ist."
+msgstr "Stelle sicher, dass dieser Wert größer oder gleich {min_value} ist."
 
 #: fields.py:660 fields.py:694 fields.py:730
 msgid "String value too large."
