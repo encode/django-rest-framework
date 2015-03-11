@@ -6,30 +6,36 @@ a single block in the template.
 
 */
 
-
 .form-actions {
-    background: transparent;
-    border-top-color: transparent;
-    padding-top: 0;
+  background: transparent;
+  border-top-color: transparent;
+  padding-top: 0;
+  text-align: right;
+}
+
+#generic-content-form textarea {
+  font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+  font-size: 80%;
 }
 
 .navbar-inverse .brand a {
-    color: #999;
+  color: #999999;
 }
 .navbar-inverse .brand:hover a {
-    color: white;
-    text-decoration: none;
+  color: white;
+  text-decoration: none;
 }
 
 /* custom navigation styles */
-.wrapper .navbar{
+.navbar {
   width: 100%;
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
+  z-index: 3;
 }
 
-.navbar .navbar-inner{
+.navbar {
   background: #2C2C2C;
   color: white;
   border: none;
@@ -37,149 +43,165 @@ a single block in the template.
   border-radius: 0px;
 }
 
-.navbar .navbar-inner .nav li, .navbar .navbar-inner .nav li a, .navbar .navbar-inner .brand:hover{
+.navbar .nav li, .navbar .nav li a, .navbar .brand:hover {
   color: white;
 }
 
 .nav-list > .active > a, .nav-list > .active > a:hover {
-  background: #2c2c2c;
+  background: #2C2C2C;
 }
 
-.navbar .navbar-inner .dropdown-menu li a, .navbar .navbar-inner .dropdown-menu li{
- color: #A30000;
+.navbar .dropdown-menu li a, .navbar .dropdown-menu li {
+  color: #A30000;
 }
-.navbar .navbar-inner .dropdown-menu li a:hover{
-  background: #eeeeee;
-  color: #c20000;
+
+.navbar .dropdown-menu li a:hover {
+  background: #EEEEEE;
+  color: #C20000;
+}
+
+.pagination>.disabled>a,
+.pagination>.disabled>a:hover,
+.pagination>.disabled>a:focus {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pager>.disabled>a,
+.pager>.disabled>a:hover,
+.pager>.disabled>a:focus {
+  pointer-events: none;
+}
+
+.pager .next {
+  margin-left: 10px;
 }
 
 /*=== dabapps bootstrap styles ====*/
 
-html{
+html {
   width:100%;
   background: none;
 }
 
-body, .navbar .navbar-inner .container-fluid {
+/*body, .navbar .container-fluid {
   max-width: 1150px;
   margin: 0 auto;
-}
+}*/
 
-body{
+body {
   background: url("../img/grid.png") repeat-x;
   background-attachment: fixed;
 }
 
-#content{
-    margin: 0;
+#content {
+  margin: 0;
+  padding-bottom: 60px;
 }
 
 /* sticky footer and footer */
 html, body {
   height: 100%;
 }
+
 .wrapper {
+  position: relative;
+  top: 0;
+  left: 0;
+  padding-top: 60px;
+  margin: -60px 0;
   min-height: 100%;
-  height: auto !important;
-  height: 100%;
-  margin: 0 auto -60px;
 }
 
 .form-switcher {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .well {
-    -webkit-box-shadow: none;
-       -moz-box-shadow: none;
-            box-shadow: none;
+  -webkit-box-shadow: none;
+     -moz-box-shadow: none;
+          box-shadow: none;
 }
 
 .well .form-actions {
-    padding-bottom: 0;
-    margin-bottom: 0;
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
 
 .well form {
-    margin-bottom: 0;
-}
-
-.well form .help-block {
-    color: #999;
+  margin-bottom: 0;
 }
 
 .nav-tabs {
-    border: 0;
+  border: 0;
 }
 
 .nav-tabs > li {
-    float: right;
+  float: right;
 }
 
 .nav-tabs li a {
-    margin-right: 0;
+  margin-right: 0;
 }
 
 .nav-tabs > .active > a {
-    background: #f5f5f5;
+  background: #F5F5F5;
 }
 
 .nav-tabs > .active > a:hover {
-    background: #f5f5f5;
+  background: #F5F5F5;
 }
 
-.tabbable.first-tab-active .tab-content
-{
-    border-top-right-radius: 0;
+.tabbable.first-tab-active .tab-content {
+  border-top-right-radius: 0;
 }
 
-#footer, #push {
-  height: 60px; /* .push must be the same height as .footer */
+footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  clear: both;
+  z-index: 10;
+  height: 60px;
+  width: 95%;
+  margin: 0 2.5%;
 }
 
-#footer{
-    text-align: right;
-}
-
-#footer p {
+footer p {
   text-align: center;
   color: gray;
-  border-top: 1px solid #DDD;
+  border-top: 1px solid #DDDDDD;
   padding-top: 10px;
 }
 
-#footer a {
-  color: gray;
+footer a {
+  color: gray !important;
   font-weight: bold;
 }
 
-#footer a:hover {
+footer a:hover {
   color: gray;
 }
 
 .page-header {
-    border-bottom: none;
-    padding-bottom: 0px;
-    margin-bottom: 20px;
+  border-bottom: none;
+  padding-bottom: 0px;
+  margin: 0;
 }
 
 /* custom general page styles */
-.hero-unit h2, .hero-unit h1{
+.hero-unit h1, .hero-unit h2 {
   color: #A30000;
 }
 
-body a, body a{
+body a {
   color: #A30000;
 }
 
-body a:hover{
+body a:hover {
   color: #c20000;
 }
 
-#content a span{
-    text-decoration: underline;
- }
-
 .request-info {
-    clear:both;
+  clear:both;
 }

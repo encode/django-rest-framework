@@ -2,25 +2,20 @@
 Generic views that provide commonly needed behaviour.
 """
 from __future__ import unicode_literals
-
-from django.core.exceptions import ImproperlyConfigured, PermissionDenied
-from django.core.paginator import Paginator, InvalidPage
+from django.db.models.query import QuerySet
 from django.http import Http404
 from django.shortcuts import get_object_or_404 as _get_object_or_404
-from django.utils.translation import ugettext as _
-from rest_framework import views, mixins, exceptions
-from rest_framework.request import clone_request
+from rest_framework import views, mixins
 from rest_framework.settings import api_settings
-import warnings
 
 
-def get_object_or_404(queryset, **filter_kwargs):
+def get_object_or_404(queryset, *filter_args, **filter_kwargs):
     """
-    Same as Django's standard shortcut, but make sure to raise 404
+    Same as Django's standard shortcut, but make sure to also raise 404
     if the filter_kwargs don't match the required types.
     """
     try:
-        return _get_object_or_404(queryset, **filter_kwargs)
+        return _get_object_or_404(queryset, *filter_args, **filter_kwargs)
     except (TypeError, ValueError):
         raise Http404
 
@@ -29,180 +24,89 @@ class GenericAPIView(views.APIView):
     """
     Base class for all other generic views.
     """
-
     # You'll need to either set these attributes,
     # or override `get_queryset()`/`get_serializer_class()`.
+    # If you are overriding a view method, it is important that you call
+    # `get_queryset()` instead of accessing the `queryset` property directly,
+    # as `queryset` will get evaluated only once, and those results are cached
+    # for all subsequent requests.
     queryset = None
     serializer_class = None
 
-    # This shortcut may be used instead of setting either or both
-    # of the `queryset`/`serializer_class` attributes, although using
-    # the explicit style is generally preferred.
-    model = None
-
-    # If you want to use object lookups other than pk, set this attribute.
+    # If you want to use object lookups other than pk, set 'lookup_field'.
     # For more complex lookup requirements override `get_object()`.
     lookup_field = 'pk'
-
-    # Pagination settings
-    paginate_by = api_settings.PAGINATE_BY
-    paginate_by_param = api_settings.PAGINATE_BY_PARAM
-    pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
-    page_kwarg = 'page'
+    lookup_url_kwarg = None
 
     # The filter backend classes to use for queryset filtering
     filter_backends = api_settings.DEFAULT_FILTER_BACKENDS
 
-    # The following attributes may be subject to change,
-    # and should be considered private API.
-    model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
-    paginator_class = Paginator
+    # The style to use for queryset pagination.
+    pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
 
-    ######################################
-    # These are pending deprecation...
-
-    pk_url_kwarg = 'pk'
-    slug_url_kwarg = 'slug'
-    slug_field = 'slug'
-    allow_empty = True
-    filter_backend = api_settings.FILTER_BACKEND
-
-    def get_serializer_context(self):
+    def get_queryset(self):
         """
-        Extra context provided to the serializer class.
-        """
-        return {
-            'request': self.request,
-            'format': self.format_kwarg,
-            'view': self
-        }
+        Get the list of items for this view.
+        This must be an iterable, and may be a queryset.
+        Defaults to using `self.queryset`.
 
-    def get_serializer(self, instance=None, data=None,
-                       files=None, many=False, partial=False):
+        This method should always be used rather than accessing `self.queryset`
+        directly, as `self.queryset` gets evaluated only once, and those results
+        are cached for all subsequent requests.
+
+        You may want to override this if you need to provide different
+        querysets depending on the incoming request.
+
+        (Eg. return a list of items that is specific to the user)
+        """
+        assert self.queryset is not None, (
+            "'%s' should either include a `queryset` attribute, "
+            "or override the `get_queryset()` method."
+            % self.__class__.__name__
+        )
+
+        queryset = self.queryset
+        if isinstance(queryset, QuerySet):
+            # Ensure queryset is re-evaluated on each request.
+            queryset = queryset.all()
+        return queryset
+
+    def get_object(self):
+        """
+        Returns the object the view is displaying.
+
+        You may want to override this if you need to provide non-standard
+        queryset lookups.  Eg if objects are referenced using multiple
+        keyword arguments in the url conf.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # Perform the lookup filtering.
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+
+        assert lookup_url_kwarg in self.kwargs, (
+            'Expected view %s to be called with a URL keyword argument '
+            'named "%s". Fix your URL conf, or set the `.lookup_field` '
+            'attribute on the view correctly.' %
+            (self.__class__.__name__, lookup_url_kwarg)
+        )
+
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+        obj = get_object_or_404(queryset, **filter_kwargs)
+
+        # May raise a permission denied
+        self.check_object_permissions(self.request, obj)
+
+        return obj
+
+    def get_serializer(self, *args, **kwargs):
         """
         Return the serializer instance that should be used for validating and
         deserializing input, and for serializing output.
         """
         serializer_class = self.get_serializer_class()
-        context = self.get_serializer_context()
-        return serializer_class(instance, data=data, files=files,
-                                many=many, partial=partial, context=context)
-
-    def get_pagination_serializer(self, page):
-        """
-        Return a serializer instance to use with paginated data.
-        """
-        class SerializerClass(self.pagination_serializer_class):
-            class Meta:
-                object_serializer_class = self.get_serializer_class()
-
-        pagination_serializer_class = SerializerClass
-        context = self.get_serializer_context()
-        return pagination_serializer_class(instance=page, context=context)
-
-    def paginate_queryset(self, queryset, page_size=None):
-        """
-        Paginate a queryset if required, either returning a page object,
-        or `None` if pagination is not configured for this view.
-        """
-        deprecated_style = False
-        if page_size is not None:
-            warnings.warn('The `page_size` parameter to `paginate_queryset()` '
-                          'is due to be deprecated. '
-                          'Note that the return style of this method is also '
-                          'changed, and will simply return a page object '
-                          'when called without a `page_size` argument.',
-                          PendingDeprecationWarning, stacklevel=2)
-            deprecated_style = True
-        else:
-            # Determine the required page size.
-            # If pagination is not configured, simply return None.
-            page_size = self.get_paginate_by()
-            if not page_size:
-                return None
-
-        if not self.allow_empty:
-            warnings.warn(
-                'The `allow_empty` parameter is due to be deprecated. '
-                'To use `allow_empty=False` style behavior, You should override '
-                '`get_queryset()` and explicitly raise a 404 on empty querysets.',
-                PendingDeprecationWarning, stacklevel=2
-            )
-
-        paginator = self.paginator_class(queryset, page_size,
-                                         allow_empty_first_page=self.allow_empty)
-        page_kwarg = self.kwargs.get(self.page_kwarg)
-        page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
-        page = page_kwarg or page_query_param or 1
-        try:
-            page_number = int(page)
-        except ValueError:
-            if page == 'last':
-                page_number = paginator.num_pages
-            else:
-                raise Http404(_("Page is not 'last', nor can it be converted to an int."))
-        try:
-            page = paginator.page(page_number)
-        except InvalidPage as e:
-            raise Http404(_('Invalid page (%(page_number)s): %(message)s') % {
-                                'page_number': page_number,
-                                'message': str(e)
-            })
-
-        if deprecated_style:
-            return (paginator, page, page.object_list, page.has_other_pages())
-        return page
-
-    def filter_queryset(self, queryset):
-        """
-        Given a queryset, filter it with whichever filter backend is in use.
-
-        You are unlikely to want to override this method, although you may need
-        to call it either from a list view, or from a custom `get_object`
-        method if you want to apply the configured filtering backend to the
-        default queryset.
-        """
-        filter_backends = self.filter_backends or []
-        if not filter_backends and self.filter_backend:
-            warnings.warn(
-                'The `filter_backend` attribute and `FILTER_BACKEND` setting '
-                'are due to be deprecated in favor of a `filter_backends` '
-                'attribute and `DEFAULT_FILTER_BACKENDS` setting, that take '
-                'a *list* of filter backend classes.',
-                PendingDeprecationWarning, stacklevel=2
-            )
-            filter_backends = [self.filter_backend]
-
-        for backend in filter_backends:
-            queryset = backend().filter_queryset(self.request, queryset, self)
-        return queryset
-
-    ########################
-    ### The following methods provide default implementations
-    ### that you may want to override for more complex cases.
-
-    def get_paginate_by(self, queryset=None):
-        """
-        Return the size of pages to use with pagination.
-
-        If `PAGINATE_BY_PARAM` is set it will attempt to get the page size
-        from a named query parameter in the url, eg. ?page_size=100
-
-        Otherwise defaults to using `self.paginate_by`.
-        """
-        if queryset is not None:
-            warnings.warn('The `queryset` parameter to `get_paginate_by()` '
-                          'is due to be deprecated.',
-                          PendingDeprecationWarning, stacklevel=2)
-
-        if self.paginate_by_param:
-            query_params = self.request.QUERY_PARAMS
-            try:
-                return int(query_params[self.paginate_by_param])
-            except (KeyError, ValueError):
-                pass
-
-        return self.paginate_by
+        kwargs['context'] = self.get_serializer_context()
+        return serializer_class(*args, **kwargs)
 
     def get_serializer_class(self):
         """
@@ -214,153 +118,67 @@ class GenericAPIView(views.APIView):
 
         (Eg. admins get full serialization, others get basic serialization)
         """
-        serializer_class = self.serializer_class
-        if serializer_class is not None:
-            return serializer_class
-
-        assert self.model is not None, \
-            "'%s' should either include a 'serializer_class' attribute, " \
-            "or use the 'model' attribute as a shortcut for " \
-            "automatically generating a serializer class." \
+        assert self.serializer_class is not None, (
+            "'%s' should either include a `serializer_class` attribute, "
+            "or override the `get_serializer_class()` method."
             % self.__class__.__name__
+        )
 
-        class DefaultSerializer(self.model_serializer_class):
-            class Meta:
-                model = self.model
-        return DefaultSerializer
+        return self.serializer_class
 
-    def get_queryset(self):
+    def get_serializer_context(self):
         """
-        Get the list of items for this view.
-        This must be an iterable, and may be a queryset.
-        Defaults to using `self.queryset`.
-
-        You may want to override this if you need to provide different
-        querysets depending on the incoming request.
-
-        (Eg. return a list of items that is specific to the user)
+        Extra context provided to the serializer class.
         """
-        if self.queryset is not None:
-            return self.queryset._clone()
+        return {
+            'request': self.request,
+            'format': self.format_kwarg,
+            'view': self
+        }
 
-        if self.model is not None:
-            return self.model._default_manager.all()
-
-        raise ImproperlyConfigured("'%s' must define 'queryset' or 'model'"
-                                    % self.__class__.__name__)
-
-    def get_object(self, queryset=None):
+    def filter_queryset(self, queryset):
         """
-        Returns the object the view is displaying.
+        Given a queryset, filter it with whichever filter backend is in use.
 
-        You may want to override this if you need to provide non-standard
-        queryset lookups.  Eg if objects are referenced using multiple
-        keyword arguments in the url conf.
+        You are unlikely to want to override this method, although you may need
+        to call it either from a list view, or from a custom `get_object`
+        method if you want to apply the configured filtering backend to the
+        default queryset.
         """
-        # Determine the base queryset to use.
-        if queryset is None:
-            queryset = self.filter_queryset(self.get_queryset())
-        else:
-            pass  # Deprecation warning
+        for backend in list(self.filter_backends):
+            queryset = backend().filter_queryset(self.request, queryset, self)
+        return queryset
 
-        # Perform the lookup filtering.
-        pk = self.kwargs.get(self.pk_url_kwarg, None)
-        slug = self.kwargs.get(self.slug_url_kwarg, None)
-        lookup = self.kwargs.get(self.lookup_field, None)
-
-        if lookup is not None:
-            filter_kwargs = {self.lookup_field: lookup}
-        elif pk is not None and self.lookup_field == 'pk':
-            warnings.warn(
-                'The `pk_url_kwarg` attribute is due to be deprecated. '
-                'Use the `lookup_field` attribute instead',
-                PendingDeprecationWarning
-            )
-            filter_kwargs = {'pk': pk}
-        elif slug is not None and self.lookup_field == 'pk':
-            warnings.warn(
-                'The `slug_url_kwarg` attribute is due to be deprecated. '
-                'Use the `lookup_field` attribute instead',
-                PendingDeprecationWarning
-            )
-            filter_kwargs = {self.slug_field: slug}
-        else:
-            raise ImproperlyConfigured(
-                'Expected view %s to be called with a URL keyword argument '
-                'named "%s". Fix your URL conf, or set the `.lookup_field` '
-                'attribute on the view correctly.' %
-                (self.__class__.__name__, self.lookup_field)
-            )
-
-        obj = get_object_or_404(queryset, **filter_kwargs)
-
-        # May raise a permission denied
-        self.check_object_permissions(self.request, obj)
-
-        return obj
-
-    ########################
-    ### The following are placeholder methods,
-    ### and are intended to be overridden.
-    ###
-    ### The are not called by GenericAPIView directly,
-    ### but are used by the mixin methods.
-
-    def pre_save(self, obj):
+    @property
+    def paginator(self):
         """
-        Placeholder method for calling before saving an object.
-
-        May be used to set attributes on the object that are implicit
-        in either the request, or the url.
+        The paginator instance associated with the view, or `None`.
         """
-        pass
-
-    def post_save(self, obj, created=False):
-        """
-        Placeholder method for calling after saving an object.
-        """
-        pass
-
-    def metadata(self, request):
-        """
-        Return a dictionary of metadata about the view.
-        Used to return responses for OPTIONS requests.
-
-        We override the default behavior, and add some extra information
-        about the required request body for POST and PUT operations.
-        """
-        ret = super(GenericAPIView, self).metadata(request)
-
-        actions = {}
-        for method in ('PUT', 'POST'):
-            if method not in self.allowed_methods:
-                continue
-
-            cloned_request = clone_request(request, method)
-            try:
-                # Test global permissions
-                self.check_permissions(cloned_request)
-                # Test object permissions
-                if method == 'PUT':
-                    self.get_object()
-            except (exceptions.APIException, PermissionDenied, Http404):
-                pass
+        if not hasattr(self, '_paginator'):
+            if self.pagination_class is None:
+                self._paginator = None
             else:
-                # If user has appropriate permissions for the view, include
-                # appropriate metadata about the fields that should be supplied.
-                serializer = self.get_serializer()
-                actions[method] = serializer.metadata()
+                self._paginator = self.pagination_class()
+        return self._paginator
 
-        if actions:
-            ret['actions'] = actions
+    def paginate_queryset(self, queryset):
+        """
+        Return a single page of results, or `None` if pagination is disabled.
+        """
+        if self.paginator is None:
+            return None
+        return self.paginator.paginate_queryset(queryset, self.request, view=self)
 
-        return ret
+    def get_paginated_response(self, data):
+        """
+        Return a paginated style `Response` object for the given output data.
+        """
+        assert self.paginator is not None
+        return self.paginator.get_paginated_response(data)
 
 
-##########################################################
-### Concrete view classes that provide method handlers ###
-### by composing the mixin classes with the base view. ###
-##########################################################
+# Concrete view classes that provide method handlers
+# by composing the mixin classes with the base view.
 
 class CreateAPIView(mixins.CreateModelMixin,
                     GenericAPIView):
@@ -473,27 +291,3 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
-
-
-##########################
-### Deprecated classes ###
-##########################
-
-class MultipleObjectAPIView(GenericAPIView):
-    def __init__(self, *args, **kwargs):
-        warnings.warn(
-            'Subclassing `MultipleObjectAPIView` is due to be deprecated. '
-            'You should simply subclass `GenericAPIView` instead.',
-            PendingDeprecationWarning, stacklevel=2
-        )
-        super(MultipleObjectAPIView, self).__init__(*args, **kwargs)
-
-
-class SingleObjectAPIView(GenericAPIView):
-    def __init__(self, *args, **kwargs):
-        warnings.warn(
-            'Subclassing `SingleObjectAPIView` is due to be deprecated. '
-            'You should simply subclass `GenericAPIView` instead.',
-            PendingDeprecationWarning, stacklevel=2
-        )
-        super(SingleObjectAPIView, self).__init__(*args, **kwargs)

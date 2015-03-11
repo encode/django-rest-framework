@@ -1,4 +1,4 @@
-<a class="github" href="renderers.py"></a>
+source: renderers.py
 
 # Renderers
 
@@ -18,11 +18,11 @@ For more information see the documentation on [content negotiation][conneg].
 
 ## Setting the renderers
 
-The default set of renderers may be set globally, using the `DEFAULT_RENDERER_CLASSES` setting.  For example, the following settings would use `YAML` as the main media type and also include the self describing API.
+The default set of renderers may be set globally, using the `DEFAULT_RENDERER_CLASSES` setting.  For example, the following settings would use `JSON` as the main media type and also include the self describing API.
 
     REST_FRAMEWORK = {
         'DEFAULT_RENDERER_CLASSES': (
-            'rest_framework.renderers.YAMLRenderer',
+            'rest_framework.renderers.JSONRenderer',
             'rest_framework.renderers.BrowsableAPIRenderer',
         )
     }
@@ -30,11 +30,16 @@ The default set of renderers may be set globally, using the `DEFAULT_RENDERER_CL
 You can also set the renderers used for an individual view, or viewset,
 using the `APIView` class based views.
 
+    from django.contrib.auth.models import User
+    from rest_framework.renderers import JSONRenderer
+    from rest_framework.response import Response
+    from rest_framework.views import APIView
+
     class UserCountView(APIView):
         """
-        A view that returns the count of active users, in JSON or JSONp.
+        A view that returns the count of active users in JSON.
         """
-        renderer_classes = (JSONRenderer, JSONPRenderer)
+        renderer_classes = (JSONRenderer, )
 
         def get(self, request, format=None):
             user_count = User.objects.filter(active=True).count()
@@ -44,10 +49,10 @@ using the `APIView` class based views.
 Or, if you're using the `@api_view` decorator with function based views.
 
     @api_view(['GET'])
-    @renderer_classes((JSONRenderer, JSONPRenderer))
+    @renderer_classes((JSONRenderer,))
     def user_count_view(request, format=None):
         """
-        A view that returns the count of active users, in JSON or JSONp.
+        A view that returns the count of active users in JSON.
         """
         user_count = User.objects.filter(active=True).count()
         content = {'user_count': user_count}
@@ -69,83 +74,24 @@ If your API includes views that can serve both regular webpages and API response
 
 Renders the request data into `JSON`, using utf-8 encoding.
 
-Note that non-ascii characters will be rendered using JSON's `\uXXXX` character escape.  For example:
+Note that the default style is to include unicode characters, and render the response using a compact style with no unnecessary whitespace:
 
-    {"unicode black star": "\u2605"}
+    {"unicode black star":"★","value":999}
 
 The client may additionally include an `'indent'` media type parameter, in which case the returned `JSON` will be indented.  For example `Accept: application/json; indent=4`.
 
     {
-        "unicode black star": "\u2605"
+        "unicode black star": "★",
+        "value": 999
     }
+
+The default JSON encoding style can be altered using the `UNICODE_JSON` and `COMPACT_JSON` settings keys.
 
 **.media_type**: `application/json`
 
 **.format**: `'.json'`
 
-**.charset**: `utf-8`
-
-## UnicodeJSONRenderer
-
-Renders the request data into `JSON`, using utf-8 encoding.
-
-Note that non-ascii characters will not be character escaped.  For example:
-
-    {"unicode black star": "★"}
-
-The client may additionally include an `'indent'` media type parameter, in which case the returned `JSON` will be indented.  For example `Accept: application/json; indent=4`.
-
-    {
-        "unicode black star": "★"
-    }
-
-Both the `JSONRenderer` and `UnicodeJSONRenderer` styles conform to [RFC 4627][rfc4627], and are syntactically valid JSON.
-
-**.media_type**: `application/json`
-
-**.format**: `'.json'`
-
-**.charset**: `utf-8`
-
-## JSONPRenderer
-
-Renders the request data into `JSONP`.  The `JSONP` media type provides a mechanism of allowing cross-domain AJAX requests, by wrapping a `JSON` response in a javascript callback.
-
-The javascript callback function must be set by the client including a `callback` URL query parameter.  For example `http://example.com/api/users?callback=jsonpCallback`.  If the callback function is not explicitly set by the client it will default to `'callback'`.
-
-**Note**: If you require cross-domain AJAX requests, you may want to consider using the more modern approach of [CORS][cors] as an alternative to `JSONP`.  See the [CORS documentation][cors-docs] for more details.
-
-**.media_type**: `application/javascript`
-
-**.format**: `'.jsonp'`
-
-**.charset**: `utf-8`
-
-## YAMLRenderer
-
-Renders the request data into `YAML`. 
-
-Requires the `pyyaml` package to be installed.
-
-**.media_type**: `application/yaml`
-
-**.format**: `'.yaml'`
-
-**.charset**: `utf-8`
-
-## XMLRenderer
-
-Renders REST framework's default style of `XML` response content.
-
-Note that the `XML` markup language is used typically used as the base language for more strictly defined domain-specific languages, such as `RSS`, `Atom`, and `XHTML`.
-
-If you are considering using `XML` for your API, you may want to consider implementing a custom renderer and parser for your specific requirements, and using an existing domain-specific media-type, or creating your own custom XML-based media-type.
-
-**.media_type**: `application/xml`
-
-**.format**: `'.xml'`
-
-**.charset**: `utf-8`
+**.charset**: `None`
 
 ## TemplateHTMLRenderer
 
@@ -162,17 +108,17 @@ The template name is determined by (in order of preference):
 
 An example of a view that uses `TemplateHTMLRenderer`:
 
-    class UserDetail(generics.RetrieveUserAPIView):
+    class UserDetail(generics.RetrieveAPIView):
         """
         A view that returns a templated HTML representations of a given user.
         """
         queryset = User.objects.all()
         renderer_classes = (TemplateHTMLRenderer,)
 
-        def get(self, request, *args, **kwargs)
+        def get(self, request, *args, **kwargs):
             self.object = self.get_object()
             return Response({'user': self.object}, template_name='user_detail.html')
- 
+
 You can use `TemplateHTMLRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
 
 If you're building websites that use `TemplateHTMLRenderer` along with other renderer classes, you should consider listing `TemplateHTMLRenderer` as the first class in the `renderer_classes` list, so that it will be prioritised first even for browsers that send poorly formed `ACCEPT:` headers.
@@ -193,7 +139,7 @@ An example of a view that uses `TemplateHTMLRenderer`:
 
     @api_view(('GET',))
     @renderer_classes((StaticHTMLRenderer,))
-    def simple_html_view(request): 
+    def simple_html_view(request):
         data = '<html><body><h1>Hello, world</h1></body></html>'
         return Response(data)
 
@@ -207,6 +153,20 @@ You can use `TemplateHTMLRenderer` either to return regular HTML pages using RES
 
 See also: `TemplateHTMLRenderer`
 
+## HTMLFormRenderer
+
+Renders data returned by a serializer into an HTML form.  The output of this renderer does not include the enclosing `<form>` tags or an submit actions, as you'll probably need those to include the desired method and URL.  Also note that the `HTMLFormRenderer` does not yet support including field error messages.
+
+Note that the template used by the `HTMLFormRenderer` class, and the context submitted to it **may be subject to change**.  If you need to use this renderer class it is advised that you either make a local copy of the class and templates, or follow the release note on REST framework upgrades closely.
+
+**.media_type**: `text/html`
+
+**.format**: `'.form'`
+
+**.charset**: `utf-8`
+
+**.template**: `'rest_framework/form.html'`
+
 ## BrowsableAPIRenderer
 
 Renders data into HTML for the Browsable API.  This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.
@@ -216,6 +176,8 @@ Renders data into HTML for the Browsable API.  This renderer will determine whic
 **.format**: `'.api'`
 
 **.charset**: `utf-8`
+
+**.template**: `'rest_framework/api.html'`
 
 #### Customizing BrowsableAPIRenderer
 
@@ -241,7 +203,7 @@ This renderer is used for rendering HTML multipart form data.  **It is not suita
 
 To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, media_type=None, renderer_context=None)` method.
 
-The method should return a bytestring, which wil be used as the body of the HTTP response.
+The method should return a bytestring, which will be used as the body of the HTTP response.
 
 The arguments passed to the `.render()` method are:
 
@@ -272,7 +234,7 @@ The following is an example plaintext renderer that will return a response with 
     class PlainTextRenderer(renderers.BaseRenderer):
         media_type = 'text/plain'
         format = 'txt'
-        
+
         def render(self, data, media_type=None, renderer_context=None):
             return data.encode(self.charset)
 
@@ -290,12 +252,15 @@ By default renderer classes are assumed to be using the `UTF-8` encoding.  To us
 
 Note that if a renderer class returns a unicode string, then the response content will be coerced into a bytestring by the `Response` class, with the `charset` attribute set on the renderer used to determine the encoding.
 
-If the renderer returns a bytestring representing raw binary content, you should set a charset value of `None`, which will ensure the `Content-Type` header of the response will not have a `charset` value set.  Doing so will also ensure that the browsable API will not attempt to display the binary content as a string.
+If the renderer returns a bytestring representing raw binary content, you should set a charset value of `None`, which will ensure the `Content-Type` header of the response will not have a `charset` value set.
+
+In some cases you may also want to set the `render_style` attribute to `'binary'`.  Doing so will also ensure that the browsable API will not attempt to display the binary content as a string.
 
     class JPEGRenderer(renderers.BaseRenderer):
         media_type = 'image/jpeg'
         format = 'jpg'
         charset = None
+        render_style = 'binary'
 
         def render(self, data, media_type=None, renderer_context=None):
             return data
@@ -309,7 +274,7 @@ You can do some pretty flexible things using REST framework's renderers.  Some e
 * Provide either flat or nested representations from the same endpoint, depending on the requested media type.
 * Serve both regular HTML webpages, and JSON based API responses from the same endpoints.
 * Specify multiple types of HTML representation for API clients to use.
-* Underspecify a renderer's media type, such as using `media_type = 'image/*'`, and use the `Accept` header to vary the encoding of the response. 
+* Underspecify a renderer's media type, such as using `media_type = 'image/*'`, and use the `Accept` header to vary the encoding of the response.
 
 ## Varying behaviour by media type
 
@@ -377,28 +342,125 @@ Templates will render with a `RequestContext` which includes the `status_code` a
 
 The following third party packages are also available.
 
+## YAML
+
+[REST framework YAML][rest-framework-yaml] provides [YAML][yaml] parsing and rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.
+
+#### Installation & configuration
+
+Install using pip.
+
+    $ pip install djangorestframework-yaml
+
+Modify your REST framework settings.
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PARSER_CLASSES': (
+            'rest_framework_yaml.parsers.YAMLParser',
+        ),
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework_yaml.renderers.YAMLRenderer',
+        ),
+    }
+
+## XML
+
+[REST Framework XML][rest-framework-xml] provides a simple informal XML format. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.
+
+#### Installation & configuration
+
+Install using pip.
+
+    $ pip install djangorestframework-xml
+
+Modify your REST framework settings.
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PARSER_CLASSES': (
+            'rest_framework_xml.parsers.XMLParser',
+        ),
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework_xml.renderers.XMLRenderer',
+        ),
+    }
+
+## JSONP
+
+[REST framework JSONP][rest-framework-jsonp] provides JSONP rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.
+
+---
+
+**Warning**: If you require cross-domain AJAX requests, you should generally be using the more modern approach of [CORS][cors] as an alternative to `JSONP`. See the [CORS documentation][cors-docs] for more details.
+
+The `jsonp` approach is essentially a browser hack, and is [only appropriate for globally readable API endpoints][jsonp-security], where `GET` requests are unauthenticated and do not require any user permissions.
+
+---
+
+#### Installation & configuration
+
+Install using pip.
+
+    $ pip install djangorestframework-jsonp
+
+Modify your REST framework settings.
+
+    REST_FRAMEWORK = {
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework_yaml.renderers.JSONPRenderer',
+        ),
+    }
+
 ## MessagePack
 
 [MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
 
 ## CSV
 
-Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications.  [Mjumbe Poe][mjumbewu] maintains the [djangorestframework-csv][djangorestframework-csv] package which provides CSV renderer support for REST framework.
+Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications. [Mjumbe Poe][mjumbewu] maintains the [djangorestframework-csv][djangorestframework-csv] package which provides CSV renderer support for REST framework.
+
+## UltraJSON
+
+[UltraJSON][ultrajson] is an optimized C JSON encoder which can give significantly faster JSON rendering. [Jacob Haslehurst][hzy] maintains the [drf-ujson-renderer][drf-ujson-renderer] package which implements JSON rendering using the UJSON package.
+
+## CamelCase JSON
+
+[djangorestframework-camel-case] provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by [Vitaly Babiy][vbabiy].
+
+## Pandas (CSV, Excel, PNG)
+
+[Django REST Pandas] provides a serializer and renderers that support additional data processing and output via the [Pandas] DataFrame API.  Django REST Pandas includes renderers for Pandas-style CSV files, Excel workbooks (both `.xls` and `.xlsx`), and a number of [other formats]. It is maintained by [S. Andrew Sheppard][sheppard] as part of the [wq Project][wq].
+
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
-[rfc4627]: http://www.ietf.org/rfc/rfc4627.txt
-[cors]: http://www.w3.org/TR/cors/
-[cors-docs]: ../topics/ajax-csrf-cors.md
 [testing]: testing.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas
 [quote]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [application/vnd.github+json]: http://developer.github.com/v3/media/
 [application/vnd.collection+json]: http://www.amundsen.com/media-types/collection/
 [django-error-views]: https://docs.djangoproject.com/en/dev/topics/http/views/#customizing-error-views
+[rest-framework-jsonp]: http://jpadilla.github.io/django-rest-framework-jsonp/
+[cors]: http://www.w3.org/TR/cors/
+[cors-docs]: http://www.django-rest-framework.org/topics/ajax-csrf-cors/
+[jsonp-security]: http://stackoverflow.com/questions/613962/is-jsonp-safe-to-use
+[rest-framework-yaml]: http://jpadilla.github.io/django-rest-framework-yaml/
+[rest-framework-xml]: http://jpadilla.github.io/django-rest-framework-xml/
 [messagepack]: http://msgpack.org/
 [juanriaza]: https://github.com/juanriaza
 [mjumbewu]: https://github.com/mjumbewu
+[vbabiy]: https://github.com/vbabiy
+[rest-framework-yaml]: http://jpadilla.github.io/django-rest-framework-yaml/
+[rest-framework-xml]: http://jpadilla.github.io/django-rest-framework-xml/
+[yaml]: http://www.yaml.org/
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv
+[ultrajson]: https://github.com/esnme/ultrajson
+[hzy]: https://github.com/hzy
+[drf-ujson-renderer]: https://github.com/gizmag/drf-ujson-renderer
+[djangorestframework-camel-case]: https://github.com/vbabiy/djangorestframework-camel-case
+[Django REST Pandas]: https://github.com/wq/django-rest-pandas
+[Pandas]: http://pandas.pydata.org/
+[other formats]: https://github.com/wq/django-rest-pandas#supported-formats
+[sheppard]: https://github.com/sheppard
+[wq]: https://github.com/wq

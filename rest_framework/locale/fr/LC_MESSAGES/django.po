@@ -1,0 +1,326 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Etienne Desgagné <etienne.desgagne@evimbec.ca>, 2015
+# Martin Maillard <martin.maillard@gmail.com>, 2015
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-01-30 16:23+0000\n"
+"PO-Revision-Date: 2015-01-30 16:27+0000\n"
+"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"Language-Team: French (http://www.transifex.com/projects/p/django-rest-framework/language/fr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: authentication.py:69
+msgid "Invalid basic header. No credentials provided."
+msgstr "En-tête « basic » non valide. Informations d'identification non fournies."
+
+#: authentication.py:72
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "En-tête « basic » non valide. Les informations d'identification ne doivent pas contenir d'espaces."
+
+#: authentication.py:78
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "En-tête « basic » non valide. Encodage base64 des informations d'identification incorrect."
+
+#: authentication.py:90
+msgid "Invalid username/password."
+msgstr "Nom d'utilisateur et/ou mot de passe non valide(s)."
+
+#: authentication.py:156
+msgid "Invalid token header. No credentials provided."
+msgstr "En-tête « token » non valide. Informations d'identification non fournies."
+
+#: authentication.py:159
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "En-tête « token » non valide. Un token ne doit pas contenir d'espaces."
+
+#: authentication.py:168
+msgid "Invalid token."
+msgstr "Token non valide."
+
+#: authentication.py:171
+msgid "User inactive or deleted."
+msgstr "Utilisateur inactif ou supprimé."
+
+#: exceptions.py:38
+msgid "A server error occurred."
+msgstr "Une erreur du serveur est survenue."
+
+#: exceptions.py:73
+msgid "Malformed request."
+msgstr "Requête malformée"
+
+#: exceptions.py:78
+msgid "Incorrect authentication credentials."
+msgstr "Informations d'authentification incorrectes."
+
+#: exceptions.py:83
+msgid "Authentication credentials were not provided."
+msgstr "Informations d'authentification non fournies."
+
+#: exceptions.py:88
+msgid "You do not have permission to perform this action."
+msgstr "Vous n'avez pas la permission d'effectuer cette action."
+
+#: exceptions.py:93
+msgid "Not found."
+msgstr ""
+
+#: exceptions.py:98
+msgid "Method \"{method}\" not allowed."
+msgstr "Méthode \"{method}\" non autorisée."
+
+#: exceptions.py:109
+msgid "Could not satisfy the request Accept header."
+msgstr ""
+
+#: exceptions.py:121
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr ""
+
+#: exceptions.py:134
+msgid "Request was throttled."
+msgstr ""
+
+#: fields.py:153 relations.py:132 relations.py:156 validators.py:77
+#: validators.py:155
+msgid "This field is required."
+msgstr "Ce champ est obligatoire."
+
+#: fields.py:154
+msgid "This field may not be null."
+msgstr "Ce champ ne peut être null."
+
+#: fields.py:487 fields.py:515
+msgid "\"{input}\" is not a valid boolean."
+msgstr "\"{input}\" n'est pas un booléen valide."
+
+#: fields.py:550
+msgid "This field may not be blank."
+msgstr "Ce champ ne peut être vide."
+
+#: fields.py:551 fields.py:1324
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "Assurez-vous que ce champ comporte au plus {max_length} caractères."
+
+#: fields.py:552
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "Assurez-vous que ce champ comporte au moins {min_length} caractères."
+
+#: fields.py:587
+msgid "Enter a valid email address."
+msgstr "Saisissez une adresse email valable."
+
+#: fields.py:604
+msgid "This value does not match the required pattern."
+msgstr "Cette valeur ne satisfait pas le motif imposé."
+
+#: fields.py:615
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "Ce champ ne doit contenir que des lettres, des nombres, des tirets bas _ et des traits d'union."
+
+#: fields.py:627
+msgid "Enter a valid URL."
+msgstr "Saisissez une URL valide."
+
+#: fields.py:638
+msgid "\"{value}\" is not a valid UUID."
+msgstr ""
+
+#: fields.py:657
+msgid "A valid integer is required."
+msgstr "Saisissez un nombre entier valide."
+
+#: fields.py:658 fields.py:692 fields.py:725
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "Assurez-vous que cette valeur est inférieure ou égale à {max_value}."
+
+#: fields.py:659 fields.py:693 fields.py:726
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "Assurez-vous que cette valeur est supérieure ou égale à {min_value}."
+
+#: fields.py:660 fields.py:694 fields.py:730
+msgid "String value too large."
+msgstr "Chaîne de caractères trop longue."
+
+#: fields.py:691 fields.py:724
+msgid "A valid number is required."
+msgstr "Un nombre valide est requis."
+
+#: fields.py:727
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "Assurez-vous qu'il n'y a pas plus de {max_digits} chiffres au total."
+
+#: fields.py:728
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "Assurez-vous qu'il n'y a pas plus de {max_decimal_places} chiffres après la virgule."
+
+#: fields.py:729
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "Assurez-vous qu'il n'y a pas plus de {max_whole_digits} chiffres avant la virgule."
+
+#: fields.py:813
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr ""
+
+#: fields.py:814
+msgid "Expected a datetime but got a date."
+msgstr ""
+
+#: fields.py:878
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr ""
+
+#: fields.py:879
+msgid "Expected a date but got a datetime."
+msgstr ""
+
+#: fields.py:936
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr ""
+
+#: fields.py:992 fields.py:1036
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" n'est pas un choix valide."
+
+#: fields.py:1037 fields.py:1151 serializers.py:482
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr ""
+
+#: fields.py:1067
+msgid "No file was submitted."
+msgstr "Aucun fichier n'a été soumis."
+
+#: fields.py:1068
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "La donnée soumise n'est pas un fichier. Vérifiez le type d'encodage du formulaire."
+
+#: fields.py:1069
+msgid "No filename could be determined."
+msgstr "Le nom de fichier n'a pu être déterminé."
+
+#: fields.py:1070
+msgid "The submitted file is empty."
+msgstr "Le fichier soumis est vide."
+
+#: fields.py:1071
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "Assurez-vous que le nom de fichier comporte au plus {max_length} caractères (il en comporte {length})."
+
+#: fields.py:1113
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Transférez une image valide. Le fichier que vous avez transféré n'est pas une image, ou il est corrompu."
+
+#: fields.py:1188
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr ""
+
+#: pagination.py:221
+msgid "Invalid page \"{page_number}\": {message}."
+msgstr "Page \"{page_number}\" non valide : {message}."
+
+#: pagination.py:442
+msgid "Invalid cursor"
+msgstr ""
+
+#: relations.py:133
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "Clé primaire \"{pk_value}\" non valide - l'objet n'existe pas."
+
+#: relations.py:134
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr ""
+
+#: relations.py:157
+msgid "Invalid hyperlink - No URL match."
+msgstr ""
+
+#: relations.py:158
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr ""
+
+#: relations.py:159
+msgid "Invalid hyperlink - Object does not exist."
+msgstr ""
+
+#: relations.py:160
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr ""
+
+#: relations.py:295
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "L'object avec {slug_name}={value} n'existe pas."
+
+#: relations.py:296
+msgid "Invalid value."
+msgstr "Valeur non valide."
+
+#: serializers.py:299
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr ""
+
+#: validators.py:22
+msgid "This field must be unique."
+msgstr "Ce champ doit être unique."
+
+#: validators.py:76
+msgid "The fields {field_names} must make a unique set."
+msgstr "Les champs {field_names} doivent former un ensemble unique."
+
+#: validators.py:219
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "Ce champ doit être unique pour la date \"{date_field}\"."
+
+#: validators.py:234
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "Ce champ doit être unique pour le mois \"{date_field}\"."
+
+#: validators.py:247
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "Ce champ doit être unique pour l'année \"{date_field}\"."
+
+#: versioning.py:39
+msgid "Invalid version in \"Accept\" header."
+msgstr "Version non valide dans l'en-tête « Accept »."
+
+#: versioning.py:70 versioning.py:112
+msgid "Invalid version in URL path."
+msgstr "Version non valide dans l'URL."
+
+#: versioning.py:138
+msgid "Invalid version in hostname."
+msgstr "Version non valide dans le nom d'hôte."
+
+#: versioning.py:160
+msgid "Invalid version in query parameter."
+msgstr "Version non valide dans le paramètre de requête."
+
+#: authtoken/serializers.py:20
+msgid "User account is disabled."
+msgstr "Ce compte est désactivé."
+
+#: authtoken/serializers.py:23
+msgid "Unable to log in with provided credentials."
+msgstr "Impossible de se connecter avec les informations d'identification fournies."
+
+#: authtoken/serializers.py:26
+msgid "Must include \"username\" and \"password\"."
+msgstr "\"username\" et \"password\" doivent être inclus."

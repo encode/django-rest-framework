@@ -16,7 +16,7 @@ The most common way to document Web APIs today is to produce documentation that 
 
 Marc Gibbons' [Django REST Swagger][django-rest-swagger] integrates REST framework with the [Swagger][swagger] API documentation tool.  The package produces well presented API documentation, and includes interactive tools for testing API endpoints.
 
-The pacakge is fully documented, well supported, and comes highly recommended.
+The package is fully documented, well supported, and comes highly recommended.
 
 Django REST Swagger supports REST framework versions 2.3 and above.
 
@@ -42,7 +42,7 @@ There are various other online tools and services for providing API documentatio
 
 ## Self describing APIs
 
-The browsable API that REST framwork provides makes it possible for your API to be entirely self describing.  The documentation for each API endpoint can be provided simply by visiting the URL in your browser.
+The browsable API that REST framework provides makes it possible for your API to be entirely self describing.  The documentation for each API endpoint can be provided simply by visiting the URL in your browser.
 
 ![Screenshot - Self describing API][image-self-describing-api]
 
@@ -54,7 +54,7 @@ The title that is used in the browsable API is generated from the view class nam
 
 For example, the view `UserListView`, will be named `User List` when presented in the browsable API.
 
-When working with viewsets, an appropriate suffix is appended to each generated view.  For example, the view set `UserViewSet` will generate views named `User List` and `User Instance`. 
+When working with viewsets, an appropriate suffix is appended to each generated view.  For example, the view set `UserViewSet` will generate views named `User List` and `User Instance`.
 
 #### Setting the description
 
@@ -65,9 +65,9 @@ If the python `markdown` library is installed, then [markdown syntax][markdown] 
     class AccountListView(views.APIView):
         """
         Returns a list of all **active** accounts in the system.
-        
+
         For more details on how accounts are activated please [see here][ref].
-        
+
         [ref]: http://example.com/activating-accounts
         """
 
@@ -84,7 +84,7 @@ You can modify the response behavior to `OPTIONS` requests by overriding the `me
     def metadata(self, request):
         """
         Don't include the view description in OPTIONS responses.
-        """ 
+        """
         data = super(ExampleView, self).metadata(request)
         data.pop('description')
         return data
@@ -93,11 +93,11 @@ You can modify the response behavior to `OPTIONS` requests by overriding the `me
 
 ## The hypermedia approach
 
-To be fully RESTful an API should present it's available actions as hypermedia controls in the responses that it sends.
+To be fully RESTful an API should present its available actions as hypermedia controls in the responses that it sends.
 
-In this approach, rather than documenting the available API endpoints up front, the description instead concentrates on the *media types* that are used.  The available actions take may be taken on any given URL are not strictly fixed, but are instead made available by the presence of link and form controls in the returned document.
+In this approach, rather than documenting the available API endpoints up front, the description instead concentrates on the *media types* that are used.  The available actions that may be taken on any given URL are not strictly fixed, but are instead made available by the presence of link and form controls in the returned document.
 
-To implement a hypermedia API you'll need to decide on an appropriate media type for the API, and implement a custom renderer and parser for that media type.  The [REST, Hypermedia & HATEOAS][hypermedia-docs] section of the documention includes pointers to background reading, as well as links to various hypermedia formats.
+To implement a hypermedia API you'll need to decide on an appropriate media type for the API, and implement a custom renderer and parser for that media type.  The [REST, Hypermedia & HATEOAS][hypermedia-docs] section of the documentation includes pointers to background reading, as well as links to various hypermedia formats.
 
 [cite]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [django-rest-swagger]: https://github.com/marcgibbons/django-rest-swagger

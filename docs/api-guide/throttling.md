@@ -1,4 +1,4 @@
-<a class="github" href="throttling.py"></a>
+source: throttling.py
 
 # Throttling
 
@@ -35,13 +35,17 @@ The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_C
         'DEFAULT_THROTTLE_RATES': {
             'anon': '100/day',
             'user': '1000/day'
-        }        
+        }
     }
 
 The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `second`, `minute`, `hour` or `day` as the throttle period.
 
 You can also set the throttling policy on a per-view or per-viewset basis,
 using the `APIView` class based views.
+
+	from rest_framework.response import Response
+    from rest_framework.throttling import UserRateThrottle
+	from rest_framework.views import APIView
 
     class ExampleView(APIView):
         throttle_classes = (UserRateThrottle,)
@@ -54,17 +58,34 @@ using the `APIView` class based views.
 
 Or, if you're using the `@api_view` decorator with function based views.
 
-    @api_view('GET')
-    @throttle_classes(UserRateThrottle)
+    @api_view(['GET'])
+    @throttle_classes([UserRateThrottle])
     def example_view(request, format=None):
         content = {
             'status': 'request was permitted'
         }
         return Response(content)
 
+## How clients are identified
+
+The `X-Forwarded-For` and `Remote-Addr` HTTP headers are used to uniquely identify client IP addresses for throttling.  If the `X-Forwarded-For` header is present then it will be used, otherwise the value of the `Remote-Addr` header will be used.
+
+If you need to strictly identify unique client IP addresses, you'll need to first configure the number of application proxies that the API runs behind by setting the `NUM_PROXIES` setting.  This setting should be an integer of zero or more.  If set to non-zero then the client IP will be identified as being the last IP address in the `X-Forwarded-For` header, once any application proxy IP addresses have first been excluded.  If set to zero, then the `Remote-Addr` header will always be used as the identifying IP address.
+
+It is important to understand that if you configure the `NUM_PROXIES` setting, then all clients behind a unique [NAT'd](http://en.wikipedia.org/wiki/Network_address_translation) gateway will be treated as a single client.
+
+Further context on how the `X-Forwarded-For` header works, and identifying a remote client IP can be [found here][identifing-clients].
+
 ## Setting up the cache
 
 The throttle classes provided by REST framework use Django's cache backend.  You should make sure that you've set appropriate [cache settings][cache-setting].  The default value of `LocMemCache` backend should be okay for simple setups.  See Django's [cache documentation][cache-docs] for more details.
+
+If you need to use a cache other than `'default'`, you can do so by creating a custom throttle class and setting the `cache` attribute.  For example:
+
+    class CustomAnonRateThrottle(AnonRateThrottle):
+        cache = get_cache('alternate')
+
+You'll need to remember to also set your custom throttle class in the `'DEFAULT_THROTTLE_CLASSES'` settings key, or using the `throttle_classes` view attribute.
 
 ---
 
@@ -126,20 +147,20 @@ For example, given the following views...
     class ContactListView(APIView):
         throttle_scope = 'contacts'
         ...
-    
+
     class ContactDetailView(ApiView):
         throttle_scope = 'contacts'
         ...
 
-    class UploadView(APIView):        
+    class UploadView(APIView):
         throttle_scope = 'uploads'
         ...
-    
+
 ...and the following settings.
 
     REST_FRAMEWORK = {
         'DEFAULT_THROTTLE_CLASSES': (
-            'rest_framework.throttling.ScopedRateThrottle'
+            'rest_framework.throttling.ScopedRateThrottle',
         ),
         'DEFAULT_THROTTLE_RATES': {
             'contacts': '1000/day',
@@ -157,6 +178,8 @@ To create a custom throttle, override `BaseThrottle` and implement `.allow_reque
 
 Optionally you may also override the `.wait()` method.  If implemented, `.wait()` should return a recommended number of seconds to wait before attempting the next request, or `None`.  The `.wait()` method will only be called if `.allow_request()` has previously returned `False`.
 
+If the `.wait()` method is implemented and the request is throttled, then a `Retry-After` header will be included in the response.
+
 ## Example
 
 The following is an example of a rate throttle, that will randomly throttle 1 in every 10 requests.
@@ -167,5 +190,6 @@ The following is an example of a rate throttle, that will randomly throttle 1 in
 
 [cite]: https://dev.twitter.com/docs/error-codes-responses
 [permissions]: permissions.md
+[identifing-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster
 [cache-setting]: https://docs.djangoproject.com/en/dev/ref/settings/#caches
 [cache-docs]: https://docs.djangoproject.com/en/dev/topics/cache/#setting-up-the-cache

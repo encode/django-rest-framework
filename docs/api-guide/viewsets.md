@@ -1,4 +1,4 @@
-<a class="github" href="viewsets.py"></a>
+source: viewsets.py
 
 # ViewSets
 
@@ -18,6 +18,12 @@ Typically, rather than explicitly registering the views in a viewset in the urlc
 ## Example
 
 Let's define a simple viewset that can be used to list or retrieve all the users in the system.
+
+    from django.contrib.auth.models import User
+    from django.shortcuts import get_object_or_404
+    from myapps.serializers import UserSerializer
+    from rest_framework import viewsets
+    from rest_framework.response import Response
 
     class UserViewSet(viewsets.ViewSet):
         """
@@ -41,6 +47,9 @@ If we need to, we can bind this viewset into two separate views, like so:
 
 Typically we wouldn't do this, but would instead register the viewset with a router, and allow the urlconf to be automatically generated.
 
+    from myapp.views import UserViewSet
+    from rest_framework.routers import DefaultRouter
+
     router = DefaultRouter()
     router.register(r'users', UserViewSet)
     urlpatterns = router.urls
@@ -61,7 +70,7 @@ There are two main advantages of using a `ViewSet` class over using a `View` cla
 
 Both of these come with a trade-off.  Using regular views and URL confs is more explicit and gives you more control.  ViewSets are helpful if you want to get up and running quickly, or when you have a large API and you want to enforce a consistent URL configuration throughout.
 
-## Marking extra methods for routing
+## Marking extra actions for routing
 
 The default routers included with REST framework will provide routes for a standard set of create/retrieve/update/destroy style operations, as shown below:
 
@@ -92,14 +101,16 @@ The default routers included with REST framework will provide routes for a stand
         def destroy(self, request, pk=None):
             pass
 
-If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@link` or `@action` decorators.  The `@link` decorator will route `GET` requests, and the `@action` decorator will route `POST` requests.
+If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@detail_route` or `@list_route` decorators.
+
+The `@detail_route` decorator contains `pk` in its URL pattern and is intended for methods which require a single instance. The `@list_route` decorator is intended for methods which operate on a list of objects.
 
 For example:
 
     from django.contrib.auth.models import User
-    from rest_framework import viewsets
     from rest_framework import status
-    from rest_framework.decorators import action
+    from rest_framework import viewsets
+    from rest_framework.decorators import detail_route, list_route
     from rest_framework.response import Response
     from myapp.serializers import UserSerializer, PasswordSerializer
 
@@ -110,10 +121,10 @@ For example:
         queryset = User.objects.all()
         serializer_class = UserSerializer
 
-        @action()
+        @detail_route(methods=['post'])
         def set_password(self, request, pk=None):
             user = self.get_object()
-            serializer = PasswordSerializer(data=request.DATA)
+            serializer = PasswordSerializer(data=request.data)
             if serializer.is_valid():
                 user.set_password(serializer.data['password'])
                 user.save()
@@ -122,17 +133,27 @@ For example:
                 return Response(serializer.errors,
                                 status=status.HTTP_400_BAD_REQUEST)
 
-The `@action` and `@link` decorators can additionally take extra arguments that will be set for the routed view only.  For example...
+        @list_route()
+        def recent_users(self, request):
+            recent_users = User.objects.all().order('-last_login')
+            page = self.paginate_queryset(recent_users)
+            serializer = self.get_pagination_serializer(page)
+            return Response(serializer.data)
 
-        @action(permission_classes=[IsAdminOrIsSelf])
+The decorators can additionally take extra arguments that will be set for the routed view only.  For example...
+
+        @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf])
         def set_password(self, request, pk=None):
            ...
 
-The `@action` decorator will route `POST` requests by default, but may also accept other HTTP methods, by using the `method` argument.  For example:
+These decorators will route `GET` requests by default, but may also accept other HTTP methods, by using the `methods` argument.  For example:
 
-        @action(methods=['POST', 'DELETE'])
+        @detail_route(methods=['post', 'delete'])
         def unset_password(self, request, pk=None):
            ...
+
+The two new actions will then be available at the urls `^users/{pk}/set_password/$` and `^users/{pk}/unset_password/$`
+
 ---
 
 # API Reference
@@ -180,6 +201,8 @@ Note that you can use any of the standard attributes or method overrides provide
         def get_queryset(self):
             return self.request.user.accounts.all()
 
+Note however that upon removal of the `queryset` property from your `ViewSet`, any associated [router][routers] will be unable to derive the base_name of your Model automatically, and so you will have to specify the `base_name` kwarg as part of your [router registration][routers].
+
 Also note that although this class provides the complete set of create/list/retrieve/update/destroy actions by default, you can restrict the available operations by using the standard permission classes.
 
 ## ReadOnlyModelViewSet
@@ -212,7 +235,7 @@ To create a base viewset class that provides `create`, `list` and `retrieve` ope
                                     mixins.RetrieveModelMixin,
                                     viewsets.GenericViewSet):
         """
-        A viewset that provides `retrieve`, `update`, and `list` actions.
+        A viewset that provides `retrieve`, `create`, and `list` actions.
 
         To use it, override the class and set the `.queryset` and
         `.serializer_class` attributes.
@@ -222,3 +245,4 @@ To create a base viewset class that provides `create`, `list` and `retrieve` ope
 By creating your own base `ViewSet` classes, you can provide common behavior that can be reused in multiple viewsets across your API.
 
 [cite]: http://guides.rubyonrails.org/routing.html
+[routers]: routers.md

@@ -1,19 +1,19 @@
 # REST, Hypermedia & HATEOAS
 
-> You keep using that word "REST".  I do not think it means what you think it means.
+> You keep using that word "REST". I do not think it means what you think it means.
 >
 > &mdash; Mike Amundsen, [REST fest 2012 keynote][cite].
 
-First off, the disclaimer.  The name "Django REST framework" was chosen simply to sure the project would be easily found by developers.  Throughout the documentation we try to use the more simple and technically correct terminology of "Web APIs".
+First off, the disclaimer.  The name "Django REST framework" was decided back in early 2011 and was chosen simply to sure the project would be easily found by developers. Throughout the documentation we try to use the more simple and technically correct terminology of "Web APIs".
 
-If you are serious about designing a Hypermedia APIs, you should look to resources outside of this documentation to help inform your design choices.
+If you are serious about designing a Hypermedia API, you should look to resources outside of this documentation to help inform your design choices.
 
 The following fall into the "required reading" category.
 
 * Roy Fielding's dissertation - [Architectural Styles and
 the Design of Network-based Software Architectures][dissertation].
 * Roy Fielding's "[REST APIs must be hypertext-driven][hypertext-driven]" blog post.
-* Leonard Richardson & Sam Ruby's [RESTful Web Services][restful-web-services].
+* Leonard Richardson & Mike Amundsen's [RESTful Web APIs][restful-web-apis].
 * Mike Amundsen's [Building Hypermedia APIs with HTML5 and Node][building-hypermedia-apis].
 * Steve Klabnik's [Designing Hypermedia APIs][designing-hypermedia-apis].
 * The [Richardson Maturity Model][maturitymodel].
@@ -32,12 +32,12 @@ REST framework also includes [serialization] and [parser]/[renderer] components 
 
 ## What REST framework doesn't provide.
 
-What REST framework doesn't do is give you is machine readable hypermedia formats such as [HAL][hal], [Collection+JSON][collection], [JSON API][json-api] or HTML [microformats] by default, or the ability to auto-magically create fully HATEOAS style APIs that include hypermedia-based form descriptions and semantically labelled hyperlinks.  Doing so would involve making opinionated choices about API design that should really remain outside of the framework's scope.
+What REST framework doesn't do is give you is machine readable hypermedia formats such as [HAL][hal], [Collection+JSON][collection], [JSON API][json-api] or HTML [microformats] by default, or the ability to auto-magically create fully HATEOAS style APIs that include hypermedia-based form descriptions and semantically labelled hyperlinks. Doing so would involve making opinionated choices about API design that should really remain outside of the framework's scope.
 
 [cite]: http://vimeo.com/channels/restfest/page:2
 [dissertation]: http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm
 [hypertext-driven]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
-[restful-web-services]: http://www.amazon.com/Restful-Web-Services-Leonard-Richardson/dp/0596529260
+[restful-web-apis]: http://restfulwebapis.org/
 [building-hypermedia-apis]: http://www.amazon.com/Building-Hypermedia-APIs-HTML5-Node/dp/1449306578
 [designing-hypermedia-apis]: http://designinghypermediaapis.com/
 [restisover]: http://blog.steveklabnik.com/posts/2012-02-23-rest-is-over

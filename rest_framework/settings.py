@@ -5,11 +5,11 @@ For example your project's `settings.py` file might look like this:
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.YAMLRenderer',
+        'rest_framework.renderers.TemplateHTMLRenderer',
     )
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
-        'rest_framework.parsers.YAMLParser',
+        'rest_framework.parsers.TemplateHTMLRenderer',
     )
 }
 
@@ -18,13 +18,11 @@ REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
 from __future__ import unicode_literals
-
+from django.test.signals import setting_changed
 from django.conf import settings
-from django.utils import importlib
-
+from django.utils import six
 from rest_framework import ISO_8601
-from rest_framework.compat import six
-
+from rest_framework.compat import importlib
 
 USER_SETTINGS = getattr(settings, 'REST_FRAMEWORK', None)
 
@@ -46,17 +44,13 @@ DEFAULTS = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
     ),
-    'DEFAULT_THROTTLE_CLASSES': (
-    ),
+    'DEFAULT_THROTTLE_CLASSES': (),
+    'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'rest_framework.negotiation.DefaultContentNegotiation',
+    'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
+    'DEFAULT_VERSIONING_CLASS': None,
 
-    'DEFAULT_CONTENT_NEGOTIATION_CLASS':
-        'rest_framework.negotiation.DefaultContentNegotiation',
-
-    # Genric view behavior
-    'DEFAULT_MODEL_SERIALIZER_CLASS':
-        'rest_framework.serializers.ModelSerializer',
-    'DEFAULT_PAGINATION_SERIALIZER_CLASS':
-        'rest_framework.pagination.PaginationSerializer',
+    # Generic view behavior
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'DEFAULT_FILTER_BACKENDS': (),
 
     # Throttling
@@ -64,14 +58,31 @@ DEFAULTS = {
         'user': None,
         'anon': None,
     },
+    'NUM_PROXIES': None,
 
     # Pagination
-    'PAGINATE_BY': None,
-    'PAGINATE_BY_PARAM': None,
+    'PAGE_SIZE': None,
+
+    # Filtering
+    'SEARCH_PARAM': 'search',
+    'ORDERING_PARAM': 'ordering',
+
+    # Versioning
+    'DEFAULT_VERSION': None,
+    'ALLOWED_VERSIONS': None,
+    'VERSION_PARAM': 'version',
 
     # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
+
+    # View configuration
+    'VIEW_NAME_FUNCTION': 'rest_framework.views.get_view_name',
+    'VIEW_DESCRIPTION_FUNCTION': 'rest_framework.views.get_view_description',
+
+    # Exception handling
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+    'NON_FIELD_ERRORS_KEY': 'non_field_errors',
 
     # Testing
     'TEST_REQUEST_RENDERER_CLASSES': (
@@ -88,25 +99,28 @@ DEFAULTS = {
     'URL_FORMAT_OVERRIDE': 'format',
 
     'FORMAT_SUFFIX_KWARG': 'format',
+    'URL_FIELD_NAME': 'url',
 
     # Input and output formats
-    'DATE_INPUT_FORMATS': (
-        ISO_8601,
-    ),
-    'DATE_FORMAT': None,
+    'DATE_FORMAT': ISO_8601,
+    'DATE_INPUT_FORMATS': (ISO_8601,),
 
-    'DATETIME_INPUT_FORMATS': (
-        ISO_8601,
-    ),
-    'DATETIME_FORMAT': None,
+    'DATETIME_FORMAT': ISO_8601,
+    'DATETIME_INPUT_FORMATS': (ISO_8601,),
 
-    'TIME_INPUT_FORMATS': (
-        ISO_8601,
-    ),
-    'TIME_FORMAT': None,
+    'TIME_FORMAT': ISO_8601,
+    'TIME_INPUT_FORMATS': (ISO_8601,),
 
-    # Pending deprecation
-    'FILTER_BACKEND': None,
+    # Encoding
+    'UNICODE_JSON': True,
+    'COMPACT_JSON': True,
+    'COERCE_DECIMAL_TO_STRING': True,
+    'UPLOADED_FILES_USE_URL': True,
+
+    # Pending deprecation:
+    'PAGINATE_BY': None,
+    'PAGINATE_BY_PARAM': None,
+    'MAX_PAGINATE_BY': None
 }
 
 
@@ -118,13 +132,16 @@ IMPORT_STRINGS = (
     'DEFAULT_PERMISSION_CLASSES',
     'DEFAULT_THROTTLE_CLASSES',
     'DEFAULT_CONTENT_NEGOTIATION_CLASS',
-    'DEFAULT_MODEL_SERIALIZER_CLASS',
-    'DEFAULT_PAGINATION_SERIALIZER_CLASS',
+    'DEFAULT_METADATA_CLASS',
+    'DEFAULT_VERSIONING_CLASS',
+    'DEFAULT_PAGINATION_CLASS',
     'DEFAULT_FILTER_BACKENDS',
-    'FILTER_BACKEND',
+    'EXCEPTION_HANDLER',
     'TEST_REQUEST_RENDERER_CLASSES',
     'UNAUTHENTICATED_USER',
     'UNAUTHENTICATED_TOKEN',
+    'VIEW_NAME_FUNCTION',
+    'VIEW_DESCRIPTION_FUNCTION'
 )
 
 
@@ -133,7 +150,9 @@ def perform_import(val, setting_name):
     If the given setting is a string import notation,
     then perform the necessary import or imports.
     """
-    if isinstance(val, six.string_types):
+    if val is None:
+        return None
+    elif isinstance(val, six.string_types):
         return import_from_string(val, setting_name)
     elif isinstance(val, (list, tuple)):
         return [import_from_string(item, setting_name) for item in val]
@@ -161,15 +180,15 @@ class APISettings(object):
     For example:
 
         from rest_framework.settings import api_settings
-        print api_settings.DEFAULT_RENDERER_CLASSES
+        print(api_settings.DEFAULT_RENDERER_CLASSES)
 
     Any setting with string import paths will be automatically resolved
     and return the class, rather than the string literal.
     """
     def __init__(self, user_settings=None, defaults=None, import_strings=None):
         self.user_settings = user_settings or {}
-        self.defaults = defaults or {}
-        self.import_strings = import_strings or ()
+        self.defaults = defaults or DEFAULTS
+        self.import_strings = import_strings or IMPORT_STRINGS
 
     def __getattr__(self, attr):
         if attr not in self.defaults.keys():
@@ -186,15 +205,19 @@ class APISettings(object):
         if val and attr in self.import_strings:
             val = perform_import(val, attr)
 
-        self.validate_setting(attr, val)
-
         # Cache the result
         setattr(self, attr, val)
         return val
 
-    def validate_setting(self, attr, val):
-        if attr == 'FILTER_BACKEND' and val is not None:
-            # Make sure we can initialize the class
-            val()
 
 api_settings = APISettings(USER_SETTINGS, DEFAULTS, IMPORT_STRINGS)
+
+
+def reload_api_settings(*args, **kwargs):
+    global api_settings
+    setting, value = kwargs['setting'], kwargs['value']
+    if setting == 'REST_FRAMEWORK':
+        api_settings = APISettings(value, DEFAULTS, IMPORT_STRINGS)
+
+
+setting_changed.connect(reload_api_settings)

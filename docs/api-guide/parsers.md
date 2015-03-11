@@ -1,4 +1,4 @@
-<a class="github" href="parsers.py"></a>
+source: parsers.py
 
 # Parsers
 
@@ -12,7 +12,7 @@ REST framework includes a number of built in Parser classes, that allow you to a
 
 ## How the parser is determined
 
-The set of valid parsers for a view is always defined as a list of classes.  When either `request.DATA` or `request.FILES` is accessed, REST framework will examine the `Content-Type` header on the incoming request, and determine which parser to use to parse the request content.
+The set of valid parsers for a view is always defined as a list of classes.  When  `request.data` is accessed, REST framework will examine the `Content-Type` header on the incoming request, and determine which parser to use to parse the request content.
 
 ---
 
@@ -26,35 +26,39 @@ As an example, if you are sending `json` encoded data using jQuery with the [.aj
 
 ## Setting the parsers
 
-The default set of parsers may be set globally, using the `DEFAULT_PARSER_CLASSES` setting.  For example, the following settings would allow requests with `YAML` content.
+The default set of parsers may be set globally, using the `DEFAULT_PARSER_CLASSES` setting. For example, the following settings would allow only requests with `JSON` content, instead of the default of JSON or form data.
 
     REST_FRAMEWORK = {
         'DEFAULT_PARSER_CLASSES': (
-            'rest_framework.parsers.YAMLParser',
+            'rest_framework.parsers.JSONParser',
         )
     }
 
-You can also set the renderers used for an individual view, or viewset,
+You can also set the parsers used for an individual view, or viewset,
 using the `APIView` class based views.
+
+    from rest_framework.parsers import JSONParser
+    from rest_framework.response import Response
+    from rest_framework.views import APIView
 
     class ExampleView(APIView):
         """
-        A view that can accept POST requests with YAML content.
+        A view that can accept POST requests with JSON content.
         """
-        parser_classes = (YAMLParser,)
+        parser_classes = (JSONParser,)
 
         def post(self, request, format=None):
-            return Response({'received data': request.DATA})
+            return Response({'received data': request.data})
 
 Or, if you're using the `@api_view` decorator with function based views.
 
     @api_view(['POST'])
-    @parser_classes((YAMLParser,))
+    @parser_classes((JSONParser,))
     def example_view(request, format=None):
         """
-        A view that can accept POST requests with YAML content.
+        A view that can accept POST requests with JSON content.
         """
-        return Response({'received data': request.DATA})
+        return Response({'received data': request.data})
 
 ---
 
@@ -66,29 +70,9 @@ Parses `JSON` request content.
 
 **.media_type**: `application/json`
 
-## YAMLParser
-
-Parses `YAML` request content.
-
-Requires the `pyyaml` package to be installed.
-
-**.media_type**: `application/yaml`
-
-## XMLParser
-
-Parses REST framework's default style of `XML` request content.
-
-Note that the `XML` markup language is typically used as the base language for more strictly defined domain-specific languages, such as `RSS`, `Atom`, and `XHTML`.
-
-If you are considering using `XML` for your API, you may want to consider implementing a custom renderer and parser for your specific requirements, and using an existing domain-specific media-type, or creating your own custom XML-based media-type.
-
-Requires the `defusedxml` package to be installed.
-
-**.media_type**: `application/xml`
-
 ## FormParser
 
-Parses HTML form content.  `request.DATA` will be populated with a `QueryDict` of data, `request.FILES` will be populated with an empty `QueryDict` of data.
+Parses HTML form content.  `request.data` will be populated with a `QueryDict` of data.
 
 You will typically want to use both `FormParser` and `MultiPartParser` together in order to fully support HTML form data.
 
@@ -96,7 +80,7 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 ## MultiPartParser
 
-Parses multipart HTML form content, which supports file uploads.  Both `request.DATA` and `request.FILES` will be populated with a `QueryDict`.
+Parses multipart HTML form content, which supports file uploads.  Both `request.data` will be populated with a `QueryDict`.
 
 You will typically want to use both `FormParser` and `MultiPartParser` together in order to fully support HTML form data.
 
@@ -104,7 +88,7 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 ## FileUploadParser
 
-Parses raw file upload content.  The `request.DATA` property will be an empty `QueryDict`, and `request.FILES` will be a dictionary with a single key `'file'` containing the uploaded file.
+Parses raw file upload content.  The `request.data` property will be a dictionary with a single key `'file'` containing the uploaded file.
 
 If the view used with `FileUploadParser` is called with a `filename` URL keyword argument, then that argument will be used as the filename.  If it is called without a `filename` URL keyword argument, then the client must set the filename in the `Content-Disposition` HTTP header.  For example `Content-Disposition: attachment; filename=upload.jpg`.
 
@@ -122,9 +106,9 @@ If the view used with `FileUploadParser` is called with a `filename` URL keyword
         parser_classes = (FileUploadParser,)
 
         def put(self, request, filename, format=None):
-            file_obj = request.FILES['file']
+            file_obj = request.data['file']
             # ...
-            # do some staff with uploaded file
+            # do some stuff with uploaded file
             # ...
             return Response(status=204)
 
@@ -135,7 +119,7 @@ If the view used with `FileUploadParser` is called with a `filename` URL keyword
 
 To implement a custom parser, you should override `BaseParser`, set the `.media_type` property, and implement the `.parse(self, stream, media_type, parser_context)` method.
 
-The method should return the data that will be used to populate the `request.DATA` property.
+The method should return the data that will be used to populate the `request.data` property.
 
 The arguments passed to `.parse()` are:
 
@@ -157,7 +141,7 @@ By default this will include the following keys: `view`, `request`, `args`, `kwa
 
 ## Example
 
-The following is an example plaintext parser that will populate the `request.DATA` property with a string representing the body of the request. 
+The following is an example plaintext parser that will populate the `request.data` property with a string representing the body of the request.
 
     class PlainTextParser(BaseParser):
     """
@@ -178,13 +162,64 @@ The following is an example plaintext parser that will populate the `request.DAT
 
 The following third party packages are also available.
 
+## YAML
+
+[REST framework YAML][rest-framework-yaml] provides [YAML][yaml] parsing and rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.
+
+#### Installation & configuration
+
+Install using pip.
+
+    $ pip install djangorestframework-yaml
+
+Modify your REST framework settings.
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PARSER_CLASSES': (
+            'rest_framework_yaml.parsers.YAMLParser',
+        ),
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework_yaml.renderers.YAMLRenderer',
+        ),
+    }
+
+## XML
+
+[REST Framework XML][rest-framework-xml] provides a simple informal XML format. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.
+
+#### Installation & configuration
+
+Install using pip.
+
+    $ pip install djangorestframework-xml
+
+Modify your REST framework settings.
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PARSER_CLASSES': (
+            'rest_framework_xml.parsers.XMLParser',
+        ),
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework_xml.renderers.XMLRenderer',
+        ),
+    }
+
 ## MessagePack
 
 [MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
 
+## CamelCase JSON
+
+[djangorestframework-camel-case] provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by [Vitaly Babiy][vbabiy].
+
 [jquery-ajax]: http://api.jquery.com/jQuery.ajax/
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion
 [upload-handlers]: https://docs.djangoproject.com/en/dev/topics/http/file-uploads/#upload-handlers
+[rest-framework-yaml]: http://jpadilla.github.io/django-rest-framework-yaml/
+[rest-framework-xml]: http://jpadilla.github.io/django-rest-framework-xml/
+[yaml]: http://www.yaml.org/
 [messagepack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [juanriaza]: https://github.com/juanriaza
+[vbabiy]: https://github.com/vbabiy
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
+[djangorestframework-camel-case]: https://github.com/vbabiy/djangorestframework-camel-case

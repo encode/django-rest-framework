@@ -1,8 +1,8 @@
-<a class="github" href="test.py"></a>
+source: test.py
 
 # Testing
 
-> Code without tests is broken as designed
+> Code without tests is broken as designed.
 >
 > &mdash; [Jacob Kaplan-Moss][cite]
 
@@ -14,7 +14,9 @@ Extends [Django's existing `RequestFactory` class][requestfactory].
 
 ## Creating test requests
 
-The `APIRequestFactory` class supports an almost identical API to Django's standard `RequestFactory` class.  This means the that standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.
+The `APIRequestFactory` class supports an almost identical API to Django's standard `RequestFactory` class.  This means that the standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.
+
+    from rest_framework.test import APIRequestFactory
 
     # Using the standard RequestFactory API to create a form POST request
     factory = APIRequestFactory()
@@ -34,7 +36,7 @@ To support a wider set of request formats, or change the default format, [see th
 
 #### Explicitly encoding the request body
 
-If you need to explictly encode the request body, you can do so by setting the `content_type` flag.  For example:
+If you need to explicitly encode the request body, you can do so by setting the `content_type` flag.  For example:
 
     request = factory.post('/notes/', json.dumps({'title': 'new idea'}), content_type='application/json')
 
@@ -49,6 +51,8 @@ For example, using `APIRequestFactory`, you can make a form PUT request like so:
 
 Using Django's `RequestFactory`, you'd need to explicitly encode the data yourself:
 
+    from django.test.client import encode_multipart, RequestFactory
+
     factory = RequestFactory()
     data = {'title': 'remember to email dave'}
     content = encode_multipart('BoUnDaRyStRiNg', data)
@@ -61,6 +65,8 @@ When testing views directly using a request factory, it's often convenient to be
 
 To forcibly authenticate a request, use the `force_authenticate()` method.
 
+    from rest_framework.tests import force_authenticate
+
     factory = APIRequestFactory()
     user = User.objects.get(username='olivia')
     view = AccountDetail.as_view()
@@ -71,6 +77,12 @@ To forcibly authenticate a request, use the `force_authenticate()` method.
     response = view(request)
 
 The signature for the method is `force_authenticate(request, user=None, token=None)`.  When making the call, either or both of the user and token may be set.
+
+For example, when forcibly authenticating using a token, you might do something like the following:
+
+    user = User.objects.get(username='olivia')
+    request = factory.get('/accounts/django-superstars/')
+    force_authenticate(request, user=user, token=user.token)
 
 ---
 
@@ -103,7 +115,9 @@ Extends [Django's existing `Client` class][client].
 
 ## Making requests
 
-The `APIClient` class supports the same request interface as `APIRequestFactory`.  This means the that standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.  For example:
+The `APIClient` class supports the same request interface as Django's standard `Client` class.  This means the that standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.  For example:
+
+    from rest_framework.test import APIClient
 
     client = APIClient()
     client.post('/notes/', {'title': 'new idea'}, format='json')
@@ -131,8 +145,11 @@ The `login` method is appropriate for testing APIs that use session authenticati
 
 The `credentials` method can be used to set headers that will then be included on all subsequent requests by the test client.
 
+    from rest_framework.authtoken.models import Token
+    from rest_framework.test import APIClient
+
     # Include an appropriate `Authorization:` header on all requests.
-    token = Token.objects.get(username='lauren')
+    token = Token.objects.get(user__username='lauren')
     client = APIClient()
     client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
 
@@ -155,7 +172,7 @@ This can be a useful shortcut if you're testing the API but don't want to have t
 
 To unauthenticate subsequent requests, call `force_authenticate` setting the user and/or token to `None`.
 
-    client.force_authenticate(user=None) 
+    client.force_authenticate(user=None)
 
 ## CSRF validation
 
@@ -182,7 +199,7 @@ You can use any of REST framework's test case classes as you would for the regul
 
     from django.core.urlresolvers import reverse
     from rest_framework import status
-    from rest_framework.test import APITestCase 
+    from rest_framework.test import APITestCase
 
     class AccountTests(APITestCase):
         def test_create_account(self):
@@ -203,12 +220,12 @@ You can use any of REST framework's test case classes as you would for the regul
 
 When checking the validity of test responses it's often more convenient to inspect the data that the response was created with, rather than inspecting the fully rendered response.
 
-For example, it's easier to inspect `request.data`:
+For example, it's easier to inspect `response.data`:
 
     response = self.client.get('/users/4/')
     self.assertEqual(response.data, {'id': 4, 'username': 'lauren'})
 
-Instead of inspecting the result of parsing `request.content`:
+Instead of inspecting the result of parsing `response.content`:
 
     response = self.client.get('/users/4/')
     self.assertEqual(json.loads(response.content), {'id': 4, 'username': 'lauren'})
@@ -240,18 +257,18 @@ The default format used to make test requests may be set using the `TEST_REQUEST
 
 If you need to test requests using something other than multipart or json requests, you can do so by setting the `TEST_REQUEST_RENDERER_CLASSES` setting.
 
-For example, to add support for using `format='yaml'` in test requests, you might have something like this in your `settings.py` file.
+For example, to add support for using `format='html'` in test requests, you might have something like this in your `settings.py` file.
 
     REST_FRAMEWORK = {
         ...
         'TEST_REQUEST_RENDERER_CLASSES': (
             'rest_framework.renderers.MultiPartRenderer',
             'rest_framework.renderers.JSONRenderer',
-            'rest_framework.renderers.YAMLRenderer'
+            'rest_framework.renderers.TemplateHTMLRenderer'
         )
     }
 
 [cite]: http://jacobian.org/writing/django-apps-with-buildout/#s-create-a-test-wrapper
-[client]: https://docs.djangoproject.com/en/dev/topics/testing/overview/#module-django.test.client
+[client]: https://docs.djangoproject.com/en/dev/topics/testing/tools/#the-test-client
 [requestfactory]: https://docs.djangoproject.com/en/dev/topics/testing/advanced/#django.test.client.RequestFactory
 [configuration]: #configuration

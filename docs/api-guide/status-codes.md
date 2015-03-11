@@ -1,4 +1,4 @@
-<a class="github" href="status.py"></a>
+source: status.py
 
 # Status Codes
 
@@ -9,12 +9,25 @@
 Using bare status codes in your responses isn't recommended.  REST framework includes a set of named constants that you can use to make more code more obvious and readable.
 
     from rest_framework import status
+    from rest_framework.response import Response
 
     def empty_view(self):
         content = {'please move along': 'nothing to see here'}
         return Response(content, status=status.HTTP_404_NOT_FOUND)
 
 The full set of HTTP status codes included in the `status` module is listed below.
+
+The module also includes a set of helper functions for testing if a status code is in a given range.
+
+    from rest_framework import status
+	from rest_framework.test import APITestCase
+
+	class ExampleTestCase(APITestCase):
+	    def test_url_root(self):
+	        url = reverse('index')
+	        response = self.client.get(url)
+	        self.assertTrue(status.is_success(response.status_code))
+
 
 For more information on proper usage of HTTP status codes see [RFC 2616][rfc2616]
 and [RFC 6585][rfc6585].
@@ -38,7 +51,7 @@ This class of status code indicates that the client's request was successfully r
     HTTP_205_RESET_CONTENT
     HTTP_206_PARTIAL_CONTENT
 
-## Redirection - 3xx 
+## Redirection - 3xx
 
 This class of status code indicates that further action needs to be taken by the user agent in order to fulfill the request.
 
@@ -89,6 +102,15 @@ Response status codes beginning with the digit "5" indicate cases in which the s
     HTTP_505_HTTP_VERSION_NOT_SUPPORTED
     HTTP_511_NETWORK_AUTHENTICATION_REQUIRED
 
+## Helper functions
+
+The following helper functions are available for identifying the category of the response code.
+
+    is_informational()  # 1xx
+    is_success()        # 2xx
+    is_redirect()       # 3xx
+    is_client_error()   # 4xx
+    is_server_error()   # 5xx
 
 [rfc2324]: http://www.ietf.org/rfc/rfc2324.txt
 [rfc2616]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html

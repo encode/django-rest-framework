@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup
+from setuptools.command.test import test as TestCommand
 import re
 import os
 import sys
@@ -12,7 +13,7 @@ def get_version(package):
     Return package version as listed in `__version__` in `init.py`.
     """
     init_py = open(os.path.join(package, '__init__.py')).read()
-    return re.match("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
+    return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
 
 
 def get_packages(package):
@@ -44,7 +45,14 @@ version = get_version('rest_framework')
 
 
 if sys.argv[-1] == 'publish':
-    os.system("python setup.py sdist upload")
+    if os.system("pip freeze | grep wheel"):
+        print("wheel not installed.\nUse `pip install wheel`.\nExiting.")
+        sys.exit()
+    if os.system("pip freeze | grep twine"):
+        print("twine not installed.\nUse `pip install twine`.\nExiting.")
+        sys.exit()
+    os.system("python setup.py sdist bdist_wheel")
+    os.system("twine upload dist/*")
     print("You probably want to also tag the version now:")
     print("  git tag -a %s -m 'version %s'" % (version, version))
     print("  git push --tags")
@@ -54,15 +62,15 @@ if sys.argv[-1] == 'publish':
 setup(
     name='djangorestframework',
     version=version,
-    url='http://django-rest-framework.org',
+    url='http://www.django-rest-framework.org',
     license='BSD',
     description='Web APIs for Django, made easy.',
     author='Tom Christie',
     author_email='tom@tomchristie.com',  # SEE NOTE BELOW (*)
     packages=get_packages('rest_framework'),
     package_data=get_package_data('rest_framework'),
-    test_suite='rest_framework.runtests.runtests.main',
     install_requires=[],
+    zip_safe=False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',

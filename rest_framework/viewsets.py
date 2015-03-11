@@ -9,7 +9,7 @@ Actions are only bound to methods at the point of instantiating the views.
     user_detail = UserViewSet.as_view({'get': 'retrieve'})
 
 Typically, rather than instantiate views from viewsets directly, you'll
-regsiter the viewset with a router and let the URL conf be determined
+register the viewset with a router and let the URL conf be determined
 automatically.
 
     router = DefaultRouter()
@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from functools import update_wrapper
 from django.utils.decorators import classonlymethod
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import views, generics, mixins
 
 
@@ -43,9 +44,15 @@ class ViewSetMixin(object):
         instantiated view, we need to totally reimplement `.as_view`,
         and slightly modify the view function that is created and returned.
         """
-        # The suffix initkwarg is reserved for identifing the viewset type
+        # The suffix initkwarg is reserved for identifying the viewset type
         # eg. 'List' or 'Instance'.
         cls.suffix = None
+
+        # actions must not be empty
+        if not actions:
+            raise TypeError("The `actions` argument must be provided when "
+                            "calling `.as_view()` on a ViewSet. For example "
+                            "`.as_view({'get': 'list'})`")
 
         # sanitize keyword arguments
         for key in initkwargs:
@@ -89,14 +96,14 @@ class ViewSetMixin(object):
         # resolved URL.
         view.cls = cls
         view.suffix = initkwargs.get('suffix', None)
-        return view
+        return csrf_exempt(view)
 
-    def initialize_request(self, request, *args, **kargs):
+    def initialize_request(self, request, *args, **kwargs):
         """
         Set the `.action` attribute on the view,
         depending on the request method.
         """
-        request = super(ViewSetMixin, self).initialize_request(request, *args, **kargs)
+        request = super(ViewSetMixin, self).initialize_request(request, *args, **kwargs)
         self.action = self.action_map.get(request.method.lower())
         return request
 
@@ -127,11 +134,11 @@ class ReadOnlyModelViewSet(mixins.RetrieveModelMixin,
 
 
 class ModelViewSet(mixins.CreateModelMixin,
-                    mixins.RetrieveModelMixin,
-                    mixins.UpdateModelMixin,
-                    mixins.DestroyModelMixin,
-                    mixins.ListModelMixin,
-                    GenericViewSet):
+                   mixins.RetrieveModelMixin,
+                   mixins.UpdateModelMixin,
+                   mixins.DestroyModelMixin,
+                   mixins.ListModelMixin,
+                   GenericViewSet):
     """
     A viewset that provides default `create()`, `retrieve()`, `update()`,
     `partial_update()`, `destroy()` and `list()` actions.

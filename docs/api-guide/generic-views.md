@@ -1,5 +1,5 @@
-<a class="github" href="mixins.py"></a>
-<a class="github" href="generics.py"></a>
+source: mixins.py
+        generics.py
 
 # Generic views
 
@@ -7,7 +7,7 @@
 >
 > &mdash; [Django Documentation][cite]
 
-One of the key benefits of class based views is the way they allow you to compose bits of reusable behaviour.  REST framework takes advantage of this by providing a number of pre-built views that provide for commonly used patterns.
+One of the key benefits of class based views is the way they allow you to compose bits of reusable behavior.  REST framework takes advantage of this by providing a number of pre-built views that provide for commonly used patterns.
 
 The generic views provided by REST framework allow you to quickly build API views that map closely to your database models.
 
@@ -16,6 +16,11 @@ If the generic views don't suit the needs of your API, you can drop down to usin
 ## Examples
 
 Typically when using the generic views, you'll override the view, and set several class attributes.
+
+    from django.contrib.auth.models import User
+    from myapp.serializers import UserSerializer
+    from rest_framework import generics
+    from rest_framework.permissions import IsAdminUser
 
     class UserList(generics.ListCreateAPIView):
         queryset = User.objects.all()
@@ -38,9 +43,15 @@ For more complex cases you might also want to override various methods on the vi
                 return 20
             return 100
 
-For very simple cases you might want to pass through any class attributes using the `.as_view()` method.  For example, your URLconf might include something the following entry.
+        def list(self, request):
+            # Note the use of `get_queryset()` instead of `self.queryset`
+            queryset = self.get_queryset()
+            serializer = UserSerializer(queryset, many=True)
+            return Response(serializer.data)
 
-    url(r'^/users/', ListCreateAPIView.as_view(model=User) name='user-list')
+For very simple cases you might want to pass through any class attributes using the `.as_view()` method.  For example, your URLconf might include something like the following entry:
+
+    url(r'^/users/', ListCreateAPIView.as_view(model=User), name='user-list')
 
 ---
 
@@ -58,22 +69,18 @@ Each of the concrete generic views provided is built by combining `GenericAPIVie
 
 The following attributes control the basic view behavior.
 
-* `queryset` - The queryset that should be used for returning objects from this view.  Typically, you must either set this attribute, or override the `get_queryset()` method.
+* `queryset` - The queryset that should be used for returning objects from this view.  Typically, you must either set this attribute, or override the `get_queryset()` method. If you are overriding a view method, it is important that you call `get_queryset()` instead of accessing this property directly, as `queryset` will get evaluated once, and those results will be cached for all subsequent requests.
 * `serializer_class` - The serializer class that should be used for validating and deserializing input, and for serializing output.  Typically, you must either set this attribute, or override the `get_serializer_class()` method.
-* `lookup_field` - The field that should be used to lookup individual model instances.  Defaults to `'pk'`.  The URL conf should include a keyword argument corresponding to this value.  More complex lookup styles can be supported by overriding the `get_object()` method.  Note that when using hyperlinked APIs you'll need to ensure that *both* the API views *and* the serializer classes use lookup fields that correctly correspond with the URL conf.
-
-**Shortcuts**:
-
-* `model` - This shortcut may be used instead of setting either (or both) of the `queryset`/`serializer_class` attributes, although using the explicit style is generally preferred.  If used instead of `serializer_class`, then then `DEFAULT_MODEL_SERIALIZER_CLASS` setting will determine the base serializer class.
+* `lookup_field` - The model field that should be used to for performing object lookup of individual model instances.  Defaults to `'pk'`.  Note that when using hyperlinked APIs you'll need to ensure that *both* the API views *and* the serializer classes set the lookup fields if you need to use a custom value.
+* `lookup_url_kwarg` - The URL keyword argument that should be used for object lookup.  The URL conf should include a keyword argument corresponding to this value.  If unset this defaults to using the same value as `lookup_field`.
 
 **Pagination**:
 
-The following attibutes are used to control pagination when used with list views.
+The following attributes are used to control pagination when used with list views.
 
-* `paginate_by` - The size of pages to use with paginated data.  If set to `None` then pagination is turned off.  If unset this uses the same value as the `PAGINATE_BY` setting, which defaults to `None`.
-* `paginate_by_param` - The name of a query parameter, which can be used by the client to override the default page size to use for pagination.  If unset this uses the same value as the `PAGINATE_BY_PARAM` setting, which defaults to `None`.
-* `pagination_serializer_class` - The pagination serializer class to use when determining the style of paginated responses.  Defaults to the same value as the `DEFAULT_PAGINATION_SERIALIZER_CLASS` setting.
-* `page_kwarg` - The name of a URL kwarg or URL query parameter which can be used by the client to control which page is requested.  Defaults to `'page'`.
+* `pagination_class` - The pagination class that should be used when paginating list results. Defaults to the same value as the `DEFAULT_PAGINATION_CLASS` setting, which is `'rest_framework.pagination.PageNumberPagination'`.
+
+Note that usage of the `paginate_by`, `paginate_by_param` and `page_kwarg` attributes are now pending deprecation. The `pagination_serializer_class` attribute and `DEFAULT_PAGINATION_SERIALIZER_CLASS` setting have been removed completely. Pagination settings should instead be controlled by overriding a pagination class and setting any configuration attributes there. See the pagination documentation for more details.
 
 **Filtering**:
 
@@ -85,9 +92,11 @@ The following attibutes are used to control pagination when used with list views
 
 #### `get_queryset(self)`
 
-Returns the queryset that should be used for list views, and that should be used as the base for lookups in detail views.  Defaults to returning the queryset specified by the `queryset` attribute, or the default queryset for the model if the `model` shortcut is being used.
+Returns the queryset that should be used for list views, and that should be used as the base for lookups in detail views.  Defaults to returning the queryset specified by the `queryset` attribute.
 
-May be overridden to provide dynamic behavior such as returning a queryset that is specific to the user making the request.
+This method should always be used rather than accessing `self.queryset` directly, as `self.queryset` gets evaluated only once, and those results are cached for all subsequent requests.
+
+May be overridden to provide dynamic behavior, such as returning a queryset, that is specific to the user making the request.
 
 For example:
 
@@ -99,7 +108,7 @@ For example:
 
 Returns an object instance that should be used for detail views.  Defaults to using the `lookup_field` parameter to filter the base queryset.
 
-May be overridden to provide more complex behavior such as object lookups based on more than one URL kwarg.
+May be overridden to provide more complex behavior, such as object lookups based on more than one URL kwarg.
 
 For example:
 
@@ -108,13 +117,34 @@ For example:
         filter = {}
         for field in self.multiple_lookup_fields:
             filter[field] = self.kwargs[field]
-        return get_object_or_404(queryset, **filter)
+
+        obj = get_object_or_404(queryset, **filter)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+Note that if your API doesn't include any object level permissions, you may optionally exclude the `self.check_object_permissions`, and simply return the object from the `get_object_or_404` lookup.
+
+#### `get_filter_backends(self)`
+
+Returns the classes that should be used to filter the queryset. Defaults to returning the `filter_backends` attribute.
+
+May be overridden to provide more complex behavior with filters, such as using different (or even exlusive) lists of filter_backends depending on different criteria.
+
+For example:
+
+    def get_filter_backends(self):
+        if "geo_route" in self.request.QUERY_PARAMS:
+            return (GeoRouteFilter, CategoryFilter)
+        elif "geo_point" in self.request.QUERY_PARAMS:
+            return (GeoPointFilter, CategoryFilter)
+
+        return (CategoryFilter,)
 
 #### `get_serializer_class(self)`
 
-Returns the class that should be used for the serializer.  Defaults to returning the `serializer_class` attribute, or dynamically generating a serializer class if the `model` shortcut is being used.
+Returns the class that should be used for the serializer.  Defaults to returning the `serializer_class` attribute.
 
-May be override to provide dynamic behavior such as using different serializers for read and write operations, or providing different serializers to different types of uesr.
+May be overridden to provide dynamic behavior, such as using different serializers for read and write operations, or providing different serializers to different types of users.
 
 For example:
 
@@ -125,9 +155,9 @@ For example:
 
 #### `get_paginate_by(self)`
 
-Returns the page size to use with pagination.  By default this uses the `paginate_by` attribute, and may be overridden by the cient if the `paginate_by_param` attribute is set.
+Returns the page size to use with pagination.  By default this uses the `paginate_by` attribute, and may be overridden by the client if the `paginate_by_param` attribute is set.
 
-You may want to override this method to provide more complex behavior such as modifying page sizes based on the media type of the response.
+You may want to override this method to provide more complex behavior, such as modifying page sizes based on the media type of the response.
 
 For example:
 
@@ -136,29 +166,33 @@ For example:
             return 20
         return 100
 
-**Save hooks**:
+**Save and deletion hooks**:
 
-The following methods are provided as placeholder interfaces.  They contain empty implementations and are not called directly by `GenericAPIView`, but they are overridden and used by some of the mixin classes.
+The following methods are provided by the mixin classes, and provide easy overriding of the object save or deletion behavior.
 
-* `pre_save(self, obj)` - A hook that is called before saving an object.
-* `post_save(self, obj, created=False)` - A hook that is called after saving an object.
+* `perform_create(self, serializer)` - Called by `CreateModelMixin` when saving a new object instance.
+* `perform_update(self, serializer)` - Called by `UpdateModelMixin` when saving an existing object instance.
+* `perform_destroy(self, instance)` - Called by `DestroyModelMixin` when deleting an object instance.
 
-The `pre_save` method in particular is a useful hook for setting attributes that are implicit in the request, but are not part of the request data.  For instance, you might set an attribute on the object based on the request user, or based on a URL keyword argument.
+These hooks are particularly useful for setting attributes that are implicit in the request, but are not part of the request data.  For instance, you might set an attribute on the object based on the request user, or based on a URL keyword argument.
 
-    def pre_save(self, obj):
-        """
-        Set the object's owner, based on the incoming request.
-        """
-        obj.owner = self.request.user
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
-Remember that the `pre_save()` method is not called by `GenericAPIView` itself, but it is called by `create()` and `update()` methods on the `CreateModelMixin` and `UpdateModelMixin` classes.
+These override points are also particularly useful for adding behavior that occurs before or after saving an object, such as emailing a confirmation, or logging the update.
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        send_email_confirmation(user=self.request.user, modified=instance)
+
+**Note**: These methods replace the old-style version 2.x `pre_save`, `post_save`, `pre_delete` and `post_delete` methods, which are no longer available.
 
 **Other methods**:
 
 You won't typically need to override the following methods, although you might need to call into them if you're writing custom views using `GenericAPIView`.
 
 * `get_serializer_context(self)` - Returns a dictionary containing any extra context that should be supplied to the serializer.  Defaults to including `'request'`, `'view'` and `'format'` keys.
-* `get_serializer(self, instance=None, data=None, files=None, many=False, partial=False)` - Returns a serializer instance.
+* `get_serializer(self, instance=None, data=None, files=None, many=False, partial=False, allow_add_remove=False)` - Returns a serializer instance.
 * `get_pagination_serializer(self, page)` - Returns a serializer instance to use with paginated data.
 * `paginate_queryset(self, queryset)` - Paginate a queryset if required, either returning a page object, or `None` if pagination is not configured for this view.
 * `filter_queryset(self, queryset)` - Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.
@@ -167,15 +201,15 @@ You won't typically need to override the following methods, although you might n
 
 # Mixins
 
-The mixin classes provide the actions that are used to provide the basic view behavior.  Note that the mixin classes provide action methods rather than defining the handler methods such as `.get()` and `.post()` directly.  This allows for more flexible composition of behavior.
+The mixin classes provide the actions that are used to provide the basic view behavior.  Note that the mixin classes provide action methods rather than defining the handler methods, such as `.get()` and `.post()`, directly.  This allows for more flexible composition of behavior.
+
+The mixin classes can be imported from `rest_framework.mixins`.
 
 ## ListModelMixin
 
 Provides a `.list(request, *args, **kwargs)` method, that implements listing a queryset.
 
 If the queryset is populated, this returns a `200 OK` response, with a serialized representation of the queryset as the body of the response.  The response data may optionally be paginated.
-
-If the queryset is empty this returns a `200 OK` response, unless the `.allow_empty` attribute on the view is set to `False`, in which case it will return a `404 Not Found`.
 
 ## CreateModelMixin
 
@@ -214,6 +248,8 @@ If an object is deleted this returns a `204 No Content` response, otherwise it w
 # Concrete View Classes
 
 The following classes are the concrete generic views.  If you're using generic views this is normally the level you'll be working at unless you need heavily customized behavior.
+
+The view classes can be imported from `rest_framework.generics`.
 
 ## CreateAPIView
 
@@ -317,7 +353,7 @@ You can then simply apply this mixin to a view or viewset anytime you need to ap
         serializer_class = UserSerializer
         lookup_fields = ('account', 'username')
 
-Using custom mixins is a good option if you have custom behavior that needs to be used 
+Using custom mixins is a good option if you have custom behavior that needs to be used.
 
 ## Creating custom base classes
 
@@ -326,18 +362,41 @@ If you are using a mixin across multiple views, you can take this a step further
     class BaseRetrieveView(MultipleFieldLookupMixin,
                            generics.RetrieveAPIView):
         pass
-    
+
     class BaseRetrieveUpdateDestroyView(MultipleFieldLookupMixin,
                                         generics.RetrieveUpdateDestroyAPIView):
         pass
 
 Using custom base classes is a good option if you have custom behavior that consistently needs to be repeated across a large number of views throughout your project.
 
-[cite]: https://docs.djangoproject.com/en/dev/ref/class-based-views/#base-vs-generic-views
+---
 
+# PUT as create
+
+Prior to version 3.0 the REST framework mixins treated `PUT` as either an update or a create operation, depending on if the object already existed or not.
+
+Allowing `PUT` as create operations is problematic, as it necessarily exposes information about the existence or non-existence of objects. It's also not obvious that transparently allowing re-creating of previously deleted instances is necessarily a better default behavior than simply returning `404` responses.
+
+Both styles "`PUT` as 404" and "`PUT` as create" can be valid in different circumstances, but from version 3.0 onwards we now use 404 behavior as the default, due to it being simpler and more obvious.
+
+If you need to generic PUT-as-create behavior you may want to include something like [this `AllowPUTAsCreateMixin` class](https://gist.github.com/tomchristie/a2ace4577eff2c603b1b) as a mixin to your views.
+
+---
+
+# Third party packages
+
+The following third party packages provide additional generic view implementations.
+
+## Django REST Framework bulk
+
+The [django-rest-framework-bulk package][django-rest-framework-bulk] implements generic view mixins as well as some common concrete generic views to allow to apply bulk operations via API requests.
+
+
+[cite]: https://docs.djangoproject.com/en/dev/ref/class-based-views/#base-vs-generic-views
 [GenericAPIView]: #genericapiview
 [ListModelMixin]: #listmodelmixin
 [CreateModelMixin]: #createmodelmixin
 [RetrieveModelMixin]: #retrievemodelmixin
 [UpdateModelMixin]: #updatemodelmixin
 [DestroyModelMixin]: #destroymodelmixin
+[django-rest-framework-bulk]: https://github.com/miki725/django-rest-framework-bulk

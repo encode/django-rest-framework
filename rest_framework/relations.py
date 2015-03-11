@@ -1,358 +1,192 @@
-"""
-Serializer fields that deal with relationships.
-
-These fields allow you to specify the style that should be used to represent
-model relationships, including hyperlinks, primary keys, or slugs.
-"""
+# coding: utf-8
 from __future__ import unicode_literals
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch
-from django import forms
-from django.db.models.fields import BLANK_CHOICE_DASH
-from django.forms import widgets
-from django.forms.models import ModelChoiceIterator
+from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
+from django.core.urlresolvers import get_script_prefix, resolve, NoReverseMatch, Resolver404
+from django.db.models.query import QuerySet
+from django.utils import six
+from django.utils.encoding import smart_text
+from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
-from rest_framework.fields import Field, WritableField, get_component, is_simple_callable
+from rest_framework.compat import OrderedDict
+from rest_framework.fields import get_attribute, empty, Field
 from rest_framework.reverse import reverse
-from rest_framework.compat import urlparse
-from rest_framework.compat import smart_text
-import warnings
+from rest_framework.utils import html
 
 
-##### Relational fields #####
-
-
-# Not actually Writable, but subclasses may need to be.
-class RelatedField(WritableField):
+class PKOnlyObject(object):
     """
-    Base class for related model fields.
-
-    This represents a relationship using the unicode representation of the target.
+    This is a mock object, used for when we only need the pk of the object
+    instance, but still want to return an object with a .pk attribute,
+    in order to keep the same interface as a regular model instance.
     """
-    widget = widgets.Select
-    many_widget = widgets.SelectMultiple
-    form_field_class = forms.ChoiceField
-    many_form_field_class = forms.MultipleChoiceField
+    def __init__(self, pk):
+        self.pk = pk
 
-    cache_choices = False
-    empty_label = None
-    read_only = True
-    many = False
 
-    def __init__(self, *args, **kwargs):
+# We assume that 'validators' are intended for the child serializer,
+# rather than the parent serializer.
+MANY_RELATION_KWARGS = (
+    'read_only', 'write_only', 'required', 'default', 'initial', 'source',
+    'label', 'help_text', 'style', 'error_messages'
+)
 
-        # 'null' is to be deprecated in favor of 'required'
-        if 'null' in kwargs:
-            warnings.warn('The `null` keyword argument is deprecated. '
-                          'Use the `required` keyword argument instead.',
-                          DeprecationWarning, stacklevel=2)
-            kwargs['required'] = not kwargs.pop('null')
 
-        queryset = kwargs.pop('queryset', None)
-        self.many = kwargs.pop('many', self.many)
-        if self.many:
-            self.widget = self.many_widget
-            self.form_field_class = self.many_form_field_class
+class RelatedField(Field):
+    def __init__(self, **kwargs):
+        self.queryset = kwargs.pop('queryset', None)
+        assert self.queryset is not None or kwargs.get('read_only', None), (
+            'Relational field must provide a `queryset` argument, '
+            'or set read_only=`True`.'
+        )
+        assert not (self.queryset is not None and kwargs.get('read_only', None)), (
+            'Relational fields should not provide a `queryset` argument, '
+            'when setting read_only=`True`.'
+        )
+        super(RelatedField, self).__init__(**kwargs)
 
-        kwargs['read_only'] = kwargs.pop('read_only', self.read_only)
-        super(RelatedField, self).__init__(*args, **kwargs)
+    def __new__(cls, *args, **kwargs):
+        # We override this method in order to automagically create
+        # `ManyRelatedField` classes instead when `many=True` is set.
+        if kwargs.pop('many', False):
+            return cls.many_init(*args, **kwargs)
+        return super(RelatedField, cls).__new__(cls, *args, **kwargs)
 
-        if not self.required:
-            self.empty_label = BLANK_CHOICE_DASH[0][1]
+    @classmethod
+    def many_init(cls, *args, **kwargs):
+        """
+        This method handles creating a parent `ManyRelatedField` instance
+        when the `many=True` keyword argument is passed.
 
-        self.queryset = queryset
+        Typically you won't need to override this method.
 
-    def initialize(self, parent, field_name):
-        super(RelatedField, self).initialize(parent, field_name)
-        if self.queryset is None and not self.read_only:
+        Note that we're over-cautious in passing most arguments to both parent
+        and child classes in order to try to cover the general case. If you're
+        overriding this method you'll probably want something much simpler, eg:
+
+        @classmethod
+        def many_init(cls, *args, **kwargs):
+            kwargs['child'] = cls()
+            return CustomManyRelatedField(*args, **kwargs)
+        """
+        list_kwargs = {'child_relation': cls(*args, **kwargs)}
+        for key in kwargs.keys():
+            if key in MANY_RELATION_KWARGS:
+                list_kwargs[key] = kwargs[key]
+        return ManyRelatedField(**list_kwargs)
+
+    def run_validation(self, data=empty):
+        # We force empty strings to None values for relational fields.
+        if data == '':
+            data = None
+        return super(RelatedField, self).run_validation(data)
+
+    def get_queryset(self):
+        queryset = self.queryset
+        if isinstance(queryset, QuerySet):
+            # Ensure queryset is re-evaluated whenever used.
+            queryset = queryset.all()
+        return queryset
+
+    def use_pk_only_optimization(self):
+        return False
+
+    def get_attribute(self, instance):
+        if self.use_pk_only_optimization() and self.source_attrs:
+            # Optimized case, return a mock object only containing the pk attribute.
             try:
-                manager = getattr(self.parent.opts.model, self.source or field_name)
-                if hasattr(manager, 'related'):  # Forward
-                    self.queryset = manager.related.model._default_manager.all()
-                else:  # Reverse
-                    self.queryset = manager.field.rel.to._default_manager.all()
-            except Exception:
-                msg = ('Serializer related fields must include a `queryset`' +
-                       ' argument or set `read_only=True')
-                raise Exception(msg)
+                instance = get_attribute(instance, self.source_attrs[:-1])
+                return PKOnlyObject(pk=instance.serializable_value(self.source_attrs[-1]))
+            except AttributeError:
+                pass
 
-    ### We need this stuff to make form choices work...
+        # Standard case, return the object instance.
+        return get_attribute(instance, self.source_attrs)
 
-    def prepare_value(self, obj):
-        return self.to_native(obj)
-
-    def label_from_instance(self, obj):
-        """
-        Return a readable representation for use with eg. select widgets.
-        """
-        desc = smart_text(obj)
-        ident = smart_text(self.to_native(obj))
-        if desc == ident:
-            return desc
-        return "%s - %s" % (desc, ident)
-
-    def _get_queryset(self):
-        return self._queryset
-
-    def _set_queryset(self, queryset):
-        self._queryset = queryset
-        self.widget.choices = self.choices
-
-    queryset = property(_get_queryset, _set_queryset)
-
-    def _get_choices(self):
-        # If self._choices is set, then somebody must have manually set
-        # the property self.choices. In this case, just return self._choices.
-        if hasattr(self, '_choices'):
-            return self._choices
-
-        # Otherwise, execute the QuerySet in self.queryset to determine the
-        # choices dynamically. Return a fresh ModelChoiceIterator that has not been
-        # consumed. Note that we're instantiating a new ModelChoiceIterator *each*
-        # time _get_choices() is called (and, thus, each time self.choices is
-        # accessed) so that we can ensure the QuerySet has not been consumed. This
-        # construct might look complicated but it allows for lazy evaluation of
-        # the queryset.
-        return ModelChoiceIterator(self)
-
-    def _set_choices(self, value):
-        # Setting choices also sets the choices on the widget.
-        # choices can be any iterable, but we call list() on it because
-        # it will be consumed more than once.
-        self._choices = self.widget.choices = list(value)
-
-    choices = property(_get_choices, _set_choices)
-
-    ### Regular serializer stuff...
-
-    def field_to_native(self, obj, field_name):
-        try:
-            if self.source == '*':
-                return self.to_native(obj)
-
-            source = self.source or field_name
-            value = obj
-
-            for component in source.split('.'):
-                value = get_component(value, component)
-                if value is None:
-                    break
-        except ObjectDoesNotExist:
-            return None
-
-        if value is None:
-            return None
-
-        if self.many:
-            if is_simple_callable(getattr(value, 'all', None)):
-                return [self.to_native(item) for item in value.all()]
-            else:
-                # Also support non-queryset iterables.
-                # This allows us to also support plain lists of related items.
-                return [self.to_native(item) for item in value]
-        return self.to_native(value)
-
-    def field_from_native(self, data, files, field_name, into):
-        if self.read_only:
-            return
-
-        try:
-            if self.many:
-                try:
-                    # Form data
-                    value = data.getlist(field_name)
-                    if value == [''] or value == []:
-                        raise KeyError
-                except AttributeError:
-                    # Non-form data
-                    value = data[field_name]
-            else:
-                value = data[field_name]
-        except KeyError:
-            if self.partial:
-                return
-            value = [] if self.many else None
-
-        if value in (None, '') and self.required:
-            raise ValidationError(self.error_messages['required'])
-        elif value in (None, ''):
-            into[(self.source or field_name)] = None
-        elif self.many:
-            into[(self.source or field_name)] = [self.from_native(item) for item in value]
-        else:
-            into[(self.source or field_name)] = self.from_native(value)
+    @property
+    def choices(self):
+        return OrderedDict([
+            (
+                six.text_type(self.to_representation(item)),
+                six.text_type(item)
+            )
+            for item in self.queryset.all()
+        ])
 
 
-### PrimaryKey relationships
+class StringRelatedField(RelatedField):
+    """
+    A read only field that represents its targets using their
+    plain string representation.
+    """
+
+    def __init__(self, **kwargs):
+        kwargs['read_only'] = True
+        super(StringRelatedField, self).__init__(**kwargs)
+
+    def to_representation(self, value):
+        return six.text_type(value)
+
 
 class PrimaryKeyRelatedField(RelatedField):
-    """
-    Represents a relationship as a pk value.
-    """
-    read_only = False
-
     default_error_messages = {
-        'does_not_exist': _("Invalid pk '%s' - object does not exist."),
-        'incorrect_type': _('Incorrect type.  Expected pk value, received %s.'),
+        'required': _('This field is required.'),
+        'does_not_exist': _('Invalid pk "{pk_value}" - object does not exist.'),
+        'incorrect_type': _('Incorrect type. Expected pk value, received {data_type}.'),
     }
 
-    # TODO: Remove these field hacks...
-    def prepare_value(self, obj):
-        return self.to_native(obj.pk)
+    def use_pk_only_optimization(self):
+        return True
 
-    def label_from_instance(self, obj):
-        """
-        Return a readable representation for use with eg. select widgets.
-        """
-        desc = smart_text(obj)
-        ident = smart_text(self.to_native(obj.pk))
-        if desc == ident:
-            return desc
-        return "%s - %s" % (desc, ident)
-
-    # TODO: Possibly change this to just take `obj`, through prob less performant
-    def to_native(self, pk):
-        return pk
-
-    def from_native(self, data):
-        if self.queryset is None:
-            raise Exception('Writable related fields must include a `queryset` argument')
-
+    def to_internal_value(self, data):
         try:
-            return self.queryset.get(pk=data)
+            return self.get_queryset().get(pk=data)
         except ObjectDoesNotExist:
-            msg = self.error_messages['does_not_exist'] % smart_text(data)
-            raise ValidationError(msg)
+            self.fail('does_not_exist', pk_value=data)
         except (TypeError, ValueError):
-            received = type(data).__name__
-            msg = self.error_messages['incorrect_type'] % received
-            raise ValidationError(msg)
+            self.fail('incorrect_type', data_type=type(data).__name__)
 
-    def field_to_native(self, obj, field_name):
-        if self.many:
-            # To-many relationship
+    def to_representation(self, value):
+        return value.pk
 
-            queryset = None
-            if not self.source:
-                # Prefer obj.serializable_value for performance reasons
-                try:
-                    queryset = obj.serializable_value(field_name)
-                except AttributeError:
-                    pass
-            if queryset is None:
-                # RelatedManager (reverse relationship)
-                source = self.source or field_name
-                queryset = obj
-                for component in source.split('.'):
-                    queryset = get_component(queryset, component)
-
-            # Forward relationship
-            if is_simple_callable(getattr(queryset, 'all', None)):
-                return [self.to_native(item.pk) for item in queryset.all()]
-            else:
-                # Also support non-queryset iterables.
-                # This allows us to also support plain lists of related items.
-                return [self.to_native(item.pk) for item in queryset]
-
-        # To-one relationship
-        try:
-            # Prefer obj.serializable_value for performance reasons
-            pk = obj.serializable_value(self.source or field_name)
-        except AttributeError:
-            # RelatedObject (reverse relationship)
-            try:
-                pk = getattr(obj, self.source or field_name).pk
-            except ObjectDoesNotExist:
-                return None
-
-        # Forward relationship
-        return self.to_native(pk)
-
-
-### Slug relationships
-
-
-class SlugRelatedField(RelatedField):
-    """
-    Represents a relationship using a unique field on the target.
-    """
-    read_only = False
-
-    default_error_messages = {
-        'does_not_exist': _("Object with %s=%s does not exist."),
-        'invalid': _('Invalid value.'),
-    }
-
-    def __init__(self, *args, **kwargs):
-        self.slug_field = kwargs.pop('slug_field', None)
-        assert self.slug_field, 'slug_field is required'
-        super(SlugRelatedField, self).__init__(*args, **kwargs)
-
-    def to_native(self, obj):
-        return getattr(obj, self.slug_field)
-
-    def from_native(self, data):
-        if self.queryset is None:
-            raise Exception('Writable related fields must include a `queryset` argument')
-
-        try:
-            return self.queryset.get(**{self.slug_field: data})
-        except ObjectDoesNotExist:
-            raise ValidationError(self.error_messages['does_not_exist'] %
-                                  (self.slug_field, smart_text(data)))
-        except (TypeError, ValueError):
-            msg = self.error_messages['invalid']
-            raise ValidationError(msg)
-
-
-### Hyperlinked relationships
 
 class HyperlinkedRelatedField(RelatedField):
-    """
-    Represents a relationship using hyperlinking.
-    """
-    read_only = False
     lookup_field = 'pk'
 
     default_error_messages = {
-        'no_match': _('Invalid hyperlink - No URL match'),
-        'incorrect_match': _('Invalid hyperlink - Incorrect URL match'),
-        'configuration_error': _('Invalid hyperlink due to configuration error'),
-        'does_not_exist': _("Invalid hyperlink - object does not exist."),
-        'incorrect_type': _('Incorrect type.  Expected url string, received %s.'),
+        'required': _('This field is required.'),
+        'no_match': _('Invalid hyperlink - No URL match.'),
+        'incorrect_match': _('Invalid hyperlink - Incorrect URL match.'),
+        'does_not_exist': _('Invalid hyperlink - Object does not exist.'),
+        'incorrect_type': _('Incorrect type. Expected URL string, received {data_type}.'),
     }
 
-    # These are all pending deprecation
-    pk_url_kwarg = 'pk'
-    slug_field = 'slug'
-    slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
-
-    def __init__(self, *args, **kwargs):
-        try:
-            self.view_name = kwargs.pop('view_name')
-        except KeyError:
-            raise ValueError("Hyperlinked field requires 'view_name' kwarg")
-
+    def __init__(self, view_name=None, **kwargs):
+        assert view_name is not None, 'The `view_name` argument is required.'
+        self.view_name = view_name
         self.lookup_field = kwargs.pop('lookup_field', self.lookup_field)
+        self.lookup_url_kwarg = kwargs.pop('lookup_url_kwarg', self.lookup_field)
         self.format = kwargs.pop('format', None)
 
-        # These are pending deprecation
-        if 'pk_url_kwarg' in kwargs:
-            msg = 'pk_url_kwarg is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
-        if 'slug_url_kwarg' in kwargs:
-            msg = 'slug_url_kwarg is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
-        if 'slug_field' in kwargs:
-            msg = 'slug_field is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+        # We include this simply for dependency injection in tests.
+        # We can't add it as a class attributes or it would expect an
+        # implicit `self` argument to be passed.
+        self.reverse = reverse
 
-        self.pk_url_kwarg = kwargs.pop('pk_url_kwarg', self.pk_url_kwarg)
-        self.slug_field = kwargs.pop('slug_field', self.slug_field)
-        default_slug_kwarg = self.slug_url_kwarg or self.slug_field
-        self.slug_url_kwarg = kwargs.pop('slug_url_kwarg', default_slug_kwarg)
+        super(HyperlinkedRelatedField, self).__init__(**kwargs)
 
-        super(HyperlinkedRelatedField, self).__init__(*args, **kwargs)
+    def use_pk_only_optimization(self):
+        return self.lookup_field == 'pk'
+
+    def get_object(self, view_name, view_args, view_kwargs):
+        """
+        Return the object corresponding to a matched URL.
+
+        Takes the matched URL conf arguments, and should return an
+        object instance, or raise an `ObjectDoesNotExist` exception.
+        """
+        lookup_value = view_kwargs[self.lookup_url_kwarg]
+        lookup_kwargs = {self.lookup_field: lookup_value}
+        return self.get_queryset().get(**lookup_kwargs)
 
     def get_url(self, obj, view_name, request, format):
         """
@@ -361,180 +195,57 @@ class HyperlinkedRelatedField(RelatedField):
         May raise a `NoReverseMatch` if the `view_name` and `lookup_field`
         attributes are not configured to correctly match the URL conf.
         """
-        lookup_field = getattr(obj, self.lookup_field)
-        kwargs = {self.lookup_field: lookup_field}
-        try:
-            return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except NoReverseMatch:
-            pass
+        # Unsaved objects will not yet have a valid URL.
+        if obj.pk is None:
+            return None
 
-        if self.pk_url_kwarg != 'pk':
-            # Only try pk if it has been explicitly set.
-            # Otherwise, the default `lookup_field = 'pk'` has us covered.
-            pk = obj.pk
-            kwargs = {self.pk_url_kwarg: pk}
-            try:
-                return reverse(view_name, kwargs=kwargs, request=request, format=format)
-            except NoReverseMatch:
-                pass
+        lookup_value = getattr(obj, self.lookup_field)
+        kwargs = {self.lookup_url_kwarg: lookup_value}
+        return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
 
-        slug = getattr(obj, self.slug_field, None)
-        if slug is not None:
-            # Only try slug if it corresponds to an attribute on the object.
-            kwargs = {self.slug_url_kwarg: slug}
-            try:
-                ret = reverse(view_name, kwargs=kwargs, request=request, format=format)
-                if self.slug_field == 'slug' and self.slug_url_kwarg == 'slug':
-                    # If the lookup succeeds using the default slug params,
-                    # then `slug_field` is being used implicitly, and we
-                    # we need to warn about the pending deprecation.
-                    msg = 'Implicit slug field hyperlinked fields are pending deprecation.' \
-                          'You should set `lookup_field=slug` on the HyperlinkedRelatedField.'
-                    warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
-                return ret
-            except NoReverseMatch:
-                pass
-
-        raise NoReverseMatch()
-
-    def get_object(self, queryset, view_name, view_args, view_kwargs):
-        """
-        Return the object corresponding to a matched URL.
-
-        Takes the matched URL conf arguments, and the queryset, and should
-        return an object instance, or raise an `ObjectDoesNotExist` exception.
-        """
-        lookup = view_kwargs.get(self.lookup_field, None)
-        pk = view_kwargs.get(self.pk_url_kwarg, None)
-        slug = view_kwargs.get(self.slug_url_kwarg, None)
-
-        if lookup is not None:
-            filter_kwargs = {self.lookup_field: lookup}
-        elif pk is not None:
-            filter_kwargs = {'pk': pk}
-        elif slug is not None:
-            filter_kwargs = {self.slug_field: slug}
-        else:
-            raise ObjectDoesNotExist()
-
-        return queryset.get(**filter_kwargs)
-
-    def to_native(self, obj):
-        view_name = self.view_name
+    def to_internal_value(self, data):
         request = self.context.get('request', None)
-        format = self.format or self.context.get('format', None)
-
-        if request is None:
-            msg = (
-                "Using `HyperlinkedRelatedField` without including the request "
-                "in the serializer context is deprecated. "
-                "Add `context={'request': request}` when instantiating "
-                "the serializer."
-            )
-            warnings.warn(msg, DeprecationWarning, stacklevel=4)
-
-        # If the object has not yet been saved then we cannot hyperlink to it.
-        if getattr(obj, 'pk', None) is None:
-            return
-
-        # Return the hyperlink, or error if incorrectly configured.
         try:
-            return self.get_url(obj, view_name, request, format)
-        except NoReverseMatch:
-            msg = (
-                'Could not resolve URL for hyperlinked relationship using '
-                'view name "%s". You may have failed to include the related '
-                'model in your API, or incorrectly configured the '
-                '`lookup_field` attribute on this field.'
-            )
-            raise Exception(msg % view_name)
-
-    def from_native(self, value):
-        # Convert URL -> model instance pk
-        # TODO: Use values_list
-        queryset = self.queryset
-        if queryset is None:
-            raise Exception('Writable related fields must include a `queryset` argument')
-
-        try:
-            http_prefix = value.startswith(('http:', 'https:'))
+            http_prefix = data.startswith(('http:', 'https:'))
         except AttributeError:
-            msg = self.error_messages['incorrect_type']
-            raise ValidationError(msg % type(value).__name__)
+            self.fail('incorrect_type', data_type=type(data).__name__)
 
         if http_prefix:
             # If needed convert absolute URLs to relative path
-            value = urlparse.urlparse(value).path
+            data = urlparse.urlparse(data).path
             prefix = get_script_prefix()
-            if value.startswith(prefix):
-                value = '/' + value[len(prefix):]
+            if data.startswith(prefix):
+                data = '/' + data[len(prefix):]
 
         try:
-            match = resolve(value)
-        except Exception:
-            raise ValidationError(self.error_messages['no_match'])
-
-        if match.view_name != self.view_name:
-            raise ValidationError(self.error_messages['incorrect_match'])
+            match = resolve(data)
+        except Resolver404:
+            self.fail('no_match')
 
         try:
-            return self.get_object(queryset, match.view_name,
-                                   match.args, match.kwargs)
+            expected_viewname = request.versioning_scheme.get_versioned_viewname(
+                self.view_name, request
+            )
+        except AttributeError:
+            expected_viewname = self.view_name
+
+        if match.view_name != expected_viewname:
+            self.fail('incorrect_match')
+
+        try:
+            return self.get_object(match.view_name, match.args, match.kwargs)
         except (ObjectDoesNotExist, TypeError, ValueError):
-            raise ValidationError(self.error_messages['does_not_exist'])
+            self.fail('does_not_exist')
 
-
-class HyperlinkedIdentityField(Field):
-    """
-    Represents the instance, or a property on the instance, using hyperlinking.
-    """
-    lookup_field = 'pk'
-    read_only = True
-
-    # These are all pending deprecation
-    pk_url_kwarg = 'pk'
-    slug_field = 'slug'
-    slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
-
-    def __init__(self, *args, **kwargs):
-        try:
-            self.view_name = kwargs.pop('view_name')
-        except KeyError:
-            msg = "HyperlinkedIdentityField requires 'view_name' argument"
-            raise ValueError(msg)
-
-        self.format = kwargs.pop('format', None)
-        lookup_field = kwargs.pop('lookup_field', None)
-        self.lookup_field = lookup_field or self.lookup_field
-
-        # These are pending deprecation
-        if 'pk_url_kwarg' in kwargs:
-            msg = 'pk_url_kwarg is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
-        if 'slug_url_kwarg' in kwargs:
-            msg = 'slug_url_kwarg is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
-        if 'slug_field' in kwargs:
-            msg = 'slug_field is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
-
-        self.slug_field = kwargs.pop('slug_field', self.slug_field)
-        default_slug_kwarg = self.slug_url_kwarg or self.slug_field
-        self.pk_url_kwarg = kwargs.pop('pk_url_kwarg', self.pk_url_kwarg)
-        self.slug_url_kwarg = kwargs.pop('slug_url_kwarg', default_slug_kwarg)
-
-        super(HyperlinkedIdentityField, self).__init__(*args, **kwargs)
-
-    def field_to_native(self, obj, field_name):
+    def to_representation(self, value):
         request = self.context.get('request', None)
         format = self.context.get('format', None)
-        view_name = self.view_name
 
-        if request is None:
-            warnings.warn("Using `HyperlinkedIdentityField` without including the "
-                          "request in the serializer context is deprecated. "
-                          "Add `context={'request': request}` when instantiating the serializer.",
-                          DeprecationWarning, stacklevel=4)
+        assert request is not None, (
+            "`%s` requires the request in the serializer"
+            " context. Add `context={'request': request}` when instantiating "
+            "the serializer." % self.__class__.__name__
+        )
 
         # By default use whatever format is given for the current context
         # unless the target is a different type to the source.
@@ -550,7 +261,7 @@ class HyperlinkedIdentityField(Field):
 
         # Return the hyperlink, or error if incorrectly configured.
         try:
-            return self.get_url(obj, view_name, request, format)
+            return self.get_url(value, self.view_name, request, format)
         except NoReverseMatch:
             msg = (
                 'Could not resolve URL for hyperlinked relationship using '
@@ -558,76 +269,122 @@ class HyperlinkedIdentityField(Field):
                 'model in your API, or incorrectly configured the '
                 '`lookup_field` attribute on this field.'
             )
-            raise Exception(msg % view_name)
+            raise ImproperlyConfigured(msg % self.view_name)
 
-    def get_url(self, obj, view_name, request, format):
-        """
-        Given an object, return the URL that hyperlinks to the object.
 
-        May raise a `NoReverseMatch` if the `view_name` and `lookup_field`
-        attributes are not configured to correctly match the URL conf.
-        """
-        lookup_field = getattr(obj, self.lookup_field)
-        kwargs = {self.lookup_field: lookup_field}
+class HyperlinkedIdentityField(HyperlinkedRelatedField):
+    """
+    A read-only field that represents the identity URL for an object, itself.
+
+    This is in contrast to `HyperlinkedRelatedField` which represents the
+    URL of relationships to other objects.
+    """
+
+    def __init__(self, view_name=None, **kwargs):
+        assert view_name is not None, 'The `view_name` argument is required.'
+        kwargs['read_only'] = True
+        kwargs['source'] = '*'
+        super(HyperlinkedIdentityField, self).__init__(view_name, **kwargs)
+
+    def use_pk_only_optimization(self):
+        # We have the complete object instance already. We don't need
+        # to run the 'only get the pk for this relationship' code.
+        return False
+
+
+class SlugRelatedField(RelatedField):
+    """
+    A read-write field the represents the target of the relationship
+    by a unique 'slug' attribute.
+    """
+
+    default_error_messages = {
+        'does_not_exist': _('Object with {slug_name}={value} does not exist.'),
+        'invalid': _('Invalid value.'),
+    }
+
+    def __init__(self, slug_field=None, **kwargs):
+        assert slug_field is not None, 'The `slug_field` argument is required.'
+        self.slug_field = slug_field
+        super(SlugRelatedField, self).__init__(**kwargs)
+
+    def to_internal_value(self, data):
         try:
-            return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except NoReverseMatch:
-            pass
+            return self.get_queryset().get(**{self.slug_field: data})
+        except ObjectDoesNotExist:
+            self.fail('does_not_exist', slug_name=self.slug_field, value=smart_text(data))
+        except (TypeError, ValueError):
+            self.fail('invalid')
 
-        if self.pk_url_kwarg != 'pk':
-            # Only try pk lookup if it has been explicitly set.
-            # Otherwise, the default `lookup_field = 'pk'` has us covered.
-            kwargs = {self.pk_url_kwarg: obj.pk}
-            try:
-                return reverse(view_name, kwargs=kwargs, request=request, format=format)
-            except NoReverseMatch:
-                pass
-
-        slug = getattr(obj, self.slug_field, None)
-        if slug:
-            # Only use slug lookup if a slug field exists on the model
-            kwargs = {self.slug_url_kwarg: slug}
-            try:
-                return reverse(view_name, kwargs=kwargs, request=request, format=format)
-            except NoReverseMatch:
-                pass
-
-        raise NoReverseMatch()
+    def to_representation(self, obj):
+        return getattr(obj, self.slug_field)
 
 
-### Old-style many classes for backwards compat
+class ManyRelatedField(Field):
+    """
+    Relationships with `many=True` transparently get coerced into instead being
+    a ManyRelatedField with a child relationship.
 
-class ManyRelatedField(RelatedField):
-    def __init__(self, *args, **kwargs):
-        warnings.warn('`ManyRelatedField()` is deprecated. '
-                      'Use `RelatedField(many=True)` instead.',
-                       DeprecationWarning, stacklevel=2)
-        kwargs['many'] = True
+    The `ManyRelatedField` class is responsible for handling iterating through
+    the values and passing each one to the child relationship.
+
+    This class is treated as private API.
+    You shouldn't generally need to be using this class directly yourself,
+    and should instead simply set 'many=True' on the relationship.
+    """
+    initial = []
+    default_empty_html = []
+
+    def __init__(self, child_relation=None, *args, **kwargs):
+        self.child_relation = child_relation
+        assert child_relation is not None, '`child_relation` is a required argument.'
         super(ManyRelatedField, self).__init__(*args, **kwargs)
+        self.child_relation.bind(field_name='', parent=self)
 
+    def get_value(self, dictionary):
+        # We override the default field access in order to support
+        # lists in HTML forms.
+        if html.is_html_input(dictionary):
+            # Don't return [] if the update is partial
+            if self.field_name not in dictionary:
+                if getattr(self.root, 'partial', False):
+                    return empty
+            return dictionary.getlist(self.field_name)
 
-class ManyPrimaryKeyRelatedField(PrimaryKeyRelatedField):
-    def __init__(self, *args, **kwargs):
-        warnings.warn('`ManyPrimaryKeyRelatedField()` is deprecated. '
-                      'Use `PrimaryKeyRelatedField(many=True)` instead.',
-                       DeprecationWarning, stacklevel=2)
-        kwargs['many'] = True
-        super(ManyPrimaryKeyRelatedField, self).__init__(*args, **kwargs)
+        return dictionary.get(self.field_name, empty)
 
+    def to_internal_value(self, data):
+        return [
+            self.child_relation.to_internal_value(item)
+            for item in data
+        ]
 
-class ManySlugRelatedField(SlugRelatedField):
-    def __init__(self, *args, **kwargs):
-        warnings.warn('`ManySlugRelatedField()` is deprecated. '
-                      'Use `SlugRelatedField(many=True)` instead.',
-                       DeprecationWarning, stacklevel=2)
-        kwargs['many'] = True
-        super(ManySlugRelatedField, self).__init__(*args, **kwargs)
+    def get_attribute(self, instance):
+        # Can't have any relationships if not created
+        if not instance.pk:
+            return []
 
+        relationship = get_attribute(instance, self.source_attrs)
+        return relationship.all() if (hasattr(relationship, 'all')) else relationship
 
-class ManyHyperlinkedRelatedField(HyperlinkedRelatedField):
-    def __init__(self, *args, **kwargs):
-        warnings.warn('`ManyHyperlinkedRelatedField()` is deprecated. '
-                      'Use `HyperlinkedRelatedField(many=True)` instead.',
-                       DeprecationWarning, stacklevel=2)
-        kwargs['many'] = True
-        super(ManyHyperlinkedRelatedField, self).__init__(*args, **kwargs)
+    def to_representation(self, iterable):
+        return [
+            self.child_relation.to_representation(value)
+            for value in iterable
+        ]
+
+    @property
+    def choices(self):
+        queryset = self.child_relation.queryset
+        iterable = queryset.all() if (hasattr(queryset, 'all')) else queryset
+        items_and_representations = [
+            (item, self.child_relation.to_representation(item))
+            for item in iterable
+        ]
+        return OrderedDict([
+            (
+                six.text_type(item_representation),
+                six.text_type(item) + ' - ' + six.text_type(item_representation)
+            )
+            for item, item_representation in items_and_representations
+        ])

@@ -1,6 +1,4 @@
-# Django REST framework 2
-
-What it is, and why you should care.
+# Django REST framework 2.0
 
 > Most people just make the mistake that it should be simple to design simple things.  In reality, the effort required to design something is inversely proportional to the simplicity of the result.
 >
@@ -8,7 +6,7 @@ What it is, and why you should care.
 
 ---
 
-**Announcement:** REST framework 2 released - Tue 30th Oct 2012 
+**Announcement:** REST framework 2 released - Tue 30th Oct 2012
 
 ---
 
@@ -37,7 +35,7 @@ REST framework 2 includes a totally re-worked serialization engine, that was ini
 * A declarative serialization API, that mirrors Django's `Forms`/`ModelForms` API.
 * Structural concerns are decoupled from encoding concerns.
 * Able to support rendering and parsing to many formats, including both machine-readable representations and HTML forms.
-* Validation that can be mapped to obvious and comprehensive error responses. 
+* Validation that can be mapped to obvious and comprehensive error responses.
 * Serializers that support both nested, flat, and partially-nested representations.
 * Relationships that can be expressed as primary keys, hyperlinks, slug fields, and other custom representations.
 

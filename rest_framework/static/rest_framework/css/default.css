@@ -3,20 +3,20 @@
 content running up underneath it. */
 
 h1 {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 h2, h3 {
-    font-weight: 300;
+  font-weight: 300;
 }
 
 .resource-description, .response-info {
-    margin-bottom: 2em;
+  margin-bottom: 2em;
 }
 .version:before {
-    content: "v";
-    opacity: 0.6;
-    padding-right: 0.25em;
+  content: "v";
+  opacity: 0.6;
+  padding-right: 0.25em;
 }
 
 .version {
@@ -24,16 +24,20 @@ h2, h3 {
 }
 
 .format-option {
-    font-family: Menlo, Consolas, "Andale Mono", "Lucida Console", monospace;
+  font-family: Menlo, Consolas, "Andale Mono", "Lucida Console", monospace;
 }
 
 .button-form {
-    float: right;
-    margin-right: 1em;
+  float: right;
+  margin-right: 1em;
 }
 
 ul.breadcrumb {
-  margin: 58px 0 0 0;
+  margin: 70px 0 0 0;
+}
+
+.breadcrumb li.active a {
+  color: #777;
 }
 
 form select, form input, form textarea {
@@ -43,17 +47,18 @@ form select, form input, form textarea {
 form select[multiple] {
   height: 150px;
 }
+
 /* To allow tooltips to work on disabled elements */
 .disabled-tooltip-shield {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 
 .errorlist {
-    margin-top: 0.5em;
+  margin-top: 0.5em;
 }
 
 pre {
@@ -64,8 +69,6 @@ pre {
 }
 
 .page-header {
-    border-bottom: none;
-    padding-bottom: 0px;
-    margin-bottom: 20px;
+  border-bottom: none;
+  padding-bottom: 0px;
 }
-

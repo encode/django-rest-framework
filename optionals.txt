@@ -1,7 +1,0 @@
-markdown>=2.1.0
-PyYAML>=3.10
-defusedxml>=0.3
-django-filter>=0.5.4
-django-oauth-plus>=2.0
-oauth2>=1.5.211
-django-oauth2-provider>=0.2.4

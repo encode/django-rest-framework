@@ -1,5 +1,7 @@
 from django.contrib.auth import authenticate
-from rest_framework import serializers
+from django.utils.translation import ugettext_lazy as _
+
+from rest_framework import exceptions, serializers
 
 
 class AuthTokenSerializer(serializers.Serializer):
@@ -15,10 +17,14 @@ class AuthTokenSerializer(serializers.Serializer):
 
             if user:
                 if not user.is_active:
-                    raise serializers.ValidationError('User account is disabled.')
-                attrs['user'] = user
-                return attrs
+                    msg = _('User account is disabled.')
+                    raise exceptions.ValidationError(msg)
             else:
-                raise serializers.ValidationError('Unable to login with provided credentials.')
+                msg = _('Unable to log in with provided credentials.')
+                raise exceptions.ValidationError(msg)
         else:
-            raise serializers.ValidationError('Must include "username" and "password"')
+            msg = _('Must include "username" and "password".')
+            raise exceptions.ValidationError(msg)
+
+        attrs['user'] = user
+        return attrs

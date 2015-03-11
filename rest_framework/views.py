@@ -2,28 +2,106 @@
 Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
-
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from django.utils.datastructures import SortedDict
+from django.utils import six
+from django.utils.encoding import smart_text
+from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, exceptions
-from rest_framework.compat import View, HttpResponseBase
+from rest_framework.compat import HttpResponseBase, View
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.utils.formatting import get_view_name, get_view_description
+from rest_framework.utils import formatting
+import inspect
+import warnings
+
+
+def get_view_name(view_cls, suffix=None):
+    """
+    Given a view class, return a textual name to represent the view.
+    This name is used in the browsable API, and in OPTIONS responses.
+
+    This function is the default for the `VIEW_NAME_FUNCTION` setting.
+    """
+    name = view_cls.__name__
+    name = formatting.remove_trailing_string(name, 'View')
+    name = formatting.remove_trailing_string(name, 'ViewSet')
+    name = formatting.camelcase_to_spaces(name)
+    if suffix:
+        name += ' ' + suffix
+
+    return name
+
+
+def get_view_description(view_cls, html=False):
+    """
+    Given a view class, return a textual description to represent the view.
+    This name is used in the browsable API, and in OPTIONS responses.
+
+    This function is the default for the `VIEW_DESCRIPTION_FUNCTION` setting.
+    """
+    description = view_cls.__doc__ or ''
+    description = formatting.dedent(smart_text(description))
+    if html:
+        return formatting.markup_description(description)
+    return description
+
+
+def exception_handler(exc, context):
+    """
+    Returns the response that should be used for any given exception.
+
+    By default we handle the REST framework `APIException`, and also
+    Django's built-in `ValidationError`, `Http404` and `PermissionDenied`
+    exceptions.
+
+    Any unhandled exceptions may return `None`, which will cause a 500 error
+    to be raised.
+    """
+    if isinstance(exc, exceptions.APIException):
+        headers = {}
+        if getattr(exc, 'auth_header', None):
+            headers['WWW-Authenticate'] = exc.auth_header
+        if getattr(exc, 'wait', None):
+            headers['Retry-After'] = '%d' % exc.wait
+
+        if isinstance(exc.detail, (list, dict)):
+            data = exc.detail
+        else:
+            data = {'detail': exc.detail}
+
+        return Response(data, status=exc.status_code, headers=headers)
+
+    elif isinstance(exc, Http404):
+        msg = _('Not found.')
+        data = {'detail': six.text_type(msg)}
+        return Response(data, status=status.HTTP_404_NOT_FOUND)
+
+    elif isinstance(exc, PermissionDenied):
+        msg = _('Permission denied.')
+        data = {'detail': six.text_type(msg)}
+        return Response(data, status=status.HTTP_403_FORBIDDEN)
+
+    # Note: Unhandled exceptions will raise a 500 error.
+    return None
 
 
 class APIView(View):
-    settings = api_settings
 
+    # The following policies may be set at either globally, or per-view.
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
     parser_classes = api_settings.DEFAULT_PARSER_CLASSES
     authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
     throttle_classes = api_settings.DEFAULT_THROTTLE_CLASSES
     permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
     content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS
+    metadata_class = api_settings.DEFAULT_METADATA_CLASS
+    versioning_class = api_settings.DEFAULT_VERSIONING_CLASS
+
+    # Allow dependency injection of other settings to make testing easier.
+    settings = api_settings
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -35,7 +113,9 @@ class APIView(View):
         """
         view = super(APIView, cls).as_view(**initkwargs)
         view.cls = cls
-        return view
+        # Note: session based authentication is explicitly CSRF validated,
+        # all other authentication is CSRF exempt.
+        return csrf_exempt(view)
 
     @property
     def allowed_methods(self):
@@ -46,12 +126,12 @@ class APIView(View):
 
     @property
     def default_response_headers(self):
-        # TODO: deprecate?
-        # TODO: Only vary by accept if multiple renderers
-        return {
+        headers = {
             'Allow': ', '.join(self.allowed_methods),
-            'Vary': 'Accept'
         }
+        if len(self.renderer_classes) > 1:
+            headers['Vary'] = 'Accept'
+        return headers
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
@@ -64,7 +144,7 @@ class APIView(View):
         """
         If request is not permitted, determine what kind of exception to raise.
         """
-        if not self.request.successful_authenticator:
+        if not request.successful_authenticator:
             raise exceptions.NotAuthenticated()
         raise exceptions.PermissionDenied()
 
@@ -88,8 +168,8 @@ class APIView(View):
         Returns a dict that is passed through to Parser.parse(),
         as the `parser_context` keyword argument.
         """
-        # Note: Additionally `request` will also be added to the context
-        #       by the Request object.
+        # Note: Additionally `request` and `encoding` will also be added
+        #       to the context by the Request object.
         return {
             'view': self,
             'args': getattr(self, 'args', ()),
@@ -109,6 +189,34 @@ class APIView(View):
             'kwargs': getattr(self, 'kwargs', {}),
             'request': getattr(self, 'request', None)
         }
+
+    def get_exception_handler_context(self):
+        """
+        Returns a dict that is passed through to EXCEPTION_HANDLER,
+        as the `context` argument.
+        """
+        return {
+            'view': self,
+            'args': getattr(self, 'args', ()),
+            'kwargs': getattr(self, 'kwargs', {}),
+            'request': getattr(self, 'request', None)
+        }
+
+    def get_view_name(self):
+        """
+        Return the view name, as used in OPTIONS responses and in the
+        browsable API.
+        """
+        func = self.settings.VIEW_NAME_FUNCTION
+        return func(self.__class__, getattr(self, 'suffix', None))
+
+    def get_view_description(self, html=False):
+        """
+        Return some descriptive text for the view, as used in OPTIONS responses
+        and in the browsable API.
+        """
+        func = self.settings.VIEW_DESCRIPTION_FUNCTION
+        return func(self.__class__, html)
 
     # API policy instantiation methods
 
@@ -210,19 +318,31 @@ class APIView(View):
             if not throttle.allow_request(request, self):
                 self.throttled(request, throttle.wait())
 
+    def determine_version(self, request, *args, **kwargs):
+        """
+        If versioning is being used, then determine any API version for the
+        incoming request. Returns a two-tuple of (version, versioning_scheme)
+        """
+        if self.versioning_class is None:
+            return (None, None)
+        scheme = self.versioning_class()
+        return (scheme.determine_version(request, *args, **kwargs), scheme)
+
     # Dispatch methods
 
-    def initialize_request(self, request, *args, **kargs):
+    def initialize_request(self, request, *args, **kwargs):
         """
         Returns the initial request object.
         """
         parser_context = self.get_parser_context(request)
 
-        return Request(request,
-                       parsers=self.get_parsers(),
-                       authenticators=self.get_authenticators(),
-                       negotiator=self.get_content_negotiator(),
-                       parser_context=parser_context)
+        return Request(
+            request,
+            parsers=self.get_parsers(),
+            authenticators=self.get_authenticators(),
+            negotiator=self.get_content_negotiator(),
+            parser_context=parser_context
+        )
 
     def initial(self, request, *args, **kwargs):
         """
@@ -238,6 +358,10 @@ class APIView(View):
         # Perform content negotiation and store the accepted info on the request
         neg = self.perform_content_negotiation(request)
         request.accepted_renderer, request.accepted_media_type = neg
+
+        # Determine the API version, if versioning is in use.
+        version, scheme = self.determine_version(request, *args, **kwargs)
+        request.version, request.versioning_scheme = version, scheme
 
     def finalize_response(self, request, response, *args, **kwargs):
         """
@@ -269,37 +393,38 @@ class APIView(View):
         Handle any exception that occurs, by returning an appropriate response,
         or re-raising the error.
         """
-        if isinstance(exc, exceptions.Throttled):
-            # Throttle wait header
-            self.headers['X-Throttle-Wait-Seconds'] = '%d' % exc.wait
-
         if isinstance(exc, (exceptions.NotAuthenticated,
                             exceptions.AuthenticationFailed)):
             # WWW-Authenticate header for 401 responses, else coerce to 403
             auth_header = self.get_authenticate_header(self.request)
 
             if auth_header:
-                self.headers['WWW-Authenticate'] = auth_header
+                exc.auth_header = auth_header
             else:
                 exc.status_code = status.HTTP_403_FORBIDDEN
 
-        if isinstance(exc, exceptions.APIException):
-            return Response({'detail': exc.detail},
-                            status=exc.status_code,
-                            exception=True)
-        elif isinstance(exc, Http404):
-            return Response({'detail': 'Not found'},
-                            status=status.HTTP_404_NOT_FOUND,
-                            exception=True)
-        elif isinstance(exc, PermissionDenied):
-            return Response({'detail': 'Permission denied'},
-                            status=status.HTTP_403_FORBIDDEN,
-                            exception=True)
-        raise
+        exception_handler = self.settings.EXCEPTION_HANDLER
 
-    # Note: session based authentication is explicitly CSRF validated,
-    # all other authentication is CSRF exempt.
-    @csrf_exempt
+        if len(inspect.getargspec(exception_handler).args) == 1:
+            warnings.warn(
+                'The `exception_handler(exc)` call signature is deprecated. '
+                'Use `exception_handler(exc, context) instead.',
+                DeprecationWarning
+            )
+            response = exception_handler(exc)
+        else:
+            context = self.get_exception_handler_context()
+            response = exception_handler(exc, context)
+
+        if response is None:
+            raise
+
+        response.exception = True
+        return response
+
+    # Note: Views are made CSRF exempt from within `as_view` as to prevent
+    # accidental removal of this exemption in cases where `dispatch` needs to
+    # be overridden.
     def dispatch(self, request, *args, **kwargs):
         """
         `.dispatch()` is pretty much the same as Django's regular dispatch,
@@ -332,26 +457,8 @@ class APIView(View):
     def options(self, request, *args, **kwargs):
         """
         Handler method for HTTP 'OPTIONS' request.
-        We may as well implement this as Django will otherwise provide
-        a less useful default implementation.
         """
-        return Response(self.metadata(request), status=status.HTTP_200_OK)
-
-    def metadata(self, request):
-        """
-        Return a dictionary of metadata about the view.
-        Used to return responses for OPTIONS requests.
-        """
-
-        # This is used by ViewSets to disambiguate instance vs list views
-        view_name_suffix = getattr(self, 'suffix', None)
-
-        # By default we can't provide any form-like information, however the
-        # generic views override this implementation and add additional
-        # information for POST and PUT methods, based on the serializer.
-        ret = SortedDict()
-        ret['name'] = get_view_name(self.__class__, view_name_suffix)
-        ret['description'] = get_view_description(self.__class__)
-        ret['renders'] = [renderer.media_type for renderer in self.renderer_classes]
-        ret['parses'] = [parser.media_type for parser in self.parser_classes]
-        return ret
+        if self.metadata_class is None:
+            return self.http_method_not_allowed(request, *args, **kwargs)
+        data = self.metadata_class().determine_metadata(request, self)
+        return Response(data, status=status.HTTP_200_OK)

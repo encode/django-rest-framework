@@ -1,115 +1,32 @@
 from __future__ import unicode_literals, absolute_import
 from django import template
 from django.core.urlresolvers import reverse, NoReverseMatch
-from django.http import QueryDict
+from django.utils import six
+from django.utils.encoding import iri_to_uri, force_text
 from django.utils.html import escape
 from django.utils.safestring import SafeData, mark_safe
-from rest_framework.compat import urlparse, force_text, six, smart_urlquote
-import re, string
+from django.utils.html import smart_urlquote
+from rest_framework.renderers import HTMLFormRenderer
+from rest_framework.utils.urls import replace_query_param
+import re
 
 register = template.Library()
-
-
-# Note we don't use 'load staticfiles', because we need a 1.3 compatible
-# version, so instead we include the `static` template tag ourselves.
-
-# When 1.3 becomes unsupported by REST framework, we can instead start to
-# use the {% load staticfiles %} tag, remove the following code,
-# and add a dependency that `django.contrib.staticfiles` must be installed.
-
-# Note: We can't put this into the `compat` module because the compat import
-# from rest_framework.compat import ...
-# conflicts with this rest_framework template tag module.
-
-try:  # Django 1.5+
-    from django.contrib.staticfiles.templatetags.staticfiles import StaticFilesNode
-
-    @register.tag('static')
-    def do_static(parser, token):
-        return StaticFilesNode.handle_token(parser, token)
-
-except ImportError:
-    try:  # Django 1.4
-        from django.contrib.staticfiles.storage import staticfiles_storage
-
-        @register.simple_tag
-        def static(path):
-            """
-            A template tag that returns the URL to a file
-            using staticfiles' storage backend
-            """
-            return staticfiles_storage.url(path)
-
-    except ImportError:  # Django 1.3
-        from urlparse import urljoin
-        from django import template
-        from django.templatetags.static import PrefixNode
-
-        class StaticNode(template.Node):
-            def __init__(self, varname=None, path=None):
-                if path is None:
-                    raise template.TemplateSyntaxError(
-                        "Static template nodes must be given a path to return.")
-                self.path = path
-                self.varname = varname
-
-            def url(self, context):
-                path = self.path.resolve(context)
-                return self.handle_simple(path)
-
-            def render(self, context):
-                url = self.url(context)
-                if self.varname is None:
-                    return url
-                context[self.varname] = url
-                return ''
-
-            @classmethod
-            def handle_simple(cls, path):
-                return urljoin(PrefixNode.handle_simple("STATIC_URL"), path)
-
-            @classmethod
-            def handle_token(cls, parser, token):
-                """
-                Class method to parse prefix node and return a Node.
-                """
-                bits = token.split_contents()
-
-                if len(bits) < 2:
-                    raise template.TemplateSyntaxError(
-                        "'%s' takes at least one argument (path to file)" % bits[0])
-
-                path = parser.compile_filter(bits[1])
-
-                if len(bits) >= 2 and bits[-2] == 'as':
-                    varname = bits[3]
-                else:
-                    varname = None
-
-                return cls(varname, path)
-
-        @register.tag('static')
-        def do_static_13(parser, token):
-            return StaticNode.handle_token(parser, token)
-
-
-def replace_query_param(url, key, val):
-    """
-    Given a URL and a key/val pair, set or replace an item in the query
-    parameters of the URL, and return the new URL.
-    """
-    (scheme, netloc, path, query, fragment) = urlparse.urlsplit(url)
-    query_dict = QueryDict(query).copy()
-    query_dict[key] = val
-    query = query_dict.urlencode()
-    return urlparse.urlunsplit((scheme, netloc, path, query, fragment))
-
 
 # Regex for adding classes to html snippets
 class_re = re.compile(r'(?<=class=["\'])(.*)(?=["\'])')
 
 
-# And the template tags themselves...
+@register.simple_tag
+def get_pagination_html(pager):
+    return pager.to_html()
+
+
+@register.simple_tag
+def render_field(field, style=None):
+    style = style or {}
+    renderer = style.get('renderer', HTMLFormRenderer())
+    return renderer.render_field(field, style)
+
 
 @register.simple_tag
 def optional_login(request):
@@ -121,22 +38,31 @@ def optional_login(request):
     except NoReverseMatch:
         return ''
 
-    snippet = "<a href='%s?next=%s'>Log in</a>" % (login_url, request.path)
+    snippet = "<li><a href='{href}?next={next}'>Log in</a></li>".format(href=login_url, next=escape(request.path))
     return snippet
 
 
 @register.simple_tag
-def optional_logout(request):
+def optional_logout(request, user):
     """
     Include a logout snippet if REST framework's logout view is in the URLconf.
     """
     try:
         logout_url = reverse('rest_framework:logout')
     except NoReverseMatch:
-        return ''
+        return '<li class="navbar-text">{user}</li>'.format(user=user)
 
-    snippet = "<a href='%s?next=%s'>Log out</a>" % (logout_url, request.path)
-    return snippet
+    snippet = """<li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            {user}
+            <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a href='{href}?next={next}'>Log out</a></li>
+        </ul>
+    </li>"""
+
+    return snippet.format(user=user, href=logout_url, next=escape(request.path))
 
 
 @register.simple_tag
@@ -144,7 +70,9 @@ def add_query_param(request, key, val):
     """
     Add a query parameter to the current request url, and return the new url.
     """
-    return replace_query_param(request.get_full_path(), key, val)
+    iri = request.get_full_path()
+    uri = iri_to_uri(iri)
+    return escape(replace_query_param(uri, key, val))
 
 
 @register.filter
@@ -177,13 +105,24 @@ def add_class(value, css_class):
 
 
 # Bunch of stuff cloned from urlize
-TRAILING_PUNCTUATION = ['.', ',', ':', ';', '.)', '"', "'"]
+TRAILING_PUNCTUATION = ['.', ',', ':', ';', '.)', '"', "']", "'}", "'"]
 WRAPPING_PUNCTUATION = [('(', ')'), ('<', '>'), ('[', ']'), ('&lt;', '&gt;'),
                         ('"', '"'), ("'", "'")]
 word_split_re = re.compile(r'(\s+)')
 simple_url_re = re.compile(r'^https?://\[?\w', re.IGNORECASE)
 simple_url_2_re = re.compile(r'^www\.|^(?!http)\w[^@]+\.(com|edu|gov|int|mil|net|org)$', re.IGNORECASE)
 simple_email_re = re.compile(r'^\S+@\S+\.\S+$')
+
+
+def smart_urlquote_wrapper(matched_url):
+    """
+    Simple wrapper for smart_urlquote. ValueError("Invalid IPv6 URL") can
+    be raised here, see issue #1386
+    """
+    try:
+        return smart_urlquote(matched_url)
+    except ValueError:
+        return None
 
 
 @register.filter
@@ -204,11 +143,12 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
 
     If autoescape is True, the link text and URLs will get autoescaped.
     """
-    trim_url = lambda x, limit=trim_url_limit: limit is not None and (len(x) > limit and ('%s...' % x[:max(0, limit - 3)])) or x
+    def trim_url(x, limit=trim_url_limit):
+        return limit is not None and (len(x) > limit and ('%s...' % x[:max(0, limit - 3)])) or x
+
     safe_input = isinstance(text, SafeData)
     words = word_split_re.split(force_text(text))
     for i, word in enumerate(words):
-        match = None
         if '.' in word or '@' in word or ':' in word:
             # Deal with punctuation.
             lead, middle, trail = '', word, ''
@@ -221,8 +161,10 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
                     middle = middle[len(opening):]
                     lead = lead + opening
                 # Keep parentheses at the end only if they're balanced.
-                if (middle.endswith(closing)
-                    and middle.count(closing) == middle.count(opening) + 1):
+                if (
+                    middle.endswith(closing) and
+                    middle.count(closing) == middle.count(opening) + 1
+                ):
                     middle = middle[:-len(closing)]
                     trail = closing + trail
 
@@ -230,10 +172,10 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
             url = None
             nofollow_attr = ' rel="nofollow"' if nofollow else ''
             if simple_url_re.match(middle):
-                url = smart_urlquote(middle)
+                url = smart_urlquote_wrapper(middle)
             elif simple_url_2_re.match(middle):
-                url = smart_urlquote('http://%s' % middle)
-            elif not ':' in middle and simple_email_re.match(middle):
+                url = smart_urlquote_wrapper('http://%s' % middle)
+            elif ':' not in middle and simple_email_re.match(middle):
                 local, domain = middle.rsplit('@', 1)
                 try:
                     domain = domain.encode('idna').decode('ascii')

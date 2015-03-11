@@ -1,4 +1,4 @@
-<a class="github" href="reverse.py"></a>
+source: reverse.py
 
 # Returning URLs
 
@@ -17,7 +17,7 @@ The advantages of doing so are:
 
 REST framework provides two utility functions to make it more simple to return absolute URIs from your Web API.
 
-There's no requirement for you to use them, but if you do then the self-describing API will be able to automatically hyperlink it's output for you, which makes browsing the API much easier.
+There's no requirement for you to use them, but if you do then the self-describing API will be able to automatically hyperlink its output for you, which makes browsing the API much easier.
 
 ## reverse
 
@@ -27,13 +27,13 @@ Has the same behavior as [`django.core.urlresolvers.reverse`][reverse], except t
 
 You should **include the request as a keyword argument** to the function, for example:
 
-    import datetime
     from rest_framework.reverse import reverse
     from rest_framework.views import APIView
-   
+	from django.utils.timezone import now
+
 	class APIRootView(APIView):
 	    def get(self, request):
-	        year = datetime.datetime.now().year
+	        year = now().year
 			data = {
  				...
     		    'year-summary-url': reverse('year-summary', args=[year], request=request)

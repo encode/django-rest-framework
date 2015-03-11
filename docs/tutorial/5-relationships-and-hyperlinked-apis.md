@@ -1,12 +1,11 @@
 # Tutorial 5: Relationships & Hyperlinked APIs
 
-At the moment relationships within our API are represented by using primary keys.  In this part of the tutorial we'll improve the cohesion and discoverability of our API, by instead using hyperlinking for relationships. 
+At the moment relationships within our API are represented by using primary keys.  In this part of the tutorial we'll improve the cohesion and discoverability of our API, by instead using hyperlinking for relationships.
 
 ## Creating an endpoint for the root of our API
 
-Right now we have endpoints for 'snippets' and 'users', but we don't have a single entry point to our API.  To create one, we'll use a regular function-based view and the `@api_view` decorator we introduced earlier.
+Right now we have endpoints for 'snippets' and 'users', but we don't have a single entry point to our API.  To create one, we'll use a regular function-based view and the `@api_view` decorator we introduced earlier. In your `snippets/views.py` add:
 
-    from rest_framework import renderers
     from rest_framework.decorators import api_view
     from rest_framework.response import Response
     from rest_framework.reverse import reverse
@@ -29,7 +28,7 @@ Unlike all our other API endpoints, we don't want to use JSON, but instead just 
 
 The other thing we need to consider when creating the code highlight view is that there's no existing concrete generic view that we can use.  We're not returning an object instance, but instead a property of an object instance.
 
-Instead of using a concrete generic view, we'll use the base class for representing instances, and create our own `.get()` method.  In your snippets.views add:
+Instead of using a concrete generic view, we'll use the base class for representing instances, and create our own `.get()` method.  In your `snippets/views.py` add:
 
     from rest_framework import renderers
     from rest_framework.response import Response
@@ -37,15 +36,15 @@ Instead of using a concrete generic view, we'll use the base class for represent
     class SnippetHighlight(generics.GenericAPIView):
         queryset = Snippet.objects.all()
         renderer_classes = (renderers.StaticHTMLRenderer,)
-    
+
         def get(self, request, *args, **kwargs):
             snippet = self.get_object()
             return Response(snippet.highlighted)
 
 As usual we need to add the new views that we've created in to our URLconf.
-We'll add a url pattern for our new API root:
+We'll add a url pattern for our new API root in `snippets/urls.py`:
 
-    url(r'^$', 'api_root'),
+    url(r'^$', views.api_root),
 
 And then add a url pattern for the snippet highlights:
 
@@ -73,21 +72,21 @@ The `HyperlinkedModelSerializer` has the following differences from `ModelSerial
 * Relationships use `HyperlinkedRelatedField`,
   instead of `PrimaryKeyRelatedField`.
 
-We can easily re-write our existing serializers to use hyperlinking.
+We can easily re-write our existing serializers to use hyperlinking. In your `snippets/serializers.py` add:
 
     class SnippetSerializer(serializers.HyperlinkedModelSerializer):
-        owner = serializers.Field(source='owner.username')
+        owner = serializers.ReadOnlyField(source='owner.username')
         highlight = serializers.HyperlinkedIdentityField(view_name='snippet-highlight', format='html')
-    
+
         class Meta:
             model = Snippet
             fields = ('url', 'highlight', 'owner',
                       'title', 'code', 'linenos', 'language', 'style')
-    
-    
+
+
     class UserSerializer(serializers.HyperlinkedModelSerializer):
-        snippets = serializers.HyperlinkedRelatedField(many=True, view_name='snippet-detail')
-    
+        snippets = serializers.HyperlinkedRelatedField(many=True, view_name='snippet-detail', read_only=True)
+
         class Meta:
             model = User
             fields = ('url', 'username', 'snippets')
@@ -105,11 +104,13 @@ If we're going to have a hyperlinked API, we need to make sure we name our URL p
 * Our user serializer includes a field that refers to `'snippet-detail'`.
 * Our snippet and user serializers include `'url'` fields that by default will refer to `'{model_name}-detail'`, which in this case will be `'snippet-detail'` and `'user-detail'`.
 
-After adding all those names into our URLconf, our final `'urls.py'` file should look something like this:
+After adding all those names into our URLconf, our final `snippets/urls.py` file should look something like this:
+
+    from django.conf.urls import url, include
 
     # API endpoints
-    urlpatterns = format_suffix_patterns(patterns('snippets.views',
-        url(r'^$', 'api_root'),
+    urlpatterns = format_suffix_patterns([
+        url(r'^$', views.api_root),
         url(r'^snippets/$',
             views.SnippetList.as_view(),
             name='snippet-list'),
@@ -125,22 +126,22 @@ After adding all those names into our URLconf, our final `'urls.py'` file should
         url(r'^users/(?P<pk>[0-9]+)/$',
             views.UserDetail.as_view(),
             name='user-detail')
-    ))
-    
+    ])
+
     # Login and logout views for the browsable API
-    urlpatterns += patterns('',    
+    urlpatterns += [
         url(r'^api-auth/', include('rest_framework.urls',
                                    namespace='rest_framework')),
-    )
+    ]
 
 ## Adding pagination
 
 The list views for users and code snippets could end up returning quite a lot of instances, so really we'd like to make sure we paginate the results, and allow the API client to step through each of the individual pages.
 
-We can change the default list style to use pagination, by modifying our `settings.py` file slightly.  Add the following setting:
+We can change the default list style to use pagination, by modifying our `tutorial/settings.py` file slightly.  Add the following setting:
 
     REST_FRAMEWORK = {
-        'PAGINATE_BY': 10
+        'PAGE_SIZE': 10
     }
 
 Note that settings in REST framework are all namespaced into a single dictionary setting, named 'REST_FRAMEWORK', which helps keep them well separated from your other project settings.

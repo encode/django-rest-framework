@@ -1,0 +1,23 @@
+{% load i18n %}
+{% trans "No items to select." as no_items %}
+
+<div class="form-group">
+    {% if field.label %}
+        <label class="col-sm-2 control-label {% if style.hide_label %}sr-only{% endif %}">{{ field.label }}</label>
+    {% endif %}
+    <div class="col-sm-10">
+        <select multiple {{ field.choices|yesno:",disabled" }} class="form-control" name="{{ field.name }}">
+            {% for key, text in field.choices.items %}
+                <option value="{{ key }}" {% if key in field.value %}selected{% endif %}>{{ text }}</option>
+            {% empty %}
+                <option>{{ no_items }}</option>
+            {% endfor %}
+        </select>
+        {% if field.errors %}
+            {% for error in field.errors %}<span class="help-block">{{ error }}</span>{% endfor %}
+        {% endif %}
+        {% if field.help_text %}
+            <span class="help-block">{{ field.help_text }}</span>
+        {% endif %}
+    </div>
+</div>

@@ -16,10 +16,8 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 Before we do anything else we'll create a new virtual environment, using [virtualenv].  This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
 
-    :::bash
-    mkdir ~/env
-    virtualenv ~/env/tutorial
-    source ~/env/tutorial/bin/activate
+    virtualenv env
+    source env/bin/activate
 
 Now that we're inside a virtualenv environment, we can install our package requirements.
 
@@ -42,20 +40,7 @@ Once that's done we can create an app that we'll use to create a simple Web API.
 
     python manage.py startapp snippets
 
-The simplest way to get up and running will probably be to use an `sqlite3` database for the tutorial.  Edit the `tutorial/settings.py` file, and set the default database `"ENGINE"` to `"sqlite3"`, and `"NAME"` to `"tmp.db"`.
-
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'tmp.db',
-            'USER': '',
-            'PASSWORD': '',
-            'HOST': '',
-            'PORT': '',
-        }
-    }
-
-We'll also need to add our new `snippets` app and the `rest_framework` app to `INSTALLED_APPS`.
+We'll need to add our new `snippets` app and the `rest_framework` app to `INSTALLED_APPS`. Let's edit the `tutorial/settings.py` file:
 
     INSTALLED_APPS = (
         ...
@@ -65,15 +50,15 @@ We'll also need to add our new `snippets` app and the `rest_framework` app to `I
 
 We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to include our snippet app's URLs.
 
-    urlpatterns = patterns('',
+    urlpatterns = [
         url(r'^', include('snippets.urls')),
-    )
+    ]
 
 Okay, we're ready to roll.
 
 ## Creating a model to work with
 
-For the purposes of this tutorial we're going to start by creating a simple `Snippet` model that is used to store code snippets.  Go ahead and edit the `snippets` app's `models.py` file.  Note: Good programming practices include comments.  Although you will find them in our repository version of this tutorial code, we have omitted them here to focus on the code itself.
+For the purposes of this tutorial we're going to start by creating a simple `Snippet` model that is used to store code snippets.  Go ahead and edit the `snippets/models.py` file.  Note: Good programming practices include comments.  Although you will find them in our repository version of this tutorial code, we have omitted them here to focus on the code itself.
 
     from django.db import models
     from pygments.lexers import get_all_lexers
@@ -82,30 +67,27 @@ For the purposes of this tutorial we're going to start by creating a simple `Sni
     LEXERS = [item for item in get_all_lexers() if item[1]]
     LANGUAGE_CHOICES = sorted([(item[1][0], item[0]) for item in LEXERS])
     STYLE_CHOICES = sorted((item, item) for item in get_all_styles())
-    
-    
+
+
     class Snippet(models.Model):
         created = models.DateTimeField(auto_now_add=True)
         title = models.CharField(max_length=100, blank=True, default='')
         code = models.TextField()
         linenos = models.BooleanField(default=False)
-        language = models.CharField(choices=LANGUAGE_CHOICES,
-                                    default='python',
-                                    max_length=100)
-        style = models.CharField(choices=STYLE_CHOICES,
-                                 default='friendly',
-                                 max_length=100)
-       
+        language = models.CharField(choices=LANGUAGE_CHOICES, default='python', max_length=100)
+        style = models.CharField(choices=STYLE_CHOICES, default='friendly', max_length=100)
+
         class Meta:
             ordering = ('created',)
 
-Don't forget to sync the database for the first time.
+We'll also need to create an initial migration for our snippet model, and sync the database for the first time.
 
-    python manage.py syncdb
+    python manage.py makemigrations snippets
+    python manage.py migrate
 
 ## Creating a Serializer class
 
-The first thing we need to get started on our Web API is provide a way of serializing and deserializing the snippet instances into representations such as `json`.  We can do this by declaring serializers that work very similar to Django's forms.  Create a file in the `snippets` directory named `serializers.py` and add the following.
+The first thing we need to get started on our Web API is to provide a way of serializing and deserializing the snippet instances into representations such as `json`.  We can do this by declaring serializers that work very similar to Django's forms.  Create a file in the `snippets` directory named `serializers.py` and add the following.
 
     from django.forms import widgets
     from rest_framework import serializers
@@ -113,42 +95,38 @@ The first thing we need to get started on our Web API is provide a way of serial
 
 
     class SnippetSerializer(serializers.Serializer):
-        pk = serializers.Field()  # Note: `Field` is an untyped read-only field.
-        title = serializers.CharField(required=False,
-                                      max_length=100)
-        code = serializers.CharField(widget=widgets.Textarea,
-                                     max_length=100000)
+        pk = serializers.IntegerField(read_only=True)
+        title = serializers.CharField(required=False, allow_blank=True, max_length=100)
+        code = serializers.CharField(style={'base_template': 'textarea.html'})
         linenos = serializers.BooleanField(required=False)
-        language = serializers.ChoiceField(choices=LANGUAGE_CHOICES,
-                                           default='python')
-        style = serializers.ChoiceField(choices=STYLE_CHOICES,
-                                        default='friendly')
-    
-        def restore_object(self, attrs, instance=None):
+        language = serializers.ChoiceField(choices=LANGUAGE_CHOICES, default='python')
+        style = serializers.ChoiceField(choices=STYLE_CHOICES, default='friendly')
+
+        def create(self, validated_data):
             """
-            Create or update a new snippet instance, given a dictionary
-            of deserialized field values.
-            
-            Note that if we don't define this method, then deserializing
-            data will simply return a dictionary of items.
+            Create and return a new `Snippet` instance, given the validated data.
             """
-            if instance:
-                # Update existing instance
-                instance.title = attrs.get('title', instance.title)
-                instance.code = attrs.get('code', instance.code)
-                instance.linenos = attrs.get('linenos', instance.linenos)
-                instance.language = attrs.get('language', instance.language)
-                instance.style = attrs.get('style', instance.style)
-                return instance
+            return Snippet.objects.create(**validated_data)
 
-            # Create new instance
-            return Snippet(**attrs)
+        def update(self, instance, validated_data):
+            """
+            Update and return an existing `Snippet` instance, given the validated data.
+            """
+            instance.title = validated_data.get('title', instance.title)
+            instance.code = validated_data.get('code', instance.code)
+            instance.linenos = validated_data.get('linenos', instance.linenos)
+            instance.language = validated_data.get('language', instance.language)
+            instance.style = validated_data.get('style', instance.style)
+            instance.save()
+            return instance
 
-The first part of serializer class defines the fields that get serialized/deserialized.  The `restore_object` method defines how fully fledged instances get created when deserializing data.
+The first part of the serializer class defines the fields that get serialized/deserialized.  The `create()` and `update()` methods define how fully fledged instances are created or modified when calling `serializer.save()`
 
-Notice that we can also use various attributes that would typically be used on form fields, such as `widget=widgets.Textarea`.  These can be used to control how the serializer should render when displayed as an HTML form.  This is particularly useful for controlling how the browsable API should be displayed, as we'll see later in the tutorial.
+A serializer class is very similar to a Django `Form` class, and includes similar validation flags on the various fields, such as `required`, `max_length` and `default`.
 
-We can actually also save ourselves some time by using the `ModelSerializer` class, as we'll see later, but for now we'll keep our serializer definition explicit.  
+The field flags can also control how the serializer should be displayed in certain circumstances, such as when rendering to HTML. The `{'base_template': 'textarea.html'}` flag above is equivelent to using `widget=widgets.Textarea` on a Django `Form` class. This is particularly useful for controlling how the browsable API should be displayed, as we'll see later in the tutorial.
+
+We can actually also save ourselves some time by using the `ModelSerializer` class, as we'll see later, but for now we'll keep our serializer definition explicit.
 
 ## Working with Serializers
 
@@ -181,11 +159,11 @@ At this point we've translated the model instance into Python native datatypes. 
     content
     # '{"pk": 2, "title": "", "code": "print \\"hello, world\\"\\n", "linenos": false, "language": "python", "style": "friendly"}'
 
-Deserialization is similar.  First we parse a stream into Python native datatypes... 
+Deserialization is similar.  First we parse a stream into Python native datatypes...
 
-    import StringIO
+    from django.utils.six import BytesIO
 
-    stream = StringIO.StringIO(content)
+    stream = BytesIO(content)
     data = JSONParser().parse(stream)
 
 ...then we restore those native datatypes into to a fully populated object instance.
@@ -193,9 +171,11 @@ Deserialization is similar.  First we parse a stream into Python native datatype
     serializer = SnippetSerializer(data=data)
     serializer.is_valid()
     # True
-    serializer.object
+    serializer.validated_data
+    # OrderedDict([('title', ''), ('code', 'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])
+    serializer.save()
     # <Snippet: Snippet object>
-    
+
 Notice how similar the API is to working with forms.  The similarity should become even more apparent when we start writing views that use our serializer.
 
 We can also serialize querysets instead of model instances.  To do so we simply add a `many=True` flag to the serializer arguments.
@@ -211,12 +191,30 @@ Our `SnippetSerializer` class is replicating a lot of information that's also co
 In the same way that Django provides both `Form` classes and `ModelForm` classes, REST framework includes both `Serializer` classes, and `ModelSerializer` classes.
 
 Let's look at refactoring our serializer using the `ModelSerializer` class.
-Open the file `snippets/serializers.py` again, and edit the `SnippetSerializer` class.
+Open the file `snippets/serializers.py` again, and replace the `SnippetSerializer` class with the following.
 
     class SnippetSerializer(serializers.ModelSerializer):
         class Meta:
             model = Snippet
             fields = ('id', 'title', 'code', 'linenos', 'language', 'style')
+
+One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing its representation. Open the Django shell with `python manage.py shell`, then try the following:
+
+    >>> from snippets.serializers import SnippetSerializer
+    >>> serializer = SnippetSerializer()
+    >>> print(repr(serializer))
+    SnippetSerializer():
+        id = IntegerField(label='ID', read_only=True)
+        title = CharField(allow_blank=True, max_length=100, required=False)
+        code = CharField(style={'base_template': 'textarea.html'})
+        linenos = BooleanField(required=False)
+        language = ChoiceField(choices=[('Clipper', 'FoxPro'), ('Cucumber', 'Gherkin'), ('RobotFramework', 'RobotFramework'), ('abap', 'ABAP'), ('ada', 'Ada')...
+        style = ChoiceField(choices=[('autumn', 'autumn'), ('borland', 'borland'), ('bw', 'bw'), ('colorful', 'colorful')...
+
+It's important to remember that `ModelSerializer` classes don't do anything particularly magical, they are simply a shortcut for creating serializer classes:
+
+* An automatically determined set of fields.
+* Simple default implementations for the `create()` and `update()` methods.
 
 ## Writing regular Django views using our Serializer
 
@@ -225,7 +223,7 @@ For the moment we won't use any of REST framework's other features, we'll just w
 
 We'll start off by creating a subclass of HttpResponse that we can use to render any data we return into `json`.
 
-Edit the `snippet/views.py` file, and add the following.
+Edit the `snippets/views.py` file, and add the following.
 
     from django.http import HttpResponse
     from django.views.decorators.csrf import csrf_exempt
@@ -236,7 +234,7 @@ Edit the `snippet/views.py` file, and add the following.
 
     class JSONResponse(HttpResponse):
         """
-        An HttpResponse that renders it's content into JSON.
+        An HttpResponse that renders its content into JSON.
         """
         def __init__(self, data, **kwargs):
             content = JSONRenderer().render(data)
@@ -261,10 +259,9 @@ The root of our API is going to be a view that supports listing all the existing
             if serializer.is_valid():
                 serializer.save()
                 return JSONResponse(serializer.data, status=201)
-            else:
-                return JSONResponse(serializer.errors, status=400)
+            return JSONResponse(serializer.errors, status=400)
 
-Note that because we want to be able to POST to this view from clients that won't have a CSRF token we need to mark the view as `csrf_exempt`.  This isn't something that you'd normally want to do, and REST framework views actually use more sensible behavior than this, but it'll do for our purposes right now. 
+Note that because we want to be able to POST to this view from clients that won't have a CSRF token we need to mark the view as `csrf_exempt`.  This isn't something that you'd normally want to do, and REST framework views actually use more sensible behavior than this, but it'll do for our purposes right now.
 
 We'll also need a view which corresponds to an individual snippet, and can be used to retrieve, update or delete the snippet.
 
@@ -277,19 +274,18 @@ We'll also need a view which corresponds to an individual snippet, and can be us
             snippet = Snippet.objects.get(pk=pk)
         except Snippet.DoesNotExist:
             return HttpResponse(status=404)
- 
+
         if request.method == 'GET':
             serializer = SnippetSerializer(snippet)
             return JSONResponse(serializer.data)
-    
+
         elif request.method == 'PUT':
             data = JSONParser().parse(request)
             serializer = SnippetSerializer(snippet, data=data)
             if serializer.is_valid():
                 serializer.save()
                 return JSONResponse(serializer.data)
-            else:
-                return JSONResponse(serializer.errors, status=400)
+            return JSONResponse(serializer.errors, status=400)
 
         elif request.method == 'DELETE':
             snippet.delete()
@@ -297,12 +293,13 @@ We'll also need a view which corresponds to an individual snippet, and can be us
 
 Finally we need to wire these views up.  Create the `snippets/urls.py` file:
 
-    from django.conf.urls import patterns, url
+    from django.conf.urls import url
+    from snippets import views
 
-    urlpatterns = patterns('snippets.views',
-        url(r'^snippets/$', 'snippet_list'),
-        url(r'^snippets/(?P<pk>[0-9]+)/$', 'snippet_detail'),
-    )
+    urlpatterns = [
+        url(r'^snippets/$', views.snippet_list),
+        url(r'^snippets/(?P<pk>[0-9]+)/$', views.snippet_detail),
+    ]
 
 It's worth noting that there are a couple of edge cases we're not dealing with properly at the moment.  If we send malformed `json`, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.
 
@@ -327,17 +324,51 @@ Quit out of the shell...
 
 In another terminal window, we can test the server.
 
-We can get a list of all of the snippets.
+We can test our API using using [curl][curl] or [httpie][httpie]. Httpie is a user friendly http client that's written in Python. Let's install that.
 
-	curl http://127.0.0.1:8000/snippets/
+You can install httpie using pip:
 
-	[{"id": 1, "title": "", "code": "foo = \"bar\"\n", "linenos": false, "language": "python", "style": "friendly"}, {"id": 2, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}]
+    pip install httpie
 
-Or we can get a particular snippet by referencing its id.
+Finally, we can get a list of all of the snippets:
 
-	curl http://127.0.0.1:8000/snippets/2/
+    http http://127.0.0.1:8000/snippets/
 
-	{"id": 2, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}
+    HTTP/1.1 200 OK
+    ...
+    [
+      {
+        "id": 1,
+        "title": "",
+        "code": "foo = \"bar\"\n",
+        "linenos": false,
+        "language": "python",
+        "style": "friendly"
+      },
+      {
+        "id": 2,
+        "title": "",
+        "code": "print \"hello, world\"\n",
+        "linenos": false,
+        "language": "python",
+        "style": "friendly"
+      }
+    ]
+
+Or we can get a particular snippet by referencing its id:
+
+    http http://127.0.0.1:8000/snippets/2/
+
+    HTTP/1.1 200 OK
+    ...
+    {
+      "id": 2,
+      "title": "",
+      "code": "print \"hello, world\"\n",
+      "linenos": false,
+      "language": "python",
+      "style": "friendly"
+    }
 
 Similarly, you can have the same json displayed by visiting these URLs in a web browser.
 
@@ -354,3 +385,5 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 [sandbox]: http://restframework.herokuapp.com/
 [virtualenv]: http://www.virtualenv.org/en/latest/index.html
 [tut-2]: 2-requests-and-responses.md
+[httpie]: https://github.com/jakubroztocil/httpie#installation
+[curl]: http://curl.haxx.se

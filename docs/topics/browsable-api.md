@@ -69,6 +69,7 @@ For more specific CSS tweaks than simply overriding the default bootstrap theme 
 
 All of the blocks available in the browsable API base template that can be used in your `api.html`.
 
+* `body`                       - The entire html `<body>`.
 * `bodyclass`                  - Class attribute for the `<body>` tag, empty by default.
 * `bootstrap_theme`            - CSS for the Bootstrap theme.
 * `bootstrap_navbar_variant`   - CSS class for the navbar.
@@ -90,7 +91,7 @@ The browsable API makes use of the Bootstrap tooltips component.  Any element wi
 
 ### Login Template
 
-To add branding and customize the look-and-feel of the login template, create a template called `login.html` and add it to your project, eg: `templates/rest_framework/login.html`.  The template should extend from `rest_framework/base_login.html`.
+To add branding and customize the look-and-feel of the login template, create a template called `login.html` and add it to your project, eg: `templates/rest_framework/login.html`.  The template should extend from `rest_framework/login_base.html`.
 
 You can add your site name or branding by including the branding block:
 
@@ -115,6 +116,7 @@ The context that's available to the template:
 * `name`                : The name of the resource
 * `post_form`           : A form instance for use by the POST form (if allowed)
 * `put_form`            : A form instance for use by the PUT form (if allowed)
+* `display_edit_forms`  : A boolean indicating whether or not POST, PUT and PATCH forms will be displayed
 * `request`             : The request object
 * `response`            : The response object
 * `version`             : The version of Django REST Framework
@@ -122,38 +124,30 @@ The context that's available to the template:
 * `FORMAT_PARAM`        : The view can accept a format override
 * `METHOD_PARAM`        : The view can accept a method override
 
+You can override the `BrowsableAPIRenderer.get_context()` method to customise the context that gets passed to the template.
+
 #### Not using base.html
 
 For more advanced customization, such as not having a Bootstrap basis or tighter integration with the rest of your site, you can simply choose not to have `api.html` extend `base.html`.  Then the page content and capabilities are entirely up to you.
 
-#### Autocompletion
+#### Handling `ChoiceField` with large numbers of items.
 
-When a `ChoiceField` has too many items, rendering the widget containing all the options can become very slow, and cause the browsable API rendering to perform poorly.  One solution is to replace the selector by an autocomplete widget, that only loads and renders a subset of the available options as needed.
+When a relationship or `ChoiceField` has too many items, rendering the widget containing all the options can become very slow, and cause the browsable API rendering to perform poorly.
 
-There are [a variety of packages for autocomplete widgets][autocomplete-packages], such as [django-autocomplete-light][django-autocomplete-light].  To setup `django-autocomplete-light`, follow the [installation documentation][django-autocomplete-light-install], add the the following to the `api.html` template:
+The simplest option in this case is to replace the select input with a standard text input. For example:
 
-    {% block script %}
-    {{ block.super }}
-    {% include 'autocomplete_light/static.html' %}
-    {% endblock %}
+     author = serializers.HyperlinkedRelatedField(
+        queryset=User.objects.all(),
+        style={'base_template': 'input.html'}
+    )
 
-You can now add the `autocomplete_light.ChoiceWidget` widget to the serializer field.
+#### Autocomplete
 
-    import autocomplete_light
+An alternative, but more complex option would be to replace the input with an autocomplete widget, that only loads and renders a subset of the available options as needed. If you need to do this you'll need to do some work to build a custom autocomplete HTML template yourself.
 
-    class BookSerializer(serializers.ModelSerializer):
-        author = serializers.ChoiceField(
-            widget=autocomplete_light.ChoiceWidget('AuthorAutocomplete')
-        )
+There are [a variety of packages for autocomplete widgets][autocomplete-packages], such as [django-autocomplete-light][django-autocomplete-light], that you may want to refer to. Note that you will not be able to simply include these components as standard widgets, but will need to write the HTML template explicitly. This is because REST framework 3.0 no longer supports the `widget` keyword argument since it now uses templated HTML generation.
 
-        class Meta:
-            model = Book
-
----
-
-![Autocomplete][autocomplete-image]
-
-*Screenshot of the autocomplete-light widget*
+Better support for autocomplete inputs is planned in future versions.
 
 ---
 
@@ -164,11 +158,10 @@ You can now add the `autocomplete_light.ChoiceWidget` widget to the serializer f
 [bootstrap]: http://getbootstrap.com
 [cerulean]: ../img/cerulean.png
 [slate]: ../img/slate.png
-[bcustomize]: http://twitter.github.com/bootstrap/customize.html#variables
+[bcustomize]: http://getbootstrap.com/2.3.2/customize.html
 [bswatch]: http://bootswatch.com/
-[bcomponents]: http://twitter.github.com/bootstrap/components.html
-[bcomponentsnav]: http://twitter.github.com/bootstrap/components.html#navbar
+[bcomponents]: http://getbootstrap.com/2.3.2/components.html
+[bcomponentsnav]: http://getbootstrap.com/2.3.2/components.html#navbar
 [autocomplete-packages]: https://www.djangopackages.com/grids/g/auto-complete/
 [django-autocomplete-light]: https://github.com/yourlabs/django-autocomplete-light
 [django-autocomplete-light-install]: http://django-autocomplete-light.readthedocs.org/en/latest/#install
-[autocomplete-image]: ../img/autocomplete.png

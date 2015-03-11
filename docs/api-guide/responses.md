@@ -1,4 +1,4 @@
-<a class="github" href="response.py"></a>
+source: response.py
 
 # Responses
 
@@ -24,7 +24,7 @@ Unless you want to heavily customize REST framework for some reason, you should 
 
 Unlike regular `HttpResponse` objects, you do not instantiate `Response` objects with rendered content.  Instead you pass in unrendered data, which may consist of any Python primitives.
 
-The renderers used by the `Response` class cannot natively handle complex datatypes such as Django model instances, so you need to serialize the data into primative datatypes before creating the `Response` object.
+The renderers used by the `Response` class cannot natively handle complex datatypes such as Django model instances, so you need to serialize the data into primitive datatypes before creating the `Response` object.
 
 You can use REST framework's `Serializer` classes to perform this data serialization, or use your own custom serialization.
 
@@ -54,7 +54,7 @@ The rendered content of the response.  The `.render()` method must have been cal
 
 ## .template_name
 
-The `template_name`, if supplied.  Only required if `HTMLRenderer` or some other custom template renderer is the accepted renderer for the reponse.
+The `template_name`, if supplied.  Only required if `HTMLRenderer` or some other custom template renderer is the accepted renderer for the response.
 
 ## .accepted_renderer
 
@@ -90,6 +90,6 @@ The `Response` class extends `SimpleTemplateResponse`, and all the usual attribu
 As with any other `TemplateResponse`, this method is called to render the serialized data of the response into the final response content.  When `.render()` is called, the response content will be set to the result of calling the `.render(data, accepted_media_type, renderer_context)` method on the `accepted_renderer` instance.
 
 You won't typically need to call `.render()` yourself, as it's handled by Django's standard response cycle.
-    
+
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/
 [statuscodes]: status-codes.md

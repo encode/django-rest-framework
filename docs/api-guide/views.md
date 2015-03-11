@@ -1,4 +1,5 @@
-<a class="github" href="decorators.py"></a> <a class="github" href="views.py"></a>
+source: decorators.py
+        views.py
 
 # Class Based Views
 
@@ -26,7 +27,7 @@ For example:
     class ListUsers(APIView):
         """
         View to list all users in the system.
-        
+
         * Requires token authentication.
         * Only admin users are able to access this view.
         """
@@ -54,7 +55,7 @@ The following attributes control the pluggable aspects of API views.
 
 ### .permission_classes
 
-### .content_negotiation_class 
+### .content_negotiation_class
 
 ## API policy instantiation methods
 
@@ -110,7 +111,7 @@ You won't typically need to override this method.
 
 ### .finalize_response(self, request, response, \*args, **kwargs)
 
-Ensures that any `Response` object returned from the handler method will be rendered into the correct content type, as determined by the content negotation.
+Ensures that any `Response` object returned from the handler method will be rendered into the correct content type, as determined by the content negotiation.
 
 You won't typically need to override this method.
 
@@ -126,18 +127,25 @@ REST framework also allows you to work with regular function based views.  It pr
 
 ## @api_view()
 
-**Signature:** `@api_view(http_method_names)`
+**Signature:** `@api_view(http_method_names=['GET'])`
 
-The core of this functionality is the `api_view` decorator, which takes a list of HTTP methods that your view should respond to.  For example, this is how you would write a very simple view that just manually returns some data:
+The core of this functionality is the `api_view` decorator, which takes a list of HTTP methods that your view should respond to. For example, this is how you would write a very simple view that just manually returns some data:
 
     from rest_framework.decorators import api_view
 
-    @api_view(['GET'])
+    @api_view()
     def hello_world(request):
         return Response({"message": "Hello, world!"})
 
-
 This view will use the default renderers, parsers, authentication classes etc specified in the [settings].
+
+By default only `GET` methods will be accepted. Other methods will respond with "405 Method Not Allowed". To alter this behavior, specify which methods the view allows, like so:
+
+    @api_view(['GET', 'POST'])
+    def hello_world(request):
+        if request.method == 'POST':
+            return Response({"message": "Got some data!", "data": request.data})
+        return Response({"message": "Hello, world!"})
 
 ## API policy decorators
 
@@ -168,5 +176,5 @@ Each of these decorators takes a single argument which must be a list or tuple o
 
 [cite]: http://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html
 [cite2]: http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html
-[settings]: api-guide/settings.md
-[throttling]: api-guide/throttling.md
+[settings]: settings.md
+[throttling]: throttling.md

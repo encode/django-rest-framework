@@ -1,38 +1,33 @@
 language: python
 
-python:
-  - "2.6"
-  - "2.7"
-  - "3.2"
-  - "3.3"
+sudo: false
 
 env:
-  - DJANGO="https://www.djangoproject.com/download/1.6a1/tarball/"
-  - DJANGO="django==1.5.1 --use-mirrors"
-  - DJANGO="django==1.4.5 --use-mirrors"
-  - DJANGO="django==1.3.7 --use-mirrors"
+    - TOX_ENV=py27-flake8
+    - TOX_ENV=py27-docs
+    - TOX_ENV=py34-django17
+    - TOX_ENV=py33-django17
+    - TOX_ENV=py32-django17
+    - TOX_ENV=py27-django17
+    - TOX_ENV=py34-django16
+    - TOX_ENV=py33-django16
+    - TOX_ENV=py32-django16
+    - TOX_ENV=py27-django16
+    - TOX_ENV=py26-django16
+    - TOX_ENV=py34-django15
+    - TOX_ENV=py33-django15
+    - TOX_ENV=py32-django15
+    - TOX_ENV=py27-django15
+    - TOX_ENV=py26-django15
+    - TOX_ENV=py27-django14
+    - TOX_ENV=py26-django14
+    - TOX_ENV=py34-django18beta
+    - TOX_ENV=py33-django18beta
+    - TOX_ENV=py32-django18beta
+    - TOX_ENV=py27-django18beta
 
 install:
-  - pip install $DJANGO
-  - pip install defusedxml==0.3
-  - "if [[ ${TRAVIS_PYTHON_VERSION::1} != '3' ]]; then pip install oauth2==1.5.211 --use-mirrors; fi"
-  - "if [[ ${TRAVIS_PYTHON_VERSION::1} != '3' ]]; then pip install django-oauth-plus==2.0 --use-mirrors; fi"
-  - "if [[ ${TRAVIS_PYTHON_VERSION::1} != '3' ]]; then pip install django-oauth2-provider==0.2.4 --use-mirrors; fi"
-  - "if [[ ${DJANGO::11} == 'django==1.3' ]]; then pip install django-filter==0.5.4 --use-mirrors; fi"
-  - "if [[ ${DJANGO::11} != 'django==1.3' ]]; then pip install django-filter==0.6 --use-mirrors; fi"
-  - export PYTHONPATH=.
+  - pip install tox
 
 script:
-  - python rest_framework/runtests/runtests.py
-
-matrix:
-  exclude:
-    - python: "3.2"
-      env: DJANGO="django==1.4.5 --use-mirrors"
-    - python: "3.2"
-      env: DJANGO="django==1.3.7 --use-mirrors"
-    - python: "3.3"
-      env: DJANGO="django==1.4.5 --use-mirrors"
-    - python: "3.3"
-      env: DJANGO="django==1.3.7 --use-mirrors"
-
+    - tox -e $TOX_ENV

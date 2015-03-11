@@ -6,54 +6,48 @@ We're going to create a simple API to allow admin users to view and edit the use
 
 Create a new Django project named `tutorial`, then start a new app called `quickstart`.
 
-    # Set up a new project
-    django-admin.py startproject tutorial
+    # Create the project directory
+    mkdir tutorial
     cd tutorial
 
     # Create a virtualenv to isolate our package dependencies locally
     virtualenv env
-    source env/bin/activate
+    source env/bin/activate  # On Windows use `env\Scripts\activate`
 
     # Install Django and Django REST framework into the virtualenv
     pip install django
     pip install djangorestframework
 
-    # Create a new app
-    python manage.py startapp quickstart
+    # Set up a new project with a single application
+    django-admin.py startproject tutorial .  # Note the trailing '.' character
+    cd tutorial
+    django-admin.py startapp quickstart
+    cd ..
 
-Next you'll need to get a database set up and synced.  If you just want to use SQLite for now, then you'll want to edit your `tutorial/settings.py` module to include something like this:
+Now sync your database for the first time:
 
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'database.sql',
-            'USER': '',
-            'PASSWORD': '',
-            'HOST': '',
-            'PORT': ''
-        }
-    }
+    python manage.py migrate
 
-The run `syncdb` like so:
+We'll also create an initial user named `admin` with a password of `password`. We'll authenticate as that user later in our example.
 
-    python manage.py syncdb
+    python manage.py createsuperuser
 
-Once you've set up a database and got everything synced and ready to go, open up the app's directory and we'll get coding...
+Once you've set up a database and initial user created and ready to go, open up the app's directory and we'll get coding...
 
 ## Serializers
 
-First up we're going to define some serializers in `quickstart/serializers.py` that we'll use for our data representations.
+First up we're going to define some serializers. Let's create a new module named `tutorial/quickstart/serializers.py` that we'll use for our data representations.
 
     from django.contrib.auth.models import User, Group
     from rest_framework import serializers
-    
-    
+
+
     class UserSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = User
             fields = ('url', 'username', 'email', 'groups')
-    
-    
+
+
     class GroupSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Group
@@ -63,21 +57,21 @@ Notice that we're using hyperlinked relations in this case, with `HyperlinkedMod
 
 ## Views
 
-Right, we'd better write some views then.  Open `quickstart/views.py` and get typing.
+Right, we'd better write some views then.  Open `tutorial/quickstart/views.py` and get typing.
 
     from django.contrib.auth.models import User, Group
     from rest_framework import viewsets
-    from quickstart.serializers import UserSerializer, GroupSerializer
-    
-    
+    from tutorial.quickstart.serializers import UserSerializer, GroupSerializer
+
+
     class UserViewSet(viewsets.ModelViewSet):
         """
         API endpoint that allows users to be viewed or edited.
         """
         queryset = User.objects.all()
         serializer_class = UserSerializer
-    
-    
+
+
     class GroupViewSet(viewsets.ModelViewSet):
         """
         API endpoint that allows groups to be viewed or edited.
@@ -85,28 +79,32 @@ Right, we'd better write some views then.  Open `quickstart/views.py` and get ty
         queryset = Group.objects.all()
         serializer_class = GroupSerializer
 
-Rather that write multiple views we're grouping together all the common behavior into classes called `ViewSets`.
+Rather than write multiple views we're grouping together all the common behavior into classes called `ViewSets`.
 
 We can easily break these down into individual views if we need to, but using viewsets keeps the view logic nicely organized as well as being very concise.
+
+Notice that our viewset classes here are a little different from those in the [frontpage example][readme-example-api], as they include `queryset` and `serializer_class` attributes, instead of a `model` attribute.
+
+For trivial cases you can simply set a `model` attribute on the `ViewSet` class and the serializer and queryset will be automatically generated for you.  Setting the `queryset` and/or `serializer_class` attributes gives you more explicit control of the API behaviour, and is the recommended style for most applications.
 
 ## URLs
 
 Okay, now let's wire up the API URLs.  On to `tutorial/urls.py`...
 
-    from django.conf.urls import patterns, url, include
+    from django.conf.urls import url, include
     from rest_framework import routers
-    from quickstart import views
+    from tutorial.quickstart import views
 
     router = routers.DefaultRouter()
     router.register(r'users', views.UserViewSet)
     router.register(r'groups', views.GroupViewSet)
 
     # Wire up our API using automatic URL routing.
-    # Additionally, we include login URLs for the browseable API.
-    urlpatterns = patterns('',
+    # Additionally, we include login URLs for the browsable API.
+    urlpatterns = [
         url(r'^', include(router.urls)),
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-    )
+    ]
 
 Because we're using viewsets instead of views, we can automatically generate the URL conf for our API, by simply registering the viewsets with a router class.
 
@@ -125,7 +123,7 @@ We'd also like to set a few global settings.  We'd like to turn on pagination, a
 
     REST_FRAMEWORK = {
         'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
-        'PAGINATE_BY': 10
+        'PAGE_SIZE': 10
     }
 
 Okay, we're done.
@@ -140,35 +138,66 @@ We're now ready to test the API we've built.  Let's fire up the server from the 
 
 We can now access our API, both from the command-line, using tools like `curl`...
 
-    bash: curl -H 'Accept: application/json; indent=4' -u admin:password http://127.0.0.1:8000/users/ 
+    bash: curl -H 'Accept: application/json; indent=4' -u admin:password http://127.0.0.1:8000/users/
     {
-        "count": 2, 
-        "next": null, 
-        "previous": null, 
+        "count": 2,
+        "next": null,
+        "previous": null,
         "results": [
             {
-                "email": "admin@example.com", 
-                "groups": [], 
-                "url": "http://127.0.0.1:8000/users/1/", 
+                "email": "admin@example.com",
+                "groups": [],
+                "url": "http://127.0.0.1:8000/users/1/",
                 "username": "admin"
-            }, 
+            },
             {
-                "email": "tom@example.com", 
-                "groups": [                ], 
-                "url": "http://127.0.0.1:8000/users/2/", 
+                "email": "tom@example.com",
+                "groups": [                ],
+                "url": "http://127.0.0.1:8000/users/2/",
                 "username": "tom"
             }
         ]
     }
 
+Or using the [httpie][httpie], command line tool...
+
+    bash: http -a username:password http://127.0.0.1:8000/users/
+
+    HTTP/1.1 200 OK
+    ...
+    {
+        "count": 2,
+        "next": null,
+        "previous": null,
+        "results": [
+            {
+                "email": "admin@example.com",
+                "groups": [],
+                "url": "http://localhost:8000/users/1/",
+                "username": "paul"
+            },
+            {
+                "email": "tom@example.com",
+                "groups": [                ],
+                "url": "http://127.0.0.1:8000/users/2/",
+                "username": "tom"
+            }
+        ]
+    }
+
+
 Or directly through the browser...
 
 ![Quick start image][image]
+
+If you're working through the browser, make sure to login using the control in the top right corner.
 
 Great, that was easy!
 
 If you want to get a more in depth understanding of how REST framework fits together head on over to [the tutorial][tutorial], or start browsing the [API guide][guide].
 
+[readme-example-api]: ../#example
 [image]: ../img/quickstart.png
 [tutorial]: 1-serialization.md
 [guide]: ../#api-guide
+[httpie]: https://github.com/jakubroztocil/httpie#installation
