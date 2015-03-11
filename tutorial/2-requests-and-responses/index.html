@@ -473,7 +473,7 @@ def snippet_detail(request, pk):
 <p>This should all feel very familiar - it is not a lot different from working with regular Django views.</p>
 <p>Notice that we're no longer explicitly tying our requests or responses to a given content type.  <code>request.data</code> can handle incoming <code>json</code> requests, but it can also handle other formats.  Similarly we're returning response objects with data, but allowing REST framework to render the response into the correct content type for us.</p>
 <h2 id="adding-optional-format-suffixes-to-our-urls">Adding optional format suffixes to our URLs</h2>
-<p>To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints.  Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as <a href="http://example.com/api/items/4.json">http://example.com/api/items/4/.json</a>.</p>
+<p>To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints.  Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as <a href="http://example.com/api/items/4/.json">http://example.com/api/items/4/.json</a>.</p>
 <p>Start by adding a <code>format</code> keyword argument to both of the views, like so.</p>
 <pre><code>def snippet_list(request, format=None):
 </code></pre>
