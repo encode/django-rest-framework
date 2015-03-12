@@ -10,7 +10,7 @@ from django.core.paginator import InvalidPage, Paginator as DjangoPaginator
 from django.template import Context, loader
 from django.utils import six
 from django.utils.six.moves.urllib import parse as urlparse
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from rest_framework.compat import OrderedDict
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
