@@ -68,6 +68,19 @@ class IsAuthenticatedOrReadOnly(BasePermission):
         )
 
 
+class IsAuthenticatedAndReadOnly(BasePermission):
+    """
+    The request is authenticated as a user and is a read-only request.
+    """
+
+    def has_permission(self, request, view):
+        return (
+            request.method in SAFE_METHODS and
+            request.user and
+            request.user.is_authenticated()
+        )
+
+
 class DjangoModelPermissions(BasePermission):
     """
     The request is authenticated using `django.contrib.auth` permissions.

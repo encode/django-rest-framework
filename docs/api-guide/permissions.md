@@ -124,6 +124,12 @@ The `IsAuthenticatedOrReadOnly` will allow authenticated users to perform any re
 
 This permission is suitable if you want to your API to allow read permissions to anonymous users, and only allow write permissions to authenticated users.
 
+## IsAuthenticatedAndReadOnly
+
+The `IsAuthenticatedAndReadOnly` will allow authenticated users to perform one of the "safe" methods.  All requests for unauthorised users will denied.
+
+This permission is suitable if you want to your API to be only accessible to registered users for readonly access.
+
 ## DjangoModelPermissions
 
 This permission class ties into Django's standard `django.contrib.auth` [model permissions][contribauth].  This permission must only be applied to views that has a `.queryset` property set. Authorization will only be granted if the user *is authenticated* and has the *relevant model permissions* assigned.
