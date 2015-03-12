@@ -18,7 +18,7 @@ def parse_json_form(dictionary, prefix=''):
     """
     # Step 1: Initialize output object
     output = {}
-    for name, value in dictionary.items():
+    for name, value in get_all_items(dictionary):
         # TODO: implement is_file flag
 
         # Step 2: Compute steps array
@@ -40,6 +40,8 @@ def parse_json_form(dictionary, prefix=''):
                 entry_value=value,
                 is_file=False,
             )
+    # Convert any remaining Undefined array entries to None
+    output = clean_undefined(output)
 
     # Account for DRF prefix (not part of JSON form spec)
     result = get_value(output, prefix, Undefined())
@@ -101,7 +103,7 @@ def parse_json_path(path):
     # Step 8 - Loop
     while path:
         # Step 8.1 - Check for single-item array
-        if path[:1] == "[]":
+        if path[:2] == "[]":
             steps[-1].append = True
             path = path[2:]
             if path:
@@ -153,8 +155,6 @@ def set_json_value(context, step, current_value, entry_value, is_file):
     # TODO: handle is_file
 
     # Add empty values to array so indexing works like JavaScript
-    # TODO: According to spec, these should turn into nulls if they are never
-    # overriden in a later step.
     if isinstance(context, list) and isinstance(step.key, int):
         while len(context) <= step.key:
             context.append(Undefined())
@@ -163,13 +163,22 @@ def set_json_value(context, step, current_value, entry_value, is_file):
     if step.last:
         if isinstance(current_value, Undefined):
             # Step 7.1: No existing value
+            key = step.key
+            if isinstance(context, dict) and isinstance(key, int):
+                key = str(key)
             if step.append:
-                context[step.key] = [entry_value]
+                context[key] = [entry_value]
             else:
-                context[step.key] = entry_value
+                context[key] = entry_value
         elif isinstance(current_value, list):
-            # Step 7.2: Existing value is an Array
+            # Step 7.2: Existing value is an Array, assume multi-valued field
+            # and add entry to end.
+
+            # FIXME: What if the other items in the array had explicit keys and
+            # this one is supposed to be the "" value?
+            # (See step 8.4 and Example 7)
             context[step.key].append(entry_value)
+
         elif isinstance(current_value, dict) and not is_file:
             # Step 7.3: Existing value is an Object
             return set_json_value(
@@ -195,20 +204,21 @@ def set_json_value(context, step, current_value, entry_value, is_file):
             context[step.key] = {}
         return context[step.key]
     elif isinstance(current_value, dict):
-        # Step 7.2: Existing value is an Object
+        # Step 8.2: Existing value is an Object
         return get_value(context, step.key, Undefined())
     elif isinstance(current_value, list):
-        # Step 7.3: Existing value is an Array
+        # Step 8.3: Existing value is an Array
         if step.next_type == "array":
             return current_value
+        # Convert array to object to facilitate mixed keys
         obj = {}
         for i, item in enumerate(current_value):
             if not isinstance(item, Undefined):
-                obj[i] = item
-            context[step.key] = obj
-            return obj
+                obj[str(i)] = item
+        context[step.key] = obj
+        return obj
     else:
-        # 7.4: Existing value is a scalar; convert to Object, preserving
+        # 8.4: Existing value is a scalar; convert to Object, preserving
         # current value via an empty key
         obj = {'': current_value}
         context[step.key] = obj
@@ -255,3 +265,32 @@ class JsonStep(object):
     append = None
     last = None
     failed = None
+
+
+def clean_undefined(obj):
+    """
+    Convert Undefined array entries to None (null)
+    """
+    if isinstance(obj, list):
+        return [
+            None if isinstance(item, Undefined) else item
+            for item in obj
+        ]
+    if isinstance(obj, dict):
+        for key in obj:
+            obj[key] = clean_undefined(obj[key])
+    return obj
+
+
+def get_all_items(obj):
+    """
+    dict.items() but with a separate row for each value in a MultiValueDict
+    """
+    if hasattr(obj, 'getlist'):
+        items = []
+        for key in obj:
+            for value in obj.getlist(key):
+                items.append((key, value))
+        return items
+    else:
+        return obj.items()
