@@ -2,7 +2,24 @@ language: python
 
 sudo: false
 
+cache:
+  # Apparently if you override the install command that silently disables the
+  # cache: pip support. This is less than ideal and I've opened up
+  # travis-ci/travis-ci#3239 to hopefully get that addressed. For now I'll
+  # manually add the pip cache directory to the build cache.
+  directories:
+    - ~/.cache/pip
+
 env:
+  global:
+    # These two environment variables could be set by Travis itself, or Travis
+    # could configure itself in /etc/, ~/, or inside of the virtual
+    # environments. In any case if these two values get configured then end
+    # users only need to enable the pip cache and manually run pip wheel before
+    # running pip install.
+    - PIP_WHEEL_DIR=$HOME/.cache/pip/wheels
+    - PIP_FIND_LINKS=file://$HOME/.cache/pip/wheels
+  matrix:
     - TOX_ENV=py27-flake8
     - TOX_ENV=py27-docs
     - TOX_ENV=py34-django17
@@ -27,7 +44,8 @@ env:
     - TOX_ENV=py27-django18beta
 
 install:
+  - pip wheel tox
   - pip install tox
 
 script:
-    - tox -e $TOX_ENV
+  - tox -e $TOX_ENV
