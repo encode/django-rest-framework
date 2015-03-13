@@ -32,6 +32,13 @@ class NoteViewSet(viewsets.ModelViewSet):
     lookup_field = 'uuid'
 
 
+class KWargedNoteViewSet(viewsets.ModelViewSet):
+    queryset = RouterTestModel.objects.all()
+    serializer_class = NoteSerializer
+    lookup_field = 'text__contains'
+    lookup_url_kwarg = 'text'
+
+
 class MockViewSet(viewsets.ModelViewSet):
     queryset = None
     serializer_class = None
@@ -40,6 +47,9 @@ class MockViewSet(viewsets.ModelViewSet):
 notes_router = SimpleRouter()
 notes_router.register(r'notes', NoteViewSet)
 
+kwarged_notes_router = SimpleRouter()
+kwarged_notes_router.register(r'notes', KWargedNoteViewSet)
+
 namespaced_router = DefaultRouter()
 namespaced_router.register(r'example', MockViewSet, base_name='example')
 
@@ -47,6 +57,7 @@ urlpatterns = [
     url(r'^non-namespaced/', include(namespaced_router.urls)),
     url(r'^namespaced/', include(namespaced_router.urls, namespace='example')),
     url(r'^example/', include(notes_router.urls)),
+    url(r'^example2/', include(kwarged_notes_router.urls)),
 ]
 
 
@@ -175,6 +186,33 @@ class TestLookupValueRegex(TestCase):
         expected = ['^notes/$', '^notes/(?P<uuid>[0-9a-f]{32})/$']
         for idx in range(len(expected)):
             self.assertEqual(expected[idx], self.urls[idx].regex.pattern)
+
+
+class TestLookupUrlKwargs(TestCase):
+    """
+    Ensure the router honors lookup_url_kwarg.
+
+    Setup a deep lookup_field, but map it to a simple URL kwarg.
+    """
+    urls = 'tests.test_routers'
+
+    def setUp(self):
+        RouterTestModel.objects.create(uuid='123', text='foo bar')
+
+    def test_custom_lookup_url_kwarg_route(self):
+        detail_route = kwarged_notes_router.urls[-1]
+        detail_url_pattern = detail_route.regex.pattern
+        self.assertIn('^notes/(?P<text>', detail_url_pattern)
+
+    def test_retrieve_lookup_url_kwarg_detail_view(self):
+        response = self.client.get('/example2/notes/fo/')
+        self.assertEqual(
+            response.data,
+            {
+                "url": "http://testserver/example/notes/123/",
+                "uuid": "123", "text": "foo bar"
+            }
+        )
 
 
 class TestTrailingSlashIncluded(TestCase):
