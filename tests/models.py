@@ -15,7 +15,10 @@ class RESTFrameworkModel(models.Model):
 
 
 class BasicModel(RESTFrameworkModel):
-    text = models.CharField(max_length=100, verbose_name=_("Text comes here"), help_text=_("Text description."))
+    text = models.CharField(
+        max_length=100,
+        verbose_name=_("Text comes here"),
+        help_text=_("Text description."))
 
 
 class BaseFilterableItem(RESTFrameworkModel):
@@ -44,6 +47,9 @@ class ManyToManySource(RESTFrameworkModel):
 # ForeignKey
 class ForeignKeyTarget(RESTFrameworkModel):
     name = models.CharField(max_length=100)
+
+    def get_first_source(self):
+        return self.sources.first()
 
 
 class ForeignKeySource(RESTFrameworkModel):
