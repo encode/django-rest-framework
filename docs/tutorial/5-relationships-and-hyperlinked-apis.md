@@ -107,6 +107,9 @@ If we're going to have a hyperlinked API, we need to make sure we name our URL p
 After adding all those names into our URLconf, our final `snippets/urls.py` file should look something like this:
 
     from django.conf.urls import url, include
+    from rest_framework.urlpatterns import format_suffix_patterns
+    from snippets import views
+
 
     # API endpoints
     urlpatterns = format_suffix_patterns([
