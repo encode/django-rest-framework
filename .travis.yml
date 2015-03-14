@@ -19,6 +19,7 @@ env:
     # running pip install.
     - PIP_WHEEL_DIR=$HOME/.cache/pip/wheels
     - PIP_FIND_LINKS=file://$HOME/.cache/pip/wheels
+    - PIP_DOWNLOAD_CACHE=$HOME/.cache/pip
   matrix:
     - TOX_ENV=py27-flake8
     - TOX_ENV=py27-docs
