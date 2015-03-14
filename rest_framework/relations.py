@@ -267,7 +267,9 @@ class HyperlinkedRelatedField(RelatedField):
                 'Could not resolve URL for hyperlinked relationship using '
                 'view name "%s". You may have failed to include the related '
                 'model in your API, or incorrectly configured the '
-                '`lookup_field` attribute on this field.'
+                '`lookup_field` attribute on this field, or perhaps your'
+                'data contains an empty value for the `lookup_field` you'
+                'specified.'
             )
             raise ImproperlyConfigured(msg % self.view_name)
 
