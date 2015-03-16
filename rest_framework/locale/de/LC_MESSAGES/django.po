@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Fabian Büchler <fabian@buechler.io>, 2015
 # Thomas Tanner, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-30 16:23+0000\n"
-"PO-Revision-Date: 2015-01-30 16:27+0000\n"
-"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"PO-Revision-Date: 2015-03-07 19:50+0000\n"
+"Last-Translator: Fabian Büchler <fabian@buechler.io>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/django-rest-framework/language/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -80,7 +81,7 @@ msgstr "Methode \"{method}\" nicht erlaubt."
 
 #: exceptions.py:109
 msgid "Could not satisfy the request Accept header."
-msgstr "Kann den Accept header der Anfrage nicht erfüllen."
+msgstr "Kann die Accept Kopfzeile der Anfrage nicht erfüllen."
 
 #: exceptions.py:121
 msgid "Unsupported media type \"{media_type}\" in request."
@@ -101,7 +102,7 @@ msgstr "Dieses Feld darf nicht Null sein."
 
 #: fields.py:487 fields.py:515
 msgid "\"{input}\" is not a valid boolean."
-msgstr "\"{input}\" ist kein gültiger Boole'scher Wert."
+msgstr "\"{input}\" ist kein gültiger Wahrheitswert."
 
 #: fields.py:550
 msgid "This field may not be blank."
@@ -117,7 +118,7 @@ msgstr "Stelle sicher, dass dieses Feld mindestens {min_length} Zeichen lang ist
 
 #: fields.py:587
 msgid "Enter a valid email address."
-msgstr "Gebe eine gültige E-Mail Adresse an."
+msgstr "Gib eine gültige E-Mail Adresse an."
 
 #: fields.py:604
 msgid "This value does not match the required pattern."
@@ -127,15 +128,15 @@ msgstr "Dieser Wert passt nicht zu dem erforderlichen Muster."
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
-msgstr "Gebe ein gültiges \"slug\" aus Buchstaben, Ziffern, Unterstrichen und Minuszeichen ein."
+msgstr "Gib ein gültiges \"slug\" aus Buchstaben, Ziffern, Unterstrichen und Minuszeichen ein."
 
 #: fields.py:627
 msgid "Enter a valid URL."
-msgstr "Gebe eine gültige URL ein."
+msgstr "Gib eine gültige URL ein."
 
 #: fields.py:638
 msgid "\"{value}\" is not a valid UUID."
-msgstr ""
+msgstr "\"{value}\" ist keine gültige UUID."
 
 #: fields.py:657
 msgid "A valid integer is required."
@@ -147,7 +148,7 @@ msgstr "Stelle sicher, dass dieser Wert kleiner oder gleich {max_value} ist."
 
 #: fields.py:659 fields.py:693 fields.py:726
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr "Stelle sicher, dass dieser Wert größer oder gleich {max_value} ist."
+msgstr "Stelle sicher, dass dieser Wert größer oder gleich {min_value} ist."
 
 #: fields.py:660 fields.py:694 fields.py:730
 msgid "String value too large."
@@ -174,11 +175,11 @@ msgstr "Stelle sicher, dass es nicht mehr als {max_whole_places} Stellen vor dem
 
 #: fields.py:813
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
-msgstr "Datum- und Zeitangabe hat das falsche Format. Nutze stattdessen eines dieser Formate: {format}."
+msgstr "Datums- und Zeitangabe hat das falsche Format. Nutze stattdessen eines dieser Formate: {format}."
 
 #: fields.py:814
 msgid "Expected a datetime but got a date."
-msgstr "Erwarte eine Datum- und Zeitangabe, erhielt aber ein Datum."
+msgstr "Erwarte eine Datums- und Zeitangabe, erhielt aber ein Datum."
 
 #: fields.py:878
 msgid "Date has wrong format. Use one of these formats instead: {format}."
@@ -186,7 +187,7 @@ msgstr "Datum hat das falsche Format. Nutze stattdessen eines dieser Formate: {f
 
 #: fields.py:879
 msgid "Expected a date but got a datetime."
-msgstr "Erwarte ein Datum, erhielt aber eine Datum- und Zeitangabe."
+msgstr "Erwarte ein Datum, erhielt aber eine Datums- und Zeitangabe."
 
 #: fields.py:936
 msgid "Time has wrong format. Use one of these formats instead: {format}."
@@ -207,7 +208,7 @@ msgstr "Es wurde keine Datei übermittelt."
 #: fields.py:1068
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
-msgstr "Die übermittelten Daten sind keine Datei. Prüfe den Kodierungstyp im Formular."
+msgstr "Die übermittelten Daten stellen keine Datei dar. Prüfe den Kodierungstyp im Formular."
 
 #: fields.py:1069
 msgid "No filename could be determined."
@@ -220,53 +221,53 @@ msgstr "Die übermittelte Datei ist leer."
 #: fields.py:1071
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
-msgstr ""
+msgstr "Stelle sicher, dass dieser Dateiname höchstens {max_length} Zeichen lang ist (er hat {length})."
 
 #: fields.py:1113
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
-msgstr ""
+msgstr "Lade ein gültiges Bild hoch. Die hochgeladene Datei ist entweder kein Bild oder ein beschädigtes Bild."
 
 #: fields.py:1188
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Erwarte ein Dictionary mit Elementen, erhielt aber den Typ \"{input_type}\"."
 
 #: pagination.py:221
 msgid "Invalid page \"{page_number}\": {message}."
-msgstr ""
+msgstr "Ungültige Seite \"{page_number}\": {message}."
 
 #: pagination.py:442
 msgid "Invalid cursor"
-msgstr ""
+msgstr "Ungültiger Zeiger"
 
 #: relations.py:133
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
-msgstr ""
+msgstr "Ungültiger pk \"{pk_value}\" - Object existiert nicht."
 
 #: relations.py:134
 msgid "Incorrect type. Expected pk value, received {data_type}."
-msgstr ""
+msgstr "Falscher Typ. Erwarte pk Wert, erhielt aber {data_type}."
 
 #: relations.py:157
 msgid "Invalid hyperlink - No URL match."
-msgstr ""
+msgstr "Ungültiger Hyperlink - entspricht keiner URL."
 
 #: relations.py:158
 msgid "Invalid hyperlink - Incorrect URL match."
-msgstr ""
+msgstr "Ungültiger Hyperlink - URL stimmt nicht überein."
 
 #: relations.py:159
 msgid "Invalid hyperlink - Object does not exist."
-msgstr ""
+msgstr "Ungültiger Hyperlink - Objekt existiert nicht."
 
 #: relations.py:160
 msgid "Incorrect type. Expected URL string, received {data_type}."
-msgstr ""
+msgstr "Falscher Typ. Erwarte URL Zeichenkette, erhielt aber {data_type}."
 
 #: relations.py:295
 msgid "Object with {slug_name}={value} does not exist."
-msgstr ""
+msgstr "Objekt mit {slug_name}={value} existiert nicht."
 
 #: relations.py:296
 msgid "Invalid value."
@@ -278,39 +279,39 @@ msgstr "Ungültige Daten. Dictionary erwartet, aber {datatype} erhalten."
 
 #: validators.py:22
 msgid "This field must be unique."
-msgstr "Dieses Feld muss eineindeutig sein."
+msgstr "Dieses Feld muss eindeutig sein."
 
 #: validators.py:76
 msgid "The fields {field_names} must make a unique set."
-msgstr ""
+msgstr "Die Felder {field_names} müssen eine eindeutige Menge bilden."
 
 #: validators.py:219
 msgid "This field must be unique for the \"{date_field}\" date."
-msgstr ""
+msgstr "Dieses Feld muss bezüglich des \"{date_field}\" Datums eindeutig sein."
 
 #: validators.py:234
 msgid "This field must be unique for the \"{date_field}\" month."
-msgstr ""
+msgstr "Dieses Feld muss bezüglich des \"{date_field}\" Monats eindeutig sein."
 
 #: validators.py:247
 msgid "This field must be unique for the \"{date_field}\" year."
-msgstr ""
+msgstr "Dieses Feld muss bezüglich des \"{date_field}\" Jahrs eindeutig sein."
 
 #: versioning.py:39
 msgid "Invalid version in \"Accept\" header."
-msgstr ""
+msgstr "Ungültige Version in der \"Accept\" Kopfzeile."
 
 #: versioning.py:70 versioning.py:112
 msgid "Invalid version in URL path."
-msgstr ""
+msgstr "Ungültige Version im URL Pfad."
 
 #: versioning.py:138
 msgid "Invalid version in hostname."
-msgstr ""
+msgstr "Ungültige Version im Hostname."
 
 #: versioning.py:160
 msgid "Invalid version in query parameter."
-msgstr ""
+msgstr "Ungültige Version im Anfrageparameter."
 
 #: authtoken/serializers.py:20
 msgid "User account is disabled."

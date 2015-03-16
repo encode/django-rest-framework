@@ -4,15 +4,15 @@
 # 
 # Translators:
 # José Padilla <jpadilla@webapplicate.com>, 2015
-# Miguel González <migonzalvar@activitycentral.com>, 2015
+# Miguel González <migonzalvar@gmail.com>, 2015
 # Sergio Infante <rsinfante@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-30 16:23+0000\n"
-"PO-Revision-Date: 2015-01-30 16:27+0000\n"
-"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"PO-Revision-Date: 2015-03-06 19:51+0000\n"
+"Last-Translator: Miguel González <migonzalvar@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/django-rest-framework/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -137,7 +137,7 @@ msgstr "Introduzca una URL válida."
 
 #: fields.py:638
 msgid "\"{value}\" is not a valid UUID."
-msgstr ""
+msgstr "\"{value}\" no es un UUID válido."
 
 #: fields.py:657
 msgid "A valid integer is required."
@@ -232,7 +232,7 @@ msgstr "Adjunte una imagen válida. El archivo adjunto o bien no es una imagen o
 
 #: fields.py:1188
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Se esperaba un diccionario de elementos en vez del tipo \"{input_type}\"."
 
 #: pagination.py:221
 msgid "Invalid page \"{page_number}\": {message}."
@@ -240,7 +240,7 @@ msgstr "Página \"{page_number}\" inválida: {message}."
 
 #: pagination.py:442
 msgid "Invalid cursor"
-msgstr ""
+msgstr "Cursor inválido"
 
 #: relations.py:133
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
