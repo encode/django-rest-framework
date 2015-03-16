@@ -154,7 +154,7 @@ For older release notes, [please see the version 2.x documentation](old-release-
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
 [ticket-582]: https://github.com/tomchristie/django-rest-framework/issues/582
 [rfc-6266]: http://tools.ietf.org/html/rfc6266#section-4.3
-[old-release-notes]: http://tomchristie.github.io/rest-framework-2-docs/topics/release-notes#24x-series
+[old-release-notes]: https://github.com/tomchristie/django-rest-framework/blob/version-2.4.x/docs/topics/release-notes.md
 
 [3.0.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.1+Release%22
 [3.0.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.2+Release%22
