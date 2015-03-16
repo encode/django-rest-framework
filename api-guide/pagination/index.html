@@ -539,7 +539,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 }
 </code></pre>
 <h4 id="setup_1">Setup</h4>
-<p>To enable the <code>PageNumberPagination</code> style globally, use the following configuration:</p>
+<p>To enable the <code>LimitOffsetPagination</code> style globally, use the following configuration:</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
 }

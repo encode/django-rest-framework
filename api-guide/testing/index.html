@@ -498,7 +498,7 @@ request = factory.put('/notes/547/', content, content_type=content_type)
 <h2 id="forcing-authentication">Forcing authentication</h2>
 <p>When testing views directly using a request factory, it's often convenient to be able to directly authenticate the request, rather than having to construct the correct authentication credentials.</p>
 <p>To forcibly authenticate a request, use the <code>force_authenticate()</code> method.</p>
-<pre><code>from rest_framework.tests import force_authenticate
+<pre><code>from rest_framework.test import force_authenticate
 
 factory = APIRequestFactory()
 user = User.objects.get(username='olivia')
