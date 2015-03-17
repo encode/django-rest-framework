@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.http import Http404
 from rest_framework.compat import get_model_name
 
-SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
+SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
 
 
 class BasePermission(object):
@@ -185,7 +185,7 @@ class DjangoObjectPermissions(DjangoModelPermissions):
             # they have read permissions to see 403, or not, and simply see
             # a 404 response.
 
-            if request.method in ('GET', 'OPTIONS', 'HEAD'):
+            if request.method in SAFE_METHODS:
                 # Read permissions already checked and failed, no need
                 # to make another lookup.
                 raise Http404
