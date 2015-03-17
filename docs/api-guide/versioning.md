@@ -103,7 +103,7 @@ Your client requests would now look like this:
     Host: example.com
     Accept: application/vnd.megacorp.bookings+json; version=1.0
 
-## URLParameterVersioning
+## URLPathVersioning
 
 This scheme requires the client to specify the version as part of the URL path.
 
