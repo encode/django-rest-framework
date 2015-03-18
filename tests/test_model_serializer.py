@@ -108,7 +108,7 @@ class TestRegularFieldMappings(TestCase):
             TestSerializer():
                 auto_field = IntegerField(read_only=True)
                 big_integer_field = IntegerField()
-                boolean_field = BooleanField(required=False)
+                boolean_field = BooleanField(default=False, required=False)
                 char_field = CharField(max_length=100)
                 comma_separated_integer_field = CharField(max_length=100, validators=[<django.core.validators.RegexValidator object>])
                 date_field = DateField()
@@ -141,7 +141,7 @@ class TestRegularFieldMappings(TestCase):
                 length_limit_field = CharField(max_length=12, min_length=3)
                 blank_field = CharField(allow_blank=True, max_length=10, required=False)
                 null_field = IntegerField(allow_null=True, required=False)
-                default_field = IntegerField(required=False)
+                default_field = IntegerField(default=0)
                 descriptive_field = IntegerField(help_text='Some help text', label='A label')
                 choices_field = ChoiceField(choices=[('red', 'Red'), ('blue', 'Blue'), ('green', 'Green')])
         """)
@@ -152,7 +152,9 @@ class TestRegularFieldMappings(TestCase):
                 "('red', 'Red'), ('blue', 'Blue'), ('green', 'Green')",
                 "(u'red', u'Red'), (u'blue', u'Blue'), (u'green', u'Green')"
             )
-        self.assertEqual(unicode_repr(TestSerializer()), expected)
+        serializer = TestSerializer()
+        self.assertEqual(unicode_repr(serializer), expected)
+        self.assertFalse(serializer.fields["default_field"].required)
 
     def test_method_field(self):
         """

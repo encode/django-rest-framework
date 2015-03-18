@@ -96,8 +96,11 @@ def get_field_kwargs(field_name, model_field):
         kwargs['read_only'] = True
         return kwargs
 
-    if model_field.has_default() or model_field.blank or model_field.null:
+    if model_field.blank or model_field.null:
         kwargs['required'] = False
+
+    if model_field.has_default():
+        kwargs['default'] = model_field.get_default()
 
     if model_field.null and not isinstance(model_field, models.NullBooleanField):
         kwargs['allow_null'] = True
