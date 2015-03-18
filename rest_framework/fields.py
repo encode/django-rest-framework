@@ -576,14 +576,18 @@ class CharField(Field):
             self.validators.append(MinLengthValidator(self.min_length, message=message))
 
     def run_validation(self, data=empty):
+        (is_empty_value, data) = self.validate_empty_values(data)
+        if is_empty_value:
+            return data
+
+        value = self.to_internal_value(data)
         # Test for the empty string here so that it does not get validated,
         # and so that subclasses do not need to handle it explicitly
         # inside the `to_internal_value()` method.
-        if data == '':
+        if value == '':
             if not self.allow_blank:
                 self.fail('blank')
-            return ''
-        return super(CharField, self).run_validation(data)
+        return super(CharField, self).run_validation(value)
 
     def to_internal_value(self, data):
         value = six.text_type(data)
