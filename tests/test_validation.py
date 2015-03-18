@@ -46,6 +46,42 @@ class ShouldValidateModelSerializer(serializers.ModelSerializer):
         fields = ('renamed',)
 
 
+class UniqueTogetherModel(models.Model):
+    foo = models.IntegerField()
+    bar = models.IntegerField()
+
+    class Meta(object):
+        unique_together = ('foo', 'bar')
+
+
+class ExampleSerializer(serializers.ModelSerializer):
+    class Meta(object):
+        model = UniqueTogetherModel
+
+
+class TestUniqueTogether(TestCase):
+    def test_validation(self):
+        """
+        Ensure that validation works when model has unique together validation.
+        """
+        UniqueTogetherModel.objects.all().delete()
+        obj = UniqueTogetherModel.objects.create(foo=1, bar=2)
+
+        s = ExampleSerializer(
+            UniqueTogetherModel.objects.all(),
+            data=[
+                {
+                    'foo': 5,
+                    'id': obj.pk,
+                }
+            ],
+            partial=True,
+            many=True,
+        )
+
+        s.is_valid(raise_exception=True)
+
+
 class TestPreSaveValidationExclusionsSerializer(TestCase):
     def test_renamed_fields_are_model_validated(self):
         """
