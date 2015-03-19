@@ -512,10 +512,11 @@ class CursorPagination(BasePagination):
             (offset, reverse, current_position) = self.cursor
 
         # Cursor pagination always enforces an ordering.
-        if reverse:
-            queryset = queryset.order_by(*_reverse_ordering(self.ordering))
-        else:
-            queryset = queryset.order_by(*self.ordering)
+        if not queryset.ordered:
+            if reverse:
+                queryset = queryset.order_by(*_reverse_ordering(self.ordering))
+            else:
+                queryset = queryset.order_by(*self.ordering)
 
         # If we have a cursor with a fixed position then filter by that.
         if current_position is not None:
