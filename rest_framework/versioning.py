@@ -1,6 +1,7 @@
 # coding: utf-8
 from __future__ import unicode_literals
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import NoReverseMatch
 from rest_framework import exceptions
 from rest_framework.compat import unicode_http_header
 from rest_framework.reverse import _reverse
@@ -122,7 +123,16 @@ class NamespaceVersioning(BaseVersioning):
 
     def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
         if request.version is not None:
-            viewname = self.get_versioned_viewname(viewname, request)
+            versioned_viewname = self.get_versioned_viewname(viewname, request)
+            try:
+                return super(NamespaceVersioning, self).reverse(
+                    versioned_viewname, args, kwargs, request, format, **extra
+                )
+            except NoReverseMatch:
+                # If the versioned viewname lookup fails, fallback to the
+                # default reversal, since it may be a non-API view
+                pass
+
         return super(NamespaceVersioning, self).reverse(
             viewname, args, kwargs, request, format, **extra
         )

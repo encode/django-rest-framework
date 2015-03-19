@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory, APITestCase
 from rest_framework.versioning import NamespaceVersioning
+from rest_framework.relations import PKOnlyObject
 import pytest
 
 
@@ -234,7 +235,7 @@ class TestInvalidVersion:
 
 class TestHyperlinkedRelatedField(UsingURLPatterns, APITestCase):
     included = [
-        url(r'^namespaced/(?P<pk>\d+)/$', dummy_view, name='namespaced'),
+        url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='namespaced'),
     ]
 
     urlpatterns = [
@@ -262,3 +263,44 @@ class TestHyperlinkedRelatedField(UsingURLPatterns, APITestCase):
         assert self.field.to_internal_value('/v1/namespaced/3/') == 'object 3'
         with pytest.raises(serializers.ValidationError):
             self.field.to_internal_value('/v2/namespaced/3/')
+
+
+class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(UsingURLPatterns, APITestCase):
+    included = [
+        url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='namespaced'),
+    ]
+
+    urlpatterns = [
+        url(r'^v1/', include(included, namespace='v1')),
+        url(r'^v2/', include(included, namespace='v2')),
+        url(r'^non-api/(?P<pk>\d+)/$', dummy_pk_view, name='non-api-view')
+    ]
+
+    def _create_field(self, view_name, version):
+        request = factory.get("/")
+        request.versioning_scheme = NamespaceVersioning()
+        request.version = version
+
+        field = serializers.HyperlinkedRelatedField(
+            view_name=view_name,
+            read_only=True)
+        field._context = {'request': request}
+        return field
+
+    def test_api_url_is_properly_reversed_with_v1(self):
+        field = self._create_field('namespaced', 'v1')
+        assert field.to_representation(PKOnlyObject(3)) == 'http://testserver/v1/namespaced/3/'
+
+    def test_api_url_is_properly_reversed_with_v2(self):
+        field = self._create_field('namespaced', 'v2')
+        assert field.to_representation(PKOnlyObject(5)) == 'http://testserver/v2/namespaced/5/'
+
+    def test_non_api_url_is_properly_reversed_regardless_of_the_version(self):
+        """
+        Regression test for #2711
+        """
+        field = self._create_field('non-api-view', 'v1')
+        assert field.to_representation(PKOnlyObject(10)) == 'http://testserver/non-api/10/'
+
+        field = self._create_field('non-api-view', 'v2')
+        assert field.to_representation(PKOnlyObject(10)) == 'http://testserver/non-api/10/'
