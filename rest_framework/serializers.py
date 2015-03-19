@@ -545,6 +545,8 @@ class ListSerializer(BaseSerializer):
 
         for item in data:
             try:
+                if isinstance(self.instance, QuerySet):
+                    self.child.instance = self.instance.get(pk=item['id'])
                 validated = self.child.run_validation(item)
             except ValidationError as exc:
                 errors.append(exc.detail)
