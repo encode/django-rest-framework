@@ -6,6 +6,7 @@ be used for paginated responses.
 from __future__ import unicode_literals
 from base64 import b64encode, b64decode
 from collections import namedtuple
+from django import VERSION as DJANGO_VERSION
 from django.core.paginator import InvalidPage, Paginator as DjangoPaginator
 from django.template import Context, loader
 from django.utils import six
@@ -512,10 +513,11 @@ class CursorPagination(BasePagination):
             (offset, reverse, current_position) = self.cursor
 
         # Cursor pagination always enforces an ordering.
-        if reverse:
-            queryset = queryset.order_by(*_reverse_ordering(self.ordering))
-        else:
-            queryset = queryset.order_by(*self.ordering)
+        if not queryset.ordered:
+            if reverse:
+                queryset = queryset.order_by(*_reverse_ordering(self.ordering))
+            else:
+                queryset = queryset.order_by(*self.ordering)
 
         # If we have a cursor with a fixed position then filter by that.
         if current_position is not None:
@@ -681,6 +683,27 @@ class CursorPagination(BasePagination):
             if hasattr(filter_cls, 'get_ordering')
         ]
 
+        if queryset.ordered:
+            if ordering_filters:
+                warnings.warn('The queryset is already ordered so'
+                              'the ordering provided by the filter class {}'
+                              'will be ignored'.format(filter_cls.__name__))
+
+            ordering = []
+            if queryset.query.extra_order_by:
+                ordering.extend(queryset.query.extra_order_by)
+            elif queryset.query.order_by:
+                ordering.extend(queryset.query.order_by)
+
+            elif queryset.query.default_ordering:
+                if DJANGO_VERSION[1] <= 5:
+                    ordering.extend(queryset.query.model._meta.ordering)
+                else:
+                    ordering.extend(queryset.query.get_meta().ordering)
+
+            # Since the queryset is ordered we return the existing ordering.
+            return ordering
+
         if ordering_filters:
             # If a filter exists on the view that implements `get_ordering`
             # then we defer to that filter to determine the ordering.
@@ -710,6 +733,7 @@ class CursorPagination(BasePagination):
 
         if isinstance(ordering, six.string_types):
             return (ordering,)
+
         return tuple(ordering)
 
     def _get_position_from_instance(self, instance, ordering):
