@@ -41,10 +41,18 @@ class ListModelMixin(object):
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
+            self.perform_list(serializer)
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
+        self.perform_list(serializer)
         return Response(serializer.data)
+
+    def perform_list(self, serializer):
+        """
+        Hook in the list method that can be overridden
+        """
+        pass
 
 
 class RetrieveModelMixin(object):
@@ -54,7 +62,14 @@ class RetrieveModelMixin(object):
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
+        self.perform_retrieve(serializer)
         return Response(serializer.data)
+
+    def perform_retrieve(self, serializer):
+        """
+        Hook in the retrieve method that can be overridden
+        """
+        pass
 
 
 class UpdateModelMixin(object):

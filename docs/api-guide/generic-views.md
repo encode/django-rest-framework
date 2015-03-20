@@ -166,13 +166,15 @@ For example:
             return 20
         return 100
 
-**Save and deletion hooks**:
+**Save, deletion, and retrieval hooks**:
 
 The following methods are provided by the mixin classes, and provide easy overriding of the object save or deletion behavior.
 
 * `perform_create(self, serializer)` - Called by `CreateModelMixin` when saving a new object instance.
 * `perform_update(self, serializer)` - Called by `UpdateModelMixin` when saving an existing object instance.
 * `perform_destroy(self, instance)` - Called by `DestroyModelMixin` when deleting an object instance.
+* `perform_retrieve(self, serializer)` - Called by `RetrieveModelMixin` when retrieving an object instance.
+* `perform_list(self, serializer)` - Called by `ListModelMixin` when listing multiple object instances.
 
 These hooks are particularly useful for setting attributes that are implicit in the request, but are not part of the request data.  For instance, you might set an attribute on the object based on the request user, or based on a URL keyword argument.
 
@@ -184,8 +186,15 @@ These override points are also particularly useful for adding behavior that occu
     def perform_update(self, serializer):
         instance = serializer.save()
         send_email_confirmation(user=self.request.user, modified=instance)
-
+        
 **Note**: These methods replace the old-style version 2.x `pre_save`, `post_save`, `pre_delete` and `post_delete` methods, which are no longer available.
+        
+The `perform_list` and `perform_retrieve` hooks are useful for logging requests that have already passed the permission and serialization stages.
+ 
+    def perform_retrieve(self, serializer):
+        log_user_accessed_item(user=self.request.user, item=serializer)
+
+
 
 **Other methods**:
 
