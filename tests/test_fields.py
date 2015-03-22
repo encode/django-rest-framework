@@ -571,6 +571,7 @@ class TestIPv6AddressField(FieldValues):
     outputs = {}
     field = serializers.IPAddressField(protocol='IPv6')
 
+
 # Number types...
 
 class TestIntegerField(FieldValues):
