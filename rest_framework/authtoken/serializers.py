@@ -6,7 +6,7 @@ from rest_framework import exceptions, serializers
 
 class AuthTokenSerializer(serializers.Serializer):
     username = serializers.CharField()
-    password = serializers.CharField()
+    password = serializers.CharField(style={'input_type': 'password'})
 
     def validate(self, attrs):
         username = attrs.get('username')
