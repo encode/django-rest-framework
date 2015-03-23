@@ -341,6 +341,7 @@ class ManyRelatedField(Field):
         assert child_relation is not None, '`child_relation` is a required argument.'
         super(ManyRelatedField, self).__init__(*args, **kwargs)
         self.child_relation.bind(field_name='', parent=self)
+        self.id_field = kwargs.pop('id_field', 'pk')
 
     def get_value(self, dictionary):
         # We override the default field access in order to support
@@ -362,7 +363,7 @@ class ManyRelatedField(Field):
 
     def get_attribute(self, instance):
         # Can't have any relationships if not created
-        if not instance.pk:
+        if getattr(instance, self.id_field) is None:
             return []
 
         relationship = get_attribute(instance, self.source_attrs)
