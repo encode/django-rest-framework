@@ -2,6 +2,10 @@ language: python
 
 sudo: false
 
+cache:
+  directories:
+    - $HOME/.cache/pip
+
 env:
     - TOX_ENV=py27-flake8
     - TOX_ENV=py27-docs
