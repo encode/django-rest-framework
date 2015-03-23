@@ -40,6 +40,20 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.0.x series
 
+### 3.1.1
+
+**Date**: [19th March 2015][3.1.1-milestone].
+
+* Fix missing anchor closing tag after next button. ([#2691][gh2691])
+* Fix `lookup_url_kwarg` handling in viewsets. ([#2685][gh2685], [#2591][gh2591])
+* Fix problem with imporing `rest_framework.views` in `apps.py` ([#2678][gh2678])
+* LimitOffsetPagination raises Type error if PAGE_SIZE not set ([#2667][gh2667], [#2700][gh2700])
+* German translation for `min_value` field error message references `max_value`. ([#2645][gh2645])
+* Remove `MergeDict`. ([#2640][gh2640])
+* Support serializing unsaved models with related fields. ([#2637][gh2637], [#2641][gh2641])
+* Allow blank/null on radio.html choices. ([#2631][gh2631])
+
+
 ### 3.1.0
 
 **Date**: [5th March 2015][3.1.0-milestone].
@@ -161,6 +175,8 @@ For older release notes, [please see the version 2.x documentation](old-release-
 [3.0.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.3+Release%22
 [3.0.4-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.4+Release%22
 [3.0.5-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.5+Release%22
+[3.1.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.0+Release%22
+[3.1.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.1+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -259,3 +275,15 @@ For older release notes, [please see the version 2.x documentation](old-release-
 [gh2519]: https://github.com/tomchristie/django-rest-framework/issues/2519
 [gh2524]: https://github.com/tomchristie/django-rest-framework/issues/2524
 [gh2530]: https://github.com/tomchristie/django-rest-framework/issues/2530
+<!-- 3.1.1 -->
+[gh2691]: https://github.com/tomchristie/django-rest-framework/issues/2691
+[gh2685]: https://github.com/tomchristie/django-rest-framework/issues/2685
+[gh2591]: https://github.com/tomchristie/django-rest-framework/issues/2591
+[gh2678]: https://github.com/tomchristie/django-rest-framework/issues/2678
+[gh2667]: https://github.com/tomchristie/django-rest-framework/issues/2667
+[gh2700]: https://github.com/tomchristie/django-rest-framework/issues/2700
+[gh2645]: https://github.com/tomchristie/django-rest-framework/issues/2645
+[gh2640]: https://github.com/tomchristie/django-rest-framework/issues/2640
+[gh2637]: https://github.com/tomchristie/django-rest-framework/issues/2637
+[gh2641]: https://github.com/tomchristie/django-rest-framework/issues/2641
+[gh2631]: https://github.com/tomchristie/django-rest-framework/issues/2631
