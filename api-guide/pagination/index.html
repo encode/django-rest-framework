@@ -589,7 +589,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 <p>The <code>CursorPagination</code> class includes a number of attributes that may be overridden to modify the pagination style.</p>
 <p>To set these attributes you should override the <code>CursorPagination</code> class, and then enable your custom pagination class as above.</p>
 <ul>
-<li><code>page_size</code> = A numeric value indicating the page size. If set, this overrides the <code>DEFAULT_PAGE_SIZE</code> setting. Defaults to the same value as the <code>DEFAULT_PAGE_SIZE</code> settings key.</li>
+<li><code>page_size</code> = A numeric value indicating the page size. If set, this overrides the <code>PAGE_SIZE</code> setting. Defaults to the same value as the <code>PAGE_SIZE</code> settings key.</li>
 <li><code>cursor_query_param</code> = A string value indicating the name of the "cursor" query parameter. Defaults to <code>'cursor'</code>.</li>
 <li><code>ordering</code> = This should be a string, or list of strings, indicating the field against which the cursor based pagination will be applied. For example: <code>ordering = 'slug'</code>. Defaults to <code>-created</code>. This value may also be overridden by using <code>OrderingFilter</code> on the view.</li>
 <li><code>template</code> = The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to <code>None</code> to disable HTML pagination controls completely. Defaults to <code>"rest_framework/pagination/previous_and_next.html"</code>.</li>

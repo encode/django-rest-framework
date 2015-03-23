@@ -473,8 +473,10 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 <li>Our user serializer includes a field that refers to <code>'snippet-detail'</code>.</li>
 <li>Our snippet and user serializers include <code>'url'</code> fields that by default will refer to <code>'{model_name}-detail'</code>, which in this case will be <code>'snippet-detail'</code> and <code>'user-detail'</code>.</li>
 </ul>
-<p>After adding all those names into our URLconf, our final <code>snippets/urls.py</code> file should look something like this:</p>
+<p>After adding all those names into our URLconf, our final <code>snippets/urls.py</code> file should look like this:</p>
 <pre><code>from django.conf.urls import url, include
+from rest_framework.urlpatterns import format_suffix_patterns
+from snippets import views
 
 # API endpoints
 urlpatterns = format_suffix_patterns([

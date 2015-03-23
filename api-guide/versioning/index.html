@@ -370,7 +370,7 @@
                     </li>
                   
                     <li>
-                      <a href="#urlparameterversioning">URLParameterVersioning</a>
+                      <a href="#urlpathversioning">URLPathVersioning</a>
                     </li>
                   
                     <li>
@@ -436,7 +436,9 @@
 </code></pre>
 <h4 id="reversing-urls-for-versioned-apis">Reversing URLs for versioned APIs</h4>
 <p>The <code>reverse</code> function included by REST framework ties in with the versioning scheme. You need to make sure to include the current <code>request</code> as a keyword argument, like so.</p>
-<pre><code>reverse('bookings-list', request=request)
+<pre><code>from rest_framework.reverse import reverse
+
+reverse('bookings-list', request=request)
 </code></pre>
 <p>The above function will apply any URL transformations appropriate to the request version. For example:</p>
 <ul>
@@ -490,7 +492,7 @@ Accept: application/json; version=1.0
 Host: example.com
 Accept: application/vnd.megacorp.bookings+json; version=1.0
 </code></pre>
-<h2 id="urlparameterversioning">URLParameterVersioning</h2>
+<h2 id="urlpathversioning">URLPathVersioning</h2>
 <p>This scheme requires the client to specify the version as part of the URL path.</p>
 <pre><code>GET /v1/bookings/ HTTP/1.1
 Host: example.com
