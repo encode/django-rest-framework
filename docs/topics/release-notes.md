@@ -163,7 +163,7 @@ For full details see the [3.0 release announcement](3.0-announcement.md).
 
 ---
 
-For older release notes, [please see the version 2.x documentation](old-release-notes).
+For older release notes, [please see the version 2.x documentation][old-release-notes].
 
 [cite]: http://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s04.html
 [deprecation-policy]: #deprecation-policy
