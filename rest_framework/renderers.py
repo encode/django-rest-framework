@@ -421,6 +421,14 @@ class BrowsableAPIRenderer(BaseRenderer):
             return False  # Doesn't have permissions
         return True
 
+    def _get_serializer(self, serializer_class, view_instance, request, *args, **kwargs):
+        kwargs['context'] = {
+            'request': request,
+            'format': self.format,
+            'view': view_instance
+        }
+        return serializer_class(*args, **kwargs)
+
     def get_rendered_html_form(self, data, view, method, request):
         """
         Return a string representing a rendered HTML form, possibly bound to
@@ -457,8 +465,11 @@ class BrowsableAPIRenderer(BaseRenderer):
             if method in ('DELETE', 'OPTIONS'):
                 return True  # Don't actually need to return a form
 
+            has_serializer = getattr(view, 'get_serializer', None)
+            has_serializer_class = getattr(view, 'serializer_class', None)
+
             if (
-                not getattr(view, 'get_serializer', None) or
+                (not has_serializer and not has_serializer_class) or
                 not any(is_form_media_type(parser.media_type) for parser in view.parser_classes)
             ):
                 return
@@ -466,10 +477,19 @@ class BrowsableAPIRenderer(BaseRenderer):
             if existing_serializer is not None:
                 serializer = existing_serializer
             else:
-                if method in ('PUT', 'PATCH'):
-                    serializer = view.get_serializer(instance=instance, **kwargs)
+                if has_serializer:
+                    if method in ('PUT', 'PATCH'):
+                        serializer = view.get_serializer(instance=instance, **kwargs)
+                    else:
+                        serializer = view.get_serializer(**kwargs)
                 else:
-                    serializer = view.get_serializer(**kwargs)
+                    # at this point we must have a serializer_class
+                    if method in ('PUT', 'PATCH'):
+                        serializer = self._get_serializer(view.serializer_class, view,
+                                                          request, instance=instance, **kwargs)
+                    else:
+                        serializer = self._get_serializer(view.serializer_class, view,
+                                                          request, **kwargs)
 
             if hasattr(serializer, 'initial_data'):
                 serializer.is_valid()
