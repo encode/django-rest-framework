@@ -823,6 +823,10 @@ class ModelSerializer(Serializer):
                 serializer_class=self.__class__.__name__
             )
         )
+        if model_meta.is_abstract_model(self.Meta.model):
+            raise ValueError(
+                'Cannot use ModelSerializer with Abstract Models.'
+            )
 
         declared_fields = copy.deepcopy(self._declared_fields)
         model = getattr(self.Meta, 'model')

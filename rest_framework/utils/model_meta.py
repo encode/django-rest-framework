@@ -167,3 +167,10 @@ def _merge_relationships(forward_relations, reverse_relations):
         list(forward_relations.items()) +
         list(reverse_relations.items())
     )
+
+
+def is_abstract_model(model):
+    """
+    Given a model class, returns a boolean True if it is abstract and False if it is not.
+    """
+    return hasattr(model, 'Meta') and hasattr(model._meta, 'abstract') and model._meta.abstract
