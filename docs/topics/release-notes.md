@@ -42,7 +42,7 @@ You can determine your currently installed version using `pip freeze`:
 
 ### 3.1.1
 
-**Date**: [19th March 2015][3.1.1-milestone].
+**Date**: [23rd March 2015][3.1.1-milestone].
 
 * **Security fix**: Escape tab switching cookie name in browsable API.
 * Display input forms in browsable API if `serializer_class` is used, even when `get_serializer` method does not exist on the view. ([#2743](gh2743))
