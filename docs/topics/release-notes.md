@@ -40,6 +40,12 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.4.x series
 
+### 2.4.5
+
+**Date**: 24 March 2015
+
+* **Security fix**: Escape tab switching cookie name in browsable API. [Backported from 3.1.1](http://www.django-rest-framework.org/topics/release-notes/#311).
+
 ### 2.4.4
 
 **Date**: [3rd November 2014](https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%222.4.4+Release%22+).
