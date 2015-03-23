@@ -44,10 +44,13 @@ You can determine your currently installed version using `pip freeze`:
 
 **Date**: [19th March 2015][3.1.1-milestone].
 
+* **Security fix**: Escape tab switching cookie name in browsable API.
+* Display input forms in browsable API if `serializer_class` is used, even when `get_serializer` method does not exist on the view. ([#2743](gh2743))
+* Use a password input for the AuthTokenSerializer. ([#2741](gh2741))
 * Fix missing anchor closing tag after next button. ([#2691][gh2691])
 * Fix `lookup_url_kwarg` handling in viewsets. ([#2685][gh2685], [#2591][gh2591])
 * Fix problem with imporing `rest_framework.views` in `apps.py` ([#2678][gh2678])
-* LimitOffsetPagination raises Type error if PAGE_SIZE not set ([#2667][gh2667], [#2700][gh2700])
+* LimitOffsetPagination raises `TypeError` if PAGE_SIZE not set ([#2667][gh2667], [#2700][gh2700])
 * German translation for `min_value` field error message references `max_value`. ([#2645][gh2645])
 * Remove `MergeDict`. ([#2640][gh2640])
 * Support serializing unsaved models with related fields. ([#2637][gh2637], [#2641][gh2641])
@@ -287,3 +290,5 @@ For older release notes, [please see the version 2.x documentation](old-release-
 [gh2637]: https://github.com/tomchristie/django-rest-framework/issues/2637
 [gh2641]: https://github.com/tomchristie/django-rest-framework/issues/2641
 [gh2631]: https://github.com/tomchristie/django-rest-framework/issues/2631
+[gh2741]: https://github.com/tomchristie/django-rest-framework/issues/2641
+[gh2743]: https://github.com/tomchristie/django-rest-framework/issues/2643
