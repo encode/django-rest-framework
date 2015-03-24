@@ -1106,7 +1106,7 @@ class FileField(Field):
         return data
 
     def to_representation(self, value):
-        if self.use_url:
+        if self.use_url and hasattr(value, 'url'):
             if not value:
                 return None
             url = value.url
