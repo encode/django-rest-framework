@@ -166,7 +166,6 @@ class HyperlinkedRelatedField(RelatedField):
         self.lookup_field = kwargs.pop('lookup_field', self.lookup_field)
         self.lookup_url_kwarg = kwargs.pop('lookup_url_kwarg', self.lookup_field)
         self.format = kwargs.pop('format', None)
-        self.id_field = kwargs.pop('id_field', 'pk')
 
         # We include this simply for dependency injection in tests.
         # We can't add it as a class attributes or it would expect an
@@ -197,7 +196,7 @@ class HyperlinkedRelatedField(RelatedField):
         attributes are not configured to correctly match the URL conf.
         """
         # Unsaved objects will not yet have a valid URL.
-        if getattr(obj, self.id_field) is None:
+        if hasattr(obj, 'pk') and obj.pk is None:
             return None
 
         lookup_value = getattr(obj, self.lookup_field)
@@ -341,7 +340,6 @@ class ManyRelatedField(Field):
         assert child_relation is not None, '`child_relation` is a required argument.'
         super(ManyRelatedField, self).__init__(*args, **kwargs)
         self.child_relation.bind(field_name='', parent=self)
-        self.id_field = kwargs.pop('id_field', 'pk')
 
     def get_value(self, dictionary):
         # We override the default field access in order to support
@@ -363,7 +361,7 @@ class ManyRelatedField(Field):
 
     def get_attribute(self, instance):
         # Can't have any relationships if not created
-        if getattr(instance, self.id_field) is None:
+        if hasattr(instance, 'pk') and instance.pk is None:
             return []
 
         relationship = get_attribute(instance, self.source_attrs)
