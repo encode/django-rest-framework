@@ -430,10 +430,6 @@
                     </li>
                   
                     <li>
-                      <a href="#http-signature-authentication">HTTP Signature Authentication</a>
-                    </li>
-                  
-                    <li>
                       <a href="#djoser">Djoser</a>
                     </li>
                   
@@ -708,8 +704,6 @@ REST_FRAMEWORK = {
 <p>JSON Web Token is a fairly new standard which can be used for token-based authentication. Unlike the built-in TokenAuthentication scheme, JWT Authentication doesn't need to use a database to validate a token. <a href="https://github.com/GetBlimp">Blimp</a> maintains the <a href="https://github.com/GetBlimp/django-rest-framework-jwt">djangorestframework-jwt</a> package which provides a JWT Authentication class as well as a mechanism for clients to obtain a JWT given the username and password.</p>
 <h2 id="hawk-http-authentication">Hawk HTTP Authentication</h2>
 <p>The <a href="http://hawkrest.readthedocs.org/en/latest/">HawkREST</a> library builds on the <a href="http://mohawk.readthedocs.org/en/latest/">Mohawk</a> library to let you work with <a href="https://github.com/hueniverse/hawk">Hawk</a> signed requests and responses in your API. <a href="https://github.com/hueniverse/hawk">Hawk</a> lets two parties securely communicate with each other using messages signed by a shared key. It is based on <a href="http://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05">HTTP MAC access authentication</a> (which was based on parts of <a href="http://oauth.net/core/1.0a">OAuth 1.0</a>).</p>
-<h2 id="http-signature-authentication">HTTP Signature Authentication</h2>
-<p>HTTP Signature (currently a <a href="https://datatracker.ietf.org/doc/draft-cavage-http-signatures/">IETF draft</a>) provides a way to achieve origin authentication and message integrity for HTTP messages. Similar to <a href="http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html">Amazon's HTTP Signature scheme</a>, used by many of its services, it permits stateless, per-request authentication. <a href="https://github.com/etoccalino/">Elvio Toccalino</a> maintains the <a href="https://github.com/etoccalino/django-rest-framework-httpsignature">djangorestframework-httpsignature</a> package which provides an easy to use HTTP Signature Authentication mechanism.</p>
 <h2 id="djoser">Djoser</h2>
 <p><a href="https://github.com/sunscrapers/djoser">Djoser</a> library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and it uses token based authentication. This is a ready to use REST implementation of Django authentication system.</p>
 <h2 id="django-rest-auth">django-rest-auth</h2>
