@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from rest_framework import exceptions, serializers, status, views, versioning
+from rest_framework import exceptions, metadata, serializers, status, views, versioning
 from rest_framework.request import Request
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.test import APIRequestFactory
@@ -207,3 +207,8 @@ class TestMetadata:
         scheme = versioning.QueryParameterVersioning
         view = ExampleView.as_view(versioning_class=scheme)
         view(request=request)
+
+    def test_null_boolean_field_info_type(self):
+        options = metadata.SimpleMetadata()
+        field_info = options.get_field_info(serializers.NullBooleanField())
+        assert field_info['type'] == 'boolean'
