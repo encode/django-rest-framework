@@ -173,4 +173,4 @@ def is_abstract_model(model):
     """
     Given a model class, returns a boolean True if it is abstract and False if it is not.
     """
-    return hasattr(model, 'Meta') and hasattr(model._meta, 'abstract') and model._meta.abstract
+    return hasattr(model, '_meta') and hasattr(model._meta, 'abstract') and model._meta.abstract
