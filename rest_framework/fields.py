@@ -639,20 +639,37 @@ class URLField(CharField):
 
 
 class UUIDField(Field):
+    valid_formats = ('hex_verbose', 'hex', 'int', 'urn')
+
     default_error_messages = {
         'invalid': _('"{value}" is not a valid UUID.'),
     }
 
+    def __init__(self, **kwargs):
+        self.uuid_format = kwargs.pop('format', 'hex_verbose')
+        if self.uuid_format not in self.valid_formats:
+            raise ValueError(
+                'Invalid format for uuid representation. '
+                'Must be one of "{0}"'.format('", "'.join(self.valid_formats))
+            )
+        super(UUIDField, self).__init__(**kwargs)
+
     def to_internal_value(self, data):
         if not isinstance(data, uuid.UUID):
             try:
-                return uuid.UUID(data)
+                if isinstance(data, six.integer_types):
+                    return uuid.UUID(int=data)
+                else:
+                    return uuid.UUID(hex=data)
             except (ValueError, TypeError):
                 self.fail('invalid', value=data)
         return data
 
     def to_representation(self, value):
-        return str(value)
+        if self.uuid_format == 'hex_verbose':
+            return str(value)
+        else:
+            return getattr(value, self.uuid_format)
 
 
 # Number types...

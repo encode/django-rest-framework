@@ -183,6 +183,15 @@ A field that ensures the input is a valid UUID string. The `to_internal_value` m
 
     "de305d54-75b4-431b-adb2-eb6b9e546013"
 
+**Signature:** `UUIDField(format='hex_verbose')`
+
+- `format`: Determines the representation format of the uuid value
+    - `'hex_verbose'` - The cannoncical hex representation, including hyphens
+    - `'hex'` - The compact hex representation of the UUID, not including hyphens
+    - `'int'` - A 128 bit integer representation of the UUID.
+    - `'urn'` - RFC 4122 URN representation of the UUID
+  Changing the `format` parameters only affects representation values. All formats are accepted by `to_internal_value`
+
 ---
 
 # Numeric fields
