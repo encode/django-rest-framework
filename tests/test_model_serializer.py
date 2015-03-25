@@ -279,6 +279,11 @@ class ThroughTargetModel(models.Model):
     name = models.CharField(max_length=100)
 
 
+class StringForeignKeyTargetModel(models.Model):
+    id = models.CharField(primary_key=True, max_length=128)
+    name = models.CharField(max_length=100)
+
+
 class Supplementary(models.Model):
     extra = models.IntegerField()
     forwards = models.ForeignKey('ThroughTargetModel')
@@ -290,6 +295,8 @@ class RelationalModel(models.Model):
     many_to_many = models.ManyToManyField(ManyToManyTargetModel, related_name='reverse_many_to_many')
     one_to_one = models.OneToOneField(OneToOneTargetModel, related_name='reverse_one_to_one')
     through = models.ManyToManyField(ThroughTargetModel, through=Supplementary, related_name='reverse_through')
+
+    string_foreign_key = models.ForeignKey(StringForeignKeyTargetModel, related_name='reverse_string_foreign_key')
 
 
 class TestRelationalFieldMappings(TestCase):
@@ -303,6 +310,7 @@ class TestRelationalFieldMappings(TestCase):
                 id = IntegerField(label='ID', read_only=True)
                 foreign_key = PrimaryKeyRelatedField(queryset=ForeignKeyTargetModel.objects.all())
                 one_to_one = PrimaryKeyRelatedField(queryset=OneToOneTargetModel.objects.all(), validators=[<UniqueValidator(queryset=RelationalModel.objects.all())>])
+                string_foreign_key = PrimaryKeyRelatedField(pk_field=CharField(label='Id', max_length=128, validators=[<UniqueValidator(queryset=StringForeignKeyTargetModel.objects.all())>]), queryset=StringForeignKeyTargetModel.objects.all())
                 many_to_many = PrimaryKeyRelatedField(many=True, queryset=ManyToManyTargetModel.objects.all())
                 through = PrimaryKeyRelatedField(many=True, read_only=True)
         """)
@@ -323,6 +331,9 @@ class TestRelationalFieldMappings(TestCase):
                 one_to_one = NestedSerializer(read_only=True):
                     id = IntegerField(label='ID', read_only=True)
                     name = CharField(max_length=100)
+                string_foreign_key = NestedSerializer(read_only=True):
+                    id = CharField(max_length=128, validators=[<UniqueValidator(queryset=StringForeignKeyTargetModel.objects.all())>])
+                    name = CharField(max_length=100)
                 many_to_many = NestedSerializer(many=True, read_only=True):
                     id = IntegerField(label='ID', read_only=True)
                     name = CharField(max_length=100)
@@ -342,6 +353,7 @@ class TestRelationalFieldMappings(TestCase):
                 url = HyperlinkedIdentityField(view_name='relationalmodel-detail')
                 foreign_key = HyperlinkedRelatedField(queryset=ForeignKeyTargetModel.objects.all(), view_name='foreignkeytargetmodel-detail')
                 one_to_one = HyperlinkedRelatedField(queryset=OneToOneTargetModel.objects.all(), validators=[<UniqueValidator(queryset=RelationalModel.objects.all())>], view_name='onetoonetargetmodel-detail')
+                string_foreign_key = HyperlinkedRelatedField(queryset=StringForeignKeyTargetModel.objects.all(), view_name='stringforeignkeytargetmodel-detail')
                 many_to_many = HyperlinkedRelatedField(many=True, queryset=ManyToManyTargetModel.objects.all(), view_name='manytomanytargetmodel-detail')
                 through = HyperlinkedRelatedField(many=True, read_only=True, view_name='throughtargetmodel-detail')
         """)
@@ -361,6 +373,9 @@ class TestRelationalFieldMappings(TestCase):
                     name = CharField(max_length=100)
                 one_to_one = NestedSerializer(read_only=True):
                     url = HyperlinkedIdentityField(view_name='onetoonetargetmodel-detail')
+                    name = CharField(max_length=100)
+                string_foreign_key = NestedSerializer(read_only=True):
+                    url = HyperlinkedIdentityField(view_name='stringforeignkeytargetmodel-detail')
                     name = CharField(max_length=100)
                 many_to_many = NestedSerializer(many=True, read_only=True):
                     url = HyperlinkedIdentityField(view_name='manytomanytargetmodel-detail')
@@ -427,6 +442,20 @@ class TestRelationalFieldMappings(TestCase):
         """)
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
+    def test_pk_reverse_string_foreign_key(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = StringForeignKeyTargetModel
+                fields = ('id', 'name', 'reverse_string_foreign_key')
+
+        expected = dedent("""
+            TestSerializer():
+                id = CharField(max_length=128, validators=[<UniqueValidator(queryset=StringForeignKeyTargetModel.objects.all())>])
+                name = CharField(max_length=100)
+                reverse_string_foreign_key = PrimaryKeyRelatedField(many=True, queryset=RelationalModel.objects.all())
+        """)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
+
 
 class TestIntegration(TestCase):
     def setUp(self):
@@ -441,9 +470,14 @@ class TestIntegration(TestCase):
                 name='many_to_many (%d)' % idx
             ) for idx in range(3)
         ]
+        self.string_foreign_key_target = StringForeignKeyTargetModel.objects.create(
+            id='stringified_id: 1',
+            name='string_foreign_key'
+        )
         self.instance = RelationalModel.objects.create(
             foreign_key=self.foreign_key_target,
             one_to_one=self.one_to_one_target,
+            string_foreign_key=self.string_foreign_key_target
         )
         self.instance.many_to_many = self.many_to_many_targets
         self.instance.save()
@@ -459,6 +493,7 @@ class TestIntegration(TestCase):
             'foreign_key': self.foreign_key_target.pk,
             'one_to_one': self.one_to_one_target.pk,
             'many_to_many': [item.pk for item in self.many_to_many_targets],
+            'string_foreign_key': self.string_foreign_key_target.pk,
             'through': []
         }
         self.assertEqual(serializer.data, expected)
@@ -479,15 +514,20 @@ class TestIntegration(TestCase):
                 name='new many_to_many (%d)' % idx
             ) for idx in range(3)
         ]
+        new_string_foreign_key = StringForeignKeyTargetModel.objects.create(
+            id='stringified_id: 2',
+            name='string_foreign_key'
+        )
         data = {
             'foreign_key': new_foreign_key.pk,
             'one_to_one': new_one_to_one.pk,
             'many_to_many': [item.pk for item in new_many_to_many],
+            'string_foreign_key': new_string_foreign_key.pk,
         }
 
         # Serializer should validate okay.
         serializer = TestSerializer(data=data)
-        assert serializer.is_valid()
+        assert serializer.is_valid(raise_exception=True)
 
         # Creating the instance, relationship attributes should be set.
         instance = serializer.save()
@@ -498,6 +538,8 @@ class TestIntegration(TestCase):
         ] == [
             item.pk for item in new_many_to_many
         ]
+
+        assert instance.string_foreign_key.pk == new_string_foreign_key.pk
         assert list(instance.through.all()) == []
 
         # Representation should be correct.
@@ -506,6 +548,7 @@ class TestIntegration(TestCase):
             'foreign_key': new_foreign_key.pk,
             'one_to_one': new_one_to_one.pk,
             'many_to_many': [item.pk for item in new_many_to_many],
+            'string_foreign_key': new_string_foreign_key.pk,
             'through': []
         }
         self.assertEqual(serializer.data, expected)
@@ -526,10 +569,15 @@ class TestIntegration(TestCase):
                 name='new many_to_many (%d)' % idx
             ) for idx in range(3)
         ]
+        new_string_foreign_key = StringForeignKeyTargetModel.objects.create(
+            id='stringified_id: 2',
+            name='string_foreign_key'
+        )
         data = {
             'foreign_key': new_foreign_key.pk,
             'one_to_one': new_one_to_one.pk,
             'many_to_many': [item.pk for item in new_many_to_many],
+            'string_foreign_key': new_string_foreign_key.pk
         }
 
         # Serializer should validate okay.
@@ -545,6 +593,7 @@ class TestIntegration(TestCase):
         ] == [
             item.pk for item in new_many_to_many
         ]
+        assert instance.string_foreign_key.pk == new_string_foreign_key.pk
         assert list(instance.through.all()) == []
 
         # Representation should be correct.
@@ -553,6 +602,7 @@ class TestIntegration(TestCase):
             'foreign_key': new_foreign_key.pk,
             'one_to_one': new_one_to_one.pk,
             'many_to_many': [item.pk for item in new_many_to_many],
+            'string_foreign_key': new_string_foreign_key.pk,
             'through': []
         }
         self.assertEqual(serializer.data, expected)
@@ -639,3 +689,32 @@ class TestSerializerMetaClass(TestCase):
             str(exception),
             "Cannot set both 'fields' and 'exclude' options on serializer ExampleSerializer."
         )
+"""
+{
+    False = <bound method TestSerializer.is_valid of TestSerializer(
+        data=
+        {
+            'foreign_key': 2,
+            'many_to_many': [4, 5, 6],
+            'one_to_one...ny=True,
+            queryset=ManyToManyTargetModel.objects.all())
+            through = PrimaryKeyRelatedField(many=True, read_only=True)>
+            {
+                <bound method TestSerializer.is_valid of TestSerializer(data=
+                {
+                    'foreign_key': 2,
+                    'many_to_many': [4, 5, 6],
+                    'one_to_one...ny=True,
+                    queryset=ManyToManyTargetModel.objects.all())\\n    through = PrimaryKeyRelatedField(many=True, read_only=True)> = TestSerializer(
+                    data=
+                    {
+                        'foreign_key': 2,
+                        'many_to_many': [4, 5, 6],
+                        'one_to_one': 2,
+
+                        'string_foreign_key': ''
+                    }): id ...any=True, queryset=ManyToManyTargetModel.objects.all())\\n
+                    through = PrimaryKeyRelatedField(many=True, read_only=True).is_valid\n
+                }()\n
+}
+"""

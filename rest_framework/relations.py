@@ -134,10 +134,16 @@ class PrimaryKeyRelatedField(RelatedField):
         'incorrect_type': _('Incorrect type. Expected pk value, received {data_type}.'),
     }
 
+    def __init__(self, **kwargs):
+        self.pk_field = kwargs.pop('pk_field', None)
+        super(PrimaryKeyRelatedField, self).__init__(**kwargs)
+
     def use_pk_only_optimization(self):
         return True
 
     def to_internal_value(self, data):
+        if self.pk_field is not None:
+            data = self.pk_field.to_internal_value(data)
         try:
             return self.get_queryset().get(pk=data)
         except ObjectDoesNotExist:
@@ -146,6 +152,8 @@ class PrimaryKeyRelatedField(RelatedField):
             self.fail('incorrect_type', data_type=type(data).__name__)
 
     def to_representation(self, value):
+        if self.pk_field is not None:
+            return self.pk_field.to_representation(value.pk)
         return value.pk
 
 

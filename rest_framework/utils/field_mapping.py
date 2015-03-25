@@ -203,6 +203,13 @@ def get_relation_kwargs(field_name, relation_info):
         'view_name': get_detail_view_name(related_model)
     }
 
+    related_pk = related_model._meta.pk
+    if (not isinstance(related_pk, models.AutoField) and
+            not getattr(related_pk, 'is_relation', False)):
+        pk_field_class = type(related_pk)
+        pk_field_kwargs = get_field_kwargs('pk', related_pk)
+        kwargs['pk_field'] = (pk_field_class, pk_field_kwargs)
+
     if to_many:
         kwargs['many'] = True
 

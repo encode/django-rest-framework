@@ -1,3 +1,4 @@
+import uuid
 from .utils import mock_reverse, fail_reverse, BadType, MockObject, MockQueryset
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.datastructures import MultiValueDict
@@ -46,6 +47,42 @@ class TestPrimaryKeyRelatedField(APISimpleTestCase):
     def test_pk_representation(self):
         representation = self.field.to_representation(self.instance)
         assert representation == self.instance.pk
+
+
+class TestUUIDPrimaryKeyRelatedField(APISimpleTestCase):
+    def setUp(self):
+        self.queryset = MockQueryset([
+            MockObject(pk=uuid.UUID(int=1), name='foo'),
+            MockObject(pk=uuid.UUID(int=2), name='bar'),
+            MockObject(pk=uuid.UUID(int=3), name='baz')
+        ])
+        self.instance = self.queryset.items[2]
+        self.field = serializers.PrimaryKeyRelatedField(
+            pk_field=serializers.UUIDField(),
+            queryset=self.queryset
+        )
+
+    def test_pk_related_lookup_exists(self):
+        instance = self.field.to_internal_value(self.instance.pk)
+        assert instance is self.instance
+
+    def test_pk_related_lookup_does_not_exist(self):
+        bad_value = uuid.UUID(int=4)
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.field.to_internal_value(str(bad_value))
+        msg = excinfo.value.detail[0]
+        assert msg == 'Invalid pk "{0}" - object does not exist.'.format(bad_value)
+
+    def test_pk_related_lookup_invalid_type(self):
+        bad_value = BadType()
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.field.to_internal_value(bad_value)
+        msg = excinfo.value.detail[0]
+        assert msg == '"{0}" is not a valid UUID.'.format(bad_value)
+
+    def test_pk_representation(self):
+        representation = self.field.to_representation(self.instance)
+        assert representation == str(self.instance.pk)
 
 
 class TestHyperlinkedIdentityField(APISimpleTestCase):

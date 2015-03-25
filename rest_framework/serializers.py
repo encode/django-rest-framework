@@ -11,6 +11,7 @@ python primitives.
 response content is handled by parsers and renderers.
 """
 from __future__ import unicode_literals
+
 from django.db import models
 from django.db.models.fields import FieldDoesNotExist, Field as DjangoModelField
 from django.db.models import query
@@ -731,6 +732,7 @@ class ModelSerializer(Serializer):
         models.TimeField: TimeField,
         models.URLField: URLField,
     }
+
     serializer_related_field = PrimaryKeyRelatedField
     serializer_url_field = HyperlinkedIdentityField
     serializer_choice_field = ChoiceField
@@ -1020,6 +1022,15 @@ class ModelSerializer(Serializer):
         """
         field_class = self.serializer_related_field
         field_kwargs = get_relation_kwargs(field_name, relation_info)
+
+        # `pk_field` is only valid for primary key relationships
+        pk_field_info = field_kwargs.pop('pk_field', None)
+        if issubclass(field_class, PrimaryKeyRelatedField) and pk_field_info is not None:
+            pk_field_class, pk_field_kwargs = pk_field_info
+            pk_field_class = self.serializer_field_mapping[pk_field_class]
+            if not issubclass(pk_field_class, ModelField):
+                pk_field_kwargs.pop('model_field', None)
+            field_kwargs['pk_field'] = pk_field_class(**pk_field_kwargs)
 
         # `view_name` is only valid for hyperlinked relationships.
         if not issubclass(field_class, HyperlinkedRelatedField):
