@@ -50,7 +50,7 @@ from rest_framework.relations import *  # NOQA # isort:skip
 LIST_SERIALIZER_KWARGS = (
     'read_only', 'write_only', 'required', 'default', 'initial', 'source',
     'label', 'help_text', 'style', 'error_messages', 'allow_empty',
-    'instance', 'data', 'partial', 'context'
+    'instance', 'data', 'partial', 'context', 'allow_null'
 )
 
 
