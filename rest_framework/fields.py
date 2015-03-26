@@ -662,7 +662,7 @@ class IPAddressField(CharField):
     }
 
     def __init__(self, protocol='both', unpack_ipv4=False, **kwargs):
-        self.protocol = protocol
+        self.protocol = protocol.lower()
         self.unpack_ipv4 = unpack_ipv4
         super(IPAddressField, self).__init__(**kwargs)
         validators, error_message = ip_address_validators(protocol, unpack_ipv4)
