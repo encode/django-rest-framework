@@ -121,7 +121,7 @@ class TestNestedSerializerWithMany:
         serializer = self.get_serializer(input_data)
 
         assert not serializer.is_valid()
-        assert set(serializer.errors) == {'nested'}
+        assert set(serializer.errors) == set(['nested'])
         assert serializer.errors['nested'][0] == serializer.error_messages['null']
 
     def test_run_the_field_validation_even_if_the_field_is_null(self):
@@ -132,7 +132,7 @@ class TestNestedSerializerWithMany:
         serializer = self.get_serializer(input_data, condition_to_allow_null=False)
 
         assert not serializer.is_valid()
-        assert set(serializer.errors) == {'payment_info'}
+        assert set(serializer.errors) == set(['payment_info'])
         assert serializer.errors['payment_info'][0] == serializer.ERROR_MESSAGE
 
     def test_expected_results_if_not_null(self):
