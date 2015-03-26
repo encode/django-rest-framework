@@ -434,7 +434,7 @@ A field class that does not take a value based on user input, but instead takes 
 
 For example, to include a field that always provides the current time as part of the serializer validated data, you would use the following:
 
-    modified = serializer.HiddenField(default=timezone.now)
+    modified = serializers.HiddenField(default=timezone.now)
 
 The `HiddenField` class is usually only needed if you have some validation that needs to run based on some pre-provided field values, but you do not want to expose all of those fields to the end user.
 
@@ -481,7 +481,7 @@ If you want to create a custom field, you'll need to subclass `Field` and then o
 
 The `.to_representation()` method is called to convert the initial datatype into a primitive, serializable datatype.
 
-The `to_internal_value()` method is called to restore a primitive datatype into its internal python representation. This method should raise a `serializer.ValidationError` if the data is invalid.
+The `to_internal_value()` method is called to restore a primitive datatype into its internal python representation. This method should raise a `serializers.ValidationError` if the data is invalid.
 
 Note that the `WritableField` class that was present in version 2.x no longer exists. You should subclass `Field` and override `to_internal_value()` if the field supports data input.
 
