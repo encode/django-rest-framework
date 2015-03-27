@@ -339,7 +339,7 @@ class Field(object):
         * Raise `ValidationError`, indicating invalid data.
         * Raise `SkipField`, indicating that the field should be ignored.
         * Return (True, data), indicating an empty value that should be
-          returned without any furhter validation being applied.
+          returned without any further validation being applied.
         * Return (False, data), indicating a non-empty value, that should
           have validation applied as normal.
         """
