@@ -133,9 +133,9 @@ May be overridden to provide more complex behavior with filters, such as using d
 For example:
 
     def get_filter_backends(self):
-        if "geo_route" in self.request.QUERY_PARAMS:
+        if "geo_route" in self.request.query_params:
             return (GeoRouteFilter, CategoryFilter)
-        elif "geo_point" in self.request.QUERY_PARAMS:
+        elif "geo_point" in self.request.query_params:
             return (GeoPointFilter, CategoryFilter)
 
         return (CategoryFilter,)
