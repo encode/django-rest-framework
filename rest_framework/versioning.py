@@ -27,7 +27,7 @@ class BaseVersioning(object):
     def is_allowed_version(self, version):
         if not self.allowed_versions:
             return True
-        return (version == self.default_version) or (version in self.allowed_versions)
+        return version in self.allowed_versions
 
 
 class AcceptHeaderVersioning(BaseVersioning):
