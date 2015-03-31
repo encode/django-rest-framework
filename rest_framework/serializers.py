@@ -737,7 +737,7 @@ class ModelSerializer(Serializer):
 
     # Default `create` and `update` behavior...
 
-    def create(self, validated_data):
+    def create(self, validated_data, check_for_nested_writes=True):
         """
         We have a bit of extra checking around this in order to provide
         descriptive messages when something goes wrong, but this method is
@@ -758,7 +758,8 @@ class ModelSerializer(Serializer):
         If you want to support writable nested relationships you'll need
         to write an explicit `.create()` method.
         """
-        raise_errors_on_nested_writes('create', self, validated_data)
+        if check_for_nested_writes:
+            raise_errors_on_nested_writes('create', self, validated_data)
 
         ModelClass = self.Meta.model
 
@@ -797,8 +798,9 @@ class ModelSerializer(Serializer):
 
         return instance
 
-    def update(self, instance, validated_data):
-        raise_errors_on_nested_writes('update', self, validated_data)
+    def update(self, instance, validated_data, check_for_nested_writes=True):
+        if check_for_nested_writes:
+            raise_errors_on_nested_writes('update', self, validated_data)
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
