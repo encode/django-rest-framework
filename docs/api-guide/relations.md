@@ -46,7 +46,7 @@ In order to explain the various types of relational fields, we'll use a couple o
 
         class Meta:
             unique_together = ('album', 'order')
-            order_by = 'order'
+            ordering = ['order']
 
         def __unicode__(self):
             return '%d: %s' % (self.order, self.title)
