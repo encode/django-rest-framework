@@ -661,17 +661,18 @@ class IPAddressField(CharField):
         'invalid': _('Enter a valid IPv4 or IPv6 address.'),
     }
 
-    def __init__(self, protocol='both', unpack_ipv4=False, **kwargs):
+    def __init__(self, protocol='both', **kwargs):
         self.protocol = protocol.lower()
-        self.unpack_ipv4 = unpack_ipv4
+        self.unpack_ipv4 = (self.protocol == 'both')
         super(IPAddressField, self).__init__(**kwargs)
-        validators, error_message = ip_address_validators(protocol, unpack_ipv4)
+        validators, error_message = ip_address_validators(protocol, self.unpack_ipv4)
         self.validators.extend(validators)
 
     def to_internal_value(self, data):
         if data and ':' in data:
             try:
-                return clean_ipv6_address(data, self.unpack_ipv4)
+                if self.protocol in ('both', 'ipv6'):
+                    return clean_ipv6_address(data, self.unpack_ipv4)
             except DjangoValidationError:
                 self.fail('invalid', value=data)
 
