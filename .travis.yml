@@ -5,6 +5,10 @@ sudo: false
 env:
     - TOX_ENV=py27-flake8
     - TOX_ENV=py27-docs
+    - TOX_ENV=py34-django18
+    - TOX_ENV=py33-django18
+    - TOX_ENV=py32-django18
+    - TOX_ENV=py27-django18
     - TOX_ENV=py34-django17
     - TOX_ENV=py33-django17
     - TOX_ENV=py32-django17
@@ -21,10 +25,7 @@ env:
     - TOX_ENV=py26-django15
     - TOX_ENV=py27-django14
     - TOX_ENV=py26-django14
-    - TOX_ENV=py34-django18beta
-    - TOX_ENV=py33-django18beta
-    - TOX_ENV=py32-django18beta
-    - TOX_ENV=py27-django18beta
+
 
 install:
   - pip install tox
