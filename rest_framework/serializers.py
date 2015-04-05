@@ -351,7 +351,7 @@ class Serializer(BaseSerializer):
         # We override the default field access in order to support
         # nested HTML forms.
         if html.is_html_input(dictionary):
-            return html.parse_html_dict(dictionary, prefix=self.field_name)
+            return html.parse_html_dict(dictionary, prefix=self.field_name) or empty
         return dictionary.get(self.field_name, empty)
 
     def run_validation(self, data=empty):
@@ -502,7 +502,7 @@ class ListSerializer(BaseSerializer):
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
-            return html.parse_html_list(dictionary, prefix=self.field_name)
+            return html.parse_html_list(dictionary, prefix=self.field_name) or empty
         return dictionary.get(self.field_name, empty)
 
     def run_validation(self, data=empty):
