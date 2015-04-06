@@ -1034,7 +1034,7 @@ class ModelSerializer(Serializer):
         class NestedSerializer(ModelSerializer):
             class Meta:
                 model = relation_info.related_model
-                depth = nested_depth
+                depth = nested_depth - 1
 
         field_class = NestedSerializer
         field_kwargs = get_nested_relation_kwargs(relation_info)
