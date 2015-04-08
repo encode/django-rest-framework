@@ -128,7 +128,7 @@ Note that if your API doesn't include any object level permissions, you may opti
 
 Returns the classes that should be used to filter the queryset. Defaults to returning the `filter_backends` attribute.
 
-May be overridden to provide more complex behavior with filters, such as using different (or even exlusive) lists of filter_backends depending on different criteria.
+May be overridden to provide more complex behavior with filters, such as using different (or even exclusive) lists of filter_backends depending on different criteria.
 
 For example:
 

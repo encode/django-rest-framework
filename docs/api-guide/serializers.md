@@ -812,7 +812,7 @@ There are four methods that can be overridden, depending on what functionality y
 
 * `.to_representation()` - Override this to support serialization, for read operations.
 * `.to_internal_value()` - Override this to support deserialization, for write operations.
-* `.create()` and `.update()` - Overide either or both of these to support saving instances.
+* `.create()` and `.update()` - Override either or both of these to support saving instances.
 
 Because this class provides the same interface as the `Serializer` class, you can use it with the existing generic class based views exactly as you would for a regular `Serializer` or `ModelSerializer`.
 
