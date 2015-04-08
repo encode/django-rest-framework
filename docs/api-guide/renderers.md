@@ -110,7 +110,7 @@ An example of a view that uses `TemplateHTMLRenderer`:
 
     class UserDetail(generics.RetrieveAPIView):
         """
-        A view that returns a templated HTML representations of a given user.
+        A view that returns a templated HTML representation of a given user.
         """
         queryset = User.objects.all()
         renderer_classes = (TemplateHTMLRenderer,)
