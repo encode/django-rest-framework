@@ -478,7 +478,7 @@ The default `ModelSerializer` uses primary keys for relationships, but you can a
 
 The `depth` option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.
 
-If you want to customize the way the serialization is done (e.g. using `allow_add_remove`) you'll need to define the field yourself.
+If you want to customize the way the serialization is done you'll need to define the field yourself.
 
 ## Specifying fields explicitly
 
