@@ -28,11 +28,11 @@ Some example output from our serializer.
 
     {
         'title': 'Leaving party preperations',
-        'items': {
+        'items': [
             {'text': 'Compile playlist', 'is_completed': True},
             {'text': 'Send invites', 'is_completed': False},
             {'text': 'Clean house', 'is_completed': False}
-        }
+        ]
     }
 
 Let's take a look at updating our nested one-to-many data structure.
