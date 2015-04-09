@@ -32,10 +32,6 @@ h2, h3 {
   margin-right: 1em;
 }
 
-ul.breadcrumb {
-  margin: 70px 0 0 0;
-}
-
 .breadcrumb li.active a {
   color: #777;
 }

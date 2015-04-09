@@ -60,6 +60,10 @@ a single block in the template.
   color: #C20000;
 }
 
+ul.breadcrumb {
+  margin: 70px 0 0 0;
+}
+
 .pagination>.disabled>a,
 .pagination>.disabled>a:hover,
 .pagination>.disabled>a:focus {
