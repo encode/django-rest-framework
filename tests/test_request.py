@@ -71,6 +71,21 @@ class TestMethodOverloading(TestCase):
         request = Request(factory.get('/', {'foo': 'bar'}, HTTP_X_HTTP_METHOD_OVERRIDE='DELETE'))
         self.assertEqual(request.method, 'DELETE')
 
+    def test_method_overload_csrftoken_header(self):
+        """
+        POST requests via the browsable API will include the CSRF token
+        in the POST data as csrfmiddlewaretoken, but the CSRF middleware
+        internals will not see it since the overload changes sets
+        request.method to the overloaded verb.
+
+        For other verbs, Django will look for the HTTP_X_CSRFTOKEN header,
+        so we need to move the data from the POST into that header.
+        """
+        request = Request(factory.post('/', {'csrfmiddlewaretoken': 'foobar', api_settings.FORM_METHOD_OVERRIDE: 'PUT'}))
+        # Calling .method triggers override behavior
+        self.assertEqual(request.method, 'PUT')
+        self.assertEqual(request._request.META.get('HTTP_X_CSRFTOKEN'), 'foobar')
+
 
 class TestContentParsing(TestCase):
     def test_standard_behaviour_determines_no_content_GET(self):
