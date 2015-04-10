@@ -393,6 +393,12 @@ class Request(object):
         ):
             self._method = self._data[self._METHOD_PARAM].upper()
 
+        # Inject the csrfmiddlewaretoken into request META if provided
+        csrf_header_name = getattr(settings, 'CSRF_HEADER_NAME', 'HTTP_X_CSRFTOKEN')
+        csrf_data = self._data.get('csrfmiddlewaretoken')
+        if csrf_data:
+            self.META[csrf_header_name] = csrf_data
+
         # Content overloading - modify the content type, and force re-parse.
         if (
             self._CONTENT_PARAM and
