@@ -4,7 +4,7 @@
 
 **Awesome web-browseable Web APIs.**
 
-**Note**: Full documentation for the project is available at [http://www.django-rest-framework.org][docs].
+**Note**: Full documentation for the project is available at [http://tomchristie.github.io/rest-framework-2-docs/][docs].
 
 # Overview
 
@@ -135,7 +135,7 @@ Or to create a new user:
 
 # Documentation & Support
 
-Full documentation for the project is available at [http://www.django-rest-framework.org][docs].
+Full documentation for the project is available at [http://tomchristie.github.io/rest-framework-2-docs/][docs].
 
 For questions and support, use the [REST framework discussion group][group], or `#restframework` on freenode IRC.
 
