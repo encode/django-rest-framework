@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework.test import APIRequestFactory
 from tests.models import (
     ManyToManyTarget, ManyToManySource, ForeignKeyTarget, ForeignKeySource,
-    NullableForeignKeySource, OneToOneTarget, NullableOneToOneSource
+    NullableForeignKeySource, OneToOneTarget, NullableOneToOneSource, NullableOneToOneSource2
 )
 
 factory = APIRequestFactory()
@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^nullableforeignkeysource/(?P<pk>[0-9]+)/$', dummy_view, name='nullableforeignkeysource-detail'),
     url(r'^onetoonetarget/(?P<pk>[0-9]+)/$', dummy_view, name='onetoonetarget-detail'),
     url(r'^nullableonetoonesource/(?P<pk>[0-9]+)/$', dummy_view, name='nullableonetoonesource-detail'),
+    url(r'^nullableonetoonesource2/(?P<pk>[0-9]+)/$', dummy_view, name='nullableonetoonesource2-detail'),
 ]
 
 
@@ -66,6 +67,22 @@ class NullableOneToOneTargetSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = OneToOneTarget
         fields = ('url', 'name', 'nullable_source')
+
+
+# Nullable OneToOne2
+class NullableOneToOneTargetSerializer2(serializers.HyperlinkedModelSerializer):
+    nullable_source2 = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='nullableonetoonesource2-detail',
+        # This source causes a AttributeError, but seems like the proper value
+        # source='nullable_source.nullable_source2',
+        # This source produces the pk of the nullable_source instance, not nullable_source2
+        source='nullable_source',
+        )
+
+    class Meta:
+        model = OneToOneTarget
+        fields = ('url', 'name', 'nullable_source', 'nullable_source2')
 
 
 # TODO: Add test that .data cannot be accessed prior to .is_valid
@@ -440,5 +457,28 @@ class HyperlinkedNullableOneToOneTests(TestCase):
         expected = [
             {'url': 'http://testserver/onetoonetarget/1/', 'name': 'target-1', 'nullable_source': 'http://testserver/nullableonetoonesource/1/'},
             {'url': 'http://testserver/onetoonetarget/2/', 'name': 'target-2', 'nullable_source': None},
+        ]
+        self.assertEqual(serializer.data, expected)
+
+
+class HyperlinkedNullableSecondDegreeOneToOneTests(TestCase):
+    urls = 'tests.test_relations_hyperlink'
+
+    def setUp(self):
+        target = OneToOneTarget(name='target-1')
+        target.save()
+        new_target = OneToOneTarget(name='target-2')
+        new_target.save()
+        source = NullableOneToOneSource(name='source-1', target=target)
+        source.save()
+        source2 = NullableOneToOneSource2(pk=5, name='source2-1', target=source)
+        source2.save()
+
+    def test_reverse_foreign_key_retrieve_with_null(self):
+        queryset = OneToOneTarget.objects.all()
+        serializer = NullableOneToOneTargetSerializer2(queryset, many=True, context={'request': request})
+        expected = [
+            {'url': 'http://testserver/onetoonetarget/1/', 'name': 'target-1', 'nullable_source': 'http://testserver/nullableonetoonesource/1/', 'nullable_source2': 'http://testserver/nullableonetoonesource2/5/'},
+            {'url': 'http://testserver/onetoonetarget/2/', 'name': 'target-2', 'nullable_source': None, 'nullable_source2': None},
         ]
         self.assertEqual(serializer.data, expected)
