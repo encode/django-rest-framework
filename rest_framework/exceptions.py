@@ -7,8 +7,7 @@ In addition Django's built in 403 and 404 exceptions are handled.
 from __future__ import unicode_literals
 from django.utils import six
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ungettext_lazy
+from django.utils.translation import ugettext_lazy as _, ungettext
 from rest_framework import status
 import math
 
@@ -36,7 +35,7 @@ class APIException(Exception):
     Subclasses should provide `.status_code` and `.default_detail` properties.
     """
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    default_detail = _('A server error occured')
+    default_detail = _('A server error occurred.')
 
     def __init__(self, detail=None):
         if detail is not None:
@@ -89,20 +88,25 @@ class PermissionDenied(APIException):
     default_detail = _('You do not have permission to perform this action.')
 
 
+class NotFound(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = _('Not found.')
+
+
 class MethodNotAllowed(APIException):
     status_code = status.HTTP_405_METHOD_NOT_ALLOWED
-    default_detail = _("Method '%s' not allowed.")
+    default_detail = _('Method "{method}" not allowed.')
 
     def __init__(self, method, detail=None):
         if detail is not None:
             self.detail = force_text(detail)
         else:
-            self.detail = force_text(self.default_detail) % method
+            self.detail = force_text(self.default_detail).format(method=method)
 
 
 class NotAcceptable(APIException):
     status_code = status.HTTP_406_NOT_ACCEPTABLE
-    default_detail = _('Could not satisfy the request Accept header')
+    default_detail = _('Could not satisfy the request Accept header.')
 
     def __init__(self, detail=None, available_renderers=None):
         if detail is not None:
@@ -114,23 +118,22 @@ class NotAcceptable(APIException):
 
 class UnsupportedMediaType(APIException):
     status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
-    default_detail = _("Unsupported media type '%s' in request.")
+    default_detail = _('Unsupported media type "{media_type}" in request.')
 
     def __init__(self, media_type, detail=None):
         if detail is not None:
             self.detail = force_text(detail)
         else:
-            self.detail = force_text(self.default_detail) % media_type
+            self.detail = force_text(self.default_detail).format(
+                media_type=media_type
+            )
 
 
 class Throttled(APIException):
     status_code = status.HTTP_429_TOO_MANY_REQUESTS
     default_detail = _('Request was throttled.')
-    extra_detail = ungettext_lazy(
-        'Expected available in %(wait)d second.',
-        'Expected available in %(wait)d seconds.',
-        'wait'
-    )
+    extra_detail_singular = 'Expected available in {wait} second.'
+    extra_detail_plural = 'Expected available in {wait} seconds.'
 
     def __init__(self, wait=None, detail=None):
         if detail is not None:
@@ -142,6 +145,8 @@ class Throttled(APIException):
             self.wait = None
         else:
             self.wait = math.ceil(wait)
-            self.detail += ' ' + force_text(
-                self.extra_detail % {'wait': self.wait}
-            )
+            self.detail += ' ' + force_text(ungettext(
+                self.extra_detail_singular.format(wait=self.wait),
+                self.extra_detail_plural.format(wait=self.wait),
+                self.wait
+            ))

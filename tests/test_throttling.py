@@ -188,7 +188,9 @@ class ScopedRateThrottleTests(TestCase):
         class XYScopedRateThrottle(ScopedRateThrottle):
             TIMER_SECONDS = 0
             THROTTLE_RATES = {'x': '3/min', 'y': '1/min'}
-            timer = lambda self: self.TIMER_SECONDS
+
+            def timer(self):
+                return self.TIMER_SECONDS
 
         class XView(APIView):
             throttle_classes = (XYScopedRateThrottle,)
@@ -290,7 +292,9 @@ class XffTestingBase(TestCase):
         class Throttle(ScopedRateThrottle):
             THROTTLE_RATES = {'test_limit': '1/day'}
             TIMER_SECONDS = 0
-            timer = lambda self: self.TIMER_SECONDS
+
+            def timer(self):
+                return self.TIMER_SECONDS
 
         class View(APIView):
             throttle_classes = (Throttle,)

@@ -143,6 +143,16 @@ class PKManyToManyTests(TestCase):
         ]
         self.assertEqual(serializer.data, expected)
 
+    def test_many_to_many_unsaved(self):
+        source = ManyToManySource(name='source-unsaved')
+
+        serializer = ManyToManySourceSerializer(source)
+
+        expected = {'id': None, 'name': 'source-unsaved', 'targets': []}
+        # no query if source hasn't been created yet
+        with self.assertNumQueries(0):
+            self.assertEqual(serializer.data, expected)
+
     def test_reverse_many_to_many_create(self):
         data = {'id': 4, 'name': 'target-4', 'sources': [1, 3]}
         serializer = ManyToManyTargetSerializer(data=data)
@@ -295,6 +305,16 @@ class PKForeignKeyTests(TestCase):
         serializer = ForeignKeySourceSerializer(instance, data=data)
         self.assertFalse(serializer.is_valid())
         self.assertEqual(serializer.errors, {'target': ['This field may not be null.']})
+
+    def test_foreign_key_with_unsaved(self):
+        source = ForeignKeySource(name='source-unsaved')
+        expected = {'id': None, 'name': 'source-unsaved', 'target': None}
+
+        serializer = ForeignKeySourceSerializer(source)
+
+        # no query if source hasn't been created yet
+        with self.assertNumQueries(0):
+            self.assertEqual(serializer.data, expected)
 
     def test_foreign_key_with_empty(self):
         """

@@ -32,6 +32,13 @@ class NoteViewSet(viewsets.ModelViewSet):
     lookup_field = 'uuid'
 
 
+class KWargedNoteViewSet(viewsets.ModelViewSet):
+    queryset = RouterTestModel.objects.all()
+    serializer_class = NoteSerializer
+    lookup_field = 'text__contains'
+    lookup_url_kwarg = 'text'
+
+
 class MockViewSet(viewsets.ModelViewSet):
     queryset = None
     serializer_class = None
@@ -40,6 +47,9 @@ class MockViewSet(viewsets.ModelViewSet):
 notes_router = SimpleRouter()
 notes_router.register(r'notes', NoteViewSet)
 
+kwarged_notes_router = SimpleRouter()
+kwarged_notes_router.register(r'notes', KWargedNoteViewSet)
+
 namespaced_router = DefaultRouter()
 namespaced_router.register(r'example', MockViewSet, base_name='example')
 
@@ -47,6 +57,7 @@ urlpatterns = [
     url(r'^non-namespaced/', include(namespaced_router.urls)),
     url(r'^namespaced/', include(namespaced_router.urls, namespace='example')),
     url(r'^example/', include(notes_router.urls)),
+    url(r'^example2/', include(kwarged_notes_router.urls)),
 ]
 
 
@@ -177,10 +188,37 @@ class TestLookupValueRegex(TestCase):
             self.assertEqual(expected[idx], self.urls[idx].regex.pattern)
 
 
+class TestLookupUrlKwargs(TestCase):
+    """
+    Ensure the router honors lookup_url_kwarg.
+
+    Setup a deep lookup_field, but map it to a simple URL kwarg.
+    """
+    urls = 'tests.test_routers'
+
+    def setUp(self):
+        RouterTestModel.objects.create(uuid='123', text='foo bar')
+
+    def test_custom_lookup_url_kwarg_route(self):
+        detail_route = kwarged_notes_router.urls[-1]
+        detail_url_pattern = detail_route.regex.pattern
+        self.assertIn('^notes/(?P<text>', detail_url_pattern)
+
+    def test_retrieve_lookup_url_kwarg_detail_view(self):
+        response = self.client.get('/example2/notes/fo/')
+        self.assertEqual(
+            response.data,
+            {
+                "url": "http://testserver/example/notes/123/",
+                "uuid": "123", "text": "foo bar"
+            }
+        )
+
+
 class TestTrailingSlashIncluded(TestCase):
     def setUp(self):
         class NoteViewSet(viewsets.ModelViewSet):
-            model = RouterTestModel
+            queryset = RouterTestModel.objects.all()
 
         self.router = SimpleRouter()
         self.router.register(r'notes', NoteViewSet)
@@ -195,7 +233,7 @@ class TestTrailingSlashIncluded(TestCase):
 class TestTrailingSlashRemoved(TestCase):
     def setUp(self):
         class NoteViewSet(viewsets.ModelViewSet):
-            model = RouterTestModel
+            queryset = RouterTestModel.objects.all()
 
         self.router = SimpleRouter(trailing_slash=False)
         self.router.register(r'notes', NoteViewSet)
@@ -210,7 +248,8 @@ class TestTrailingSlashRemoved(TestCase):
 class TestNameableRoot(TestCase):
     def setUp(self):
         class NoteViewSet(viewsets.ModelViewSet):
-            model = RouterTestModel
+            queryset = RouterTestModel.objects.all()
+
         self.router = DefaultRouter()
         self.router.root_view_name = 'nameable-root'
         self.router.register(r'notes', NoteViewSet)
@@ -301,12 +340,16 @@ class DynamicListAndDetailViewSet(viewsets.ViewSet):
         return Response({'method': 'link2'})
 
 
+class SubDynamicListAndDetailViewSet(DynamicListAndDetailViewSet):
+    pass
+
+
 class TestDynamicListAndDetailRouter(TestCase):
     def setUp(self):
         self.router = SimpleRouter()
 
-    def test_list_and_detail_route_decorators(self):
-        routes = self.router.get_routes(DynamicListAndDetailViewSet)
+    def _test_list_and_detail_route_decorators(self, viewset):
+        routes = self.router.get_routes(viewset)
         decorator_routes = [r for r in routes if not (r.name.endswith('-list') or r.name.endswith('-detail'))]
 
         MethodNamesMap = namedtuple('MethodNamesMap', 'method_name url_path')
@@ -335,3 +378,9 @@ class TestDynamicListAndDetailRouter(TestCase):
             else:
                 method_map = 'get'
             self.assertEqual(route.mapping[method_map], method_name)
+
+    def test_list_and_detail_route_decorators(self):
+        self._test_list_and_detail_route_decorators(DynamicListAndDetailViewSet)
+
+    def test_inherited_list_and_detail_route_decorators(self):
+        self._test_list_and_detail_route_decorators(SubDynamicListAndDetailViewSet)

@@ -1,11 +1,5 @@
 source: fields.py
 
----
-
-**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
-
----
-
 # Serializer fields
 
 > Each field in a Form class is responsible not only for validating data, but also for "cleaning" it &mdash; normalizing it to a consistent format.
@@ -138,11 +132,12 @@ A text representation. Optionally validates the text to be shorter than `max_len
 
 Corresponds to `django.db.models.fields.CharField` or `django.db.models.fields.TextField`.
 
-**Signature:** `CharField(max_length=None, min_length=None, allow_blank=False)`
+**Signature:** `CharField(max_length=None, min_length=None, allow_blank=False, trim_whitespace=True)`
 
 - `max_length` - Validates that the input contains no more than this number of characters.
 - `min_length` - Validates that the input contains no fewer than this number of characters.
 - `allow_blank` - If set to `True` then the empty string should be considered a valid value. If set to `False` then the empty string is considered invalid and will raise a validation error. Defaults to `False`.
+- `trim_whitespace` - If set to `True` then leading and trailing whitespace is trimmed. Defaults to `True`.
 
 The `allow_null` option is also available for string fields, although its usage is discouraged in favor of `allow_blank`. It is valid to set both `allow_blank=True` and `allow_null=True`, but doing so means that there will be two differing types of empty value permissible for string representations, which can lead to data inconsistencies and subtle application bugs.
 
@@ -181,6 +176,12 @@ A `RegexField` that validates the input against a URL matching pattern. Expects 
 Corresponds to `django.db.models.fields.URLField`.  Uses Django's `django.core.validators.URLValidator` for validation.
 
 **Signature:** `URLField(max_length=200, min_length=None, allow_blank=False)`
+
+## UUIDField
+
+A field that ensures the input is a valid UUID string. The `to_internal_value` method will return a `uuid.UUID` instance. On output the field will return a string in the canonical hyphenated format, for example:
+
+    "de305d54-75b4-431b-adb2-eb6b9e546013"
 
 ---
 
@@ -320,7 +321,7 @@ Both the `allow_blank` and `allow_null` are valid options on `ChoiceField`, alth
 
 ## MultipleChoiceField
 
-A field that can accept a set of zero, one or many values, chosen from a limited set of choices. Takes a single mandatory argument. `to_internal_representation` returns a `set` containing the selected values.
+A field that can accept a set of zero, one or many values, chosen from a limited set of choices. Takes a single mandatory argument. `to_internal_value` returns a `set` containing the selected values.
 
 **Signature:** `MultipleChoiceField(choices)`
 
@@ -374,7 +375,7 @@ A field class that validates a list of objects.
 
 **Signature**: `ListField(child)`
 
-- `child` - A field instance that should be used for validating the objects in the list.
+- `child` - A field instance that should be used for validating the objects in the list. If this argument is not provided then objects in the list will not be validated.
 
 For example, to validate a list of integers you might use something like the following:
 
@@ -388,6 +389,23 @@ The `ListField` class also supports a declarative style that allows you to write
         child = serializers.CharField()
 
 We can now reuse our custom `StringListField` class throughout our application, without having to provide a `child` argument to it.
+
+## DictField
+
+A field class that validates a dictionary of objects. The keys in `DictField` are always assumed to be string values.
+
+**Signature**: `DictField(child)`
+
+- `child` - A field instance that should be used for validating the values in the dictionary. If this argument is not provided then values in the mapping will not be validated.
+
+For example, to create a field that validates a mapping of strings to strings, you would write something like this:
+
+    document = DictField(child=CharField())
+
+You can also use the declarative style, as with `ListField`. For example:
+
+    class DocumentField(DictField):
+        child = CharField()
 
 ---
 
@@ -416,7 +434,7 @@ A field class that does not take a value based on user input, but instead takes 
 
 For example, to include a field that always provides the current time as part of the serializer validated data, you would use the following:
 
-    modified = serializer.HiddenField(default=timezone.now)
+    modified = serializers.HiddenField(default=timezone.now)
 
 The `HiddenField` class is usually only needed if you have some validation that needs to run based on some pre-provided field values, but you do not want to expose all of those fields to the end user.
 
@@ -438,7 +456,7 @@ This is a read-only field. It gets its value by calling a method on the serializ
 
 **Signature**: `SerializerMethodField(method_name=None)`
 
-- `method-name` - The name of the method on the serializer to be called. If not included this defaults to `get_<field_name>`.
+- `method_name` - The name of the method on the serializer to be called. If not included this defaults to `get_<field_name>`.
 
 The serializer method referred to by the `method_name` argument should accept a single argument (in addition to `self`), which is the object being serialized. It should return whatever you want to be included in the serialized representation of the object. For example:
 
@@ -463,7 +481,7 @@ If you want to create a custom field, you'll need to subclass `Field` and then o
 
 The `.to_representation()` method is called to convert the initial datatype into a primitive, serializable datatype.
 
-The `to_internal_value()` method is called to restore a primitive datatype into its internal python representation. This method should raise a `serializer.ValidationError` if the data is invalid.
+The `to_internal_value()` method is called to restore a primitive datatype into its internal python representation. This method should raise a `serializers.ValidationError` if the data is invalid.
 
 Note that the `WritableField` class that was present in version 2.x no longer exists. You should subclass `Field` and override `to_internal_value()` if the field supports data input.
 
@@ -501,7 +519,7 @@ As an example, let's create a field that can be used represent the class name of
             # We pass the object instance onto `to_representation`,
             # not just the field attribute.
             return obj
- 
+
         def to_representation(self, obj):
             """
             Serialize the object's class name.
@@ -567,6 +585,10 @@ The [drf-compound-fields][drf-compound-fields] package provides "compound" seria
 
 The [drf-extra-fields][drf-extra-fields] package provides extra serializer fields for REST framework, including `Base64ImageField` and `PointField` classes.
 
+## djangrestframework-recursive
+
+the [djangorestframework-recursive][djangorestframework-recursive] package provides a `RecursiveField` for serializing and deserializing recursive structures
+
 ## django-rest-framework-gis
 
 The [django-rest-framework-gis][django-rest-framework-gis] package provides geographic addons for django rest framework like a  `GeometryField` field and a GeoJSON serializer.
@@ -583,6 +605,7 @@ The [django-rest-framework-hstore][django-rest-framework-hstore] package provide
 [iso8601]: http://www.w3.org/TR/NOTE-datetime
 [drf-compound-fields]: http://drf-compound-fields.readthedocs.org
 [drf-extra-fields]: https://github.com/Hipo/drf-extra-fields
+[djangorestframework-recursive]: https://github.com/heywbj/django-rest-framework-recursive
 [django-rest-framework-gis]: https://github.com/djangonauts/django-rest-framework-gis
 [django-rest-framework-hstore]: https://github.com/djangonauts/django-rest-framework-hstore
 [django-hstore]: https://github.com/djangonauts/django-hstore

@@ -18,7 +18,6 @@ def pytest_configure():
         MIDDLEWARE_CLASSES=(
             'django.middleware.common.CommonMiddleware',
             'django.contrib.sessions.middleware.SessionMiddleware',
-            'django.middleware.csrf.CsrfViewMiddleware',
             'django.contrib.auth.middleware.AuthenticationMiddleware',
             'django.contrib.messages.middleware.MessageMiddleware',
         ),
@@ -27,7 +26,6 @@ def pytest_configure():
             'django.contrib.contenttypes',
             'django.contrib.sessions',
             'django.contrib.sites',
-            'django.contrib.messages',
             'django.contrib.staticfiles',
 
             'rest_framework',
@@ -35,34 +33,9 @@ def pytest_configure():
             'tests',
         ),
         PASSWORD_HASHERS=(
-            'django.contrib.auth.hashers.SHA1PasswordHasher',
-            'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-            'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
-            'django.contrib.auth.hashers.BCryptPasswordHasher',
             'django.contrib.auth.hashers.MD5PasswordHasher',
-            'django.contrib.auth.hashers.CryptPasswordHasher',
         ),
     )
-
-    try:
-        import oauth_provider  # NOQA
-        import oauth2  # NOQA
-    except ImportError:
-        pass
-    else:
-        settings.INSTALLED_APPS += (
-            'oauth_provider',
-        )
-
-    try:
-        import provider  # NOQA
-    except ImportError:
-        pass
-    else:
-        settings.INSTALLED_APPS += (
-            'provider',
-            'provider.oauth2',
-        )
 
     # guardian is optional
     try:

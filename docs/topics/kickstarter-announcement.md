@@ -84,7 +84,7 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 <li><a href="http://pulsecode.ca" rel="nofollow" style="background-image:url(../../img/sponsors/2-pulsecode.png);">Pulsecode Inc.</a></li>
 <li><a href="http://singinghorsestudio.com" rel="nofollow" style="background-image:url(../../img/sponsors/2-singing-horse.png);">Singing Horse Studio Ltd.</a></li>
 <li><a href="https://www.heroku.com/" rel="nofollow" style="background-image:url(../../img/sponsors/2-heroku.png);">Heroku</a></li>
-<li><a href="https://www.galileo-press.de/" rel="nofollow" style="background-image:url(../../img/sponsors/2-galileo_press.png);">Galileo Press</a></li>
+<li><a href="https://www.rheinwerk-verlag.de/" rel="nofollow" style="background-image:url(../../img/sponsors/2-rheinwerk_verlag.png);">Rheinwerk Verlag</a></li>
 <li><a href="http://www.securitycompass.com/" rel="nofollow" style="background-image:url(../../img/sponsors/2-security_compass.png);">Security Compass</a></li>
 <li><a href="https://www.djangoproject.com/foundation/" rel="nofollow" style="background-image:url(../../img/sponsors/2-django.png);">Django Software Foundation</a></li>
 <li><a href="http://www.hipflaskapp.com" rel="nofollow" style="background-image:url(../../img/sponsors/2-hipflask.png);">Hipflask</a></li>

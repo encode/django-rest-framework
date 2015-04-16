@@ -36,6 +36,7 @@ class SimpleMetadata(BaseMetadata):
     label_lookup = ClassLookupDict({
         serializers.Field: 'field',
         serializers.BooleanField: 'boolean',
+        serializers.NullBooleanField: 'boolean',
         serializers.CharField: 'string',
         serializers.URLField: 'url',
         serializers.EmailField: 'email',
@@ -115,7 +116,13 @@ class SimpleMetadata(BaseMetadata):
         field_info['type'] = self.label_lookup[field]
         field_info['required'] = getattr(field, 'required', False)
 
-        for attr in ['read_only', 'label', 'help_text', 'min_length', 'max_length']:
+        attrs = [
+            'read_only', 'label', 'help_text',
+            'min_length', 'max_length',
+            'min_value', 'max_value'
+        ]
+
+        for attr in attrs:
             value = getattr(field, attr, None)
             if value is not None and value != '':
                 field_info[attr] = force_text(value, strings_only=True)

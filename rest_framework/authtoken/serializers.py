@@ -6,7 +6,7 @@ from rest_framework import exceptions, serializers
 
 class AuthTokenSerializer(serializers.Serializer):
     username = serializers.CharField()
-    password = serializers.CharField()
+    password = serializers.CharField(style={'input_type': 'password'})
 
     def validate(self, attrs):
         username = attrs.get('username')
@@ -23,7 +23,7 @@ class AuthTokenSerializer(serializers.Serializer):
                 msg = _('Unable to log in with provided credentials.')
                 raise exceptions.ValidationError(msg)
         else:
-            msg = _('Must include "username" and "password"')
+            msg = _('Must include "username" and "password".')
             raise exceptions.ValidationError(msg)
 
         attrs['user'] = user
