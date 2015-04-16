@@ -68,3 +68,9 @@ class NullableOneToOneSource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
     target = models.OneToOneField(OneToOneTarget, null=True, blank=True,
                                   related_name='nullable_source')
+
+
+class NullableOneToOneSource2(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+    target = models.OneToOneField(NullableOneToOneSource, null=True, blank=True,
+                                  related_name='nullable_source2')
