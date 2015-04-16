@@ -11,9 +11,10 @@ class ObtainAuthToken(APIView):
     permission_classes = ()
     parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
     renderer_classes = (renderers.JSONRenderer,)
+    serializer_class = AuthTokenSerializer
 
     def post(self, request):
-        serializer = AuthTokenSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)

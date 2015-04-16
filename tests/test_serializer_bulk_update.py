@@ -101,7 +101,7 @@ class BulkCreateSerializerTests(TestCase):
         serializer = self.BookSerializer(data=data, many=True)
         self.assertEqual(serializer.is_valid(), False)
 
-        expected_errors = {'non_field_errors': ['Expected a list of items but got type `int`.']}
+        expected_errors = {'non_field_errors': ['Expected a list of items but got type "int".']}
 
         self.assertEqual(serializer.errors, expected_errors)
 
@@ -118,6 +118,6 @@ class BulkCreateSerializerTests(TestCase):
         serializer = self.BookSerializer(data=data, many=True)
         self.assertEqual(serializer.is_valid(), False)
 
-        expected_errors = {'non_field_errors': ['Expected a list of items but got type `dict`.']}
+        expected_errors = {'non_field_errors': ['Expected a list of items but got type "dict".']}
 
         self.assertEqual(serializer.errors, expected_errors)

@@ -1,11 +1,5 @@
 source: request.py
 
----
-
-**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
-
----
-
 # Requests
 
 > If you're doing REST-based web service stuff ... you should ignore request.POST.
@@ -38,7 +32,7 @@ For clarity inside your code, we recommend using `request.query_params` instead 
 
 ## .DATA and .FILES
 
-The old-style version 2.x `request.data` and `request.FILES` attributes are still available, but are now pending deprecation in favor of the unified `request.data` attribute.
+The old-style version 2.x `request.DATA` and `request.FILES` attributes are still available, but are now pending deprecation in favor of the unified `request.data` attribute.
 
 ## .QUERY_PARAMS
 

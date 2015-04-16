@@ -130,19 +130,13 @@ class SimpleRouter(BaseRouter):
         If `base_name` is not specified, attempt to automatically determine
         it from the viewset.
         """
-        # Note that `.model` attribute on views is deprecated, although we
-        # enforce the deprecation on the view `get_serializer_class()` and
-        # `get_queryset()` methods, rather than here.
-        model_cls = getattr(viewset, 'model', None)
         queryset = getattr(viewset, 'queryset', None)
-        if model_cls is None and queryset is not None:
-            model_cls = queryset.model
 
-        assert model_cls, '`base_name` argument not specified, and could ' \
+        assert queryset is not None, '`base_name` argument not specified, and could ' \
             'not automatically determine the name from the viewset, as ' \
             'it does not have a `.queryset` attribute.'
 
-        return model_cls._meta.object_name.lower()
+        return queryset.model._meta.object_name.lower()
 
     def get_routes(self, viewset):
         """
@@ -171,34 +165,30 @@ class SimpleRouter(BaseRouter):
                 else:
                     list_routes.append((httpmethods, methodname))
 
+        def _get_dynamic_routes(route, dynamic_routes):
+            ret = []
+            for httpmethods, methodname in dynamic_routes:
+                method_kwargs = getattr(viewset, methodname).kwargs
+                initkwargs = route.initkwargs.copy()
+                initkwargs.update(method_kwargs)
+                url_path = initkwargs.pop("url_path", None) or methodname
+                ret.append(Route(
+                    url=replace_methodname(route.url, url_path),
+                    mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
+                    name=replace_methodname(route.name, url_path),
+                    initkwargs=initkwargs,
+                ))
+
+            return ret
+
         ret = []
         for route in self.routes:
             if isinstance(route, DynamicDetailRoute):
                 # Dynamic detail routes (@detail_route decorator)
-                for httpmethods, methodname in detail_routes:
-                    method_kwargs = getattr(viewset, methodname).kwargs
-                    url_path = method_kwargs.pop("url_path", None) or methodname
-                    initkwargs = route.initkwargs.copy()
-                    initkwargs.update(method_kwargs)
-                    ret.append(Route(
-                        url=replace_methodname(route.url, url_path),
-                        mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
-                        name=replace_methodname(route.name, url_path),
-                        initkwargs=initkwargs,
-                    ))
+                ret += _get_dynamic_routes(route, detail_routes)
             elif isinstance(route, DynamicListRoute):
                 # Dynamic list routes (@list_route decorator)
-                for httpmethods, methodname in list_routes:
-                    method_kwargs = getattr(viewset, methodname).kwargs
-                    url_path = method_kwargs.pop("url_path", None) or methodname
-                    initkwargs = route.initkwargs.copy()
-                    initkwargs.update(method_kwargs)
-                    ret.append(Route(
-                        url=replace_methodname(route.url, url_path),
-                        mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
-                        name=replace_methodname(route.name, url_path),
-                        initkwargs=initkwargs,
-                    ))
+                ret += _get_dynamic_routes(route, list_routes)
             else:
                 # Standard route
                 ret.append(route)
@@ -228,14 +218,15 @@ class SimpleRouter(BaseRouter):
 
         https://github.com/alanjds/drf-nested-routers
         """
-        base_regex = '(?P<{lookup_prefix}{lookup_field}>{lookup_value})'
+        base_regex = '(?P<{lookup_prefix}{lookup_url_kwarg}>{lookup_value})'
         # Use `pk` as default field, unset set.  Default regex should not
         # consume `.json` style suffixes and should break at '/' boundaries.
         lookup_field = getattr(viewset, 'lookup_field', 'pk')
+        lookup_url_kwarg = getattr(viewset, 'lookup_url_kwarg', None) or lookup_field
         lookup_value = getattr(viewset, 'lookup_value_regex', '[^/.]+')
         return base_regex.format(
             lookup_prefix=lookup_prefix,
-            lookup_field=lookup_field,
+            lookup_url_kwarg=lookup_url_kwarg,
             lookup_value=lookup_value
         )
 

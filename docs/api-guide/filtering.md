@@ -72,7 +72,7 @@ We can override `.get_queryset()` to deal with URLs such as `http://example.com/
             by filtering against a `username` query parameter in the URL.
             """
             queryset = Purchase.objects.all()
-            username = self.request.QUERY_PARAMS.get('username', None)
+            username = self.request.query_params.get('username', None)
             if username is not None:
                 queryset = queryset.filter(purchaser__username=username)
             return queryset
@@ -398,8 +398,8 @@ The [django-rest-framework-filters package][django-rest-framework-filters] works
 [cite]: https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter]: https://github.com/alex/django-filter
 [django-filter-docs]: https://django-filter.readthedocs.org/en/latest/index.html
-[guardian]: http://pythonhosted.org/django-guardian/
-[view-permissions]: http://pythonhosted.org/django-guardian/userguide/assign.html
+[guardian]: https://django-guardian.readthedocs.org/
+[view-permissions]: https://django-guardian.readthedocs.org/en/latest/userguide/assign.html
 [view-permissions-blogpost]: http://blog.nyaruka.com/adding-a-view-permission-to-django-models
 [nullbooleanselect]: https://github.com/django/django/blob/master/django/forms/widgets.py
 [search-django-admin]: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields

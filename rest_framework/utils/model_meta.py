@@ -25,7 +25,7 @@ FieldInfo = namedtuple('FieldResult', [
 
 RelationInfo = namedtuple('RelationInfo', [
     'model_field',
-    'related',
+    'related_model',
     'to_many',
     'to_field',
     'has_through_model'
@@ -100,7 +100,7 @@ def _get_forward_relationships(opts):
     for field in [field for field in opts.fields if field.serialize and field.rel]:
         forward_relations[field.name] = RelationInfo(
             model_field=field,
-            related=_resolve_model(field.rel.to),
+            related_model=_resolve_model(field.rel.to),
             to_many=False,
             to_field=get_to_field(field),
             has_through_model=False
@@ -110,7 +110,7 @@ def _get_forward_relationships(opts):
     for field in [field for field in opts.many_to_many if field.serialize]:
         forward_relations[field.name] = RelationInfo(
             model_field=field,
-            related=_resolve_model(field.rel.to),
+            related_model=_resolve_model(field.rel.to),
             to_many=True,
             # manytomany do not have to_fields
             to_field=None,
@@ -126,12 +126,17 @@ def _get_reverse_relationships(opts):
     """
     Returns an `OrderedDict` of field names to `RelationInfo`.
     """
+    # Note that we have a hack here to handle internal API differences for
+    # this internal API across Django 1.7 -> Django 1.8.
+    # See: https://code.djangoproject.com/ticket/24208
+
     reverse_relations = OrderedDict()
     for relation in opts.get_all_related_objects():
         accessor_name = relation.get_accessor_name()
+        related = getattr(relation, 'related_model', relation.model)
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
-            related=relation.model,
+            related_model=related,
             to_many=relation.field.rel.multiple,
             to_field=get_to_field(relation.field),
             has_through_model=False
@@ -140,15 +145,16 @@ def _get_reverse_relationships(opts):
     # Deal with reverse many-to-many relationships.
     for relation in opts.get_all_related_many_to_many_objects():
         accessor_name = relation.get_accessor_name()
+        related = getattr(relation, 'related_model', relation.model)
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
-            related=relation.model,
+            related_model=related,
             to_many=True,
             # manytomany do not have to_fields
             to_field=None,
             has_through_model=(
-                (getattr(relation.field.rel, 'through', None) is not None)
-                and not relation.field.rel.through._meta.auto_created
+                (getattr(relation.field.rel, 'through', None) is not None) and
+                not relation.field.rel.through._meta.auto_created
             )
         )
 

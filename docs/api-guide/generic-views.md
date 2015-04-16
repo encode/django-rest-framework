@@ -1,12 +1,6 @@
 source: mixins.py
         generics.py
 
----
-
-**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
-
----
-
 # Generic views
 
 > Django’s generic views... were developed as a shortcut for common usage patterns... They take certain common idioms and patterns found in view development and abstract them so that you can quickly write common views of data without having to repeat yourself.
@@ -84,18 +78,13 @@ The following attributes control the basic view behavior.
 
 The following attributes are used to control pagination when used with list views.
 
-* `paginate_by` - The size of pages to use with paginated data.  If set to `None` then pagination is turned off.  If unset this uses the same value as the `PAGINATE_BY` setting, which defaults to `None`.
-* `paginate_by_param` - The name of a query parameter, which can be used by the client to override the default page size to use for pagination.  If unset this uses the same value as the `PAGINATE_BY_PARAM` setting, which defaults to `None`.
-* `pagination_serializer_class` - The pagination serializer class to use when determining the style of paginated responses.  Defaults to the same value as the `DEFAULT_PAGINATION_SERIALIZER_CLASS` setting.
-* `page_kwarg` - The name of a URL kwarg or URL query parameter which can be used by the client to control which page is requested.  Defaults to `'page'`.
+* `pagination_class` - The pagination class that should be used when paginating list results. Defaults to the same value as the `DEFAULT_PAGINATION_CLASS` setting, which is `'rest_framework.pagination.PageNumberPagination'`.
+
+Note that usage of the `paginate_by`, `paginate_by_param` and `page_kwarg` attributes are now pending deprecation. The `pagination_serializer_class` attribute and `DEFAULT_PAGINATION_SERIALIZER_CLASS` setting have been removed completely. Pagination settings should instead be controlled by overriding a pagination class and setting any configuration attributes there. See the pagination documentation for more details.
 
 **Filtering**:
 
 * `filter_backends` - A list of filter backend classes that should be used for filtering the queryset.  Defaults to the same value as the `DEFAULT_FILTER_BACKENDS` setting.
-
-**Deprecated attributes**:
-
-* `model` - This shortcut may be used instead of setting either (or both) of the `queryset`/`serializer_class` attributes. The explicit style is preferred over the `.model` shortcut, and usage of this attribute is now deprecated.
 
 ### Methods
 
@@ -103,7 +92,7 @@ The following attributes are used to control pagination when used with list view
 
 #### `get_queryset(self)`
 
-Returns the queryset that should be used for list views, and that should be used as the base for lookups in detail views.  Defaults to returning the queryset specified by the `queryset` attribute, or the default queryset for the model if the `model` shortcut is being used.
+Returns the queryset that should be used for list views, and that should be used as the base for lookups in detail views.  Defaults to returning the queryset specified by the `queryset` attribute.
 
 This method should always be used rather than accessing `self.queryset` directly, as `self.queryset` gets evaluated only once, and those results are cached for all subsequent requests.
 
@@ -139,21 +128,21 @@ Note that if your API doesn't include any object level permissions, you may opti
 
 Returns the classes that should be used to filter the queryset. Defaults to returning the `filter_backends` attribute.
 
-May be overridden to provide more complex behavior with filters, such as using different (or even exlusive) lists of filter_backends depending on different criteria.
+May be overridden to provide more complex behavior with filters, such as using different (or even exclusive) lists of filter_backends depending on different criteria.
 
 For example:
 
     def get_filter_backends(self):
-        if "geo_route" in self.request.QUERY_PARAMS:
+        if "geo_route" in self.request.query_params:
             return (GeoRouteFilter, CategoryFilter)
-        elif "geo_point" in self.request.QUERY_PARAMS:
+        elif "geo_point" in self.request.query_params:
             return (GeoPointFilter, CategoryFilter)
 
         return (CategoryFilter,)
 
 #### `get_serializer_class(self)`
 
-Returns the class that should be used for the serializer.  Defaults to returning the `serializer_class` attribute, or dynamically generating a serializer class if the `model` shortcut is being used.
+Returns the class that should be used for the serializer.  Defaults to returning the `serializer_class` attribute.
 
 May be overridden to provide dynamic behavior, such as using different serializers for read and write operations, or providing different serializers to different types of users.
 

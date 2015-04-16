@@ -83,9 +83,35 @@ class UniquenessTogetherModel(models.Model):
         unique_together = ('race_name', 'position')
 
 
+class NullUniquenessTogetherModel(models.Model):
+    """
+    Used to ensure that null values are not included when checking
+    unique_together constraints.
+
+    Ignoring items which have a null in any of the validated fields is the same
+    behavior that database backends will use when they have the
+    unique_together constraint added.
+
+    Example case: a null position could indicate a non-finisher in the race,
+    there could be many non-finishers in a race, but all non-NULL
+    values *should* be unique against the given `race_name`.
+    """
+    date_of_birth = models.DateField(null=True)  # Not part of the uniqueness constraint
+    race_name = models.CharField(max_length=100)
+    position = models.IntegerField(null=True)
+
+    class Meta:
+        unique_together = ('race_name', 'position')
+
+
 class UniquenessTogetherSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniquenessTogetherModel
+
+
+class NullUniquenessTogetherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NullUniquenessTogetherModel
 
 
 class TestUniquenessTogetherValidation(TestCase):
@@ -181,6 +207,34 @@ class TestUniquenessTogetherValidation(TestCase):
                 race_name = CharField(max_length=100)
         """)
         assert repr(serializer) == expected
+
+    def test_ignore_validation_for_null_fields(self):
+        # None values that are on fields which are part of the uniqueness
+        # constraint cause the instance to ignore uniqueness validation.
+        NullUniquenessTogetherModel.objects.create(
+            date_of_birth=datetime.date(2000, 1, 1),
+            race_name='Paris Marathon',
+            position=None
+        )
+        data = {
+            'date': datetime.date(2000, 1, 1),
+            'race_name': 'Paris Marathon',
+            'position': None
+        }
+        serializer = NullUniquenessTogetherSerializer(data=data)
+        assert serializer.is_valid()
+
+    def test_do_not_ignore_validation_for_null_fields(self):
+        # None values that are not on fields part of the uniqueness constraint
+        # do not cause the instance to skip validation.
+        NullUniquenessTogetherModel.objects.create(
+            date_of_birth=datetime.date(2000, 1, 1),
+            race_name='Paris Marathon',
+            position=1
+        )
+        data = {'date': None, 'race_name': 'Paris Marathon', 'position': 1}
+        serializer = NullUniquenessTogetherSerializer(data=data)
+        assert not serializer.is_valid()
 
 
 # Tests for `UniqueForDateValidator`

@@ -60,6 +60,23 @@ a single block in the template.
   color: #C20000;
 }
 
+.pagination>.disabled>a,
+.pagination>.disabled>a:hover,
+.pagination>.disabled>a:focus {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pager>.disabled>a,
+.pager>.disabled>a:hover,
+.pager>.disabled>a:focus {
+  pointer-events: none;
+}
+
+.pager .next {
+  margin-left: 10px;
+}
+
 /*=== dabapps bootstrap styles ====*/
 
 html {
@@ -184,10 +201,6 @@ body a {
 body a:hover {
   color: #c20000;
 }
-
-#content a span {
-  text-decoration: underline;
- }
 
 .request-info {
   clear:both;
