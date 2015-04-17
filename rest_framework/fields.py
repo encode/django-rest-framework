@@ -682,7 +682,7 @@ class IntegerField(Field):
             self.fail('max_string_length')
 
         try:
-            data = int(data)
+            data = int(re.compile(r'\.0*\s*$').sub('', str(data)))
         except (ValueError, TypeError):
             self.fail('invalid')
         return data
