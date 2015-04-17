@@ -166,20 +166,22 @@ class SimpleRouter(BaseRouter):
                     list_routes.append((httpmethods, methodname))
 
         def _get_dynamic_routes(route, dynamic_routes):
-            ret = []
+            routes_map = OrderedDict()
             for httpmethods, methodname in dynamic_routes:
                 method_kwargs = getattr(viewset, methodname).kwargs
                 initkwargs = route.initkwargs.copy()
                 initkwargs.update(method_kwargs)
                 url_path = initkwargs.pop("url_path", None) or methodname
-                ret.append(Route(
-                    url=replace_methodname(route.url, url_path),
-                    mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
-                    name=replace_methodname(route.name, url_path),
-                    initkwargs=initkwargs,
-                ))
+                url = replace_methodname(route.url, url_path)
+                if url not in routes_map:
+                    routes_map[url] = {
+                        'mapping': {},
+                        'name': replace_methodname(route.name, url_path),
+                        'initkwargs': initkwargs
+                    }
+                routes_map[url]['mapping'].update(dict((httpmethod, methodname) for httpmethod in httpmethods))
 
-            return ret
+            return list(Route(url=url, **args) for url, args in routes_map.items())
 
         ret = []
         for route in self.routes:
