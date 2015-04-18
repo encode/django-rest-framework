@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Kirill Tarasenko, 2015
 # Mikhail Dmitriev <mktums@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-30 16:23+0000\n"
-"PO-Revision-Date: 2015-01-30 16:27+0000\n"
-"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"PO-Revision-Date: 2015-02-23 10:40+0000\n"
+"Last-Translator: Kirill Tarasenko\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/django-rest-framework/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -135,7 +136,7 @@ msgstr "Введите корректный URL."
 
 #: fields.py:638
 msgid "\"{value}\" is not a valid UUID."
-msgstr ""
+msgstr "\"{value}\" не является корректным UUID."
 
 #: fields.py:657
 msgid "A valid integer is required."
@@ -230,7 +231,7 @@ msgstr "Загрузите корректное изображение. Загр
 
 #: fields.py:1188
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Ожидался словарь со значениями, но был получен \"{input_type}\"."
 
 #: pagination.py:221
 msgid "Invalid page \"{page_number}\": {message}."
@@ -238,7 +239,7 @@ msgstr "Недопустимая страница \"{page_number}\": {message}."
 
 #: pagination.py:442
 msgid "Invalid cursor"
-msgstr ""
+msgstr "Не корректный курсор"
 
 #: relations.py:133
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
@@ -278,11 +279,11 @@ msgstr "Недопустимые данные. Ожидался dictionary, но
 
 #: validators.py:22
 msgid "This field must be unique."
-msgstr ""
+msgstr "Это поле должно быть уникально."
 
 #: validators.py:76
 msgid "The fields {field_names} must make a unique set."
-msgstr ""
+msgstr "Поля {field_names} должны производить массив с уникальными значениями."
 
 #: validators.py:219
 msgid "This field must be unique for the \"{date_field}\" date."

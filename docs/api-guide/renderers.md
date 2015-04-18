@@ -110,7 +110,7 @@ An example of a view that uses `TemplateHTMLRenderer`:
 
     class UserDetail(generics.RetrieveAPIView):
         """
-        A view that returns a templated HTML representations of a given user.
+        A view that returns a templated HTML representation of a given user.
         """
         queryset = User.objects.all()
         renderer_classes = (TemplateHTMLRenderer,)
@@ -135,7 +135,7 @@ See also: `StaticHTMLRenderer`
 
 A simple renderer that simply returns pre-rendered HTML.  Unlike other renderers, the data passed to the response object should be a string representing the content to be returned.
 
-An example of a view that uses `TemplateHTMLRenderer`:
+An example of a view that uses `StaticHTMLRenderer`:
 
     @api_view(('GET',))
     @renderer_classes((StaticHTMLRenderer,))
@@ -143,7 +143,7 @@ An example of a view that uses `TemplateHTMLRenderer`:
         data = '<html><body><h1>Hello, world</h1></body></html>'
         return Response(data)
 
-You can use `TemplateHTMLRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
+You can use `StaticHTMLRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
 
 **.media_type**: `text/html`
 

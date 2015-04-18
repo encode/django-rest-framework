@@ -72,7 +72,7 @@ We can override `.get_queryset()` to deal with URLs such as `http://example.com/
             by filtering against a `username` query parameter in the URL.
             """
             queryset = Purchase.objects.all()
-            username = self.request.QUERY_PARAMS.get('username', None)
+            username = self.request.query_params.get('username', None)
             if username is not None:
                 queryset = queryset.filter(purchaser__username=username)
             return queryset

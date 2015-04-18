@@ -127,7 +127,7 @@ This pagination style mirrors the syntax used when looking up multiple database 
 
 #### Setup
 
-To enable the `PageNumberPagination` style globally, use the following configuration:
+To enable the `LimitOffsetPagination` style globally, use the following configuration:
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
@@ -196,7 +196,7 @@ The `CursorPagination` class includes a number of attributes that may be overrid
 
 To set these attributes you should override the `CursorPagination` class, and then enable your custom pagination class as above.
 
-* `page_size` = A numeric value indicating the page size. If set, this overrides the `DEFAULT_PAGE_SIZE` setting. Defaults to the same value as the `DEFAULT_PAGE_SIZE` settings key.
+* `page_size` = A numeric value indicating the page size. If set, this overrides the `PAGE_SIZE` setting. Defaults to the same value as the `PAGE_SIZE` settings key.
 * `cursor_query_param` = A string value indicating the name of the "cursor" query parameter. Defaults to `'cursor'`.
 * `ordering` = This should be a string, or list of strings, indicating the field against which the cursor based pagination will be applied. For example: `ordering = 'slug'`. Defaults to `-created`. This value may also be overridden by using `OrderingFilter` on the view.
 * `template` = The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to `None` to disable HTML pagination controls completely. Defaults to `"rest_framework/pagination/previous_and_next.html"`.

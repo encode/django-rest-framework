@@ -10,7 +10,7 @@ from django.core.paginator import InvalidPage, Paginator as DjangoPaginator
 from django.template import Context, loader
 from django.utils import six
 from django.utils.six.moves.urllib import parse as urlparse
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from rest_framework.compat import OrderedDict
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
@@ -388,6 +388,9 @@ class LimitOffsetPagination(BasePagination):
 
     def paginate_queryset(self, queryset, request, view=None):
         self.limit = self.get_limit(request)
+        if self.limit is None:
+            return None
+
         self.offset = self.get_offset(request)
         self.count = _get_count(queryset)
         self.request = request
@@ -491,6 +494,9 @@ class CursorPagination(BasePagination):
     template = 'rest_framework/pagination/previous_and_next.html'
 
     def paginate_queryset(self, queryset, request, view=None):
+        if self.page_size is None:
+            return None
+
         self.base_url = request.build_absolute_uri()
         self.ordering = self.get_ordering(request, queryset, view)
 

@@ -31,6 +31,8 @@ How you vary the API behavior is up to you, but one example you might typically 
 
 The `reverse` function included by REST framework ties in with the versioning scheme. You need to make sure to include the current `request` as a keyword argument, like so.
 
+    from rest_framework.reverse import reverse
+
     reverse('bookings-list', request=request)
 
 The above function will apply any URL transformations appropriate to the request version. For example:
@@ -103,7 +105,7 @@ Your client requests would now look like this:
     Host: example.com
     Accept: application/vnd.megacorp.bookings+json; version=1.0
 
-## URLParameterVersioning
+## URLPathVersioning
 
 This scheme requires the client to specify the version as part of the URL path.
 
