@@ -13,6 +13,7 @@ h2, h3 {
 .resource-description, .response-info {
   margin-bottom: 2em;
 }
+
 .version:before {
   content: "v";
   opacity: 0.6;
@@ -30,10 +31,6 @@ h2, h3 {
 .button-form {
   float: right;
   margin-right: 1em;
-}
-
-.breadcrumb li.active a {
-  color: #777;
 }
 
 form select, form input, form textarea {
