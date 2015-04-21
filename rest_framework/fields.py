@@ -665,6 +665,7 @@ class IntegerField(Field):
         'max_string_length': _('String value too large.')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
+    re_decimal = re.compile(r'\.0*\s*$')  # allow e.g. '1.0' as an int, but not '1.2'
 
     def __init__(self, **kwargs):
         self.max_value = kwargs.pop('max_value', None)
@@ -682,7 +683,7 @@ class IntegerField(Field):
             self.fail('max_string_length')
 
         try:
-            data = int(re.compile(r'\.0*\s*$').sub('', str(data)))
+            data = int(self.re_decimal.sub('', str(data)))
         except (ValueError, TypeError):
             self.fail('invalid')
         return data
