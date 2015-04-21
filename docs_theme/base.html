@@ -4,7 +4,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <title>{{ page_title }}</title>
+  <title>{% if page_title %}{{ page_title }} - {% endif %}{{ site_name }}</title>
   <link href="{{ base_url }}/img/favicon.ico" rel="icon" type="image/x-icon">
   <link rel="canonical" href="{{ canonical_url }}" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
