@@ -64,27 +64,19 @@
       <div class="container-fluid">
 
         <!-- Search Modal -->
-        <div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             <h3 id="myModalLabel">Documentation search</h3>
           </div>
 
           <div class="modal-body">
-            <!-- Custom google search -->
-            <script>
-              (function() {
-                var cx = '015016005043623903336:rxraeohqk6w';
-                var gcse = document.createElement('script');
-                gcse.type = 'text/javascript';
-                gcse.async = true;
-                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
-                  '//www.google.com/cse/cse.js?cx=' + cx;
-                var s = document.getElementsByTagName('script')[0];
-                s.parentNode.insertBefore(gcse, s);
-              })();
-            </script>
-            <gcse:search></gcse:search>
+            <form role="form">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+              </div>
+            </form>
+            <div id="mkdocs-search-results"></div>
           </div>
 
           <div class="modal-footer">
@@ -176,6 +168,8 @@
   <script src="{{ base_url }}/js/prettify-1.0.js"></script>
   <script src="{{ base_url }}/js/bootstrap-2.1.1-min.js"></script>
   <script src="{{ base_url }}/js/theme.js"></script>
+  <script>var base_url = '{{ base_url }}';</script>
+  <script data-main="{{ base_url }}/mkdocs/js/search.js" src="{{ base_url }}/mkdocs/js/require.js"></script>
 
   <script>
     //$('.side-nav').scrollspy()
