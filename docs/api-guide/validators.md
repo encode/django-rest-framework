@@ -172,7 +172,7 @@ REST framework includes a couple of defaults that may be useful in this context.
 A default class that can be used to represent the current user. In order to use this, the 'request' must have been provided as part of the context dictionary when instantiating the serializer.
 
     owner = serializers.HiddenField(
-        default=CurrentUserDefault()
+        default=serializers.CurrentUserDefault()
     )
 
 #### CreateOnlyDefault
