@@ -611,7 +611,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                 renderer_content_type += ' ;%s' % renderer.charset
         response_headers['Content-Type'] = renderer_content_type
 
-        if hasattr(view, 'paginator') and view.paginator.display_page_controls:
+        if getattr(view, 'paginator', None) and view.paginator.display_page_controls:
             paginator = view.paginator
         else:
             paginator = None
