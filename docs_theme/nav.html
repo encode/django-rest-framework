@@ -19,7 +19,6 @@
             {% if include_nav %}
             <!-- Main navigation -->
             <ul class="nav navbar-nav">
-              <li {% if current_page.is_homepage %}class="active"{% endif %}><a href="/">Home</a></li>
               {% for nav_item in nav %} {% if nav_item.children %}
               <li class="dropdown{% if nav_item.active %} active{% endif %}">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ nav_item.title }} <b class="caret"></b></a>
