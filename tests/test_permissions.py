@@ -31,8 +31,19 @@ class InstanceView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [permissions.DjangoModelPermissions]
 
+
+class GetQuerySetListView(generics.ListCreateAPIView):
+    serializer_class = BasicSerializer
+    authentication_classes = [authentication.BasicAuthentication]
+    permission_classes = [permissions.DjangoModelPermissions]
+
+    def get_queryset(self):
+        return BasicModel.objects.all()
+
+
 root_view = RootView.as_view()
 instance_view = InstanceView.as_view()
+get_queryset_list_view = GetQuerySetListView.as_view()
 
 
 def basic_auth_header(username, password):
@@ -65,6 +76,12 @@ class ModelPermissionsIntegrationTests(TestCase):
         request = factory.post('/', {'text': 'foobar'}, format='json',
                                HTTP_AUTHORIZATION=self.permitted_credentials)
         response = root_view(request, pk=1)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_get_queryset_has_create_permissions(self):
+        request = factory.post('/', {'text': 'foobar'}, format='json',
+                               HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = get_queryset_list_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_has_put_permissions(self):

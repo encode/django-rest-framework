@@ -107,7 +107,13 @@ class DjangoModelPermissions(BasePermission):
         return [perm % kwargs for perm in self.perms_map[method]]
 
     def has_permission(self, request, view):
-        queryset = getattr(view, 'queryset', None)
+        try:
+            queryset = view.get_queryset()
+        except AttributeError:
+            queryset = getattr(view, 'queryset', None)
+        except AssertionError:
+            # view.get_queryset() didn't find .queryset
+            queryset = None
 
         # Workaround to ensure DjangoModelPermissions are not applied
         # to the root view when using DefaultRouter.
