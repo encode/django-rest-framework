@@ -16,7 +16,7 @@ import datetime
 import inspect
 import types
 from decimal import Decimal
-from django.contrib.contenttypes.fields import GenericForeignKey
+import django
 from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
@@ -40,6 +40,11 @@ try:
     from collections import OrderedDict
 except ImportError:
     from django.utils.datastructures import SortedDict as OrderedDict
+
+if django.VERSION >= (1, 8):
+    from django.contrib.contenttypes.fields import GenericForeignKey
+else:
+    from django.contrib.contenttypes.generic import GenericForeignKey
 
 
 def _resolve_model(obj):
