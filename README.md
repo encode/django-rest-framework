@@ -202,7 +202,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [wlonk]: https://twitter.com/wlonk/status/261689665952833536
 [laserllama]: https://twitter.com/laserllama/status/328688333750407168
 
-[docs]: http://www.django-rest-framework.org/
+[docs]: http://tomchristie.github.io/rest-framework-2-docs/
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [pyyaml]: http://pypi.python.org/pypi/PyYAML
