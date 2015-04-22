@@ -23,6 +23,7 @@ from django.forms import widgets
 from django.utils import six
 from django.utils.functional import cached_property
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.compat import OrderedDict, GenericForeignKey
 from rest_framework.settings import api_settings
 
 
@@ -35,16 +36,6 @@ from rest_framework.settings import api_settings
 
 from rest_framework.relations import *  # NOQA
 from rest_framework.fields import *  # NOQA
-
-try:
-    from collections import OrderedDict
-except ImportError:
-    from django.utils.datastructures import SortedDict as OrderedDict
-
-if django.VERSION >= (1, 8):
-    from django.contrib.contenttypes.fields import GenericForeignKey
-else:
-    from django.contrib.contenttypes.generic import GenericForeignKey
 
 
 def _resolve_model(obj):

@@ -5,17 +5,12 @@ from __future__ import unicode_literals
 from django.utils import timezone
 from django.db.models.query import QuerySet
 from django.utils.functional import Promise
-from rest_framework.compat import force_text
+from rest_framework.compat import force_text, OrderedDict
 from rest_framework.serializers import DictWithMetadata, OrderedDictWithMetadata
 import datetime
 import decimal
 import types
 import json
-
-try:
-    from collections import OrderedDict
-except ImportError:
-    from django.utils.datastructures import SortedDict as OrderedDict
 
 
 class JSONEncoder(json.JSONEncoder):

@@ -25,15 +25,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    BytesIO, smart_text,
+    BytesIO, smart_text, OrderedDict,
     force_text, is_non_str_iterable
 )
 from rest_framework.settings import api_settings
-
-try:
-    from collections import OrderedDict
-except ImportError:
-    from django.utils.datastructures import SortedDict as OrderedDict
 
 
 def is_simple_callable(obj):
