@@ -992,8 +992,8 @@ class ModelSerializer(Serializer):
                 m2m_data[field.name] = attrs.pop(field.name)
 
         # Forward m2m relations
-        _ = [_inner_loop_code(field) for field in meta.many_to_many]
-        _ = [_inner_loop_code(field) for field in meta.virtual_fields]
+        [_inner_loop_code(field) for field in meta.many_to_many]
+        [_inner_loop_code(field) for field in meta.virtual_fields]
 
         # Nested forward relations - These need to be marked so we can save
         # them before saving the parent model instance.
