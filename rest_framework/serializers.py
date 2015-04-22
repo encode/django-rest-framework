@@ -16,7 +16,6 @@ import datetime
 import inspect
 import types
 from decimal import Decimal
-import django
 from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
