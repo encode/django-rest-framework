@@ -1297,7 +1297,7 @@ class SerializerPickleTests(TestCase):
 
     def test_pickle_inner_serializer(self):
         """
-        Test pickling a serializer whose resulting .data (a SortedDictWithMetadata) will
+        Test pickling a serializer whose resulting .data (a OrderedDictWithMetadata) will
         have unpickleable meta data--in order to make sure metadata doesn't get pulled into the pickle.
         See DictWithMetadata.__getstate__
         """
@@ -1312,13 +1312,13 @@ class SerializerPickleTests(TestCase):
         Regression test for #645.
         """
         data = serializers.DictWithMetadata({1: 1})
-        self.assertEqual(data.__getstate__(), serializers.SortedDict({1: 1}))
+        self.assertEqual(data.__getstate__(), serializers.OrderedDict({1: 1}))
 
     def test_serializer_data_is_pickleable(self):
         """
         Another regression test for #645.
         """
-        data = serializers.SortedDictWithMetadata({1: 1})
+        data = serializers.OrderedDictWithMetadata({1: 1})
         repr(pickle.loads(pickle.dumps(data, 0)))
 
 

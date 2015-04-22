@@ -3,6 +3,7 @@ General serializer field tests.
 """
 from __future__ import unicode_literals
 
+from collections import OrderedDict
 import datetime
 import re
 from decimal import Decimal
@@ -10,7 +11,6 @@ from uuid import uuid4
 from django.core import validators
 from django.db import models
 from django.test import TestCase
-from django.utils.datastructures import SortedDict
 from rest_framework import serializers
 from tests.models import RESTFrameworkModel
 
@@ -95,7 +95,7 @@ class BasicFieldTests(TestCase):
         Field should preserve dictionary ordering, if it exists.
         See: https://github.com/tomchristie/django-rest-framework/issues/832
         """
-        ret = SortedDict()
+        ret = OrderedDict()
         ret['c'] = 1
         ret['b'] = 1
         ret['a'] = 1
