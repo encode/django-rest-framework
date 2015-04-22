@@ -172,7 +172,7 @@ class DjangoObjectPermissions(DjangoModelPermissions):
         return [perm % kwargs for perm in self.perms_map[method]]
 
     def has_object_permission(self, request, view, obj):
-        model_cls = view.queryset.model
+        model_cls = view.get_queryset().model
         user = request.user
 
         perms = self.get_required_object_permissions(request.method, model_cls)
