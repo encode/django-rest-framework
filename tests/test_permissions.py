@@ -41,9 +41,17 @@ class GetQuerySetListView(generics.ListCreateAPIView):
         return BasicModel.objects.all()
 
 
+class EmptyListView(generics.ListCreateAPIView):
+    queryset = BasicModel.objects.none()
+    serializer_class = BasicSerializer
+    authentication_classes = [authentication.BasicAuthentication]
+    permission_classes = [permissions.DjangoModelPermissions]
+
+
 root_view = RootView.as_view()
 instance_view = InstanceView.as_view()
 get_queryset_list_view = GetQuerySetListView.as_view()
+empty_list_view = EmptyListView.as_view()
 
 
 def basic_auth_header(username, password):
@@ -165,6 +173,11 @@ class ModelPermissionsIntegrationTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('actions', response.data)
         self.assertEqual(list(response.data['actions'].keys()), ['PUT'])
+
+    def test_empty_view_does_not_assert(self):
+        request = factory.get('/1', HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = empty_list_view(request, pk=1)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class BasicPermModel(models.Model):
