@@ -3,6 +3,7 @@ Provides a set of pluggable permission policies.
 """
 from __future__ import unicode_literals
 from django.http import Http404
+from django.utils import six
 from rest_framework.compat import get_model_name
 
 SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
@@ -109,8 +110,6 @@ class DjangoModelPermissions(BasePermission):
     def has_permission(self, request, view):
         try:
             queryset = view.get_queryset()
-        except AttributeError:
-            queryset = getattr(view, 'queryset', None)
         except AssertionError:
             # view.get_queryset() didn't find .queryset
             queryset = None
@@ -172,7 +171,14 @@ class DjangoObjectPermissions(DjangoModelPermissions):
         return [perm % kwargs for perm in self.perms_map[method]]
 
     def has_object_permission(self, request, view, obj):
-        model_cls = view.queryset.model
+        try:
+            queryset = view.get_queryset()
+        except AssertionError as exc:
+            # view.get_queryset() didn't find .queryset
+            raise six.raise_from(AssertionError(
+                'Cannot apply DjangoObjectPermissions on a view that '
+                'does not have `.queryset` property nor redefines `.get_queryset()`.'), exc)
+        model_cls = queryset.model
         user = request.user
 
         perms = self.get_required_object_permissions(request.method, model_cls)
