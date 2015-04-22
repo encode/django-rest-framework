@@ -19,8 +19,13 @@ back to the defaults.
 """
 from __future__ import unicode_literals
 from django.conf import settings
-from django.utils import importlib, six
+from django.utils import six
 from rest_framework import ISO_8601
+
+try:
+    import importlib
+except ImportError:
+    from django.utils import importlib
 
 
 USER_SETTINGS = getattr(settings, 'REST_FRAMEWORK', None)

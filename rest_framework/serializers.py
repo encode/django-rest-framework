@@ -16,7 +16,7 @@ import datetime
 import inspect
 import types
 from decimal import Decimal
-from django.contrib.contenttypes.generic import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
@@ -114,6 +114,9 @@ class OrderedDictWithMetadata(OrderedDict):
     """
     A sorted dict-like object, that can have additional properties attached.
     """
+    def __reduce__(self):
+        return self.__class__, (OrderedDict(self), )
+
     def __getstate__(self):
         """
         Used by pickle (e.g., caching).
