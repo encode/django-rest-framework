@@ -406,7 +406,7 @@ Modify your REST framework settings.
 
     REST_FRAMEWORK = {
         'DEFAULT_RENDERER_CLASSES': (
-            'rest_framework_yaml.renderers.JSONPRenderer',
+            'rest_framework_jsonp.renderers.JSONPRenderer',
         ),
     }
 
