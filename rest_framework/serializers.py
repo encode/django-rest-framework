@@ -11,7 +11,6 @@ python primitives.
 response content is handled by parsers and renderers.
 """
 from __future__ import unicode_literals
-from collections import OrderedDict
 import copy
 import datetime
 import inspect
@@ -36,6 +35,11 @@ from rest_framework.settings import api_settings
 
 from rest_framework.relations import *  # NOQA
 from rest_framework.fields import *  # NOQA
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    from django.utils.datastructures import SortedDict as OrderedDict
 
 
 def _resolve_model(obj):

@@ -30,6 +30,11 @@ from rest_framework.compat import (
 )
 from rest_framework.settings import api_settings
 
+try:
+    from collections import OrderedDict
+except ImportError:
+    from django.utils.datastructures import SortedDict as OrderedDict
+
 
 def is_simple_callable(obj):
     """
@@ -224,7 +229,7 @@ class Field(object):
             return [self.to_native(item) for item in value]
         elif isinstance(value, dict):
             # Make sure we preserve field ordering, if it exists
-            ret = collections.OrderedDict()
+            ret = OrderedDict()
             for key, val in value.items():
                 ret[key] = self.to_native(val)
             return ret
@@ -239,7 +244,7 @@ class Field(object):
         return {}
 
     def metadata(self):
-        metadata = collections.OrderedDict()
+        metadata = OrderedDict()
         metadata['type'] = self.type_label
         metadata['required'] = getattr(self, 'required', False)
         optional_attrs = ['read_only', 'label', 'help_text',

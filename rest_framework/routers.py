@@ -16,7 +16,7 @@ For example, you might have a `urls.py` that looks something like this:
 from __future__ import unicode_literals
 
 import itertools
-from collections import namedtuple, OrderedDict
+from collections import namedtuple
 from django.conf.urls import patterns, url
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
@@ -24,6 +24,11 @@ from rest_framework import views
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.urlpatterns import format_suffix_patterns
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    from django.utils.datastructures import SortedDict as OrderedDict
 
 
 Route = namedtuple('Route', ['url', 'mapping', 'name', 'initkwargs'])

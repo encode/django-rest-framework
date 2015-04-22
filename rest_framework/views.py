@@ -3,7 +3,6 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
 
-from collections import OrderedDict
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.views.decorators.csrf import csrf_exempt
@@ -13,6 +12,11 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    from django.utils.datastructures import SortedDict as OrderedDict
 
 
 def get_view_name(view_cls, suffix=None):

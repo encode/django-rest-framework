@@ -2,7 +2,6 @@
 Helper classes for parsers.
 """
 from __future__ import unicode_literals
-from collections import OrderedDict
 from django.utils import timezone
 from django.db.models.query import QuerySet
 from django.utils.functional import Promise
@@ -12,6 +11,11 @@ import datetime
 import decimal
 import types
 import json
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    from django.utils.datastructures import SortedDict as OrderedDict
 
 
 class JSONEncoder(json.JSONEncoder):

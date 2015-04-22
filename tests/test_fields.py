@@ -3,7 +3,6 @@ General serializer field tests.
 """
 from __future__ import unicode_literals
 
-from collections import OrderedDict
 import datetime
 import re
 from decimal import Decimal
@@ -13,6 +12,11 @@ from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
 from tests.models import RESTFrameworkModel
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    from django.utils.datastructures import SortedDict as OrderedDict
 
 
 class TimestampedModel(models.Model):
