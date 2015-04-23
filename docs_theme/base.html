@@ -73,7 +73,7 @@
           <div class="modal-body">
             <form role="form">
               <div class="form-group">
-                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
               </div>
             </form>
             <div id="mkdocs-search-results"></div>
@@ -167,9 +167,9 @@
   <script src="{{ base_url }}/js/jquery-1.8.1-min.js"></script>
   <script src="{{ base_url }}/js/prettify-1.0.js"></script>
   <script src="{{ base_url }}/js/bootstrap-2.1.1-min.js"></script>
-  <script src="{{ base_url }}/js/theme.js"></script>
   <script>var base_url = '{{ base_url }}';</script>
-  <script data-main="{{ base_url }}/mkdocs/js/search.js" src="{{ base_url }}/mkdocs/js/require.js"></script>
+  <script src="{{ base_url }}/mkdocs/js/require.js"></script>
+  <script src="{{ base_url }}/js/theme.js"></script>
 
   <script>
     //$('.side-nav').scrollspy()
