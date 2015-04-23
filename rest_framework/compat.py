@@ -266,11 +266,20 @@ except ImportError:
         klass.__str__ = lambda self: self.__unicode__().encode('utf-8')
         return klass
 
+"""
+SortedDict deprecated since django 1.8. There is collections.OrderedDict
+which available since python 2.7 and python 3.1. There are no need of other
+checks because of django 1.7+ requires python 2.7+
+"""
 try:
-    from collections import OrderedDict
+    from collections import OrderedDict as SortedDict
 except ImportError:
-    from django.utils.datastructures import SortedDict as OrderedDict
+    from django.utils.datastructures import SortedDict
 
+"""
+GenericForeignKey moves from generic to fields in django 1.9 and in 1.8 shows
+deprecation warnings
+"""
 if django.VERSION >= (1, 8):
     from django.contrib.contenttypes.fields import GenericForeignKey
 else:

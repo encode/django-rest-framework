@@ -25,7 +25,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    BytesIO, smart_text, OrderedDict,
+    BytesIO, smart_text, SortedDict,
     force_text, is_non_str_iterable
 )
 from rest_framework.settings import api_settings
@@ -224,7 +224,7 @@ class Field(object):
             return [self.to_native(item) for item in value]
         elif isinstance(value, dict):
             # Make sure we preserve field ordering, if it exists
-            ret = OrderedDict()
+            ret = SortedDict()
             for key, val in value.items():
                 ret[key] = self.to_native(val)
             return ret
@@ -239,7 +239,7 @@ class Field(object):
         return {}
 
     def metadata(self):
-        metadata = OrderedDict()
+        metadata = SortedDict()
         metadata['type'] = self.type_label
         metadata['required'] = getattr(self, 'required', False)
         optional_attrs = ['read_only', 'label', 'help_text',

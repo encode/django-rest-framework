@@ -5,8 +5,8 @@ from __future__ import unicode_literals
 from django.utils import timezone
 from django.db.models.query import QuerySet
 from django.utils.functional import Promise
-from rest_framework.compat import force_text, OrderedDict
-from rest_framework.serializers import DictWithMetadata, OrderedDictWithMetadata
+from rest_framework.compat import force_text, SortedDict
+from rest_framework.serializers import DictWithMetadata, SortedDictWithMetadata
 import datetime
 import decimal
 import types
@@ -66,7 +66,7 @@ else:
     class SafeDumper(yaml.SafeDumper):
         """
         Handles decimals as strings.
-        Handles OrderedDicts as usual dicts, but preserves field order, rather
+        Handles SortedDicts as usual dicts, but preserves field order, rather
         than the usual behaviour of sorting the keys.
         """
         def represent_decimal(self, data):
@@ -80,7 +80,7 @@ else:
             best_style = True
             if hasattr(mapping, 'items'):
                 mapping = list(mapping.items())
-                if not isinstance(mapping, OrderedDict):
+                if not isinstance(mapping, SortedDict):
                     mapping.sort()
             for item_key, item_value in mapping:
                 node_key = self.represent_data(item_key)
@@ -102,7 +102,7 @@ else:
         SafeDumper.represent_decimal
     )
     SafeDumper.add_representer(
-        OrderedDict,
+        SortedDict,
         yaml.representer.SafeRepresenter.represent_dict
     )
     SafeDumper.add_representer(
@@ -110,7 +110,7 @@ else:
         yaml.representer.SafeRepresenter.represent_dict
     )
     SafeDumper.add_representer(
-        OrderedDictWithMetadata,
+        SortedDictWithMetadata,
         yaml.representer.SafeRepresenter.represent_dict
     )
     SafeDumper.add_representer(

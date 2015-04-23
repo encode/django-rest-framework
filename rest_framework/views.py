@@ -7,7 +7,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, exceptions
-from rest_framework.compat import smart_text, HttpResponseBase, OrderedDict, View
+from rest_framework.compat import smart_text, HttpResponseBase, SortedDict, View
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -420,7 +420,7 @@ class APIView(View):
         # By default we can't provide any form-like information, however the
         # generic views override this implementation and add additional
         # information for POST and PUT methods, based on the serializer.
-        ret = OrderedDict()
+        ret = SortedDict()
         ret['name'] = self.get_view_name()
         ret['description'] = self.get_view_description()
         ret['renders'] = [renderer.media_type for renderer in self.renderer_classes]
