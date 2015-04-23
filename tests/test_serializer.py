@@ -1312,7 +1312,7 @@ class SerializerPickleTests(TestCase):
         Regression test for #645.
         """
         data = serializers.DictWithMetadata({1: 1})
-        self.assertEqual(data.__getstate__(), serializers.OrderedDict({1: 1}))
+        self.assertEqual(data.__getstate__(), serializers.SortedDict({1: 1}))
 
     def test_serializer_data_is_pickleable(self):
         """

@@ -11,12 +11,8 @@ from django.core import validators
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
+from rest_framework.compat import SortedDict
 from tests.models import RESTFrameworkModel
-
-try:
-    from collections import OrderedDict
-except ImportError:
-    from django.utils.datastructures import SortedDict as OrderedDict
 
 
 class TimestampedModel(models.Model):
@@ -99,7 +95,7 @@ class BasicFieldTests(TestCase):
         Field should preserve dictionary ordering, if it exists.
         See: https://github.com/tomchristie/django-rest-framework/issues/832
         """
-        ret = OrderedDict()
+        ret = SortedDict()
         ret['c'] = 1
         ret['b'] = 1
         ret['a'] = 1
