@@ -284,3 +284,11 @@ if django.VERSION >= (1, 8):
     from django.contrib.contenttypes.fields import GenericForeignKey
 else:
     from django.contrib.contenttypes.generic import GenericForeignKey
+
+"""
+django.utils.importlib is deprecated since django 1.8
+"""
+try:
+    import importlib
+except ImportError:
+    from django.utils import importlib
