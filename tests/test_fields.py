@@ -563,7 +563,8 @@ class TestIntegerField(FieldValues):
         1: 1,
         0: 0,
         1.0: 1,
-        0.0: 0
+        0.0: 0,
+        '1.0': 1
     }
     field = serializers.IntegerField()
 
@@ -726,10 +727,7 @@ class TestDateField(FieldValues):
         datetime.datetime(2001, 1, 1, 12, 00): ['Expected a date but got a datetime.'],
     }
     outputs = {
-        datetime.date(2001, 1, 1): '2001-01-01',
-        '2001-01-01': '2001-01-01',
-        None: None,
-        '': None,
+        datetime.date(2001, 1, 1): '2001-01-01'
     }
     field = serializers.DateField()
 

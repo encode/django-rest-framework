@@ -678,18 +678,21 @@ class IntegerField(Field):
             message = self.error_messages['min_value'].format(min_value=self.min_value)
             self.validators.append(MinValueValidator(self.min_value, message=message))
 
+    def coerce_to_int(self, value):
+        return int(self.re_decimal.sub('', str(value)))
+
     def to_internal_value(self, data):
         if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
             self.fail('max_string_length')
 
         try:
-            data = int(self.re_decimal.sub('', str(data)))
+            data = self.coerce_to_int(data)
         except (ValueError, TypeError):
             self.fail('invalid')
         return data
 
     def to_representation(self, value):
-        return int(value)
+        return self.coerce_to_int(value)
 
 
 class FloatField(Field):
@@ -925,9 +928,6 @@ class DateField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
-        if not value:
-            return None
-
         if self.format is None:
             return value
 
@@ -941,10 +941,7 @@ class DateField(Field):
         )
 
         if self.format.lower() == ISO_8601:
-            if (isinstance(value, str)):
-                value = datetime.datetime.strptime(value, '%Y-%m-%d').date()
             return value.isoformat()
-
         return value.strftime(self.format)
 
 
