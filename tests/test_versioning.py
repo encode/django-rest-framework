@@ -82,6 +82,10 @@ class TestRequestVersion:
         response = view(request)
         assert response.data == {'version': '1.2.3'}
 
+        request = factory.get('/endpoint/', HTTP_ACCEPT='*/*; version=1.2.3')
+        response = view(request)
+        assert response.data == {'version': '1.2.3'}
+
         request = factory.get('/endpoint/', HTTP_ACCEPT='application/json')
         response = view(request)
         assert response.data == {'version': None}
