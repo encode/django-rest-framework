@@ -54,8 +54,7 @@ def exception_handler(exc, context):
     Returns the response that should be used for any given exception.
 
     By default we handle the REST framework `APIException`, and also
-    Django's built-in `ValidationError`, `Http404` and `PermissionDenied`
-    exceptions.
+    Django's built-in `Http404` and `PermissionDenied` exceptions.
 
     Any unhandled exceptions may return `None`, which will cause a 500 error
     to be raised.
