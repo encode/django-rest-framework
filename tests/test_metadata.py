@@ -212,3 +212,27 @@ class TestMetadata:
         options = metadata.SimpleMetadata()
         field_info = options.get_field_info(serializers.NullBooleanField())
         assert field_info['type'] == 'boolean'
+
+    def test_instance_passed_to_serializer(self):
+        dummy_obj = object()
+
+        class ExampleSerializer(serializers.Serializer):
+            def __init__(self, *args, **kwargs):
+                super(ExampleSerializer, self).__init__(*args, **kwargs)
+                assert self.instance == dummy_obj
+
+        class ExampleView(views.APIView):
+            """Example view."""
+            def put(self, request):
+                pass
+
+            def get_object(self):
+                return dummy_obj
+
+            def get_serializer(self, *args, **kwargs):
+                assert kwargs['instance'] == self.get_object()
+                return ExampleSerializer(*args, **kwargs)
+
+        view = ExampleView.as_view()
+        response = view(request=request)
+        assert response.status_code == status.HTTP_200_OK
