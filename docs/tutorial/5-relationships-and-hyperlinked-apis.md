@@ -18,7 +18,7 @@ Right now we have endpoints for 'snippets' and 'users', but we don't have a sing
             'snippets': reverse('snippet-list', request=request, format=format)
         })
 
-Notice that we're using REST framework's `reverse` function in order to return fully-qualified URLs.
+Two things should be noticed here. First, we're using REST framework's `reverse` function in order to return fully-qualified URLs; second, URL patterns are identified by convenience names that we will declare later on in our `snippets/urls.py`. 
 
 ## Creating an endpoint for the highlighted snippets
 
