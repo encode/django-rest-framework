@@ -992,15 +992,12 @@ class ModelSerializer(Serializer):
             if field_name in attrs:
                 m2m_data[field_name] = attrs.pop(field_name)
 
-        def _inner_loop_code(field):
-            if isinstance(field, GenericForeignKey):
-                return
-            if field.name in attrs:
-                m2m_data[field.name] = attrs.pop(field.name)
-
         # Forward m2m relations
-        [_inner_loop_code(field) for field in meta.many_to_many]
-        [_inner_loop_code(field) for field in meta.virtual_fields]
+        for field in meta.many_to_many + meta.virtual_fields:
+            if isinstance(field, GenericForeignKey):
+                continue
+            if field.name in attrs:
+                 m2m_data[field.name] = attrs.pop(field.name)
 
         # Nested forward relations - These need to be marked so we can save
         # them before saving the parent model instance.
