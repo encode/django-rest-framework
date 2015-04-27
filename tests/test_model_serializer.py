@@ -94,6 +94,30 @@ class TestModelSerializer(TestCase):
         msginitial = 'Got a `TypeError` when calling `OneFieldModel.objects.create()`.'
         assert str(excinfo.exception).startswith(msginitial)
 
+    def test_abstract_model(self):
+        """
+        Test that trying to use ModelSerializer with Abstract Models
+        throws a ValueError exception.
+        """
+        class AbstractModel(models.Model):
+            afield = models.CharField(max_length=255)
+
+            class Meta:
+                abstract = True
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = AbstractModel
+                fields = ('afield',)
+
+        serializer = TestSerializer(data={
+            'afield': 'foo',
+        })
+        with self.assertRaises(ValueError) as excinfo:
+            serializer.is_valid()
+        msginitial = 'Cannot use ModelSerializer with Abstract Models.'
+        assert str(excinfo.exception).startswith(msginitial)
+
 
 class TestRegularFieldMappings(TestCase):
     def test_regular_fields(self):
