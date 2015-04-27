@@ -997,7 +997,7 @@ class ModelSerializer(Serializer):
             if isinstance(field, GenericForeignKey):
                 continue
             if field.name in attrs:
-                 m2m_data[field.name] = attrs.pop(field.name)
+                m2m_data[field.name] = attrs.pop(field.name)
 
         # Nested forward relations - These need to be marked so we can save
         # them before saving the parent model instance.
