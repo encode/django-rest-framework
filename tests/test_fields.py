@@ -10,8 +10,8 @@ from uuid import uuid4
 from django.core import validators
 from django.db import models
 from django.test import TestCase
-from django.utils.datastructures import SortedDict
 from rest_framework import serializers
+from rest_framework.compat import SortedDict
 from tests.models import RESTFrameworkModel
 
 
