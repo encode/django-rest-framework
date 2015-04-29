@@ -1,8 +1,8 @@
 # coding: utf-8
 from __future__ import unicode_literals
 from .utils import MockObject
-from rest_framework import serializers
-from rest_framework.compat import unicode_repr
+from rest_framework_3 import serializers
+from rest_framework_3.compat import unicode_repr
 import pickle
 import pytest
 

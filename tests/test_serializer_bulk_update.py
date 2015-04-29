@@ -4,7 +4,7 @@ Tests to cover bulk create and update using serializers.
 from __future__ import unicode_literals
 from django.test import TestCase
 from django.utils import six
-from rest_framework import serializers
+from rest_framework_3 import serializers
 
 
 class BulkCreateSerializerTests(TestCase):

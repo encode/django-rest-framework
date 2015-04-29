@@ -3,11 +3,11 @@ from django.conf.urls import url, include
 from django.db import models
 from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
-from rest_framework import serializers, viewsets, permissions
-from rest_framework.decorators import detail_route, list_route
-from rest_framework.response import Response
-from rest_framework.routers import SimpleRouter, DefaultRouter
-from rest_framework.test import APIRequestFactory
+from rest_framework_3 import serializers, viewsets, permissions
+from rest_framework_3.decorators import detail_route, list_route
+from rest_framework_3.response import Response
+from rest_framework_3.routers import SimpleRouter, DefaultRouter
+from rest_framework_3.test import APIRequestFactory
 from collections import namedtuple
 
 factory = APIRequestFactory()

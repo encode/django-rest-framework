@@ -4,8 +4,8 @@ from django.db import models
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from django.utils import six
-from rest_framework import generics, renderers, serializers, status
-from rest_framework.test import APIRequestFactory
+from rest_framework_3 import generics, renderers, serializers, status
+from rest_framework_3.test import APIRequestFactory
 from tests.models import BasicModel, RESTFrameworkModel
 from tests.models import ForeignKeySource, ForeignKeyTarget
 

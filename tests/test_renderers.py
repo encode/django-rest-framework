@@ -6,16 +6,16 @@ from django.db import models
 from django.test import TestCase
 from django.utils import six
 from django.utils.translation import ugettext_lazy as _
-from rest_framework import status, permissions
-from rest_framework.compat import OrderedDict
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import serializers
-from rest_framework.renderers import (
+from rest_framework_3 import status, permissions
+from rest_framework_3.compat import OrderedDict
+from rest_framework_3.response import Response
+from rest_framework_3.views import APIView
+from rest_framework_3 import serializers
+from rest_framework_3.renderers import (
     BaseRenderer, JSONRenderer, BrowsableAPIRenderer, HTMLFormRenderer
 )
-from rest_framework.settings import api_settings
-from rest_framework.test import APIRequestFactory
+from rest_framework_3.settings import api_settings
+from rest_framework_3.test import APIRequestFactory
 from collections import MutableMapping
 import json
 import re
@@ -112,7 +112,7 @@ urlpatterns = patterns(
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
     url(r'^empty$', EmptyGETView.as_view()),
-    url(r'^api', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^api', include('rest_framework_3.urls', namespace='rest_framework_3'))
 )
 
 

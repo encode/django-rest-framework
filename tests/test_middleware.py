@@ -1,10 +1,10 @@
 
 from django.conf.urls import patterns, url
 from django.contrib.auth.models import User
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.authtoken.models import Token
-from rest_framework.test import APITestCase
-from rest_framework.views import APIView
+from rest_framework_3.authentication import TokenAuthentication
+from rest_framework_3.authtoken.models import Token
+from rest_framework_3.test import APITestCase
+from rest_framework_3.views import APIView
 
 
 urlpatterns = patterns(

@@ -1,13 +1,13 @@
 from .utils import UsingURLPatterns
 from django.conf.urls import include, url
-from rest_framework import serializers
-from rest_framework import status, versioning
-from rest_framework.decorators import APIView
-from rest_framework.response import Response
-from rest_framework.reverse import reverse
-from rest_framework.test import APIRequestFactory, APITestCase
-from rest_framework.versioning import NamespaceVersioning
-from rest_framework.relations import PKOnlyObject
+from rest_framework_3 import serializers
+from rest_framework_3 import status, versioning
+from rest_framework_3.decorators import APIView
+from rest_framework_3.response import Response
+from rest_framework_3.reverse import reverse
+from rest_framework_3.test import APIRequestFactory, APITestCase
+from rest_framework_3.versioning import NamespaceVersioning
+from rest_framework_3.relations import PKOnlyObject
 import pytest
 
 

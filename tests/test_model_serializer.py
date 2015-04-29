@@ -11,8 +11,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator, MinLeng
 from django.db import models
 from django.test import TestCase
 from django.utils import six
-from rest_framework import serializers
-from rest_framework.compat import unicode_repr
+from rest_framework_3 import serializers
+from rest_framework_3.compat import unicode_repr
 
 
 def dedent(blocktext):

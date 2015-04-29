@@ -3,8 +3,8 @@ from collections import namedtuple
 from django.conf.urls import patterns, url, include
 from django.core import urlresolvers
 from django.test import TestCase
-from rest_framework.test import APIRequestFactory
-from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework_3.test import APIRequestFactory
+from rest_framework_3.urlpatterns import format_suffix_patterns
 
 
 # A container class for test paths for the test case

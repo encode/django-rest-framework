@@ -9,9 +9,9 @@ from django.test.utils import override_settings
 from django.utils import unittest
 from django.utils.dateparse import parse_date
 from django.utils.six.moves import reload_module
-from rest_framework import generics, serializers, status, filters
-from rest_framework.compat import django_filters
-from rest_framework.test import APIRequestFactory
+from rest_framework_3 import generics, serializers, status, filters
+from rest_framework_3.compat import django_filters
+from rest_framework_3.test import APIRequestFactory
 from .models import BaseFilterableItem, FilterableItem, BasicModel
 
 

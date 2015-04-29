@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from rest_framework.test import APIClient
+from rest_framework_3.test import APIClient
 
 
 class DropdownWithAuthTests(TestCase):

@@ -1,8 +1,8 @@
 from django.test import TestCase
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.test import APIRequestFactory
-from rest_framework.viewsets import GenericViewSet
+from rest_framework_3 import status
+from rest_framework_3.response import Response
+from rest_framework_3.test import APIRequestFactory
+from rest_framework_3.viewsets import GenericViewSet
 
 
 factory = APIRequestFactory()
