@@ -1,6 +1,6 @@
 from decimal import Decimal
 from django.utils import timezone
-from rest_framework import serializers
+from rest_framework_3 import serializers
 import datetime
 import django
 import pytest

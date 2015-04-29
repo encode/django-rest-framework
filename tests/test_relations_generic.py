@@ -4,7 +4,7 @@ from django.contrib.contenttypes.generic import GenericRelation, GenericForeignK
 from django.db import models
 from django.test import TestCase
 from django.utils.encoding import python_2_unicode_compatible
-from rest_framework import serializers
+from rest_framework_3 import serializers
 
 
 @python_2_unicode_compatible

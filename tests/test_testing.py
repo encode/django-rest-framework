@@ -4,9 +4,9 @@ from django.conf.urls import patterns, url
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.test import TestCase
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.test import APIClient, APIRequestFactory, force_authenticate
+from rest_framework_3.decorators import api_view
+from rest_framework_3.response import Response
+from rest_framework_3.test import APIClient, APIRequestFactory, force_authenticate
 from io import BytesIO
 
 

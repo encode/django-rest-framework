@@ -2,8 +2,8 @@ from __future__ import unicode_literals
 from django.core.validators import RegexValidator, MaxValueValidator
 from django.db import models
 from django.test import TestCase
-from rest_framework import generics, serializers, status
-from rest_framework.test import APIRequestFactory
+from rest_framework_3 import generics, serializers, status
+from rest_framework_3.test import APIRequestFactory
 import re
 
 factory = APIRequestFactory()

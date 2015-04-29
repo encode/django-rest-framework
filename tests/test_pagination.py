@@ -1,9 +1,9 @@
 # coding: utf-8
 from __future__ import unicode_literals
-from rest_framework import exceptions, generics, pagination, serializers, status, filters
-from rest_framework.request import Request
-from rest_framework.pagination import PageLink, PAGE_BREAK
-from rest_framework.test import APIRequestFactory
+from rest_framework_3 import exceptions, generics, pagination, serializers, status, filters
+from rest_framework_3.request import Request
+from rest_framework_3.pagination import PageLink, PAGE_BREAK
+from rest_framework_3.test import APIRequestFactory
 import pytest
 
 factory = APIRequestFactory()

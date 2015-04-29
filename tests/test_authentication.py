@@ -4,21 +4,21 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import TestCase
 from django.utils import six
-from rest_framework import HTTP_HEADER_ENCODING
-from rest_framework import exceptions
-from rest_framework import permissions
-from rest_framework import renderers
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.authentication import (
+from rest_framework_3 import HTTP_HEADER_ENCODING
+from rest_framework_3 import exceptions
+from rest_framework_3 import permissions
+from rest_framework_3 import renderers
+from rest_framework_3.response import Response
+from rest_framework_3 import status
+from rest_framework_3.authentication import (
     BaseAuthentication,
     TokenAuthentication,
     BasicAuthentication,
     SessionAuthentication,
 )
-from rest_framework.authtoken.models import Token
-from rest_framework.test import APIRequestFactory, APIClient
-from rest_framework.views import APIView
+from rest_framework_3.authtoken.models import Token
+from rest_framework_3.test import APIRequestFactory, APIClient
+from rest_framework_3.views import APIView
 import base64
 
 factory = APIRequestFactory()
@@ -42,8 +42,8 @@ urlpatterns = patterns(
     (r'^session/$', MockView.as_view(authentication_classes=[SessionAuthentication])),
     (r'^basic/$', MockView.as_view(authentication_classes=[BasicAuthentication])),
     (r'^token/$', MockView.as_view(authentication_classes=[TokenAuthentication])),
-    (r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
-    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework'))
+    (r'^auth-token/$', 'rest_framework_3.authtoken.views.obtain_auth_token'),
+    url(r'^auth/', include('rest_framework_3.urls', namespace='rest_framework_3'))
 )
 
 

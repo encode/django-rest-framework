@@ -1,8 +1,8 @@
 from __future__ import unicode_literals
-from rest_framework import exceptions, metadata, serializers, status, views, versioning
-from rest_framework.request import Request
-from rest_framework.renderers import BrowsableAPIRenderer
-from rest_framework.test import APIRequestFactory
+from rest_framework_3 import exceptions, metadata, serializers, status, views, versioning
+from rest_framework_3.request import Request
+from rest_framework_3.renderers import BrowsableAPIRenderer
+from rest_framework_3.test import APIRequestFactory
 
 request = Request(APIRequestFactory().options('/'))
 

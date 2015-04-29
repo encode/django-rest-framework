@@ -41,7 +41,7 @@ def get_package_data(package):
     return {package: filepaths}
 
 
-version = get_version('rest_framework')
+version = get_version('rest_framework_3')
 
 
 if sys.argv[-1] == 'publish':
@@ -60,15 +60,15 @@ if sys.argv[-1] == 'publish':
 
 
 setup(
-    name='djangorestframework',
+    name='djangorestframework-3',
     version=version,
     url='http://www.django-rest-framework.org',
     license='BSD',
     description='Web APIs for Django, made easy.',
     author='Tom Christie',
     author_email='tom@tomchristie.com',  # SEE NOTE BELOW (*)
-    packages=get_packages('rest_framework'),
-    package_data=get_package_data('rest_framework'),
+    packages=get_packages('rest_framework_3'),
+    package_data=get_package_data('rest_framework_3'),
     install_requires=[],
     zip_safe=False,
     classifiers=[

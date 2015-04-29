@@ -3,19 +3,19 @@ from django.conf.urls import patterns, url, include
 from django.test import TestCase
 from django.utils import six
 from tests.models import BasicModel
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import generics
-from rest_framework import routers
-from rest_framework import serializers
-from rest_framework import status
-from rest_framework.renderers import (
+from rest_framework_3.response import Response
+from rest_framework_3.views import APIView
+from rest_framework_3 import generics
+from rest_framework_3 import routers
+from rest_framework_3 import serializers
+from rest_framework_3 import status
+from rest_framework_3.renderers import (
     BaseRenderer,
     JSONRenderer,
     BrowsableAPIRenderer
 )
-from rest_framework import viewsets
-from rest_framework.settings import api_settings
+from rest_framework_3 import viewsets
+from rest_framework_3.settings import api_settings
 
 
 # Serializer used to test BasicModel
@@ -122,7 +122,7 @@ urlpatterns = patterns(
     url(r'^html1$', HTMLView1.as_view()),
     url(r'^html_new_model$', HTMLNewModelView.as_view()),
     url(r'^html_new_model_viewset', include(new_model_viewset_router.urls)),
-    url(r'^restframework', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^restframework_3', include('rest_framework_3.urls', namespace='rest_framework_3'))
 )
 
 

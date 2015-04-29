@@ -6,7 +6,7 @@
 # to catch unicode related errors, a mock view has to be declared in a separate
 # module.
 
-from rest_framework.views import APIView
+from rest_framework_3.views import APIView
 
 
 # test strings snatched from http://www.columbia.edu/~fdc/utf8/,
