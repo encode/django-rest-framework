@@ -15,19 +15,19 @@ factory = APIRequestFactory()
 
 
 class BasicView(APIView):
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         BasicModel.objects.create()
         return Response({'method': 'GET'})
 
 
 class ErrorView(APIView):
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         BasicModel.objects.create()
         raise Exception
 
 
 class APIExceptionView(APIView):
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         BasicModel.objects.create()
         raise APIException
 
@@ -43,7 +43,7 @@ class DBTransactionTests(TestCase):
         connections.databases['default']['ATOMIC_REQUESTS'] = False
 
     def test_no_exception_conmmit_transaction(self):
-        request = factory.get('/')
+        request = factory.post('/')
 
         with self.assertNumQueries(1):
             response = self.view(request)
@@ -66,7 +66,7 @@ class DBTransactionErrorTests(TestCase):
         Transaction is eventually managed by outer-most transaction atomic
         block. DRF do not try to interfere here.
         """
-        request = factory.get('/')
+        request = factory.post('/')
         with self.assertNumQueries(3):
             # 1 - begin savepoint
             # 2 - insert
@@ -90,7 +90,7 @@ class DBTransactionAPIExceptionTests(TestCase):
         """
         Transaction is rollbacked by our transaction atomic block.
         """
-        request = factory.get('/')
+        request = factory.post('/')
         num_queries = (4 if getattr(connection.features,
                                     'can_release_savepoints', False) else 3)
         with self.assertNumQueries(num_queries):
