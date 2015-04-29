@@ -49,6 +49,7 @@ class DBTransactionTests(TestCase):
             response = self.view(request)
         self.assertFalse(transaction.get_rollback())
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert BasicModel.objects.count() == 1
 
 
 @skipUnless(connection.features.uses_savepoints,
@@ -74,6 +75,7 @@ class DBTransactionErrorTests(TestCase):
             with transaction.atomic():
                 self.assertRaises(Exception, self.view, request)
                 self.assertFalse(transaction.get_rollback())
+        assert BasicModel.objects.count() == 1
 
 
 @skipUnless(connection.features.uses_savepoints,
@@ -103,3 +105,4 @@ class DBTransactionAPIExceptionTests(TestCase):
                 self.assertTrue(transaction.get_rollback())
         self.assertEqual(response.status_code,
                          status.HTTP_500_INTERNAL_SERVER_ERROR)
+        assert BasicModel.objects.count() == 0
