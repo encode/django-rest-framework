@@ -62,10 +62,12 @@ class DBTransactionErrorTests(TestCase):
     def tearDown(self):
         connections.databases['default']['ATOMIC_REQUESTS'] = False
 
-    def test_error_rollback_transaction(self):
+    def test_generic_exception_delegate_transaction_management(self):
         """
         Transaction is eventually managed by outer-most transaction atomic
         block. DRF do not try to interfere here.
+
+        We let django deal with the transaction when it will catch the Exception.
         """
         request = factory.post('/')
         with self.assertNumQueries(3):
