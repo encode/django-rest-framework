@@ -925,6 +925,9 @@ class DateField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
+        if not value:
+            return None
+
         if self.format is None:
             return value
 
@@ -938,7 +941,10 @@ class DateField(Field):
         )
 
         if self.format.lower() == ISO_8601:
+            if (isinstance(value, str)):
+                value = datetime.datetime.strptime(value, '%Y-%m-%d').date()
             return value.isoformat()
+
         return value.strftime(self.format)
 
 
