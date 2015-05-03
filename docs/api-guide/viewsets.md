@@ -136,8 +136,13 @@ For example:
         @list_route()
         def recent_users(self, request):
             recent_users = User.objects.all().order('-last_login')
+
             page = self.paginate_queryset(recent_users)
-            serializer = self.get_paginated_response(page)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = self.get_serializer(recent_users, many=True)
             return Response(serializer.data)
 
 The decorators can additionally take extra arguments that will be set for the routed view only.  For example...
