@@ -993,7 +993,11 @@ class ModelSerializer(Serializer):
                 m2m_data[field_name] = attrs.pop(field_name)
 
         # Forward m2m relations
-        for field in meta.many_to_many + meta.virtual_fields:
+        if issubclass(meta.many_to_many.__class__, tuple):
+            temp_m2m = list(meta.many_to_many)
+        else:
+            temp_m2m = meta.many_to_many
+        for field in temp_m2m + meta.virtual_fields:
             if isinstance(field, GenericForeignKey):
                 continue
             if field.name in attrs:
