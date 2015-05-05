@@ -227,6 +227,18 @@ class ObjectPermissionListView(generics.ListAPIView):
 object_permissions_list_view = ObjectPermissionListView.as_view()
 
 
+class GetQuerysetObjectPermissionInstanceView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = BasicPermSerializer
+    authentication_classes = [authentication.BasicAuthentication]
+    permission_classes = [ViewObjectPermissions]
+
+    def get_queryset(self):
+        return BasicPermModel.objects.all()
+
+
+get_queryset_object_permissions_view = GetQuerysetObjectPermissionInstanceView.as_view()
+
+
 @unittest.skipUnless(guardian, 'django-guardian not installed')
 class ObjectPermissionsIntegrationTests(TestCase):
     """
@@ -325,6 +337,15 @@ class ObjectPermissionsIntegrationTests(TestCase):
         request = factory.get('/1', HTTP_AUTHORIZATION=self.credentials['writeonly'])
         response = object_permissions_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_can_read_get_queryset_permissions(self):
+        """
+        same as ``test_can_read_permissions`` but with a view
+        that rely on ``.get_queryset()`` instead of ``.queryset``.
+        """
+        request = factory.get('/1', HTTP_AUTHORIZATION=self.credentials['readonly'])
+        response = get_queryset_object_permissions_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # Read list
     def test_can_read_list_permissions(self):
