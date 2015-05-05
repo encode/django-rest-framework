@@ -290,14 +290,14 @@ The following third party packages are also available.
 
 The [drf-nested-routers package][drf-nested-routers] provides routers and relationship fields for working with nested resources.
 
-## wq.db
+## ModelRouter (wq.db.rest)
 
-The [wq.db package][wq.db] provides an advanced [Router][wq.db-router] class (and singleton instance) that extends `DefaultRouter` with a `register_model()` API. Much like Django's `admin.site.register`, the only required argument to `app.router.register_model` is a model class.  Reasonable defaults for a url prefix and viewset will be inferred from the model and global configuration.
+The [wq.db package][wq.db] provides an advanced [ModelRouter][wq.db-router] class (and singleton instance) that extends `DefaultRouter` with a `register_model()` API. Much like Django's `admin.site.register`, the only required argument to `rest.router.register_model` is a model class.  Reasonable defaults for a url prefix, serializer, and viewset will be inferred from the model and global configuration.
 
-    from wq.db.rest import app
+    from wq.db import rest
     from myapp.models import MyModel
 
-    app.router.register_model(MyModel)
+    rest.router.register_model(MyModel)
 
 ## DRF-extensions
 
@@ -307,7 +307,7 @@ The [`DRF-extensions` package][drf-extensions] provides [routers][drf-extensions
 [route-decorators]: viewsets.md#marking-extra-actions-for-routing
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [wq.db]: http://wq.io/wq.db
-[wq.db-router]: http://wq.io/docs/app.py
+[wq.db-router]: http://wq.io/docs/router
 [drf-extensions]: http://chibisov.github.io/drf-extensions/docs/
 [drf-extensions-routers]: http://chibisov.github.io/drf-extensions/docs/#routers
 [drf-extensions-nested-viewsets]: http://chibisov.github.io/drf-extensions/docs/#nested-routes
