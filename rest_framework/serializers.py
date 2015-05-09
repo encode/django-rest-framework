@@ -14,6 +14,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.db.models.fields import FieldDoesNotExist, Field as DjangoModelField
 from django.db.models import query
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.compat import postgres_fields, unicode_to_repr
 from rest_framework.utils import model_meta
@@ -314,6 +315,17 @@ class Serializer(BaseSerializer):
                 self._fields[key] = value
         return self._fields
 
+    @cached_property
+    def _to_internal_value_fields(self):
+        return [
+            field for field in self.fields.values()
+            if (not field.read_only) or (field.default is not empty)
+        ]
+
+    @cached_property
+    def _to_representation_fields(self):
+        return [field for field in self.fields.values() if not field.write_only]
+
     def get_fields(self):
         """
         Returns a dictionary of {field_name: field_instance}.
@@ -388,10 +400,7 @@ class Serializer(BaseSerializer):
 
         ret = OrderedDict()
         errors = OrderedDict()
-        fields = [
-            field for field in self.fields.values()
-            if (not field.read_only) or (field.default is not empty)
-        ]
+        fields = self._to_internal_value_fields
 
         for field in fields:
             validate_method = getattr(self, 'validate_' + field.field_name, None)
@@ -419,7 +428,7 @@ class Serializer(BaseSerializer):
         Object instance -> Dict of primitive datatypes.
         """
         ret = OrderedDict()
-        fields = [field for field in self.fields.values() if not field.write_only]
+        fields = self._to_representation_fields
 
         for field in fields:
             try:
