@@ -273,7 +273,7 @@ If you want to implement a read-write relational field, you must also implement 
 
 ## Example
 
-For, example, we could define a relational field, to serialize a track to a custom string representation, using its ordering, title, and duration.
+For example, we could define a relational field to serialize a track to a custom string representation, using its ordering, title, and duration.
 
     import time
 
