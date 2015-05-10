@@ -175,6 +175,8 @@ class TokenAuthentication(BaseAuthentication):
         if not token.user.is_active:
             raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
 
+        token.user.backend = "{0}.{1}".format(self.__class__.__module__, self.__class__.__name__)
+
         return (token.user, token)
 
     def authenticate_header(self, request):
