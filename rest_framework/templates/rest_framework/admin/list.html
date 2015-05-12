@@ -1,0 +1,20 @@
+<table class="table table-striped">
+    <thead>
+        <tr>{% for column in columns%}<th>{{ column|capfirst }}</th>{% endfor %}</tr>
+    </thead>
+    <tbody>
+        {% for row in results %}
+        <tr>
+            {% for key, value in row.items %}
+            {% if key in columns %}
+            <td>
+                {% if key in linked %}<a href="{{ row.url }}">{% endif %}
+                {{ value }}
+                {% if key in linked %}</a>{% endif %}
+            </td>
+            {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

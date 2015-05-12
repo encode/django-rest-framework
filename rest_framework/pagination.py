@@ -200,6 +200,9 @@ class BasePagination(object):
     def to_html(self):  # pragma: no cover
         raise NotImplementedError('to_html() must be implemented to display page controls.')
 
+    def get_results(self, data):
+        return data['results']
+
 
 class PageNumberPagination(BasePagination):
     """
