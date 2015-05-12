@@ -1,6 +1,7 @@
 from __future__ import unicode_literals, absolute_import
 from django import template
 from django.core.urlresolvers import reverse, NoReverseMatch
+from django.template import loader, Context
 from django.utils import six
 from django.utils.encoding import iri_to_uri, force_text
 from django.utils.html import escape
@@ -110,9 +111,13 @@ def format_value(value):
     if isinstance(value, (int, float, decimal.Decimal, bool, type(None))):
         return mark_safe('<code>%s</code>' % value)
     elif isinstance(value, list):
-        return ''
+        template = loader.get_template('rest_framework/admin/list_value.html')
+        context = Context({'value': value})
+        return template.render(context)
     elif isinstance(value, dict):
-        return ''
+        template = loader.get_template('rest_framework/admin/dict_value.html')
+        context = Context({'value': value})
+        return template.render(context)
     elif isinstance(value, six.string_types):
         if (
             (value.startswith('http:') or value.startswith('https:')) and not
@@ -123,6 +128,12 @@ def format_value(value):
             return mark_safe('<a href="mailto:{value}">{value}</a>'.format(value=escape(value)))
     return six.text_type(value)
 
+
+@register.filter
+def add_nested_class(value):
+    if isinstance(value, (list, dict)):
+        return 'class=nested'
+    return ''
 
 
 # Bunch of stuff cloned from urlize

@@ -8,7 +8,7 @@
         <tr>
             {% for key, value in row.items %}
             {% if key in columns %}
-            <td>
+            <td {{ value|add_nested_class }} >
                 {% if key in linked %}<a href="{{ row.url }}">{% endif %}
                 {{ value|format_value }}
                 {% if key in linked %}</a>{% endif %}

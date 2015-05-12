@@ -33,6 +33,14 @@ h2, h3 {
   margin-right: 1em;
 }
 
+td.nested {
+  padding: 0 !important;
+}
+
+td.nested > table {
+  margin: 0;
+}
+
 form select, form input, form textarea {
   width: 90%;
 }
