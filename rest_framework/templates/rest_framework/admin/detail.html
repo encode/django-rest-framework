@@ -1,8 +1,9 @@
+{% load rest_framework %}
 <table class="table table-striped">
     <tbody>
         {% for key, value in results.items %}
         {% if key in details %}
-        <tr><th>{{ key|capfirst }}</th><td>{{ value }}</td></tr>
+        <tr><th>{{ key|capfirst }}</th><td>{{ value|format_value }}</td></tr>
         {% endif %}
         {% endfor %}
     </tbody>

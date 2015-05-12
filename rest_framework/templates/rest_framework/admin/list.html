@@ -1,3 +1,4 @@
+{% load rest_framework %}
 <table class="table table-striped">
     <thead>
         <tr>{% for column in columns%}<th>{{ column|capfirst }}</th>{% endfor %}</tr>
@@ -9,7 +10,7 @@
             {% if key in columns %}
             <td>
                 {% if key in linked %}<a href="{{ row.url }}">{% endif %}
-                {{ value }}
+                {{ value|format_value }}
                 {% if key in linked %}</a>{% endif %}
             </td>
             {% endif %}

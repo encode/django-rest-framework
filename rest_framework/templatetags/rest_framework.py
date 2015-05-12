@@ -8,6 +8,7 @@ from django.utils.safestring import SafeData, mark_safe
 from django.utils.html import smart_urlquote
 from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
+import decimal
 import re
 
 register = template.Library()
@@ -102,6 +103,26 @@ def add_class(value, css_class):
     else:
         return mark_safe(html.replace('>', ' class="%s">' % css_class, 1))
     return value
+
+
+@register.filter
+def format_value(value):
+    if isinstance(value, (int, float, decimal.Decimal, bool, type(None))):
+        return mark_safe('<code>%s</code>' % value)
+    elif isinstance(value, list):
+        return ''
+    elif isinstance(value, dict):
+        return ''
+    elif isinstance(value, six.string_types):
+        if (
+            (value.startswith('http:') or value.startswith('https:')) and not
+            re.search(r'\s', value)
+        ):
+            return mark_safe('<a href="{value}">{value}</a>'.format(value=escape(value)))
+        elif '@' in value and not re.search(r'\s', value):
+            return mark_safe('<a href="mailto:{value}">{value}</a>'.format(value=escape(value)))
+    return six.text_type(value)
+
 
 
 # Bunch of stuff cloned from urlize

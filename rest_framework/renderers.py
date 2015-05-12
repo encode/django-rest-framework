@@ -687,7 +687,7 @@ class AdminRenderer(BrowsableAPIRenderer):
             results = data
 
         if isinstance(results, list):
-            header = results[0]
+            header = results[0] if results else {}
             style = 'list'
         else:
             header = results
@@ -695,7 +695,7 @@ class AdminRenderer(BrowsableAPIRenderer):
 
         columns = [key for key in header.keys() if key != 'url']
         details = [key for key in header.keys() if key != 'url']
-        linked = [columns[0]]
+        linked = [columns[0]] if columns else []
 
         context['style'] = style
         context['columns'] = columns
