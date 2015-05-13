@@ -107,23 +107,20 @@ class DjangoModelPermissions(BasePermission):
         return [perm % kwargs for perm in self.perms_map[method]]
 
     def has_permission(self, request, view):
+        # Workaround to ensure DjangoModelPermissions are not applied
+        # to the root view when using DefaultRouter.
+        if getattr(view, '_ignore_model_permissions', False):
+            return True
+
         try:
             queryset = view.get_queryset()
         except AttributeError:
             queryset = getattr(view, 'queryset', None)
-        except AssertionError:
-            # view.get_queryset() didn't find .queryset
-            queryset = None
-
-        # Workaround to ensure DjangoModelPermissions are not applied
-        # to the root view when using DefaultRouter.
-        if queryset is None and getattr(view, '_ignore_model_permissions', False):
-            return True
 
         assert queryset is not None, (
             'Cannot apply DjangoModelPermissions on a view that '
-            'does not have `.queryset` property nor redefines `.get_queryset()`.'
-        )
+            'does not have `.queryset` property or overrides the '
+            '`.get_queryset()` method.')
 
         perms = self.get_required_permissions(request.method, queryset.model)
 
@@ -172,7 +169,17 @@ class DjangoObjectPermissions(DjangoModelPermissions):
         return [perm % kwargs for perm in self.perms_map[method]]
 
     def has_object_permission(self, request, view, obj):
-        model_cls = view.queryset.model
+        try:
+            queryset = view.get_queryset()
+        except AttributeError:
+            queryset = getattr(view, 'queryset', None)
+
+        assert queryset is not None, (
+            'Cannot apply DjangoObjectPermissions on a view that '
+            'does not have `.queryset` property or overrides the '
+            '`.get_queryset()` method.')
+
+        model_cls = queryset.model
         user = request.user
 
         perms = self.get_required_object_permissions(request.method, model_cls)
