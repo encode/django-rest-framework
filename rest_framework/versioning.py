@@ -184,8 +184,10 @@ class MultipleNamespaceVersioning(NamespaceVersioning):
         for namespace in resolver_match.namespaces:
             if namespace in self.allowed_versions:
                 version = namespace
+
         if version is None:
             version = self.default_version
+            
         return version
 
     def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
@@ -200,7 +202,6 @@ class MultipleNamespaceVersioning(NamespaceVersioning):
             return ':'.join(request.resolver_match.namespaces)
 
         return request.version + ':' + viewname
-
 
 
 class HostNameVersioning(BaseVersioning):
