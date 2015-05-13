@@ -58,6 +58,7 @@ You can determine your currently installed version using `pip freeze`:
 * Prevent empty `queryset`s to raise AssertionError. ([#2862](gh2862))
 * DjangoModelPermissions rely on get_queryset. ([#2863](gh2863))
 * Check AcceptHeaderVersioning with content negotiation in place. ([#2868](gh2868))
+* Allow DjangoObjectPermissions to use views that define get_queryset ([#2905](gh2905))
 
 
 ### 3.1.1
@@ -339,3 +340,4 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh2862]: https://github.com/tomchristie/django-rest-framework/issues/2862
 [gh2863]: https://github.com/tomchristie/django-rest-framework/issues/2863
 [gh2868]: https://github.com/tomchristie/django-rest-framework/issues/2868
+[gh2905]: https://github.com/tomchristie/django-rest-framework/issues/2905
