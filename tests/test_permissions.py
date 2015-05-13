@@ -5,7 +5,9 @@ from django.test import TestCase
 from django.utils import unittest
 from rest_framework import generics, serializers, status, permissions, authentication, HTTP_HEADER_ENCODING
 from rest_framework.compat import guardian, get_model_name
+from django.core.urlresolvers import ResolverMatch
 from rest_framework.filters import DjangoObjectPermissionsFilter
+from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
 from tests.models import BasicModel
 import base64
@@ -49,6 +51,7 @@ class EmptyListView(generics.ListCreateAPIView):
 
 
 root_view = RootView.as_view()
+api_root_view = DefaultRouter().get_api_root_view()
 instance_view = InstanceView.as_view()
 get_queryset_list_view = GetQuerySetListView.as_view()
 empty_list_view = EmptyListView.as_view()
@@ -85,6 +88,18 @@ class ModelPermissionsIntegrationTests(TestCase):
                                HTTP_AUTHORIZATION=self.permitted_credentials)
         response = root_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_api_root_view_discard_default_django_model_permission(self):
+        """
+        We check that DEFAULT_PERMISSION_CLASSES can
+        apply to APIRoot view. More specifically we check expected behavior of
+        ``_ignore_model_permissions`` attribute support.
+        """
+        request = factory.get('/', format='json',
+                              HTTP_AUTHORIZATION=self.permitted_credentials)
+        request.resolver_match = ResolverMatch('get', (), {})
+        response = api_root_view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_queryset_has_create_permissions(self):
         request = factory.post('/', {'text': 'foobar'}, format='json',
@@ -227,6 +242,18 @@ class ObjectPermissionListView(generics.ListAPIView):
 object_permissions_list_view = ObjectPermissionListView.as_view()
 
 
+class GetQuerysetObjectPermissionInstanceView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = BasicPermSerializer
+    authentication_classes = [authentication.BasicAuthentication]
+    permission_classes = [ViewObjectPermissions]
+
+    def get_queryset(self):
+        return BasicPermModel.objects.all()
+
+
+get_queryset_object_permissions_view = GetQuerysetObjectPermissionInstanceView.as_view()
+
+
 @unittest.skipUnless(guardian, 'django-guardian not installed')
 class ObjectPermissionsIntegrationTests(TestCase):
     """
@@ -325,6 +352,15 @@ class ObjectPermissionsIntegrationTests(TestCase):
         request = factory.get('/1', HTTP_AUTHORIZATION=self.credentials['writeonly'])
         response = object_permissions_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_can_read_get_queryset_permissions(self):
+        """
+        same as ``test_can_read_permissions`` but with a view
+        that rely on ``.get_queryset()`` instead of ``.queryset``.
+        """
+        request = factory.get('/1', HTTP_AUTHORIZATION=self.credentials['readonly'])
+        response = get_queryset_object_permissions_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # Read list
     def test_can_read_list_permissions(self):
