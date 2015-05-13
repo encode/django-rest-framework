@@ -131,7 +131,7 @@ class NamespaceVersioning(BaseVersioning):
         return request.version + ':' + viewname
 
 
-class MultipleNamespaceVersioning(versioning.NamespaceVersioning):
+class MultipleNamespaceVersioning(NamespaceVersioning):
 
     """
     This is the same as NamespaceVersioning, the difference is that
