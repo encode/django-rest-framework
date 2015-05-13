@@ -187,7 +187,7 @@ class MultipleNamespaceVersioning(NamespaceVersioning):
 
         if version is None:
             version = self.default_version
-            
+
         return version
 
     def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
