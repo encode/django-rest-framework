@@ -131,6 +131,83 @@ class NamespaceVersioning(BaseVersioning):
         return request.version + ':' + viewname
 
 
+class MultipleNamespaceVersioning(versioning.NamespaceVersioning):
+
+    """
+    This is the same as NamespaceVersioning, the difference is that
+    multiple namespaces can be used for bigger projects.
+
+    In settings.py, REST_FRAMEWORK should include
+        ALLOWED_VERSIONS: a list of all available versions
+        DEFAULT_VERSION: a string containing the default version to use
+
+    An example URL conf that is namespaced using different namespaces
+
+    # item/urls.py
+    urlpatterns = [
+        url(r'^/(?P<pk>[\d]+)/$', item_detail, name='detail'),
+    ]
+
+    # urls.py
+    api_patterns = [
+        url(r'^items', include('mysite.item.urls', namespace='items')),
+    ]
+
+    urlpatterns = [
+        url(r'^', include(api_patterns)),
+        url(r'^json/', include(api_patterns, namespace='json')),
+    ]
+
+    They can then be accessed in templates such as
+
+    - to get the default version
+    {% url 'items:detail' pk=2 %}
+    --> /items/2/
+
+    - to get the json version or any other version
+    {% url 'json:items:detail' pk=2 }
+    --> /json/items/2/
+
+
+    allowed versions must be set as it will be used to compare its
+    contents with the given namespaces of the url
+    """
+
+    def determine_version(self, request, *args, **kwargs):
+
+        resolver_match = getattr(request, 'resolver_match', None)
+        version = None
+
+        if (resolver_match is None or not resolver_match.namespaces):
+            if (not resolver_match.namespace):
+                version = self.default_version
+            else:
+                version = resolver_match.namespace
+
+        for namespace in resolver_match.namespaces:
+            if namespace in self.allowed_versions:
+                version = namespace
+
+        if version is None:
+            version = self.default_version
+
+        return version
+
+    def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
+        if request.version is not None:
+            viewname = self.get_versioned_viewname(viewname, request)
+        return super(NamespaceVersioning, self).reverse(
+            viewname, args, kwargs, request, format, **extra
+        )
+
+    def get_versioned_viewname(self, viewname, request):
+        if request.resolver_match is not None and request.resolver_match.namespaces:
+            return ':'.join(request.resolver_match.namespaces)
+
+        return request.version + ':' + viewname
+
+
+
 class HostNameVersioning(BaseVersioning):
     """
     GET /something/ HTTP/1.1
