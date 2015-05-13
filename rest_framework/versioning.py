@@ -132,7 +132,6 @@ class NamespaceVersioning(BaseVersioning):
 
 
 class MultipleNamespaceVersioning(NamespaceVersioning):
-
     """
     This is the same as NamespaceVersioning, the difference is that
     multiple namespaces can be used for bigger projects.
@@ -168,13 +167,11 @@ class MultipleNamespaceVersioning(NamespaceVersioning):
     {% url 'json:items:detail' pk=2 }
     --> /json/items/2/
 
-
     allowed versions must be set as it will be used to compare its
     contents with the given namespaces of the url
     """
 
     def determine_version(self, request, *args, **kwargs):
-
         resolver_match = getattr(request, 'resolver_match', None)
         version = None
 
@@ -187,10 +184,8 @@ class MultipleNamespaceVersioning(NamespaceVersioning):
         for namespace in resolver_match.namespaces:
             if namespace in self.allowed_versions:
                 version = namespace
-
         if version is None:
             version = self.default_version
-
         return version
 
     def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
