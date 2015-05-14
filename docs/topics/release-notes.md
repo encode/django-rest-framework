@@ -44,21 +44,21 @@ You can determine your currently installed version using `pip freeze`:
 
 **Date**: [13rd May 2015][3.1.2-milestone].
 
-* DateField to_representation can handle str and empty values. ([#2656](gh2656), [#2687](gh2687), [#2869](gh2869))
-* Use default reason phrases from HTTP standard. ([#2764](gh2764), [#2763](gh2763))
-* Raise error when ModelSerializer used with abstract model. ([#2757](gh2757), [#2630](gh2630))
-* Handle reversal of non-API view_name in HyperLinkedRelatedField ([#2724](gh2724), [#2711](gh2711))
-* Dont require pk strictly for related fields. ([#2745](gh2745), [#2754](gh2754))
-* Metadata detects null boolean field type. ([#2762](gh2762))
-* Proper handling of depth in nested serializers. ([#2798](gh2798))
-* Display viewset without paginator. ([#2807](gh2807))
-* Don't check for deprecated '.model' attribute in permissions ([#2818](gh2818))
-* Restrict integer field to integers and strings. ([#2835](gh2835), [#2836](gh2836))
-* Improve IntegerField to use compiled decimal regex. ([#2853](gh2853))
-* Prevent empty `queryset`s to raise AssertionError. ([#2862](gh2862))
-* DjangoModelPermissions rely on get_queryset. ([#2863](gh2863))
-* Check AcceptHeaderVersioning with content negotiation in place. ([#2868](gh2868))
-* Allow DjangoObjectPermissions to use views that define get_queryset ([#2905](gh2905))
+* DateField to_representation can handle str and empty values. ([#2656][gh2656], [#2687][gh2687], [#2869][gh2869])
+* Use default reason phrases from HTTP standard. ([#2764][gh2764], [#2763][gh2763])
+* Raise error when ModelSerializer used with abstract model. ([#2757][gh2757], [#2630][gh2630])
+* Handle reversal of non-API view_name in HyperLinkedRelatedField ([#2724][gh2724], [#2711][gh2711])
+* Dont require pk strictly for related fields. ([#2745](gh2745), [#2754][gh2754])
+* Metadata detects null boolean field type. ([#2762][gh2762])
+* Proper handling of depth in nested serializers. ([#2798][gh2798])
+* Display viewset without paginator. ([#2807][gh2807])
+* Don't check for deprecated '.model' attribute in permissions ([#2818][gh2818])
+* Restrict integer field to integers and strings. ([#2835](gh2835), [#2836][gh2836])
+* Improve IntegerField to use compiled decimal regex. ([#2853][gh2853])
+* Prevent empty `queryset`s to raise AssertionError. ([#2862][gh2862])
+* DjangoModelPermissions rely on get_queryset. ([#2863][gh2863])
+* Check AcceptHeaderVersioning with content negotiation in place. ([#2868][gh2868])
+* Allow DjangoObjectPermissions to use views that define get_queryset ([#2905][gh2905])
 
 
 ### 3.1.1
@@ -66,8 +66,8 @@ You can determine your currently installed version using `pip freeze`:
 **Date**: [23rd March 2015][3.1.1-milestone].
 
 * **Security fix**: Escape tab switching cookie name in browsable API.
-* Display input forms in browsable API if `serializer_class` is used, even when `get_serializer` method does not exist on the view. ([#2743](gh2743))
-* Use a password input for the AuthTokenSerializer. ([#2741](gh2741))
+* Display input forms in browsable API if `serializer_class` is used, even when `get_serializer` method does not exist on the view. ([#2743][gh2743])
+* Use a password input for the AuthTokenSerializer. ([#2741][gh2741])
 * Fix missing anchor closing tag after next button. ([#2691][gh2691])
 * Fix `lookup_url_kwarg` handling in viewsets. ([#2685][gh2685], [#2591][gh2591])
 * Fix problem with importing `rest_framework.views` in `apps.py` ([#2678][gh2678])
