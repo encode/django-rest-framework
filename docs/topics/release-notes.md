@@ -44,21 +44,21 @@ You can determine your currently installed version using `pip freeze`:
 
 **Date**: [13rd May 2015][3.1.2-milestone].
 
-* DateField to_representation can handle str and empty values. ([#2656][gh2656], [#2687][gh2687], [#2869][gh2869])
+* `DateField.to_representation` can handle str and empty values. ([#2656][gh2656], [#2687][gh2687], [#2869][gh2869])
 * Use default reason phrases from HTTP standard. ([#2764][gh2764], [#2763][gh2763])
-* Raise error when ModelSerializer used with abstract model. ([#2757][gh2757], [#2630][gh2630])
-* Handle reversal of non-API view_name in HyperLinkedRelatedField ([#2724][gh2724], [#2711][gh2711])
+* Raise error when `ModelSerializer` used with abstract model. ([#2757][gh2757], [#2630][gh2630])
+* Handle reversal of non-API view_name in `HyperLinkedRelatedField` ([#2724][gh2724], [#2711][gh2711])
 * Dont require pk strictly for related fields. ([#2745](gh2745), [#2754][gh2754])
 * Metadata detects null boolean field type. ([#2762][gh2762])
 * Proper handling of depth in nested serializers. ([#2798][gh2798])
 * Display viewset without paginator. ([#2807][gh2807])
-* Don't check for deprecated '.model' attribute in permissions ([#2818][gh2818])
+* Don't check for deprecated `.model` attribute in permissions ([#2818][gh2818])
 * Restrict integer field to integers and strings. ([#2835](gh2835), [#2836][gh2836])
-* Improve IntegerField to use compiled decimal regex. ([#2853][gh2853])
-* Prevent empty `queryset`s to raise AssertionError. ([#2862][gh2862])
-* DjangoModelPermissions rely on get_queryset. ([#2863][gh2863])
-* Check AcceptHeaderVersioning with content negotiation in place. ([#2868][gh2868])
-* Allow DjangoObjectPermissions to use views that define get_queryset ([#2905][gh2905])
+* Improve `IntegerField` to use compiled decimal regex. ([#2853][gh2853])
+* Prevent empty `queryset` to raise AssertionError. ([#2862][gh2862])
+* `DjangoModelPermissions` rely on `get_queryset`. ([#2863][gh2863])
+* Check `AcceptHeaderVersioning` with content negotiation in place. ([#2868][gh2868])
+* Allow `DjangoObjectPermissions` to use views that define `get_queryset`. ([#2905][gh2905])
 
 
 ### 3.1.1
