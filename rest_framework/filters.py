@@ -106,9 +106,12 @@ class SearchFilter(BaseFilterBackend):
             or_queries = [models.Q(**{orm_lookup: search_term})
                           for orm_lookup in orm_lookups]
             queryset = queryset.filter(reduce(operator.or_, or_queries))
-            if settings.DATABASES[queryset.db]["ENGINE"] != "django.db.backends.oracle":
-                queryset = queryset.distinct()
 
+        if settings.DATABASES[queryset.db]["ENGINE"] != "django.db.backends.oracle":
+            queryset = queryset.distinct()
+        else:
+            pk_list = queryset.values_list('pk', flat=True)
+            queryset = view.model.objects.filter(pk__in=set(pk_list))
         return queryset
 
 
