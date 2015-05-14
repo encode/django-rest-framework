@@ -40,6 +40,27 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.1.x series
 
+### 3.1.2
+
+**Date**: [13rd May 2015][3.1.2-milestone].
+
+* DateField to_representation can handle str and empty values. ([#2656](gh2656), [#2687](gh2687), [#2869](gh2869))
+* Use default reason phrases from HTTP standard. ([#2764](gh2764), [#2763](gh2763))
+* Raise error when ModelSerializer used with abstract model. ([#2757](gh2757), [#2630](gh2630))
+* Handle reversal of non-API view_name in HyperLinkedRelatedField ([#2724](gh2724), [#2711](gh2711))
+* Dont require pk strictly for related fields. ([#2745](gh2745), [#2754](gh2754))
+* Metadata detects null boolean field type. ([#2762](gh2762))
+* Proper handling of depth in nested serializers. ([#2798](gh2798))
+* Display viewset without paginator. ([#2807](gh2807))
+* Don't check for deprecated '.model' attribute in permissions ([#2818](gh2818))
+* Restrict integer field to integers and strings. ([#2835](gh2835), [#2836](gh2836))
+* Improve IntegerField to use compiled decimal regex. ([#2853](gh2853))
+* Prevent empty `queryset`s to raise AssertionError. ([#2862](gh2862))
+* DjangoModelPermissions rely on get_queryset. ([#2863](gh2863))
+* Check AcceptHeaderVersioning with content negotiation in place. ([#2868](gh2868))
+* Allow DjangoObjectPermissions to use views that define get_queryset ([#2905](gh2905))
+
+
 ### 3.1.1
 
 **Date**: [23rd March 2015][3.1.1-milestone].
@@ -184,6 +205,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.0.5-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.5+Release%22
 [3.1.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.0+Release%22
 [3.1.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.1+Release%22
+[3.1.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.2+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -296,3 +318,26 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh2631]: https://github.com/tomchristie/django-rest-framework/issues/2631
 [gh2741]: https://github.com/tomchristie/django-rest-framework/issues/2641
 [gh2743]: https://github.com/tomchristie/django-rest-framework/issues/2643
+<!-- 3.1.2 -->
+[gh2656]: https://github.com/tomchristie/django-rest-framework/issues/2656
+[gh2687]: https://github.com/tomchristie/django-rest-framework/issues/2687
+[gh2869]: https://github.com/tomchristie/django-rest-framework/issues/2869
+[gh2764]: https://github.com/tomchristie/django-rest-framework/issues/2764
+[gh2763]: https://github.com/tomchristie/django-rest-framework/issues/2763
+[gh2757]: https://github.com/tomchristie/django-rest-framework/issues/2757
+[gh2630]: https://github.com/tomchristie/django-rest-framework/issues/2630
+[gh2724]: https://github.com/tomchristie/django-rest-framework/issues/2724
+[gh2711]: https://github.com/tomchristie/django-rest-framework/issues/2711
+[gh2745]: https://github.com/tomchristie/django-rest-framework/issues/2745
+[gh2754]: https://github.com/tomchristie/django-rest-framework/issues/2754
+[gh2762]: https://github.com/tomchristie/django-rest-framework/issues/2762
+[gh2798]: https://github.com/tomchristie/django-rest-framework/issues/2798
+[gh2807]: https://github.com/tomchristie/django-rest-framework/issues/2807
+[gh2818]: https://github.com/tomchristie/django-rest-framework/issues/2818
+[gh2835]: https://github.com/tomchristie/django-rest-framework/issues/2835
+[gh2836]: https://github.com/tomchristie/django-rest-framework/issues/2836
+[gh2853]: https://github.com/tomchristie/django-rest-framework/issues/2853
+[gh2862]: https://github.com/tomchristie/django-rest-framework/issues/2862
+[gh2863]: https://github.com/tomchristie/django-rest-framework/issues/2863
+[gh2868]: https://github.com/tomchristie/django-rest-framework/issues/2868
+[gh2905]: https://github.com/tomchristie/django-rest-framework/issues/2905
