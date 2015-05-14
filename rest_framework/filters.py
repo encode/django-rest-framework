@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import six
+from django.conf import settings
 from rest_framework.compat import django_filters, guardian, get_model_name
 from rest_framework.settings import api_settings
 from functools import reduce
@@ -104,7 +105,9 @@ class SearchFilter(BaseFilterBackend):
         for search_term in self.get_search_terms(request):
             or_queries = [models.Q(**{orm_lookup: search_term})
                           for orm_lookup in orm_lookups]
-            queryset = queryset.filter(reduce(operator.or_, or_queries)).distinct()
+            queryset = queryset.filter(reduce(operator.or_, or_queries))
+            if settings.DATABASES[queryset.db]["ENGINE"] != "django.db.backends.oracle":
+                queryset = queryset.distinct()
 
         return queryset
 
