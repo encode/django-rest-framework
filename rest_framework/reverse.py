@@ -6,6 +6,8 @@ from django.core.urlresolvers import reverse as django_reverse
 from django.core.urlresolvers import NoReverseMatch
 from django.utils import six
 from django.utils.functional import lazy
+from rest_framework.settings import api_settings
+from rest_framework.utils.urls import replace_query_param
 
 
 def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra):
@@ -17,14 +19,18 @@ def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra
     scheme = getattr(request, 'versioning_scheme', None)
     if scheme is not None:
         try:
-            return scheme.reverse(viewname, args, kwargs, request, format, **extra)
+            url = scheme.reverse(viewname, args, kwargs, request, format, **extra)
         except NoReverseMatch:
             # In case the versioning scheme reversal fails, fallback to the
             # default implementation
-            pass
+            url = _reverse(viewname, args, kwargs, request, format, **extra)
+    else:
+        url = _reverse(viewname, args, kwargs, request, format, **extra)
 
-    return _reverse(viewname, args, kwargs, request, format, **extra)
-
+    FORMAT_OVERRIDE = api_settings.URL_FORMAT_OVERRIDE
+    if FORMAT_OVERRIDE and (FORMAT_OVERRIDE in request.query_params):
+        return replace_query_param(url, FORMAT_OVERRIDE, request.query_params[FORMAT_OVERRIDE])
+    return url
 
 def _reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra):
     """
