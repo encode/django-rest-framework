@@ -107,11 +107,13 @@ class SearchFilter(BaseFilterBackend):
                           for orm_lookup in orm_lookups]
             and_queries.append(reduce(operator.or_, or_queries))
 
-        if settings.DATABASES[queryset.db]["ENGINE"] == "django.db.backends.oracle":
-            pk_list = queryset.filter(reduce(operator.and_, and_queries)).values_list('pk', flat=True)
-            return queryset.filter(pk__in=frozenset(pk_list))
-        else:
-            return queryset.filter(reduce(operator.and_, and_queries)).distinct()
+        if and_queries:
+            if settings.DATABASES[queryset.db]["ENGINE"] == "django.db.backends.oracle":
+                pk_list = queryset.filter(reduce(operator.and_, and_queries)).values_list('pk', flat=True)
+                return queryset.filter(pk__in=frozenset(pk_list))
+            else:
+                return queryset.filter(reduce(operator.and_, and_queries)).distinct()
+        return queryset
 
 
 class OrderingFilter(BaseFilterBackend):
