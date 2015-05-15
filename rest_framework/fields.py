@@ -1045,7 +1045,7 @@ class ChoiceField(Field):
     def to_representation(self, value):
         if value in ('', None):
             return value
-        return self.choice_strings_to_values[six.text_type(value)]
+        return self.choice_strings_to_values.get(six.text_type(value), value)
 
 
 class MultipleChoiceField(ChoiceField):
@@ -1073,7 +1073,7 @@ class MultipleChoiceField(ChoiceField):
 
     def to_representation(self, value):
         return set([
-            self.choice_strings_to_values[six.text_type(item)] for item in value
+            self.choice_strings_to_values.get(six.text_type(item), item) for item in value
         ])
 
 

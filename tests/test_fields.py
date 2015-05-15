@@ -920,7 +920,8 @@ class TestChoiceField(FieldValues):
     }
     outputs = {
         'good': 'good',
-        '': ''
+        '': '',
+        'amazing': 'amazing',
     }
     field = serializers.ChoiceField(
         choices=[
@@ -1005,7 +1006,7 @@ class TestMultipleChoiceField(FieldValues):
         ('aircon', 'incorrect'): ['"incorrect" is not a valid choice.']
     }
     outputs = [
-        (['aircon', 'manual'], set(['aircon', 'manual']))
+        (['aircon', 'manual', 'incorrect'], set(['aircon', 'manual', 'incorrect']))
     ]
     field = serializers.MultipleChoiceField(
         choices=[
