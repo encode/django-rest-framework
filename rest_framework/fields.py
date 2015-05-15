@@ -1042,10 +1042,16 @@ class ChoiceField(Field):
         except KeyError:
             self.fail('invalid_choice', input=data)
 
+    def representation_value(self, value):
+        try:
+            return self.choice_strings_to_values[six.text_type(value)]
+        except KeyError:
+            return value
+
     def to_representation(self, value):
         if value in ('', None):
             return value
-        return self.choice_strings_to_values[six.text_type(value)]
+        return self.representation_value(value)
 
 
 class MultipleChoiceField(ChoiceField):
@@ -1073,7 +1079,7 @@ class MultipleChoiceField(ChoiceField):
 
     def to_representation(self, value):
         return set([
-            self.choice_strings_to_values[six.text_type(item)] for item in value
+            self.representation_value(item) for item in value
         ])
 
 
