@@ -316,14 +316,14 @@ class Serializer(BaseSerializer):
         return self._fields
 
     @cached_property
-    def _to_internal_value_fields(self):
+    def _writable_fields(self):
         return [
             field for field in self.fields.values()
             if (not field.read_only) or (field.default is not empty)
         ]
 
     @cached_property
-    def _to_representation_fields(self):
+    def _readable_fields(self):
         return [field for field in self.fields.values() if not field.write_only]
 
     def get_fields(self):
@@ -400,7 +400,7 @@ class Serializer(BaseSerializer):
 
         ret = OrderedDict()
         errors = OrderedDict()
-        fields = self._to_internal_value_fields
+        fields = self._writable_fields
 
         for field in fields:
             validate_method = getattr(self, 'validate_' + field.field_name, None)
@@ -428,7 +428,7 @@ class Serializer(BaseSerializer):
         Object instance -> Dict of primitive datatypes.
         """
         ret = OrderedDict()
-        fields = self._to_representation_fields
+        fields = self._readable_fields
 
         for field in fields:
             try:
