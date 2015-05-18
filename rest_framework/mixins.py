@@ -76,7 +76,7 @@ class UpdateModelMixin(object):
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
-        
+
     def get_success_headers(self, data):
         try:
             return {'Content-Location': data[api_settings.URL_FIELD_NAME]}
