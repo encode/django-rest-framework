@@ -647,6 +647,7 @@ class TestDecimalField(FieldValues):
         0: Decimal('0'),
         12.3: Decimal('12.3'),
         0.1: Decimal('0.1'),
+        '2E+2': Decimal('200'),
     }
     invalid_inputs = (
         ('abc', ["A valid number is required."]),
