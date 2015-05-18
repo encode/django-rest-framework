@@ -1005,9 +1005,9 @@ class ModelSerializer(Serializer):
 
         # Nested forward relations - These need to be marked so we can save
         # them before saving the parent model instance.
-        for field_name in attrs.keys():
+        for field_name in list(attrs.keys()):
             if isinstance(self.fields.get(field_name, None), Serializer):
-                nested_forward_relations[field_name] = attrs[field_name]
+                nested_forward_relations[field_name] = attrs.pop(field_name)
 
         # Create an empty instance of the model
         if instance is None:
