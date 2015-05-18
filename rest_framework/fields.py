@@ -783,7 +783,7 @@ class DecimalField(Field):
 
         sign, digittuple, exponent = value.as_tuple()
         decimals = exponent * decimal.Decimal(-1) if exponent < 0 else 0
-        
+
         # digittuple doesn't include any leading zeros.
         digits = len(digittuple)
         if decimals > digits:
