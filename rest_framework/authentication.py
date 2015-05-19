@@ -10,6 +10,7 @@ from rest_framework import exceptions, HTTP_HEADER_ENCODING
 from rest_framework.authtoken.models import Token
 from rest_framework.compat import get_user_model
 
+
 def get_authorization_header(request):
     """
     Return request's 'Authorization:' header, as a bytestring.
