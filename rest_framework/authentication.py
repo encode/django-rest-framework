@@ -86,11 +86,7 @@ class BasicAuthentication(BaseAuthentication):
         """
         Authenticate the userid and password against username and password.
         """
-        user_model = get_user_model()
-        if hasattr(user_model, 'USERNAME_FIELD'):
-            username_field = user_model.USERNAME_FIELD
-        else:
-            username_field = 'username'
+        username_field = getattr(get_user_model(), 'USERNAME_FIELD', 'username')
         credentials = {
             username_field: userid,
             'password': password
