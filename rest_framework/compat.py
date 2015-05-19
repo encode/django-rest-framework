@@ -119,6 +119,14 @@ def get_model_name(model_cls):
         return model_cls._meta.module_name
 
 
+# Support custom user models in Django 1.5+
+try:
+    from django.contrib.auth import get_user_model
+except ImportError:
+    from django.contrib.auth.models import User
+    get_user_model = lambda: User
+
+
 # View._allowed_methods only present from 1.5 onwards
 if django.VERSION >= (1, 5):
     from django.views.generic import View
