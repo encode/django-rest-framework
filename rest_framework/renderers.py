@@ -672,6 +672,35 @@ class AdminRenderer(BrowsableAPIRenderer):
     template = 'rest_framework/admin.html'
     format = 'admin'
 
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        self.accepted_media_type = accepted_media_type or ''
+        self.renderer_context = renderer_context or {}
+
+        template = loader.get_template(self.template)
+        context = self.get_context(data, accepted_media_type, renderer_context)
+        context = RequestContext(renderer_context['request'], context)
+        ret = template.render(context)
+
+        # Creation and deletion should use redirects in the admin style.
+        response = renderer_context['response']
+        request = renderer_context['request']
+
+        if (response.status_code == status.HTTP_201_CREATED) and ('Location' in response):
+            response.status_code = status.HTTP_302_FOUND
+            ret = ''
+
+        if response.status_code == status.HTTP_204_NO_CONTENT:
+            response.status_code = status.HTTP_302_FOUND
+            try:
+                # Attempt to get the parent breadcrumb URL.
+                response['Location'] = self.get_breadcrumbs(request)[-2][1]
+            except KeyError:
+                # Otherwise reload current URL to get a 'Not Found' page.
+                response['Location'] = request.full_path
+            ret = ''
+
+        return ret
+
     def get_context(self, data, accepted_media_type, renderer_context):
         """
         Render the HTML for the browsable API representation.
@@ -681,12 +710,18 @@ class AdminRenderer(BrowsableAPIRenderer):
         )
 
         paginator = getattr(context['view'], 'paginator', None)
-        try:
-            results = data if paginator is None else paginator.get_results(data)
-        except KeyError:
+        if (paginator is not None and data is not None):
+            try:
+                results = paginator.get_results(data)
+            except KeyError:
+                results = data
+        else:
             results = data
 
-        if isinstance(results, list):
+        if results is None:
+            header = {}
+            style = 'detail'
+        elif isinstance(results, list):
             header = results[0] if results else {}
             style = 'list'
         else:
