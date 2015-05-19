@@ -4,6 +4,7 @@ Provides various authentication policies.
 from __future__ import unicode_literals
 import base64
 from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import exceptions, HTTP_HEADER_ENCODING
@@ -85,7 +86,11 @@ class BasicAuthentication(BaseAuthentication):
         """
         Authenticate the userid and password against username and password.
         """
-        user = authenticate(username=userid, password=password)
+        credentials = {
+            get_user_model().USERNAME_FIELD: userid,
+            'password': password
+        }
+        user = authenticate(**credentials)
 
         if user is None:
             raise exceptions.AuthenticationFailed(_('Invalid username/password.'))
