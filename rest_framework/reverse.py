@@ -10,6 +10,27 @@ from rest_framework.settings import api_settings
 from rest_framework.utils.urls import replace_query_param
 
 
+def preserve_builtin_query_params(url, request=None):
+    """
+    Given an incoming request, and an outgoing URL representation,
+    append the value of any built-in query parameters.
+    """
+    if request is None:
+        return url
+
+    overrides = [
+        api_settings.URL_FORMAT_OVERRIDE,
+        api_settings.URL_ACCEPT_OVERRIDE
+    ]
+
+    for param in overrides:
+        if param and (param in request.GET):
+            value = request.GET[param]
+            url = replace_query_param(url, param, value)
+
+    return url
+
+
 def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra):
     """
     If versioning is being used then we pass any `reverse` calls through
@@ -27,10 +48,8 @@ def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra
     else:
         url = _reverse(viewname, args, kwargs, request, format, **extra)
 
-    FORMAT_OVERRIDE = api_settings.URL_FORMAT_OVERRIDE
-    if FORMAT_OVERRIDE and (FORMAT_OVERRIDE in request.query_params):
-        return replace_query_param(url, FORMAT_OVERRIDE, request.query_params[FORMAT_OVERRIDE])
-    return url
+    return preserve_builtin_query_params(url, request)
+
 
 def _reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra):
     """

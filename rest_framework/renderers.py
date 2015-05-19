@@ -586,7 +586,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         return view.get_view_description(html=True)
 
     def get_breadcrumbs(self, request):
-        return get_breadcrumbs(request.path)
+        return get_breadcrumbs(request.path, request)
 
     def get_context(self, data, accepted_media_type, renderer_context):
         """
