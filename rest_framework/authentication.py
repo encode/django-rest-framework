@@ -8,6 +8,7 @@ from django.middleware.csrf import CsrfViewMiddleware
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import exceptions, HTTP_HEADER_ENCODING
 from rest_framework.authtoken.models import Token
+from rest_framework.compat import get_user_model
 
 
 def get_authorization_header(request):
@@ -85,7 +86,12 @@ class BasicAuthentication(BaseAuthentication):
         """
         Authenticate the userid and password against username and password.
         """
-        user = authenticate(username=userid, password=password)
+        username_field = getattr(get_user_model(), 'USERNAME_FIELD', 'username')
+        credentials = {
+            username_field: userid,
+            'password': password
+        }
+        user = authenticate(**credentials)
 
         if user is None:
             raise exceptions.AuthenticationFailed(_('Invalid username/password.'))
