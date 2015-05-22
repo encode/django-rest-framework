@@ -267,6 +267,9 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [Web API performance: profiling Django REST framework][web-api-performance-profiling-django-rest-framework]
 * [API Development with Django and Django REST Framework][api-development-with-django-and-django-rest-framework]
 
+### Documentations
+* [Classy Django REST Framework][cdrf.co]
+
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
 [new-repo]: https://github.com/new
@@ -330,3 +333,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-auth]: https://github.com/Tivix/django-rest-auth/
 [django-versatileimagefield]: https://github.com/WGBH/django-versatileimagefield
 [django-versatileimagefield-drf-docs]:http://django-versatileimagefield.readthedocs.org/en/latest/drf_integration.html
+[cdrf.co]:http://www.cdrf.co
