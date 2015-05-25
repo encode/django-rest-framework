@@ -772,7 +772,7 @@ class ModelSerializer(Serializer):
                 many_to_many[field_name] = validated_data.pop(field_name)
 
         try:
-            instance = ModelClass.objects.create(**validated_data)
+            instance = ModelClass.object.create(**validated_data)
         except TypeError as exc:
             msg = (
                 'Got a `TypeError` when calling `%s.objects.create()`. '
