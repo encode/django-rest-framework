@@ -316,6 +316,14 @@ class RelationalModel(models.Model):
     through = models.ManyToManyField(ThroughTargetModel, through=Supplementary, related_name='reverse_through')
 
 
+class RelationalModelTwo(models.Model):
+    many_to_many = models.ManyToManyField(ManyToManyTargetModel, blank=True)
+
+
+class RelationalModelThree(models.Model):
+    many_to_many = models.ManyToManyField(ManyToManyTargetModel, null=True, blank=True)
+
+
 class TestRelationalFieldMappings(TestCase):
     def test_pk_relations(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -450,6 +458,39 @@ class TestRelationalFieldMappings(TestCase):
                 reverse_through = PrimaryKeyRelatedField(many=True, read_only=True)
         """)
         self.assertEqual(unicode_repr(TestSerializer()), expected)
+
+
+class ManyToManyNullTrueTests(TestCase):
+    """
+    Tests model with a ManyToMany relationship with field attributes
+    null==True and blank==True.
+    """
+    def setUp(self):
+        # An anchor instance to use for the relationship
+        self.target = ManyToManyTargetModel()
+        self.target.save()
+
+    def test_required_RelationalModelTwo(self):
+        class ManyToManySerializerTwo(serializers.ModelSerializer):
+            class Meta:
+                model = RelationalModelTwo
+
+        serializer_class = ManyToManySerializerTwo
+        data = {'many_to_many': [self.target.id]}
+        serializer = serializer_class(data=data)
+        self.assertTrue(serializer.is_valid())
+        self.assertFalse(serializer.fields['many_to_many'].required)
+
+    def test_required_RelationalModelThree(self):
+        class ManyToManySerializerThree(serializers.ModelSerializer):
+            class Meta:
+                model = RelationalModelThree
+
+        serializer_class = ManyToManySerializerThree
+        data = {'many_to_many': [self.target.id]}
+        serializer = serializer_class(data=data)
+        self.assertTrue(serializer.is_valid())
+        self.assertFalse(serializer.fields['many_to_many'].required)
 
 
 class TestIntegration(TestCase):
