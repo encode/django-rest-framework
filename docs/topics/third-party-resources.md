@@ -241,6 +241,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [drf-extensions][drf-extensions] - A collection of custom extensions
 * [ember-django-adapter][ember-django-adapter] - An adapter for working with Ember.js
 * [django-versatileimagefield][django-versatileimagefield] - Provides a drop-in replacement for Django's stock `ImageField` that makes it easy to serve images in multiple sizes/renditions from a single field. For DRF-specific implementation docs, [click here][django-versatileimagefield-drf-docs].
+* [drf-tracking][drf-tracking] - Utilities to track requests to DRF API views.
 
 ## Other Resources
 
@@ -334,3 +335,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-versatileimagefield]: https://github.com/WGBH/django-versatileimagefield
 [django-versatileimagefield-drf-docs]:http://django-versatileimagefield.readthedocs.org/en/latest/drf_integration.html
 [cdrf.co]:http://www.cdrf.co
+[drf-tracking]: https://github.com/aschn/drf-tracking
