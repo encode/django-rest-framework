@@ -12,6 +12,9 @@ from rest_framework.settings import api_settings
 from functools import reduce
 import operator
 
+from django.conf import settings
+engine = settings.DATABASES['default']['ENGINE']
+
 FilterSet = django_filters and django_filters.FilterSet or None
 
 
@@ -104,7 +107,11 @@ class SearchFilter(BaseFilterBackend):
         for search_term in self.get_search_terms(request):
             or_queries = [models.Q(**{orm_lookup: search_term})
                           for orm_lookup in orm_lookups]
-            queryset = queryset.filter(reduce(operator.or_, or_queries)).distinct()
+            if engine == 'django_mongodb_engine':
+                queryset = queryset.filter(reduce(operator.or_, or_queries))
+            else:
+                queryset = queryset.filter(reduce(operator.or_, or_queries)).distinct()
+
 
         return queryset
 
