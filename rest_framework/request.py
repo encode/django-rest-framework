@@ -382,6 +382,9 @@ class Request(object):
 
         # Reading the request body before directly accessing the POST attr will
         # ensure the request body is stored, making it accessible again later.
+        # DRF uses multipart/form-data by default, which triggers an optimization
+        # in the underlying django request. For more details:
+        # https://github.com/django/django/blob/1.8.2/tests/requests/tests.py#L353-L372
         self._request.body
         data = self._request.POST
 
