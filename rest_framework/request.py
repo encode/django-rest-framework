@@ -380,29 +380,27 @@ class Request(object):
         ):
             return
 
-        # At this point we're committed to parsing the request as form data.
-        self._data = self._request.POST
-        self._files = self._request.FILES
-        self._full_data = self._data.copy()
-        self._full_data.update(self._files)
+        # Reading the request body before directly accessing the POST attr will
+        # ensure the request body is stored, making it accessible again later.
+        self._request.body
+        data = self._request.POST
 
         # Method overloading - change the method and remove the param from the content.
         if (
             self._METHOD_PARAM and
-            self._METHOD_PARAM in self._data
+            self._METHOD_PARAM in data
         ):
-            self._method = self._data[self._METHOD_PARAM].upper()
+            self._method = data[self._METHOD_PARAM].upper()
 
         # Content overloading - modify the content type, and force re-parse.
         if (
             self._CONTENT_PARAM and
             self._CONTENTTYPE_PARAM and
-            self._CONTENT_PARAM in self._data and
-            self._CONTENTTYPE_PARAM in self._data
+            self._CONTENT_PARAM in data and
+            self._CONTENTTYPE_PARAM in data
         ):
-            self._content_type = self._data[self._CONTENTTYPE_PARAM]
-            self._stream = six.BytesIO(self._data[self._CONTENT_PARAM].encode(self.parser_context['encoding']))
-            self._data, self._files, self._full_data = (Empty, Empty, Empty)
+            self._content_type = data[self._CONTENTTYPE_PARAM]
+            self._stream = six.BytesIO(data[self._CONTENT_PARAM].encode(self.parser_context['encoding']))
 
     def _parse(self):
         """
