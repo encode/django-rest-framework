@@ -48,16 +48,14 @@ class override_method(object):
 
     def __enter__(self):
         self.view.request = clone_request(self.request, self.method)
-        if self.action is not None:
-            # For viewsets we also set the `.action` attribute.
-            action_map = getattr(self.view, 'action_map', {})
-            self.view.action = action_map.get(self.method.lower())
+        # For viewsets we also set the `.action` attribute.
+        action_map = getattr(self.view, 'action_map', {})
+        self.view.action = action_map.get(self.method.lower())
         return self.view.request
 
     def __exit__(self, *args, **kwarg):
         self.view.request = self.request
-        if self.action is not None:
-            self.view.action = self.action
+        self.view.action = self.action
 
 
 class Empty(object):
