@@ -235,7 +235,7 @@ The following third party packages are also available.
 
 ## DRF Any Permissions
 
-The [DRF Any Permissions][drf-any-permissions] packages provides a different permission behavior in contrast to REST framework.  Instead of all specified permissions being required, only one of the given permissions has to be true in order to get access to the view.
+The [DRF Any Permissions][drf-any-permissions] package is not maintained anymore, the author recommends REST Condition.
 
 ## Composed Permissions
 
