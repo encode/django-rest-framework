@@ -419,6 +419,13 @@ class TestRelationalFieldMappings(TestCase):
                 class Meta:
                     validators = [<UniqueTogetherValidator(queryset=UniqueTogetherModel.objects.all(), fields=('foreign_key', 'one_to_one'))>]
         """)
+        if six.PY2:
+            # This case is also too awkward to resolve fully across both py2
+            # and py3.  (See above)
+            expected = expected.replace(
+                "('foreign_key', 'one_to_one')",
+                "(u'foreign_key', u'one_to_one')"
+            )
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
     def test_pk_reverse_foreign_key(self):
