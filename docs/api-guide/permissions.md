@@ -233,10 +233,6 @@ Also note that the generic views will only check the object-level permissions fo
 
 The following third party packages are also available.
 
-## DRF Any Permissions
-
-The [DRF Any Permissions][drf-any-permissions] packages provides a different permission behavior in contrast to REST framework.  Instead of all specified permissions being required, only one of the given permissions has to be true in order to get access to the view.
-
 ## Composed Permissions
 
 The [Composed Permissions][composed-permissions] package provides a simple way to define complex and multi-depth (with logic operators) permission objects, using small and reusable components.
