@@ -316,6 +316,13 @@ class RelationalModel(models.Model):
     through = models.ManyToManyField(ThroughTargetModel, through=Supplementary, related_name='reverse_through')
 
 
+class UniqueTogetherModel(models.Model):
+    foreign_key = models.ForeignKey(ForeignKeyTargetModel, related_name='unique_foreign_key')
+    one_to_one = models.OneToOneField(OneToOneTargetModel, related_name='unique_one_to_one')
+    class Meta:
+        unique_together = ("foreign_key", "one_to_one")
+
+
 class TestRelationalFieldMappings(TestCase):
     def test_pk_relations(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -392,6 +399,25 @@ class TestRelationalFieldMappings(TestCase):
                 through = NestedSerializer(many=True, read_only=True):
                     url = HyperlinkedIdentityField(view_name='throughtargetmodel-detail')
                     name = CharField(max_length=100)
+        """)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
+
+    def test_nested_unique_together_relations(self):
+        class TestSerializer(serializers.HyperlinkedModelSerializer):
+            class Meta:
+                model = UniqueTogetherModel
+                depth = 1
+        expected = dedent("""
+            TestSerializer():
+                url = HyperlinkedIdentityField(view_name='uniquetogethermodel-detail')
+                foreign_key = NestedSerializer(read_only=True):
+                    url = HyperlinkedIdentityField(view_name='foreignkeytargetmodel-detail')
+                    name = CharField(max_length=100)
+                one_to_one = NestedSerializer(read_only=True):
+                    url = HyperlinkedIdentityField(view_name='onetoonetargetmodel-detail')
+                    name = CharField(max_length=100)
+                class Meta:
+                    validators = [<UniqueTogetherValidator(queryset=UniqueTogetherModel.objects.all(), fields=('foreign_key', 'one_to_one'))>]
         """)
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
