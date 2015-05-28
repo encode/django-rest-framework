@@ -1088,6 +1088,9 @@ class ModelSerializer(Serializer):
         if extra_kwargs.get('default') and kwargs.get('required') is False:
             kwargs.pop('required')
 
+        if kwargs.get('read_only', False):
+            extra_kwargs.pop('required', None)
+
         kwargs.update(extra_kwargs)
 
         return kwargs
