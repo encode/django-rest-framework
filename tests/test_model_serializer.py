@@ -319,6 +319,7 @@ class RelationalModel(models.Model):
 class UniqueTogetherModel(models.Model):
     foreign_key = models.ForeignKey(ForeignKeyTargetModel, related_name='unique_foreign_key')
     one_to_one = models.OneToOneField(OneToOneTargetModel, related_name='unique_one_to_one')
+
     class Meta:
         unique_together = ("foreign_key", "one_to_one")
 
