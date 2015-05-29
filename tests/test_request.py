@@ -58,6 +58,7 @@ class TestMethodOverloading(TestCase):
         reserved form field
         """
         request = Request(factory.post('/', {api_settings.FORM_METHOD_OVERRIDE: 'DELETE'}))
+        request.parsers = (MultiPartParser(), )
         self.assertEqual(request.method, 'DELETE')
 
     def test_x_http_method_override_header(self):
@@ -66,6 +67,7 @@ class TestMethodOverloading(TestCase):
         the X-HTTP-Method-Override header.
         """
         request = Request(factory.post('/', {'foo': 'bar'}, HTTP_X_HTTP_METHOD_OVERRIDE='DELETE'))
+        request.parsers = (MultiPartParser(), )
         self.assertEqual(request.method, 'DELETE')
 
         request = Request(factory.get('/', {'foo': 'bar'}, HTTP_X_HTTP_METHOD_OVERRIDE='DELETE'))
@@ -148,7 +150,7 @@ class TestContentParsing(TestCase):
             api_settings.FORM_CONTENTTYPE_OVERRIDE: content_type
         }
         request = Request(factory.post('/', form_data))
-        request.parsers = (JSONParser(), )
+        request.parsers = (JSONParser(), MultiPartParser(), )
         self.assertEqual(request.DATA, json_data)
 
     def test_form_POST_unicode(self):

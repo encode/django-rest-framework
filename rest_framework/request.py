@@ -379,10 +379,13 @@ class Request(object):
             return
 
         # At this point we're committed to parsing the request as form data.
-        self._data = self._request.POST
-        self._files = self._request.FILES
+        self._data, self._files = self._parse()
         self._full_data = self._data.copy()
         self._full_data.update(self._files)
+
+        # Point the underlying request data to our parsed data for backwards compatibility.
+        self._request._post = self._data
+        self._request._files = self._files
 
         # Method overloading - change the method and remove the param from the content.
         if (
