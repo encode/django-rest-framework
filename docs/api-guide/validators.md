@@ -209,7 +209,7 @@ To write a class based validator, use the `__call__` method. Class based validat
             self.base = base
 
         def __call__(self, value):
-            if value % self.base != 0
+            if value % self.base != 0:
                 message = 'This field must be a multiple of %d.' % self.base
                 raise serializers.ValidationError(message)
 
