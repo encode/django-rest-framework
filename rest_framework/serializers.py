@@ -935,7 +935,7 @@ class ModelSerializer(Serializer):
             # If `Meta.exclude` is included, then remove those fields.
             for field_name in exclude:
                 assert field_name in fields, (
-                    "The field '{field_name}' was include on serializer "
+                    "The field '{field_name}' was included on serializer "
                     "{serializer_class} in the 'exclude' option, but does "
                     "not match any model field.".format(
                         field_name=field_name,
