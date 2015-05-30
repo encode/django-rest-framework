@@ -385,8 +385,15 @@ class Request(object):
         # DRF uses multipart/form-data by default, which triggers an optimization
         # in the underlying django request. For more details:
         # https://github.com/django/django/blob/1.8.2/tests/requests/tests.py#L353-L372
-        self._request.body
-        data = self._request.POST
+        if api_settings.FORM_OVERRIDE_DO_PARSE:
+            self._request.body
+            data = self._request.POST
+        else:
+            self._data = self._request.POST
+            self._files = self._request.FILES
+            self._full_data = self._data.copy()
+            self._full_data.update(self._files)
+            data = self._data
 
         # Method overloading - change the method and remove the param from the content.
         if (
