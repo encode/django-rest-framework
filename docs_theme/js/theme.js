@@ -27,7 +27,7 @@ $(function() {
     $('pre code').parent().addClass('prettyprint well');
 
     $(document).on("submit", "#mkdocs_search_modal form", function (e) {
-        $("#mkdocs-search-results").html("Searching...")
+        $("#mkdocs-search-results").html("Searching...");
         initialise_search();
         return false;
     });
