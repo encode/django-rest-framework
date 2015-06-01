@@ -1083,7 +1083,11 @@ class MultipleChoiceField(ChoiceField):
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
-            return dictionary.getlist(self.field_name)
+            ret = dictionary.getlist(self.field_name)
+            if getattr(self.root, 'partial', False) and not ret:
+                ret = empty
+            return ret
+
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):

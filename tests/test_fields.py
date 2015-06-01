@@ -1,6 +1,7 @@
 from decimal import Decimal
 from django.utils import timezone
 from rest_framework import serializers
+import rest_framework
 import datetime
 import django
 import pytest
@@ -1037,6 +1038,15 @@ class TestMultipleChoiceField(FieldValues):
             ('diesel', 'Diesel'),
         ]
     )
+
+    def test_against_partial_and_full_updates(self):
+        # serializer = self.Serializer(data=MockHTMLDict())
+        from django.http import QueryDict
+        field = serializers.MultipleChoiceField(choices=(('a', 'a'), ('b', 'b')))
+        field.partial = False
+        assert field.get_value(QueryDict({})) == []
+        field.partial = True
+        assert field.get_value(QueryDict({})) == rest_framework.fields.empty
 
 
 # File serializers...
