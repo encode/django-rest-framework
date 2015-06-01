@@ -221,6 +221,14 @@ class TestInvalidErrorKey:
         assert str(exc_info.value) == expected
 
 
+class MockHTMLDict(dict):
+    """
+    This class mocks up a dictionary like object, that behaves
+    as if it was returned for multipart or urlencoded data.
+    """
+    getlist = None
+
+
 class TestBooleanHTMLInput:
     def setup(self):
         class TestSerializer(serializers.Serializer):
@@ -234,19 +242,9 @@ class TestBooleanHTMLInput:
         """
         # This class mocks up a dictionary like object, that behaves
         # as if it was returned for multipart or urlencoded data.
-        class MockHTMLDict(dict):
-            getlist = None
         serializer = self.Serializer(data=MockHTMLDict())
         assert serializer.is_valid()
         assert serializer.validated_data == {'archived': False}
-
-
-class MockHTMLDict(dict):
-    """
-    This class mocks up a dictionary like object, that behaves
-    as if it was returned for multipart or urlencoded data.
-    """
-    getlist = None
 
 
 class TestHTMLInput:
