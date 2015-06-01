@@ -415,3 +415,7 @@ ul.sponsor {
     list-style: none;
     display: block;
 }
+
+#mkdocs_search_modal article p{
+  word-wrap: break-word;
+}
