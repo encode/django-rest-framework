@@ -1018,10 +1018,13 @@ class TestMultipleChoiceField(FieldValues):
         ]
     )
 
-    def test_against_partial_updates(self):
+    def test_against_partial_and_full_updates(self):
         # serializer = self.Serializer(data=MockHTMLDict())
         from django.http import QueryDict
         field = serializers.MultipleChoiceField(choices=(('a', 'a'), ('b', 'b')))
+        field.partial = False
+        assert field.get_value(QueryDict({})) == []
+        field.partial = True
         assert field.get_value(QueryDict({})) == rest_framework.fields.empty
 
 
