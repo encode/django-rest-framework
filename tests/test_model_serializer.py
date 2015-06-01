@@ -6,13 +6,15 @@ These tests deal with ensuring that we correctly map the model fields onto
 an appropriate set of serializer fields for each case.
 """
 from __future__ import unicode_literals
+import django
 from django.core.exceptions import ImproperlyConfigured
 from django.core.validators import MaxValueValidator, MinValueValidator, MinLengthValidator
 from django.db import models
 from django.test import TestCase
 from django.utils import six
+import pytest
 from rest_framework import serializers
-from rest_framework.compat import unicode_repr
+from rest_framework.compat import unicode_repr, DurationField as ModelDurationField
 
 
 def dedent(blocktext):
@@ -282,6 +284,28 @@ class TestRegularFieldMappings(TestCase):
                 fields = ('auto_field',)
 
         ChildSerializer().fields
+
+
+@pytest.mark.skipif(django.VERSION < (1, 8),
+                    reason='DurationField is only available for django1.8+')
+class TestDurationFieldMapping(TestCase):
+    def test_duration_field(self):
+        class DurationFieldModel(models.Model):
+            """
+            A model that defines DurationField.
+            """
+            duration_field = ModelDurationField()
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DurationFieldModel
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                duration_field = DurationField()
+        """)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
 
 
 # Tests for relational field mappings.

@@ -905,6 +905,29 @@ class TestNoOutputFormatTimeField(FieldValues):
     field = serializers.TimeField(format=None)
 
 
+@pytest.mark.skipif(django.VERSION < (1, 8),
+                    reason='DurationField is only available for django1.8+')
+class TestDurationField(FieldValues):
+    """
+    Valid and invalid values for `DurationField`.
+    """
+    valid_inputs = {
+        '13': datetime.timedelta(seconds=13),
+        '3 08:32:01.000123': datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
+        '08:01': datetime.timedelta(minutes=8, seconds=1),
+        datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123): datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
+    }
+    invalid_inputs = {
+        'abc': ['Duration has wrong format. Use one of these formats instead: [DD] [HH:[MM:]]ss[.uuuuuu].'],
+        '3 08:32 01.123': ['Duration has wrong format. Use one of these formats instead: [DD] [HH:[MM:]]ss[.uuuuuu].'],
+    }
+    outputs = {
+        datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123): '3 08:32:01.000123',
+    }
+    if django.VERSION >= (1, 8):
+        field = serializers.DurationField()
+
+
 # Choice types...
 
 class TestChoiceField(FieldValues):
