@@ -258,3 +258,11 @@ else:
     SHORT_SEPARATORS = (b',', b':')
     LONG_SEPARATORS = (b', ', b': ')
     INDENT_SEPARATORS = (b',', b': ')
+
+
+if django.VERSION >= (1, 8):
+    from django.db.models import DurationField
+    from django.utils.dateparse import parse_duration
+    from django.utils.duration import duration_string
+else:
+    DurationField = duration_string = parse_duration = None

@@ -15,7 +15,11 @@ from django.db import models
 from django.db.models.fields import FieldDoesNotExist, Field as DjangoModelField
 from django.db.models import query
 from django.utils.translation import ugettext_lazy as _
-from rest_framework.compat import postgres_fields, unicode_to_repr
+from rest_framework.compat import (
+    postgres_fields,
+    unicode_to_repr,
+    DurationField as ModelDurationField,
+)
 from rest_framework.utils import model_meta
 from rest_framework.utils.field_mapping import (
     get_url_kwargs, get_field_kwargs,
@@ -731,6 +735,8 @@ class ModelSerializer(Serializer):
         models.TimeField: TimeField,
         models.URLField: URLField,
     }
+    if ModelDurationField is not None:
+        serializer_field_mapping[ModelDurationField] = DurationField
     serializer_related_field = PrimaryKeyRelatedField
     serializer_url_field = HyperlinkedIdentityField
     serializer_choice_field = ChoiceField
