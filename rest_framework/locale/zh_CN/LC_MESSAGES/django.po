@@ -4,13 +4,14 @@
 # 
 # Translators:
 # Lele Long <schemacs@gmail.com>, 2015
+# Ming Chen <mockey.chen@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-30 16:23+0000\n"
-"PO-Revision-Date: 2015-01-30 16:27+0000\n"
-"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"POT-Creation-Date: 2015-06-01 23:48+0100\n"
+"PO-Revision-Date: 2015-06-01 22:52+0000\n"
+"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/django-rest-framework/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,37 +19,49 @@ msgstr ""
 "Language: zh_CN\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: authentication.py:69
+#: authentication.py:70
 msgid "Invalid basic header. No credentials provided."
 msgstr "没有提供认证信息（基本认证HTTP头无效）。"
 
-#: authentication.py:72
+#: authentication.py:73
 msgid "Invalid basic header. Credentials string should not contain spaces."
 msgstr "认证字符串不应该包含空格（基本认证HTTP头无效）。"
 
-#: authentication.py:78
+#: authentication.py:79
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
 msgstr "认证字符串base64编码错误（基本认证HTTP头无效）。"
 
-#: authentication.py:90
+#: authentication.py:97
 msgid "Invalid username/password."
 msgstr "用户名或者密码错误。"
 
-#: authentication.py:156
+#: authentication.py:100 authentication.py:182
+msgid "User inactive or deleted."
+msgstr "用户未激活或者已删除。"
+
+#: authentication.py:167
 msgid "Invalid token header. No credentials provided."
 msgstr "没有提供认证信息（认证令牌HTTP头无效）。"
 
-#: authentication.py:159
+#: authentication.py:170
 msgid "Invalid token header. Token string should not contain spaces."
 msgstr "认证令牌字符串不应该包含空格（无效的认证令牌HTTP头）。"
 
-#: authentication.py:168
+#: authentication.py:179
 msgid "Invalid token."
 msgstr "认证令牌无效。"
 
-#: authentication.py:171
-msgid "User inactive or deleted."
-msgstr "用户未激活或者已删除。"
+#: authtoken/serializers.py:20
+msgid "User account is disabled."
+msgstr "用户账户已禁用。"
+
+#: authtoken/serializers.py:23
+msgid "Unable to log in with provided credentials."
+msgstr "无法使用提供的认证信息登录。"
+
+#: authtoken/serializers.py:26
+msgid "Must include \"username\" and \"password\"."
+msgstr "必须包含 “用户名” 和 “密码”。"
 
 #: exceptions.py:38
 msgid "A server error occurred."
@@ -56,25 +69,26 @@ msgstr "服务器出现了错误。"
 
 #: exceptions.py:73
 msgid "Malformed request."
-msgstr "畸形的请求。"
+msgstr "错误的请求。"
 
 #: exceptions.py:78
 msgid "Incorrect authentication credentials."
-msgstr "不正确的身份认证凭据。"
+msgstr "不正确的身份认证信息。"
 
 #: exceptions.py:83
 msgid "Authentication credentials were not provided."
-msgstr "身份认证凭据未提供。"
+msgstr "身份认证信息未提供。"
 
 #: exceptions.py:88
 msgid "You do not have permission to perform this action."
 msgstr "您没有执行该操作的权限。"
 
-#: exceptions.py:93
+#: exceptions.py:93 views.py:77
 msgid "Not found."
 msgstr "未找到。"
 
 #: exceptions.py:98
+#, python-brace-format
 msgid "Method \"{method}\" not allowed."
 msgstr "方法 “{method}” 不被允许。"
 
@@ -83,168 +97,188 @@ msgid "Could not satisfy the request Accept header."
 msgstr "无法满足Accept HTTP头的请求。"
 
 #: exceptions.py:121
+#, python-brace-format
 msgid "Unsupported media type \"{media_type}\" in request."
 msgstr "不支持请求中的媒体类型 “{media_type}”。"
 
 #: exceptions.py:134
 msgid "Request was throttled."
-msgstr "请求被限速。"
+msgstr "请求超过了限速。"
 
-#: fields.py:153 relations.py:132 relations.py:156 validators.py:77
-#: validators.py:155
+#: fields.py:162 relations.py:132 relations.py:156 validators.py:77
+#: validators.py:160
 msgid "This field is required."
 msgstr "这个字段是必填项。"
 
-#: fields.py:154
+#: fields.py:163
 msgid "This field may not be null."
 msgstr "这个值不能为 null。"
 
-#: fields.py:487 fields.py:515
+#: fields.py:496 fields.py:524
+#, python-brace-format
 msgid "\"{input}\" is not a valid boolean."
 msgstr "“{input}” 不是合法的布尔值。"
 
-#: fields.py:550
+#: fields.py:559
 msgid "This field may not be blank."
 msgstr "此字段不能为空。"
 
-#: fields.py:551 fields.py:1324
+#: fields.py:560 fields.py:1342
+#, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr "请确保这个字段不能超过 {max_length} 个字符。"
 
-#: fields.py:552
+#: fields.py:561
+#, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
 msgstr "请确保这个字段至少包含 {min_length} 个字符。"
 
-#: fields.py:587
+#: fields.py:598
 msgid "Enter a valid email address."
 msgstr "请输入合法的邮件地址。"
 
-#: fields.py:604
+#: fields.py:609
 msgid "This value does not match the required pattern."
 msgstr "输入值不匹配要求的模式。"
 
-#: fields.py:615
+#: fields.py:620
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
 msgstr "请输入合法的“短语“，只能包含字母，数字，下划线或者中划线。"
 
-#: fields.py:627
+#: fields.py:632
 msgid "Enter a valid URL."
 msgstr "请输入合法的URL。"
 
-#: fields.py:638
+#: fields.py:643
+#, python-brace-format
 msgid "\"{value}\" is not a valid UUID."
-msgstr ""
+msgstr "“{value}”不是合法的UUID。"
 
-#: fields.py:657
+#: fields.py:662
 msgid "A valid integer is required."
 msgstr "请填写合法的整数值。"
 
-#: fields.py:658 fields.py:692 fields.py:725
+#: fields.py:663 fields.py:698 fields.py:731
+#, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
 msgstr "请确保该值小于或者等于 {max_value}。"
 
-#: fields.py:659 fields.py:693 fields.py:726
+#: fields.py:664 fields.py:699 fields.py:732
+#, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
 msgstr "请确保该值大于或者等于 {min_value}。"
 
-#: fields.py:660 fields.py:694 fields.py:730
+#: fields.py:665 fields.py:700 fields.py:736
 msgid "String value too large."
-msgstr "字符值太长。"
+msgstr "字符串值太长。"
 
-#: fields.py:691 fields.py:724
+#: fields.py:697 fields.py:730
 msgid "A valid number is required."
 msgstr "请填写合法的数字。"
 
-#: fields.py:727
+#: fields.py:733
+#, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
 msgstr "请确保总计不超过 {max_digits} 个数字。"
 
-#: fields.py:728
+#: fields.py:734
+#, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr "请确保总计不超过 {max_decimal_places} 个小数位。"
 
-#: fields.py:729
+#: fields.py:735
+#, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
 msgstr "请确保小数点前不超过 {max_whole_digits} 个数字。"
 
-#: fields.py:813
+#: fields.py:825
+#, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
 msgstr "日期时间格式错误。请从这些格式中选择：{format}。"
 
-#: fields.py:814
+#: fields.py:826
 msgid "Expected a datetime but got a date."
 msgstr "期望为日期时间，得到的是日期。"
 
-#: fields.py:878
+#: fields.py:890
+#, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr "日期格式错误。请从这些格式中选择：{format}。"
 
-#: fields.py:879
+#: fields.py:891
 msgid "Expected a date but got a datetime."
 msgstr "期望为日期，得到的是日期时间。"
 
-#: fields.py:936
+#: fields.py:954
+#, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr "时间格式错误。请从这些格式中选择：{format}。"
 
-#: fields.py:992 fields.py:1036
+#: fields.py:1010 fields.py:1054
+#, python-brace-format
 msgid "\"{input}\" is not a valid choice."
 msgstr "“{input}” 不是合法选项。"
 
-#: fields.py:1037 fields.py:1151 serializers.py:482
+#: fields.py:1055 fields.py:1169 serializers.py:483
+#, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "期望为一个包含物件的列表，得到的类型是“{input_type}”。"
 
-#: fields.py:1067
+#: fields.py:1085
 msgid "No file was submitted."
 msgstr "没有提交任何文件。"
 
-#: fields.py:1068
+#: fields.py:1086
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
 msgstr "提交的数据不是一个文件。请检查表单的编码类型。"
 
-#: fields.py:1069
+#: fields.py:1087
 msgid "No filename could be determined."
 msgstr "无法检测到文件名。"
 
-#: fields.py:1070
+#: fields.py:1088
 msgid "The submitted file is empty."
 msgstr "提交的是空文件。"
 
-#: fields.py:1071
+#: fields.py:1089
+#, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr "确保该文件名最多包含 {max_length} 个字符 ( 当前长度为{length} ) 。"
 
-#: fields.py:1113
+#: fields.py:1131
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr "请上传有效图片。您上传的该文件不是图片或者图片已经损坏。"
 
-#: fields.py:1188
+#: fields.py:1206
+#, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "期望是包含类目的字典，得到类型为 “{input_type}”。"
 
-#: pagination.py:221
+#: pagination.py:231
+#, python-brace-format
 msgid "Invalid page \"{page_number}\": {message}."
 msgstr "无效页面 “{page_number}”：{message}。"
 
-#: pagination.py:442
+#: pagination.py:492
 msgid "Invalid cursor"
-msgstr ""
+msgstr "无效游标"
 
 #: relations.py:133
+#, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
 msgstr "无效主键 “{pk_value}” － 对象不存在。"
 
 #: relations.py:134
+#, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
 msgstr "类型错误。期望为主键，得到的类型为 {data_type}。"
 
@@ -261,38 +295,57 @@ msgid "Invalid hyperlink - Object does not exist."
 msgstr "无效超链接 －对象不存在。"
 
 #: relations.py:160
+#, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
-msgstr "类型错误。期望为URL字符串，得到的类型是 {data_type}。"
+msgstr "类型错误。期望为URL字符串，实际的类型是 {data_type}。"
 
-#: relations.py:295
+#: relations.py:302
+#, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
 msgstr "属性 {slug_name} 为 {value} 的对象不存在。"
 
-#: relations.py:296
+#: relations.py:303
 msgid "Invalid value."
 msgstr "无效值。"
 
-#: serializers.py:299
+#: serializers.py:300
+#, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
 msgstr "无效数据。期待为字典类型，得到的是 {datatype} 。"
+
+#: templates/rest_framework/horizontal/radio.html:2
+#: templates/rest_framework/inline/radio.html:2
+#: templates/rest_framework/vertical/radio.html:2
+msgid "None"
+msgstr ""
+
+#: templates/rest_framework/horizontal/select_multiple.html:2
+#: templates/rest_framework/inline/select_multiple.html:2
+#: templates/rest_framework/vertical/select_multiple.html:2
+msgid "No items to select."
+msgstr ""
 
 #: validators.py:22
 msgid "This field must be unique."
 msgstr "该字段必须唯一。"
 
 #: validators.py:76
+#, python-brace-format
 msgid "The fields {field_names} must make a unique set."
 msgstr "字段 {field_names} 必须能构成唯一集合。"
 
-#: validators.py:219
+#: validators.py:224
+#, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" date."
 msgstr "该字段必须在日期 “{date_field}” 唯一。"
 
-#: validators.py:234
+#: validators.py:239
+#, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" month."
 msgstr "该字段必须在月份 “{date_field}” 唯一。"
 
-#: validators.py:247
+#: validators.py:252
+#, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" year."
 msgstr "该字段必须在年 “{date_field}” 唯一。"
 
@@ -302,24 +355,16 @@ msgstr "“Accept” HTTP头包含无效版本。"
 
 #: versioning.py:70 versioning.py:112
 msgid "Invalid version in URL path."
-msgstr "URl路径包含无效版本。"
+msgstr "URL路径包含无效版本。"
 
-#: versioning.py:138
+#: versioning.py:141
 msgid "Invalid version in hostname."
 msgstr "主机名包含无效版本。"
 
-#: versioning.py:160
+#: versioning.py:163
 msgid "Invalid version in query parameter."
 msgstr "请求参数里包含无效版本。"
 
-#: authtoken/serializers.py:20
-msgid "User account is disabled."
-msgstr "用户账户已禁用。"
-
-#: authtoken/serializers.py:23
-msgid "Unable to log in with provided credentials."
-msgstr "无法使用提供的认证信息登录。"
-
-#: authtoken/serializers.py:26
-msgid "Must include \"username\" and \"password\"."
-msgstr "必须包含 “用户名” 和 “密码”。"
+#: views.py:82
+msgid "Permission denied."
+msgstr ""

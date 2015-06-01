@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-30 16:23+0000\n"
-"PO-Revision-Date: 2015-01-30 16:27+0000\n"
-"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"POT-Creation-Date: 2015-06-01 23:48+0100\n"
+"PO-Revision-Date: 2015-06-01 22:52+0000\n"
+"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
 "Language-Team: Slovak (http://www.transifex.com/projects/p/django-rest-framework/language/sk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,37 +18,49 @@ msgstr ""
 "Language: sk\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: authentication.py:69
+#: authentication.py:70
 msgid "Invalid basic header. No credentials provided."
 msgstr "Nesprávna hlavička. Neboli poskytnuté prihlasovacie údaje."
 
-#: authentication.py:72
+#: authentication.py:73
 msgid "Invalid basic header. Credentials string should not contain spaces."
 msgstr "Nesprávna hlavička. Prihlasovacie údaje nesmú obsahovať medzery."
 
-#: authentication.py:78
+#: authentication.py:79
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
 msgstr "Nesprávna hlavička. Prihlasovacie údaje nie sú správne zakódované pomocou metódy base64."
 
-#: authentication.py:90
+#: authentication.py:97
 msgid "Invalid username/password."
 msgstr "Nesprávne prihlasovacie údaje."
 
-#: authentication.py:156
+#: authentication.py:100 authentication.py:182
+msgid "User inactive or deleted."
+msgstr "Daný používateľ je neaktívny, alebo zmazaný."
+
+#: authentication.py:167
 msgid "Invalid token header. No credentials provided."
 msgstr "Nesprávna token hlavička. Neboli poskytnuté prihlasovacie údaje."
 
-#: authentication.py:159
+#: authentication.py:170
 msgid "Invalid token header. Token string should not contain spaces."
 msgstr "Nesprávna token hlavička. Token hlavička nesmie obsahovať medzery."
 
-#: authentication.py:168
+#: authentication.py:179
 msgid "Invalid token."
 msgstr "Nesprávny token."
 
-#: authentication.py:171
-msgid "User inactive or deleted."
-msgstr "Daný používateľ je neaktívny, alebo zmazaný."
+#: authtoken/serializers.py:20
+msgid "User account is disabled."
+msgstr "Daný používateľ je zablokovaný."
+
+#: authtoken/serializers.py:23
+msgid "Unable to log in with provided credentials."
+msgstr "S danými prihlasovacími údajmi nebolo možné sa prihlásiť."
+
+#: authtoken/serializers.py:26
+msgid "Must include \"username\" and \"password\"."
+msgstr "Musí obsahovať parametre \"používateľské meno\" a \"heslo\"."
 
 #: exceptions.py:38
 msgid "A server error occurred."
@@ -70,11 +82,12 @@ msgstr "Prihlasovacie údaje neboli zadané."
 msgid "You do not have permission to perform this action."
 msgstr "K danej akcii nemáte oprávnenie."
 
-#: exceptions.py:93
+#: exceptions.py:93 views.py:77
 msgid "Not found."
 msgstr "Nebolo nájdené."
 
 #: exceptions.py:98
+#, python-brace-format
 msgid "Method \"{method}\" not allowed."
 msgstr "Metóda \"{method}\" nie je povolená."
 
@@ -83,243 +96,274 @@ msgid "Could not satisfy the request Accept header."
 msgstr "Nie je možné vyhovieť požiadavku v hlavičke \"Accept\"."
 
 #: exceptions.py:121
+#, python-brace-format
 msgid "Unsupported media type \"{media_type}\" in request."
 msgstr "Požiadavok obsahuje nepodporovaný media type: \"{media_type}\"."
 
 #: exceptions.py:134
 msgid "Request was throttled."
-msgstr ""
+msgstr "Požiadavok bol obmedzený, z dôvodu prekročenia limitu."
 
-#: fields.py:153 relations.py:132 relations.py:156 validators.py:77
-#: validators.py:155
+#: fields.py:162 relations.py:132 relations.py:156 validators.py:77
+#: validators.py:160
 msgid "This field is required."
-msgstr ""
+msgstr "Toto pole je povinné."
 
-#: fields.py:154
+#: fields.py:163
 msgid "This field may not be null."
-msgstr ""
+msgstr "Toto pole nemôže byť nulové."
 
-#: fields.py:487 fields.py:515
+#: fields.py:496 fields.py:524
+#, python-brace-format
 msgid "\"{input}\" is not a valid boolean."
-msgstr ""
+msgstr "\"{input}\" je validný boolean."
 
-#: fields.py:550
+#: fields.py:559
 msgid "This field may not be blank."
-msgstr ""
+msgstr "Toto pole nemože byť prázdne."
 
-#: fields.py:551 fields.py:1324
+#: fields.py:560 fields.py:1342
+#, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
-msgstr ""
+msgstr "Uistite sa, že toto pole nemá viac ako {max_length} znakov."
 
-#: fields.py:552
+#: fields.py:561
+#, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
-msgstr ""
+msgstr "Uistite sa, že toto pole má viac ako {min_length} znakov."
 
-#: fields.py:587
+#: fields.py:598
 msgid "Enter a valid email address."
-msgstr ""
+msgstr "Vložte správnu emailovú adresu."
 
-#: fields.py:604
+#: fields.py:609
 msgid "This value does not match the required pattern."
-msgstr ""
+msgstr "Toto pole nezodpovedá požadovanému formátu."
 
-#: fields.py:615
+#: fields.py:620
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
-msgstr ""
+msgstr "Zadajte platný \"slug\", ktorý obsahuje len malé písmená, čísla, spojovník alebopodtržítko."
 
-#: fields.py:627
+#: fields.py:632
 msgid "Enter a valid URL."
-msgstr ""
+msgstr "Zadajte platnú URL adresu."
 
-#: fields.py:638
+#: fields.py:643
+#, python-brace-format
 msgid "\"{value}\" is not a valid UUID."
-msgstr ""
+msgstr "\"{value}\" nie je platné UUID."
 
-#: fields.py:657
+#: fields.py:662
 msgid "A valid integer is required."
-msgstr ""
+msgstr "Je vyžadované celé číslo."
 
-#: fields.py:658 fields.py:692 fields.py:725
+#: fields.py:663 fields.py:698 fields.py:731
+#, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
-msgstr ""
+msgstr "Uistite sa, že hodnota je menšia alebo rovná {max_value}."
 
-#: fields.py:659 fields.py:693 fields.py:726
+#: fields.py:664 fields.py:699 fields.py:732
+#, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr ""
+msgstr "Uistite sa, že hodnota je väčšia alebo rovná {min_value}."
 
-#: fields.py:660 fields.py:694 fields.py:730
+#: fields.py:665 fields.py:700 fields.py:736
 msgid "String value too large."
-msgstr ""
+msgstr "Zadaný textový reťazec je príliš dlhý."
 
-#: fields.py:691 fields.py:724
+#: fields.py:697 fields.py:730
 msgid "A valid number is required."
-msgstr ""
+msgstr "Je vyžadované číslo."
 
-#: fields.py:727
+#: fields.py:733
+#, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
-msgstr ""
+msgstr "Uistite sa, že hodnota neobsahuje viac ako {max_digits} cifier."
 
-#: fields.py:728
+#: fields.py:734
+#, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
-msgstr ""
+msgstr "Uistite sa, že hodnota neobsahuje viac ako {max_decimal_places}  desatinných miest."
 
-#: fields.py:729
+#: fields.py:735
+#, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
-msgstr ""
+msgstr "Uistite sa, že hodnota neobsahuje viac ako {max_whole_digits} cifier pred desatinnou čiarkou."
 
-#: fields.py:813
+#: fields.py:825
+#, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Nesprávny formát dátumu a času. Prosím použite jeden z nasledujúcich formátov: {format}."
 
-#: fields.py:814
+#: fields.py:826
 msgid "Expected a datetime but got a date."
-msgstr ""
+msgstr "Vložený len dátum - date namiesto dátumu a času - datetime."
 
-#: fields.py:878
+#: fields.py:890
+#, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Nesprávny formát dátumu. Prosím použite jeden z nasledujúcich formátov: {format}."
 
-#: fields.py:879
+#: fields.py:891
 msgid "Expected a date but got a datetime."
-msgstr ""
+msgstr "Vložený dátum a čas - datetime namiesto jednoduchého dátumu - date."
 
-#: fields.py:936
+#: fields.py:954
+#, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Nesprávny formát času. Prosím použite jeden z nasledujúcich formátov: {format}."
 
-#: fields.py:992 fields.py:1036
+#: fields.py:1010 fields.py:1054
+#, python-brace-format
 msgid "\"{input}\" is not a valid choice."
-msgstr ""
+msgstr "\"{input}\" je nesprávny výber z daných možností."
 
-#: fields.py:1037 fields.py:1151 serializers.py:482
+#: fields.py:1055 fields.py:1169 serializers.py:483
+#, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Bol očakávaný zoznam položiek, no namiesto toho bol nájdený \"{input_type}\"."
 
-#: fields.py:1067
+#: fields.py:1085
 msgid "No file was submitted."
-msgstr ""
+msgstr "Nebol odoslaný žiadny súbor."
 
-#: fields.py:1068
+#: fields.py:1086
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
-msgstr ""
+msgstr "Odoslané dáta neobsahujú súbor. Prosím skontrolujte kódovanie - encoding type daného formuláru."
 
-#: fields.py:1069
+#: fields.py:1087
 msgid "No filename could be determined."
-msgstr ""
+msgstr "Nebolo možné určiť meno súboru."
 
-#: fields.py:1070
+#: fields.py:1088
 msgid "The submitted file is empty."
-msgstr ""
+msgstr "Odoslaný súbor je prázdny."
 
-#: fields.py:1071
+#: fields.py:1089
+#, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
-msgstr ""
+msgstr "Uistite sa, že meno súboru neobsahuje viac ako {max_length} znakov. (V skutočnosti ich má   {length})."
 
-#: fields.py:1113
+#: fields.py:1131
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
-msgstr ""
+msgstr "Uploadujte prosím obrázok. Súbor, ktorý ste uploadovali buď nie je obrázok, alebo daný obrázok je poškodený."
 
-#: fields.py:1188
+#: fields.py:1206
+#, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Bol očakávaný slovník položiek, no namiesto toho bol nájdený \"{input_type}\"."
 
-#: pagination.py:221
+#: pagination.py:231
+#, python-brace-format
 msgid "Invalid page \"{page_number}\": {message}."
-msgstr ""
+msgstr "Nesprávne číslo stránky \"{page_number}\": {message}."
 
-#: pagination.py:442
+#: pagination.py:492
 msgid "Invalid cursor"
-msgstr ""
+msgstr "Nesprávny kurzor."
 
 #: relations.py:133
+#, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
-msgstr ""
+msgstr "Nesprávny primárny kľúč \"{pk_value}\" - objekt s daným primárnym kľúčom neexistuje."
 
 #: relations.py:134
+#, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
-msgstr ""
+msgstr "Nesprávny typ. Bol prijatý {data_type} namiesto primárneho kľúča."
 
 #: relations.py:157
 msgid "Invalid hyperlink - No URL match."
-msgstr ""
+msgstr "Nesprávny hypertextový odkaz - žiadna zhoda."
 
 #: relations.py:158
 msgid "Invalid hyperlink - Incorrect URL match."
-msgstr ""
+msgstr "Nesprávny hypertextový odkaz - chybná URL."
 
 #: relations.py:159
 msgid "Invalid hyperlink - Object does not exist."
-msgstr ""
+msgstr "Nesprávny hypertextový odkaz - požadovný objekt neexistuje."
 
 #: relations.py:160
+#, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
-msgstr ""
+msgstr "Nesprávny typ {data_type}. Požadovaný typ: hypertextový odkaz."
 
-#: relations.py:295
+#: relations.py:302
+#, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
-msgstr ""
+msgstr "Objekt, ktorého atribút \"{slug_name}\" je \"{value}\" neexistuje."
 
-#: relations.py:296
+#: relations.py:303
 msgid "Invalid value."
+msgstr "Nesprávna hodnota."
+
+#: serializers.py:300
+#, python-brace-format
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "Bol očakávaný slovník položiek, no namiesto toho bol nájdený \"{datatype}\"."
+
+#: templates/rest_framework/horizontal/radio.html:2
+#: templates/rest_framework/inline/radio.html:2
+#: templates/rest_framework/vertical/radio.html:2
+msgid "None"
 msgstr ""
 
-#: serializers.py:299
-msgid "Invalid data. Expected a dictionary, but got {datatype}."
+#: templates/rest_framework/horizontal/select_multiple.html:2
+#: templates/rest_framework/inline/select_multiple.html:2
+#: templates/rest_framework/vertical/select_multiple.html:2
+msgid "No items to select."
 msgstr ""
 
 #: validators.py:22
 msgid "This field must be unique."
-msgstr ""
+msgstr "Táto položka musí byť unikátna."
 
 #: validators.py:76
+#, python-brace-format
 msgid "The fields {field_names} must make a unique set."
-msgstr ""
+msgstr "Dané položky:  {field_names} musia tvoriť musia spolu tvoriť unikátnu množinu."
 
-#: validators.py:219
+#: validators.py:224
+#, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" date."
-msgstr ""
+msgstr "Položka musí byť pre špecifický deň \"{date_field}\" unikátna."
 
-#: validators.py:234
+#: validators.py:239
+#, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" month."
-msgstr ""
+msgstr "Položka musí byť pre mesiac \"{date_field}\" unikátna."
 
-#: validators.py:247
+#: validators.py:252
+#, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" year."
-msgstr ""
+msgstr "Položka musí byť pre rok \"{date_field}\" unikátna."
 
 #: versioning.py:39
 msgid "Invalid version in \"Accept\" header."
-msgstr ""
+msgstr "Nesprávna verzia v \"Accept\" hlavičke."
 
 #: versioning.py:70 versioning.py:112
 msgid "Invalid version in URL path."
-msgstr ""
+msgstr "Nesprávna verzia v URL adrese."
 
-#: versioning.py:138
+#: versioning.py:141
 msgid "Invalid version in hostname."
-msgstr ""
+msgstr "Nesprávna verzia v \"hostname\"."
 
-#: versioning.py:160
+#: versioning.py:163
 msgid "Invalid version in query parameter."
+msgstr "Nesprávna verzia v parametri požiadavku."
+
+#: views.py:82
+msgid "Permission denied."
 msgstr ""
-
-#: authtoken/serializers.py:20
-msgid "User account is disabled."
-msgstr "Daný používateľ je zablokovaný."
-
-#: authtoken/serializers.py:23
-msgid "Unable to log in with provided credentials."
-msgstr "S danými prihlasovacími údajmi nebolo možné sa prihlásiť."
-
-#: authtoken/serializers.py:26
-msgid "Must include \"username\" and \"password\"."
-msgstr "Musí obsahovať parametre \"používateľské meno\" a \"heslo\"."
