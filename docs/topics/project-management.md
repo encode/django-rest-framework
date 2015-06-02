@@ -97,9 +97,9 @@ The following template should be used for the description of the issue, and serv
     Release manager is @***.
     Pull request is #***.
 
-    Pre checklist:
+    During development cycle:
 
-    - [x] Upload the new content to be translated to [transifex](http://www.django-rest-framework.org/topics/project-management/#translations).
+    - [ ] Upload the new content to be translated to [transifex](http://www.django-rest-framework.org/topics/project-management/#translations).
 
 
     Checklist:
