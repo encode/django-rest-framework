@@ -7,6 +7,7 @@ versions of django/python, and compatibility wrappers around optional packages.
 from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
+from django.db import connection, transaction
 from django.utils.encoding import force_text
 from django.utils.six.moves.urllib.parse import urlparse as _urlparse
 from django.utils import six
@@ -258,3 +259,27 @@ else:
     SHORT_SEPARATORS = (b',', b':')
     LONG_SEPARATORS = (b', ', b': ')
     INDENT_SEPARATORS = (b',', b': ')
+
+
+if django.VERSION >= (1, 8):
+    from django.db.models import DurationField
+    from django.utils.dateparse import parse_duration
+    from django.utils.duration import duration_string
+else:
+    DurationField = duration_string = parse_duration = None
+
+
+def set_rollback():
+    if hasattr(transaction, 'set_rollback'):
+        if connection.settings_dict.get('ATOMIC_REQUESTS', False):
+            # If running in >=1.6 then mark a rollback as required,
+            # and allow it to be handled by Django.
+            transaction.set_rollback(True)
+    elif transaction.is_managed():
+        # Otherwise handle it explicitly if in managed mode.
+        if transaction.is_dirty():
+            transaction.rollback()
+        transaction.leave_transaction_management()
+    else:
+        # transaction not managed
+        pass

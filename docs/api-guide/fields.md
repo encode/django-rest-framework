@@ -302,6 +302,18 @@ Corresponds to `django.db.models.fields.TimeField`
 
 Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style times should be used. (eg `'12:34:56.000000'`)
 
+## DurationField
+
+A Duration representation.
+Corresponds to `django.db.models.fields.DurationField`
+
+The `validated_data` for these fields will contain a `datetime.timedelta` instance.
+The representation is a string following this format `'[DD] [HH:[MM:]]ss[.uuuuuu]'`.
+
+**Note:** This field is only available with Django versions >= 1.8.
+
+**Signature:** `DurationField()`
+
 ---
 
 # Choice selection fields

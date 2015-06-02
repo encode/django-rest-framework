@@ -1,6 +1,7 @@
 from decimal import Decimal
 from django.utils import timezone
 from rest_framework import serializers
+import rest_framework
 import datetime
 import django
 import pytest
@@ -221,6 +222,14 @@ class TestInvalidErrorKey:
         assert str(exc_info.value) == expected
 
 
+class MockHTMLDict(dict):
+    """
+    This class mocks up a dictionary like object, that behaves
+    as if it was returned for multipart or urlencoded data.
+    """
+    getlist = None
+
+
 class TestBooleanHTMLInput:
     def setup(self):
         class TestSerializer(serializers.Serializer):
@@ -234,19 +243,9 @@ class TestBooleanHTMLInput:
         """
         # This class mocks up a dictionary like object, that behaves
         # as if it was returned for multipart or urlencoded data.
-        class MockHTMLDict(dict):
-            getlist = None
         serializer = self.Serializer(data=MockHTMLDict())
         assert serializer.is_valid()
         assert serializer.validated_data == {'archived': False}
-
-
-class MockHTMLDict(dict):
-    """
-    This class mocks up a dictionary like object, that behaves
-    as if it was returned for multipart or urlencoded data.
-    """
-    getlist = None
 
 
 class TestHTMLInput:
@@ -905,6 +904,29 @@ class TestNoOutputFormatTimeField(FieldValues):
     field = serializers.TimeField(format=None)
 
 
+@pytest.mark.skipif(django.VERSION < (1, 8),
+                    reason='DurationField is only available for django1.8+')
+class TestDurationField(FieldValues):
+    """
+    Valid and invalid values for `DurationField`.
+    """
+    valid_inputs = {
+        '13': datetime.timedelta(seconds=13),
+        '3 08:32:01.000123': datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
+        '08:01': datetime.timedelta(minutes=8, seconds=1),
+        datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123): datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
+    }
+    invalid_inputs = {
+        'abc': ['Duration has wrong format. Use one of these formats instead: [DD] [HH:[MM:]]ss[.uuuuuu].'],
+        '3 08:32 01.123': ['Duration has wrong format. Use one of these formats instead: [DD] [HH:[MM:]]ss[.uuuuuu].'],
+    }
+    outputs = {
+        datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123): '3 08:32:01.000123',
+    }
+    if django.VERSION >= (1, 8):
+        field = serializers.DurationField()
+
+
 # Choice types...
 
 class TestChoiceField(FieldValues):
@@ -1016,6 +1038,15 @@ class TestMultipleChoiceField(FieldValues):
             ('diesel', 'Diesel'),
         ]
     )
+
+    def test_against_partial_and_full_updates(self):
+        # serializer = self.Serializer(data=MockHTMLDict())
+        from django.http import QueryDict
+        field = serializers.MultipleChoiceField(choices=(('a', 'a'), ('b', 'b')))
+        field.partial = False
+        assert field.get_value(QueryDict({})) == []
+        field.partial = True
+        assert field.get_value(QueryDict({})) == rest_framework.fields.empty
 
 
 # File serializers...

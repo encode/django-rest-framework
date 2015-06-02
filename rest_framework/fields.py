@@ -12,7 +12,7 @@ from rest_framework import ISO_8601
 from rest_framework.compat import (
     EmailValidator, MinValueValidator, MaxValueValidator,
     MinLengthValidator, MaxLengthValidator, URLValidator, OrderedDict,
-    unicode_repr, unicode_to_repr
+    unicode_repr, unicode_to_repr, parse_duration, duration_string,
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
@@ -1003,6 +1003,29 @@ class TimeField(Field):
         return value.strftime(self.format)
 
 
+class DurationField(Field):
+    default_error_messages = {
+        'invalid': _('Duration has wrong format. Use one of these formats instead: {format}.'),
+    }
+
+    def __init__(self, *args, **kwargs):
+        if parse_duration is None:
+            raise NotImplementedError(
+                'DurationField not supported for django versions prior to 1.8')
+        return super(DurationField, self).__init__(*args, **kwargs)
+
+    def to_internal_value(self, value):
+        if isinstance(value, datetime.timedelta):
+            return value
+        parsed = parse_duration(value)
+        if parsed is not None:
+            return parsed
+        self.fail('invalid', format='[DD] [HH:[MM:]]ss[.uuuuuu]')
+
+    def to_representation(self, value):
+        return duration_string(value)
+
+
 # Choice types...
 
 class ChoiceField(Field):
@@ -1060,7 +1083,11 @@ class MultipleChoiceField(ChoiceField):
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
-            return dictionary.getlist(self.field_name)
+            ret = dictionary.getlist(self.field_name)
+            if getattr(self.root, 'partial', False) and not ret:
+                ret = empty
+            return ret
+
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
