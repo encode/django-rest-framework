@@ -305,7 +305,7 @@ Format strings may either be [Python strftime formats][strftime] which explicitl
 ## DurationField
 
 A Duration representation.
-Corresponds to `django.db.models.fields.Duration`
+Corresponds to `django.db.models.fields.DurationField`
 
 The `validated_data` for these fields will contain a `datetime.timedelta` instance.
 The representation is a string following this format `'[DD] [HH:[MM:]]ss[.uuuuuu]'`.
