@@ -97,9 +97,15 @@ The following template should be used for the description of the issue, and serv
     Release manager is @***.
     Pull request is #***.
 
+    Pre checklist:
+
+    - [x] Upload the new content to be translated to [transifex](http://www.django-rest-framework.org/topics/project-management/#translations).
+
+
     Checklist:
 
     - [ ] Create pull request for [release notes](https://github.com/tomchristie/django-rest-framework/blob/master/docs/topics/release-notes.md) based on the [*.*.* milestone](https://github.com/tomchristie/django-rest-framework/milestones/***).
+    - [ ] Update the translations from [transifex](http://www.django-rest-framework.org/topics/project-management/#translations).
     - [ ] Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/tomchristie/django-rest-framework/blob/master/rest_framework/__init__.py).
     - [ ] Confirm with @tomchristie that release is finalized and ready to go.
     - [ ] Ensure that release date is included in pull request.
