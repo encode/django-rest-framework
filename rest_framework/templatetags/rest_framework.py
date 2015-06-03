@@ -134,7 +134,9 @@ def format_value(value):
 
 @register.filter
 def add_nested_class(value):
-    if isinstance(value, (list, dict)):
+    if isinstance(value, dict):
+        return 'class=nested'
+    if isinstance(value, list) and any([isinstance(item, (list, dict)) for item in value]):
         return 'class=nested'
     return ''
 
