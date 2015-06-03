@@ -1,0 +1,1 @@
+{% for item in value %}{% if not forloop.first%},{% endif %} {% if item.is_hyperlink %}<a href="{{ item }}">{{item.name}}</a>{% else %}{{ item }}{% endif %}{% endfor %}

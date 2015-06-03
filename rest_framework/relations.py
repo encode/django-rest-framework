@@ -13,6 +13,20 @@ from rest_framework.reverse import reverse
 from rest_framework.utils import html
 
 
+class Hyperlink(six.text_type):
+    """
+    A string like object that additionally has an associated name.
+    We use this for hyperlinked URLs that may render as a named link
+    in some contexts, or render as a plain URL in others.
+    """
+    def __new__(self, url, name):
+        ret = six.text_type.__new__(self, url)
+        ret.name = name
+        return ret
+
+    is_hyperlink = True
+
+
 class PKOnlyObject(object):
     """
     This is a mock object, used for when we only need the pk of the object
@@ -203,6 +217,9 @@ class HyperlinkedRelatedField(RelatedField):
         kwargs = {self.lookup_url_kwarg: lookup_value}
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
 
+    def get_name(self, obj):
+        return str(obj)
+
     def to_internal_value(self, data):
         request = self.context.get('request', None)
         try:
@@ -261,7 +278,7 @@ class HyperlinkedRelatedField(RelatedField):
 
         # Return the hyperlink, or error if incorrectly configured.
         try:
-            return self.get_url(value, self.view_name, request, format)
+            url = self.get_url(value, self.view_name, request, format)
         except NoReverseMatch:
             msg = (
                 'Could not resolve URL for hyperlinked relationship using '
@@ -270,6 +287,12 @@ class HyperlinkedRelatedField(RelatedField):
                 '`lookup_field` attribute on this field.'
             )
             raise ImproperlyConfigured(msg % self.view_name)
+
+        if url is None:
+            return None
+
+        name = self.get_name(value)
+        return Hyperlink(url, name)
 
 
 class HyperlinkedIdentityField(HyperlinkedRelatedField):

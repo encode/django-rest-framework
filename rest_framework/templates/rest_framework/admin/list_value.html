@@ -1,5 +1,5 @@
 {% load rest_framework %}
-<table class="table table-striped">
+<!-- <table class="table table-striped">
     <tbody>
         {% for item in value %}
         <tr>
@@ -9,3 +9,5 @@
         {% endfor %}
     </tbody>
 </table>
+ -->
+{% for item in value %}{% if not forloop.first%}, {% endif %}<a href="{{ item }}">{{item.name}}</a>{% endfor %}

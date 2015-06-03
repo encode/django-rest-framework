@@ -111,7 +111,10 @@ def format_value(value):
     if isinstance(value, (int, float, decimal.Decimal, bool, type(None))):
         return mark_safe('<code>%s</code>' % value)
     elif isinstance(value, list):
-        template = loader.get_template('rest_framework/admin/list_value.html')
+        if any([isinstance(item, (list, dict)) for item in value]):
+            template = loader.get_template('rest_framework/admin/list_value.html')
+        else:
+            template = loader.get_template('rest_framework/admin/simple_list_value.html')
         context = Context({'value': value})
         return template.render(context)
     elif isinstance(value, dict):
