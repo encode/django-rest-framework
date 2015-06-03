@@ -218,7 +218,7 @@ class HyperlinkedRelatedField(RelatedField):
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
 
     def get_name(self, obj):
-        return str(obj)
+        return six.text_type(obj)
 
     def to_internal_value(self, data):
         request = self.context.get('request', None)
