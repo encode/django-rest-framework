@@ -108,6 +108,7 @@ class SearchFilter(BaseFilterBackend):
             and_queries.append(reduce(operator.or_, or_queries))
 
         if and_queries:
+            # According to Oracle DB limits there is no capability to make a DISTINT on *LOB
             if settings.DATABASES[queryset.db]["ENGINE"] == "django.db.backends.oracle":
                 pk_list = queryset.filter(reduce(operator.and_, and_queries)).values_list('pk', flat=True)
                 return queryset.filter(pk__in=frozenset(pk_list))
