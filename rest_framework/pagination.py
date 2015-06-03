@@ -306,7 +306,7 @@ class PageNumberPagination(BasePagination):
             )
             raise NotFound(msg)
 
-        if paginator.count > 1 and self.template is not None:
+        if paginator.num_pages > 1 and self.template is not None:
             # The browsable API should display pagination controls.
             self.display_page_controls = True
 
