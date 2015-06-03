@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-01 23:48+0100\n"
-"PO-Revision-Date: 2015-06-01 22:52+0000\n"
+"POT-Creation-Date: 2015-06-03 17:30+0100\n"
+"PO-Revision-Date: 2015-06-03 16:30+0000\n"
 "Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
 "Language-Team: Slovak (http://www.transifex.com/projects/p/django-rest-framework/language/sk/)\n"
 "MIME-Version: 1.0\n"
@@ -82,7 +82,7 @@ msgstr "Prihlasovacie údaje neboli zadané."
 msgid "You do not have permission to perform this action."
 msgstr "K danej akcii nemáte oprávnenie."
 
-#: exceptions.py:93 views.py:77
+#: exceptions.py:93 views.py:78
 msgid "Not found."
 msgstr "Nebolo nájdené."
 
@@ -122,7 +122,7 @@ msgstr "\"{input}\" je validný boolean."
 msgid "This field may not be blank."
 msgstr "Toto pole nemože byť prázdne."
 
-#: fields.py:560 fields.py:1342
+#: fields.py:560 fields.py:1386
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr "Uistite sa, že toto pole nemá viac ako {max_length} znakov."
@@ -150,114 +150,119 @@ msgstr "Zadajte platný \"slug\", ktorý obsahuje len malé písmená, čísla, 
 msgid "Enter a valid URL."
 msgstr "Zadajte platnú URL adresu."
 
-#: fields.py:643
+#: fields.py:645
 #, python-brace-format
 msgid "\"{value}\" is not a valid UUID."
 msgstr "\"{value}\" nie je platné UUID."
 
-#: fields.py:662
+#: fields.py:679
 msgid "A valid integer is required."
 msgstr "Je vyžadované celé číslo."
 
-#: fields.py:663 fields.py:698 fields.py:731
+#: fields.py:680 fields.py:715 fields.py:748
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
 msgstr "Uistite sa, že hodnota je menšia alebo rovná {max_value}."
 
-#: fields.py:664 fields.py:699 fields.py:732
+#: fields.py:681 fields.py:716 fields.py:749
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
 msgstr "Uistite sa, že hodnota je väčšia alebo rovná {min_value}."
 
-#: fields.py:665 fields.py:700 fields.py:736
+#: fields.py:682 fields.py:717 fields.py:753
 msgid "String value too large."
 msgstr "Zadaný textový reťazec je príliš dlhý."
 
-#: fields.py:697 fields.py:730
+#: fields.py:714 fields.py:747
 msgid "A valid number is required."
 msgstr "Je vyžadované číslo."
 
-#: fields.py:733
+#: fields.py:750
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
 msgstr "Uistite sa, že hodnota neobsahuje viac ako {max_digits} cifier."
 
-#: fields.py:734
+#: fields.py:751
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr "Uistite sa, že hodnota neobsahuje viac ako {max_decimal_places}  desatinných miest."
 
-#: fields.py:735
+#: fields.py:752
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
 msgstr "Uistite sa, že hodnota neobsahuje viac ako {max_whole_digits} cifier pred desatinnou čiarkou."
 
-#: fields.py:825
+#: fields.py:842
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
 msgstr "Nesprávny formát dátumu a času. Prosím použite jeden z nasledujúcich formátov: {format}."
 
-#: fields.py:826
+#: fields.py:843
 msgid "Expected a datetime but got a date."
 msgstr "Vložený len dátum - date namiesto dátumu a času - datetime."
 
-#: fields.py:890
+#: fields.py:907
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr "Nesprávny formát dátumu. Prosím použite jeden z nasledujúcich formátov: {format}."
 
-#: fields.py:891
+#: fields.py:908
 msgid "Expected a date but got a datetime."
 msgstr "Vložený dátum a čas - datetime namiesto jednoduchého dátumu - date."
 
-#: fields.py:954
+#: fields.py:971
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr "Nesprávny formát času. Prosím použite jeden z nasledujúcich formátov: {format}."
 
-#: fields.py:1010 fields.py:1054
+#: fields.py:1025
+#, python-brace-format
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr ""
+
+#: fields.py:1050 fields.py:1094
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
 msgstr "\"{input}\" je nesprávny výber z daných možností."
 
-#: fields.py:1055 fields.py:1169 serializers.py:483
+#: fields.py:1095 fields.py:1213 serializers.py:487
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Bol očakávaný zoznam položiek, no namiesto toho bol nájdený \"{input_type}\"."
 
-#: fields.py:1085
+#: fields.py:1129
 msgid "No file was submitted."
 msgstr "Nebol odoslaný žiadny súbor."
 
-#: fields.py:1086
+#: fields.py:1130
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
 msgstr "Odoslané dáta neobsahujú súbor. Prosím skontrolujte kódovanie - encoding type daného formuláru."
 
-#: fields.py:1087
+#: fields.py:1131
 msgid "No filename could be determined."
 msgstr "Nebolo možné určiť meno súboru."
 
-#: fields.py:1088
+#: fields.py:1132
 msgid "The submitted file is empty."
 msgstr "Odoslaný súbor je prázdny."
 
-#: fields.py:1089
+#: fields.py:1133
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr "Uistite sa, že meno súboru neobsahuje viac ako {max_length} znakov. (V skutočnosti ich má   {length})."
 
-#: fields.py:1131
+#: fields.py:1175
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr "Uploadujte prosím obrázok. Súbor, ktorý ste uploadovali buď nie je obrázok, alebo daný obrázok je poškodený."
 
-#: fields.py:1206
+#: fields.py:1250
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
 msgstr "Bol očakávaný slovník položiek, no namiesto toho bol nájdený \"{input_type}\"."
@@ -307,7 +312,7 @@ msgstr "Objekt, ktorého atribút \"{slug_name}\" je \"{value}\" neexistuje."
 msgid "Invalid value."
 msgstr "Nesprávna hodnota."
 
-#: serializers.py:300
+#: serializers.py:304
 #, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
 msgstr "Bol očakávaný slovník položiek, no namiesto toho bol nájdený \"{datatype}\"."
@@ -364,6 +369,6 @@ msgstr "Nesprávna verzia v \"hostname\"."
 msgid "Invalid version in query parameter."
 msgstr "Nesprávna verzia v parametri požiadavku."
 
-#: views.py:82
+#: views.py:85
 msgid "Permission denied."
 msgstr ""

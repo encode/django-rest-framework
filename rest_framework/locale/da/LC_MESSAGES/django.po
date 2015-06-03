@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-01 23:48+0100\n"
-"PO-Revision-Date: 2015-06-01 22:52+0000\n"
+"POT-Creation-Date: 2015-06-03 17:30+0100\n"
+"PO-Revision-Date: 2015-06-03 16:30+0000\n"
 "Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
 "Language-Team: Danish (http://www.transifex.com/projects/p/django-rest-framework/language/da/)\n"
 "MIME-Version: 1.0\n"
@@ -82,7 +82,7 @@ msgstr "Legitimation til autentificering blev ikke angivet."
 msgid "You do not have permission to perform this action."
 msgstr "Du har ikke lov til at udføre denne handling."
 
-#: exceptions.py:93 views.py:77
+#: exceptions.py:93 views.py:78
 msgid "Not found."
 msgstr "Ikke fundet."
 
@@ -122,7 +122,7 @@ msgstr "\"{input}\" er ikke en tilladt boolsk værdi."
 msgid "This field may not be blank."
 msgstr "Dette felt må ikke være tomt."
 
-#: fields.py:560 fields.py:1342
+#: fields.py:560 fields.py:1386
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr "Tjek at dette felt ikke indeholder flere end {max_length} tegn."
@@ -150,117 +150,122 @@ msgstr "Indtast en gyldig \"slug\", bestående af bogstaver, tal, bund- og binde
 msgid "Enter a valid URL."
 msgstr "Indtast en gyldig URL."
 
-#: fields.py:643
+#: fields.py:645
 #, python-brace-format
 msgid "\"{value}\" is not a valid UUID."
-msgstr ""
+msgstr "\"{value}\" er ikke et gyldigt UUID."
 
-#: fields.py:662
+#: fields.py:679
 msgid "A valid integer is required."
 msgstr "Et gyldigt heltal er påkrævet."
 
-#: fields.py:663 fields.py:698 fields.py:731
+#: fields.py:680 fields.py:715 fields.py:748
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
 msgstr "Tjek at værdien er mindre end eller lig med {max_value}."
 
-#: fields.py:664 fields.py:699 fields.py:732
+#: fields.py:681 fields.py:716 fields.py:749
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
 msgstr "Tjek at værdien er større end eller lig med {min_value}."
 
-#: fields.py:665 fields.py:700 fields.py:736
+#: fields.py:682 fields.py:717 fields.py:753
 msgid "String value too large."
 msgstr "Strengværdien er for stor."
 
-#: fields.py:697 fields.py:730
+#: fields.py:714 fields.py:747
 msgid "A valid number is required."
 msgstr "Et gyldigt tal er påkrævet."
 
-#: fields.py:733
+#: fields.py:750
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
 msgstr "Tjek at der ikke er flere end {max_digits} cifre i alt."
 
-#: fields.py:734
+#: fields.py:751
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr "Tjek at der ikke er flere end {max_decimal_places} cifre efter kommaet."
 
-#: fields.py:735
+#: fields.py:752
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
 msgstr "Tjek at der ikke er flere end {max_whole_digits} cifre før kommaet."
 
-#: fields.py:825
+#: fields.py:842
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
 msgstr "Datotid har et forkert format. Brug i stedet et af disse formater: {format}."
 
-#: fields.py:826
+#: fields.py:843
 msgid "Expected a datetime but got a date."
 msgstr "Forventede en datotid, men fik en dato."
 
-#: fields.py:890
+#: fields.py:907
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr "Dato har et forkert format. Brug i stedet et af disse formater: {format}."
 
-#: fields.py:891
+#: fields.py:908
 msgid "Expected a date but got a datetime."
 msgstr "Forventede en dato men fik en datotid."
 
-#: fields.py:954
+#: fields.py:971
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr "Klokkeslæt har forkert format. Brug i stedet et af disse formater: {format}. "
 
-#: fields.py:1010 fields.py:1054
+#: fields.py:1025
+#, python-brace-format
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr ""
+
+#: fields.py:1050 fields.py:1094
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
 msgstr "\"{input}\" er ikke et gyldigt valg."
 
-#: fields.py:1055 fields.py:1169 serializers.py:483
+#: fields.py:1095 fields.py:1213 serializers.py:487
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Forventede en liste, men fik noget af typen \"{input_type}\"."
 
-#: fields.py:1085
+#: fields.py:1129
 msgid "No file was submitted."
 msgstr "Ingen medsendt fil."
 
-#: fields.py:1086
+#: fields.py:1130
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
 msgstr "Det medsendte data var ikke en fil. Tjek typen af indkodning på formularen."
 
-#: fields.py:1087
+#: fields.py:1131
 msgid "No filename could be determined."
 msgstr "Filnavnet kunne ikke afgøres."
 
-#: fields.py:1088
+#: fields.py:1132
 msgid "The submitted file is empty."
 msgstr "Den medsendte fil er tom."
 
-#: fields.py:1089
+#: fields.py:1133
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr "Sørg for at filnavnet er højst {max_length} langt (det er {length})."
 
-#: fields.py:1131
+#: fields.py:1175
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr "Medsend et gyldigt billede. Den medsendte fil var enten ikke et billede eller billedfilen var ødelagt."
 
-#: fields.py:1206
+#: fields.py:1250
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Forventede en dictionary, men fik noget af typen \"{input_type}\"."
 
 #: pagination.py:231
 #, python-brace-format
@@ -269,7 +274,7 @@ msgstr "Ugyldig side \"{page_number}\": {message}."
 
 #: pagination.py:492
 msgid "Invalid cursor"
-msgstr ""
+msgstr "Ugyldig cursor"
 
 #: relations.py:133
 #, python-brace-format
@@ -307,7 +312,7 @@ msgstr "Object med {slug_name}={value} findes ikke."
 msgid "Invalid value."
 msgstr "Ugyldig værdi."
 
-#: serializers.py:300
+#: serializers.py:304
 #, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
 msgstr "Ugyldig data. Forventede en dictionary, men fik {datatype}."
@@ -316,13 +321,13 @@ msgstr "Ugyldig data. Forventede en dictionary, men fik {datatype}."
 #: templates/rest_framework/inline/radio.html:2
 #: templates/rest_framework/vertical/radio.html:2
 msgid "None"
-msgstr ""
+msgstr "Ingen"
 
 #: templates/rest_framework/horizontal/select_multiple.html:2
 #: templates/rest_framework/inline/select_multiple.html:2
 #: templates/rest_framework/vertical/select_multiple.html:2
 msgid "No items to select."
-msgstr ""
+msgstr "Intet at vælge."
 
 #: validators.py:22
 msgid "This field must be unique."
@@ -364,6 +369,6 @@ msgstr "Ugyldig version i hostname."
 msgid "Invalid version in query parameter."
 msgstr "Ugyldig version i forespørgselsparameteren."
 
-#: views.py:82
+#: views.py:85
 msgid "Permission denied."
-msgstr ""
+msgstr "Adgang nægtet."
