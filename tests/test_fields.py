@@ -1,6 +1,7 @@
 from decimal import Decimal
 from django.utils import timezone
 from rest_framework import serializers
+import rest_framework
 import datetime
 import django
 import pytest
@@ -221,6 +222,14 @@ class TestInvalidErrorKey:
         assert str(exc_info.value) == expected
 
 
+class MockHTMLDict(dict):
+    """
+    This class mocks up a dictionary like object, that behaves
+    as if it was returned for multipart or urlencoded data.
+    """
+    getlist = None
+
+
 class TestBooleanHTMLInput:
     def setup(self):
         class TestSerializer(serializers.Serializer):
@@ -234,19 +243,9 @@ class TestBooleanHTMLInput:
         """
         # This class mocks up a dictionary like object, that behaves
         # as if it was returned for multipart or urlencoded data.
-        class MockHTMLDict(dict):
-            getlist = None
         serializer = self.Serializer(data=MockHTMLDict())
         assert serializer.is_valid()
         assert serializer.validated_data == {'archived': False}
-
-
-class MockHTMLDict(dict):
-    """
-    This class mocks up a dictionary like object, that behaves
-    as if it was returned for multipart or urlencoded data.
-    """
-    getlist = None
 
 
 class TestHTMLInput:
@@ -316,6 +315,25 @@ class TestCreateOnlyDefault:
         assert serializer.validated_data == {
             'text': 'example',
         }
+
+    def test_create_only_default_callable_sets_context(self):
+        """
+        CreateOnlyDefault instances with a callable default should set_context
+        on the callable if possible
+        """
+        class TestCallableDefault:
+            def set_context(self, serializer_field):
+                self.field = serializer_field
+
+            def __call__(self):
+                return "success" if hasattr(self, 'field') else "failure"
+
+        class TestSerializer(serializers.Serializer):
+            context_set = serializers.CharField(default=serializers.CreateOnlyDefault(TestCallableDefault()))
+
+        serializer = TestSerializer(data={})
+        assert serializer.is_valid()
+        assert serializer.validated_data['context_set'] == 'success'
 
 
 # Tests for field input and output values.
@@ -507,7 +525,9 @@ class TestUUIDField(FieldValues):
     """
     valid_inputs = {
         '825d7aeb-05a9-45b5-a5b7-05df87923cda': uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda'),
-        '825d7aeb05a945b5a5b705df87923cda': uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda')
+        '825d7aeb05a945b5a5b705df87923cda': uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda'),
+        'urn:uuid:213b7d9b-244f-410d-828c-dabce7a2615d': uuid.UUID('213b7d9b-244f-410d-828c-dabce7a2615d'),
+        284758210125106368185219588917561929842: uuid.UUID('d63a6fb6-88d5-40c7-a91c-9edf73283072')
     }
     invalid_inputs = {
         '825d7aeb-05a9-45b5-a5b7': ['"825d7aeb-05a9-45b5-a5b7" is not a valid UUID.']
@@ -516,6 +536,17 @@ class TestUUIDField(FieldValues):
         uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda'): '825d7aeb-05a9-45b5-a5b7-05df87923cda'
     }
     field = serializers.UUIDField()
+
+    def _test_format(self, uuid_format, formatted_uuid_0):
+        field = serializers.UUIDField(format=uuid_format)
+        assert field.to_representation(uuid.UUID(int=0)) == formatted_uuid_0
+        assert field.to_internal_value(formatted_uuid_0) == uuid.UUID(int=0)
+
+    def test_formats(self):
+        self._test_format('int', 0)
+        self._test_format('hex_verbose', '00000000-0000-0000-0000-000000000000')
+        self._test_format('urn', 'urn:uuid:00000000-0000-0000-0000-000000000000')
+        self._test_format('hex', '0' * 32)
 
 
 class TestIPAddressField(FieldValues):
@@ -584,10 +615,13 @@ class TestIntegerField(FieldValues):
         1: 1,
         0: 0,
         1.0: 1,
-        0.0: 0
+        0.0: 0,
+        '1.0': 1
     }
     invalid_inputs = {
-        'abc': ['A valid integer is required.']
+        0.5: ['A valid integer is required.'],
+        'abc': ['A valid integer is required.'],
+        '0.5': ['A valid integer is required.']
     }
     outputs = {
         '1': 1,
@@ -679,6 +713,7 @@ class TestDecimalField(FieldValues):
         0: Decimal('0'),
         12.3: Decimal('12.3'),
         0.1: Decimal('0.1'),
+        '2E+2': Decimal('200'),
     }
     invalid_inputs = (
         ('abc', ["A valid number is required."]),
@@ -758,7 +793,10 @@ class TestDateField(FieldValues):
         datetime.datetime(2001, 1, 1, 12, 00): ['Expected a date but got a datetime.'],
     }
     outputs = {
-        datetime.date(2001, 1, 1): '2001-01-01'
+        datetime.date(2001, 1, 1): '2001-01-01',
+        '2001-01-01': '2001-01-01',
+        None: None,
+        '': None,
     }
     field = serializers.DateField()
 
@@ -933,6 +971,29 @@ class TestNoOutputFormatTimeField(FieldValues):
     field = serializers.TimeField(format=None)
 
 
+@pytest.mark.skipif(django.VERSION < (1, 8),
+                    reason='DurationField is only available for django1.8+')
+class TestDurationField(FieldValues):
+    """
+    Valid and invalid values for `DurationField`.
+    """
+    valid_inputs = {
+        '13': datetime.timedelta(seconds=13),
+        '3 08:32:01.000123': datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
+        '08:01': datetime.timedelta(minutes=8, seconds=1),
+        datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123): datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
+    }
+    invalid_inputs = {
+        'abc': ['Duration has wrong format. Use one of these formats instead: [DD] [HH:[MM:]]ss[.uuuuuu].'],
+        '3 08:32 01.123': ['Duration has wrong format. Use one of these formats instead: [DD] [HH:[MM:]]ss[.uuuuuu].'],
+    }
+    outputs = {
+        datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123): '3 08:32:01.000123',
+    }
+    if django.VERSION >= (1, 8):
+        field = serializers.DurationField()
+
+
 # Choice types...
 
 class TestChoiceField(FieldValues):
@@ -949,7 +1010,8 @@ class TestChoiceField(FieldValues):
     }
     outputs = {
         'good': 'good',
-        '': ''
+        '': '',
+        'amazing': 'amazing',
     }
     field = serializers.ChoiceField(
         choices=[
@@ -1034,7 +1096,7 @@ class TestMultipleChoiceField(FieldValues):
         ('aircon', 'incorrect'): ['"incorrect" is not a valid choice.']
     }
     outputs = [
-        (['aircon', 'manual'], set(['aircon', 'manual']))
+        (['aircon', 'manual', 'incorrect'], set(['aircon', 'manual', 'incorrect']))
     ]
     field = serializers.MultipleChoiceField(
         choices=[
@@ -1043,6 +1105,15 @@ class TestMultipleChoiceField(FieldValues):
             ('diesel', 'Diesel'),
         ]
     )
+
+    def test_against_partial_and_full_updates(self):
+        # serializer = self.Serializer(data=MockHTMLDict())
+        from django.http import QueryDict
+        field = serializers.MultipleChoiceField(choices=(('a', 'a'), ('b', 'b')))
+        field.partial = False
+        assert field.get_value(QueryDict({})) == []
+        field.partial = True
+        assert field.get_value(QueryDict({})) == rest_framework.fields.empty
 
 
 # File serializers...

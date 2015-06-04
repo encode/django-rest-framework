@@ -9,9 +9,9 @@
 
 ---
 
-**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
+**Note**: This is the documentation for the **version 3.1** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
 
-For more details see the [3.0 release notes][3.0-announcement].
+For more details see the [3.1 release notes][3.1-announcement].
 
 ---
 
@@ -50,7 +50,7 @@ Some reasons you might want to use REST framework:
 REST framework requires the following:
 
 * Python (2.6.5+, 2.7, 3.2, 3.3, 3.4)
-* Django (1.4.11+, 1.5.6+, 1.6.3+, 1.7, 1.8-beta)
+* Django (1.4.11+, 1.5.6+, 1.6.3+, 1.7+, 1.8)
 
 The following packages are optional:
 

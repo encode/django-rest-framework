@@ -65,7 +65,7 @@ When testing views directly using a request factory, it's often convenient to be
 
 To forcibly authenticate a request, use the `force_authenticate()` method.
 
-    from rest_framework.tests import force_authenticate
+    from rest_framework.test import force_authenticate
 
     factory = APIRequestFactory()
     user = User.objects.get(username='olivia')

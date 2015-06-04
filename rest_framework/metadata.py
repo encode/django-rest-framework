@@ -36,6 +36,7 @@ class SimpleMetadata(BaseMetadata):
     label_lookup = ClassLookupDict({
         serializers.Field: 'field',
         serializers.BooleanField: 'boolean',
+        serializers.NullBooleanField: 'boolean',
         serializers.CharField: 'string',
         serializers.URLField: 'url',
         serializers.EmailField: 'email',
@@ -126,7 +127,7 @@ class SimpleMetadata(BaseMetadata):
             if value is not None and value != '':
                 field_info[attr] = force_text(value, strings_only=True)
 
-        if hasattr(field, 'choices'):
+        if not field_info.get('read_only') and hasattr(field, 'choices'):
             field_info['choices'] = [
                 {
                     'value': choice_value,

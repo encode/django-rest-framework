@@ -3,6 +3,7 @@ Provide urlresolver functions that return fully qualified URLs or view names
 """
 from __future__ import unicode_literals
 from django.core.urlresolvers import reverse as django_reverse
+from django.core.urlresolvers import NoReverseMatch
 from django.utils import six
 from django.utils.functional import lazy
 
@@ -15,7 +16,13 @@ def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra
     """
     scheme = getattr(request, 'versioning_scheme', None)
     if scheme is not None:
-        return scheme.reverse(viewname, args, kwargs, request, format, **extra)
+        try:
+            return scheme.reverse(viewname, args, kwargs, request, format, **extra)
+        except NoReverseMatch:
+            # In case the versioning scheme reversal fails, fallback to the
+            # default implementation
+            pass
+
     return _reverse(viewname, args, kwargs, request, format, **extra)
 
 

@@ -61,9 +61,7 @@ DEFAULTS = {
     'NUM_PROXIES': None,
 
     # Pagination
-    'PAGINATE_BY': None,
-    'PAGINATE_BY_PARAM': None,
-    'MAX_PAGINATE_BY': None,
+    'PAGE_SIZE': None,
 
     # Filtering
     'SEARCH_PARAM': 'search',
@@ -117,7 +115,12 @@ DEFAULTS = {
     'UNICODE_JSON': True,
     'COMPACT_JSON': True,
     'COERCE_DECIMAL_TO_STRING': True,
-    'UPLOADED_FILES_USE_URL': True
+    'UPLOADED_FILES_USE_URL': True,
+
+    # Pending deprecation:
+    'PAGINATE_BY': None,
+    'PAGINATE_BY_PARAM': None,
+    'MAX_PAGINATE_BY': None
 }
 
 

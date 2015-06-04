@@ -18,7 +18,7 @@ Right now we have endpoints for 'snippets' and 'users', but we don't have a sing
             'snippets': reverse('snippet-list', request=request, format=format)
         })
 
-Notice that we're using REST framework's `reverse` function in order to return fully-qualified URLs.
+Two things should be noticed here. First, we're using REST framework's `reverse` function in order to return fully-qualified URLs; second, URL patterns are identified by convenience names that we will declare later on in our `snippets/urls.py`. 
 
 ## Creating an endpoint for the highlighted snippets
 
@@ -104,9 +104,11 @@ If we're going to have a hyperlinked API, we need to make sure we name our URL p
 * Our user serializer includes a field that refers to `'snippet-detail'`.
 * Our snippet and user serializers include `'url'` fields that by default will refer to `'{model_name}-detail'`, which in this case will be `'snippet-detail'` and `'user-detail'`.
 
-After adding all those names into our URLconf, our final `snippets/urls.py` file should look something like this:
+After adding all those names into our URLconf, our final `snippets/urls.py` file should look like this:
 
     from django.conf.urls import url, include
+    from rest_framework.urlpatterns import format_suffix_patterns
+    from snippets import views
 
     # API endpoints
     urlpatterns = format_suffix_patterns([
@@ -141,7 +143,7 @@ The list views for users and code snippets could end up returning quite a lot of
 We can change the default list style to use pagination, by modifying our `tutorial/settings.py` file slightly.  Add the following setting:
 
     REST_FRAMEWORK = {
-        'PAGINATE_BY': 10
+        'PAGE_SIZE': 10
     }
 
 Note that settings in REST framework are all namespaced into a single dictionary setting, named 'REST_FRAMEWORK', which helps keep them well separated from your other project settings.

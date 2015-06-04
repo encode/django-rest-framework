@@ -9,7 +9,9 @@ Full documentation for the project is available at [http://www.django-rest-frame
 
 ---
 
-**Note**: We have now released Django REST framework 3.0. For older codebases you may want to refer to the version 2.4.4 [source code](https://github.com/tomchristie/django-rest-framework/tree/version-2.4.x), and [documentation](http://tomchristie.github.io/rest-framework-2-docs/).
+**Note**: We have now released Django REST framework 3.1. For older codebases you may want to refer to the version 2.4.4 [source code](https://github.com/tomchristie/django-rest-framework/tree/version-2.4.x), and [documentation](http://tomchristie.github.io/rest-framework-2-docs/).
+
+For more details see the [3.1 release notes][3.1-announcement]
 
 ---
 
@@ -23,7 +25,7 @@ Some reasons you might want to use REST framework:
 * [Authentication policies][authentication] including optional packages for [OAuth1a][oauth1-section] and [OAuth2][oauth2-section].
 * [Serialization][serializers] that supports both [ORM][modelserializer-section] and [non-ORM][serializer-section] data sources.
 * Customizable all the way down - just use [regular function-based views][functionview-section] if you don't need the [more][generic-views] [powerful][viewsets] [features][routers].
-* [Extensive documentation][index], and [great community support][group].
+* [Extensive documentation][docs], and [great community support][group].
 
 There is a live example API for testing purposes, [available here][sandbox].
 
@@ -34,7 +36,7 @@ There is a live example API for testing purposes, [available here][sandbox].
 # Requirements
 
 * Python (2.6.5+, 2.7, 3.2, 3.3, 3.4)
-* Django (1.4.11+, 1.5.6+, 1.6.3+, 1.7, 1.8-beta)
+* Django (1.4.11+, 1.5.6+, 1.6.3+, 1.7, 1.8)
 
 # Installation
 
@@ -154,42 +156,15 @@ If you believe you’ve found something in Django REST framework which has secur
 
 Send a description of the issue via email to [rest-framework-security@googlegroups.com][security-mail].  The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
 
-# License
-
-Copyright (c) 2011-2015, Tom Christie
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
-Redistributions in binary form must reproduce the above copyright notice, this
-list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 
 [build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.svg?branch=master
 [travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
-[pypi-version]: https://pypip.in/version/djangorestframework/badge.svg
+[pypi-version]: https://img.shields.io/pypi/v/djangorestframework.svg
 [pypi]: https://pypi.python.org/pypi/djangorestframework
 [twitter]: https://twitter.com/_tomchristie
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
-[0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [sandbox]: http://restframework.herokuapp.com/
 
-[index]: http://www.django-rest-framework.org/
 [oauth1-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
 [serializer-section]: http://www.django-rest-framework.org/api-guide/serializers/#serializers
@@ -200,18 +175,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [routers]: http://www.django-rest-framework.org/api-guide/routers/
 [serializers]: http://www.django-rest-framework.org/api-guide/serializers/
 [authentication]: http://www.django-rest-framework.org/api-guide/authentication/
-[rest-framework-2-announcement]: http://www.django-rest-framework.org/topics/rest-framework-2-announcement/
-[2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
 [image]: http://www.django-rest-framework.org/img/quickstart.png
 
-[tox]: http://testrun.org/tox/latest/
-
-[tehjones]: https://twitter.com/tehjones/status/294986071979196416
-[wlonk]: https://twitter.com/wlonk/status/261689665952833536
-[laserllama]: https://twitter.com/laserllama/status/328688333750407168
-
 [docs]: http://www.django-rest-framework.org/
-[urlobject]: https://github.com/zacharyvoase/urlobject
-[markdown]: http://pypi.python.org/pypi/Markdown/
-[django-filter]: http://pypi.python.org/pypi/django-filter
 [security-mail]: mailto:rest-framework-security@googlegroups.com
+[3.1-announcement]: http://www.django-rest-framework.org/topics/3.1-announcement/

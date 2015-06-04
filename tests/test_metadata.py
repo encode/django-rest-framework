@@ -1,5 +1,8 @@
 from __future__ import unicode_literals
-from rest_framework import exceptions, serializers, status, views, versioning
+from django.db import models
+from django.test import TestCase
+from django.core.validators import MinValueValidator, MaxValueValidator
+from rest_framework import exceptions, metadata, serializers, status, views, versioning
 from rest_framework.request import Request
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.test import APIRequestFactory
@@ -207,3 +210,88 @@ class TestMetadata:
         scheme = versioning.QueryParameterVersioning
         view = ExampleView.as_view(versioning_class=scheme)
         view(request=request)
+
+    def test_null_boolean_field_info_type(self):
+        options = metadata.SimpleMetadata()
+        field_info = options.get_field_info(serializers.NullBooleanField())
+        assert field_info['type'] == 'boolean'
+
+
+class TestModelSerializerMetadata(TestCase):
+    def test_read_only_primary_key_related_field(self):
+        """
+        On generic views OPTIONS should return an 'actions' key with metadata
+        on the fields that may be supplied to PUT and POST requests. It should
+        not fail when a read_only PrimaryKeyRelatedField is present
+        """
+        class Parent(models.Model):
+            integer_field = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(1000)])
+            children = models.ManyToManyField('Child')
+            name = models.CharField(max_length=100, blank=True, null=True)
+
+        class Child(models.Model):
+            name = models.CharField(max_length=100)
+
+        class ExampleSerializer(serializers.ModelSerializer):
+            children = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
+
+            class Meta:
+                model = Parent
+
+        class ExampleView(views.APIView):
+            """Example view."""
+            def post(self, request):
+                pass
+
+            def get_serializer(self):
+                return ExampleSerializer()
+
+        view = ExampleView.as_view()
+        response = view(request=request)
+        expected = {
+            'name': 'Example',
+            'description': 'Example view.',
+            'renders': [
+                'application/json',
+                'text/html'
+            ],
+            'parses': [
+                'application/json',
+                'application/x-www-form-urlencoded',
+                'multipart/form-data'
+            ],
+            'actions': {
+                'POST': {
+                    'id': {
+                        'type': 'integer',
+                        'required': False,
+                        'read_only': True,
+                        'label': 'ID'
+                    },
+                    'children': {
+                        'type': 'field',
+                        'required': False,
+                        'read_only': True,
+                        'label': 'Children'
+                    },
+                    'integer_field': {
+                        'type': 'integer',
+                        'required': True,
+                        'read_only': False,
+                        'label': 'Integer field',
+                        'min_value': 1,
+                        'max_value': 1000
+                    },
+                    'name': {
+                        'type': 'string',
+                        'required': False,
+                        'read_only': False,
+                        'label': 'Name',
+                        'max_length': 100
+                    }
+                }
+            }
+        }
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == expected

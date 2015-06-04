@@ -1,11 +1,5 @@
 source: serializers.py
 
----
-
-**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
-
----
-
 # Serializers
 
 > Expanding the usefulness of the serializers is something that we would
@@ -23,7 +17,7 @@ The serializers in REST framework work very similarly to Django's `Form` and `Mo
 Let's start by creating a simple object we can use for example purposes:
 
     from datetime import datetime
-    
+
     class Comment(object):
         def __init__(self, email, content, created=None):
             self.email = email
@@ -350,7 +344,7 @@ Here's an example for an `update()` method on our previous `UserSerializer` clas
 
             return instance
 
-Because the behavior of nested creates and updates can be ambiguous, and may require complex dependancies between related models, REST framework 3 requires you to always write these methods explicitly. The default `ModelSerializer` `.create()` and `.update()` methods do not include support for writable nested representations.
+Because the behavior of nested creates and updates can be ambiguous, and may require complex dependencies between related models, REST framework 3 requires you to always write these methods explicitly. The default `ModelSerializer` `.create()` and `.update()` methods do not include support for writable nested representations.
 
 It is possible that a third party package, providing automatic support some kinds of automatic writable nested representations may be released alongside the 3.1 release.
 
@@ -484,7 +478,7 @@ The default `ModelSerializer` uses primary keys for relationships, but you can a
 
 The `depth` option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.
 
-If you want to customize the way the serialization is done (e.g. using `allow_add_remove`) you'll need to define the field yourself.
+If you want to customize the way the serialization is done you'll need to define the field yourself.
 
 ## Specifying fields explicitly
 
@@ -818,7 +812,7 @@ There are four methods that can be overridden, depending on what functionality y
 
 * `.to_representation()` - Override this to support serialization, for read operations.
 * `.to_internal_value()` - Override this to support deserialization, for write operations.
-* `.create()` and `.update()` - Overide either or both of these to support saving instances.
+* `.create()` and `.update()` - Override either or both of these to support saving instances.
 
 Because this class provides the same interface as the `Serializer` class, you can use it with the existing generic class based views exactly as you would for a regular `Serializer` or `ModelSerializer`.
 

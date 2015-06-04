@@ -45,6 +45,10 @@ var selectedTab = null;
 var selectedTabName = getCookie('tabstyle');
 
 if (selectedTabName) {
+    selectedTabName = selectedTabName.replace(/[^a-z-]/g, '');
+}
+
+if (selectedTabName) {
     selectedTab = $('.form-switcher a[name=' + selectedTabName + ']');
 }
 

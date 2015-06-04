@@ -72,7 +72,7 @@ We can override `.get_queryset()` to deal with URLs such as `http://example.com/
             by filtering against a `username` query parameter in the URL.
             """
             queryset = Purchase.objects.all()
-            username = self.request.QUERY_PARAMS.get('username', None)
+            username = self.request.query_params.get('username', None)
             if username is not None:
                 queryset = queryset.filter(purchaser__username=username)
             return queryset
@@ -395,6 +395,10 @@ The following third party packages provide additional filter implementations.
 
 The [django-rest-framework-filters package][django-rest-framework-filters] works together with the `DjangoFilterBackend` class, and allows you to easily create filters across relationships, or create multiple filter lookup types for a given field.
 
+## Django REST framework full word search filter
+
+The [djangorestframework-word-filter][django-rest-framework-word-search-filter] developed as alternative to `filters.SearchFilter` which will search full word in text, or exact match.
+
 [cite]: https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter]: https://github.com/alex/django-filter
 [django-filter-docs]: https://django-filter.readthedocs.org/en/latest/index.html
@@ -404,3 +408,4 @@ The [django-rest-framework-filters package][django-rest-framework-filters] works
 [nullbooleanselect]: https://github.com/django/django/blob/master/django/forms/widgets.py
 [search-django-admin]: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
 [django-rest-framework-filters]: https://github.com/philipn/django-rest-framework-filters
+[django-rest-framework-word-search-filter]: https://github.com/trollknurr/django-rest-framework-word-search-filter

@@ -206,6 +206,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 
 * [drf-compound-fields][drf-compound-fields] - Provides "compound" serializer fields, such as lists of simple values.
 * [django-extra-fields][django-extra-fields] - Provides extra serializer fields.
+* [django-versatileimagefield][django-versatileimagefield] - Provides a drop-in replacement for Django's stock `ImageField` that makes it easy to serve images in multiple sizes/renditions from a single field. For DRF-specific implementation docs, [click here][django-versatileimagefield-drf-docs].
 
 ### Views
 
@@ -239,6 +240,8 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [gaiarestframework][gaiarestframework] - Utils for django-rest-framewok
 * [drf-extensions][drf-extensions] - A collection of custom extensions
 * [ember-django-adapter][ember-django-adapter] - An adapter for working with Ember.js
+* [django-versatileimagefield][django-versatileimagefield] - Provides a drop-in replacement for Django's stock `ImageField` that makes it easy to serve images in multiple sizes/renditions from a single field. For DRF-specific implementation docs, [click here][django-versatileimagefield-drf-docs].
+* [drf-tracking][drf-tracking] - Utilities to track requests to DRF API views.
 
 ## Other Resources
 
@@ -264,6 +267,9 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 
 * [Web API performance: profiling Django REST framework][web-api-performance-profiling-django-rest-framework]
 * [API Development with Django and Django REST Framework][api-development-with-django-and-django-rest-framework]
+
+### Documentations
+* [Classy Django REST Framework][cdrf.co]
 
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
@@ -326,3 +332,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [web-api-performance-profiling-django-rest-framework]: http://dabapps.com/blog/api-performance-profiling-django-rest-framework/
 [api-development-with-django-and-django-rest-framework]: https://bnotions.com/api-development-with-django-and-django-rest-framework/
 [django-rest-auth]: https://github.com/Tivix/django-rest-auth/
+[django-versatileimagefield]: https://github.com/WGBH/django-versatileimagefield
+[django-versatileimagefield-drf-docs]:http://django-versatileimagefield.readthedocs.org/en/latest/drf_integration.html
+[cdrf.co]:http://www.cdrf.co
+[drf-tracking]: https://github.com/aschn/drf-tracking

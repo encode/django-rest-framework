@@ -13,7 +13,7 @@ from rest_framework import ISO_8601
 from rest_framework.compat import (
     EmailValidator, MinValueValidator, MaxValueValidator,
     MinLengthValidator, MaxLengthValidator, URLValidator, OrderedDict,
-    unicode_repr, unicode_to_repr
+    unicode_repr, unicode_to_repr, parse_duration, duration_string,
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
@@ -104,7 +104,7 @@ def set_value(dictionary, keys, value):
     dictionary[keys[-1]] = value
 
 
-class CreateOnlyDefault:
+class CreateOnlyDefault(object):
     """
     This class may be used to provide default values that are only used
     for create operations, but that do not return any value for update
@@ -115,6 +115,8 @@ class CreateOnlyDefault:
 
     def set_context(self, serializer_field):
         self.is_update = serializer_field.parent.instance is not None
+        if callable(self.default) and hasattr(self.default, 'set_context') and not self.is_update:
+            self.default.set_context(serializer_field)
 
     def __call__(self):
         if self.is_update:
@@ -129,7 +131,7 @@ class CreateOnlyDefault:
         )
 
 
-class CurrentUserDefault:
+class CurrentUserDefault(object):
     def set_context(self, serializer_field):
         self.user = serializer_field.context['request'].user
 
@@ -338,7 +340,7 @@ class Field(object):
         * Raise `ValidationError`, indicating invalid data.
         * Raise `SkipField`, indicating that the field should be ignored.
         * Return (True, data), indicating an empty value that should be
-          returned without any furhter validation being applied.
+          returned without any further validation being applied.
         * Return (False, data), indicating a non-empty value, that should
           have validation applied as normal.
         """
@@ -638,20 +640,37 @@ class URLField(CharField):
 
 
 class UUIDField(Field):
+    valid_formats = ('hex_verbose', 'hex', 'int', 'urn')
+
     default_error_messages = {
         'invalid': _('"{value}" is not a valid UUID.'),
     }
 
+    def __init__(self, **kwargs):
+        self.uuid_format = kwargs.pop('format', 'hex_verbose')
+        if self.uuid_format not in self.valid_formats:
+            raise ValueError(
+                'Invalid format for uuid representation. '
+                'Must be one of "{0}"'.format('", "'.join(self.valid_formats))
+            )
+        super(UUIDField, self).__init__(**kwargs)
+
     def to_internal_value(self, data):
         if not isinstance(data, uuid.UUID):
             try:
-                return uuid.UUID(data)
+                if isinstance(data, six.integer_types):
+                    return uuid.UUID(int=data)
+                else:
+                    return uuid.UUID(hex=data)
             except (ValueError, TypeError):
                 self.fail('invalid', value=data)
         return data
 
     def to_representation(self, value):
-        return str(value)
+        if self.uuid_format == 'hex_verbose':
+            return str(value)
+        else:
+            return getattr(value, self.uuid_format)
 
 
 class IPAddressField(CharField):
@@ -689,6 +708,7 @@ class IntegerField(Field):
         'max_string_length': _('String value too large.')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
+    re_decimal = re.compile(r'\.0*\s*$')  # allow e.g. '1.0' as an int, but not '1.2'
 
     def __init__(self, **kwargs):
         self.max_value = kwargs.pop('max_value', None)
@@ -706,7 +726,7 @@ class IntegerField(Field):
             self.fail('max_string_length')
 
         try:
-            data = int(data)
+            data = int(self.re_decimal.sub('', str(data)))
         except (ValueError, TypeError):
             self.fail('invalid')
         return data
@@ -805,7 +825,8 @@ class DecimalField(Field):
             self.fail('invalid')
 
         sign, digittuple, exponent = value.as_tuple()
-        decimals = abs(exponent)
+        decimals = exponent * decimal.Decimal(-1) if exponent < 0 else 0
+
         # digittuple doesn't include any leading zeros.
         digits = len(digittuple)
         if decimals > digits:
@@ -948,6 +969,9 @@ class DateField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
+        if not value:
+            return None
+
         if self.format is None:
             return value
 
@@ -961,7 +985,10 @@ class DateField(Field):
         )
 
         if self.format.lower() == ISO_8601:
+            if (isinstance(value, str)):
+                value = datetime.datetime.strptime(value, '%Y-%m-%d').date()
             return value.isoformat()
+
         return value.strftime(self.format)
 
 
@@ -1019,6 +1046,29 @@ class TimeField(Field):
         return value.strftime(self.format)
 
 
+class DurationField(Field):
+    default_error_messages = {
+        'invalid': _('Duration has wrong format. Use one of these formats instead: {format}.'),
+    }
+
+    def __init__(self, *args, **kwargs):
+        if parse_duration is None:
+            raise NotImplementedError(
+                'DurationField not supported for django versions prior to 1.8')
+        return super(DurationField, self).__init__(*args, **kwargs)
+
+    def to_internal_value(self, value):
+        if isinstance(value, datetime.timedelta):
+            return value
+        parsed = parse_duration(value)
+        if parsed is not None:
+            return parsed
+        self.fail('invalid', format='[DD] [HH:[MM:]]ss[.uuuuuu]')
+
+    def to_representation(self, value):
+        return duration_string(value)
+
+
 # Choice types...
 
 class ChoiceField(Field):
@@ -1062,7 +1112,7 @@ class ChoiceField(Field):
     def to_representation(self, value):
         if value in ('', None):
             return value
-        return self.choice_strings_to_values[six.text_type(value)]
+        return self.choice_strings_to_values.get(six.text_type(value), value)
 
 
 class MultipleChoiceField(ChoiceField):
@@ -1076,7 +1126,11 @@ class MultipleChoiceField(ChoiceField):
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
-            return dictionary.getlist(self.field_name)
+            ret = dictionary.getlist(self.field_name)
+            if getattr(self.root, 'partial', False) and not ret:
+                ret = empty
+            return ret
+
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
@@ -1090,7 +1144,7 @@ class MultipleChoiceField(ChoiceField):
 
     def to_representation(self, value):
         return set([
-            self.choice_strings_to_values[six.text_type(item)] for item in value
+            self.choice_strings_to_values.get(six.text_type(item), item) for item in value
         ])
 
 

@@ -15,7 +15,11 @@ from django.db import models
 from django.db.models.fields import FieldDoesNotExist, Field as DjangoModelField
 from django.db.models import query
 from django.utils.translation import ugettext_lazy as _
-from rest_framework.compat import postgres_fields, unicode_to_repr
+from rest_framework.compat import (
+    postgres_fields,
+    unicode_to_repr,
+    DurationField as ModelDurationField,
+)
 from rest_framework.utils import model_meta
 from rest_framework.utils.field_mapping import (
     get_url_kwargs, get_field_kwargs,
@@ -732,6 +736,8 @@ class ModelSerializer(Serializer):
         models.URLField: URLField,
         models.GenericIPAddressField: IPAddressField,
     }
+    if ModelDurationField is not None:
+        serializer_field_mapping[ModelDurationField] = DurationField
     serializer_related_field = PrimaryKeyRelatedField
     serializer_url_field = HyperlinkedIdentityField
     serializer_choice_field = ChoiceField
@@ -824,6 +830,10 @@ class ModelSerializer(Serializer):
                 serializer_class=self.__class__.__name__
             )
         )
+        if model_meta.is_abstract_model(self.Meta.model):
+            raise ValueError(
+                'Cannot use ModelSerializer with Abstract Models.'
+            )
 
         declared_fields = copy.deepcopy(self._declared_fields)
         model = getattr(self.Meta, 'model')
@@ -932,7 +942,7 @@ class ModelSerializer(Serializer):
             # If `Meta.exclude` is included, then remove those fields.
             for field_name in exclude:
                 assert field_name in fields, (
-                    "The field '{field_name}' was include on serializer "
+                    "The field '{field_name}' was included on serializer "
                     "{serializer_class} in the 'exclude' option, but does "
                     "not match any model field.".format(
                         field_name=field_name,
@@ -1035,7 +1045,7 @@ class ModelSerializer(Serializer):
         class NestedSerializer(ModelSerializer):
             class Meta:
                 model = relation_info.related_model
-                depth = nested_depth
+                depth = nested_depth - 1
 
         field_class = NestedSerializer
         field_kwargs = get_nested_relation_kwargs(relation_info)
@@ -1084,6 +1094,9 @@ class ModelSerializer(Serializer):
 
         if extra_kwargs.get('default') and kwargs.get('required') is False:
             kwargs.pop('required')
+
+        if kwargs.get('read_only', False):
+            extra_kwargs.pop('required', None)
 
         kwargs.update(extra_kwargs)
 

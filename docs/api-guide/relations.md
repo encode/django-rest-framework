@@ -1,11 +1,5 @@
 source: relations.py
 
----
-
-**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
-
----
-
 # Serializer relations
 
 > Bad programmers worry about the code.
@@ -52,7 +46,7 @@ In order to explain the various types of relational fields, we'll use a couple o
 
         class Meta:
             unique_together = ('album', 'order')
-            order_by = 'order'
+            ordering = ['order']
 
         def __unicode__(self):
             return '%d: %s' % (self.order, self.title)
@@ -279,7 +273,7 @@ If you want to implement a read-write relational field, you must also implement 
 
 ## Example
 
-For, example, we could define a relational field, to serialize a track to a custom string representation, using its ordering, title, and duration.
+For example, we could define a relational field to serialize a track to a custom string representation, using its ordering, title, and duration.
 
     import time
 

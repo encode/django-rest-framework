@@ -8,7 +8,7 @@
           <a class="repo-link btn btn-inverse btn-small {% if not previous_page %}disabled{% endif %}" rel="next" {% if previous_page %}href="{{ previous_page.url }}"{% endif %}>
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
-          <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
+          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -19,7 +19,6 @@
             {% if include_nav %}
             <!-- Main navigation -->
             <ul class="nav navbar-nav">
-              <li {% if current_page.is_homepage %}class="active"{% endif %}><a href="/">Home</a></li>
               {% for nav_item in nav %} {% if nav_item.children %}
               <li class="dropdown{% if nav_item.active %} active{% endif %}">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ nav_item.title }} <b class="caret"></b></a>

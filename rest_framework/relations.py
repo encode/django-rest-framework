@@ -196,7 +196,7 @@ class HyperlinkedRelatedField(RelatedField):
         attributes are not configured to correctly match the URL conf.
         """
         # Unsaved objects will not yet have a valid URL.
-        if obj.pk is None:
+        if hasattr(obj, 'pk') and obj.pk is None:
             return None
 
         lookup_value = getattr(obj, self.lookup_field)
@@ -360,6 +360,10 @@ class ManyRelatedField(Field):
         ]
 
     def get_attribute(self, instance):
+        # Can't have any relationships if not created
+        if hasattr(instance, 'pk') and instance.pk is None:
+            return []
+
         relationship = get_attribute(instance, self.source_attrs)
         return relationship.all() if (hasattr(relationship, 'all')) else relationship
 
