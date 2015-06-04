@@ -55,6 +55,7 @@ You can determine your currently installed version using `pip freeze`:
 * `DecimalField` accepts `2E+2` as 200 and validates decimal place correctly. ([#2948][gh2948], [#2947][gh2947])
 * Support basic authentication with custom `UserModel` that change `username`. ([#2952][gh2952])
 * `IPAddressField` improvements. ([#2747][gh2747], [#2618][gh2618], [#3008][gh3008])
+* Improve `DecimalField` for easier subclassing. ([#2695][gh2695])
 
 
 ### 3.1.2
@@ -380,3 +381,4 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh2747]: https://github.com/tomchristie/django-rest-framework/issues/2747
 [gh2618]: https://github.com/tomchristie/django-rest-framework/issues/2618
 [gh3008]: https://github.com/tomchristie/django-rest-framework/issues/3008
+[gh2695]: https://github.com/tomchristie/django-rest-framework/issues/2695
