@@ -62,13 +62,13 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../../api-guide/requests">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../../api-guide/requests/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../5-relationships-and-hyperlinked-apis">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../5-relationships-and-hyperlinked-apis/">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
-          <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
+          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -79,38 +79,41 @@
             
             <!-- Main navigation -->
             <ul class="nav navbar-nav">
-              <li ><a href="/">Home</a></li>
                
+              <li >
+                <a href="../..">Home</a>
+              </li>
+                
               <li class="dropdown active">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   
                   <li >
-                    <a href="../quickstart">Quickstart</a>
+                    <a href="../quickstart/">Quickstart</a>
                   </li>
                   
                   <li >
-                    <a href="../1-serialization">1 - Serialization</a>
+                    <a href="../1-serialization/">1 - Serialization</a>
                   </li>
                   
                   <li >
-                    <a href="../2-requests-and-responses">2 - Requests and responses</a>
+                    <a href="../2-requests-and-responses/">2 - Requests and responses</a>
                   </li>
                   
                   <li >
-                    <a href="../3-class-based-views">3 - Class based views</a>
+                    <a href="../3-class-based-views/">3 - Class based views</a>
                   </li>
                   
                   <li >
-                    <a href="../4-authentication-and-permissions">4 - Authentication and permissions</a>
+                    <a href="../4-authentication-and-permissions/">4 - Authentication and permissions</a>
                   </li>
                   
                   <li >
-                    <a href="../5-relationships-and-hyperlinked-apis">5 - Relationships and hyperlinked APIs</a>
+                    <a href="../5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
                   </li>
                   
                   <li class="active" >
-                    <a href=".">6 - Viewsets and routers</a>
+                    <a href="./">6 - Viewsets and routers</a>
                   </li>
                   
                 </ul>
@@ -121,107 +124,107 @@
                 <ul class="dropdown-menu">
                   
                   <li >
-                    <a href="../../api-guide/requests">Requests</a>
+                    <a href="../../api-guide/requests/">Requests</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/responses">Responses</a>
+                    <a href="../../api-guide/responses/">Responses</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/views">Views</a>
+                    <a href="../../api-guide/views/">Views</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/generic-views">Generic views</a>
+                    <a href="../../api-guide/generic-views/">Generic views</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/viewsets">Viewsets</a>
+                    <a href="../../api-guide/viewsets/">Viewsets</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/routers">Routers</a>
+                    <a href="../../api-guide/routers/">Routers</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/parsers">Parsers</a>
+                    <a href="../../api-guide/parsers/">Parsers</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/renderers">Renderers</a>
+                    <a href="../../api-guide/renderers/">Renderers</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/serializers">Serializers</a>
+                    <a href="../../api-guide/serializers/">Serializers</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/fields">Serializer fields</a>
+                    <a href="../../api-guide/fields/">Serializer fields</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/relations">Serializer relations</a>
+                    <a href="../../api-guide/relations/">Serializer relations</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/validators">Validators</a>
+                    <a href="../../api-guide/validators/">Validators</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/authentication">Authentication</a>
+                    <a href="../../api-guide/authentication/">Authentication</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/permissions">Permissions</a>
+                    <a href="../../api-guide/permissions/">Permissions</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/throttling">Throttling</a>
+                    <a href="../../api-guide/throttling/">Throttling</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/filtering">Filtering</a>
+                    <a href="../../api-guide/filtering/">Filtering</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/pagination">Pagination</a>
+                    <a href="../../api-guide/pagination/">Pagination</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/versioning">Versioning</a>
+                    <a href="../../api-guide/versioning/">Versioning</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/content-negotiation">Content negotiation</a>
+                    <a href="../../api-guide/content-negotiation/">Content negotiation</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/metadata">Metadata</a>
+                    <a href="../../api-guide/metadata/">Metadata</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/format-suffixes">Format suffixes</a>
+                    <a href="../../api-guide/format-suffixes/">Format suffixes</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/reverse">Returning URLs</a>
+                    <a href="../../api-guide/reverse/">Returning URLs</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/exceptions">Exceptions</a>
+                    <a href="../../api-guide/exceptions/">Exceptions</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/status-codes">Status codes</a>
+                    <a href="../../api-guide/status-codes/">Status codes</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/testing">Testing</a>
+                    <a href="../../api-guide/testing/">Testing</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/settings">Settings</a>
+                    <a href="../../api-guide/settings/">Settings</a>
                   </li>
                   
                 </ul>
@@ -232,55 +235,55 @@
                 <ul class="dropdown-menu">
                   
                   <li >
-                    <a href="../../topics/documenting-your-api">Documenting your API</a>
+                    <a href="../../topics/documenting-your-api/">Documenting your API</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/internationalization">Internationalization</a>
+                    <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
+                    <a href="../../topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/browser-enhancements">Browser enhancements</a>
+                    <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/browsable-api">The Browsable API</a>
+                    <a href="../../topics/browsable-api/">The Browsable API</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a>
+                    <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/third-party-resources">Third Party Resources</a>
+                    <a href="../../topics/third-party-resources/">Third Party Resources</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/contributing">Contributing to REST framework</a>
+                    <a href="../../topics/contributing/">Contributing to REST framework</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/project-management">Project management</a>
+                    <a href="../../topics/project-management/">Project management</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.0-announcement">3.0 Announcement</a>
+                    <a href="../../topics/3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.1-announcement">3.1 Announcement</a>
+                    <a href="../../topics/3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/kickstarter-announcement">Kickstarter Announcement</a>
+                    <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/release-notes">Release Notes</a>
+                    <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
                 </ul>
@@ -300,27 +303,19 @@
       <div class="container-fluid">
 
         <!-- Search Modal -->
-        <div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             <h3 id="myModalLabel">Documentation search</h3>
           </div>
 
           <div class="modal-body">
-            <!-- Custom google search -->
-            <script>
-              (function() {
-                var cx = '015016005043623903336:rxraeohqk6w';
-                var gcse = document.createElement('script');
-                gcse.type = 'text/javascript';
-                gcse.async = true;
-                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
-                  '//www.google.com/cse/cse.js?cx=' + cx;
-                var s = document.getElementsByTagName('script')[0];
-                s.parentNode.insertBefore(gcse, s);
-              })();
-            </script>
-            <gcse:search></gcse:search>
+            <form role="form">
+              <div class="form-group">
+                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+              </div>
+            </form>
+            <div id="mkdocs-search-results"></div>
           </div>
 
           <div class="modal-footer">
@@ -345,7 +340,7 @@
                 
 
                   <li class="main">
-                    <a href="#tutorial-6-viewsets-routers">Tutorial 6: ViewSets &amp; Routers</a>
+                    <a href="#tutorial-6-viewsets-routers">Tutorial 6: ViewSets  Routers</a>
                   </li>
 
                   
@@ -384,9 +379,12 @@
           </div>
 
           <div id="main-content" class="span9">
+
             
 
-            <h1 id="tutorial-6-viewsets-routers">Tutorial 6: ViewSets &amp; Routers</h1>
+              
+
+              <h1 id="tutorial-6-viewsets-routers">Tutorial 6: ViewSets &amp; Routers</h1>
 <p>REST framework includes an abstraction for dealing with <code>ViewSets</code>, that allows the developer to concentrate on modeling the state and interactions of the API, and leave the URL construction to be handled automatically, based on common conventions.</p>
 <p><code>ViewSet</code> classes are almost the same thing as <code>View</code> classes, except that they provide operations such as <code>read</code>, or <code>update</code>, and not method handlers such as <code>get</code> or <code>put</code>.</p>
 <p>A <code>ViewSet</code> class is only bound to a set of method handlers at the last moment, when it is instantiated into a set of views, typically by using a <code>Router</code> class which handles the complexities of defining the URL conf for you.</p>
@@ -505,6 +503,8 @@ urlpatterns = [
 </ul>
 <p><strong>Now go build awesome things.</strong></p>
 
+            
+
           </div>
           <!--/span-->
         </div>
@@ -528,6 +528,8 @@ urlpatterns = [
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script>var base_url = '../..';</script>
+  <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>
 
   <script>

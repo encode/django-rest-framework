@@ -62,13 +62,13 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../fields">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../fields/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../renderers">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../renderers/">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
-          <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
+          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -79,38 +79,41 @@
             
             <!-- Main navigation -->
             <ul class="nav navbar-nav">
-              <li ><a href="/">Home</a></li>
                
+              <li >
+                <a href="../..">Home</a>
+              </li>
+                
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   
                   <li >
-                    <a href="../../tutorial/quickstart">Quickstart</a>
+                    <a href="../../tutorial/quickstart/">Quickstart</a>
                   </li>
                   
                   <li >
-                    <a href="../../tutorial/1-serialization">1 - Serialization</a>
+                    <a href="../../tutorial/1-serialization/">1 - Serialization</a>
                   </li>
                   
                   <li >
-                    <a href="../../tutorial/2-requests-and-responses">2 - Requests and responses</a>
+                    <a href="../../tutorial/2-requests-and-responses/">2 - Requests and responses</a>
                   </li>
                   
                   <li >
-                    <a href="../../tutorial/3-class-based-views">3 - Class based views</a>
+                    <a href="../../tutorial/3-class-based-views/">3 - Class based views</a>
                   </li>
                   
                   <li >
-                    <a href="../../tutorial/4-authentication-and-permissions">4 - Authentication and permissions</a>
+                    <a href="../../tutorial/4-authentication-and-permissions/">4 - Authentication and permissions</a>
                   </li>
                   
                   <li >
-                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis">5 - Relationships and hyperlinked APIs</a>
+                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
                   </li>
                   
                   <li >
-                    <a href="../../tutorial/6-viewsets-and-routers">6 - Viewsets and routers</a>
+                    <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
                   </li>
                   
                 </ul>
@@ -121,107 +124,107 @@
                 <ul class="dropdown-menu">
                   
                   <li >
-                    <a href="../requests">Requests</a>
+                    <a href="../requests/">Requests</a>
                   </li>
                   
                   <li >
-                    <a href="../responses">Responses</a>
+                    <a href="../responses/">Responses</a>
                   </li>
                   
                   <li >
-                    <a href="../views">Views</a>
+                    <a href="../views/">Views</a>
                   </li>
                   
                   <li >
-                    <a href="../generic-views">Generic views</a>
+                    <a href="../generic-views/">Generic views</a>
                   </li>
                   
                   <li >
-                    <a href="../viewsets">Viewsets</a>
+                    <a href="../viewsets/">Viewsets</a>
                   </li>
                   
                   <li >
-                    <a href="../routers">Routers</a>
+                    <a href="../routers/">Routers</a>
                   </li>
                   
                   <li >
-                    <a href="../parsers">Parsers</a>
+                    <a href="../parsers/">Parsers</a>
                   </li>
                   
                   <li >
-                    <a href="../renderers">Renderers</a>
+                    <a href="../renderers/">Renderers</a>
                   </li>
                   
                   <li class="active" >
-                    <a href=".">Serializers</a>
+                    <a href="./">Serializers</a>
                   </li>
                   
                   <li >
-                    <a href="../fields">Serializer fields</a>
+                    <a href="../fields/">Serializer fields</a>
                   </li>
                   
                   <li >
-                    <a href="../relations">Serializer relations</a>
+                    <a href="../relations/">Serializer relations</a>
                   </li>
                   
                   <li >
-                    <a href="../validators">Validators</a>
+                    <a href="../validators/">Validators</a>
                   </li>
                   
                   <li >
-                    <a href="../authentication">Authentication</a>
+                    <a href="../authentication/">Authentication</a>
                   </li>
                   
                   <li >
-                    <a href="../permissions">Permissions</a>
+                    <a href="../permissions/">Permissions</a>
                   </li>
                   
                   <li >
-                    <a href="../throttling">Throttling</a>
+                    <a href="../throttling/">Throttling</a>
                   </li>
                   
                   <li >
-                    <a href="../filtering">Filtering</a>
+                    <a href="../filtering/">Filtering</a>
                   </li>
                   
                   <li >
-                    <a href="../pagination">Pagination</a>
+                    <a href="../pagination/">Pagination</a>
                   </li>
                   
                   <li >
-                    <a href="../versioning">Versioning</a>
+                    <a href="../versioning/">Versioning</a>
                   </li>
                   
                   <li >
-                    <a href="../content-negotiation">Content negotiation</a>
+                    <a href="../content-negotiation/">Content negotiation</a>
                   </li>
                   
                   <li >
-                    <a href="../metadata">Metadata</a>
+                    <a href="../metadata/">Metadata</a>
                   </li>
                   
                   <li >
-                    <a href="../format-suffixes">Format suffixes</a>
+                    <a href="../format-suffixes/">Format suffixes</a>
                   </li>
                   
                   <li >
-                    <a href="../reverse">Returning URLs</a>
+                    <a href="../reverse/">Returning URLs</a>
                   </li>
                   
                   <li >
-                    <a href="../exceptions">Exceptions</a>
+                    <a href="../exceptions/">Exceptions</a>
                   </li>
                   
                   <li >
-                    <a href="../status-codes">Status codes</a>
+                    <a href="../status-codes/">Status codes</a>
                   </li>
                   
                   <li >
-                    <a href="../testing">Testing</a>
+                    <a href="../testing/">Testing</a>
                   </li>
                   
                   <li >
-                    <a href="../settings">Settings</a>
+                    <a href="../settings/">Settings</a>
                   </li>
                   
                 </ul>
@@ -232,55 +235,55 @@
                 <ul class="dropdown-menu">
                   
                   <li >
-                    <a href="../../topics/documenting-your-api">Documenting your API</a>
+                    <a href="../../topics/documenting-your-api/">Documenting your API</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/internationalization">Internationalization</a>
+                    <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/ajax-csrf-cors">AJAX, CSRF & CORS</a>
+                    <a href="../../topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/browser-enhancements">Browser enhancements</a>
+                    <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/browsable-api">The Browsable API</a>
+                    <a href="../../topics/browsable-api/">The Browsable API</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a>
+                    <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/third-party-resources">Third Party Resources</a>
+                    <a href="../../topics/third-party-resources/">Third Party Resources</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/contributing">Contributing to REST framework</a>
+                    <a href="../../topics/contributing/">Contributing to REST framework</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/project-management">Project management</a>
+                    <a href="../../topics/project-management/">Project management</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.0-announcement">3.0 Announcement</a>
+                    <a href="../../topics/3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.1-announcement">3.1 Announcement</a>
+                    <a href="../../topics/3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/kickstarter-announcement">Kickstarter Announcement</a>
+                    <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/release-notes">Release Notes</a>
+                    <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
                 </ul>
@@ -300,27 +303,19 @@
       <div class="container-fluid">
 
         <!-- Search Modal -->
-        <div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             <h3 id="myModalLabel">Documentation search</h3>
           </div>
 
           <div class="modal-body">
-            <!-- Custom google search -->
-            <script>
-              (function() {
-                var cx = '015016005043623903336:rxraeohqk6w';
-                var gcse = document.createElement('script');
-                gcse.type = 'text/javascript';
-                gcse.async = true;
-                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
-                  '//www.google.com/cse/cse.js?cx=' + cx;
-                var s = document.getElementsByTagName('script')[0];
-                s.parentNode.insertBefore(gcse, s);
-              })();
-            </script>
-            <gcse:search></gcse:search>
+            <form role="form">
+              <div class="form-group">
+                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+              </div>
+            </form>
+            <div id="mkdocs-search-results"></div>
           </div>
 
           <div class="modal-footer">
@@ -544,15 +539,18 @@
           </div>
 
           <div id="main-content" class="span9">
-            
-              
-                <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/serializers.py">
-                  <span class="label label-info">serializers.py</span>
-                </a>
-              
+
             
 
-            <h1 id="serializers">Serializers</h1>
+              
+                
+                  <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/serializers.py">
+                    <span class="label label-info">serializers.py</span>
+                  </a>
+                
+              
+
+              <h1 id="serializers">Serializers</h1>
 <blockquote>
 <p>Expanding the usefulness of the serializers is something that we would
 like to address.  However, it's not a trivial problem, and it
@@ -742,7 +740,7 @@ class GameRecord(serializers.Serializer):
             fields=['room_number', 'date']
         )
 </code></pre>
-<p>For more information see the <a href="../validators">validators documentation</a>.</p>
+<p>For more information see the <a href="../validators/">validators documentation</a>.</p>
 <h2 id="accessing-the-initial-data-and-instance">Accessing the initial data and instance</h2>
 <p>When passing an initial object or queryset to a serializer instance, the object will be made available as <code>.instance</code>. If no initial object is passed then the <code>.instance</code> attribute will be <code>None</code>.</p>
 <p>When passing data to a serializer instance, the unmodified data will be made available as <code>.initial_data</code>. If the data keyword argument is not passed then the <code>.initial_data</code> attribute will not exist.</p>
@@ -861,7 +859,7 @@ serializer.errors
         has_support_contract=validated_data['profile']['has_support_contract']
     )
 </code></pre>
-<p>For more details on this approach see the Django documentation on <a href="../../model-managers">model managers</a>, and <a href="../../encapsulation-blogpost">this blogpost on using model and manager classes</a>.</p>
+<p>For more details on this approach see the Django documentation on <a href="../model-managers">model managers</a>, and <a href="../encapsulation-blogpost">this blogpost on using model and manager classes</a>.</p>
 <h2 id="dealing-with-multiple-objects">Dealing with multiple objects</h2>
 <p>The <code>Serializer</code> class can also handle serializing or deserializing lists of objects.</p>
 <h4 id="serializing-multiple-objects">Serializing multiple objects</h4>
@@ -959,7 +957,7 @@ AccountSerializer():
 <p>One example of this is a read-only relation to the currently authenticated <code>User</code> which is <code>unique_together</code> with another identifier. In this case you would declare the user field like so:</p>
 <pre><code>user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
 </code></pre>
-<p>Please review the <a href="../..//api-guide/validators/">Validators Documentation</a> for details on the <a href="../..//api-guide/validators/#uniquetogethervalidator">UniqueTogetherValidator</a> and <a href="../..//api-guide/validators/#currentuserdefault">CurrentUserDefault</a> classes.</p>
+<p>Please review the <a href="../../api-guide/validators/">Validators Documentation</a> for details on the <a href="../../api-guide/validators/#uniquetogethervalidator">UniqueTogetherValidator</a> and <a href="../../api-guide/validators/#currentuserdefault">CurrentUserDefault</a> classes.</p>
 <hr />
 <h2 id="additional-keyword-arguments">Additional keyword arguments</h2>
 <p>There is also a shortcut allowing you to specify arbitrary additional keyword arguments on fields, using the <code>extra_kwargs</code> option. Similarly to <code>read_only_fields</code> this means you do not need to explicitly declare the field on the serializer.</p>
@@ -982,7 +980,7 @@ AccountSerializer():
 <h2 id="relational-fields">Relational fields</h2>
 <p>When serializing model instances, there are a number of different ways you might choose to represent relationships.  The default representation for <code>ModelSerializer</code> is to use the primary keys of the related instances.</p>
 <p>Alternative representations include serializing using hyperlinks, serializing complete nested representations, or serializing with a custom representation.</p>
-<p>For full details see the <a href="../relations">serializer relations</a> documentation.</p>
+<p>For full details see the <a href="../relations/">serializer relations</a> documentation.</p>
 <h2 id="inheritance-of-the-meta-class">Inheritance of the 'Meta' class</h2>
 <p>The inner <code>Meta</code> class on serializers is not inherited from parent classes by default. This is the same behavior as with Django's <code>Model</code> and <code>ModelForm</code> classes. If you want the <code>Meta</code> class to inherit from a parent class you must do so explicitly. For example:</p>
 <pre><code>class AccountSerializer(MyBaseSerializer):
@@ -1346,6 +1344,8 @@ def all_high_scores(request):
 <h2 id="hstoreserializer">HStoreSerializer</h2>
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-hstore">django-rest-framework-hstore</a> package provides an <code>HStoreSerializer</code> to support <a href="https://github.com/djangonauts/django-hstore">django-hstore</a> <code>DictionaryField</code> model field and its <code>schema-mode</code> feature.</p>
 
+            
+
           </div>
           <!--/span-->
         </div>
@@ -1369,6 +1369,8 @@ def all_high_scores(request):
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script>var base_url = '../..';</script>
+  <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>
 
   <script>

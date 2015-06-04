@@ -65,10 +65,10 @@
           <a class="repo-link btn btn-inverse btn-small disabled" rel="prev" >
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../kickstarter-announcement">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../kickstarter-announcement/">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
-          <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
+          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -79,38 +79,41 @@
             
             <!-- Main navigation -->
             <ul class="nav navbar-nav">
-              <li ><a href="/">Home</a></li>
                
+              <li >
+                <a href="../..">Home</a>
+              </li>
+                
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   
                   <li >
-                    <a href="../../tutorial/quickstart">Quickstart</a>
+                    <a href="../../tutorial/quickstart/">Quickstart</a>
                   </li>
                   
                   <li >
-                    <a href="../../tutorial/1-serialization">1 - Serialization</a>
+                    <a href="../../tutorial/1-serialization/">1 - Serialization</a>
                   </li>
                   
                   <li >
-                    <a href="../../tutorial/2-requests-and-responses">2 - Requests and responses</a>
+                    <a href="../../tutorial/2-requests-and-responses/">2 - Requests and responses</a>
                   </li>
                   
                   <li >
-                    <a href="../../tutorial/3-class-based-views">3 - Class based views</a>
+                    <a href="../../tutorial/3-class-based-views/">3 - Class based views</a>
                   </li>
                   
                   <li >
-                    <a href="../../tutorial/4-authentication-and-permissions">4 - Authentication and permissions</a>
+                    <a href="../../tutorial/4-authentication-and-permissions/">4 - Authentication and permissions</a>
                   </li>
                   
                   <li >
-                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis">5 - Relationships and hyperlinked APIs</a>
+                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
                   </li>
                   
                   <li >
-                    <a href="../../tutorial/6-viewsets-and-routers">6 - Viewsets and routers</a>
+                    <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
                   </li>
                   
                 </ul>
@@ -121,107 +124,107 @@
                 <ul class="dropdown-menu">
                   
                   <li >
-                    <a href="../../api-guide/requests">Requests</a>
+                    <a href="../../api-guide/requests/">Requests</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/responses">Responses</a>
+                    <a href="../../api-guide/responses/">Responses</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/views">Views</a>
+                    <a href="../../api-guide/views/">Views</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/generic-views">Generic views</a>
+                    <a href="../../api-guide/generic-views/">Generic views</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/viewsets">Viewsets</a>
+                    <a href="../../api-guide/viewsets/">Viewsets</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/routers">Routers</a>
+                    <a href="../../api-guide/routers/">Routers</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/parsers">Parsers</a>
+                    <a href="../../api-guide/parsers/">Parsers</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/renderers">Renderers</a>
+                    <a href="../../api-guide/renderers/">Renderers</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/serializers">Serializers</a>
+                    <a href="../../api-guide/serializers/">Serializers</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/fields">Serializer fields</a>
+                    <a href="../../api-guide/fields/">Serializer fields</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/relations">Serializer relations</a>
+                    <a href="../../api-guide/relations/">Serializer relations</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/validators">Validators</a>
+                    <a href="../../api-guide/validators/">Validators</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/authentication">Authentication</a>
+                    <a href="../../api-guide/authentication/">Authentication</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/permissions">Permissions</a>
+                    <a href="../../api-guide/permissions/">Permissions</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/throttling">Throttling</a>
+                    <a href="../../api-guide/throttling/">Throttling</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/filtering">Filtering</a>
+                    <a href="../../api-guide/filtering/">Filtering</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/pagination">Pagination</a>
+                    <a href="../../api-guide/pagination/">Pagination</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/versioning">Versioning</a>
+                    <a href="../../api-guide/versioning/">Versioning</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/content-negotiation">Content negotiation</a>
+                    <a href="../../api-guide/content-negotiation/">Content negotiation</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/metadata">Metadata</a>
+                    <a href="../../api-guide/metadata/">Metadata</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/format-suffixes">Format suffixes</a>
+                    <a href="../../api-guide/format-suffixes/">Format suffixes</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/reverse">Returning URLs</a>
+                    <a href="../../api-guide/reverse/">Returning URLs</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/exceptions">Exceptions</a>
+                    <a href="../../api-guide/exceptions/">Exceptions</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/status-codes">Status codes</a>
+                    <a href="../../api-guide/status-codes/">Status codes</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/testing">Testing</a>
+                    <a href="../../api-guide/testing/">Testing</a>
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/settings">Settings</a>
+                    <a href="../../api-guide/settings/">Settings</a>
                   </li>
                   
                 </ul>
@@ -232,55 +235,55 @@
                 <ul class="dropdown-menu">
                   
                   <li >
-                    <a href="../documenting-your-api">Documenting your API</a>
+                    <a href="../documenting-your-api/">Documenting your API</a>
                   </li>
                   
                   <li >
-                    <a href="../internationalization">Internationalization</a>
+                    <a href="../internationalization/">Internationalization</a>
                   </li>
                   
                   <li >
-                    <a href="../ajax-csrf-cors">AJAX, CSRF & CORS</a>
+                    <a href="../ajax-csrf-cors/">AJAX, CSRF & CORS</a>
                   </li>
                   
                   <li >
-                    <a href="../browser-enhancements">Browser enhancements</a>
+                    <a href="../browser-enhancements/">Browser Enhancements</a>
                   </li>
                   
                   <li >
-                    <a href="../browsable-api">The Browsable API</a>
+                    <a href="../browsable-api/">The Browsable API</a>
                   </li>
                   
                   <li >
-                    <a href="../rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a>
+                    <a href="../rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
                   </li>
                   
                   <li >
-                    <a href="../third-party-resources">Third Party Resources</a>
+                    <a href="../third-party-resources/">Third Party Resources</a>
                   </li>
                   
                   <li >
-                    <a href="../contributing">Contributing to REST framework</a>
+                    <a href="../contributing/">Contributing to REST framework</a>
                   </li>
                   
                   <li >
-                    <a href="../project-management">Project management</a>
+                    <a href="../project-management/">Project management</a>
                   </li>
                   
                   <li >
-                    <a href="../3.0-announcement">3.0 Announcement</a>
+                    <a href="../3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../3.1-announcement">3.1 Announcement</a>
+                    <a href="../3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../kickstarter-announcement">Kickstarter Announcement</a>
+                    <a href="../kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
                   <li class="active" >
-                    <a href=".">Release Notes</a>
+                    <a href="./">Release Notes</a>
                   </li>
                   
                 </ul>
@@ -300,27 +303,19 @@
       <div class="container-fluid">
 
         <!-- Search Modal -->
-        <div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             <h3 id="myModalLabel">Documentation search</h3>
           </div>
 
           <div class="modal-body">
-            <!-- Custom google search -->
-            <script>
-              (function() {
-                var cx = '015016005043623903336:rxraeohqk6w';
-                var gcse = document.createElement('script');
-                gcse.type = 'text/javascript';
-                gcse.async = true;
-                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
-                  '//www.google.com/cse/cse.js?cx=' + cx;
-                var s = document.getElementsByTagName('script')[0];
-                s.parentNode.insertBefore(gcse, s);
-              })();
-            </script>
-            <gcse:search></gcse:search>
+            <form role="form">
+              <div class="form-group">
+                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+              </div>
+            </form>
+            <div id="mkdocs-search-results"></div>
           </div>
 
           <div class="modal-footer">
@@ -380,9 +375,12 @@
           </div>
 
           <div id="main-content" class="span9">
+
             
 
-            <h1 id="release-notes">Release Notes</h1>
+              
+
+              <h1 id="release-notes">Release Notes</h1>
 <blockquote>
 <p>Release Early, Release Often</p>
 <p>&mdash; Eric S. Raymond, <a href="http://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s04.html">The Cathedral and the Bazaar</a>.</p>
@@ -415,6 +413,22 @@
 </code></pre>
 <hr />
 <h2 id="31x-series">3.1.x series</h2>
+<h3 id="313">3.1.3</h3>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.3+Release%22">4th June 2015</a>.</p>
+<ul>
+<li>Add <code>DurationField</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2481">#2481</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2989">#2989</a>)</li>
+<li>Add <code>format</code> argument to <code>UUIDField</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2788">#2788</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3000">#3000</a>)</li>
+<li><code>MultipleChoiceField</code> empties incorrectly on a partial update using multipart/form-data (<a href="https://github.com/tomchristie/django-rest-framework/issues/2993">#2993</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2894">#2894</a>)</li>
+<li>Fix a bug in options related to read-only <code>RelatedField</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2981">#2981</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2811">#2811</a>)</li>
+<li>Fix nested serializers with <code>unique_together</code> relations. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2975">#2975</a>)</li>
+<li>Allow unexpected values for <code>ChoiceField</code>/<code>MultipleChoiceField</code> representations. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2839">#2839</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2940">#2940</a>)</li>
+<li>Rollback the transaction on error if <code>ATOMIC_REQUESTS</code> is set. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2887">#2887</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2034">#2034</a>)</li>
+<li>Set the action on a view when override_method regardless of its None-ness. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2933">#2933</a>)</li>
+<li><code>DecimalField</code> accepts <code>2E+2</code> as 200 and validates decimal place correctly. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2948">#2948</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2947">#2947</a>)</li>
+<li>Support basic authentication with custom <code>UserModel</code> that change <code>username</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2952">#2952</a>)</li>
+<li><code>IPAddressField</code> improvements. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2747">#2747</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2618">#2618</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3008">#3008</a>)</li>
+<li>Improve <code>DecimalField</code> for easier subclassing. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2695">#2695</a>)</li>
+</ul>
 <h3 id="312">3.1.2</h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.2+Release%22">13rd May 2015</a>.</p>
 <ul>
@@ -422,12 +436,12 @@
 <li>Use default reason phrases from HTTP standard. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2764">#2764</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2763">#2763</a>)</li>
 <li>Raise error when <code>ModelSerializer</code> used with abstract model. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2757">#2757</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2630">#2630</a>)</li>
 <li>Handle reversal of non-API view_name in <code>HyperLinkedRelatedField</code> (<a href="https://github.com/tomchristie/django-rest-framework/issues/2724">#2724</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2711">#2711</a>)</li>
-<li>Dont require pk strictly for related fields. (<a href="../../gh2745">#2745</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2754">#2754</a>)</li>
+<li>Dont require pk strictly for related fields. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2745">#2745</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2754">#2754</a>)</li>
 <li>Metadata detects null boolean field type. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2762">#2762</a>)</li>
 <li>Proper handling of depth in nested serializers. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2798">#2798</a>)</li>
 <li>Display viewset without paginator. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2807">#2807</a>)</li>
 <li>Don't check for deprecated <code>.model</code> attribute in permissions (<a href="https://github.com/tomchristie/django-rest-framework/issues/2818">#2818</a>)</li>
-<li>Restrict integer field to integers and strings. (<a href="../../gh2835">#2835</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2836">#2836</a>)</li>
+<li>Restrict integer field to integers and strings. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2835">#2835</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2836">#2836</a>)</li>
 <li>Improve <code>IntegerField</code> to use compiled decimal regex. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2853">#2853</a>)</li>
 <li>Prevent empty <code>queryset</code> to raise AssertionError. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2862">#2862</a>)</li>
 <li><code>DjangoModelPermissions</code> rely on <code>get_queryset</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2863">#2863</a>)</li>
@@ -451,7 +465,7 @@
 </ul>
 <h3 id="310">3.1.0</h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.0+Release%22">5th March 2015</a>.</p>
-<p>For full details see the <a href="../3.1-announcement">3.1 release announcement</a>.</p>
+<p>For full details see the <a href="../3.1-announcement/">3.1 release announcement</a>.</p>
 <hr />
 <h2 id="30x-series">3.0.x series</h2>
 <h3 id="305">3.0.5</h3>
@@ -539,7 +553,7 @@
 </ul>
 <h3 id="300">3.0.0</h3>
 <p><strong>Date</strong>: 1st December 2014</p>
-<p>For full details see the <a href="../3.0-announcement">3.0 release announcement</a>.</p>
+<p>For full details see the <a href="../3.0-announcement/">3.0 release announcement</a>.</p>
 <hr />
 <p>For older release notes, <a href="https://github.com/tomchristie/django-rest-framework/blob/version-2.4.x/docs/topics/release-notes.md">please see the version 2.x documentation</a>.</p>
 <!-- 3.0.1 -->
@@ -549,7 +563,10 @@
 <!-- 3.0.4 -->
 <!-- 3.0.5 -->
 <!-- 3.1.1 -->
-<!-- 3.1.2 --></p>
+<!-- 3.1.2 -->
+<!-- 3.1.3 --></p>
+
+            
 
           </div>
           <!--/span-->
@@ -574,6 +591,8 @@
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script>var base_url = '../..';</script>
+  <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>
 
   <script>
