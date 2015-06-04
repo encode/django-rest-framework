@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-01 23:48+0100\n"
-"PO-Revision-Date: 2015-06-01 23:15+0000\n"
+"POT-Creation-Date: 2015-06-03 17:30+0100\n"
+"PO-Revision-Date: 2015-06-03 16:30+0000\n"
 "Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/django-rest-framework/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -85,7 +85,7 @@ msgstr "Informations d'authentification non fournies."
 msgid "You do not have permission to perform this action."
 msgstr "Vous n'avez pas la permission d'effectuer cette action."
 
-#: exceptions.py:93 views.py:77
+#: exceptions.py:93 views.py:78
 msgid "Not found."
 msgstr "Pas trouvé."
 
@@ -125,7 +125,7 @@ msgstr "\"{input}\" n'est pas un booléen valide."
 msgid "This field may not be blank."
 msgstr "Ce champ ne peut être vide."
 
-#: fields.py:560 fields.py:1342
+#: fields.py:560 fields.py:1386
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr "Assurez-vous que ce champ comporte au plus {max_length} caractères."
@@ -153,114 +153,119 @@ msgstr "Ce champ ne doit contenir que des lettres, des nombres, des tirets bas _
 msgid "Enter a valid URL."
 msgstr "Saisissez une URL valide."
 
-#: fields.py:643
+#: fields.py:645
 #, python-brace-format
 msgid "\"{value}\" is not a valid UUID."
 msgstr "\"{value}\" n'est pas un UUID valide."
 
-#: fields.py:662
+#: fields.py:679
 msgid "A valid integer is required."
 msgstr "Un nombre entier valide est requis."
 
-#: fields.py:663 fields.py:698 fields.py:731
+#: fields.py:680 fields.py:715 fields.py:748
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
 msgstr "Assurez-vous que cette valeur est inférieure ou égale à {max_value}."
 
-#: fields.py:664 fields.py:699 fields.py:732
+#: fields.py:681 fields.py:716 fields.py:749
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
 msgstr "Assurez-vous que cette valeur est supérieure ou égale à {min_value}."
 
-#: fields.py:665 fields.py:700 fields.py:736
+#: fields.py:682 fields.py:717 fields.py:753
 msgid "String value too large."
 msgstr "Chaîne de caractères trop longue."
 
-#: fields.py:697 fields.py:730
+#: fields.py:714 fields.py:747
 msgid "A valid number is required."
 msgstr "Un nombre valide est requis."
 
-#: fields.py:733
+#: fields.py:750
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
 msgstr "Assurez-vous qu'il n'y a pas plus de {max_digits} chiffres au total."
 
-#: fields.py:734
+#: fields.py:751
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr "Assurez-vous qu'il n'y a pas plus de {max_decimal_places} chiffres après la virgule."
 
-#: fields.py:735
+#: fields.py:752
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
 msgstr "Assurez-vous qu'il n'y a pas plus de {max_whole_digits} chiffres avant la virgule."
 
-#: fields.py:825
+#: fields.py:842
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
 msgstr "La date + heure n'a pas le bon format. Utilisez un des formats suivants : {format}."
 
-#: fields.py:826
+#: fields.py:843
 msgid "Expected a datetime but got a date."
 msgstr "Attendait une date + heure mais a reçu une date."
 
-#: fields.py:890
+#: fields.py:907
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr "La date n'a pas le bon format. Utilisez un des formats suivants : {format}."
 
-#: fields.py:891
+#: fields.py:908
 msgid "Expected a date but got a datetime."
 msgstr "Attendait une date mais a reçu une date + heure."
 
-#: fields.py:954
+#: fields.py:971
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr "L'heure n'a pas le bon format. Utilisez un des formats suivants : {format}."
 
-#: fields.py:1010 fields.py:1054
+#: fields.py:1025
+#, python-brace-format
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr ""
+
+#: fields.py:1050 fields.py:1094
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
 msgstr "\"{input}\" n'est pas un choix valide."
 
-#: fields.py:1055 fields.py:1169 serializers.py:483
+#: fields.py:1095 fields.py:1213 serializers.py:487
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Attendait une liste d'éléments mais a reçu \"{input_type}\"."
 
-#: fields.py:1085
+#: fields.py:1129
 msgid "No file was submitted."
 msgstr "Aucun fichier n'a été soumis."
 
-#: fields.py:1086
+#: fields.py:1130
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
 msgstr "La donnée soumise n'est pas un fichier. Vérifiez le type d'encodage du formulaire."
 
-#: fields.py:1087
+#: fields.py:1131
 msgid "No filename could be determined."
 msgstr "Le nom de fichier n'a pu être déterminé."
 
-#: fields.py:1088
+#: fields.py:1132
 msgid "The submitted file is empty."
 msgstr "Le fichier soumis est vide."
 
-#: fields.py:1089
+#: fields.py:1133
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr "Assurez-vous que le nom de fichier comporte au plus {max_length} caractères (il en comporte {length})."
 
-#: fields.py:1131
+#: fields.py:1175
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr "Transférez une image valide. Le fichier que vous avez transféré n'est pas une image, ou il est corrompu."
 
-#: fields.py:1206
+#: fields.py:1250
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
 msgstr "Attendait un dictionnaire d'éléments mais a reçu \"{input_type}\"."
@@ -310,7 +315,7 @@ msgstr "L'object avec {slug_name}={value} n'existe pas."
 msgid "Invalid value."
 msgstr "Valeur non valide."
 
-#: serializers.py:300
+#: serializers.py:304
 #, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
 msgstr "Donnée non valide. Attendait un dictionnaire, a reçu {datatype}."
@@ -367,6 +372,6 @@ msgstr "Version non valide dans le nom d'hôte."
 msgid "Invalid version in query parameter."
 msgstr "Version non valide dans le paramètre de requête."
 
-#: views.py:82
+#: views.py:85
 msgid "Permission denied."
 msgstr "Permission refusée."

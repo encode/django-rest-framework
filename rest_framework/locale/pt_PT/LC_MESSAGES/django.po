@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-01 23:48+0100\n"
-"PO-Revision-Date: 2015-06-01 22:51+0000\n"
+"POT-Creation-Date: 2015-06-03 17:30+0100\n"
+"PO-Revision-Date: 2015-06-03 16:30+0000\n"
 "Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
 "Language-Team: Portuguese (Portugal) (http://www.transifex.com/projects/p/django-rest-framework/language/pt_PT/)\n"
 "MIME-Version: 1.0\n"
@@ -81,7 +81,7 @@ msgstr ""
 msgid "You do not have permission to perform this action."
 msgstr ""
 
-#: exceptions.py:93 views.py:77
+#: exceptions.py:93 views.py:78
 msgid "Not found."
 msgstr ""
 
@@ -121,7 +121,7 @@ msgstr ""
 msgid "This field may not be blank."
 msgstr ""
 
-#: fields.py:560 fields.py:1342
+#: fields.py:560 fields.py:1386
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr ""
@@ -149,114 +149,119 @@ msgstr ""
 msgid "Enter a valid URL."
 msgstr ""
 
-#: fields.py:643
+#: fields.py:645
 #, python-brace-format
 msgid "\"{value}\" is not a valid UUID."
 msgstr ""
 
-#: fields.py:662
+#: fields.py:679
 msgid "A valid integer is required."
 msgstr ""
 
-#: fields.py:663 fields.py:698 fields.py:731
+#: fields.py:680 fields.py:715 fields.py:748
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
 msgstr ""
 
-#: fields.py:664 fields.py:699 fields.py:732
+#: fields.py:681 fields.py:716 fields.py:749
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
 msgstr ""
 
-#: fields.py:665 fields.py:700 fields.py:736
+#: fields.py:682 fields.py:717 fields.py:753
 msgid "String value too large."
 msgstr ""
 
-#: fields.py:697 fields.py:730
+#: fields.py:714 fields.py:747
 msgid "A valid number is required."
 msgstr ""
 
-#: fields.py:733
+#: fields.py:750
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
 msgstr ""
 
-#: fields.py:734
+#: fields.py:751
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr ""
 
-#: fields.py:735
+#: fields.py:752
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
 msgstr ""
 
-#: fields.py:825
+#: fields.py:842
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
-#: fields.py:826
+#: fields.py:843
 msgid "Expected a datetime but got a date."
 msgstr ""
 
-#: fields.py:890
+#: fields.py:907
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
-#: fields.py:891
+#: fields.py:908
 msgid "Expected a date but got a datetime."
 msgstr ""
 
-#: fields.py:954
+#: fields.py:971
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
-#: fields.py:1010 fields.py:1054
+#: fields.py:1025
+#, python-brace-format
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr ""
+
+#: fields.py:1050 fields.py:1094
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
 msgstr ""
 
-#: fields.py:1055 fields.py:1169 serializers.py:483
+#: fields.py:1095 fields.py:1213 serializers.py:487
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr ""
 
-#: fields.py:1085
+#: fields.py:1129
 msgid "No file was submitted."
 msgstr ""
 
-#: fields.py:1086
+#: fields.py:1130
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
 msgstr ""
 
-#: fields.py:1087
+#: fields.py:1131
 msgid "No filename could be determined."
 msgstr ""
 
-#: fields.py:1088
+#: fields.py:1132
 msgid "The submitted file is empty."
 msgstr ""
 
-#: fields.py:1089
+#: fields.py:1133
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr ""
 
-#: fields.py:1131
+#: fields.py:1175
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr ""
 
-#: fields.py:1206
+#: fields.py:1250
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
 msgstr ""
@@ -306,7 +311,7 @@ msgstr ""
 msgid "Invalid value."
 msgstr ""
 
-#: serializers.py:300
+#: serializers.py:304
 #, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
 msgstr ""
@@ -363,6 +368,6 @@ msgstr ""
 msgid "Invalid version in query parameter."
 msgstr ""
 
-#: views.py:82
+#: views.py:85
 msgid "Permission denied."
 msgstr ""

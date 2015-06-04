@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-01 23:48+0100\n"
-"PO-Revision-Date: 2015-06-01 22:52+0000\n"
+"POT-Creation-Date: 2015-06-03 17:30+0100\n"
+"PO-Revision-Date: 2015-06-03 16:30+0000\n"
 "Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/django-rest-framework/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
@@ -83,7 +83,7 @@ msgstr "身份认证信息未提供。"
 msgid "You do not have permission to perform this action."
 msgstr "您没有执行该操作的权限。"
 
-#: exceptions.py:93 views.py:77
+#: exceptions.py:93 views.py:78
 msgid "Not found."
 msgstr "未找到。"
 
@@ -123,7 +123,7 @@ msgstr "“{input}” 不是合法的布尔值。"
 msgid "This field may not be blank."
 msgstr "此字段不能为空。"
 
-#: fields.py:560 fields.py:1342
+#: fields.py:560 fields.py:1386
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr "请确保这个字段不能超过 {max_length} 个字符。"
@@ -151,114 +151,119 @@ msgstr "请输入合法的“短语“，只能包含字母，数字，下划线
 msgid "Enter a valid URL."
 msgstr "请输入合法的URL。"
 
-#: fields.py:643
+#: fields.py:645
 #, python-brace-format
 msgid "\"{value}\" is not a valid UUID."
 msgstr "“{value}”不是合法的UUID。"
 
-#: fields.py:662
+#: fields.py:679
 msgid "A valid integer is required."
 msgstr "请填写合法的整数值。"
 
-#: fields.py:663 fields.py:698 fields.py:731
+#: fields.py:680 fields.py:715 fields.py:748
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
 msgstr "请确保该值小于或者等于 {max_value}。"
 
-#: fields.py:664 fields.py:699 fields.py:732
+#: fields.py:681 fields.py:716 fields.py:749
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
 msgstr "请确保该值大于或者等于 {min_value}。"
 
-#: fields.py:665 fields.py:700 fields.py:736
+#: fields.py:682 fields.py:717 fields.py:753
 msgid "String value too large."
 msgstr "字符串值太长。"
 
-#: fields.py:697 fields.py:730
+#: fields.py:714 fields.py:747
 msgid "A valid number is required."
 msgstr "请填写合法的数字。"
 
-#: fields.py:733
+#: fields.py:750
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
 msgstr "请确保总计不超过 {max_digits} 个数字。"
 
-#: fields.py:734
+#: fields.py:751
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr "请确保总计不超过 {max_decimal_places} 个小数位。"
 
-#: fields.py:735
+#: fields.py:752
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
 msgstr "请确保小数点前不超过 {max_whole_digits} 个数字。"
 
-#: fields.py:825
+#: fields.py:842
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
 msgstr "日期时间格式错误。请从这些格式中选择：{format}。"
 
-#: fields.py:826
+#: fields.py:843
 msgid "Expected a datetime but got a date."
 msgstr "期望为日期时间，得到的是日期。"
 
-#: fields.py:890
+#: fields.py:907
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr "日期格式错误。请从这些格式中选择：{format}。"
 
-#: fields.py:891
+#: fields.py:908
 msgid "Expected a date but got a datetime."
 msgstr "期望为日期，得到的是日期时间。"
 
-#: fields.py:954
+#: fields.py:971
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr "时间格式错误。请从这些格式中选择：{format}。"
 
-#: fields.py:1010 fields.py:1054
+#: fields.py:1025
+#, python-brace-format
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr ""
+
+#: fields.py:1050 fields.py:1094
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
 msgstr "“{input}” 不是合法选项。"
 
-#: fields.py:1055 fields.py:1169 serializers.py:483
+#: fields.py:1095 fields.py:1213 serializers.py:487
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "期望为一个包含物件的列表，得到的类型是“{input_type}”。"
 
-#: fields.py:1085
+#: fields.py:1129
 msgid "No file was submitted."
 msgstr "没有提交任何文件。"
 
-#: fields.py:1086
+#: fields.py:1130
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
 msgstr "提交的数据不是一个文件。请检查表单的编码类型。"
 
-#: fields.py:1087
+#: fields.py:1131
 msgid "No filename could be determined."
 msgstr "无法检测到文件名。"
 
-#: fields.py:1088
+#: fields.py:1132
 msgid "The submitted file is empty."
 msgstr "提交的是空文件。"
 
-#: fields.py:1089
+#: fields.py:1133
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr "确保该文件名最多包含 {max_length} 个字符 ( 当前长度为{length} ) 。"
 
-#: fields.py:1131
+#: fields.py:1175
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr "请上传有效图片。您上传的该文件不是图片或者图片已经损坏。"
 
-#: fields.py:1206
+#: fields.py:1250
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
 msgstr "期望是包含类目的字典，得到类型为 “{input_type}”。"
@@ -308,7 +313,7 @@ msgstr "属性 {slug_name} 为 {value} 的对象不存在。"
 msgid "Invalid value."
 msgstr "无效值。"
 
-#: serializers.py:300
+#: serializers.py:304
 #, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
 msgstr "无效数据。期待为字典类型，得到的是 {datatype} 。"
@@ -365,6 +370,6 @@ msgstr "主机名包含无效版本。"
 msgid "Invalid version in query parameter."
 msgstr "请求参数里包含无效版本。"
 
-#: views.py:82
+#: views.py:85
 msgid "Permission denied."
 msgstr ""
