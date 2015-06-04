@@ -2,12 +2,13 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, ip_address_validators
 from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import is_protected_type, smart_text
 from django.utils.translation import ugettext_lazy as _
+from django.utils.ipv6 import clean_ipv6_address
 from rest_framework import ISO_8601
 from rest_framework.compat import (
     EmailValidator, MinValueValidator, MaxValueValidator,
@@ -670,6 +671,31 @@ class UUIDField(Field):
             return str(value)
         else:
             return getattr(value, self.uuid_format)
+
+
+class IPAddressField(CharField):
+    """Support both IPAddressField and GenericIPAddressField"""
+
+    default_error_messages = {
+        'invalid': _('Enter a valid IPv4 or IPv6 address.'),
+    }
+
+    def __init__(self, protocol='both', **kwargs):
+        self.protocol = protocol.lower()
+        self.unpack_ipv4 = (self.protocol == 'both')
+        super(IPAddressField, self).__init__(**kwargs)
+        validators, error_message = ip_address_validators(protocol, self.unpack_ipv4)
+        self.validators.extend(validators)
+
+    def to_internal_value(self, data):
+        if data and ':' in data:
+            try:
+                if self.protocol in ('both', 'ipv6'):
+                    return clean_ipv6_address(data, self.unpack_ipv4)
+            except DjangoValidationError:
+                self.fail('invalid', value=data)
+
+        return super(IPAddressField, self).to_internal_value(data)
 
 
 # Number types...

@@ -192,6 +192,17 @@ A field that ensures the input is a valid UUID string. The `to_internal_value` m
     - `'urn'` - RFC 4122 URN representation of the UUID: `"urn:uuid:5ce0e9a5-5ffa-654b-cee0-1238041fb31a"`
   Changing the `format` parameters only affects representation values. All formats are accepted by `to_internal_value`
 
+## IPAddressField
+
+A field that ensures the input is a valid IPv4 or IPv6 string.
+
+Corresponds to `django.forms.fields.IPAddressField` and `django.forms.fields.GenericIPAddressField`.
+
+**Signature**: `IPAddressField(protocol='both', unpack_ipv4=False, **options)`
+
+- `protocol` Limits valid inputs to the specified protocol. Accepted values are 'both' (default), 'IPv4' or 'IPv6'. Matching is case insensitive.
+- `unpack_ipv4` Unpacks IPv4 mapped addresses like ::ffff:192.0.2.1. If this option is enabled that address would be unpacked to 192.0.2.1. Default is disabled. Can only be used when protocol is set to 'both'.
+
 ---
 
 # Numeric fields

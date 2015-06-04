@@ -734,6 +734,7 @@ class ModelSerializer(Serializer):
         models.TextField: CharField,
         models.TimeField: TimeField,
         models.URLField: URLField,
+        models.GenericIPAddressField: IPAddressField,
     }
     if ModelDurationField is not None:
         serializer_field_mapping[ModelDurationField] = DurationField
@@ -1359,6 +1360,10 @@ class ModelSerializer(Serializer):
 
 if hasattr(models, 'UUIDField'):
     ModelSerializer.serializer_field_mapping[models.UUIDField] = UUIDField
+
+# IPAddressField is deprecated in Django
+if hasattr(models, 'IPAddressField'):
+    ModelSerializer.serializer_field_mapping[models.IPAddressField] = IPAddressField
 
 if postgres_fields:
     class CharMappingField(DictField):
