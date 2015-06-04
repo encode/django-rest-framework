@@ -775,10 +775,8 @@ class DecimalField(Field):
 
     def to_internal_value(self, data):
         """
-        Validates that the input is a decimal number. Returns a Decimal
-        instance. Returns None for empty values. Ensures that there are no more
-        than max_digits in the number, and no more than decimal_places digits
-        after the decimal point.
+        Validate that the input is a decimal number and return a Decimal
+        instance.
         """
         data = smart_text(data).strip()
         if len(data) > self.MAX_STRING_LENGTH:
@@ -798,6 +796,16 @@ class DecimalField(Field):
         if value in (decimal.Decimal('Inf'), decimal.Decimal('-Inf')):
             self.fail('invalid')
 
+        return self.validate_precision(value)
+
+    def validate_precision(self, value):
+        """
+        Ensure that there are no more than max_digits in the number, and no
+        more than decimal_places digits after the decimal point.
+
+        Override this method to disable the precision validation for input
+        values or to enhance it in any way you need to.
+        """
         sign, digittuple, exponent = value.as_tuple()
         decimals = exponent * decimal.Decimal(-1) if exponent < 0 else 0
 
@@ -824,15 +832,21 @@ class DecimalField(Field):
         if not isinstance(value, decimal.Decimal):
             value = decimal.Decimal(six.text_type(value).strip())
 
-        context = decimal.getcontext().copy()
-        context.prec = self.max_digits
-        quantized = value.quantize(
-            decimal.Decimal('.1') ** self.decimal_places,
-            context=context
-        )
+        quantized = self.quantize(value)
+
         if not self.coerce_to_string:
             return quantized
         return '{0:f}'.format(quantized)
+
+    def quantize(self, value):
+        """
+        Quantize the decimal value to the configured precision.
+        """
+        context = decimal.getcontext().copy()
+        context.prec = self.max_digits
+        return value.quantize(
+            decimal.Decimal('.1') ** self.decimal_places,
+            context=context)
 
 
 # Date & time fields...
