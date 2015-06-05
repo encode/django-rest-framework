@@ -102,7 +102,7 @@ def get_field_kwargs(field_name, model_field):
     if model_field.null and not isinstance(model_field, models.NullBooleanField):
         kwargs['allow_null'] = True
 
-    if model_field.blank:
+    if model_field.blank and isinstance(model_field, models.CharField):
         kwargs['allow_blank'] = True
 
     if model_field.flatchoices:
