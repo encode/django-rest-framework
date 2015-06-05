@@ -35,7 +35,7 @@ To replace the default theme, add a `bootstrap_theme` block to your `api.html` a
         <link rel="stylesheet" href="/path/to/my/bootstrap.css" type="text/css">
     {% endblock %}
 
-A suitable replacement theme can be generated using Bootstrap's [Customize Tool][bcustomize].  There are also pre-made themes available at [Bootswatch][bswatch].  To use any of the Bootswatch themes, simply download the theme's `bootstrap.min.css` file, add it to your project, and replace the default one as described above.
+Suitable pre-made replacement themes are available at [Bootswatch][bswatch].  To use any of the Bootswatch themes, simply download the theme's `bootstrap.min.css` file, add it to your project, and replace the default one as described above.
 
 You can also change the navbar variant, which by default is `navbar-inverse`, using the `bootstrap_navbar_variant` block.  The empty `{% block bootstrap_navbar_variant %}{% endblock %}` will use the original Bootstrap navbar style.
 
