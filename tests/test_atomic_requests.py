@@ -33,16 +33,6 @@ class APIExceptionView(APIView):
         raise APIException
 
 
-class NonAtomicAPIExceptionView(APIView):
-    @method_decorator(transaction.non_atomic_requests)
-    def dispatch(self, *args, **kwargs):
-        return super(NonAtomicAPIExceptionView, self).dispatch(*args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        BasicModel.objects.create()
-        raise PermissionDenied
-
-
 @skipUnless(connection.features.uses_savepoints,
             "'atomic' requires transactions and savepoints.")
 class DBTransactionTests(TestCase):
@@ -125,6 +115,16 @@ class DBTransactionAPIExceptionTests(TestCase):
             "'atomic' requires transactions and savepoints.")
 class NonAtomicDBTransactionAPIExceptionTests(TestCase):
     def setUp(self):
+        # only Django >= 1.6 provides @transaction.non_atomic_requests
+        class NonAtomicAPIExceptionView(APIView):
+            @method_decorator(transaction.non_atomic_requests)
+            def dispatch(self, *args, **kwargs):
+                return super(NonAtomicAPIExceptionView, self).dispatch(*args, **kwargs)
+
+            def post(self, request, *args, **kwargs):
+                BasicModel.objects.create()
+                raise PermissionDenied
+
         self.view = NonAtomicAPIExceptionView.as_view()
         connections.databases['default']['ATOMIC_REQUESTS'] = True
 
