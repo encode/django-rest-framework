@@ -274,7 +274,8 @@ def set_rollback():
         if connection.settings_dict.get('ATOMIC_REQUESTS', False):
             # If running in >=1.6 then mark a rollback as required,
             # and allow it to be handled by Django.
-            transaction.set_rollback(True)
+            if connection.in_atomic_block:
+                transaction.set_rollback(True)
     elif transaction.is_managed():
         # Otherwise handle it explicitly if in managed mode.
         if transaction.is_dirty():
