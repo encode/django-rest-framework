@@ -1,11 +1,13 @@
 from __future__ import unicode_literals
 
+from django.conf.urls import patterns, url
 from django.db import connection, connections, transaction
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
+from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.utils.unittest import skipUnless
 from rest_framework import status
-from rest_framework.exceptions import APIException, PermissionDenied
+from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView
@@ -113,30 +115,33 @@ class DBTransactionAPIExceptionTests(TestCase):
 
 @skipUnless(connection.features.uses_savepoints,
             "'atomic' requires transactions and savepoints.")
-class NonAtomicDBTransactionAPIExceptionTests(TestCase):
-    def setUp(self):
-        # only Django >= 1.6 provides @transaction.non_atomic_requests
+class NonAtomicDBTransactionAPIExceptionTests(TransactionTestCase):
+    @property
+    def urls(self):
         class NonAtomicAPIExceptionView(APIView):
             @method_decorator(transaction.non_atomic_requests)
             def dispatch(self, *args, **kwargs):
                 return super(NonAtomicAPIExceptionView, self).dispatch(*args, **kwargs)
 
-            def post(self, request, *args, **kwargs):
-                BasicModel.objects.create()
-                raise PermissionDenied
+            def get(self, request, *args, **kwargs):
+                BasicModel.objects.all()
+                raise Http404
 
-        self.view = NonAtomicAPIExceptionView.as_view()
+        return patterns(
+            '',
+            url(r'^$', NonAtomicAPIExceptionView.as_view())
+        )
+
+    def setUp(self):
         connections.databases['default']['ATOMIC_REQUESTS'] = True
 
     def tearDown(self):
         connections.databases['default']['ATOMIC_REQUESTS'] = False
 
     def test_api_exception_rollback_transaction_non_atomic_view(self):
-        request = factory.post('/')
-
-        response = self.view(request)
+        response = self.client.get('/')
 
         # without checking connection.in_atomic_block view raises 500
         # due attempt to rollback without transaction
         self.assertEqual(response.status_code,
-                         status.HTTP_403_FORBIDDEN)
+                         status.HTTP_404_NOT_FOUND)
