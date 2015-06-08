@@ -2,9 +2,10 @@ from __future__ import unicode_literals
 
 from django.db import connection, connections, transaction
 from django.test import TestCase
+from django.utils.decorators import method_decorator
 from django.utils.unittest import skipUnless
 from rest_framework import status
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView
@@ -30,6 +31,16 @@ class APIExceptionView(APIView):
     def post(self, request, *args, **kwargs):
         BasicModel.objects.create()
         raise APIException
+
+
+class NonAtomicAPIExceptionView(APIView):
+    @method_decorator(transaction.non_atomic_requests)
+    def dispatch(self, *args, **kwargs):
+        return super(NonAtomicAPIExceptionView, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        BasicModel.objects.create()
+        raise PermissionDenied
 
 
 @skipUnless(connection.features.uses_savepoints,
@@ -108,3 +119,24 @@ class DBTransactionAPIExceptionTests(TestCase):
         self.assertEqual(response.status_code,
                          status.HTTP_500_INTERNAL_SERVER_ERROR)
         assert BasicModel.objects.count() == 0
+
+
+@skipUnless(connection.features.uses_savepoints,
+            "'atomic' requires transactions and savepoints.")
+class NonAtomicDBTransactionAPIExceptionTests(TestCase):
+    def setUp(self):
+        self.view = NonAtomicAPIExceptionView.as_view()
+        connections.databases['default']['ATOMIC_REQUESTS'] = True
+
+    def tearDown(self):
+        connections.databases['default']['ATOMIC_REQUESTS'] = False
+
+    def test_api_exception_rollback_transaction_non_atomic_view(self):
+        request = factory.post('/')
+
+        response = self.view(request)
+
+        # without checking connection.in_atomic_block view raises 500
+        # due attempt to rollback without transaction
+        self.assertEqual(response.status_code,
+                         status.HTTP_403_FORBIDDEN)
