@@ -349,9 +349,9 @@ class ManyRelatedField(Field):
             if self.field_name not in dictionary:
                 if getattr(self.root, 'partial', False):
                     return empty
-            return dictionary.getlist(self.field_name)
+            return dictionary.getlist(self.field_name) or empty
 
-        return dictionary.get(self.field_name, empty)
+        return dictionary.get(self.field_name, empty) or empty
 
     def to_internal_value(self, data):
         return [
