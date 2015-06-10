@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.test import TestCase
 from django.utils import six
 from rest_framework.utils.model_meta import _resolve_model
