@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from collections import namedtuple
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.core import urlresolvers
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
