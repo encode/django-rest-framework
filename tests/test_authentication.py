@@ -38,11 +38,11 @@ class MockView(APIView):
 
 
 urlpatterns = [
-    (r'^session/$', MockView.as_view(authentication_classes=[SessionAuthentication])),
-    (r'^basic/$', MockView.as_view(authentication_classes=[BasicAuthentication])),
-    (r'^token/$', MockView.as_view(authentication_classes=[TokenAuthentication])),
-    (r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
-    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^session/$', MockView.as_view(authentication_classes=[SessionAuthentication])),
+    url(r'^basic/$', MockView.as_view(authentication_classes=[BasicAuthentication])),
+    url(r'^token/$', MockView.as_view(authentication_classes=[TokenAuthentication])),
+    url(r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
+    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 
 

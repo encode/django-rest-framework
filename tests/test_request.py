@@ -2,6 +2,7 @@
 Tests for content parsing, and form-overloaded content parsing.
 """
 from __future__ import unicode_literals
+from django.conf.urls import url
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.sessions.middleware import SessionMiddleware
@@ -189,7 +190,7 @@ class MockView(APIView):
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 urlpatterns = [
-    (r'^$', MockView.as_view()),
+    url(r'^$', MockView.as_view()),
 ]
 
 
