@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from django.core.exceptions import PermissionDenied
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.http import Http404
 from django.test import TestCase
 from django.template import TemplateDoesNotExist, Template
@@ -34,12 +34,11 @@ def not_found(request):
     raise Http404()
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$', example),
     url(r'^permission_denied$', permission_denied),
     url(r'^not_found$', not_found),
-)
+]
 
 
 class TemplateHTMLRendererTests(TestCase):

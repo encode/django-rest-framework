@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from collections import namedtuple
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.core import urlresolvers
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
@@ -36,10 +36,9 @@ class FormatSuffixTests(TestCase):
             self.assertEqual(callback_kwargs, test_path.kwargs)
 
     def test_format_suffix(self):
-        urlpatterns = patterns(
-            '',
+        urlpatterns = [
             url(r'^test$', dummy_view),
-        )
+        ]
         test_paths = [
             URLTestPath('/test', (), {}),
             URLTestPath('/test.api', (), {'format': 'api'}),
@@ -48,10 +47,9 @@ class FormatSuffixTests(TestCase):
         self._resolve_urlpatterns(urlpatterns, test_paths)
 
     def test_default_args(self):
-        urlpatterns = patterns(
-            '',
+        urlpatterns = [
             url(r'^test$', dummy_view, {'foo': 'bar'}),
-        )
+        ]
         test_paths = [
             URLTestPath('/test', (), {'foo': 'bar', }),
             URLTestPath('/test.api', (), {'foo': 'bar', 'format': 'api'}),
@@ -60,14 +58,12 @@ class FormatSuffixTests(TestCase):
         self._resolve_urlpatterns(urlpatterns, test_paths)
 
     def test_included_urls(self):
-        nested_patterns = patterns(
-            '',
+        nested_patterns = [
             url(r'^path$', dummy_view)
-        )
-        urlpatterns = patterns(
-            '',
+        ]
+        urlpatterns = [
             url(r'^test/', include(nested_patterns), {'foo': 'bar'}),
-        )
+        ]
         test_paths = [
             URLTestPath('/test/path', (), {'foo': 'bar', }),
             URLTestPath('/test/path.api', (), {'foo': 'bar', 'format': 'api'}),

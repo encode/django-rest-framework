@@ -32,12 +32,11 @@ def redirect_view(request):
     return redirect('/view/')
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^view/$', view),
     url(r'^session-view/$', session_view),
     url(r'^redirect-view/$', redirect_view),
-)
+]
 
 
 class TestAPITestClient(TestCase):

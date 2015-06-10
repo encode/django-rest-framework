@@ -1,9 +1,7 @@
 from __future__ import unicode_literals
-from django.conf.urls import patterns
 
 from .views import MockView
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     (r'^$', MockView.as_view()),
-)
+]

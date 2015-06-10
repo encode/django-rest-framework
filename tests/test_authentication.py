@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import TestCase
@@ -37,14 +37,13 @@ class MockView(APIView):
         return HttpResponse({'a': 1, 'b': 2, 'c': 3})
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     (r'^session/$', MockView.as_view(authentication_classes=[SessionAuthentication])),
     (r'^basic/$', MockView.as_view(authentication_classes=[BasicAuthentication])),
     (r'^token/$', MockView.as_view(authentication_classes=[TokenAuthentication])),
     (r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
     url(r'^auth/', include('rest_framework.urls', namespace='rest_framework'))
-)
+]
 
 
 class BasicAuthTests(TestCase):

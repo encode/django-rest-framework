@@ -103,8 +103,7 @@ class HTMLView1(APIView):
     def get(self, request, **kwargs):
         return Response('text')
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
     url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
     url(r'^cache$', MockGETView.as_view()),
@@ -113,7 +112,7 @@ urlpatterns = patterns(
     url(r'^html1$', HTMLView1.as_view()),
     url(r'^empty$', EmptyGETView.as_view()),
     url(r'^api', include('rest_framework.urls', namespace='rest_framework'))
-)
+]
 
 
 class POSTDeniedPermission(permissions.BasePermission):

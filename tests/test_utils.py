@@ -31,14 +31,13 @@ class NestedResourceInstance(APIView):
     pass
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$', Root.as_view()),
     url(r'^resource/$', ResourceRoot.as_view()),
     url(r'^resource/(?P<key>[0-9]+)$', ResourceInstance.as_view()),
     url(r'^resource/(?P<key>[0-9]+)/$', NestedResourceRoot.as_view()),
     url(r'^resource/(?P<key>[0-9]+)/(?P<other>[A-Za-z]+)$', NestedResourceInstance.as_view()),
-)
+]
 
 
 class BreadcrumbTests(TestCase):

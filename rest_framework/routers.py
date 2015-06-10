@@ -17,7 +17,7 @@ from __future__ import unicode_literals
 
 import itertools
 from collections import namedtuple
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
 from rest_framework import views
@@ -76,7 +76,7 @@ class BaseRouter(object):
     @property
     def urls(self):
         if not hasattr(self, '_urls'):
-            self._urls = patterns('', *self.get_urls())
+            self._urls = self.get_urls()
         return self._urls
 
 
