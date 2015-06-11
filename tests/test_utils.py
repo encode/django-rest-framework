@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.test import TestCase
 from django.utils import six
 from rest_framework.utils.model_meta import _resolve_model
@@ -31,14 +31,13 @@ class NestedResourceInstance(APIView):
     pass
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$', Root.as_view()),
     url(r'^resource/$', ResourceRoot.as_view()),
     url(r'^resource/(?P<key>[0-9]+)$', ResourceInstance.as_view()),
     url(r'^resource/(?P<key>[0-9]+)/$', NestedResourceRoot.as_view()),
     url(r'^resource/(?P<key>[0-9]+)/(?P<other>[A-Za-z]+)$', NestedResourceInstance.as_view()),
-)
+]
 
 
 class BreadcrumbTests(TestCase):

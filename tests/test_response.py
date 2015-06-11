@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.test import TestCase
 from django.utils import six
 from tests.models import BasicModel
@@ -113,8 +113,7 @@ new_model_viewset_router = routers.DefaultRouter()
 new_model_viewset_router.register(r'', HTMLNewModelViewSet)
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^setbyview$', MockViewSettingContentType.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
     url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
@@ -123,7 +122,7 @@ urlpatterns = patterns(
     url(r'^html_new_model$', HTMLNewModelView.as_view()),
     url(r'^html_new_model_viewset', include(new_model_viewset_router.urls)),
     url(r'^restframework', include('rest_framework.urls', namespace='rest_framework'))
-)
+]
 
 
 # TODO: Clean tests bellow - remove duplicates with above, better unit testing, ...
