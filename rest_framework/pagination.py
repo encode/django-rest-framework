@@ -487,20 +487,20 @@ class LimitOffsetPagination(BasePagination):
         return template.render(context)
 
 
-class CursorPagination(BasePagination):
+class CursorPagination(PageSizePaginationMixin, BasePagination):
     """
     The cursor pagination implementation is neccessarily complex.
     For an overview of the position/offset style we use, see this post:
     http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api/
     """
     cursor_query_param = 'cursor'
-    page_size = api_settings.PAGE_SIZE
     invalid_cursor_message = _('Invalid cursor')
     ordering = '-created'
     template = 'rest_framework/pagination/previous_and_next.html'
 
     def paginate_queryset(self, queryset, request, view=None):
-        if self.page_size is None:
+        self.page_size = page_size = self.get_page_size(request)
+        if not page_size:
             return None
 
         self.base_url = request.build_absolute_uri()
@@ -540,8 +540,8 @@ class CursorPagination(BasePagination):
         # If we have an offset cursor then offset the entire page by that amount.
         # We also always fetch an extra item in order to determine if there is a
         # page following on from this one.
-        results = list(queryset[offset:offset + self.page_size + 1])
-        self.page = list(results[:self.page_size])
+        results = list(queryset[offset:offset + page_size + 1])
+        self.page = list(results[:page_size])
 
         # Determine the position of the final item following the page.
         if len(results) > len(self.page):
