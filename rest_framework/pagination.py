@@ -487,20 +487,20 @@ class LimitOffsetPagination(BasePagination):
         return template.render(context)
 
 
-class CursorPagination(BasePagination):
+class CursorPagination(BasePageSizePagination):
     """
     The cursor pagination implementation is neccessarily complex.
     For an overview of the position/offset style we use, see this post:
     http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api/
     """
     cursor_query_param = 'cursor'
-    page_size = api_settings.PAGE_SIZE
     invalid_cursor_message = _('Invalid cursor')
     ordering = '-created'
     template = 'rest_framework/pagination/previous_and_next.html'
 
     def paginate_queryset(self, queryset, request, view=None):
-        if self.page_size is None:
+        self.page_size = self.get_page_size(request)
+        if not self.page_size:
             return None
 
         self.base_url = request.build_absolute_uri()
