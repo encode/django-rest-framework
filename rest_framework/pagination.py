@@ -201,7 +201,34 @@ class BasePagination(object):
         raise NotImplementedError('to_html() must be implemented to display page controls.')
 
 
-class PageNumberPagination(BasePagination):
+class BasePageSizePagination(BasePagination):
+    # The default page size.
+    # Defaults to `None`, meaning pagination is disabled.
+    page_size = api_settings.PAGE_SIZE
+
+    # Set to an integer to limit the maximum page size the client may request.
+    # Only relevant if 'page_size_query_param' has also been set.
+    max_page_size = None
+
+    # Client can control the page size using this query parameter.
+    # Default is 'None'. Set to eg 'page_size' to enable usage.
+    page_size_query_param = None
+
+    def get_page_size(self, request):
+        if self.page_size_query_param:
+            try:
+                return _positive_int(
+                    request.query_params[self.page_size_query_param],
+                    strict=True,
+                    cutoff=self.max_page_size
+                )
+            except (KeyError, ValueError):
+                pass
+
+        return self.page_size
+
+
+class PageNumberPagination(BasePageSizePagination):
     """
     A simple page number based style that supports page numbers as
     query parameters. For example:
@@ -209,20 +236,9 @@ class PageNumberPagination(BasePagination):
     http://api.example.org/accounts/?page=4
     http://api.example.org/accounts/?page=4&page_size=100
     """
-    # The default page size.
-    # Defaults to `None`, meaning pagination is disabled.
-    page_size = api_settings.PAGE_SIZE
 
     # Client can control the page using this query parameter.
     page_query_param = 'page'
-
-    # Client can control the page size using this query parameter.
-    # Default is 'None'. Set to eg 'page_size' to enable usage.
-    page_size_query_param = None
-
-    # Set to an integer to limit the maximum page size the client may request.
-    # Only relevant if 'page_size_query_param' has also been set.
-    max_page_size = None
 
     last_page_strings = ('last',)
 
@@ -317,19 +333,6 @@ class PageNumberPagination(BasePagination):
             ('previous', self.get_previous_link()),
             ('results', data)
         ]))
-
-    def get_page_size(self, request):
-        if self.page_size_query_param:
-            try:
-                return _positive_int(
-                    request.query_params[self.page_size_query_param],
-                    strict=True,
-                    cutoff=self.max_page_size
-                )
-            except (KeyError, ValueError):
-                pass
-
-        return self.page_size
 
     def get_next_link(self):
         if not self.page.has_next():
