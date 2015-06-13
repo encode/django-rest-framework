@@ -186,6 +186,7 @@ class TestPageNumberPagination:
     def setup(self):
         class ExamplePagination(pagination.PageNumberPagination):
             page_size = 5
+
         self.pagination = ExamplePagination()
         self.queryset = range(1, 101)
 
@@ -475,52 +476,51 @@ class TestCursorPagination:
     """
     Unit tests for `pagination.CursorPagination`.
     """
+    class MockObject(object):
+        def __init__(self, idx):
+            self.created = idx
 
-    def setup(self):
-        class MockObject(object):
-            def __init__(self, idx):
-                self.created = idx
+    class MockQuerySet(object):
+        def __init__(self, items):
+            self.items = list(items)
 
-        class MockQuerySet(object):
-            def __init__(self, items):
-                self.items = items
-
-            def filter(self, created__gt=None, created__lt=None):
-                if created__gt is not None:
-                    return MockQuerySet([
-                        item for item in self.items
-                        if item.created > int(created__gt)
-                    ])
-
-                assert created__lt is not None
-                return MockQuerySet([
+        def filter(self, created__gt=None, created__lt=None):
+            if created__gt is not None:
+                return type(self)([
                     item for item in self.items
-                    if item.created < int(created__lt)
+                    if item.created > int(created__gt)
                 ])
 
-            def order_by(self, *ordering):
-                if ordering[0].startswith('-'):
-                    return MockQuerySet(list(reversed(self.items)))
-                return self
+            assert created__lt is not None
+            return type(self)([
+                item for item in self.items
+                if item.created < int(created__lt)
+            ])
 
-            def __getitem__(self, sliced):
-                return self.items[sliced]
+        def order_by(self, *ordering):
+            if ordering[0].startswith('-'):
+                return type(self)(list(reversed(self.items)))
+            return self
 
-        class ExamplePagination(pagination.CursorPagination):
-            page_size = 5
-            ordering = 'created'
+        def __getitem__(self, sliced):
+            return self.items[sliced]
 
-        self.pagination = ExamplePagination()
-        self.queryset = MockQuerySet([
-            MockObject(idx) for idx in [
+    class ExamplePagination(pagination.CursorPagination):
+        page_size = 5
+        ordering = 'created'
+
+    def setup(self):
+        self.pagination = self.ExamplePagination()
+        self.queryset = self.MockQuerySet(
+            map(self.MockObject, [
                 1, 1, 1, 1, 1,
                 1, 2, 3, 4, 4,
                 4, 4, 5, 6, 7,
                 7, 7, 7, 7, 7,
                 7, 7, 7, 8, 9,
                 9, 9, 9, 9, 9
-            ]
-        ])
+            ])
+        )
 
     def get_pages(self, url):
         """
