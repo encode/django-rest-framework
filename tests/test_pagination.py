@@ -483,7 +483,7 @@ class TestCursorPagination:
 
     class MockQuerySet(object):
         def __init__(self, items):
-            self.items = items
+            self.items = list(items)
 
         def filter(self, created__gt=None, created__lt=None):
             if created__gt is not None:
