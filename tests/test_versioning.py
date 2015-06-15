@@ -128,7 +128,7 @@ class TestURLReversing(UsingURLPatterns, APITestCase):
     urlpatterns = [
         url(r'^v1/', include(included, namespace='v1')),
         url(r'^another/$', dummy_view, name='another'),
-        url(r'^(?P<version>[^/]+)/another/$', dummy_view, name='another'),
+        url(r'^(?P<version>[v1|v2]+)/another/$', dummy_view, name='another'),
     ]
 
     def test_reverse_unversioned(self):

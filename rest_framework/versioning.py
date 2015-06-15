@@ -59,8 +59,8 @@ class URLPathVersioning(BaseVersioning):
     An example URL conf for two views that accept two different versions.
 
     urlpatterns = [
-        url(r'^(?P<version>{v1,v2})/users/$', users_list, name='users-list'),
-        url(r'^(?P<version>{v1,v2})/users/(?P<pk>[0-9]+)/$', users_detail, name='users-detail')
+        url(r'^(?P<version>[v1|v2]+)/users/$', users_list, name='users-list'),
+        url(r'^(?P<version>[v1|v2]+)/users/(?P<pk>[0-9]+)/$', users_detail, name='users-detail')
     ]
 
     GET /1.0/something/ HTTP/1.1
