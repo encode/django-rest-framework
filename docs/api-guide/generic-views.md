@@ -124,21 +124,24 @@ For example:
 
 Note that if your API doesn't include any object level permissions, you may optionally exclude the `self.check_object_permissions`, and simply return the object from the `get_object_or_404` lookup.
 
-#### `get_filter_backends(self)`
-
-Returns the classes that should be used to filter the queryset. Defaults to returning the `filter_backends` attribute.
-
-May be overridden to provide more complex behavior with filters, such as using different (or even exclusive) lists of filter_backends depending on different criteria.
-
-For example:
-
-    def get_filter_backends(self):
-        if "geo_route" in self.request.query_params:
-            return (GeoRouteFilter, CategoryFilter)
-        elif "geo_point" in self.request.query_params:
-            return (GeoPointFilter, CategoryFilter)
-
-        return (CategoryFilter,)
+#### `filter_queryset(self, queryset)`       
+       
+Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.   
+        
+For example:       
+       
+    def filter_queryset(self, queryset):
+        filter_backends = (CategoryFilter,)
+        
+        if 'geo_route' in self.request.query_params:
+            filter_backends = (GeoRouteFilter, CategoryFilter)
+        elif 'geo_point' in self.request.query_params:
+            filter_backends = (GeoPointFilter, CategoryFilter)
+        
+        for backend in list(filter_backends):
+            queryset = backend().filter_queryset(self.request, queryset, view=self)
+        
+        return queryset
 
 #### `get_serializer_class(self)`
 
