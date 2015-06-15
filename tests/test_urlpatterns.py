@@ -17,7 +17,8 @@ def dummy_view(request, *args, **kwargs):
 
 class FormatSuffixTests(TestCase):
     """
-    Tests `format_suffix_patterns` against different URLPatterns to ensure the URLs still resolve properly, including any captured parameters.
+    Tests `format_suffix_patterns` against different URLPatterns to ensure the
+    URLs still resolve properly, including any captured parameters.
     """
     def _resolve_urlpatterns(self, urlpatterns, test_paths):
         factory = APIRequestFactory()
@@ -34,6 +35,33 @@ class FormatSuffixTests(TestCase):
                 self.fail("Failed to resolve URL: %s" % request.path_info)
             self.assertEqual(callback_args, test_path.args)
             self.assertEqual(callback_kwargs, test_path.kwargs)
+
+    def test_trailing_slash(self):
+        factory = APIRequestFactory()
+        urlpatterns = format_suffix_patterns([
+            url(r'^test/$', dummy_view),
+        ])
+        resolver = urlresolvers.RegexURLResolver(r'^/', urlpatterns)
+
+        test_paths = [
+            (URLTestPath('/test.api', (), {'format': 'api'}), True),
+            (URLTestPath('/test/.api', (), {'format': 'api'}), False),
+            (URLTestPath('/test.api/', (), {'format': 'api'}), True),
+        ]
+
+        for test_path, expected_resolved in test_paths:
+            request = factory.get(test_path.path)
+            try:
+                callback, callback_args, callback_kwargs = resolver.resolve(request.path_info)
+            except urlresolvers.Resolver404:
+                callback, callback_args, callback_kwargs = (None, None, None)
+            if not expected_resolved:
+                assert callback is None
+                continue
+
+            print(test_path, callback, callback_args, callback_kwargs)
+            assert callback_args == test_path.args
+            assert callback_kwargs == test_path.kwargs
 
     def test_format_suffix(self):
         urlpatterns = [
