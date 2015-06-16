@@ -5,11 +5,12 @@ pre {
 }
 
 .dropdown .dropdown-menu {
-    display: none;
+  display: none;
+  overflow-y: scroll;
 }
 
 .dropdown.open .dropdown-menu {
-    display: block;
+  display: block;
 }
 
 @media (max-width: 480px) {
