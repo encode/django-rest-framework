@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from __future__ import unicode_literals
 from django.conf.urls import url, include
 from django.contrib.auth.models import User
@@ -160,6 +162,12 @@ class TokenAuthTests(TestCase):
         auth = 'Token ' + self.key
         response = self.csrf_client.post('/token/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_fail_post_form_passing_invalid_token_auth(self):
+        # add an 'invalid' unicode character
+        auth = 'Token ' + self.key + "¸"
+        response = self.csrf_client.post('/token/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_post_json_passing_token_auth(self):
         """Ensure POSTing form over token auth with correct credentials passes and does not require CSRF"""
