@@ -48,6 +48,11 @@ class TestPrimaryKeyRelatedField(APISimpleTestCase):
         representation = self.field.to_representation(self.instance)
         assert representation == self.instance.pk
 
+    def test_explicit_many_false(self):
+        field = serializers.PrimaryKeyRelatedField(queryset=self.queryset, many=False)
+        instance = field.to_internal_value(self.instance.pk)
+        assert instance is self.instance
+        
 
 class TestProxiedPrimaryKeyRelatedField(APISimpleTestCase):
     def setUp(self):
