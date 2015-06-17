@@ -52,7 +52,7 @@ class TestPrimaryKeyRelatedField(APISimpleTestCase):
         field = serializers.PrimaryKeyRelatedField(queryset=self.queryset, many=False)
         instance = field.to_internal_value(self.instance.pk)
         assert instance is self.instance
-        
+
 
 class TestProxiedPrimaryKeyRelatedField(APISimpleTestCase):
     def setUp(self):

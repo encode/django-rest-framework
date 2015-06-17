@@ -42,6 +42,8 @@ class RelatedField(Field):
             'Relational fields should not provide a `queryset` argument, '
             'when setting read_only=`True`.'
         )
+        if 'many' in kwargs:
+            kwargs.pop('many')
         super(RelatedField, self).__init__(**kwargs)
 
     def __new__(cls, *args, **kwargs):
