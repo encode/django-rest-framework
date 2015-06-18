@@ -2,12 +2,14 @@
 Helper functions for mapping model fields to a dictionary of default
 keyword arguments that should be used for their equivelent serializer fields.
 """
-from django.core import validators
+import inspect
+
 from django.db import models
+from django.core import validators
 from django.utils.text import capfirst
+
 from rest_framework.compat import clean_manytomany_helptext
 from rest_framework.validators import UniqueValidator
-import inspect
 
 
 NUMERIC_FIELD_TYPES = (

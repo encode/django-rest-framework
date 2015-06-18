@@ -11,29 +11,31 @@ python primitives.
 response content is handled by parsers and renderers.
 """
 from __future__ import unicode_literals
+
+import warnings
+
 from django.db import models
-from django.db.models.fields import FieldDoesNotExist, Field as DjangoModelField
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
-from rest_framework.compat import (
-    postgres_fields,
-    unicode_to_repr,
-    DurationField as ModelDurationField,
+from django.db.models.fields import (
+    FieldDoesNotExist, Field as DjangoModelField
 )
+
 from rest_framework.utils import model_meta
-from rest_framework.utils.field_mapping import (
-    get_url_kwargs, get_field_kwargs,
-    get_relation_kwargs, get_nested_relation_kwargs,
-    ClassLookupDict
+from rest_framework.compat import (
+    postgres_fields, unicode_to_repr, DurationField as ModelDurationField,
 )
 from rest_framework.utils.serializer_helpers import (
     ReturnDict, ReturnList, BoundField, NestedBoundField, BindingDict
+)
+from rest_framework.utils.field_mapping import (
+    get_url_kwargs, get_field_kwargs, get_relation_kwargs,
+    get_nested_relation_kwargs, ClassLookupDict
 )
 from rest_framework.validators import (
     UniqueForDateValidator, UniqueForMonthValidator, UniqueForYearValidator,
     UniqueTogetherValidator
 )
-import warnings
 
 
 # Note: We do the following so that users of the framework can use this style:

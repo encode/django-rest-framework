@@ -4,21 +4,24 @@ Pagination serializers determine the structure of the output that should
 be used for paginated responses.
 """
 from __future__ import unicode_literals
+
+import warnings
 from base64 import b64encode, b64decode
 from collections import namedtuple
-from django.core.paginator import InvalidPage, Paginator as DjangoPaginator
-from django.template import Context, loader
+
 from django.utils import six
-from django.utils.six.moves.urllib import parse as urlparse
+from django.template import Context, loader
 from django.utils.translation import ugettext_lazy as _
+from django.utils.six.moves.urllib import parse as urlparse
+from django.core.paginator import InvalidPage, Paginator as DjangoPaginator
+
+from rest_framework.response import Response
 from rest_framework.compat import OrderedDict
 from rest_framework.exceptions import NotFound
-from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.utils.urls import (
     replace_query_param, remove_query_param
 )
-import warnings
 
 
 def _positive_int(integer_string, strict=False, cutoff=None):

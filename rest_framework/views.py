@@ -2,20 +2,23 @@
 Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
-from django.core.exceptions import PermissionDenied
-from django.http import Http404
-from django.utils import six
-from django.utils.encoding import smart_text
-from django.utils.translation import ugettext_lazy as _
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework import status, exceptions
-from rest_framework.compat import HttpResponseBase, View, set_rollback
-from rest_framework.request import Request
-from rest_framework.response import Response
-from rest_framework.settings import api_settings
-from rest_framework.utils import formatting
+
 import inspect
 import warnings
+
+from django.utils import six
+from django.http import Http404
+from django.utils.encoding import smart_text
+from django.core.exceptions import PermissionDenied
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.translation import ugettext_lazy as _
+
+from rest_framework import status, exceptions
+from rest_framework.request import Request
+from rest_framework.utils import formatting
+from rest_framework.response import Response
+from rest_framework.settings import api_settings
+from rest_framework.compat import HttpResponseBase, View, set_rollback
 
 
 def get_view_name(view_cls, suffix=None):

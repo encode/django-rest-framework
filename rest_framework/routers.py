@@ -17,13 +17,15 @@ from __future__ import unicode_literals
 
 import itertools
 from collections import namedtuple
+
 from django.conf.urls import url
-from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
+from django.core.exceptions import ImproperlyConfigured
+
 from rest_framework import views
-from rest_framework.compat import get_resolver_match, OrderedDict
-from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.response import Response
+from rest_framework.compat import get_resolver_match, OrderedDict
 from rest_framework.urlpatterns import format_suffix_patterns
 
 

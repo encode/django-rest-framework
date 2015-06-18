@@ -5,12 +5,14 @@ relationships and their associated metadata.
 
 Usage: `get_field_info(model)` returns a `FieldInfo` instance.
 """
-from collections import namedtuple
-from django.core.exceptions import ImproperlyConfigured
-from django.db import models
-from django.utils import six
-from rest_framework.compat import OrderedDict
 import inspect
+from collections import namedtuple
+
+from django.utils import six
+from django.db import models
+from django.core.exceptions import ImproperlyConfigured
+
+from rest_framework.compat import OrderedDict
 
 
 FieldInfo = namedtuple('FieldResult', [

@@ -6,17 +6,21 @@ on the request, such as form content or json encoded data.
 """
 from __future__ import unicode_literals
 
-from django.conf import settings
-from django.core.files.uploadhandler import StopFutureHandlers
-from django.http import QueryDict
-from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
-from django.http.multipartparser import MultiPartParserError, parse_header, ChunkIter
-from django.utils import six
-from django.utils.six.moves.urllib import parse as urlparse
-from django.utils.encoding import force_text
-from rest_framework.exceptions import ParseError
-from rest_framework import renderers
 import json
+
+from django.utils import six
+from django.conf import settings
+from django.http import QueryDict
+from django.utils.encoding import force_text
+from django.utils.six.moves.urllib import parse as urlparse
+from django.core.files.uploadhandler import StopFutureHandlers
+from django.http.multipartparser import (
+    MultiPartParserError, parse_header, ChunkIter,
+    MultiPartParser as DjangoMultiPartParser
+)
+
+from rest_framework import renderers
+from rest_framework.exceptions import ParseError
 
 
 class DataAndFiles(object):

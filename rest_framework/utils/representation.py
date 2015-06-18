@@ -3,11 +3,14 @@ Helper functions for creating user-friendly representations
 of serializer classes and serializer fields.
 """
 from __future__ import unicode_literals
-from django.db import models
-from django.utils.encoding import force_text
-from django.utils.functional import Promise
-from rest_framework.compat import unicode_repr
+
 import re
+
+from django.db import models
+from django.utils.functional import Promise
+from django.utils.encoding import force_text
+
+from rest_framework.compat import unicode_repr
 
 
 def manager_repr(value):

@@ -2,9 +2,11 @@
 Generic views that provide commonly needed behaviour.
 """
 from __future__ import unicode_literals
-from django.db.models.query import QuerySet
+
 from django.http import Http404
+from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404 as _get_object_or_404
+
 from rest_framework import views, mixins
 from rest_framework.settings import api_settings
 
