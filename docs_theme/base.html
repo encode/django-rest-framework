@@ -57,12 +57,10 @@
 <body onload="prettyPrint()" class="{% if current_page and current_page.is_homepage %}index{% endif %}-page">
 
   <div class="wrapper">
-
     {% include "nav.html" %}
 
     <div class="body-content">
       <div class="container-fluid">
-
         <!-- Search Modal -->
         <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-header">
@@ -85,25 +83,16 @@
         </div>
 
         <div class="row-fluid">
-
           <div class="span3">
-            <!-- TODO
-            <p style="margin-top: -12px">
-              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
-              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
-            </p>
-          -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-
                 {% if current_page and current_page.is_homepage %}
-                    <li class="main">
-                        <a href="#">Django REST framework</a>
-                    </li>
+                  <li class="main">
+                    <a href="#">Django REST framework</a>
+                  </li>
                 {% endif %}
 
                 {% for toc_item in toc %}
-
                   <li class="{% if current_page and not current_page.is_homepage %}main{% endif %}">
                     <a href="{{ toc_item.url }}">{{ toc_item.title }}</a>
                   </li>
@@ -113,25 +102,21 @@
                       <a href="{{ toc_item.url }}">{{ toc_item.title }}</a>
                     </li>
                   {% endfor %}
-
                 {% endfor %}
 
                 {% if current_page and current_page.is_homepage %}
-                <div class="promo">
-                  <hr/>
-                  <script type="text/javascript" src="//cdn.fusionads.net/fusion.js?zoneid=1332&serve=C6SDP2Y&placement=djangorestframework" id="_fusionads_js"></script>
-                </div>
+                  <div class="promo">
+                    <hr/>
+                    <script type="text/javascript" src="//cdn.fusionads.net/fusion.js?zoneid=1332&serve=C6SDP2Y&placement=djangorestframework" id="_fusionads_js"></script>
+                  </div>
                 {% endif %}
-
               </ul>
 
             </div>
           </div>
 
           <div id="main-content" class="span9">
-
             {% block content %}
-
               {% if meta.source %}
                 {% for filename in meta.source %}
                   <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/{{ filename }}">
@@ -141,20 +126,14 @@
               {% endif %}
 
               {{ content }}
-
             {% endblock %}
 
-          </div>
-          <!--/span-->
-        </div>
-        <!--/row-->
-      </div>
-      <!--/.fluid-container-->
-    </div>
-    <!--/.body content-->
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
     <div id="push"></div>
-  </div>
-  <!--/.wrapper -->
+  </div> <!--/.wrapper -->
 
   <footer class="span12">
     <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
