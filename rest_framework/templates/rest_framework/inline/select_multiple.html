@@ -2,14 +2,17 @@
 {% trans "No items to select." as no_items %}
 
 <div class="form-group {% if field.errors %}has-error{% endif %}">
-    {% if field.label %}
-        <label class="sr-only">{{ field.label }}</label>
-    {% endif %}
-    <select multiple {{ field.choices|yesno:",disabled" }} class="form-control" name="{{ field.name }}">
-        {% for key, text in field.choices.items %}
-            <option value="{{ key }}" {% if key in field.value %}selected{% endif %}>{{ text }}</option>
-        {% empty %}
-            <option>{{ no_items }}</option>
-        {% endfor %}
-    </select>
+  {% if field.label %}
+    <label class="sr-only">
+      {{ field.label }}
+    </label>
+  {% endif %}
+
+  <select multiple {{ field.choices|yesno:",disabled" }} class="form-control" name="{{ field.name }}">
+    {% for key, text in field.choices.items %}
+      <option value="{{ key }}" {% if key in field.value %}selected{% endif %}>{{ text }}</option>
+    {% empty %}
+      <option>{{ no_items }}</option>
+    {% endfor %}
+  </select>
 </div>
