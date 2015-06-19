@@ -74,6 +74,19 @@ The following settings keys are also used to control versioning:
 * `ALLOWED_VERSIONS`. If set, this value will restrict the set of versions that may be returned by the versioning scheme, and will raise an error if the provided version if not in this set. Defaults to `None`.
 * `VERSION_PARAMETER`. The string that should used for any versioning parameters, such as in the media type or URL query parameters. Defaults to `'version'`.
 
+You can also set your versioning class plus those three values on a per-view or a per-viewset basis by defining your own versioning scheme and using the `default_version`, `allowed_versions` and `version_param` class variables. For example, if you want to use `URLPathVersioning`:
+
+    from rest_framework.versioning import URLPathVersioning
+    from rest_framework.views import APIView
+
+    class ExampleVersioning(URLPathVersioning):
+        default_version = ...
+        allowed_versions = ...
+        version_param = ...
+
+    class ExampleView(APIVIew):
+        versioning_class = ExampleVersioning
+
 ---
 
 # API Reference
