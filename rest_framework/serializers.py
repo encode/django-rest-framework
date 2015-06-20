@@ -324,7 +324,10 @@ class Serializer(BaseSerializer):
 
     @cached_property
     def _readable_fields(self):
-        return [field for field in self.fields.values() if not field.write_only]
+        return [
+            field for field in self.fields.values()
+            if not field.write_only
+        ]
 
     def get_fields(self):
         """
