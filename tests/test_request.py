@@ -24,6 +24,8 @@ from rest_framework.test import APIRequestFactory, APIClient
 from rest_framework.views import APIView
 from io import BytesIO
 import json
+import django
+import pytest
 
 
 factory = APIRequestFactory()
@@ -277,6 +279,8 @@ class TestAuthSetter(TestCase):
         self.assertEqual(request.auth, 'DUMMY')
 
 
+@pytest.mark.skipif(django.VERSION < (1, 7),
+                    reason='secure argument is only available for django1.7+')
 class TestSecure(TestCase):
 
     def test_default_secure_false(self):
