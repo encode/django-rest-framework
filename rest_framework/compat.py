@@ -210,7 +210,9 @@ except ImportError:
 
 
 # RequestFactory only provides `generic` from 1.5 onwards
-if django.VERSION < (1, 5):
+if django.VERSION >= (1, 5):
+    from django.test.client import RequestFactory
+else:
     from django.test.client import RequestFactory as DjangoRequestFactory
 
     class RequestFactory(DjangoRequestFactory):
@@ -231,8 +233,6 @@ if django.VERSION < (1, 5):
                 })
             r.update(extra)
             return self.request(**r)
-else:
-    from django.test.client import RequestFactory
 
 
 # Markdown is optional
