@@ -275,3 +275,14 @@ class TestAuthSetter(TestCase):
         request = Request(factory.get('/'))
         request.auth = 'DUMMY'
         self.assertEqual(request.auth, 'DUMMY')
+
+
+class TestSecure(TestCase):
+
+    def test_default_secure_false(self):
+        request = Request(factory.get('/', secure=False))
+        self.assertEqual(request.scheme, 'http')
+
+    def test_default_secure_true(self):
+        request = Request(factory.get('/', secure=True))
+        self.assertEqual(request.scheme, 'https')
