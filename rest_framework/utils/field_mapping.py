@@ -36,7 +36,7 @@ class ClassLookupDict(object):
         for cls in inspect.getmro(base_class):
             if cls in self.mapping:
                 return self.mapping[cls]
-        raise KeyError('Class %s not found in lookup.', cls.__name__)
+        raise KeyError('Class %s not found in lookup.' % base_class.__name__)
 
     def __setitem__(self, key, value):
         self.mapping[key] = value
