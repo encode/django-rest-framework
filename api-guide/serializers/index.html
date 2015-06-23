@@ -57,7 +57,6 @@
 <body onload="prettyPrint()" class="-page">
 
   <div class="wrapper">
-
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -301,7 +300,6 @@
 
     <div class="body-content">
       <div class="container-fluid">
-
         <!-- Search Modal -->
         <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-header">
@@ -324,21 +322,12 @@
         </div>
 
         <div class="row-fluid">
-
           <div class="span3">
-            <!-- TODO
-            <p style="margin-top: -12px">
-              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
-              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
-            </p>
-          -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-
                 
 
                 
-
                   <li class="main">
                     <a href="#serializers">Serializers</a>
                   </li>
@@ -388,9 +377,7 @@
                       <a href="#including-extra-context">Including extra context</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#modelserializer">ModelSerializer</a>
                   </li>
@@ -432,9 +419,7 @@
                       <a href="#customizing-field-mappings">Customizing field mappings</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#hyperlinkedmodelserializer">HyperlinkedModelSerializer</a>
                   </li>
@@ -448,9 +433,7 @@
                       <a href="#changing-the-url-field-name">Changing the URL field name</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#listserializer">ListSerializer</a>
                   </li>
@@ -468,9 +451,7 @@
                       <a href="#customizing-listserializer-initialization">Customizing ListSerializer initialization</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#baseserializer">BaseSerializer</a>
                   </li>
@@ -488,9 +469,7 @@
                       <a href="#creating-new-base-classes">Creating new base classes</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#advanced-serializer-usage">Advanced serializer usage</a>
                   </li>
@@ -508,9 +487,7 @@
                       <a href="#customizing-the-default-fields">Customizing the default fields</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#third-party-packages">Third party packages</a>
                   </li>
@@ -528,20 +505,16 @@
                       <a href="#hstoreserializer">HStoreSerializer</a>
                     </li>
                   
-
                 
 
                 
-
               </ul>
 
             </div>
           </div>
 
           <div id="main-content" class="span9">
-
             
-
               
                 
                   <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/serializers.py">
@@ -1343,20 +1316,14 @@ def all_high_scores(request):
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-gis">django-rest-framework-gis</a> package provides a <code>GeoFeatureModelSerializer</code> serializer class that supports GeoJSON both for read and write operations.</p>
 <h2 id="hstoreserializer">HStoreSerializer</h2>
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-hstore">django-rest-framework-hstore</a> package provides an <code>HStoreSerializer</code> to support <a href="https://github.com/djangonauts/django-hstore">django-hstore</a> <code>DictionaryField</code> model field and its <code>schema-mode</code> feature.</p>
-
             
 
-          </div>
-          <!--/span-->
-        </div>
-        <!--/row-->
-      </div>
-      <!--/.fluid-container-->
-    </div>
-    <!--/.body content-->
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
     <div id="push"></div>
-  </div>
-  <!--/.wrapper -->
+  </div> <!--/.wrapper -->
 
   <footer class="span12">
     <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
@@ -1374,10 +1341,10 @@ def all_high_scores(request):
   <script src="../../js/theme.js"></script>
 
   <script>
-    //$('.side-nav').scrollspy()
     var shiftWindow = function() {
       scrollBy(0, -50)
     };
+
     if (location.hash) shiftWindow();
     window.addEventListener("hashchange", shiftWindow);
 
@@ -1385,12 +1352,12 @@ def all_high_scores(request):
       event.stopPropagation();
     });
 
-    // Dynamically force sidenav to no higher than browser window
-    $('.side-nav').css('max-height', window.innerHeight - 130);
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
     $(function() {
       $(window).resize(function() {
-        $('.side-nav').css('max-height', window.innerHeight - 130);
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
       });
     });
   </script>

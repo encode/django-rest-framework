@@ -57,7 +57,6 @@
 <body onload="prettyPrint()" class="-page">
 
   <div class="wrapper">
-
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -301,7 +300,6 @@
 
     <div class="body-content">
       <div class="container-fluid">
-
         <!-- Search Modal -->
         <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-header">
@@ -324,21 +322,12 @@
         </div>
 
         <div class="row-fluid">
-
           <div class="span3">
-            <!-- TODO
-            <p style="margin-top: -12px">
-              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
-              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
-            </p>
-          -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-
                 
 
                 
-
                   <li class="main">
                     <a href="#the-browsable-api">The Browsable API</a>
                   </li>
@@ -356,20 +345,16 @@
                       <a href="#customizing">Customizing</a>
                     </li>
                   
-
                 
 
                 
-
               </ul>
 
             </div>
           </div>
 
           <div id="main-content" class="span9">
-
             
-
               
 
               <h1 id="the-browsable-api">The Browsable API</h1>
@@ -396,7 +381,7 @@
     &lt;link rel="stylesheet" href="/path/to/my/bootstrap.css" type="text/css"&gt;
 {% endblock %}
 </code></pre>
-<p>A suitable replacement theme can be generated using Bootstrap's <a href="http://getbootstrap.com/2.3.2/customize.html">Customize Tool</a>.  There are also pre-made themes available at <a href="http://bootswatch.com/">Bootswatch</a>.  To use any of the Bootswatch themes, simply download the theme's <code>bootstrap.min.css</code> file, add it to your project, and replace the default one as described above.</p>
+<p>Suitable pre-made replacement themes are available at <a href="http://bootswatch.com/">Bootswatch</a>.  To use any of the Bootswatch themes, simply download the theme's <code>bootstrap.min.css</code> file, add it to your project, and replace the default one as described above.</p>
 <p>You can also change the navbar variant, which by default is <code>navbar-inverse</code>, using the <code>bootstrap_navbar_variant</code> block.  The empty <code>{% block bootstrap_navbar_variant %}{% endblock %}</code> will use the original Bootstrap navbar style.</p>
 <p>Full example:</p>
 <pre><code>{% extends "rest_framework/base.html" %}
@@ -479,20 +464,14 @@
 <p>There are <a href="https://www.djangopackages.com/grids/g/auto-complete/">a variety of packages for autocomplete widgets</a>, such as <a href="https://github.com/yourlabs/django-autocomplete-light">django-autocomplete-light</a>, that you may want to refer to. Note that you will not be able to simply include these components as standard widgets, but will need to write the HTML template explicitly. This is because REST framework 3.0 no longer supports the <code>widget</code> keyword argument since it now uses templated HTML generation.</p>
 <p>Better support for autocomplete inputs is planned in future versions.</p>
 <hr />
-
             
 
-          </div>
-          <!--/span-->
-        </div>
-        <!--/row-->
-      </div>
-      <!--/.fluid-container-->
-    </div>
-    <!--/.body content-->
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
     <div id="push"></div>
-  </div>
-  <!--/.wrapper -->
+  </div> <!--/.wrapper -->
 
   <footer class="span12">
     <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
@@ -510,10 +489,10 @@
   <script src="../../js/theme.js"></script>
 
   <script>
-    //$('.side-nav').scrollspy()
     var shiftWindow = function() {
       scrollBy(0, -50)
     };
+
     if (location.hash) shiftWindow();
     window.addEventListener("hashchange", shiftWindow);
 
@@ -521,12 +500,12 @@
       event.stopPropagation();
     });
 
-    // Dynamically force sidenav to no higher than browser window
-    $('.side-nav').css('max-height', window.innerHeight - 130);
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
     $(function() {
       $(window).resize(function() {
-        $('.side-nav').css('max-height', window.innerHeight - 130);
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
       });
     });
   </script>

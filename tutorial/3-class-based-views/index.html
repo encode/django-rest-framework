@@ -57,7 +57,6 @@
 <body onload="prettyPrint()" class="-page">
 
   <div class="wrapper">
-
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -301,7 +300,6 @@
 
     <div class="body-content">
       <div class="container-fluid">
-
         <!-- Search Modal -->
         <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-header">
@@ -324,21 +322,12 @@
         </div>
 
         <div class="row-fluid">
-
           <div class="span3">
-            <!-- TODO
-            <p style="margin-top: -12px">
-              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
-              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
-            </p>
-          -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-
                 
 
                 
-
                   <li class="main">
                     <a href="#tutorial-3-class-based-views">Tutorial 3: Class Based Views</a>
                   </li>
@@ -356,20 +345,16 @@
                       <a href="#using-generic-class-based-views">Using generic class based views</a>
                     </li>
                   
-
                 
 
                 
-
               </ul>
 
             </div>
           </div>
 
           <div id="main-content" class="span9">
-
             
-
               
 
               <h1 id="tutorial-3-class-based-views">Tutorial 3: Class Based Views</h1>
@@ -501,20 +486,14 @@ class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
 </code></pre>
 <p>Wow, that's pretty concise.  We've gotten a huge amount for free, and our code looks like good, clean, idiomatic Django.</p>
 <p>Next we'll move onto <a href="../4-authentication-and-permissions/">part 4 of the tutorial</a>, where we'll take a look at how we can deal with authentication and permissions for our API.</p>
-
             
 
-          </div>
-          <!--/span-->
-        </div>
-        <!--/row-->
-      </div>
-      <!--/.fluid-container-->
-    </div>
-    <!--/.body content-->
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
     <div id="push"></div>
-  </div>
-  <!--/.wrapper -->
+  </div> <!--/.wrapper -->
 
   <footer class="span12">
     <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
@@ -532,10 +511,10 @@ class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
   <script src="../../js/theme.js"></script>
 
   <script>
-    //$('.side-nav').scrollspy()
     var shiftWindow = function() {
       scrollBy(0, -50)
     };
+
     if (location.hash) shiftWindow();
     window.addEventListener("hashchange", shiftWindow);
 
@@ -543,12 +522,12 @@ class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
       event.stopPropagation();
     });
 
-    // Dynamically force sidenav to no higher than browser window
-    $('.side-nav').css('max-height', window.innerHeight - 130);
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
     $(function() {
       $(window).resize(function() {
-        $('.side-nav').css('max-height', window.innerHeight - 130);
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
       });
     });
   </script>

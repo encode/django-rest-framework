@@ -57,7 +57,6 @@
 <body onload="prettyPrint()" class="-page">
 
   <div class="wrapper">
-
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -301,7 +300,6 @@
 
     <div class="body-content">
       <div class="container-fluid">
-
         <!-- Search Modal -->
         <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-header">
@@ -324,21 +322,12 @@
         </div>
 
         <div class="row-fluid">
-
           <div class="span3">
-            <!-- TODO
-            <p style="margin-top: -12px">
-              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
-              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
-            </p>
-          -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-
                 
 
                 
-
                   <li class="main">
                     <a href="#serializer-fields">Serializer fields</a>
                   </li>
@@ -348,9 +337,7 @@
                       <a href="#core-arguments">Core arguments</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#boolean-fields">Boolean fields</a>
                   </li>
@@ -364,9 +351,7 @@
                       <a href="#nullbooleanfield">NullBooleanField</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#string-fields">String fields</a>
                   </li>
@@ -400,9 +385,7 @@
                       <a href="#ipaddressfield">IPAddressField</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#numeric-fields">Numeric fields</a>
                   </li>
@@ -420,9 +403,7 @@
                       <a href="#decimalfield">DecimalField</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#date-and-time-fields">Date and time fields</a>
                   </li>
@@ -444,9 +425,7 @@
                       <a href="#durationfield">DurationField</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#choice-selection-fields">Choice selection fields</a>
                   </li>
@@ -460,9 +439,7 @@
                       <a href="#multiplechoicefield">MultipleChoiceField</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#file-upload-fields">File upload fields</a>
                   </li>
@@ -480,9 +457,7 @@
                       <a href="#imagefield">ImageField</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#composite-fields">Composite fields</a>
                   </li>
@@ -496,9 +471,7 @@
                       <a href="#dictfield">DictField</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#miscellaneous-fields">Miscellaneous fields</a>
                   </li>
@@ -520,9 +493,7 @@
                       <a href="#serializermethodfield">SerializerMethodField</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#custom-fields">Custom fields</a>
                   </li>
@@ -532,9 +503,7 @@
                       <a href="#examples">Examples</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#third-party-packages">Third party packages</a>
                   </li>
@@ -560,20 +529,16 @@
                       <a href="#django-rest-framework-hstore">django-rest-framework-hstore</a>
                     </li>
                   
-
                 
 
                 
-
               </ul>
 
             </div>
           </div>
 
           <div id="main-content" class="span9">
-
             
-
               
                 
                   <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/fields.py">
@@ -1010,20 +975,14 @@ def to_internal_value(self, data):
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-gis">django-rest-framework-gis</a> package provides geographic addons for django rest framework like a  <code>GeometryField</code> field and a GeoJSON serializer.</p>
 <h2 id="django-rest-framework-hstore">django-rest-framework-hstore</h2>
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-hstore">django-rest-framework-hstore</a> package provides an <code>HStoreField</code> to support <a href="https://github.com/djangonauts/django-hstore">django-hstore</a> <code>DictionaryField</code> model field.</p>
-
             
 
-          </div>
-          <!--/span-->
-        </div>
-        <!--/row-->
-      </div>
-      <!--/.fluid-container-->
-    </div>
-    <!--/.body content-->
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
     <div id="push"></div>
-  </div>
-  <!--/.wrapper -->
+  </div> <!--/.wrapper -->
 
   <footer class="span12">
     <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
@@ -1041,10 +1000,10 @@ def to_internal_value(self, data):
   <script src="../../js/theme.js"></script>
 
   <script>
-    //$('.side-nav').scrollspy()
     var shiftWindow = function() {
       scrollBy(0, -50)
     };
+
     if (location.hash) shiftWindow();
     window.addEventListener("hashchange", shiftWindow);
 
@@ -1052,12 +1011,12 @@ def to_internal_value(self, data):
       event.stopPropagation();
     });
 
-    // Dynamically force sidenav to no higher than browser window
-    $('.side-nav').css('max-height', window.innerHeight - 130);
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
     $(function() {
       $(window).resize(function() {
-        $('.side-nav').css('max-height', window.innerHeight - 130);
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
       });
     });
   </script>

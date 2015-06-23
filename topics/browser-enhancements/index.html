@@ -57,7 +57,6 @@
 <body onload="prettyPrint()" class="-page">
 
   <div class="wrapper">
-
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -301,7 +300,6 @@
 
     <div class="body-content">
       <div class="container-fluid">
-
         <!-- Search Modal -->
         <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-header">
@@ -324,21 +322,12 @@
         </div>
 
         <div class="row-fluid">
-
           <div class="span3">
-            <!-- TODO
-            <p style="margin-top: -12px">
-              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
-              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
-            </p>
-          -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-
                 
 
                 
-
                   <li class="main">
                     <a href="#browser-enhancements">Browser enhancements</a>
                   </li>
@@ -368,20 +357,16 @@
                       <a href="#doesnt-html5-support-put-and-delete-forms">Doesn't HTML5 support PUT and DELETE forms?</a>
                     </li>
                   
-
                 
 
                 
-
               </ul>
 
             </div>
           </div>
 
           <div id="main-content" class="span9">
-
             
-
               
 
               <h1 id="browser-enhancements">Browser enhancements</h1>
@@ -437,20 +422,14 @@ you less control.  (For example you can't specify any media type parameters)</p>
 was later <a href="http://www.w3.org/TR/html5-diff/#changes-2010-06-24">dropped from the spec</a>.  There remains
 <a href="http://amundsen.com/examples/put-delete-forms/">ongoing discussion</a> about adding support for <code>PUT</code> and <code>DELETE</code>,
 as well as how to support content types other than form-encoded data.</p>
-
             
 
-          </div>
-          <!--/span-->
-        </div>
-        <!--/row-->
-      </div>
-      <!--/.fluid-container-->
-    </div>
-    <!--/.body content-->
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
     <div id="push"></div>
-  </div>
-  <!--/.wrapper -->
+  </div> <!--/.wrapper -->
 
   <footer class="span12">
     <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
@@ -468,10 +447,10 @@ as well as how to support content types other than form-encoded data.</p>
   <script src="../../js/theme.js"></script>
 
   <script>
-    //$('.side-nav').scrollspy()
     var shiftWindow = function() {
       scrollBy(0, -50)
     };
+
     if (location.hash) shiftWindow();
     window.addEventListener("hashchange", shiftWindow);
 
@@ -479,12 +458,12 @@ as well as how to support content types other than form-encoded data.</p>
       event.stopPropagation();
     });
 
-    // Dynamically force sidenav to no higher than browser window
-    $('.side-nav').css('max-height', window.innerHeight - 130);
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
     $(function() {
       $(window).resize(function() {
-        $('.side-nav').css('max-height', window.innerHeight - 130);
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
       });
     });
   </script>

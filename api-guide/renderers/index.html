@@ -57,7 +57,6 @@
 <body onload="prettyPrint()" class="-page">
 
   <div class="wrapper">
-
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -301,7 +300,6 @@
 
     <div class="body-content">
       <div class="container-fluid">
-
         <!-- Search Modal -->
         <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-header">
@@ -324,21 +322,12 @@
         </div>
 
         <div class="row-fluid">
-
           <div class="span3">
-            <!-- TODO
-            <p style="margin-top: -12px">
-              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
-              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
-            </p>
-          -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-
                 
 
                 
-
                   <li class="main">
                     <a href="#renderers">Renderers</a>
                   </li>
@@ -356,9 +345,7 @@
                       <a href="#ordering-of-renderer-classes">Ordering of renderer classes</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#api-reference">API Reference</a>
                   </li>
@@ -388,9 +375,7 @@
                       <a href="#multipartrenderer">MultiPartRenderer</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#custom-renderers">Custom renderers</a>
                   </li>
@@ -416,9 +401,7 @@
                       <a href="#setting-the-character-set">Setting the character set</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#advanced-renderer-usage">Advanced renderer usage</a>
                   </li>
@@ -440,9 +423,7 @@
                       <a href="#html-error-views">HTML error views</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#third-party-packages">Third party packages</a>
                   </li>
@@ -480,20 +461,16 @@
                       <a href="#pandas-csv-excel-png">Pandas (CSV, Excel, PNG)</a>
                     </li>
                   
-
                 
 
                 
-
               </ul>
 
             </div>
           </div>
 
           <div id="main-content" class="span9">
-
             
-
               
                 
                   <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/renderers.py">
@@ -801,20 +778,14 @@ In this case you can underspecify the media types it should respond to, by using
 <p><a href="https://github.com/vbabiy/djangorestframework-camel-case">djangorestframework-camel-case</a> provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by <a href="https://github.com/vbabiy">Vitaly Babiy</a>.</p>
 <h2 id="pandas-csv-excel-png">Pandas (CSV, Excel, PNG)</h2>
 <p><a href="https://github.com/wq/django-rest-pandas">Django REST Pandas</a> provides a serializer and renderers that support additional data processing and output via the <a href="http://pandas.pydata.org/">Pandas</a> DataFrame API.  Django REST Pandas includes renderers for Pandas-style CSV files, Excel workbooks (both <code>.xls</code> and <code>.xlsx</code>), and a number of <a href="https://github.com/wq/django-rest-pandas#supported-formats">other formats</a>. It is maintained by <a href="https://github.com/sheppard">S. Andrew Sheppard</a> as part of the <a href="https://github.com/wq">wq Project</a>.</p>
-
             
 
-          </div>
-          <!--/span-->
-        </div>
-        <!--/row-->
-      </div>
-      <!--/.fluid-container-->
-    </div>
-    <!--/.body content-->
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
     <div id="push"></div>
-  </div>
-  <!--/.wrapper -->
+  </div> <!--/.wrapper -->
 
   <footer class="span12">
     <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
@@ -832,10 +803,10 @@ In this case you can underspecify the media types it should respond to, by using
   <script src="../../js/theme.js"></script>
 
   <script>
-    //$('.side-nav').scrollspy()
     var shiftWindow = function() {
       scrollBy(0, -50)
     };
+
     if (location.hash) shiftWindow();
     window.addEventListener("hashchange", shiftWindow);
 
@@ -843,12 +814,12 @@ In this case you can underspecify the media types it should respond to, by using
       event.stopPropagation();
     });
 
-    // Dynamically force sidenav to no higher than browser window
-    $('.side-nav').css('max-height', window.innerHeight - 130);
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
     $(function() {
       $(window).resize(function() {
-        $('.side-nav').css('max-height', window.innerHeight - 130);
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
       });
     });
   </script>

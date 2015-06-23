@@ -57,7 +57,6 @@
 <body onload="prettyPrint()" class="-page">
 
   <div class="wrapper">
-
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -301,7 +300,6 @@
 
     <div class="body-content">
       <div class="container-fluid">
-
         <!-- Search Modal -->
         <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-header">
@@ -324,21 +322,12 @@
         </div>
 
         <div class="row-fluid">
-
           <div class="span3">
-            <!-- TODO
-            <p style="margin-top: -12px">
-              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
-              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
-            </p>
-          -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-
                 
 
                 
-
                   <li class="main">
                     <a href="#pagination">Pagination</a>
                   </li>
@@ -352,9 +341,7 @@
                       <a href="#modifying-the-pagination-style">Modifying the pagination style</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#api-reference">API Reference</a>
                   </li>
@@ -372,9 +359,7 @@
                       <a href="#cursorpagination">CursorPagination</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#custom-pagination-styles">Custom pagination styles</a>
                   </li>
@@ -392,9 +377,7 @@
                       <a href="#using-your-custom-pagination-class">Using your custom pagination class</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#html-pagination-controls">HTML pagination controls</a>
                   </li>
@@ -404,9 +387,7 @@
                       <a href="#customizing-the-controls">Customizing the controls</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#third-party-packages">Third party packages</a>
                   </li>
@@ -416,20 +397,16 @@
                       <a href="#drf-extensions">DRF-extensions</a>
                     </li>
                   
-
                 
 
                 
-
               </ul>
 
             </div>
           </div>
 
           <div id="main-content" class="span9">
-
             
-
               
                 
                   <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/pagination.py">
@@ -671,20 +648,14 @@ class StandardResultsSetPagination(PageNumberPagination):
 <p>The following third party packages are also available.</p>
 <h2 id="drf-extensions">DRF-extensions</h2>
 <p>The <a href="http://chibisov.github.io/drf-extensions/docs/"><code>DRF-extensions</code> package</a> includes a <a href="http://chibisov.github.io/drf-extensions/docs/#paginatebymaxmixin"><code>PaginateByMaxMixin</code> mixin class</a> that allows your API clients to specify <code>?page_size=max</code> to obtain the maximum allowed page size.</p>
-
             
 
-          </div>
-          <!--/span-->
-        </div>
-        <!--/row-->
-      </div>
-      <!--/.fluid-container-->
-    </div>
-    <!--/.body content-->
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
     <div id="push"></div>
-  </div>
-  <!--/.wrapper -->
+  </div> <!--/.wrapper -->
 
   <footer class="span12">
     <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
@@ -702,10 +673,10 @@ class StandardResultsSetPagination(PageNumberPagination):
   <script src="../../js/theme.js"></script>
 
   <script>
-    //$('.side-nav').scrollspy()
     var shiftWindow = function() {
       scrollBy(0, -50)
     };
+
     if (location.hash) shiftWindow();
     window.addEventListener("hashchange", shiftWindow);
 
@@ -713,12 +684,12 @@ class StandardResultsSetPagination(PageNumberPagination):
       event.stopPropagation();
     });
 
-    // Dynamically force sidenav to no higher than browser window
-    $('.side-nav').css('max-height', window.innerHeight - 130);
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
     $(function() {
       $(window).resize(function() {
-        $('.side-nav').css('max-height', window.innerHeight - 130);
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
       });
     });
   </script>

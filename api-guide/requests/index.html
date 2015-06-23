@@ -57,7 +57,6 @@
 <body onload="prettyPrint()" class="-page">
 
   <div class="wrapper">
-
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -301,7 +300,6 @@
 
     <div class="body-content">
       <div class="container-fluid">
-
         <!-- Search Modal -->
         <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-header">
@@ -324,29 +322,18 @@
         </div>
 
         <div class="row-fluid">
-
           <div class="span3">
-            <!-- TODO
-            <p style="margin-top: -12px">
-              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
-              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
-            </p>
-          -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-
                 
 
                 
-
                   <li class="main">
                     <a href="#requests">Requests</a>
                   </li>
 
                   
-
                 
-
                   <li class="main">
                     <a href="#request-parsing">Request parsing</a>
                   </li>
@@ -372,9 +359,7 @@
                       <a href="#parsers">.parsers</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#content-negotiation">Content negotiation</a>
                   </li>
@@ -388,9 +373,7 @@
                       <a href="#accepted_media_type">.accepted_media_type</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#authentication">Authentication</a>
                   </li>
@@ -408,9 +391,7 @@
                       <a href="#authenticators">.authenticators</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#browser-enhancements">Browser enhancements</a>
                   </li>
@@ -428,28 +409,22 @@
                       <a href="#stream">.stream</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#standard-httprequest-attributes">Standard HttpRequest attributes</a>
                   </li>
 
                   
-
                 
 
                 
-
               </ul>
 
             </div>
           </div>
 
           <div id="main-content" class="span9">
-
             
-
               
                 
                   <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/request.py">
@@ -535,20 +510,14 @@
 <h1 id="standard-httprequest-attributes">Standard HttpRequest attributes</h1>
 <p>As REST framework's <code>Request</code> extends Django's <code>HttpRequest</code>, all the other standard attributes and methods are also available.  For example the <code>request.META</code> and <code>request.session</code> dictionaries are available as normal.</p>
 <p>Note that due to implementation reasons the <code>Request</code> class does not inherit from <code>HttpRequest</code> class, but instead extends the class using composition.</p>
-
             
 
-          </div>
-          <!--/span-->
-        </div>
-        <!--/row-->
-      </div>
-      <!--/.fluid-container-->
-    </div>
-    <!--/.body content-->
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
     <div id="push"></div>
-  </div>
-  <!--/.wrapper -->
+  </div> <!--/.wrapper -->
 
   <footer class="span12">
     <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
@@ -566,10 +535,10 @@
   <script src="../../js/theme.js"></script>
 
   <script>
-    //$('.side-nav').scrollspy()
     var shiftWindow = function() {
       scrollBy(0, -50)
     };
+
     if (location.hash) shiftWindow();
     window.addEventListener("hashchange", shiftWindow);
 
@@ -577,12 +546,12 @@
       event.stopPropagation();
     });
 
-    // Dynamically force sidenav to no higher than browser window
-    $('.side-nav').css('max-height', window.innerHeight - 130);
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
     $(function() {
       $(window).resize(function() {
-        $('.side-nav').css('max-height', window.innerHeight - 130);
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
       });
     });
   </script>

@@ -57,7 +57,6 @@
 <body onload="prettyPrint()" class="-page">
 
   <div class="wrapper">
-
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -301,7 +300,6 @@
 
     <div class="body-content">
       <div class="container-fluid">
-
         <!-- Search Modal -->
         <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-header">
@@ -324,21 +322,12 @@
         </div>
 
         <div class="row-fluid">
-
           <div class="span3">
-            <!-- TODO
-            <p style="margin-top: -12px">
-              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
-              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
-            </p>
-          -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-
                 
 
                 
-
                   <li class="main">
                     <a href="#versioning">Versioning</a>
                   </li>
@@ -352,9 +341,7 @@
                       <a href="#configuring-the-versioning-scheme">Configuring the versioning scheme</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#api-reference">API Reference</a>
                   </li>
@@ -380,9 +367,7 @@
                       <a href="#queryparameterversioning">QueryParameterVersioning</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#custom-versioning-schemes">Custom versioning schemes</a>
                   </li>
@@ -392,20 +377,16 @@
                       <a href="#example">Example</a>
                     </li>
                   
-
                 
 
                 
-
               </ul>
 
             </div>
           </div>
 
           <div id="main-content" class="span9">
-
             
-
               
                 
                   <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/versioning.py">
@@ -469,6 +450,18 @@ reverse('bookings-list', request=request)
 <li><code>ALLOWED_VERSIONS</code>. If set, this value will restrict the set of versions that may be returned by the versioning scheme, and will raise an error if the provided version if not in this set. Defaults to <code>None</code>.</li>
 <li><code>VERSION_PARAMETER</code>. The string that should used for any versioning parameters, such as in the media type or URL query parameters. Defaults to <code>'version'</code>.</li>
 </ul>
+<p>You can also set your versioning class plus those three values on a per-view or a per-viewset basis by defining your own versioning scheme and using the <code>default_version</code>, <code>allowed_versions</code> and <code>version_param</code> class variables. For example, if you want to use <code>URLPathVersioning</code>:</p>
+<pre><code>from rest_framework.versioning import URLPathVersioning
+from rest_framework.views import APIView
+
+class ExampleVersioning(URLPathVersioning):
+    default_version = ...
+    allowed_versions = ...
+    version_param = ...
+
+class ExampleView(APIVIew):
+    versioning_class = ExampleVersioning
+</code></pre>
 <hr />
 <h1 id="api-reference">API Reference</h1>
 <h2 id="acceptheaderversioning">AcceptHeaderVersioning</h2>
@@ -499,12 +492,12 @@ Accept: application/json
 <p>Your URL conf must include a pattern that matches the version with a <code>'version'</code> keyword argument, so that this information is available to the versioning scheme.</p>
 <pre><code>urlpatterns = [
     url(
-        r'^(?P&lt;version&gt;{v1,v2})/bookings/$',
+        r'^(?P&lt;version&gt;[v1|v2]+)/bookings/$',
         bookings_list,
         name='bookings-list'
     ),
     url(
-        r'^(?P&lt;version&gt;{v1,v2})/bookings/(?P&lt;pk&gt;[0-9]+)/$',
+        r'^(?P&lt;version&gt;[v1|v2]+)/bookings/(?P&lt;pk&gt;[0-9]+)/$',
         bookings_detail,
         name='bookings-detail'
     )
@@ -560,20 +553,14 @@ Accept: application/json
         return request.META.get('HTTP_X_API_VERSION', None)
 </code></pre>
 <p>If your versioning scheme is based on the request URL, you will also want to alter how versioned URLs are determined. In order to do so you should override the <code>.reverse()</code> method on the class. See the source code for examples.</p>
-
             
 
-          </div>
-          <!--/span-->
-        </div>
-        <!--/row-->
-      </div>
-      <!--/.fluid-container-->
-    </div>
-    <!--/.body content-->
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
     <div id="push"></div>
-  </div>
-  <!--/.wrapper -->
+  </div> <!--/.wrapper -->
 
   <footer class="span12">
     <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
@@ -591,10 +578,10 @@ Accept: application/json
   <script src="../../js/theme.js"></script>
 
   <script>
-    //$('.side-nav').scrollspy()
     var shiftWindow = function() {
       scrollBy(0, -50)
     };
+
     if (location.hash) shiftWindow();
     window.addEventListener("hashchange", shiftWindow);
 
@@ -602,12 +589,12 @@ Accept: application/json
       event.stopPropagation();
     });
 
-    // Dynamically force sidenav to no higher than browser window
-    $('.side-nav').css('max-height', window.innerHeight - 130);
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
     $(function() {
       $(window).resize(function() {
-        $('.side-nav').css('max-height', window.innerHeight - 130);
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
       });
     });
   </script>

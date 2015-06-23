@@ -57,7 +57,6 @@
 <body onload="prettyPrint()" class="-page">
 
   <div class="wrapper">
-
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -301,7 +300,6 @@
 
     <div class="body-content">
       <div class="container-fluid">
-
         <!-- Search Modal -->
         <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-header">
@@ -324,29 +322,18 @@
         </div>
 
         <div class="row-fluid">
-
           <div class="span3">
-            <!-- TODO
-            <p style="margin-top: -12px">
-              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
-              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
-            </p>
-          -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-
                 
 
                 
-
                   <li class="main">
                     <a href="#responses">Responses</a>
                   </li>
 
                   
-
                 
-
                   <li class="main">
                     <a href="#creating-responses">Creating responses</a>
                   </li>
@@ -356,9 +343,7 @@
                       <a href="#response">Response()</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#attributes">Attributes</a>
                   </li>
@@ -392,9 +377,7 @@
                       <a href="#renderer_context">.renderer_context</a>
                     </li>
                   
-
                 
-
                   <li class="main">
                     <a href="#standard-httpresponse-attributes">Standard HttpResponse attributes</a>
                   </li>
@@ -404,20 +387,16 @@
                       <a href="#render">.render()</a>
                     </li>
                   
-
                 
 
                 
-
               </ul>
 
             </div>
           </div>
 
           <div id="main-content" class="span9">
-
             
-
               
                 
                   <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/response.py">
@@ -479,20 +458,14 @@ response['Cache-Control'] = 'no-cache'
 <p><strong>Signature:</strong> <code>.render()</code></p>
 <p>As with any other <code>TemplateResponse</code>, this method is called to render the serialized data of the response into the final response content.  When <code>.render()</code> is called, the response content will be set to the result of calling the <code>.render(data, accepted_media_type, renderer_context)</code> method on the <code>accepted_renderer</code> instance.</p>
 <p>You won't typically need to call <code>.render()</code> yourself, as it's handled by Django's standard response cycle.</p>
-
             
 
-          </div>
-          <!--/span-->
-        </div>
-        <!--/row-->
-      </div>
-      <!--/.fluid-container-->
-    </div>
-    <!--/.body content-->
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
     <div id="push"></div>
-  </div>
-  <!--/.wrapper -->
+  </div> <!--/.wrapper -->
 
   <footer class="span12">
     <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
@@ -510,10 +483,10 @@ response['Cache-Control'] = 'no-cache'
   <script src="../../js/theme.js"></script>
 
   <script>
-    //$('.side-nav').scrollspy()
     var shiftWindow = function() {
       scrollBy(0, -50)
     };
+
     if (location.hash) shiftWindow();
     window.addEventListener("hashchange", shiftWindow);
 
@@ -521,12 +494,12 @@ response['Cache-Control'] = 'no-cache'
       event.stopPropagation();
     });
 
-    // Dynamically force sidenav to no higher than browser window
-    $('.side-nav').css('max-height', window.innerHeight - 130);
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
 
     $(function() {
       $(window).resize(function() {
-        $('.side-nav').css('max-height', window.innerHeight - 130);
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
       });
     });
   </script>
