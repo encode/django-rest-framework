@@ -44,8 +44,8 @@ body.index-page #main-content iframe.twitter-share-button {
     margin-right: 8px;
 }
 
-/* Travis CI badge */
-body.index-page #main-content img.travis-build-image {
+/* Travis CI and PyPI badge */
+body.index-page #main-content img.status-badge {
     float: right;
     margin-right: 8px;
     margin-top: -11px;
