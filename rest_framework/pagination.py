@@ -127,50 +127,6 @@ def _get_page_links(page_numbers, current, url_func):
     return page_links
 
 
-def _decode_cursor(encoded):
-    """
-    Given a string representing an encoded cursor, return a `Cursor` instance.
-    """
-
-    # The offset in the cursor is used in situations where we have a
-    # nearly-unique index. (Eg millisecond precision creation timestamps)
-    # We guard against malicious users attempting to cause expensive database
-    # queries, by having a hard cap on the maximum possible size of the offset.
-    OFFSET_CUTOFF = 1000
-
-    try:
-        querystring = b64decode(encoded.encode('ascii')).decode('ascii')
-        tokens = urlparse.parse_qs(querystring, keep_blank_values=True)
-
-        offset = tokens.get('o', ['0'])[0]
-        offset = _positive_int(offset, cutoff=OFFSET_CUTOFF)
-
-        reverse = tokens.get('r', ['0'])[0]
-        reverse = bool(int(reverse))
-
-        position = tokens.get('p', [None])[0]
-    except (TypeError, ValueError):
-        return None
-
-    return Cursor(offset=offset, reverse=reverse, position=position)
-
-
-def _encode_cursor(cursor):
-    """
-    Given a Cursor instance, return an encoded string representation.
-    """
-    tokens = {}
-    if cursor.offset != 0:
-        tokens['o'] = str(cursor.offset)
-    if cursor.reverse:
-        tokens['r'] = '1'
-    if cursor.position is not None:
-        tokens['p'] = cursor.position
-
-    querystring = urlparse.urlencode(tokens, doseq=True)
-    return b64encode(querystring.encode('ascii')).decode('ascii')
-
-
 def _reverse_ordering(ordering_tuple):
     """
     Given an order_by tuple such as `('-created', 'uuid')` reverse the
@@ -709,16 +665,50 @@ class CursorPagination(BasePagination):
         return tuple(ordering)
 
     def decode_cursor(self, request):
+        """
+        Given a request with a cursor, return a `Cursor` instance.
+        """
         # Determine if we have a cursor, and if so then decode it.
         encoded = request.query_params.get(self.cursor_query_param)
-        if encoded is not None:
-            cursor = _decode_cursor(encoded)
-            if cursor is None:
-                raise NotFound(self.invalid_cursor_message)
-            return cursor
+        if encoded is None:
+            return None
+
+        # The offset in the cursor is used in situations where we have a
+        # nearly-unique index. (Eg millisecond precision creation timestamps)
+        # We guard against malicious users attempting to cause expensive database
+        # queries, by having a hard cap on the maximum possible size of the offset.
+        OFFSET_CUTOFF = 1000
+
+        try:
+            querystring = b64decode(encoded.encode('ascii')).decode('ascii')
+            tokens = urlparse.parse_qs(querystring, keep_blank_values=True)
+
+            offset = tokens.get('o', ['0'])[0]
+            offset = _positive_int(offset, cutoff=OFFSET_CUTOFF)
+
+            reverse = tokens.get('r', ['0'])[0]
+            reverse = bool(int(reverse))
+
+            position = tokens.get('p', [None])[0]
+        except (TypeError, ValueError):
+            raise NotFound(self.invalid_cursor_message)
+
+        return Cursor(offset=offset, reverse=reverse, position=position)
 
     def encode_cursor(self, cursor):
-        encoded = _encode_cursor(cursor)
+        """
+        Given a Cursor instance, return an url with encoded cursor.
+        """
+        tokens = {}
+        if cursor.offset != 0:
+            tokens['o'] = str(cursor.offset)
+        if cursor.reverse:
+            tokens['r'] = '1'
+        if cursor.position is not None:
+            tokens['p'] = cursor.position
+
+        querystring = urlparse.urlencode(tokens, doseq=True)
+        encoded = b64encode(querystring.encode('ascii')).decode('ascii')
         return replace_query_param(self.base_url, self.cursor_query_param, encoded)
 
     def _get_position_from_instance(self, instance, ordering):
