@@ -186,6 +186,7 @@ class TestPageNumberPagination:
     def setup(self):
         class ExamplePagination(pagination.PageNumberPagination):
             page_size = 5
+
         self.pagination = ExamplePagination()
         self.queryset = range(1, 101)
 
