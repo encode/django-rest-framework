@@ -201,7 +201,7 @@ class BasePagination(object):
         raise NotImplementedError('to_html() must be implemented to display page controls.')
 
 
-class PageSizePaginationMixin(object):
+class BasePageSizePagination(BasePagination):
     # The default page size.
     # Defaults to `None`, meaning pagination is disabled.
     page_size = api_settings.PAGE_SIZE
@@ -228,7 +228,7 @@ class PageSizePaginationMixin(object):
         return self.page_size
 
 
-class PageNumberPagination(PageSizePaginationMixin, BasePagination):
+class PageNumberPagination(BasePageSizePagination):
     """
     A simple page number based style that supports page numbers as
     query parameters. For example:
@@ -487,7 +487,7 @@ class LimitOffsetPagination(BasePagination):
         return template.render(context)
 
 
-class CursorPagination(PageSizePaginationMixin, BasePagination):
+class CursorPagination(BasePageSizePagination):
     """
     The cursor pagination implementation is neccessarily complex.
     For an overview of the position/offset style we use, see this post:
