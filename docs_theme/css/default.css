@@ -37,13 +37,6 @@ body.index-page #main-content iframe.github-star-button {
     margin-right: -15px;
 }
 
-/* Tweet button */
-body.index-page #main-content iframe.twitter-share-button {
-    float: right;
-    margin-top: -12px;
-    margin-right: 8px;
-}
-
 /* Travis CI and PyPI badge */
 body.index-page #main-content img.status-badge {
     float: right;
