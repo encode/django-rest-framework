@@ -1198,8 +1198,12 @@ class FileField(Field):
         return data
 
     def to_representation(self, value):
+        if not value:
+            return None
+
         if self.use_url:
-            if not value:
+            if not getattr(value, 'url', None):
+                # If the file has not been saved it may not have a URL.
                 return None
             url = value.url
             request = self.context.get('request', None)
