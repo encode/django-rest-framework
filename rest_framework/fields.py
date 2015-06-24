@@ -580,7 +580,7 @@ class CharField(Field):
         # Test for the empty string here so that it does not get validated,
         # and so that subclasses do not need to handle it explicitly
         # inside the `to_internal_value()` method.
-        if data == '':
+        if data == '' or (self.trim_whitespace and six.text_type(data).strip() == ''):
             if not self.allow_blank:
                 self.fail('blank')
             return ''
