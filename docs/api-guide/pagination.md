@@ -246,11 +246,11 @@ Let's modify the built-in `PageNumberPagination` style, so that instead of inclu
             previous_url = self.get_previous_link()
 
             if next_url is not None and previous_url is not None:
-                link = '<{next_url}; rel="next">, <{previous_url}; rel="prev">'
+                link = '<{next_url}>; rel="next", <{previous_url}>; rel="prev"'
             elif next_url is not None:
-                link = '<{next_url}; rel="next">'
+                link = '<{next_url}>; rel="next"'
             elif previous_url is not None:
-                link = '<{previous_url}; rel="prev">'
+                link = '<{previous_url}>; rel="prev"'
             else:
                 link = ''
 
