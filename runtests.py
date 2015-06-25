@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 from __future__ import print_function
 
-import pytest
-import sys
 import os
 import subprocess
+import sys
 
+import pytest
 
 PYTEST_ARGS = {
     'default': ['tests', '--tb=short'],
@@ -14,6 +14,7 @@ PYTEST_ARGS = {
 
 FLAKE8_ARGS = ['rest_framework', 'tests', '--ignore=E501']
 
+ISORT_ARGS = ['--recursive', '--check-only', '.']
 
 sys.path.append(os.path.dirname(__file__))
 
@@ -27,6 +28,13 @@ def flake8_main(args):
     print('Running flake8 code linting')
     ret = subprocess.call(['flake8'] + args)
     print('flake8 failed' if ret else 'flake8 passed')
+    return ret
+
+
+def isort_main(args):
+    print('Running isort code checking')
+    ret = subprocess.call(['isort'] + args)
+    print('isort failed' if ret else 'isort passed')
     return ret
 
 
@@ -50,8 +58,10 @@ if __name__ == "__main__":
         sys.argv.remove('--nolint')
     except ValueError:
         run_flake8 = True
+        run_isort = True
     else:
         run_flake8 = False
+        run_isort = False
 
     try:
         sys.argv.remove('--lintonly')
@@ -67,6 +77,7 @@ if __name__ == "__main__":
     else:
         style = 'fast'
         run_flake8 = False
+        run_isort = False
 
     if len(sys.argv) > 1:
         pytest_args = sys.argv[1:]
@@ -79,7 +90,7 @@ if __name__ == "__main__":
             expression = split_class_and_function(first_arg)
             pytest_args = ['tests', '-k', expression] + pytest_args[1:]
         elif is_class(first_arg) or is_function(first_arg):
-            # `runtests.py TestCase [flags]` 
+            # `runtests.py TestCase [flags]`
             # `runtests.py test_function [flags]`
             pytest_args = ['tests', '-k', pytest_args[0]] + pytest_args[1:]
     else:
@@ -87,5 +98,9 @@ if __name__ == "__main__":
 
     if run_tests:
         exit_on_failure(pytest.main(pytest_args))
+
     if run_flake8:
         exit_on_failure(flake8_main(FLAKE8_ARGS))
+
+    if run_isort:
+        exit_on_failure(isort_main(ISORT_ARGS))
