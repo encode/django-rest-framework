@@ -721,3 +721,28 @@ class TestSerializerMetaClass(TestCase):
             str(exception),
             "Cannot set both 'fields' and 'exclude' options on serializer ExampleSerializer."
         )
+
+
+class Issue2704TestCase(TestCase):
+    def test_queryset_all(self):
+        class TestSerializer(serializers.ModelSerializer):
+            additional_attr = serializers.CharField()
+
+            class Meta:
+                model = OneFieldModel
+                fields = ('char_field', 'additional_attr')
+
+        OneFieldModel.objects.create(char_field='abc')
+        qs = OneFieldModel.objects.all()
+
+        for o in qs:
+            o.additional_attr = '123'
+
+        serializer = TestSerializer(instance=qs, many=True)
+
+        expected = [{
+            'char_field': 'abc',
+            'additional_attr': '123',
+        }]
+
+        assert serializer.data == expected
