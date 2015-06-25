@@ -170,6 +170,21 @@ else:
             super(MaxLengthValidator, self).__init__(*args, **kwargs)
 
 
+# ForeignKey's to_fields parameter was changed in Django 1.6 to an array named to_fields
+# to_fields is an array but django lets you only set one to_field for ForeignKeys
+# https://docs.djangoproject.com/en/1.7/ref/models/fields/#django.db.models.ForeignKey.to_field
+# see also ForeignKey and ForeignObject in
+# https://docs.djangoproject.com/en/1.7/_modules/django/db/models/fields/related/
+
+if django.VERSION >= (1, 6):
+    def get_to_field(field):
+        # This should work for casual ForeignKeys
+        return field.to_fields[0] if len(field.to_fields) else None
+else:
+    def get_to_field(field):
+        return field.rel.field_name
+
+
 # URLValidator only accepts `message` in 1.6+
 if django.VERSION >= (1, 6):
     from django.core.validators import URLValidator
