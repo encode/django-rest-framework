@@ -110,7 +110,7 @@ class RelatedField(Field):
                 six.text_type(self.to_representation(item)),
                 six.text_type(item)
             )
-            for item in self.queryset.all()
+            for item in self.get_queryset()
         ])
 
 
