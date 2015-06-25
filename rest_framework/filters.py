@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import six
+from django.conf import settings
 from rest_framework.compat import django_filters, guardian, get_model_name
 from rest_framework.settings import api_settings
 from functools import reduce
@@ -57,6 +58,7 @@ class DjangoFilterBackend(BaseFilterBackend):
                 class Meta:
                     model = queryset.model
                     fields = filter_fields
+
             return AutoFilterSet
 
         return None
@@ -97,14 +99,23 @@ class SearchFilter(BaseFilterBackend):
 
         if not search_fields:
             return queryset
-
+        if settings.DATABASES[queryset.db]["ENGINE"] == "django.db.backends.oracle":
+            # Remember queryset for Oracle db users
+            original_queryset = queryset
         orm_lookups = [self.construct_search(six.text_type(search_field))
                        for search_field in search_fields]
 
         for search_term in self.get_search_terms(request):
             or_queries = [models.Q(**{orm_lookup: search_term})
                           for orm_lookup in orm_lookups]
-            queryset = queryset.filter(reduce(operator.or_, or_queries)).distinct()
+            queryset = queryset.filter(reduce(operator.or_, or_queries))
+            if settings.DATABASES[queryset.db]["ENGINE"] != "django.db.backends.oracle":
+                # Oracle db don't support distinct on *LOB fields
+                queryset = queryset.distinct()
+
+        if settings.DATABASES[queryset.db]["ENGINE"] == "django.db.backends.oracle":
+            # distinct analogue for Oracle users
+            queryset = original_queryset.filter(pk__in=set(queryset.values_list('pk', flat=True)))
 
         return queryset
 
@@ -152,7 +163,7 @@ class OrderingFilter(BaseFilterBackend):
                 field.source or field_name
                 for field_name, field in serializer_class().fields.items()
                 if not getattr(field, 'write_only', False)
-            ]
+                ]
         elif valid_fields == '__all__':
             # View explicitly allows filtering on any model field
             valid_fields = [field.name for field in queryset.model._meta.fields]
@@ -174,6 +185,7 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
     A filter backend that limits results to those where the requesting user
     has read object level permissions.
     """
+
     def __init__(self):
         assert guardian, 'Using DjangoObjectPermissionsFilter, but django-guardian is not installed'
 
