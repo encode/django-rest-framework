@@ -1,9 +1,12 @@
 # encoding: utf-8
 from __future__ import unicode_literals
-from django.test import TestCase
-from rest_framework.test import APIRequestFactory
-from rest_framework.templatetags.rest_framework import add_query_param, urlize_quoted_links
 
+from django.test import TestCase
+
+from rest_framework.templatetags.rest_framework import (
+    add_query_param, urlize_quoted_links
+)
+from rest_framework.test import APIRequestFactory
 
 factory = APIRequestFactory()
 

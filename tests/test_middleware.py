@@ -1,11 +1,11 @@
 
 from django.conf.urls import url
 from django.contrib.auth.models import User
+
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 from rest_framework.views import APIView
-
 
 urlpatterns = [
     url(r'^$', APIView.as_view(authentication_classes=(TokenAuthentication,))),

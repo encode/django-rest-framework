@@ -1,21 +1,17 @@
 from __future__ import unicode_literals
-from django.conf.urls import url, include
+
+from django.conf.urls import include, url
 from django.test import TestCase
 from django.utils import six
-from tests.models import BasicModel
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import generics
-from rest_framework import routers
-from rest_framework import serializers
-from rest_framework import status
+
+from rest_framework import generics, routers, serializers, status, viewsets
 from rest_framework.renderers import (
-    BaseRenderer,
-    JSONRenderer,
-    BrowsableAPIRenderer
+    BaseRenderer, BrowsableAPIRenderer, JSONRenderer
 )
-from rest_framework import viewsets
+from rest_framework.response import Response
 from rest_framework.settings import api_settings
+from rest_framework.views import APIView
+from tests.models import BasicModel
 
 
 # Serializer used to test BasicModel

@@ -1,11 +1,13 @@
-from decimal import Decimal
-from django.utils import timezone
-from rest_framework import serializers
-import rest_framework
 import datetime
+import uuid
+from decimal import Decimal
+
 import django
 import pytest
-import uuid
+from django.utils import timezone
+
+import rest_framework
+from rest_framework import serializers
 
 
 # Tests for field keyword arguments and core functionality.

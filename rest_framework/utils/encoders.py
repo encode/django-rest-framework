@@ -3,15 +3,15 @@ Helper classes for parsers.
 """
 from __future__ import unicode_literals
 
-import uuid
-import json
-import decimal
 import datetime
+import decimal
+import json
+import uuid
 
-from django.utils import six, timezone
 from django.db.models.query import QuerySet
-from django.utils.functional import Promise
+from django.utils import six, timezone
 from django.utils.encoding import force_text
+from django.utils.functional import Promise
 
 from rest_framework.compat import total_seconds
 

@@ -7,8 +7,8 @@ from __future__ import unicode_literals
 import re
 
 from django.db import models
-from django.utils.functional import Promise
 from django.utils.encoding import force_text
+from django.utils.functional import Promise
 
 from rest_framework.compat import unicode_repr
 

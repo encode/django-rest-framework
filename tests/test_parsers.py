@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
+
 from django import forms
 from django.core.files.uploadhandler import MemoryFileUploadHandler
 from django.test import TestCase
 from django.utils.six.moves import StringIO
+
 from rest_framework.exceptions import ParseError
-from rest_framework.parsers import FormParser, FileUploadParser
+from rest_framework.parsers import FileUploadParser, FormParser
 
 
 class Form(forms.Form):

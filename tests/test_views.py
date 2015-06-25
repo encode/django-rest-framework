@@ -1,8 +1,10 @@
 from __future__ import unicode_literals
 
-import sys
 import copy
+import sys
+
 from django.test import TestCase
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response

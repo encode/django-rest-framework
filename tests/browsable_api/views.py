@@ -1,9 +1,8 @@
 from __future__ import unicode_literals
 
-from rest_framework.views import APIView
-from rest_framework import authentication
-from rest_framework import renderers
+from rest_framework import authentication, renderers
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 class MockView(APIView):

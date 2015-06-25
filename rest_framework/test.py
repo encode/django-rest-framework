@@ -5,16 +5,16 @@
 from __future__ import unicode_literals
 
 import django
-from django.utils import six
 from django.conf import settings
 from django.test import testcases
+from django.test.client import Client as DjangoClient
+from django.test.client import ClientHandler
+from django.utils import six
 from django.utils.http import urlencode
-from django.test.client import ClientHandler, Client as DjangoClient
 
+from rest_framework.compat import RequestFactory as DjangoRequestFactory
+from rest_framework.compat import force_bytes_or_smart_bytes
 from rest_framework.settings import api_settings
-from rest_framework.compat import (
-    force_bytes_or_smart_bytes, RequestFactory as DjangoRequestFactory
-)
 
 
 def force_authenticate(request, user=None, token=None):

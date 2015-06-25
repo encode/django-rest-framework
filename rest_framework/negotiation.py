@@ -9,7 +9,7 @@ from django.http import Http404
 from rest_framework import HTTP_HEADER_ENCODING, exceptions
 from rest_framework.settings import api_settings
 from rest_framework.utils.mediatypes import (
-    _MediaType, order_by_precedence, media_type_matches
+    _MediaType, media_type_matches, order_by_precedence
 )
 
 

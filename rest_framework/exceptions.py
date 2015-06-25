@@ -10,7 +10,8 @@ import math
 
 from django.utils import six
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _, ungettext
+from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ungettext
 
 from rest_framework import status
 

@@ -6,11 +6,11 @@ import re
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import exceptions
+from rest_framework.compat import unicode_http_header
 from rest_framework.reverse import _reverse
 from rest_framework.settings import api_settings
-from rest_framework.compat import unicode_http_header
-from rest_framework.utils.mediatypes import _MediaType
 from rest_framework.templatetags.rest_framework import replace_query_param
+from rest_framework.utils.mediatypes import _MediaType
 
 
 class BaseVersioning(object):

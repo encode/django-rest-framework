@@ -1,34 +1,33 @@
 from __future__ import unicode_literals
 
-import re
+import collections
 import copy
-import uuid
+import datetime
 import decimal
 import inspect
-import datetime
-import collections
+import re
+import uuid
 
 from django.conf import settings
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.validators import RegexValidator, ip_address_validators
+from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
+from django.utils.dateparse import parse_date, parse_datetime, parse_time
+from django.utils.encoding import is_protected_type, smart_text
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.translation import ugettext_lazy as _
-from django.forms import ImageField as DjangoImageField
-from django.utils.encoding import is_protected_type, smart_text
-from django.core.validators import RegexValidator, ip_address_validators
-from django.utils.dateparse import parse_date, parse_datetime, parse_time
-from django.core.exceptions import (
-    ObjectDoesNotExist, ValidationError as DjangoValidationError
-)
 
 from rest_framework import ISO_8601
-from rest_framework.settings import api_settings
-from rest_framework.exceptions import ValidationError
-from rest_framework.utils import html, representation, humanize_datetime
 from rest_framework.compat import (
-    EmailValidator, MinValueValidator, MaxValueValidator,
-    MinLengthValidator, MaxLengthValidator, URLValidator, OrderedDict,
-    unicode_repr, unicode_to_repr, parse_duration, duration_string,
+    EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MinValueValidator, OrderedDict, URLValidator, duration_string,
+    parse_duration, unicode_repr, unicode_to_repr
 )
+from rest_framework.exceptions import ValidationError
+from rest_framework.settings import api_settings
+from rest_framework.utils import html, humanize_datetime, representation
 
 
 class empty:

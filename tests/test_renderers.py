@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.conf.urls import url, include
+
+import json
+import re
+from collections import MutableMapping
+
+from django.conf.urls import include, url
 from django.core.cache import cache
 from django.db import models
 from django.test import TestCase
 from django.utils import six
 from django.utils.translation import ugettext_lazy as _
-from rest_framework import status, permissions
+
+from rest_framework import permissions, serializers, status
 from rest_framework.compat import OrderedDict
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import serializers
 from rest_framework.renderers import (
-    BaseRenderer, JSONRenderer, BrowsableAPIRenderer, HTMLFormRenderer
+    BaseRenderer, BrowsableAPIRenderer, HTMLFormRenderer, JSONRenderer
 )
+from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
-from collections import MutableMapping
-import json
-import re
-
+from rest_framework.views import APIView
 
 DUMMYSTATUS = status.HTTP_200_OK
 DUMMYCONTENT = 'dummycontent'

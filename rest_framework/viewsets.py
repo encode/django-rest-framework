@@ -23,7 +23,7 @@ from functools import update_wrapper
 from django.utils.decorators import classonlymethod
 from django.views.decorators.csrf import csrf_exempt
 
-from rest_framework import views, generics, mixins
+from rest_framework import generics, mixins, views
 
 
 class ViewSetMixin(object):

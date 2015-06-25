@@ -7,7 +7,6 @@ from django.http import Http404
 
 from rest_framework.compat import get_model_name
 
-
 SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
 
 
