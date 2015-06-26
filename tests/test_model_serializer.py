@@ -6,15 +6,20 @@ These tests deal with ensuring that we correctly map the model fields onto
 an appropriate set of serializer fields for each case.
 """
 from __future__ import unicode_literals
+
 import django
+import pytest
 from django.core.exceptions import ImproperlyConfigured
-from django.core.validators import MaxValueValidator, MinValueValidator, MinLengthValidator
+from django.core.validators import (
+    MaxValueValidator, MinLengthValidator, MinValueValidator
+)
 from django.db import models
 from django.test import TestCase
 from django.utils import six
-import pytest
+
 from rest_framework import serializers
-from rest_framework.compat import unicode_repr, DurationField as ModelDurationField
+from rest_framework.compat import DurationField as ModelDurationField
+from rest_framework.compat import unicode_repr
 
 
 def dedent(blocktext):

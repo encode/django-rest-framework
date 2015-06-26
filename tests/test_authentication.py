@@ -1,27 +1,26 @@
 # coding: utf-8
 
 from __future__ import unicode_literals
-from django.conf.urls import url, include
+
+import base64
+
+from django.conf.urls import include, url
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import TestCase
 from django.utils import six
-from rest_framework import HTTP_HEADER_ENCODING
-from rest_framework import exceptions
-from rest_framework import permissions
-from rest_framework import renderers
-from rest_framework.response import Response
-from rest_framework import status
+
+from rest_framework import (
+    HTTP_HEADER_ENCODING, exceptions, permissions, renderers, status
+)
 from rest_framework.authentication import (
-    BaseAuthentication,
-    TokenAuthentication,
-    BasicAuthentication,
-    SessionAuthentication,
+    BaseAuthentication, BasicAuthentication, SessionAuthentication,
+    TokenAuthentication
 )
 from rest_framework.authtoken.models import Token
-from rest_framework.test import APIRequestFactory, APIClient
+from rest_framework.response import Response
+from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
-import base64
 
 factory = APIRequestFactory()
 

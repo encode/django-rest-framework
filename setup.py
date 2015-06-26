@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
+import re
+import sys
 
 from setuptools import setup
-from setuptools.command.test import test as TestCommand
-import re
-import os
-import sys
 
 
 def get_version(package):

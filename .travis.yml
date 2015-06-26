@@ -3,7 +3,7 @@ language: python
 sudo: false
 
 env:
-    - TOX_ENV=py27-flake8
+    - TOX_ENV=py27-lint
     - TOX_ENV=py27-docs
     - TOX_ENV=py34-django18
     - TOX_ENV=py33-django18

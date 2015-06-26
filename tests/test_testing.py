@@ -1,13 +1,18 @@
 # encoding: utf-8
 from __future__ import unicode_literals
+
+from io import BytesIO
+
 from django.conf.urls import url
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.test import TestCase
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.test import APIClient, APIRequestFactory, force_authenticate
-from io import BytesIO
+from rest_framework.test import (
+    APIClient, APIRequestFactory, force_authenticate
+)
 
 
 @api_view(['GET', 'POST'])

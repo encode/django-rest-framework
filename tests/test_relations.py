@@ -1,11 +1,16 @@
 import uuid
-from .utils import mock_reverse, fail_reverse, BadType, MockObject, MockQueryset
+
+import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.datastructures import MultiValueDict
+
 from rest_framework import serializers
 from rest_framework.fields import empty
 from rest_framework.test import APISimpleTestCase
-import pytest
+
+from .utils import (
+    BadType, MockObject, MockQueryset, fail_reverse, mock_reverse
+)
 
 
 class TestStringRelatedField(APISimpleTestCase):

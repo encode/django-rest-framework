@@ -2,10 +2,13 @@
 Provides various throttling policies.
 """
 from __future__ import unicode_literals
+
+import time
+
 from django.core.cache import cache as default_cache
 from django.core.exceptions import ImproperlyConfigured
+
 from rest_framework.settings import api_settings
-import time
 
 
 class BaseThrottle(object):

@@ -1,7 +1,9 @@
 from __future__ import unicode_literals
+
 from django.conf.urls import url
 from django.core.urlresolvers import NoReverseMatch
 from django.test import TestCase
+
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 

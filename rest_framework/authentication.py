@@ -2,11 +2,14 @@
 Provides various authentication policies.
 """
 from __future__ import unicode_literals
+
 import base64
+
 from django.contrib.auth import authenticate
 from django.middleware.csrf import CsrfViewMiddleware
 from django.utils.translation import ugettext_lazy as _
-from rest_framework import exceptions, HTTP_HEADER_ENCODING
+
+from rest_framework import HTTP_HEADER_ENCODING, exceptions
 from rest_framework.authtoken.models import Token
 from rest_framework.compat import get_user_model
 

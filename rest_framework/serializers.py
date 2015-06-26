@@ -11,30 +11,29 @@ python primitives.
 response content is handled by parsers and renderers.
 """
 from __future__ import unicode_literals
+
+import warnings
+
 from django.db import models
-from django.db.models.fields import FieldDoesNotExist, Field as DjangoModelField
+from django.db.models.fields import Field as DjangoModelField
+from django.db.models.fields import FieldDoesNotExist
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
-from rest_framework.compat import (
-    postgres_fields,
-    unicode_to_repr,
-    DurationField as ModelDurationField,
-)
+
+from rest_framework.compat import DurationField as ModelDurationField
+from rest_framework.compat import postgres_fields, unicode_to_repr
 from rest_framework.utils import model_meta
 from rest_framework.utils.field_mapping import (
-    get_url_kwargs, get_field_kwargs,
-    get_relation_kwargs, get_nested_relation_kwargs,
-    ClassLookupDict
+    ClassLookupDict, get_field_kwargs, get_nested_relation_kwargs,
+    get_relation_kwargs, get_url_kwargs
 )
 from rest_framework.utils.serializer_helpers import (
-    ReturnDict, ReturnList, BoundField, NestedBoundField, BindingDict
+    BindingDict, BoundField, NestedBoundField, ReturnDict, ReturnList
 )
 from rest_framework.validators import (
     UniqueForDateValidator, UniqueForMonthValidator, UniqueForYearValidator,
     UniqueTogetherValidator
 )
-import warnings
-
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -43,9 +42,8 @@ import warnings
 # This helps keep the separation between model fields, form fields, and
 # serializer fields more explicit.
 
-from rest_framework.relations import *  # NOQA
-from rest_framework.fields import *  # NOQA
-
+from rest_framework.fields import *  # NOQA # isort:skip
+from rest_framework.relations import *  # NOQA # isort:skip
 
 # We assume that 'validators' are intended for the child serializer,
 # rather than the parent serializer.

@@ -1,14 +1,15 @@
 from __future__ import unicode_literals
-from django.core.exceptions import ImproperlyConfigured
+
 from django.conf.urls import url
+from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
 from django.utils import six
-from rest_framework.utils.model_meta import _resolve_model
-from rest_framework.utils.breadcrumbs import get_breadcrumbs
-from rest_framework.views import APIView
-from tests.models import BasicModel
 
 import rest_framework.utils.model_meta
+from rest_framework.utils.breadcrumbs import get_breadcrumbs
+from rest_framework.utils.model_meta import _resolve_model
+from rest_framework.views import APIView
+from tests.models import BasicModel
 
 
 class Root(APIView):

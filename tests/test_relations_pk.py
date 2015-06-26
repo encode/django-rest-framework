@@ -1,10 +1,12 @@
 from __future__ import unicode_literals
+
 from django.test import TestCase
 from django.utils import six
+
 from rest_framework import serializers
 from tests.models import (
-    ManyToManyTarget, ManyToManySource, ForeignKeyTarget, ForeignKeySource,
-    NullableForeignKeySource, OneToOneTarget, NullableOneToOneSource,
+    ForeignKeySource, ForeignKeyTarget, ManyToManySource, ManyToManyTarget,
+    NullableForeignKeySource, NullableOneToOneSource, OneToOneTarget
 )
 
 

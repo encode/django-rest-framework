@@ -1,10 +1,14 @@
 from __future__ import unicode_literals
+
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.test import TestCase
-from django.core.validators import MinValueValidator, MaxValueValidator
-from rest_framework import exceptions, metadata, serializers, status, views, versioning
-from rest_framework.request import Request
+
+from rest_framework import (
+    exceptions, metadata, serializers, status, versioning, views
+)
 from rest_framework.renderers import BrowsableAPIRenderer
+from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
 
 request = Request(APIRequestFactory().options('/'))

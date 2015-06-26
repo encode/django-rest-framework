@@ -5,14 +5,18 @@ versions of django/python, and compatibility wrappers around optional packages.
 
 # flake8: noqa
 from __future__ import unicode_literals
-from django.core.exceptions import ImproperlyConfigured
+
+import inspect
+
+import django
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.db import connection, transaction
+from django.test.client import FakePayload
+from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.six.moves.urllib.parse import urlparse as _urlparse
-from django.utils import six
-import django
-import inspect
+
 try:
     import importlib
 except ImportError:
@@ -199,7 +203,6 @@ if 'patch' not in View.http_method_names:
     View.http_method_names = View.http_method_names + ['patch']
 
 
-from django.test.client import FakePayload
 
 try:
     # In 1.5 the test client uses force_bytes
