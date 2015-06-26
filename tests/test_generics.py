@@ -4,11 +4,10 @@ import django
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
-from django.test.utils import override_settings
 from django.utils import six
-from django.utils.six.moves import reload_module
 
 from rest_framework import generics, renderers, serializers, status
+from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from tests.models import (
     BasicModel, ForeignKeySource, ForeignKeyTarget, RESTFrameworkModel
@@ -516,15 +515,19 @@ class TestSupportPatchSetting(TestCase):
         """
         PATCH requests should fail when SUPPORT_PATCH is set to False.
         """
-        with override_settings(REST_FRAMEWORK={'SUPPORT_PATCH': False}):
-            reload_module(generics)
-            data = {'text': 'foobar'}
-            request = factory.patch('/1', data, format='json')
+        obj = BasicModel.objects.create(text='abc')
 
-            class InstanceView(generics.UpdateAPIView):
-                queryset = BasicModel.objects.all()
-                serializer_class = BasicSerializer
+        class InstanceView(generics.UpdateAPIView):
+            queryset = BasicModel.objects.all()
+            serializer_class = BasicSerializer
 
-            view = InstanceView.as_view()
-            response = view(request, pk=1).render()
-            self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        api_settings.SUPPORT_PATCH = False
+
+        data = {'text': 'foobar'}
+        request = factory.patch('/1', data, format='json')
+        view = InstanceView.as_view()
+        response = view(request, pk=obj.pk).render()
+
+        api_settings.SUPPORT_PATCH = True
+
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)

@@ -6,7 +6,7 @@ which allows mixin classes to be composed in interesting ways.
 """
 from __future__ import unicode_literals
 
-from rest_framework import status
+from rest_framework import exceptions, status
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
@@ -74,6 +74,9 @@ class UpdateModelMixin(object):
         serializer.save()
 
     def partial_update(self, request, *args, **kwargs):
+        if not api_settings.SUPPORT_PATCH:
+            raise exceptions.MethodNotAllowed(request.method)
+
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
 
