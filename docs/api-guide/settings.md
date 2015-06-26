@@ -447,6 +447,12 @@ An integer of 0 or more, that may be used to specify the number of application p
 
 Default: `None`
 
+#### SUPPORT_PATCH
+
+If set to `False` then HTTP PATCH requests will not be allowed.
+
+Default: `True`
+
 [cite]: http://www.python.org/dev/peps/pep-0020/
 [rfc4627]: http://www.ietf.org/rfc/rfc4627.txt
 [heroku-minified-json]: https://github.com/interagent/http-api-design#keep-json-minified-in-all-responses
