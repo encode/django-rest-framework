@@ -54,6 +54,7 @@ DEFAULTS = {
     # Generic view behavior
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'DEFAULT_FILTER_BACKENDS': (),
+    'SUPPORT_PATCH': True,
 
     # Throttling
     'DEFAULT_THROTTLE_RATES': {

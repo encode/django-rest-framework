@@ -7,6 +7,7 @@ from django.test import TestCase
 from django.utils import six
 
 from rest_framework import generics, renderers, serializers, status
+from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from tests.models import (
     BasicModel, ForeignKeySource, ForeignKeyTarget, RESTFrameworkModel
@@ -212,6 +213,19 @@ class TestInstanceView(TestCase):
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
         updated = self.objects.get(id=1)
         self.assertEqual(updated.text, 'foobar')
+
+    def test_patch_instance_view_support_patch(self):
+        """
+        PATCH requests with SUPPORT_PATCH=False should return 405
+        """
+        data = {'text': 'foobar'}
+        request = factory.patch('/1', data, format='json')
+
+        api_settings.SUPPORT_PATCH = False
+        response = self.view(request, pk=1).render()
+        api_settings.SUPPORT_PATCH = True
+
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_delete_instance_view(self):
         """
