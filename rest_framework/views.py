@@ -129,12 +129,7 @@ class APIView(View):
         """
         Wrap Django's private `_allowed_methods` interface in a public property.
         """
-        allowed_methods = self._allowed_methods()
-
-        if not api_settings.SUPPORT_PATCH and 'PATCH' in allowed_methods:
-            allowed_methods.remove('PATCH')
-
-        return allowed_methods
+        return self._allowed_methods()
 
     @property
     def default_response_headers(self):
@@ -456,7 +451,7 @@ class APIView(View):
             self.initial(request, *args, **kwargs)
 
             # Get the appropriate handler method
-            if request.method in self.allowed_methods:
+            if request.method.lower() in self.http_method_names:
                 handler = getattr(self, request.method.lower(),
                                   self.http_method_not_allowed)
             else:

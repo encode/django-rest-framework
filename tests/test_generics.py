@@ -4,10 +4,11 @@ import django
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
+from django.test.utils import override_settings
 from django.utils import six
+from django.utils.six.moves import reload_module
 
 from rest_framework import generics, renderers, serializers, status
-from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from tests.models import (
     BasicModel, ForeignKeySource, ForeignKeyTarget, RESTFrameworkModel
@@ -213,19 +214,6 @@ class TestInstanceView(TestCase):
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
         updated = self.objects.get(id=1)
         self.assertEqual(updated.text, 'foobar')
-
-    def test_patch_instance_view_support_patch(self):
-        """
-        PATCH requests with SUPPORT_PATCH=False should return 405
-        """
-        data = {'text': 'foobar'}
-        request = factory.patch('/1', data, format='json')
-
-        api_settings.SUPPORT_PATCH = False
-        response = self.view(request, pk=1).render()
-        api_settings.SUPPORT_PATCH = True
-
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_delete_instance_view(self):
         """
@@ -521,3 +509,22 @@ class TestFilterBackendAppliedToViews(TestCase):
         response = view(request).render()
         self.assertContains(response, 'field_b')
         self.assertNotContains(response, 'field_a')
+
+
+class TestSupportPatchSetting(TestCase):
+    def test_patch_instance_view_support_patch(self):
+        """
+        PATCH requests should fail when SUPPORT_PATCH is set to False.
+        """
+        with override_settings(REST_FRAMEWORK={'SUPPORT_PATCH': False}):
+            reload_module(generics)
+            data = {'text': 'foobar'}
+            request = factory.patch('/1', data, format='json')
+
+            class InstanceView(generics.UpdateAPIView):
+                queryset = BasicModel.objects.all()
+                serializer_class = BasicSerializer
+
+            view = InstanceView.as_view()
+            response = view(request, pk=1).render()
+            self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
