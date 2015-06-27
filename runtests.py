@@ -34,7 +34,12 @@ def flake8_main(args):
 def isort_main(args):
     print('Running isort code checking')
     ret = subprocess.call(['isort'] + args)
-    print('isort failed' if ret else 'isort passed')
+
+    if ret:
+        print('isort failed: Fix by running `isort --recursive .`')
+    else:
+        print('isort passed')
+
     return ret
 
 
