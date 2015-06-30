@@ -888,11 +888,13 @@ class DateTimeField(Field):
     format = api_settings.DATETIME_FORMAT
     input_formats = api_settings.DATETIME_INPUT_FORMATS
     default_timezone = timezone.get_default_timezone() if settings.USE_TZ else None
+    datetime_parser = datetime.datetime.strptime
 
-    def __init__(self, format=empty, input_formats=None, default_timezone=None, *args, **kwargs):
+    def __init__(self, format=empty, datetime_parser=None, input_formats=None, default_timezone=None, *args, **kwargs):
         self.format = format if format is not empty else self.format
         self.input_formats = input_formats if input_formats is not None else self.input_formats
         self.default_timezone = default_timezone if default_timezone is not None else self.default_timezone
+        self.datetime_parser = datetime_parser if datetime_parser is not None else self.datetime_parser
         super(DateTimeField, self).__init__(*args, **kwargs)
 
     def enforce_timezone(self, value):
@@ -924,7 +926,7 @@ class DateTimeField(Field):
                         return self.enforce_timezone(parsed)
             else:
                 try:
-                    parsed = datetime.datetime.strptime(value, format)
+                    parsed = self.datetime_parser(value, format)
                 except (ValueError, TypeError):
                     pass
                 else:
