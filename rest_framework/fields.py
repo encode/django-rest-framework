@@ -1169,8 +1169,8 @@ class MultipleChoiceField(ChoiceField):
 
 class MappingField(Field):
     default_error_messages = {
-        'key_not_found': _('"{value}" not found in "mapping" dict'),
-        'value_not_found': _('"{value}" not found in "mapping" dict')
+        'key_not_found': _('"{value}" not found in "mapping" keys'),
+        'value_not_found': _('"{value}" not found in "mapping" values')
     }
 
     def __init__(self, mapping, **kwargs):
