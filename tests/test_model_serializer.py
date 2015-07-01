@@ -235,6 +235,23 @@ class TestRegularFieldMappings(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
+    def test_extra_field_kwargs_required(self):
+        """
+        Ensure `extra_kwargs` are passed to generated fields.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+                fields = ('auto_field', 'char_field')
+                extra_kwargs = {'auto_field': {'required': False, 'read_only': False}}
+
+        expected = dedent("""
+            TestSerializer():
+                auto_field = IntegerField(read_only=False, required=False)
+                char_field = CharField(max_length=100)
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
     def test_invalid_field(self):
         """
         Field names that do not map to a model field or relationship should
