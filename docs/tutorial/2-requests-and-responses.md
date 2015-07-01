@@ -108,7 +108,7 @@ and
 
 Now update the `urls.py` file slightly, to append a set of `format_suffix_patterns` in addition to the existing URLs.
 
-    from django.conf.urls import patterns, url
+    from django.conf.urls import url
     from rest_framework.urlpatterns import format_suffix_patterns
     from snippets import views
 
