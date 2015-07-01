@@ -1165,6 +1165,35 @@ class MultipleChoiceField(ChoiceField):
         ])
 
 
+# Mapping types...
+
+class MappingField(Field):
+    default_error_messages = {
+        'key_not_found': _('"{value}" not found in "mapping" keys'),
+        'value_not_found': _('"{value}" not found in "mapping" values')
+    }
+
+    def __init__(self, mapping, **kwargs):
+        super(MappingField, self).__init__(**kwargs)
+
+        assert isinstance(mapping, dict), '"mapping" should be a dictionary'
+        for k, v in mapping.items():
+            assert isinstance(k, (str, int)) and isinstance(v, (str, int)), '"mapping" can contain only str or int'
+
+        self.mapping = mapping
+        self.reverse_mapping = {v: k for k, v in mapping.iteritems()}
+
+    def to_representation(self, value):
+        if value in self.mapping:
+            return self.mapping[value]
+        self.fail('key_not_found', value=value)
+
+    def to_internal_value(self, data):
+        if data in self.reverse_mapping:
+            return self.reverse_mapping[data]
+        self.fail('value_not_found', value=data)
+
+
 # File types...
 
 class FileField(Field):

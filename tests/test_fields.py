@@ -1125,6 +1125,38 @@ class TestMultipleChoiceField(FieldValues):
         assert field.get_value(QueryDict({})) == rest_framework.fields.empty
 
 
+# Mapping types...
+
+class TestMappingFieldWithIntKeys(FieldValues):
+    """
+    Valid and invalid values for `MappingField`.
+    """
+    valid_inputs = {
+        'one': 1,
+        'two': 2,
+        3: 'three',
+        4: 'four'
+    }
+    invalid_inputs = {
+        5: ['"5" not found in "mapping" values'],
+        'abc': ['"abc" not found in "mapping" values']
+    }
+    outputs = {
+        1: 'one',
+        2: 'two',
+        'three': 3,
+        'four': 4
+    }
+    field = serializers.MappingField(
+        mapping={
+            1: 'one',
+            2: 'two',
+            'three': 3,
+            'four': 4
+        }
+    )
+
+
 # File serializers...
 
 class MockFile:

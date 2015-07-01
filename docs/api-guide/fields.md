@@ -364,6 +364,18 @@ As with `ChoiceField`, both the `allow_blank` and `allow_null` options are valid
 
 ---
 
+# Mapping field
+
+## MappingField
+
+A field that converts value with given mapping dict.
+
+    **Signature:** `MappingField(mapping)`
+
+- `mapping` - A dict of valid values that should be converted both directions.
+
+---
+
 # File upload fields
 
 #### Parsers and file uploads.
