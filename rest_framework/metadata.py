@@ -131,6 +131,9 @@ class SimpleMetadata(BaseMetadata):
             if value is not None and value != '':
                 field_info[attr] = force_text(value, strings_only=True)
 
+        if getattr(field, 'child', None):
+            field_info['child'] = self.get_field_info(field.child)
+
         if not field_info.get('read_only') and hasattr(field, 'choices'):
             field_info['choices'] = [
                 {

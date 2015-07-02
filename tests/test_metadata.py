@@ -67,6 +67,11 @@ class TestMetadata:
             char_field = serializers.CharField(
                 required=False, min_length=3, max_length=40
             )
+            list_field = serializers.ListField(
+                child=serializers.ListField(
+                    child=serializers.IntegerField()
+                )
+            )
 
         class ExampleView(views.APIView):
             """Example view."""
@@ -119,6 +124,22 @@ class TestMetadata:
                         'label': 'Char field',
                         'min_length': 3,
                         'max_length': 40
+                    },
+                    'list_field': {
+                        'type': 'list',
+                        'required': True,
+                        'read_only': False,
+                        'label': 'List field',
+                        'child': {
+                            'type': 'list',
+                            'required': True,
+                            'read_only': False,
+                            'child': {
+                                'type': 'integer',
+                                'required': True,
+                                'read_only': False
+                            }
+                        }
                     }
                 }
             }
