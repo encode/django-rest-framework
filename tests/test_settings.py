@@ -17,3 +17,16 @@ class TestSettings(TestCase):
         })
         with self.assertRaises(ImportError):
             settings.DEFAULT_RENDERER_CLASSES
+
+
+class TestSettingTypes(TestCase):
+    def test_settings_consistently_coerced_to_list(self):
+        settings = APISettings({
+            'DEFAULT_THROTTLE_CLASSES': ('rest_framework.throttling.BaseThrottle',)
+        })
+        self.assertTrue(isinstance(settings.DEFAULT_THROTTLE_CLASSES, list))
+
+        settings = APISettings({
+            'DEFAULT_THROTTLE_CLASSES': ()
+        })
+        self.assertTrue(isinstance(settings.DEFAULT_THROTTLE_CLASSES, list))

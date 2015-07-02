@@ -204,7 +204,7 @@ class APISettings(object):
             val = self.defaults[attr]
 
         # Coerce import strings into classes
-        if val and attr in self.import_strings:
+        if attr in self.import_strings:
             val = perform_import(val, attr)
 
         # Cache the result
