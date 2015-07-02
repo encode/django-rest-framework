@@ -14,7 +14,7 @@ PYTEST_ARGS = {
 
 FLAKE8_ARGS = ['rest_framework', 'tests', '--ignore=E501']
 
-ISORT_ARGS = ['--recursive', '--check-only', '.']
+ISORT_ARGS = ['--recursive', '--check-only', 'rest_framework', 'tests']
 
 sys.path.append(os.path.dirname(__file__))
 
