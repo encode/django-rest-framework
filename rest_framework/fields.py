@@ -954,6 +954,7 @@ class DateField(Field):
     }
     format = api_settings.DATE_FORMAT
     input_formats = api_settings.DATE_INPUT_FORMATS
+    datetime_parser = datetime.datetime.strptime
 
     def __init__(self, format=empty, input_formats=None, *args, **kwargs):
         self.format = format if format is not empty else self.format
@@ -978,7 +979,7 @@ class DateField(Field):
                         return parsed
             else:
                 try:
-                    parsed = datetime.datetime.strptime(value, format)
+                    parsed = self.datetime_parser(value, format)
                 except (ValueError, TypeError):
                     pass
                 else:
@@ -1017,6 +1018,7 @@ class TimeField(Field):
     }
     format = api_settings.TIME_FORMAT
     input_formats = api_settings.TIME_INPUT_FORMATS
+    datetime_parser = datetime.datetime.strptime
 
     def __init__(self, format=empty, input_formats=None, *args, **kwargs):
         self.format = format if format is not empty else self.format
@@ -1038,7 +1040,7 @@ class TimeField(Field):
                         return parsed
             else:
                 try:
-                    parsed = datetime.datetime.strptime(value, format)
+                    parsed = self.datetime_parser(value, format)
                 except (ValueError, TypeError):
                     pass
                 else:
