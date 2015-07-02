@@ -420,9 +420,9 @@ class Field(object):
         Transform the *outgoing* native value into primitive data.
         """
         raise NotImplementedError(
-            '{cls}.to_representation() must be implemented for field {field_name}.\n'
-            'If you are upgrading from REST framework version 2 '
-            'you might want `ReadOnlyField`.'.format(
+            '{cls}.to_representation() must be implemented for field '
+            '{field_name}. If you do not need to support write operations '
+            'you probably want to subclass `ReadOnlyField` instead.'.format(
                 cls=self.__class__.__name__,
                 field_name=self.field_name,
             )
