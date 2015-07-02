@@ -53,6 +53,9 @@ class SimpleMetadata(BaseMetadata):
         serializers.MultipleChoiceField: 'multiple choice',
         serializers.FileField: 'file upload',
         serializers.ImageField: 'image upload',
+        serializers.ListField: 'list',
+        serializers.DictField: 'nested object',
+        serializers.Serializer: 'nested object',
     })
 
     def determine_metadata(self, request, view):
