@@ -394,6 +394,10 @@ The following third party packages provide additional generic view implementatio
 
 The [django-rest-framework-bulk package][django-rest-framework-bulk] implements generic view mixins as well as some common concrete generic views to allow to apply bulk operations via API requests.
 
+## Django Rest Multiple Models
+
+[Django Rest Multiple Models][django-rest-multiple-models] provides a generic view (and mixin) for sending multiple serialized models and/or querysets via a single API request.
+
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/class-based-views/#base-vs-generic-views
 [GenericAPIView]: #genericapiview
@@ -403,3 +407,6 @@ The [django-rest-framework-bulk package][django-rest-framework-bulk] implements 
 [UpdateModelMixin]: #updatemodelmixin
 [DestroyModelMixin]: #destroymodelmixin
 [django-rest-framework-bulk]: https://github.com/miki725/django-rest-framework-bulk
+[django-rest-multiple-models]: https://github.com/Axiologue/DjangoRestMultipleModels
+
+
