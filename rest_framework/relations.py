@@ -282,6 +282,13 @@ class HyperlinkedRelatedField(RelatedField):
                 'model in your API, or incorrectly configured the '
                 '`lookup_field` attribute on this field.'
             )
+            if value in ('', None):
+                value_string = {'': 'the empty string', None: 'None'}[value]
+                msg += (
+                    " WARNING: The value of the field on the model instance "
+                    "was %s, which may be why it didn't match any "
+                    "entries in your URL conf." % value_string
+                )
             raise ImproperlyConfigured(msg % self.view_name)
 
 
