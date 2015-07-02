@@ -185,7 +185,6 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
     A filter backend that limits results to those where the requesting user
     has read object level permissions.
     """
-
     def __init__(self):
         assert guardian, 'Using DjangoObjectPermissionsFilter, but django-guardian is not installed'
 
