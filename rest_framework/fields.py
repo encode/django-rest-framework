@@ -108,6 +108,34 @@ def set_value(dictionary, keys, value):
     dictionary[keys[-1]] = value
 
 
+def flatten_choice(choice):
+    """
+    Convert a single choices choice into a flat list of choices.
+
+    Returns a list of choices pairs.
+
+    flatten_choice(1) -> [(1, 1)]
+    flatten_choice((1, '1st')) -> [(1, '1st')]
+    flatten_choice(('Grp', ((1, '1st'), (2, '2nd')))) -> [(1, '1st'), (2, '2nd')]
+    """
+    # Allow single, paired or grouped choices style:
+    # choices = [1, 2, 3]
+    # choices = [(1, 'First'), (2, 'Second'), (3, 'Third')]
+    # choices = [('Category', ((1, 'First'), (2, 'Second'))), (3, 'Third')]
+    if (not isinstance(choice, (list, tuple))):
+        # single choice
+        return [(choice, choice)]
+    else:
+        key, display_value = choice
+        if isinstance(display_value, (list, tuple)):
+            # grouped choices
+            sub_choices = [flatten_choice(c) for c in display_value]
+            return list(itertools.chain(*sub_choices))
+        else:
+            # paired choice
+            return [(key, display_value)]
+
+
 class CreateOnlyDefault(object):
     """
     This class may be used to provide default values that are only used
@@ -1099,8 +1127,8 @@ class ChoiceField(Field):
     }
 
     def __init__(self, choices, **kwargs):
-        flat_choices = [self.flatten_choice(c) for c in choices]
-        self.choices = OrderedDict(itertools.chain(*flat_choices))
+        flat_choices = [flatten_choice(c) for c in choices]
+        self.choices = OrderedDict(list(itertools.chain(*flat_choices)))
 
         # Map the string representation of choices to the underlying value.
         # Allows us to deal with eg. integer choices while supporting either
@@ -1112,30 +1140,6 @@ class ChoiceField(Field):
         self.allow_blank = kwargs.pop('allow_blank', False)
 
         super(ChoiceField, self).__init__(**kwargs)
-
-    def flatten_choice(self, choice):
-        """
-        Convert a choices choice into a flat list of choices.
-
-        Returns a list of choices.
-        """
-
-        # Allow single, paired or grouped choices style:
-        # choices = [1, 2, 3]
-        # choices = [(1, 'First'), (2, 'Second'), (3, 'Third')]
-        # choices = [('Category', ((1, 'First'), (2, 'Second'))), (3, 'Third')]
-        if (not isinstance(choice, (list, tuple))):
-            # single choice
-            return [(choice, choice)]
-        else:
-            key, display_value = choice
-            if isinstance(display_value, (list, tuple)):
-                # grouped choices
-                sub_choices = [self.flatten_choice(c) for c in display_value]
-                return list(itertools.chain(*sub_choices))
-            else:
-                # paired choice
-                return [(key, display_value)]
 
     def to_internal_value(self, data):
         if data == '' and self.allow_blank:
