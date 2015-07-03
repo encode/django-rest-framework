@@ -241,6 +241,62 @@ class TestMetadata:
         field_info = options.get_field_info(serializers.NullBooleanField())
         assert field_info['type'] == 'boolean'
 
+    def test_bug_3101_grouped_choices(self):
+        choices = [
+            (
+                'Colours',
+                (
+                    ('red', 'Red'),
+                    ('green', 'Green'),
+                    ('blue', 'Blue'),
+                )
+            )
+        ]
+
+        class ExampleSerializer(serializers.Serializer):
+            choice_field = serializers.ChoiceField(choices)
+
+        class ExampleView(views.APIView):
+            """Example view."""
+            def post(self, request):
+                pass
+
+            def get_serializer(self):
+                return ExampleSerializer()
+
+        view = ExampleView.as_view()
+        response = view(request=request)
+        expected = {
+            'name': 'Example',
+            'description': 'Example view.',
+            'renders': [
+                'application/json',
+                'text/html'
+            ],
+            'parses': [
+                'application/json',
+                'application/x-www-form-urlencoded',
+                'multipart/form-data'
+            ],
+            'actions': {
+                'POST': {
+                    'choice_field': {
+                        'type': 'choice',
+                        'required': True,
+                        'read_only': False,
+                        'label': 'Choice field',
+                        'choices': [
+                            {'display_name': 'Red', 'value': 'red'},
+                            {'display_name': 'Green', 'value': 'green'},
+                            {'display_name': 'Blue', 'value': 'blue'}
+                        ]
+                    }
+                }
+            }
+        }
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == expected
+
 
 class TestModelSerializerMetadata(TestCase):
     def test_read_only_primary_key_related_field(self):
