@@ -5,6 +5,7 @@ import copy
 import datetime
 import decimal
 import inspect
+import itertools
 import re
 import uuid
 
@@ -1098,17 +1099,8 @@ class ChoiceField(Field):
     }
 
     def __init__(self, choices, **kwargs):
-        # Allow either single or paired choices style:
-        # choices = [1, 2, 3]
-        # choices = [(1, 'First'), (2, 'Second'), (3, 'Third')]
-        pairs = [
-            isinstance(item, (list, tuple)) and len(item) == 2
-            for item in choices
-        ]
-        if all(pairs):
-            self.choices = OrderedDict([(key, display_value) for key, display_value in choices])
-        else:
-            self.choices = OrderedDict([(item, item) for item in choices])
+        flat_choices = [self.flatten_choice(c) for c in choices]
+        self.choices = OrderedDict(itertools.chain(*flat_choices))
 
         # Map the string representation of choices to the underlying value.
         # Allows us to deal with eg. integer choices while supporting either
@@ -1120,6 +1112,30 @@ class ChoiceField(Field):
         self.allow_blank = kwargs.pop('allow_blank', False)
 
         super(ChoiceField, self).__init__(**kwargs)
+
+    def flatten_choice(self, choice):
+        """
+        Convert a choices choice into a flat list of choices.
+
+        Returns a list of choices.
+        """
+
+        # Allow single, paired or grouped choices style:
+        # choices = [1, 2, 3]
+        # choices = [(1, 'First'), (2, 'Second'), (3, 'Third')]
+        # choices = [('Category', ((1, 'First'), (2, 'Second'))), (3, 'Third')]
+        if (not isinstance(choice, (list, tuple))):
+            # single choice
+            return [(choice, choice)]
+        else:
+            key, display_value = choice
+            if isinstance(display_value, (list, tuple)):
+                # grouped choices
+                sub_choices = [self.flatten_choice(c) for c in display_value]
+                return list(itertools.chain(*sub_choices))
+            else:
+                # paired choice
+                return [(key, display_value)]
 
     def to_internal_value(self, data):
         if data == '' and self.allow_blank:
