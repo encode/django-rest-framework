@@ -43,6 +43,9 @@ class Response(SimpleTemplateResponse):
         media_type = getattr(self, 'accepted_media_type', None)
         context = getattr(self, 'renderer_context', None)
 
+        if isinstance(self.data, dict) and self.data.get('error', False):
+            raise self.data['content']
+
         assert renderer, ".accepted_renderer not set on Response"
         assert media_type, ".accepted_media_type not set on Response"
         assert context, ".renderer_context not set on Response"
