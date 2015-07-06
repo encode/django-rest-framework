@@ -238,11 +238,12 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestrelationalhyperlink][djangorestrelationalhyperlink] - A hyperlinked serialiser that can can be used to alter relationships via hyperlinks, but otherwise like a hyperlink model serializer.
 * [django-rest-swagger][django-rest-swagger] - An API documentation generator for Swagger UI.
 * [django-rest-framework-proxy][django-rest-framework-proxy] - Proxy to redirect incoming request to another API server.
-* [gaiarestframework][gaiarestframework] - Utils for django-rest-framewok
+* [gaiarestframework][gaiarestframework] - Utils for django-rest-framework
 * [drf-extensions][drf-extensions] - A collection of custom extensions
 * [ember-django-adapter][ember-django-adapter] - An adapter for working with Ember.js
 * [django-versatileimagefield][django-versatileimagefield] - Provides a drop-in replacement for Django's stock `ImageField` that makes it easy to serve images in multiple sizes/renditions from a single field. For DRF-specific implementation docs, [click here][django-versatileimagefield-drf-docs].
 * [drf-tracking][drf-tracking] - Utilities to track requests to DRF API views.
+* [django-rest-framework-braces][django-rest-framework-braces] - Collection of utilities for working with Django Rest Framework. The most notable ones are [FormSerializer](https://django-rest-framework-braces.readthedocs.org/en/latest/overview.html#formserializer) and [SerializerForm](https://django-rest-framework-braces.readthedocs.org/en/latest/overview.html#serializerform), which are adapters between DRF serializers and Django forms.
 
 ## Other Resources
 
@@ -338,3 +339,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-versatileimagefield-drf-docs]:http://django-versatileimagefield.readthedocs.org/en/latest/drf_integration.html
 [cdrf.co]:http://www.cdrf.co
 [drf-tracking]: https://github.com/aschn/drf-tracking
+[django-rest-framework-braces]: https://github.com/dealertrack/django-rest-framework-braces
