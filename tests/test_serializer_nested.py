@@ -1,3 +1,5 @@
+from django.http import QueryDict
+
 from rest_framework import serializers
 
 
@@ -50,20 +52,6 @@ class TestNotRequiredNestedSerializer:
 
         self.Serializer = TestSerializer
 
-        class FakeMultiDict(dict):
-            """
-            Use this to fake a `format="multipart"` request, because
-            `utils.is_html_input()` returns `True` when the dict object has
-            an attribute of "getlist".
-            """
-            def getlist(self, value, default=None):
-                if value in self:
-                    return [self[value]]
-                else:
-                    return [] if default is None else default
-
-        self.FakeMultiDict = FakeMultiDict
-
     def test_json_validate(self):
         input_data = {}
         serializer = self.Serializer(data=input_data)
@@ -74,10 +62,10 @@ class TestNotRequiredNestedSerializer:
         assert serializer.is_valid()
 
     def test_multipart_validate(self):
-        input_data = self.FakeMultiDict()
+        input_data = QueryDict()
         serializer = self.Serializer(data=input_data)
         assert serializer.is_valid()
 
-        input_data = self.FakeMultiDict(**{'nested.one': '1'})
+        input_data = QueryDict('nested[one]=1')
         serializer = self.Serializer(data=input_data)
         assert serializer.is_valid()
