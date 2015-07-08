@@ -296,19 +296,26 @@ Similarly, the `.validated_data` property will include nested data structures.
 If you're supporting writable nested representations you'll need to write `.create()` or `.update()` methods that handle saving multiple objects.
 
 The following example demonstrates how you might handle creating a user with a nested profile object.
+Please note that though we're using Django's Models it could be any Python class as well.
 
-    class UserSerializer(serializers.ModelSerializer):
-        profile = ProfileSerializer()
 
-        class Meta:
-            model = User
-            fields = ('username', 'email', 'profile')
+    class CommentSerializer(serializers.Serializer):
+        user = UserSerializer(required=False)  # May be an anonymous user.
+        content = serializers.CharField(max_length=200)
+        created = serializers.DateTimeField()
 
         def create(self, validated_data):
-            profile_data = validated_data.pop('profile')
-            user = User.objects.create(**validated_data)
-            Profile.objects.create(user=user, **profile_data)
-            return user
+            # Get or create the user if provided
+            user = None
+            user_data = validated_data.pop('user')
+            if user_data:
+                user = User.objects.get_or_create(**user_data)
+
+            # Create the comment
+            comment = Comment.objects.create(user=user, **validated_data)
+
+            return comment
+
 
 #### Writing `.update()` methods for nested representations
 
@@ -319,9 +326,10 @@ For updates you'll want to think carefully about how to handle updates to relati
 * Ignore the data and leave the instance as it is.
 * Raise a validation error.
 
-Here's an example for an `update()` method on our previous `UserSerializer` class.
+Here's an example for an `update()` method on our previous `CommentSerializer` class.
 
         def update(self, instance, validated_data):
+
             profile_data = validated_data.pop('profile')
             # Unless the application properly enforces that this field is
             # always set, the follow could raise a `DoesNotExist`, which
