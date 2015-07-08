@@ -62,7 +62,7 @@ class TestNotRequiredNestedSerializer:
         assert serializer.is_valid()
 
     def test_multipart_validate(self):
-        input_data = QueryDict()
+        input_data = QueryDict('')
         serializer = self.Serializer(data=input_data)
         assert serializer.is_valid()
 
