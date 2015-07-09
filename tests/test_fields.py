@@ -868,7 +868,7 @@ class TestAwareDateTimeField:
 
     @override_settings(USE_TZ=True)
     def test_with_timezone_active(self):
-        naive_now = timezone.make_naive(timezone.now())
+        naive_now = timezone.make_naive(timezone.now(), timezone.UTC())
         timezone.activate(FakeTimezone())
         field = serializers.DateTimeField(default_timezone=timezone.UTC())
         aware_now = field.enforce_timezone(naive_now)
@@ -877,7 +877,7 @@ class TestAwareDateTimeField:
 
     @override_settings(USE_TZ=True)
     def test_without_timezone_active(self):
-        naive_now = timezone.make_naive(timezone.now())
+        naive_now = timezone.make_naive(timezone.now(), timezone.UTC())
         field = serializers.DateTimeField(default_timezone=timezone.UTC())
         aware_now = field.enforce_timezone(naive_now)
         assert aware_now.tzname() == 'UTC'

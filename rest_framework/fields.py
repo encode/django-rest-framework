@@ -13,7 +13,6 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator, ip_address_validators
 from django.forms import ImageField as DjangoImageField
-from django.forms.utils import from_current_timezone
 from django.utils import six, timezone
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import is_protected_type, smart_text
@@ -29,6 +28,12 @@ from rest_framework.compat import (
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, representation
+
+# django.form.util was renamed in 1.7
+try:
+    from django.forms.utils import from_current_timezone
+except ImportError:
+    from django.forms.util import from_current_timezone
 
 
 class empty:
