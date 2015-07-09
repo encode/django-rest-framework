@@ -13,6 +13,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator, ip_address_validators
 from django.forms import ImageField as DjangoImageField
+from django.forms.utils import from_current_timezone
 from django.utils import six, timezone
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import is_protected_type, smart_text
@@ -903,7 +904,12 @@ class DateTimeField(Field):
         When `self.default_timezone` is not `None`, always return aware datetimes.
         """
         if (self.default_timezone is not None) and not timezone.is_aware(value):
-            return timezone.make_aware(value, self.default_timezone)
+            # If a timezone is active, we want to use it, but if not we want to use the timezone
+            # specified for this field over the system's default timezone.
+            if hasattr(timezone._active, 'value'):
+                return from_current_timezone(value)
+            else:
+                return timezone.make_aware(value, self.default_timezone)
         elif (self.default_timezone is None) and timezone.is_aware(value):
             return timezone.make_naive(value, timezone.UTC())
         return value
