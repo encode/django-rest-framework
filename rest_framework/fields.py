@@ -941,6 +941,11 @@ class DateTimeField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
+        if timezone.is_aware(value):
+            # convert the datetime to the timezone the user is expecting
+            tz = getattr(timezone._active, "value", self.default_timezone)
+            value = timezone.localtime(value, tz)
+
         if self.format is None:
             return value
 
