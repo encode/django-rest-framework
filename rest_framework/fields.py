@@ -660,6 +660,8 @@ class UUIDField(Field):
         super(UUIDField, self).__init__(**kwargs)
 
     def to_internal_value(self, data):
+        if data == '' and self.default:
+            data = self.get_default()
         if not isinstance(data, uuid.UUID):
             try:
                 if isinstance(data, six.integer_types):

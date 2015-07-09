@@ -557,6 +557,14 @@ class TestUUIDField(FieldValues):
         self._test_format('urn', 'urn:uuid:00000000-0000-0000-0000-000000000000')
         self._test_format('hex', '0' * 32)
 
+    def test_default_uuid(self):
+        """
+        If `default=uuid` then '' is a valid input.
+        """
+        field = serializers.UUIDField(default=uuid.uuid4)
+        output = field.run_validation('')
+        assert isinstance(output, uuid.UUID)
+
 
 class TestIPAddressField(FieldValues):
     """
