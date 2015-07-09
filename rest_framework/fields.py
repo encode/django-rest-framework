@@ -29,12 +29,6 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, representation
 
-# django.form.util was renamed in 1.7
-try:
-    from django.forms.utils import from_current_timezone
-except ImportError:
-    from django.forms.util import from_current_timezone
-
 
 class empty:
     """
@@ -909,10 +903,10 @@ class DateTimeField(Field):
         When `self.default_timezone` is not `None`, always return aware datetimes.
         """
         if (self.default_timezone is not None) and not timezone.is_aware(value):
-            # If a timezone is active, we want to use it, but if not we want to use the timezone
+            # If a timezone is active we want to use it, but if not we want to use the timezone
             # specified for this field over the system's default timezone.
             if hasattr(timezone._active, 'value'):
-                return from_current_timezone(value)
+                return timezone.make_aware(value, timezone._active.value)
             else:
                 return timezone.make_aware(value, self.default_timezone)
         elif (self.default_timezone is None) and timezone.is_aware(value):
