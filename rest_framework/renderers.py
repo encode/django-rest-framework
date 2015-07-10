@@ -448,6 +448,8 @@ class BrowsableAPIRenderer(BaseRenderer):
                 instance = None
         else:
             instance = None
+            if method == 'POST':
+                serializer = None
 
         # If this is valid serializer data, and the form is for the same
         # HTTP method as was used in the request then use the existing
