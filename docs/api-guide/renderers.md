@@ -181,7 +181,7 @@ Renders data into HTML for the Browsable API.  This renderer will determine whic
 
 #### Customizing BrowsableAPIRenderer
 
-By default the response content will be rendered with the highest priority renderer apart from `BrowseableAPIRenderer`.  If you need to customize this behavior, for example to use HTML as the default return format, but use JSON in the browsable API, you can do so by overriding the `get_default_renderer()` method.  For example:
+By default the response content will be rendered with the highest priority renderer apart from `BrowsableAPIRenderer`.  If you need to customize this behavior, for example to use HTML as the default return format, but use JSON in the browsable API, you can do so by overriding the `get_default_renderer()` method.  For example:
 
     class CustomBrowsableAPIRenderer(BrowsableAPIRenderer):
         def get_default_renderer(self, view):
