@@ -85,6 +85,8 @@ DEFAULTS = {
     # Exception handling
     'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
     'NON_FIELD_ERRORS_KEY': 'non_field_errors',
+    'REQUIRE_ERROR_CODES': False,
+    'ERROR_BUILDER': 'rest_framework.exceptions.default_error_builder',
 
     # Testing
     'TEST_REQUEST_RENDERER_CLASSES': (
@@ -138,6 +140,7 @@ IMPORT_STRINGS = (
     'DEFAULT_VERSIONING_CLASS',
     'DEFAULT_PAGINATION_CLASS',
     'DEFAULT_FILTER_BACKENDS',
+    'ERROR_BUILDER',
     'EXCEPTION_HANDLER',
     'TEST_REQUEST_RENDERER_CLASSES',
     'UNAUTHENTICATED_USER',

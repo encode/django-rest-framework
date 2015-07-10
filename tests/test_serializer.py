@@ -7,6 +7,7 @@ import pytest
 
 from rest_framework import serializers
 from rest_framework.compat import unicode_repr
+from rest_framework.fields import DjangoValidationError
 
 from .utils import MockObject
 
@@ -59,7 +60,10 @@ class TestValidateMethod:
             integer = serializers.IntegerField()
 
             def validate(self, attrs):
-                raise serializers.ValidationError('Non field error')
+                raise serializers.ValidationError(
+                    'Non field error',
+                    error_code='test'
+                )
 
         serializer = ExampleSerializer(data={'char': 'abc', 'integer': 123})
         assert not serializer.is_valid()
@@ -299,3 +303,10 @@ class TestCacheSerializerData:
         pickled = pickle.dumps(serializer.data)
         data = pickle.loads(pickled)
         assert data == {'field1': 'a', 'field2': 'b'}
+
+
+class TestGetValidationErrorDetail:
+    def test_get_validation_error_detail_converts_django_errors(self):
+        exc = DjangoValidationError("Missing field.", code='required')
+        detail = serializers.get_validation_error_detail(exc)
+        assert detail == {'non_field_errors': ['Missing field.']}

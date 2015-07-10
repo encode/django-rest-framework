@@ -25,7 +25,9 @@ from rest_framework.compat import (
     MinValueValidator, OrderedDict, URLValidator, duration_string,
     parse_duration, unicode_repr, unicode_to_repr
 )
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import (
+    ValidationError, build_error_from_django_validation_error
+)
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, representation
 
@@ -401,7 +403,9 @@ class Field(object):
                     raise
                 errors.extend(exc.detail)
             except DjangoValidationError as exc:
-                errors.extend(exc.messages)
+                errors.extend(
+                    build_error_from_django_validation_error(exc)
+                )
         if errors:
             raise ValidationError(errors)
 
@@ -439,7 +443,7 @@ class Field(object):
             msg = MISSING_ERROR_MESSAGE.format(class_name=class_name, key=key)
             raise AssertionError(msg)
         message_string = msg.format(**kwargs)
-        raise ValidationError(message_string)
+        raise ValidationError(message_string, error_code=key)
 
     @property
     def root(self):
