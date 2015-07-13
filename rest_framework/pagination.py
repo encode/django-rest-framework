@@ -454,6 +454,12 @@ class CursorPagination(BasePagination):
     ordering = '-created'
     template = 'rest_framework/pagination/previous_and_next.html'
 
+    # The offset in the cursor is used in situations where we have a
+    # nearly-unique index. (Eg millisecond precision creation timestamps)
+    # We guard against malicious users attempting to cause expensive database
+    # queries, by having a hard cap on the maximum possible size of the offset.
+    offset_cutoff = 1000
+
     def paginate_queryset(self, queryset, request, view=None):
         if self.page_size is None:
             return None
@@ -675,18 +681,12 @@ class CursorPagination(BasePagination):
         if encoded is None:
             return None
 
-        # The offset in the cursor is used in situations where we have a
-        # nearly-unique index. (Eg millisecond precision creation timestamps)
-        # We guard against malicious users attempting to cause expensive database
-        # queries, by having a hard cap on the maximum possible size of the offset.
-        OFFSET_CUTOFF = 1000
-
         try:
             querystring = b64decode(encoded.encode('ascii')).decode('ascii')
             tokens = urlparse.parse_qs(querystring, keep_blank_values=True)
 
             offset = tokens.get('o', ['0'])[0]
-            offset = _positive_int(offset, cutoff=OFFSET_CUTOFF)
+            offset = _positive_int(offset, cutoff=self.offset_cutoff)
 
             reverse = tokens.get('r', ['0'])[0]
             reverse = bool(int(reverse))

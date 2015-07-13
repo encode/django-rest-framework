@@ -6,7 +6,7 @@ import pytest
 from rest_framework import (
     exceptions, filters, generics, pagination, serializers, status
 )
-from rest_framework.pagination import PAGE_BREAK, PageLink
+from rest_framework.pagination import PAGE_BREAK, PageLink, Cursor
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
 
@@ -647,6 +647,16 @@ class TestCursorPagination:
         assert next == [1, 2, 3, 4, 4]
 
         assert isinstance(self.pagination.to_html(), type(''))
+
+    def test_offset_cutoff(self):
+        (previous, current, next, previous_url, next_url) = self.get_pages('/')
+
+        next_url = self.pagination.encode_cursor(Cursor(1050, False, None))
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [7, 7, 7, 8, 9]
+        assert current == []
+        assert next is None
 
 
 def test_get_displayed_page_numbers():
