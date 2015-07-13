@@ -903,7 +903,12 @@ class DateTimeField(Field):
         When `self.default_timezone` is not `None`, always return aware datetimes.
         """
         if (self.default_timezone is not None) and not timezone.is_aware(value):
-            return timezone.make_aware(value, self.default_timezone)
+            # If a timezone is active we want to use it, but if not we want to use the timezone
+            # specified for this field over the system's default timezone.
+            if hasattr(timezone._active, 'value'):
+                return timezone.make_aware(value, timezone._active.value)
+            else:
+                return timezone.make_aware(value, self.default_timezone)
         elif (self.default_timezone is None) and timezone.is_aware(value):
             return timezone.make_naive(value, timezone.UTC())
         return value
@@ -936,6 +941,11 @@ class DateTimeField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
+        if timezone.is_aware(value):
+            # convert the datetime to the timezone the user is expecting
+            tz = getattr(timezone._active, "value", self.default_timezone)
+            value = timezone.localtime(value, tz)
+
         if self.format is None:
             return value
 

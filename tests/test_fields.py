@@ -4,6 +4,7 @@ from decimal import Decimal
 
 import django
 import pytest
+from django.test.utils import override_settings
 from django.utils import timezone
 
 import rest_framework
@@ -846,6 +847,40 @@ class TestNoOutputFormatDateField(FieldValues):
         datetime.date(2001, 1, 1): datetime.date(2001, 1, 1)
     }
     field = serializers.DateField(format=None)
+
+
+class FakeTimezone(datetime.tzinfo):
+
+    def __repr__(self):
+        return "<FakeTimezone>"
+
+    def utcoffset(self, dt):
+        return datetime.timedelta(1)
+
+    def tzname(self, dt):
+        return "FakeTimezone"
+
+    def dst(self, dt):
+        return datetime.timedelta(1)
+
+
+class TestAwareDateTimeField:
+
+    @override_settings(USE_TZ=True)
+    def test_with_timezone_active(self):
+        naive_now = timezone.make_naive(timezone.now(), timezone.UTC())
+        timezone.activate(FakeTimezone())
+        field = serializers.DateTimeField(default_timezone=timezone.UTC())
+        aware_now = field.enforce_timezone(naive_now)
+        assert aware_now.tzname() == 'FakeTimezone'
+        timezone.deactivate()
+
+    @override_settings(USE_TZ=True)
+    def test_without_timezone_active(self):
+        naive_now = timezone.make_naive(timezone.now(), timezone.UTC())
+        field = serializers.DateTimeField(default_timezone=timezone.UTC())
+        aware_now = field.enforce_timezone(naive_now)
+        assert aware_now.tzname() == 'UTC'
 
 
 class TestDateTimeField(FieldValues):
