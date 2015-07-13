@@ -201,34 +201,7 @@ class BasePagination(object):
         raise NotImplementedError('to_html() must be implemented to display page controls.')
 
 
-class BasePageSizePagination(BasePagination):
-    # The default page size.
-    # Defaults to `None`, meaning pagination is disabled.
-    page_size = api_settings.PAGE_SIZE
-
-    # Set to an integer to limit the maximum page size the client may request.
-    # Only relevant if 'page_size_query_param' has also been set.
-    max_page_size = None
-
-    # Client can control the page size using this query parameter.
-    # Default is 'None'. Set to eg 'page_size' to enable usage.
-    page_size_query_param = None
-
-    def get_page_size(self, request):
-        if self.page_size_query_param:
-            try:
-                return _positive_int(
-                    request.query_params[self.page_size_query_param],
-                    strict=True,
-                    cutoff=self.max_page_size
-                )
-            except (KeyError, ValueError):
-                pass
-
-        return self.page_size
-
-
-class PageNumberPagination(BasePageSizePagination):
+class PageNumberPagination(BasePagination):
     """
     A simple page number based style that supports page numbers as
     query parameters. For example:
@@ -236,9 +209,20 @@ class PageNumberPagination(BasePageSizePagination):
     http://api.example.org/accounts/?page=4
     http://api.example.org/accounts/?page=4&page_size=100
     """
+    # The default page size.
+    # Defaults to `None`, meaning pagination is disabled.
+    page_size = api_settings.PAGE_SIZE
 
     # Client can control the page using this query parameter.
     page_query_param = 'page'
+
+    # Client can control the page size using this query parameter.
+    # Default is 'None'. Set to eg 'page_size' to enable usage.
+    page_size_query_param = None
+
+    # Set to an integer to limit the maximum page size the client may request.
+    # Only relevant if 'page_size_query_param' has also been set.
+    max_page_size = None
 
     last_page_strings = ('last',)
 
@@ -333,6 +317,19 @@ class PageNumberPagination(BasePageSizePagination):
             ('previous', self.get_previous_link()),
             ('results', data)
         ]))
+
+    def get_page_size(self, request):
+        if self.page_size_query_param:
+            try:
+                return _positive_int(
+                    request.query_params[self.page_size_query_param],
+                    strict=True,
+                    cutoff=self.max_page_size
+                )
+            except (KeyError, ValueError):
+                pass
+
+        return self.page_size
 
     def get_next_link(self):
         if not self.page.has_next():
@@ -487,20 +484,20 @@ class LimitOffsetPagination(BasePagination):
         return template.render(context)
 
 
-class CursorPagination(BasePageSizePagination):
+class CursorPagination(BasePagination):
     """
     The cursor pagination implementation is neccessarily complex.
     For an overview of the position/offset style we use, see this post:
     http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api/
     """
     cursor_query_param = 'cursor'
+    page_size = api_settings.PAGE_SIZE
     invalid_cursor_message = _('Invalid cursor')
     ordering = '-created'
     template = 'rest_framework/pagination/previous_and_next.html'
 
     def paginate_queryset(self, queryset, request, view=None):
-        self.page_size = self.get_page_size(request)
-        if not self.page_size:
+        if self.page_size is None:
             return None
 
         self.base_url = request.build_absolute_uri()
