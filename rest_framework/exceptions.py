@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ungettext
 
 from rest_framework import status
+from rest_framework.settings import api_settings
 
 
 def _force_text_recursive(data):
@@ -51,6 +52,33 @@ class APIException(Exception):
         return self.detail
 
 
+def build_error_from_django_validation_error(exc_info):
+    code = exc_info.code or 'invalid'
+    return [
+        build_error(msg, error_code=code) for msg in exc_info.messages
+    ]
+
+
+def build_error(detail, error_code=None):
+    assert not isinstance(detail, dict) and not isinstance(detail, list), (
+        'Use `build_error` only with single error messages. Dictionaries and '
+        'lists should be passed directly to ValidationError.'
+    )
+
+    if api_settings.REQUIRE_ERROR_CODES:
+        assert error_code is not None, (
+            'The `error_code` argument is required for single errors. Strict '
+            'checking of error_code is enabled with REQUIRE_ERROR_CODES '
+            'settings key.'
+        )
+
+    return api_settings.ERROR_BUILDER(detail, error_code)
+
+
+def default_error_builder(detail, error_code=None):
+    return detail
+
+
 # The recommended style for using `ValidationError` is to keep it namespaced
 # under `serializers`, in order to minimize potential confusion with Django's
 # built in `ValidationError`. For example:
@@ -61,12 +89,21 @@ class APIException(Exception):
 class ValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
 
-    def __init__(self, detail):
+    def __init__(self, detail, error_code=None):
         # For validation errors the 'detail' key is always required.
         # The details should always be coerced to a list if not already.
         if not isinstance(detail, dict) and not isinstance(detail, list):
-            detail = [detail]
+            detail = [build_error(detail, error_code=error_code)]
+        else:
+            if api_settings.REQUIRE_ERROR_CODES:
+                assert error_code is None, (
+                    'The `error_code` argument must not be set for compound '
+                    'errors. Strict checking of error_code is enabled with '
+                    'REQUIRE_ERROR_CODES settings key.'
+                )
+
         self.detail = _force_text_recursive(detail)
+        self.error_code = error_code
 
     def __str__(self):
         return six.text_type(self.detail)
