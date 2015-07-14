@@ -83,6 +83,12 @@ class ViewSetMixin(object):
             if hasattr(self, 'get') and not hasattr(self, 'head'):
                 self.head = self.get
 
+            # Explicitly map `options` requests to an (implicit) action named
+            # 'metadata'. This action doesn't actually exist as a named method,
+            # because, unlike other methods, we always route to it.
+            if hasattr(self, 'options'):
+                self.action_map['options'] = 'metadata'
+
             # And continue as usual
             return self.dispatch(request, *args, **kwargs)
 
