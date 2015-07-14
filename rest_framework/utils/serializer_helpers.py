@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 import collections
 
-from rest_framework.compat import OrderedDict, unicode_to_repr
+from rest_framework.compat import OrderedDict, force_text, unicode_to_repr
 
 
 class ReturnDict(OrderedDict):
@@ -54,6 +54,7 @@ class BoundField(object):
     """
     def __init__(self, field, value, errors, prefix=''):
         self._field = field
+        self._prefix = prefix
         self.value = value
         self.errors = errors
         self.name = prefix + self.field_name
@@ -69,6 +70,9 @@ class BoundField(object):
         return unicode_to_repr('<%s value=%s errors=%s>' % (
             self.__class__.__name__, self.value, self.errors
         ))
+
+    def as_form_field(self):
+        return BoundField(self._field, force_text(self.value), self.errors, self._prefix)
 
 
 class NestedBoundField(BoundField):
