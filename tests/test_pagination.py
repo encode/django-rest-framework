@@ -513,6 +513,8 @@ class TestCursorPagination:
 
         class ExamplePagination(pagination.CursorPagination):
             page_size = 5
+            page_size_query_param = 'page_size'
+            max_page_size = 20
             ordering = 'created'
 
         self.pagination = ExamplePagination()
@@ -647,6 +649,24 @@ class TestCursorPagination:
         assert next == [1, 2, 3, 4, 4]
 
         assert isinstance(self.pagination.to_html(), type(''))
+
+    def test_page_size(self):
+        (previous, current, next, previous_url, next_url) = \
+            self.get_pages('/?page_size=10')
+
+        assert previous is None
+        assert current == [1, 1, 1, 1, 1, 1, 2, 3, 4, 4]
+        assert next == [4, 4, 5, 6, 7, 7, 7, 7, 7, 7]
+        assert 'page_size=10' in next_url
+
+        (previous, current, next, previous_url, next_url) = \
+            self.get_pages(next_url.replace('page_size=10', 'page_size=4'))
+
+        assert previous == [2, 3, 4, 4]
+        assert current == [4, 4, 5, 6]
+        assert next == [7, 7, 7, 7]
+        assert 'page_size=4' in previous_url
+        assert 'page_size=4' in next_url
 
 
 def test_get_displayed_page_numbers():
