@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import inspect
 import warnings
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils import six
@@ -90,6 +91,12 @@ def exception_handler(exc, context):
 
         set_rollback()
         return Response(data, status=status.HTTP_403_FORBIDDEN)
+    elif isinstance(exc, DjangoValidationError):
+        msg = _('Validation error.')
+        data = {'detail': exc.messages}
+
+        set_rollback()
+        return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
     # Note: Unhandled exceptions will raise a 500 error.
     return None

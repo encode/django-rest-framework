@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import copy
 import sys
 
+from django.core.validators import validate_ipv4_address
 from django.test import TestCase
 
 from rest_framework import status
@@ -18,6 +19,8 @@ if sys.version_info[:2] >= (3, 4):
     JSON_ERROR = 'JSON parse error - Expecting value:'
 else:
     JSON_ERROR = 'JSON parse error - No JSON object could be decoded'
+
+IPV4_VALIDATION_ERROR = ['Enter a valid IPv4 address.']
 
 
 class BasicView(APIView):
@@ -48,6 +51,18 @@ class ErrorView(APIView):
 @api_view(['GET'])
 def error_view(request):
     raise Exception
+
+
+class ValidationErrorView(APIView):
+    def get(self, request, *args, **kwargs):
+        'raises a django ValidtionError by calling the ip4 validation function with a bad input'
+        validate_ipv4_address('a.b.c.d')
+
+
+@api_view(['GET'])
+def validation_error_view(request):
+    'raises a django ValidtionError by calling the ip4 validation function with a bad input'
+    validate_ipv4_address('a.b.c.d')
 
 
 def sanitise_json_error(error_dict):
@@ -146,5 +161,29 @@ class TestCustomExceptionHandler(TestCase):
         request = factory.get('/', content_type='application/json')
         response = view(request)
         expected = 'Error!'
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, expected)
+
+
+class TestDjangoValidationErrorHandlling(TestCase):
+    def test_class_based_validation_error_handling(self):
+        view = ValidationErrorView.as_view()
+
+        request = factory.get('/')
+        response = view(request)
+        expected = {
+            'detail': IPV4_VALIDATION_ERROR
+        }
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, expected)
+
+    def test_function_based_validation_error_handling(self):
+        view = validation_error_view
+
+        request = factory.get('/')
+        response = view(request)
+        expected = {
+            'detail': IPV4_VALIDATION_ERROR
+        }
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, expected)
