@@ -256,16 +256,63 @@ For example, the following serializer:
 
 Would serialize to a nested representation like this:
 
+    >>> album = Album.objects.create(album_name="The Grey Album", artist='Danger Mouse')
+    >>> Track.objects.create(album=album, order=1, title='Public Service Announcement', duration=245)
+    <Track: Track object>
+    >>> Track.objects.create(album=album, order=2, title='What More Can I Say', duration=264)
+    <Track: Track object>
+    >>> Track.objects.create(album=album, order=3, title='Encore', duration=159)
+    <Track: Track object>
+    >>> serializer = AlbumSerializer(instance=album)
+    >>> serializer.data
     {
         'album_name': 'The Grey Album',
         'artist': 'Danger Mouse',
         'tracks': [
-            {'order': 1, 'title': 'Public Service Announcement'},
-            {'order': 2, 'title': 'What More Can I Say'},
-            {'order': 3, 'title': 'Encore'},
+            {'order': 1, 'title': 'Public Service Announcement', 'duration': 245},
+            {'order': 2, 'title': 'What More Can I Say', 'duration': 264},
+            {'order': 3, 'title': 'Encore', 'duration': 159},
             ...
         ],
     }
+
+# Writable nested serializers
+
+Be default nested serializers are read-only. If you want to to support write-operations to a nested serializer field you'll need to create either or both of the `create()` and/or `update()` methods, in order to explicitly specify how the child relationships should be saved.
+
+    class TrackSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Track
+            fields = ('order', 'title')
+
+    class AlbumSerializer(serializers.ModelSerializer):
+        tracks = TrackSerializer(many=True)
+
+        class Meta:
+            model = Album
+            fields = ('album_name', 'artist', 'tracks')
+
+        def create(self, validated_data):
+            tracks_data = validated_data.pop('tracks')
+            album = Album.objects.create(**validated_data)
+            for track_data in tracks_data:
+                Track.objects.create(album=album, **track_data)
+            return album
+
+    >>> data = {
+        'album_name': 'The Grey Album',
+        'artist': 'Danger Mouse',
+        'tracks': [
+            {'order': 1, 'title': 'Public Service Announcement', 'duration': 245},
+            {'order': 2, 'title': 'What More Can I Say', 'duration': 264},
+            {'order': 3, 'title': 'Encore', 'duration': 159},
+        ],
+    }
+    >>> serializer = AlbumSerializer(data=data)
+    >>> serializer.is_valid()
+    True
+    >>> serializer.save()
+    <Album: Album object>
 
 # Custom relational fields
 
