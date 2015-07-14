@@ -752,8 +752,16 @@ class ModelSerializer(Serializer):
     serializer_url_field = HyperlinkedIdentityField
     serializer_choice_field = ChoiceField
 
-    # Default `create` and `update` behavior...
+    # The field name for hyperlinked identity fields. Defaults to 'url'.
+    # You can modify this using the API setting.
+    #
+    # Note that if you instead need modify this on a per-serializer basis,
+    # you'll also need to ensure you update the `create` method on any generic
+    # views, to correctly handle the 'Location' response header for
+    # "HTTP 201 Created" responses.
+    url_field_name = api_settings.URL_FIELD_NAME
 
+    # Default `create` and `update` behavior...
     def create(self, validated_data):
         """
         We have a bit of extra checking around this in order to provide
@@ -995,7 +1003,7 @@ class ModelSerializer(Serializer):
         elif hasattr(model_class, field_name):
             return self.build_property_field(field_name, model_class)
 
-        elif field_name == api_settings.URL_FIELD_NAME:
+        elif field_name == self.url_field_name:
             return self.build_url_field(field_name, model_class)
 
         return self.build_unknown_field(field_name, model_class)
@@ -1150,9 +1158,9 @@ class ModelSerializer(Serializer):
                 DeprecationWarning,
                 stacklevel=3
             )
-            kwargs = extra_kwargs.get(api_settings.URL_FIELD_NAME, {})
+            kwargs = extra_kwargs.get(self.url_field_name, {})
             kwargs['view_name'] = view_name
-            extra_kwargs[api_settings.URL_FIELD_NAME] = kwargs
+            extra_kwargs[self.url_field_name] = kwargs
 
         lookup_field = getattr(self.Meta, 'lookup_field', None)
         if lookup_field is not None:
@@ -1162,9 +1170,9 @@ class ModelSerializer(Serializer):
                 DeprecationWarning,
                 stacklevel=3
             )
-            kwargs = extra_kwargs.get(api_settings.URL_FIELD_NAME, {})
+            kwargs = extra_kwargs.get(self.url_field_name, {})
             kwargs['lookup_field'] = lookup_field
-            extra_kwargs[api_settings.URL_FIELD_NAME] = kwargs
+            extra_kwargs[self.url_field_name] = kwargs
 
         return extra_kwargs
 
@@ -1399,7 +1407,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
         `Meta.fields` option is not specified.
         """
         return (
-            [api_settings.URL_FIELD_NAME] +
+            [self.url_field_name] +
             list(declared_fields.keys()) +
             list(model_info.fields.keys()) +
             list(model_info.forward_relations.keys())
