@@ -3,371 +3,368 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Diogo Silva <dbtdsilva@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-03 17:30+0100\n"
-"PO-Revision-Date: 2015-06-03 16:30+0000\n"
-"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
+"POT-Creation-Date: 2015-07-14 15:30+0100\n"
+"PO-Revision-Date: 2015-07-14 14:30+0000\n"
+"Last-Translator: Diogo Silva <dbtdsilva@gmail.com>\n"
 "Language-Team: Portuguese (Portugal) (http://www.transifex.com/projects/p/django-rest-framework/language/pt_PT/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: pt_PT\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: authentication.py:70
 msgid "Invalid basic header. No credentials provided."
-msgstr ""
+msgstr "Cabeçalho básico inválido. Credenciais não fornecidas."
 
 #: authentication.py:73
 msgid "Invalid basic header. Credentials string should not contain spaces."
-msgstr ""
+msgstr "Cabeçalho básico inválido. String de credenciais não deve incluir espaços."
 
 #: authentication.py:79
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
-msgstr ""
+msgstr "Cabeçalho básico inválido. Credenciais codificadas em base64 incorretamente."
 
 #: authentication.py:97
 msgid "Invalid username/password."
-msgstr ""
+msgstr "Utilizador ou senha inválido."
 
 #: authentication.py:100 authentication.py:182
 msgid "User inactive or deleted."
-msgstr ""
+msgstr "Utilizador inativo ou removido."
 
 #: authentication.py:167
 msgid "Invalid token header. No credentials provided."
-msgstr ""
+msgstr "Cabeçalho de token inválido. Credenciais não fornecidas."
 
 #: authentication.py:170
 msgid "Invalid token header. Token string should not contain spaces."
-msgstr ""
+msgstr "Cabeçalho de token inválido. String de token não deve incluir espaços."
 
 #: authentication.py:179
 msgid "Invalid token."
-msgstr ""
+msgstr "Token inválido."
 
 #: authtoken/serializers.py:20
 msgid "User account is disabled."
-msgstr ""
+msgstr "Conta de utilizador desabilitada."
 
 #: authtoken/serializers.py:23
 msgid "Unable to log in with provided credentials."
-msgstr ""
+msgstr "Impossível fazer login com as credenciais fornecidas."
 
 #: authtoken/serializers.py:26
 msgid "Must include \"username\" and \"password\"."
-msgstr ""
+msgstr "Obrigatório incluir \"utilizador\" e \"senha\"."
 
 #: exceptions.py:38
 msgid "A server error occurred."
-msgstr ""
+msgstr "Ocorreu um erro de servidor."
 
 #: exceptions.py:73
 msgid "Malformed request."
-msgstr ""
+msgstr "Pedido malformado."
 
 #: exceptions.py:78
 msgid "Incorrect authentication credentials."
-msgstr ""
+msgstr "Credenciais de autenticação incorretas."
 
 #: exceptions.py:83
 msgid "Authentication credentials were not provided."
-msgstr ""
+msgstr "As credenciais de autenticação não foram fornecidas."
 
 #: exceptions.py:88
 msgid "You do not have permission to perform this action."
-msgstr ""
+msgstr "Não tem persmissão para executar essa acção."
 
 #: exceptions.py:93 views.py:78
 msgid "Not found."
-msgstr ""
+msgstr "Não encontrado."
 
 #: exceptions.py:98
 #, python-brace-format
 msgid "Method \"{method}\" not allowed."
-msgstr ""
+msgstr "Método \"{method}\" não é permitido."
 
 #: exceptions.py:109
 msgid "Could not satisfy the request Accept header."
-msgstr ""
+msgstr "Não foi possível satisfazer o pedido do cabeçalho Accept."
 
 #: exceptions.py:121
 #, python-brace-format
 msgid "Unsupported media type \"{media_type}\" in request."
-msgstr ""
+msgstr "Media type \"{media_type}\" no pedido não é suportado."
 
 #: exceptions.py:134
 msgid "Request was throttled."
-msgstr ""
+msgstr "Pedido foi limitado."
 
 #: fields.py:162 relations.py:132 relations.py:156 validators.py:77
 #: validators.py:160
 msgid "This field is required."
-msgstr ""
+msgstr "Este campo é obrigatório."
 
 #: fields.py:163
 msgid "This field may not be null."
-msgstr ""
+msgstr "Este campo não pode ser nulo."
 
 #: fields.py:496 fields.py:524
 #, python-brace-format
 msgid "\"{input}\" is not a valid boolean."
-msgstr ""
+msgstr "\"{input}\" não é um valor boleano válido."
 
 #: fields.py:559
 msgid "This field may not be blank."
-msgstr ""
+msgstr "Este campo não pode ser em branco."
 
 #: fields.py:560 fields.py:1386
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
-msgstr ""
+msgstr "Certifique-se de que este campo não tem mais de {max_length} caracteres."
 
 #: fields.py:561
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
-msgstr ""
+msgstr "Certifique-se de que este campo tem mais de {min_length} caracteres."
 
 #: fields.py:598
 msgid "Enter a valid email address."
-msgstr ""
+msgstr "Insira um endereço de email válido."
 
 #: fields.py:609
 msgid "This value does not match the required pattern."
-msgstr ""
+msgstr "Este valor não corresponde ao padrão exigido."
 
 #: fields.py:620
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
-msgstr ""
+msgstr "Introduza um \"slug\" válido que consista de letras, números, sublinhados ou hífens."
 
 #: fields.py:632
 msgid "Enter a valid URL."
-msgstr ""
+msgstr "Entrar um URL válido."
 
 #: fields.py:645
 #, python-brace-format
 msgid "\"{value}\" is not a valid UUID."
-msgstr ""
+msgstr "\"{value}\" não é um UUID válido."
 
 #: fields.py:679
 msgid "A valid integer is required."
-msgstr ""
+msgstr "Um número inteiro válido é exigido."
 
 #: fields.py:680 fields.py:715 fields.py:748
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
-msgstr ""
+msgstr "Certifique-se de que este valor é inferior ou igual a {max_value}."
 
 #: fields.py:681 fields.py:716 fields.py:749
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr ""
+msgstr "Certifque-se de que este valor é maior ou igual a {min_value}."
 
 #: fields.py:682 fields.py:717 fields.py:753
 msgid "String value too large."
-msgstr ""
+msgstr "Valor da string é muito elevado."
 
 #: fields.py:714 fields.py:747
 msgid "A valid number is required."
-msgstr ""
+msgstr "Um número válido é necessário."
 
 #: fields.py:750
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
-msgstr ""
+msgstr "Certifique-se de que não existe mais de {max_digits} dígitos no total."
 
 #: fields.py:751
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
-msgstr ""
+msgstr "Certifique-se de que não existe mais de {max_decimal_places} casas decimais."
 
 #: fields.py:752
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
-msgstr ""
+msgstr "Certifique-se de que não existe mais de {max_whole_digits} dígitos antes do ponto decimal."
 
 #: fields.py:842
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Formato inválido para data e hora. Use um dos formatos a seguir: {format}."
 
 #: fields.py:843
 msgid "Expected a datetime but got a date."
-msgstr ""
+msgstr "Data e hora são necessários mas apenas data foi encontrada."
 
 #: fields.py:907
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Formato inválido para data. Use um dos formatos a seguir: {format}."
 
 #: fields.py:908
 msgid "Expected a date but got a datetime."
-msgstr ""
+msgstr "Necessário uma data mas recebeu uma data e hora."
 
 #: fields.py:971
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Tempo tem formato errado. Use um destes em vez disso: {format}."
 
 #: fields.py:1025
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Duração tem o formato errado. Use um destes em vez disso: {format}."
 
 #: fields.py:1050 fields.py:1094
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
-msgstr ""
+msgstr "\"{input}\" não é uma escolha válida."
 
 #: fields.py:1095 fields.py:1213 serializers.py:487
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Necessário uma lista de itens, mas recebeu tipo \"{input_type}\"."
 
 #: fields.py:1129
 msgid "No file was submitted."
-msgstr ""
+msgstr "Ficheiro não foi submetido."
 
 #: fields.py:1130
-msgid ""
-"The submitted data was not a file. Check the encoding type on the form."
-msgstr ""
+msgid "The submitted data was not a file. Check the encoding type on the form."
+msgstr "Os dados submetidos nao foram um ficheiro. Certifique-se do tipo de codificação no formulário."
 
 #: fields.py:1131
 msgid "No filename could be determined."
-msgstr ""
+msgstr "Nome do arquivo não pode ser determinado."
 
 #: fields.py:1132
 msgid "The submitted file is empty."
-msgstr ""
+msgstr "O arquivo submetido ésta vázio."
 
 #: fields.py:1133
 #, python-brace-format
-msgid ""
-"Ensure this filename has at most {max_length} characters (it has {length})."
-msgstr ""
+msgid "Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "Certifique-se de que o nome do ficheiro tem menos de {max_length} caracteres (tem {length})."
 
 #: fields.py:1175
-msgid ""
-"Upload a valid image. The file you uploaded was either not an image or a "
-"corrupted image."
-msgstr ""
+msgid "Upload a valid image. The file you uploaded was either not an image or a corrupted image."
+msgstr "Faça upload de uma imagem válida. O arquivo enviado não é uma imagem ou está corrupto."
 
 #: fields.py:1250
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Esperou um dicionário de itens mas recebeu tipo \"{input_type}\"."
 
 #: pagination.py:231
 #, python-brace-format
 msgid "Invalid page \"{page_number}\": {message}."
-msgstr ""
+msgstr "Página inválida \"{page_number}\": {message}."
 
 #: pagination.py:492
 msgid "Invalid cursor"
-msgstr ""
+msgstr "Cursor invalído"
 
 #: relations.py:133
 #, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
-msgstr ""
+msgstr "Pk inválida \"{pk_value}\" - objeto não existe."
 
 #: relations.py:134
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
-msgstr ""
+msgstr "Tipo incorreto. Necessário valor pk, recebeu {data_type}."
 
 #: relations.py:157
 msgid "Invalid hyperlink - No URL match."
-msgstr ""
+msgstr "Hiperligação inválida - URL não combinou."
 
 #: relations.py:158
 msgid "Invalid hyperlink - Incorrect URL match."
-msgstr ""
+msgstr "Hiperligação inválida - URL combinou errado."
 
 #: relations.py:159
 msgid "Invalid hyperlink - Object does not exist."
-msgstr ""
+msgstr "Hiperligação inválida - objeto não existe."
 
 #: relations.py:160
 #, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
-msgstr ""
+msgstr "Tipo incorreto. Necessário string URL, recebeu {data_type}."
 
 #: relations.py:302
 #, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
-msgstr ""
+msgstr "Objeto com {slug_name}={value} não existe."
 
 #: relations.py:303
 msgid "Invalid value."
-msgstr ""
+msgstr "Valor inválido."
 
 #: serializers.py:304
 #, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
-msgstr ""
+msgstr "Data inválida. Necessário um dicionário mas recebeu {datatype}."
 
 #: templates/rest_framework/horizontal/radio.html:2
 #: templates/rest_framework/inline/radio.html:2
 #: templates/rest_framework/vertical/radio.html:2
 msgid "None"
-msgstr ""
+msgstr "Nenhum(a/as)"
 
 #: templates/rest_framework/horizontal/select_multiple.html:2
 #: templates/rest_framework/inline/select_multiple.html:2
 #: templates/rest_framework/vertical/select_multiple.html:2
 msgid "No items to select."
-msgstr ""
+msgstr "Nenhum itens para escolher."
 
 #: validators.py:22
 msgid "This field must be unique."
-msgstr ""
+msgstr "Esse campo deve ser único."
 
 #: validators.py:76
 #, python-brace-format
 msgid "The fields {field_names} must make a unique set."
-msgstr ""
+msgstr "Os campos {field_names} devem criar um set único."
 
 #: validators.py:224
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" date."
-msgstr ""
+msgstr "O campo deve ser único pela data \"{date_field}\"."
 
 #: validators.py:239
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" month."
-msgstr ""
+msgstr "O campo deve ser único pelo ano \"{date_field}\"."
 
 #: validators.py:252
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" year."
-msgstr ""
+msgstr "O campo deve ser único pela mês \"{date_field}\"."
 
 #: versioning.py:39
 msgid "Invalid version in \"Accept\" header."
-msgstr ""
+msgstr "Versão inválida no cabeçalho \"Accept\"."
 
 #: versioning.py:70 versioning.py:112
 msgid "Invalid version in URL path."
-msgstr ""
+msgstr "Versão inválida no caminho de URL."
 
 #: versioning.py:141
 msgid "Invalid version in hostname."
-msgstr ""
+msgstr "Versão inválida no hostname."
 
 #: versioning.py:163
 msgid "Invalid version in query parameter."
-msgstr ""
+msgstr "Versão inválida no parâmetro de query."
 
 #: views.py:85
 msgid "Permission denied."
-msgstr ""
+msgstr "Permissão negada."
