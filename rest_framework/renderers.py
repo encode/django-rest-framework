@@ -679,4 +679,12 @@ class MultiPartRenderer(BaseRenderer):
     BOUNDARY = 'BoUnDaRyStRiNg' if django.VERSION >= (1, 5) else b'BoUnDaRyStRiNg'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
+        if hasattr(data, 'items'):
+            for key, value in data.items():
+                assert not isinstance(value, dict), (
+                    "Test data contained a dictionary value for key '%s', "
+                    "but multipart uploads do not support nested data. "
+                    "You may want to consider using format='JSON' in this "
+                    "test case." % key
+                )
         return encode_multipart(self.BOUNDARY, data)

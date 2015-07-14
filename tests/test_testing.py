@@ -172,6 +172,16 @@ class TestAPITestClient(TestCase):
         self.assertIsNotNone(response.redirect_chain)
         self.assertEqual(response.status_code, 200)
 
+    def test_invalid_multipart_data(self):
+        """
+        MultiPart encoding cannot support nested data, so raise a helpful
+        error if the user attempts to do so.
+        """
+        self.assertRaises(
+            AssertionError, self.client.post,
+            path='/view/', data={'valid': 123, 'invalid': {'a': 123}}
+        )
+
 
 class TestAPIRequestFactory(TestCase):
     def test_csrf_exempt_by_default(self):
