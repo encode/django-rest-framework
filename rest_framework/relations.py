@@ -109,12 +109,18 @@ class RelatedField(Field):
 
     @property
     def choices(self):
+        queryset = self.get_queryset()
+        if queryset is None:
+            # Ensure that field.choices returns something sensible
+            # even when accessed with a read-only field.
+            return {}
+
         return OrderedDict([
             (
                 six.text_type(self.to_representation(item)),
                 six.text_type(item)
             )
-            for item in self.get_queryset()
+            for item in queryset
         ])
 
 
