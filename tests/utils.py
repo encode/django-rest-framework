@@ -53,6 +53,9 @@ class MockQueryset(object):
                 return item
         raise ObjectDoesNotExist()
 
+    def all(self):
+        return self.items
+
 
 class BadType(object):
     """

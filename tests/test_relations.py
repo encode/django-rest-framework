@@ -5,6 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.datastructures import MultiValueDict
 
 from rest_framework import serializers
+from rest_framework.compat import OrderedDict
 from rest_framework.fields import empty
 from rest_framework.test import APISimpleTestCase
 
@@ -57,6 +58,13 @@ class TestPrimaryKeyRelatedField(APISimpleTestCase):
         field = serializers.PrimaryKeyRelatedField(queryset=self.queryset, many=False)
         instance = field.to_internal_value(self.instance.pk)
         assert instance is self.instance
+
+    def test_choices(self):
+        self.assertEquals(
+            OrderedDict([(1, '<MockObject name=foo, pk=1>'),
+                         (2, '<MockObject name=bar, pk=2>'),
+                         (3, '<MockObject name=baz, pk=3>')]),
+            self.field.choices)
 
 
 class TestProxiedPrimaryKeyRelatedField(APISimpleTestCase):
@@ -206,3 +214,17 @@ class TestManyRelatedField(APISimpleTestCase):
 
         mvd = MultiValueDict({'baz': ['bar1', 'bar2']})
         assert empty == self.field.get_value(mvd)
+
+    def test_choices(self):
+        queryset = MockQueryset([
+            MockObject(pk=1, name='foo'),
+            MockObject(pk=2, name='bar'),
+            MockObject(pk=3, name='baz')
+        ])
+        field = serializers.ManyRelatedField(
+            child_relation=serializers.PrimaryKeyRelatedField(queryset=queryset))
+        self.assertEquals(
+            OrderedDict([(1, '<MockObject name=foo, pk=1>'),
+                         (2, '<MockObject name=bar, pk=2>'),
+                         (3, '<MockObject name=baz, pk=3>')]),
+            field.choices)
