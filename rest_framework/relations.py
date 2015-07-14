@@ -5,6 +5,7 @@ from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.urlresolvers import (
     NoReverseMatch, Resolver404, get_script_prefix, resolve
 )
+from django.db.models import Manager
 from django.db.models.query import QuerySet
 from django.utils import six
 from django.utils.encoding import smart_text
@@ -87,8 +88,13 @@ class RelatedField(Field):
 
     def get_queryset(self):
         queryset = self.queryset
-        if isinstance(queryset, QuerySet):
+        if isinstance(queryset, (QuerySet, Manager)):
             # Ensure queryset is re-evaluated whenever used.
+            # Note that actually a `Manager` class may also be used as the
+            # queryset argument. This occurs on ModelSerializer fields,
+            # as it allows us to generate a more expressive 'repr' output
+            # for the field.
+            # Eg: 'MyRelationship(queryset=ExampleModel.objects.all())'
             queryset = queryset.all()
         return queryset
 
