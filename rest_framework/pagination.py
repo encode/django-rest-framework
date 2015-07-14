@@ -449,11 +449,7 @@ class CursorPagination(BasePagination):
     http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api/
     """
     cursor_query_param = 'cursor'
-
-    # The default page size.
-    # Defaults to `None`, meaning pagination is disabled.
     page_size = api_settings.PAGE_SIZE
-
     invalid_cursor_message = _('Invalid cursor')
     ordering = '-created'
     template = 'rest_framework/pagination/previous_and_next.html'
