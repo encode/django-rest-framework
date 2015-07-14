@@ -454,14 +454,6 @@ class CursorPagination(BasePagination):
     # Defaults to `None`, meaning pagination is disabled.
     page_size = api_settings.PAGE_SIZE
 
-    # Client can control the page size using this query parameter.
-    # Default is 'None'. Set to eg 'page_size' to enable usage.
-    page_size_query_param = None
-
-    # Set to an integer to limit the maximum page size the client may request.
-    # Only relevant if 'page_size_query_param' has also been set.
-    max_page_size = None
-
     invalid_cursor_message = _('Invalid cursor')
     ordering = '-created'
     template = 'rest_framework/pagination/previous_and_next.html'
@@ -544,16 +536,6 @@ class CursorPagination(BasePagination):
         return self.page
 
     def get_page_size(self, request):
-        if self.page_size_query_param:
-            try:
-                return _positive_int(
-                    request.query_params[self.page_size_query_param],
-                    strict=True,
-                    cutoff=self.max_page_size
-                )
-            except (KeyError, ValueError):
-                pass
-
         return self.page_size
 
     def get_next_link(self):
