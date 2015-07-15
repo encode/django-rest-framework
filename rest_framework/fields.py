@@ -13,6 +13,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator, ip_address_validators
 from django.forms import ImageField as DjangoImageField
+from django.http.request import QueryDict
 from django.utils import six, timezone
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import is_protected_type, smart_text
@@ -1273,6 +1274,8 @@ class ListField(Field):
     def get_value(self, dictionary):
         # We override the default field access in order to support
         # lists in HTML forms.
+        if dictionary.__class__ == QueryDict:
+            return dictionary.getlist(self.field_name, empty)
         if html.is_html_input(dictionary):
             return html.parse_html_list(dictionary, prefix=self.field_name)
         return dictionary.get(self.field_name, empty)
