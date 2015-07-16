@@ -1141,9 +1141,14 @@ class ChoiceField(Field):
 class MultipleChoiceField(ChoiceField):
     default_error_messages = {
         'invalid_choice': _('"{input}" is not a valid choice.'),
-        'not_a_list': _('Expected a list of items but got type "{input_type}".')
+        'not_a_list': _('Expected a list of items but got type "{input_type}".'),
+        'empty': _('This selection may not be empty.')
     }
     default_empty_html = []
+
+    def __init__(self, *args, **kwargs):
+        self.allow_empty = kwargs.pop('allow_empty', True)
+        super(MultipleChoiceField, self).__init__(*args, **kwargs)
 
     def get_value(self, dictionary):
         # We override the default field access in order to support
@@ -1159,6 +1164,8 @@ class MultipleChoiceField(ChoiceField):
     def to_internal_value(self, data):
         if isinstance(data, type('')) or not hasattr(data, '__iter__'):
             self.fail('not_a_list', input_type=type(data).__name__)
+        if not self.allow_empty and len(data) == 0:
+            self.fail('empty')
 
         return set([
             super(MultipleChoiceField, self).to_internal_value(item)
@@ -1263,11 +1270,13 @@ class ListField(Field):
     child = _UnvalidatedField()
     initial = []
     default_error_messages = {
-        'not_a_list': _('Expected a list of items but got type "{input_type}".')
+        'not_a_list': _('Expected a list of items but got type "{input_type}".'),
+        'empty': _('This list may not be empty.')
     }
 
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
+        self.allow_empty = kwargs.pop('allow_empty', True)
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         super(ListField, self).__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
@@ -1287,6 +1296,8 @@ class ListField(Field):
             data = html.parse_html_list(data)
         if isinstance(data, type('')) or not hasattr(data, '__iter__'):
             self.fail('not_a_list', input_type=type(data).__name__)
+        if not self.allow_empty and len(data) == 0:
+            self.fail('empty')
         return [self.child.run_validation(item) for item in data]
 
     def to_representation(self, data):
