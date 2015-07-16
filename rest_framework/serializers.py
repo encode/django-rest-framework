@@ -49,7 +49,7 @@ from rest_framework.relations import *  # NOQA # isort:skip
 # rather than the parent serializer.
 LIST_SERIALIZER_KWARGS = (
     'read_only', 'write_only', 'required', 'default', 'initial', 'source',
-    'label', 'help_text', 'style', 'error_messages',
+    'label', 'help_text', 'style', 'error_messages', 'allow_empty',
     'instance', 'data', 'partial', 'context'
 )
 
@@ -493,11 +493,13 @@ class ListSerializer(BaseSerializer):
     many = True
 
     default_error_messages = {
-        'not_a_list': _('Expected a list of items but got type "{input_type}".')
+        'not_a_list': _('Expected a list of items but got type "{input_type}".'),
+        'empty': _('This list may not be empty.')
     }
 
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
+        self.allow_empty = kwargs.pop('allow_empty', True)
         assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         super(ListSerializer, self).__init__(*args, **kwargs)
@@ -549,6 +551,12 @@ class ListSerializer(BaseSerializer):
             message = self.error_messages['not_a_list'].format(
                 input_type=type(data).__name__
             )
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
+            })
+
+        if not self.allow_empty and len(data) == 0:
+            message = self.error_messages['empty']
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
             })

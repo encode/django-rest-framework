@@ -1140,6 +1140,27 @@ class TestMultipleChoiceField(FieldValues):
         assert field.get_value(QueryDict({})) == rest_framework.fields.empty
 
 
+class TestEmptyMultipleChoiceField(FieldValues):
+    """
+    Invalid values for `MultipleChoiceField(allow_empty=False)`.
+    """
+    valid_inputs = {
+    }
+    invalid_inputs = (
+        ([], ['This selection may not be empty.']),
+    )
+    outputs = [
+    ]
+    field = serializers.MultipleChoiceField(
+        choices=[
+            ('consistency', 'Consistency'),
+            ('availability', 'Availability'),
+            ('partition', 'Partition tolerance'),
+        ],
+        allow_empty=False
+    )
+
+
 # File serializers...
 
 class MockFile:
@@ -1233,7 +1254,8 @@ class TestListField(FieldValues):
     """
     valid_inputs = [
         ([1, 2, 3], [1, 2, 3]),
-        (['1', '2', '3'], [1, 2, 3])
+        (['1', '2', '3'], [1, 2, 3]),
+        ([], [])
     ]
     invalid_inputs = [
         ('not a list', ['Expected a list of items but got type "str".']),
@@ -1244,6 +1266,18 @@ class TestListField(FieldValues):
         (['1', '2', '3'], [1, 2, 3])
     ]
     field = serializers.ListField(child=serializers.IntegerField())
+
+
+class TestEmptyListField(FieldValues):
+    """
+    Values for `ListField` with allow_empty=False flag.
+    """
+    valid_inputs = {}
+    invalid_inputs = [
+        ([], ['This list may not be empty.'])
+    ]
+    outputs = {}
+    field = serializers.ListField(child=serializers.IntegerField(), allow_empty=False)
 
 
 class TestUnvalidatedListField(FieldValues):
