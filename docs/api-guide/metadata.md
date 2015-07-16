@@ -98,6 +98,12 @@ The following class could be used to limit the information that is returned to `
                 'description': view.get_view_description()
             }
 
+Then configure your settings to use this custom class:
+
+    REST_FRAMEWORK = {
+        'DEFAULT_METADATA_CLASS': 'myproject.apps.core.MinimalMetadata'
+    }
+
 [cite]: http://tools.ietf.org/html/rfc7231#section-4.3.7
 [no-options]: https://www.mnot.net/blog/2012/10/29/NO_OPTIONS
 [json-schema]: http://json-schema.org/
