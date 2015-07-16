@@ -83,12 +83,6 @@ class ViewSetMixin(object):
             if hasattr(self, 'get') and not hasattr(self, 'head'):
                 self.head = self.get
 
-            # Explicitly map `options` requests to an (implicit) action named
-            # 'metadata'. This action doesn't actually exist as a named method,
-            # because, unlike other methods, we always route to it.
-            if hasattr(self, 'options'):
-                self.action_map['options'] = 'metadata'
-
             # And continue as usual
             return self.dispatch(request, *args, **kwargs)
 
@@ -112,7 +106,14 @@ class ViewSetMixin(object):
         depending on the request method.
         """
         request = super(ViewSetMixin, self).initialize_request(request, *args, **kwargs)
-        self.action = self.action_map.get(request.method.lower())
+        method = request.method.lower()
+        if method == 'options':
+            # This is a special case as we always provide handling for the
+            # options method in the base `View` class.
+            # Unlike the other explicitly defined actions, 'metadata' is implict.
+            self.action = 'metadata'
+        else:
+            self.action = self.action_map.get(method)
         return request
 
 
