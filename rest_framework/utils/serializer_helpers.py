@@ -72,7 +72,7 @@ class BoundField(object):
         ))
 
     def as_form_field(self):
-        return BoundField(self._field, force_text(self.value), self.errors, self._prefix)
+        return self.__class__(self._field, force_text(self.value), self.errors, self._prefix)
 
 
 class NestedBoundField(BoundField):
