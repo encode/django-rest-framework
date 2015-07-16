@@ -198,4 +198,7 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
             'model_name': get_model_name(model_cls)
         }
         permission = self.perm_format % kwargs
-        return guardian.shortcuts.get_objects_for_user(user, permission, queryset)
+        if guardian.VERSION >= (1, 3):
+            # Maintain behavior compatibility with versions prior to 1.3
+            extra = {'accept_global_perms': False}
+        return guardian.shortcuts.get_objects_for_user(user, permission, queryset, **extra)
