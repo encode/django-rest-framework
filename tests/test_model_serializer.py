@@ -85,7 +85,7 @@ class FieldOptionsModel(models.Model):
     choices_field = models.CharField(max_length=100, choices=COLOR_CHOICES)
 
 
-class MappingForChoicesWithNonStandardArgs(models.Model):
+class ChoicesModel(models.Model):
     choices_field_with_nonstandard_args = models.DecimalField(max_digits=3, decimal_places=1, choices=DECIMAL_CHOICES, verbose_name='A label')
 
 
@@ -317,7 +317,7 @@ class TestRegularFieldMappings(TestCase):
     def test_choices_with_nonstandard_args(self):
         class ExampleSerializer(serializers.ModelSerializer):
             class Meta:
-                model = MappingForChoicesWithNonStandardArgs
+                model = ChoicesModel
 
         ExampleSerializer()
 
