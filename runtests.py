@@ -8,7 +8,7 @@ import sys
 import pytest
 
 PYTEST_ARGS = {
-    'default': ['tests', '--tb=short', '-s'],
+    'default': ['tests', '--tb=short', '-s', '--cov', 'rest_framework'],
     'fast': ['tests', '--tb=short', '-q', '-s'],
 }
 
