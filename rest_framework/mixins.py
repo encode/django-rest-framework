@@ -89,3 +89,14 @@ class DestroyModelMixin(object):
 
     def perform_destroy(self, instance):
         instance.delete()
+
+
+class MetadataModelMixin(object):
+    def metadata(self, request, *args, **kwargs):
+        """
+        Handler method for HTTP 'OPTIONS' request.
+        """
+        if self.metadata_class is None:
+            return self.http_method_not_allowed(request, *args, **kwargs)
+        data = self.metadata_class().determine_metadata(request, self)
+        return Response(data, status=status.HTTP_200_OK)

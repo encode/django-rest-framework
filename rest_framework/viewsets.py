@@ -146,6 +146,7 @@ class ModelViewSet(mixins.CreateModelMixin,
                    mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,
                    mixins.ListModelMixin,
+                   mixins.MetadataModelMixin,
                    GenericViewSet):
     """
     A viewset that provides default `create()`, `retrieve()`, `update()`,
