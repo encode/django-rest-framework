@@ -61,7 +61,6 @@ class FormatSuffixTests(TestCase):
                 assert callback is None
                 continue
 
-            print(test_path, callback, callback_args, callback_kwargs)
             assert callback_args == test_path.args
             assert callback_kwargs == test_path.kwargs
 

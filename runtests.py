@@ -8,8 +8,8 @@ import sys
 import pytest
 
 PYTEST_ARGS = {
-    'default': ['tests', '--tb=short'],
-    'fast': ['tests', '--tb=short', '-q'],
+    'default': ['tests', '--tb=short', '-s'],
+    'fast': ['tests', '--tb=short', '-q', '-s'],
 }
 
 FLAKE8_ARGS = ['rest_framework', 'tests', '--ignore=E501']
