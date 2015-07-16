@@ -455,8 +455,8 @@ class CursorPagination(BasePagination):
     template = 'rest_framework/pagination/previous_and_next.html'
 
     def paginate_queryset(self, queryset, request, view=None):
-        page_size = self.get_page_size(request)
-        if not page_size:
+        self.page_size = self.get_page_size(request)
+        if not self.page_size:
             return None
 
         self.base_url = request.build_absolute_uri()
@@ -491,8 +491,8 @@ class CursorPagination(BasePagination):
         # If we have an offset cursor then offset the entire page by that amount.
         # We also always fetch an extra item in order to determine if there is a
         # page following on from this one.
-        results = list(queryset[offset:offset + page_size + 1])
-        self.page = list(results[:page_size])
+        results = list(queryset[offset:offset + self.page_size + 1])
+        self.page = list(results[:self.page_size])
 
         # Determine the position of the final item following the page.
         if len(results) > len(self.page):
