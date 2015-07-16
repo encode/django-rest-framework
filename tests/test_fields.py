@@ -308,6 +308,14 @@ class TestHTMLInput:
         assert serializer.is_valid()
         assert serializer.validated_data == {}
 
+    def test_querydict_list_input(self):
+        class TestSerializer(serializers.Serializer):
+            scores = serializers.ListField(child=serializers.IntegerField())
+
+        serializer = TestSerializer(data=QueryDict('scores=1&scores=3'))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'scores': [1, 3]}
+
 
 class TestCreateOnlyDefault:
     def setup(self):
