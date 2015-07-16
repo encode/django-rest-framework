@@ -143,4 +143,7 @@ class SimpleMetadata(BaseMetadata):
                 for choice_value, choice_name in field.choices.items()
             ]
 
+        if issubclass(type(field), serializers.Serializer):
+            field_info['nested_object'] = self.get_serializer_info(field)
+
         return field_info
