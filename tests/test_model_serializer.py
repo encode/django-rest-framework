@@ -86,7 +86,7 @@ class FieldOptionsModel(models.Model):
 
 
 class MappingForChoicesWithNonStandardArgs(models.Model):
-    choices_field_with_nonstandard_args = models.DecimalField(max_digits=3, decimal_places=1, choices=DECIMAL_CHOICES)
+    choices_field_with_nonstandard_args = models.DecimalField(max_digits=3, decimal_places=1, choices=DECIMAL_CHOICES, verbose_name='A label')
 
 
 class TestModelSerializer(TestCase):
