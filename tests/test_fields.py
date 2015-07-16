@@ -4,6 +4,7 @@ from decimal import Decimal
 
 import django
 import pytest
+from django.http import QueryDict
 from django.utils import timezone
 
 import rest_framework
@@ -224,14 +225,6 @@ class TestInvalidErrorKey:
         assert str(exc_info.value) == expected
 
 
-class MockHTMLDict(dict):
-    """
-    This class mocks up a dictionary like object, that behaves
-    as if it was returned for multipart or urlencoded data.
-    """
-    getlist = None
-
-
 class TestBooleanHTMLInput:
     def setup(self):
         class TestSerializer(serializers.Serializer):
@@ -245,7 +238,7 @@ class TestBooleanHTMLInput:
         """
         # This class mocks up a dictionary like object, that behaves
         # as if it was returned for multipart or urlencoded data.
-        serializer = self.Serializer(data=MockHTMLDict())
+        serializer = self.Serializer(data=QueryDict(''))
         assert serializer.is_valid()
         assert serializer.validated_data == {'archived': False}
 
@@ -255,15 +248,39 @@ class TestHTMLInput:
         class TestSerializer(serializers.Serializer):
             message = serializers.CharField(default='happy')
 
-        serializer = TestSerializer(data=MockHTMLDict())
+        serializer = TestSerializer(data=QueryDict(''))
         assert serializer.is_valid()
         assert serializer.validated_data == {'message': 'happy'}
+
+    def test_empty_html_integerfield(self):
+        class TestSerializer(serializers.Serializer):
+            message = serializers.IntegerField(default=123)
+
+        serializer = TestSerializer(data=QueryDict('message='))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'message': 123}
+
+    def test_empty_html_uuidfield_with_default(self):
+        class TestSerializer(serializers.Serializer):
+            message = serializers.UUIDField(default=uuid.uuid4)
+
+        serializer = TestSerializer(data=QueryDict('message='))
+        assert serializer.is_valid()
+        assert list(serializer.validated_data.keys()) == ['message']
+
+    def test_empty_html_uuidfield_with_optional(self):
+        class TestSerializer(serializers.Serializer):
+            message = serializers.UUIDField(required=False)
+
+        serializer = TestSerializer(data=QueryDict('message='))
+        assert serializer.is_valid()
+        assert list(serializer.validated_data.keys()) == []
 
     def test_empty_html_charfield_allow_null(self):
         class TestSerializer(serializers.Serializer):
             message = serializers.CharField(allow_null=True)
 
-        serializer = TestSerializer(data=MockHTMLDict({'message': ''}))
+        serializer = TestSerializer(data=QueryDict('message='))
         assert serializer.is_valid()
         assert serializer.validated_data == {'message': None}
 
@@ -271,7 +288,7 @@ class TestHTMLInput:
         class TestSerializer(serializers.Serializer):
             expiry = serializers.DateField(allow_null=True)
 
-        serializer = TestSerializer(data=MockHTMLDict({'expiry': ''}))
+        serializer = TestSerializer(data=QueryDict('expiry='))
         assert serializer.is_valid()
         assert serializer.validated_data == {'expiry': None}
 
@@ -279,7 +296,7 @@ class TestHTMLInput:
         class TestSerializer(serializers.Serializer):
             message = serializers.CharField(allow_null=True, allow_blank=True)
 
-        serializer = TestSerializer(data=MockHTMLDict({'message': ''}))
+        serializer = TestSerializer(data=QueryDict('message='))
         assert serializer.is_valid()
         assert serializer.validated_data == {'message': ''}
 
@@ -287,7 +304,7 @@ class TestHTMLInput:
         class TestSerializer(serializers.Serializer):
             message = serializers.CharField(required=False)
 
-        serializer = TestSerializer(data=MockHTMLDict())
+        serializer = TestSerializer(data=QueryDict(''))
         assert serializer.is_valid()
         assert serializer.validated_data == {}
 
@@ -1116,8 +1133,6 @@ class TestMultipleChoiceField(FieldValues):
     )
 
     def test_against_partial_and_full_updates(self):
-        # serializer = self.Serializer(data=MockHTMLDict())
-        from django.http import QueryDict
         field = serializers.MultipleChoiceField(choices=(('a', 'a'), ('b', 'b')))
         field.partial = False
         assert field.get_value(QueryDict({})) == []

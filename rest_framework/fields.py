@@ -291,6 +291,8 @@ class Field(object):
                 # If the field is blank, and null is a valid value then
                 # determine if we should use null instead.
                 return '' if getattr(self, 'allow_blank', False) else None
+            elif ret == '' and self.default:
+                return empty
             return ret
         return dictionary.get(self.field_name, empty)
 
