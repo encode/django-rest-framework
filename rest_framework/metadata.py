@@ -133,6 +133,8 @@ class SimpleMetadata(BaseMetadata):
 
         if getattr(field, 'child', None):
             field_info['child'] = self.get_field_info(field.child)
+        elif getattr(field, 'fields', None):
+            field_info['children'] = self.get_serializer_info(field)
 
         if not field_info.get('read_only') and hasattr(field, 'choices'):
             field_info['choices'] = [

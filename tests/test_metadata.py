@@ -59,6 +59,10 @@ class TestMetadata:
         On generic views OPTIONS should return an 'actions' key with metadata
         on the fields that may be supplied to PUT and POST requests.
         """
+        class NestedField(serializers.Serializer):
+            a = serializers.IntegerField()
+            b = serializers.IntegerField()
+
         class ExampleSerializer(serializers.Serializer):
             choice_field = serializers.ChoiceField(['red', 'green', 'blue'])
             integer_field = serializers.IntegerField(
@@ -72,6 +76,7 @@ class TestMetadata:
                     child=serializers.IntegerField()
                 )
             )
+            nested_field = NestedField()
 
         class ExampleView(views.APIView):
             """Example view."""
@@ -138,6 +143,26 @@ class TestMetadata:
                                 'type': 'integer',
                                 'required': True,
                                 'read_only': False
+                            }
+                        }
+                    },
+                    'nested_field': {
+                        'type': 'nested object',
+                        'required': True,
+                        'read_only': False,
+                        'label': 'Nested field',
+                        'children': {
+                            'a': {
+                                'type': 'integer',
+                                'required': True,
+                                'read_only': False,
+                                'label': 'A'
+                            },
+                            'b': {
+                                'type': 'integer',
+                                'required': True,
+                                'read_only': False,
+                                'label': 'B'
                             }
                         }
                     }
