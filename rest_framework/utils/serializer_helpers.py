@@ -72,7 +72,8 @@ class BoundField(object):
         ))
 
     def as_form_field(self):
-        return self.__class__(self._field, force_text(self.value), self.errors, self._prefix)
+        value = force_text(self.value)
+        return self.__class__(self._field, value, self.errors, self._prefix)
 
 
 class NestedBoundField(BoundField):
@@ -92,6 +93,15 @@ class NestedBoundField(BoundField):
         if hasattr(field, 'fields'):
             return NestedBoundField(field, value, error, prefix=self.name + '.')
         return BoundField(field, value, error, prefix=self.name + '.')
+
+    def as_form_field(self):
+        values = {}
+        for key, value in self.value.items():
+            if isinstance(value, (list, dict)):
+                values[key] = value
+            else:
+                values[key] = force_text(value)
+        return self.__class__(self._field, values, self.errors, self._prefix)
 
 
 class BindingDict(collections.MutableMapping):
