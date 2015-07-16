@@ -32,7 +32,7 @@ class PKOnlyObject(object):
 # rather than the parent serializer.
 MANY_RELATION_KWARGS = (
     'read_only', 'write_only', 'required', 'default', 'initial', 'source',
-    'label', 'help_text', 'style', 'error_messages'
+    'label', 'help_text', 'style', 'error_messages', 'allow_empty'
 )
 
 
@@ -366,9 +366,14 @@ class ManyRelatedField(Field):
     """
     initial = []
     default_empty_html = []
+    default_error_messages = {
+        'not_a_list': _('Expected a list of items but got type "{input_type}".'),
+        'empty': _('This list may not be empty.')
+    }
 
     def __init__(self, child_relation=None, *args, **kwargs):
         self.child_relation = child_relation
+        self.allow_empty = kwargs.pop('allow_empty', True)
         assert child_relation is not None, '`child_relation` is a required argument.'
         super(ManyRelatedField, self).__init__(*args, **kwargs)
         self.child_relation.bind(field_name='', parent=self)
@@ -386,6 +391,11 @@ class ManyRelatedField(Field):
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
+        if isinstance(data, type('')) or not hasattr(data, '__iter__'):
+            self.fail('not_a_list', input_type=type(data).__name__)
+        if not self.allow_empty and len(data) == 0:
+            self.fail('empty')
+
         return [
             self.child_relation.to_internal_value(item)
             for item in data
