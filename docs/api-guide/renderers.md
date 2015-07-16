@@ -157,7 +157,7 @@ See also: `TemplateHTMLRenderer`
 
 Renders data returned by a serializer into an HTML form.  The output of this renderer does not include the enclosing `<form>` tags or an submit actions, as you'll probably need those to include the desired method and URL.  Also note that the `HTMLFormRenderer` does not yet support including field error messages.
 
-Note that the template used by the `HTMLFormRenderer` class, and the context submitted to it **may be subject to change**.  If you need to use this renderer class it is advised that you either make a local copy of the class and templates, or follow the release note on REST framework upgrades closely.
+**Note**: The `HTMLFormRenderer` class is intended for internal use with the browsable API. It should not be considered stable API. The template used by the `HTMLFormRenderer` class, and the context submitted to it **may be subject to change**.  If you need to use this renderer class it is advised that you either make a local copy of the class and templates, or follow the release note on REST framework upgrades closely.
 
 **.media_type**: `text/html`
 
