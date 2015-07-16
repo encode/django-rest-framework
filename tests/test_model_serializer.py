@@ -7,6 +7,8 @@ an appropriate set of serializer fields for each case.
 """
 from __future__ import unicode_literals
 
+import decimal
+
 import django
 import pytest
 from django.core.exceptions import ImproperlyConfigured
@@ -70,6 +72,7 @@ class RegularFieldsModel(models.Model):
 
 
 COLOR_CHOICES = (('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'))
+DECIMAL_CHOICES = (('low', decimal.Decimal('0.1')), ('medium', decimal.Decimal('0.5')), ('high', decimal.Decimal('0.9')))
 
 
 class FieldOptionsModel(models.Model):
@@ -80,6 +83,10 @@ class FieldOptionsModel(models.Model):
     default_field = models.IntegerField(default=0)
     descriptive_field = models.IntegerField(help_text='Some help text', verbose_name='A label')
     choices_field = models.CharField(max_length=100, choices=COLOR_CHOICES)
+
+
+class MappingForChoicesWithNonStandardArgs(models.Model):
+    choices_field_with_nonstandard_args = models.DecimalField(max_digits=3, decimal_places=1, choices=DECIMAL_CHOICES)
 
 
 class TestModelSerializer(TestCase):
@@ -306,6 +313,13 @@ class TestRegularFieldMappings(TestCase):
                 fields = ('auto_field',)
 
         ChildSerializer().fields
+
+    def test_choices_with_nonstandard_args(self):
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = MappingForChoicesWithNonStandardArgs
+
+        ExampleSerializer()
 
 
 @pytest.mark.skipif(django.VERSION < (1, 8),

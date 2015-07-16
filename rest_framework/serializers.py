@@ -1033,6 +1033,19 @@ class ModelSerializer(Serializer):
             # Fields with choices get coerced into `ChoiceField`
             # instead of using their regular typed field.
             field_class = self.serializer_choice_field
+            # Some model fields may introduce kwargs that would not be valid
+            # for the choice field. We need to strip these out.
+            # Eg. models.DecimalField(max_digits=3, decimal_places=1, choices=DECIMAL_CHOICES)
+            valid_kwargs = set((
+                'read_only', 'write_only',
+                'required', 'default', 'initial', 'source',
+                'label', 'help_text', 'style',
+                'error_messages', 'validators', 'allow_null', 'allow_blank',
+                'choices'
+            ))
+            for key in list(field_kwargs.keys()):
+                if key not in valid_kwargs:
+                    field_kwargs.pop(key)
 
         if not issubclass(field_class, ModelField):
             # `model_field` is only valid for the fallback case of
