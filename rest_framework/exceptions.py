@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ungettext
 
 from rest_framework import status
+from rest_framework.settings import api_settings
 from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 
 
@@ -58,6 +59,14 @@ class APIException(Exception):
         return self.detail
 
 
+def build_error_from_django_validation_error(exc_info):
+    code = getattr(exc_info, 'code', None) or 'invalid'
+    return [
+        ValidationError.build_detail(msg, code=code)
+        for msg in exc_info.messages
+    ]
+
+
 # The recommended style for using `ValidationError` is to keep it namespaced
 # under `serializers`, in order to minimize potential confusion with Django's
 # built in `ValidationError`. For example:
@@ -68,12 +77,40 @@ class APIException(Exception):
 class ValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
 
-    def __init__(self, detail):
+    @staticmethod
+    def build_detail(detail, code=None):
+        """
+        Create error's representation.
+
+        This method is a helper that should be used when building compound
+        ValidationErrors directly (i.e. a whole list at once). Thanks to that
+        extra call, users have a customization point where they can tune how
+        much information about an error they want to see in the final output.
+        """
+        if api_settings.REQUIRE_ERROR_CODES:
+            assert code is not None, (
+                'The `code` argument is required for single errors. '
+                'Strict checking of `code` is enabled with '
+                'REQUIRE_ERROR_CODES settings key.'
+            )
+
+        return detail
+
+    def __init__(self, detail, code=None):
         # For validation errors the 'detail' key is always required.
         # The details should always be coerced to a list if not already.
         if not isinstance(detail, dict) and not isinstance(detail, list):
-            detail = [detail]
+            detail = [self.build_detail(detail, code)]
+        else:
+            if api_settings.REQUIRE_ERROR_CODES:
+                assert code is None, (
+                    'The `code` argument must not be set for compound '
+                    'errors. Strict checking of `code` is enabled with '
+                    'REQUIRE_ERROR_CODES settings key.'
+                )
+
         self.detail = _force_text_recursive(detail)
+        self.code = code
 
     def __str__(self):
         return six.text_type(self.detail)
