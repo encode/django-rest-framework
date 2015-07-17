@@ -153,6 +153,16 @@ class BaseSerializer(Field):
             'You cannot call `.save()` on a serializer with invalid data.'
         )
 
+        # Guard against incorrect use of `serializer.save(commit=False)`
+        assert 'commit' not in kwargs, (
+            "'commit' is not a valid keyword argument to the 'save()' method. "
+            "If you need to access data before committing to the database then "
+            "inspect 'serializer.validated_data' instead. "
+            "You can also pass additional keyword arguments to 'save()' if you "
+            "need to set extra attributes on the saved model instance. "
+            "For example: 'serializer.save(owner=request.user)'.'"
+        )
+
         validated_data = dict(
             list(self.validated_data.items()) +
             list(kwargs.items())
@@ -611,6 +621,16 @@ class ListSerializer(BaseSerializer):
         """
         Save and return a list of object instances.
         """
+        # Guard against incorrect use of `serializer.save(commit=False)`
+        assert 'commit' not in kwargs, (
+            "'commit' is not a valid keyword argument to the 'save()' method. "
+            "If you need to access data before committing to the database then "
+            "inspect 'serializer.validated_data' instead. "
+            "You can also pass additional keyword arguments to 'save()' if you "
+            "need to set extra attributes on the saved model instance. "
+            "For example: 'serializer.save(owner=request.user)'.'"
+        )
+
         validated_data = [
             dict(list(attrs.items()) + list(kwargs.items()))
             for attrs in self.validated_data
