@@ -1,12 +1,6 @@
 source: mixins.py
         generics.py
 
----
-
-**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
-
----
-
 # Generic views
 
 > Django’s generic views... were developed as a shortcut for common usage patterns... They take certain common idioms and patterns found in view development and abstract them so that you can quickly write common views of data without having to repeat yourself.
@@ -57,7 +51,7 @@ For more complex cases you might also want to override various methods on the vi
 
 For very simple cases you might want to pass through any class attributes using the `.as_view()` method.  For example, your URLconf might include something like the following entry:
 
-    url(r'^/users/', ListCreateAPIView.as_view(model=User), name='user-list')
+    url(r'^/users/', ListCreateAPIView.as_view(queryset=User.objects.all(), serializer_class=UserSerializer), name='user-list')
 
 ---
 
@@ -84,10 +78,9 @@ The following attributes control the basic view behavior.
 
 The following attributes are used to control pagination when used with list views.
 
-* `paginate_by` - The size of pages to use with paginated data.  If set to `None` then pagination is turned off.  If unset this uses the same value as the `PAGINATE_BY` setting, which defaults to `None`.
-* `paginate_by_param` - The name of a query parameter, which can be used by the client to override the default page size to use for pagination.  If unset this uses the same value as the `PAGINATE_BY_PARAM` setting, which defaults to `None`.
-* `pagination_serializer_class` - The pagination serializer class to use when determining the style of paginated responses.  Defaults to the same value as the `DEFAULT_PAGINATION_SERIALIZER_CLASS` setting.
-* `page_kwarg` - The name of a URL kwarg or URL query parameter which can be used by the client to control which page is requested.  Defaults to `'page'`.
+* `pagination_class` - The pagination class that should be used when paginating list results. Defaults to the same value as the `DEFAULT_PAGINATION_CLASS` setting, which is `'rest_framework.pagination.PageNumberPagination'`.
+
+Note that usage of the `paginate_by`, `paginate_by_param` and `page_kwarg` attributes are now pending deprecation. The `pagination_serializer_class` attribute and `DEFAULT_PAGINATION_SERIALIZER_CLASS` setting have been removed completely. Pagination settings should instead be controlled by overriding a pagination class and setting any configuration attributes there. See the pagination documentation for more details.
 
 **Filtering**:
 
@@ -131,21 +124,24 @@ For example:
 
 Note that if your API doesn't include any object level permissions, you may optionally exclude the `self.check_object_permissions`, and simply return the object from the `get_object_or_404` lookup.
 
-#### `get_filter_backends(self)`
-
-Returns the classes that should be used to filter the queryset. Defaults to returning the `filter_backends` attribute.
-
-May be overridden to provide more complex behavior with filters, such as using different (or even exlusive) lists of filter_backends depending on different criteria.
-
-For example:
-
-    def get_filter_backends(self):
-        if "geo_route" in self.request.QUERY_PARAMS:
-            return (GeoRouteFilter, CategoryFilter)
-        elif "geo_point" in self.request.QUERY_PARAMS:
-            return (GeoPointFilter, CategoryFilter)
-
-        return (CategoryFilter,)
+#### `filter_queryset(self, queryset)`       
+       
+Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.   
+        
+For example:       
+       
+    def filter_queryset(self, queryset):
+        filter_backends = (CategoryFilter,)
+        
+        if 'geo_route' in self.request.query_params:
+            filter_backends = (GeoRouteFilter, CategoryFilter)
+        elif 'geo_point' in self.request.query_params:
+            filter_backends = (GeoPointFilter, CategoryFilter)
+        
+        for backend in list(filter_backends):
+            queryset = backend().filter_queryset(self.request, queryset, view=self)
+        
+        return queryset
 
 #### `get_serializer_class(self)`
 
@@ -199,8 +195,8 @@ These override points are also particularly useful for adding behavior that occu
 You won't typically need to override the following methods, although you might need to call into them if you're writing custom views using `GenericAPIView`.
 
 * `get_serializer_context(self)` - Returns a dictionary containing any extra context that should be supplied to the serializer.  Defaults to including `'request'`, `'view'` and `'format'` keys.
-* `get_serializer(self, instance=None, data=None, files=None, many=False, partial=False, allow_add_remove=False)` - Returns a serializer instance.
-* `get_pagination_serializer(self, page)` - Returns a serializer instance to use with paginated data.
+* `get_serializer(self, instance=None, data=None, many=False, partial=False)` - Returns a serializer instance.
+* `get_paginated_response(self, data)` - Returns a paginated style `Response` object.
 * `paginate_queryset(self, queryset)` - Paginate a queryset if required, either returning a page object, or `None` if pagination is not configured for this view.
 * `filter_queryset(self, queryset)` - Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.
 
@@ -398,6 +394,10 @@ The following third party packages provide additional generic view implementatio
 
 The [django-rest-framework-bulk package][django-rest-framework-bulk] implements generic view mixins as well as some common concrete generic views to allow to apply bulk operations via API requests.
 
+## Django Rest Multiple Models
+
+[Django Rest Multiple Models][django-rest-multiple-models] provides a generic view (and mixin) for sending multiple serialized models and/or querysets via a single API request.
+
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/class-based-views/#base-vs-generic-views
 [GenericAPIView]: #genericapiview
@@ -407,3 +407,6 @@ The [django-rest-framework-bulk package][django-rest-framework-bulk] implements 
 [UpdateModelMixin]: #updatemodelmixin
 [DestroyModelMixin]: #destroymodelmixin
 [django-rest-framework-bulk]: https://github.com/miki725/django-rest-framework-bulk
+[django-rest-multiple-models]: https://github.com/Axiologue/DjangoRestMultipleModels
+
+

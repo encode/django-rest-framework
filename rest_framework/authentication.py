@@ -2,12 +2,16 @@
 Provides various authentication policies.
 """
 from __future__ import unicode_literals
+
 import base64
+
 from django.contrib.auth import authenticate
 from django.middleware.csrf import CsrfViewMiddleware
 from django.utils.translation import ugettext_lazy as _
-from rest_framework import exceptions, HTTP_HEADER_ENCODING
+
+from rest_framework import HTTP_HEADER_ENCODING, exceptions
 from rest_framework.authtoken.models import Token
+from rest_framework.compat import get_user_model
 
 
 def get_authorization_header(request):
@@ -85,7 +89,12 @@ class BasicAuthentication(BaseAuthentication):
         """
         Authenticate the userid and password against username and password.
         """
-        user = authenticate(username=userid, password=password)
+        username_field = getattr(get_user_model(), 'USERNAME_FIELD', 'username')
+        credentials = {
+            username_field: userid,
+            'password': password
+        }
+        user = authenticate(**credentials)
 
         if user is None:
             raise exceptions.AuthenticationFailed(_('Invalid username/password.'))
@@ -164,7 +173,13 @@ class TokenAuthentication(BaseAuthentication):
             msg = _('Invalid token header. Token string should not contain spaces.')
             raise exceptions.AuthenticationFailed(msg)
 
-        return self.authenticate_credentials(auth[1])
+        try:
+            token = auth[1].decode()
+        except UnicodeError:
+            msg = _('Invalid token header. Token string should not contain invalid characters.')
+            raise exceptions.AuthenticationFailed(msg)
+
+        return self.authenticate_credentials(token)
 
     def authenticate_credentials(self, key):
         try:

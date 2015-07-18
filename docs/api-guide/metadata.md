@@ -1,11 +1,5 @@
 source: metadata.py
 
----
-
-**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
-
----
-
 # Metadata
 
 > [The `OPTIONS`] method allows a client to determine the options and/or requirements associated with a resource, or the capabilities of a server, without implying a resource action or initiating a resource retrieval.
@@ -59,7 +53,7 @@ Or you can set the metadata class individually for a view:
 
     class APIRoot(APIView):
         metadata_class = APIRootMetadata
-        
+
         def get(self, request, format=None):
             return Response({
                 ...
@@ -103,6 +97,12 @@ The following class could be used to limit the information that is returned to `
                 'name': view.get_view_name(),
                 'description': view.get_view_description()
             }
+
+Then configure your settings to use this custom class:
+
+    REST_FRAMEWORK = {
+        'DEFAULT_METADATA_CLASS': 'myproject.apps.core.MinimalMetadata'
+    }
 
 [cite]: http://tools.ietf.org/html/rfc7231#section-4.3.7
 [no-options]: https://www.mnot.net/blog/2012/10/29/NO_OPTIONS

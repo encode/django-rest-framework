@@ -1,10 +1,16 @@
-from .utils import mock_reverse, fail_reverse, BadType, MockObject, MockQueryset
+import uuid
+
+import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.datastructures import MultiValueDict
+
 from rest_framework import serializers
 from rest_framework.fields import empty
 from rest_framework.test import APISimpleTestCase
-import pytest
+
+from .utils import (
+    BadType, MockObject, MockQueryset, fail_reverse, mock_reverse
+)
 
 
 class TestStringRelatedField(APISimpleTestCase):
@@ -46,6 +52,39 @@ class TestPrimaryKeyRelatedField(APISimpleTestCase):
     def test_pk_representation(self):
         representation = self.field.to_representation(self.instance)
         assert representation == self.instance.pk
+
+    def test_explicit_many_false(self):
+        field = serializers.PrimaryKeyRelatedField(queryset=self.queryset, many=False)
+        instance = field.to_internal_value(self.instance.pk)
+        assert instance is self.instance
+
+
+class TestProxiedPrimaryKeyRelatedField(APISimpleTestCase):
+    def setUp(self):
+        self.queryset = MockQueryset([
+            MockObject(pk=uuid.UUID(int=0), name='foo'),
+            MockObject(pk=uuid.UUID(int=1), name='bar'),
+            MockObject(pk=uuid.UUID(int=2), name='baz')
+        ])
+        self.instance = self.queryset.items[2]
+        self.field = serializers.PrimaryKeyRelatedField(
+            queryset=self.queryset,
+            pk_field=serializers.UUIDField(format='int')
+        )
+
+    def test_pk_related_lookup_exists(self):
+        instance = self.field.to_internal_value(self.instance.pk.int)
+        assert instance is self.instance
+
+    def test_pk_related_lookup_does_not_exist(self):
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.field.to_internal_value(4)
+        msg = excinfo.value.detail[0]
+        assert msg == 'Invalid pk "00000000-0000-0000-0000-000000000004" - object does not exist.'
+
+    def test_pk_representation(self):
+        representation = self.field.to_representation(self.instance)
+        assert representation == self.instance.pk.int
 
 
 class TestHyperlinkedIdentityField(APISimpleTestCase):

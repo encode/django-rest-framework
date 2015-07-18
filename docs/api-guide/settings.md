@@ -273,6 +273,8 @@ Default: `'accept'`
 
 The name of a URL parameter that may be used to override the default `Accept` header based content negotiation.
 
+If the value of this setting is `None` then URL format overloading will be disabled.
+
 Default: `'format'`
 
 ---

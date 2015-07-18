@@ -4,20 +4,23 @@ Pagination serializers determine the structure of the output that should
 be used for paginated responses.
 """
 from __future__ import unicode_literals
-from base64 import b64encode, b64decode
+
+import warnings
+from base64 import b64decode, b64encode
 from collections import namedtuple
-from django.core.paginator import InvalidPage, Paginator as DjangoPaginator
+
+from django.core.paginator import Paginator as DjangoPaginator
+from django.core.paginator import InvalidPage
 from django.template import Context, loader
 from django.utils import six
 from django.utils.six.moves.urllib import parse as urlparse
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
+
 from rest_framework.compat import OrderedDict
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.utils.urls import (
-    replace_query_param, remove_query_param
-)
+from rest_framework.utils.urls import remove_query_param, replace_query_param
 
 
 def _positive_int(integer_string, strict=False, cutoff=None):
@@ -126,43 +129,6 @@ def _get_page_links(page_numbers, current, url_func):
     return page_links
 
 
-def _decode_cursor(encoded):
-    """
-    Given a string representing an encoded cursor, return a `Cursor` instance.
-    """
-    try:
-        querystring = b64decode(encoded.encode('ascii')).decode('ascii')
-        tokens = urlparse.parse_qs(querystring, keep_blank_values=True)
-
-        offset = tokens.get('o', ['0'])[0]
-        offset = _positive_int(offset)
-
-        reverse = tokens.get('r', ['0'])[0]
-        reverse = bool(int(reverse))
-
-        position = tokens.get('p', [None])[0]
-    except (TypeError, ValueError):
-        return None
-
-    return Cursor(offset=offset, reverse=reverse, position=position)
-
-
-def _encode_cursor(cursor):
-    """
-    Given a Cursor instance, return an encoded string representation.
-    """
-    tokens = {}
-    if cursor.offset != 0:
-        tokens['o'] = str(cursor.offset)
-    if cursor.reverse:
-        tokens['r'] = '1'
-    if cursor.position is not None:
-        tokens['p'] = cursor.position
-
-    querystring = urlparse.urlencode(tokens, doseq=True)
-    return b64encode(querystring.encode('ascii')).decode('ascii')
-
-
 def _reverse_ordering(ordering_tuple):
     """
     Given an order_by tuple such as `('-created', 'uuid')` reverse the
@@ -203,18 +169,18 @@ class PageNumberPagination(BasePagination):
     """
     # The default page size.
     # Defaults to `None`, meaning pagination is disabled.
-    paginate_by = api_settings.PAGINATE_BY
+    page_size = api_settings.PAGE_SIZE
 
     # Client can control the page using this query parameter.
     page_query_param = 'page'
 
     # Client can control the page size using this query parameter.
     # Default is 'None'. Set to eg 'page_size' to enable usage.
-    paginate_by_param = api_settings.PAGINATE_BY_PARAM
+    page_size_query_param = None
 
     # Set to an integer to limit the maximum page size the client may request.
-    # Only relevant if 'paginate_by_param' has also been set.
-    max_paginate_by = api_settings.MAX_PAGINATE_BY
+    # Only relevant if 'page_size_query_param' has also been set.
+    max_page_size = None
 
     last_page_strings = ('last',)
 
@@ -228,12 +194,48 @@ class PageNumberPagination(BasePagination):
         attributes were set there. The attributes should now be set on
         the pagination class, but the old style is still pending deprecation.
         """
-        for attr in (
-            'paginate_by', 'page_query_param',
-            'paginate_by_param', 'max_paginate_by'
+        assert not (
+            getattr(view, 'pagination_serializer_class', None) or
+            getattr(api_settings, 'DEFAULT_PAGINATION_SERIALIZER_CLASS', None)
+        ), (
+            "The pagination_serializer_class attribute and "
+            "DEFAULT_PAGINATION_SERIALIZER_CLASS setting have been removed as "
+            "part of the 3.1 pagination API improvement. See the pagination "
+            "documentation for details on the new API."
+        )
+
+        for (settings_key, attr_name) in (
+            ('PAGINATE_BY', 'page_size'),
+            ('PAGINATE_BY_PARAM', 'page_size_query_param'),
+            ('MAX_PAGINATE_BY', 'max_page_size')
         ):
-            if hasattr(view, attr):
-                setattr(self, attr, getattr(view, attr))
+            value = getattr(api_settings, settings_key, None)
+            if value is not None:
+                setattr(self, attr_name, value)
+                warnings.warn(
+                    "The `%s` settings key is pending deprecation. "
+                    "Use the `%s` attribute on the pagination class instead." % (
+                        settings_key, attr_name
+                    ),
+                    PendingDeprecationWarning,
+                )
+
+        for (view_attr, attr_name) in (
+            ('paginate_by', 'page_size'),
+            ('page_query_param', 'page_query_param'),
+            ('paginate_by_param', 'page_size_query_param'),
+            ('max_paginate_by', 'max_page_size')
+        ):
+            value = getattr(view, view_attr, None)
+            if value is not None:
+                setattr(self, attr_name, value)
+                warnings.warn(
+                    "The `%s` view attribute is pending deprecation. "
+                    "Use the `%s` attribute on the pagination class instead." % (
+                        view_attr, attr_name
+                    ),
+                    PendingDeprecationWarning,
+                )
 
     def paginate_queryset(self, queryset, request, view=None):
         """
@@ -264,7 +266,7 @@ class PageNumberPagination(BasePagination):
             self.display_page_controls = True
 
         self.request = request
-        return self.page
+        return list(self.page)
 
     def get_paginated_response(self, data):
         return Response(OrderedDict([
@@ -275,17 +277,17 @@ class PageNumberPagination(BasePagination):
         ]))
 
     def get_page_size(self, request):
-        if self.paginate_by_param:
+        if self.page_size_query_param:
             try:
                 return _positive_int(
-                    request.query_params[self.paginate_by_param],
+                    request.query_params[self.page_size_query_param],
                     strict=True,
-                    cutoff=self.max_paginate_by
+                    cutoff=self.max_page_size
                 )
             except (KeyError, ValueError):
                 pass
 
-        return self.paginate_by
+        return self.page_size
 
     def get_next_link(self):
         if not self.page.has_next():
@@ -336,7 +338,7 @@ class LimitOffsetPagination(BasePagination):
     http://api.example.org/accounts/?limit=100
     http://api.example.org/accounts/?offset=400&limit=100
     """
-    default_limit = api_settings.PAGINATE_BY
+    default_limit = api_settings.PAGE_SIZE
     limit_query_param = 'limit'
     offset_query_param = 'offset'
     max_limit = None
@@ -344,12 +346,15 @@ class LimitOffsetPagination(BasePagination):
 
     def paginate_queryset(self, queryset, request, view=None):
         self.limit = self.get_limit(request)
+        if self.limit is None:
+            return None
+
         self.offset = self.get_offset(request)
         self.count = _get_count(queryset)
         self.request = request
         if self.count > self.limit and self.template is not None:
             self.display_page_controls = True
-        return queryset[self.offset:self.offset + self.limit]
+        return list(queryset[self.offset:self.offset + self.limit])
 
     def get_paginated_response(self, data):
         return Response(OrderedDict([
@@ -384,6 +389,8 @@ class LimitOffsetPagination(BasePagination):
             return None
 
         url = self.request.build_absolute_uri()
+        url = replace_query_param(url, self.limit_query_param, self.limit)
+
         offset = self.offset + self.limit
         return replace_query_param(url, self.offset_query_param, offset)
 
@@ -392,6 +399,7 @@ class LimitOffsetPagination(BasePagination):
             return None
 
         url = self.request.build_absolute_uri()
+        url = replace_query_param(url, self.limit_query_param, self.limit)
 
         if self.offset - self.limit <= 0:
             return remove_query_param(url, self.offset_query_param)
@@ -435,29 +443,29 @@ class LimitOffsetPagination(BasePagination):
 
 
 class CursorPagination(BasePagination):
-    # Determine how/if True, False and None positions work - do the string
-    # encodings work with Django queryset filters?
-    # Consider a max offset cap.
-    # Tidy up the `get_ordering` API (eg remove queryset from it)
+    """
+    The cursor pagination implementation is neccessarily complex.
+    For an overview of the position/offset style we use, see this post:
+    http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api/
+    """
     cursor_query_param = 'cursor'
-    page_size = api_settings.PAGINATE_BY
+    page_size = api_settings.PAGE_SIZE
     invalid_cursor_message = _('Invalid cursor')
-    ordering = None
+    ordering = '-created'
     template = 'rest_framework/pagination/previous_and_next.html'
 
     def paginate_queryset(self, queryset, request, view=None):
+        self.page_size = self.get_page_size(request)
+        if not self.page_size:
+            return None
+
         self.base_url = request.build_absolute_uri()
         self.ordering = self.get_ordering(request, queryset, view)
 
-        # Determine if we have a cursor, and if so then decode it.
-        encoded = request.query_params.get(self.cursor_query_param)
-        if encoded is None:
-            self.cursor = None
+        self.cursor = self.decode_cursor(request)
+        if self.cursor is None:
             (offset, reverse, current_position) = (0, False, None)
         else:
-            self.cursor = _decode_cursor(encoded)
-            if self.cursor is None:
-                raise NotFound(self.invalid_cursor_message)
             (offset, reverse, current_position) = self.cursor
 
         # Cursor pagination always enforces an ordering.
@@ -484,7 +492,7 @@ class CursorPagination(BasePagination):
         # We also always fetch an extra item in order to determine if there is a
         # page following on from this one.
         results = list(queryset[offset:offset + self.page_size + 1])
-        self.page = results[:self.page_size]
+        self.page = list(results[:self.page_size])
 
         # Determine the position of the final item following the page.
         if len(results) > len(self.page):
@@ -522,6 +530,9 @@ class CursorPagination(BasePagination):
             self.display_page_controls = True
 
         return self.page
+
+    def get_page_size(self, request):
+        return self.page_size
 
     def get_next_link(self):
         if not self.has_next:
@@ -569,8 +580,7 @@ class CursorPagination(BasePagination):
                 position = self.previous_position
 
         cursor = Cursor(offset=offset, reverse=False, position=position)
-        encoded = _encode_cursor(cursor)
-        return replace_query_param(self.base_url, self.cursor_query_param, encoded)
+        return self.encode_cursor(cursor)
 
     def get_previous_link(self):
         if not self.has_previous:
@@ -618,8 +628,7 @@ class CursorPagination(BasePagination):
                 position = self.next_position
 
         cursor = Cursor(offset=offset, reverse=True, position=position)
-        encoded = _encode_cursor(cursor)
-        return replace_query_param(self.base_url, self.cursor_query_param, encoded)
+        return self.encode_cursor(cursor)
 
     def get_ordering(self, request, queryset, view):
         """
@@ -643,12 +652,12 @@ class CursorPagination(BasePagination):
                 )
             )
         else:
-            # The default case is to check for an `ordering` attribute,
-            # first on the view instance, and then on this pagination instance.
-            ordering = getattr(view, 'ordering', getattr(self, 'ordering', None))
+            # The default case is to check for an `ordering` attribute
+            # on this pagination instance.
+            ordering = self.ordering
             assert ordering is not None, (
                 'Using cursor pagination, but no ordering attribute was declared '
-                'on the view or on the pagination class.'
+                'on the pagination class.'
             )
 
         assert isinstance(ordering, (six.string_types, list, tuple)), (
@@ -660,6 +669,53 @@ class CursorPagination(BasePagination):
         if isinstance(ordering, six.string_types):
             return (ordering,)
         return tuple(ordering)
+
+    def decode_cursor(self, request):
+        """
+        Given a request with a cursor, return a `Cursor` instance.
+        """
+        # Determine if we have a cursor, and if so then decode it.
+        encoded = request.query_params.get(self.cursor_query_param)
+        if encoded is None:
+            return None
+
+        # The offset in the cursor is used in situations where we have a
+        # nearly-unique index. (Eg millisecond precision creation timestamps)
+        # We guard against malicious users attempting to cause expensive database
+        # queries, by having a hard cap on the maximum possible size of the offset.
+        OFFSET_CUTOFF = 1000
+
+        try:
+            querystring = b64decode(encoded.encode('ascii')).decode('ascii')
+            tokens = urlparse.parse_qs(querystring, keep_blank_values=True)
+
+            offset = tokens.get('o', ['0'])[0]
+            offset = _positive_int(offset, cutoff=OFFSET_CUTOFF)
+
+            reverse = tokens.get('r', ['0'])[0]
+            reverse = bool(int(reverse))
+
+            position = tokens.get('p', [None])[0]
+        except (TypeError, ValueError):
+            raise NotFound(self.invalid_cursor_message)
+
+        return Cursor(offset=offset, reverse=reverse, position=position)
+
+    def encode_cursor(self, cursor):
+        """
+        Given a Cursor instance, return an url with encoded cursor.
+        """
+        tokens = {}
+        if cursor.offset != 0:
+            tokens['o'] = str(cursor.offset)
+        if cursor.reverse:
+            tokens['r'] = '1'
+        if cursor.position is not None:
+            tokens['p'] = cursor.position
+
+        querystring = urlparse.urlencode(tokens, doseq=True)
+        encoded = b64encode(querystring.encode('ascii')).decode('ascii')
+        return replace_query_param(self.base_url, self.cursor_query_param, encoded)
 
     def _get_position_from_instance(self, instance, ordering):
         attr = getattr(instance, ordering[0].lstrip('-'))

@@ -27,7 +27,7 @@ Let's define a simple viewset that can be used to list or retrieve all the users
 
     class UserViewSet(viewsets.ViewSet):
         """
-        A simple ViewSet that for listing or retrieving users.
+        A simple ViewSet for listing or retrieving users.
         """
         def list(self, request):
             queryset = User.objects.all()
@@ -136,8 +136,13 @@ For example:
         @list_route()
         def recent_users(self, request):
             recent_users = User.objects.all().order('-last_login')
+
             page = self.paginate_queryset(recent_users)
-            serializer = self.get_pagination_serializer(page)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = self.get_serializer(recent_users, many=True)
             return Response(serializer.data)
 
 The decorators can additionally take extra arguments that will be set for the routed view only.  For example...

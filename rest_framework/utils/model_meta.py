@@ -5,13 +5,14 @@ relationships and their associated metadata.
 
 Usage: `get_field_info(model)` returns a `FieldInfo` instance.
 """
+import inspect
 from collections import namedtuple
+
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import six
-from rest_framework.compat import OrderedDict
-import inspect
 
+from rest_framework.compat import OrderedDict
 
 FieldInfo = namedtuple('FieldResult', [
     'pk',  # Model field instance
@@ -167,3 +168,10 @@ def _merge_relationships(forward_relations, reverse_relations):
         list(forward_relations.items()) +
         list(reverse_relations.items())
     )
+
+
+def is_abstract_model(model):
+    """
+    Given a model class, returns a boolean True if it is abstract and False if it is not.
+    """
+    return hasattr(model, '_meta') and hasattr(model._meta, 'abstract') and model._meta.abstract

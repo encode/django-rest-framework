@@ -6,12 +6,21 @@ These tests deal with ensuring that we correctly map the model fields onto
 an appropriate set of serializer fields for each case.
 """
 from __future__ import unicode_literals
+
+import decimal
+
+import django
+import pytest
 from django.core.exceptions import ImproperlyConfigured
-from django.core.validators import MaxValueValidator, MinValueValidator, MinLengthValidator
+from django.core.validators import (
+    MaxValueValidator, MinLengthValidator, MinValueValidator
+)
 from django.db import models
 from django.test import TestCase
 from django.utils import six
+
 from rest_framework import serializers
+from rest_framework.compat import DurationField as ModelDurationField
 from rest_framework.compat import unicode_repr
 
 
@@ -63,6 +72,7 @@ class RegularFieldsModel(models.Model):
 
 
 COLOR_CHOICES = (('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'))
+DECIMAL_CHOICES = (('low', decimal.Decimal('0.1')), ('medium', decimal.Decimal('0.5')), ('high', decimal.Decimal('0.9')))
 
 
 class FieldOptionsModel(models.Model):
@@ -73,6 +83,10 @@ class FieldOptionsModel(models.Model):
     default_field = models.IntegerField(default=0)
     descriptive_field = models.IntegerField(help_text='Some help text', verbose_name='A label')
     choices_field = models.CharField(max_length=100, choices=COLOR_CHOICES)
+
+
+class ChoicesModel(models.Model):
+    choices_field_with_nonstandard_args = models.DecimalField(max_digits=3, decimal_places=1, choices=DECIMAL_CHOICES, verbose_name='A label')
 
 
 class TestModelSerializer(TestCase):
@@ -92,6 +106,30 @@ class TestModelSerializer(TestCase):
         with self.assertRaises(TypeError) as excinfo:
             serializer.save()
         msginitial = 'Got a `TypeError` when calling `OneFieldModel.objects.create()`.'
+        assert str(excinfo.exception).startswith(msginitial)
+
+    def test_abstract_model(self):
+        """
+        Test that trying to use ModelSerializer with Abstract Models
+        throws a ValueError exception.
+        """
+        class AbstractModel(models.Model):
+            afield = models.CharField(max_length=255)
+
+            class Meta:
+                abstract = True
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = AbstractModel
+                fields = ('afield',)
+
+        serializer = TestSerializer(data={
+            'afield': 'foo',
+        })
+        with self.assertRaises(ValueError) as excinfo:
+            serializer.is_valid()
+        msginitial = 'Cannot use ModelSerializer with Abstract Models.'
         assert str(excinfo.exception).startswith(msginitial)
 
 
@@ -204,6 +242,23 @@ class TestRegularFieldMappings(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
+    def test_extra_field_kwargs_required(self):
+        """
+        Ensure `extra_kwargs` are passed to generated fields.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+                fields = ('auto_field', 'char_field')
+                extra_kwargs = {'auto_field': {'required': False, 'read_only': False}}
+
+        expected = dedent("""
+            TestSerializer():
+                auto_field = IntegerField(read_only=False, required=False)
+                char_field = CharField(max_length=100)
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
     def test_invalid_field(self):
         """
         Field names that do not map to a model field or relationship should
@@ -259,6 +314,35 @@ class TestRegularFieldMappings(TestCase):
 
         ChildSerializer().fields
 
+    def test_choices_with_nonstandard_args(self):
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ChoicesModel
+
+        ExampleSerializer()
+
+
+@pytest.mark.skipif(django.VERSION < (1, 8),
+                    reason='DurationField is only available for django1.8+')
+class TestDurationFieldMapping(TestCase):
+    def test_duration_field(self):
+        class DurationFieldModel(models.Model):
+            """
+            A model that defines DurationField.
+            """
+            duration_field = ModelDurationField()
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DurationFieldModel
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                duration_field = DurationField()
+        """)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
+
 
 # Tests for relational field mappings.
 # ------------------------------------
@@ -290,6 +374,14 @@ class RelationalModel(models.Model):
     many_to_many = models.ManyToManyField(ManyToManyTargetModel, related_name='reverse_many_to_many')
     one_to_one = models.OneToOneField(OneToOneTargetModel, related_name='reverse_one_to_one')
     through = models.ManyToManyField(ThroughTargetModel, through=Supplementary, related_name='reverse_through')
+
+
+class UniqueTogetherModel(models.Model):
+    foreign_key = models.ForeignKey(ForeignKeyTargetModel, related_name='unique_foreign_key')
+    one_to_one = models.OneToOneField(OneToOneTargetModel, related_name='unique_one_to_one')
+
+    class Meta:
+        unique_together = ("foreign_key", "one_to_one")
 
 
 class TestRelationalFieldMappings(TestCase):
@@ -369,6 +461,32 @@ class TestRelationalFieldMappings(TestCase):
                     url = HyperlinkedIdentityField(view_name='throughtargetmodel-detail')
                     name = CharField(max_length=100)
         """)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
+
+    def test_nested_unique_together_relations(self):
+        class TestSerializer(serializers.HyperlinkedModelSerializer):
+            class Meta:
+                model = UniqueTogetherModel
+                depth = 1
+        expected = dedent("""
+            TestSerializer():
+                url = HyperlinkedIdentityField(view_name='uniquetogethermodel-detail')
+                foreign_key = NestedSerializer(read_only=True):
+                    url = HyperlinkedIdentityField(view_name='foreignkeytargetmodel-detail')
+                    name = CharField(max_length=100)
+                one_to_one = NestedSerializer(read_only=True):
+                    url = HyperlinkedIdentityField(view_name='onetoonetargetmodel-detail')
+                    name = CharField(max_length=100)
+                class Meta:
+                    validators = [<UniqueTogetherValidator(queryset=UniqueTogetherModel.objects.all(), fields=('foreign_key', 'one_to_one'))>]
+        """)
+        if six.PY2:
+            # This case is also too awkward to resolve fully across both py2
+            # and py3.  (See above)
+            expected = expected.replace(
+                "('foreign_key', 'one_to_one')",
+                "(u'foreign_key', u'one_to_one')"
+            )
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
     def test_pk_reverse_foreign_key(self):
@@ -639,3 +757,28 @@ class TestSerializerMetaClass(TestCase):
             str(exception),
             "Cannot set both 'fields' and 'exclude' options on serializer ExampleSerializer."
         )
+
+
+class Issue2704TestCase(TestCase):
+    def test_queryset_all(self):
+        class TestSerializer(serializers.ModelSerializer):
+            additional_attr = serializers.CharField()
+
+            class Meta:
+                model = OneFieldModel
+                fields = ('char_field', 'additional_attr')
+
+        OneFieldModel.objects.create(char_field='abc')
+        qs = OneFieldModel.objects.all()
+
+        for o in qs:
+            o.additional_attr = '123'
+
+        serializer = TestSerializer(instance=qs, many=True)
+
+        expected = [{
+            'char_field': 'abc',
+            'additional_attr': '123',
+        }]
+
+        assert serializer.data == expected

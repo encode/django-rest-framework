@@ -1,11 +1,10 @@
 from __future__ import unicode_literals
-from django.conf.urls import patterns, url, include
+
+from django.conf.urls import include, url
 
 from .views import MockView
 
-
-urlpatterns = patterns(
-    '',
-    (r'^$', MockView.as_view()),
+urlpatterns = [
+    url(r'^$', MockView.as_view()),
     url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
-)
+]

@@ -17,15 +17,16 @@ from __future__ import unicode_literals
 
 import itertools
 from collections import namedtuple
-from django.conf.urls import patterns, url
+
+from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
+
 from rest_framework import views
-from rest_framework.compat import get_resolver_match, OrderedDict
+from rest_framework.compat import OrderedDict, get_resolver_match
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.urlpatterns import format_suffix_patterns
-
 
 Route = namedtuple('Route', ['url', 'mapping', 'name', 'initkwargs'])
 DynamicDetailRoute = namedtuple('DynamicDetailRoute', ['url', 'name', 'initkwargs'])
@@ -76,7 +77,7 @@ class BaseRouter(object):
     @property
     def urls(self):
         if not hasattr(self, '_urls'):
-            self._urls = patterns('', *self.get_urls())
+            self._urls = self.get_urls()
         return self._urls
 
 
@@ -218,14 +219,15 @@ class SimpleRouter(BaseRouter):
 
         https://github.com/alanjds/drf-nested-routers
         """
-        base_regex = '(?P<{lookup_prefix}{lookup_field}>{lookup_value})'
+        base_regex = '(?P<{lookup_prefix}{lookup_url_kwarg}>{lookup_value})'
         # Use `pk` as default field, unset set.  Default regex should not
         # consume `.json` style suffixes and should break at '/' boundaries.
         lookup_field = getattr(viewset, 'lookup_field', 'pk')
+        lookup_url_kwarg = getattr(viewset, 'lookup_url_kwarg', None) or lookup_field
         lookup_value = getattr(viewset, 'lookup_value_regex', '[^/.]+')
         return base_regex.format(
             lookup_prefix=lookup_prefix,
-            lookup_field=lookup_field,
+            lookup_url_kwarg=lookup_url_kwarg,
             lookup_value=lookup_value
         )
 

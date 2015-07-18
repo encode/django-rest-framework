@@ -5,11 +5,12 @@ pre {
 }
 
 .dropdown .dropdown-menu {
-    display: none;
+  display: none;
+  overflow-y: scroll;
 }
 
 .dropdown.open .dropdown-menu {
-    display: block;
+  display: block;
 }
 
 @media (max-width: 480px) {
@@ -36,15 +37,8 @@ body.index-page #main-content iframe.github-star-button {
     margin-right: -15px;
 }
 
-/* Tweet button */
-body.index-page #main-content iframe.twitter-share-button {
-    float: right;
-    margin-top: -12px;
-    margin-right: 8px;
-}
-
-/* Travis CI badge */
-body.index-page #main-content img.travis-build-image {
+/* Travis CI and PyPI badge */
+body.index-page #main-content img.status-badge {
     float: right;
     margin-right: 8px;
     margin-top: -11px;
@@ -414,4 +408,8 @@ ul.sponsor.silver li a {
 ul.sponsor {
     list-style: none;
     display: block;
+}
+
+#mkdocs_search_modal article p{
+  word-wrap: break-word;
 }

@@ -1,11 +1,5 @@
 source: validators.py
 
----
-
-**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
-
----
-
 # Validators
 
 > Validators can be useful for re-using validation logic between different types of fields.
@@ -33,7 +27,7 @@ When you're using `ModelSerializer` all of this is handled automatically for you
 As an example of how REST framework uses explicit validation, we'll take a simple model class that has a field with a uniqueness constraint.
 
     class CustomerReportRecord(models.Model):
-        time_raised = models.DateTimeField(default=timezone.now, editable=False) 
+        time_raised = models.DateTimeField(default=timezone.now, editable=False)
         reference = models.CharField(unique=True, max_length=20)
         description = models.TextField()
 
@@ -43,7 +37,7 @@ Here's a basic `ModelSerializer` that we can use for creating or updating instan
         class Meta:
             model = CustomerReportRecord
 
-If we open up the Django shell using `manage.py shell` we can now 
+If we open up the Django shell using `manage.py shell` we can now
 
     >>> from project.example.serializers import CustomerReportSerializer
     >>> serializer = CustomerReportSerializer()
@@ -178,7 +172,7 @@ REST framework includes a couple of defaults that may be useful in this context.
 A default class that can be used to represent the current user. In order to use this, the 'request' must have been provided as part of the context dictionary when instantiating the serializer.
 
     owner = serializers.HiddenField(
-        default=CurrentUserDefault()
+        default=serializers.CurrentUserDefault()
     )
 
 #### CreateOnlyDefault
@@ -204,18 +198,18 @@ A validator may be any callable that raises a `serializers.ValidationError` on f
 
     def even_number(value):
         if value % 2 != 0:
-            raise serializers.ValidationError('This field must be an even number.') 
+            raise serializers.ValidationError('This field must be an even number.')
 
 ## Class based
 
 To write a class based validator, use the `__call__` method. Class based validators are useful as they allow you to parameterize and reuse behavior.
 
-    class MultipleOf:
+    class MultipleOf(object):
         def __init__(self, base):
             self.base = base
- 
+
         def __call__(self, value):
-            if value % self.base != 0
+            if value % self.base != 0:
                 message = 'This field must be a multiple of %d.' % self.base
                 raise serializers.ValidationError(message)
 

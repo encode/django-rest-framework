@@ -108,7 +108,7 @@ and
 
 Now update the `urls.py` file slightly, to append a set of `format_suffix_patterns` in addition to the existing URLs.
 
-    from django.conf.urls import patterns, url
+    from django.conf.urls import url
     from rest_framework.urlpatterns import format_suffix_patterns
     from snippets import views
 
@@ -200,7 +200,7 @@ See the [browsable api][browsable-api] topic for more information about the brow
 
 In [tutorial part 3][tut-3], we'll start using class based views, and see how generic views reduce the amount of code we need to write.
 
-[json-url]: http://example.com/api/items/4.json
+[json-url]: http://example.com/api/items/4/.json
 [devserver]: http://127.0.0.1:8000/snippets/
 [browsable-api]: ../topics/browsable-api.md
 [tut-1]: 1-serialization.md

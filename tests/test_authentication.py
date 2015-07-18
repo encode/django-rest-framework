@@ -1,25 +1,26 @@
+# coding: utf-8
+
 from __future__ import unicode_literals
-from django.conf.urls import patterns, url, include
+
+import base64
+
+from django.conf.urls import include, url
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import TestCase
 from django.utils import six
-from rest_framework import HTTP_HEADER_ENCODING
-from rest_framework import exceptions
-from rest_framework import permissions
-from rest_framework import renderers
-from rest_framework.response import Response
-from rest_framework import status
+
+from rest_framework import (
+    HTTP_HEADER_ENCODING, exceptions, permissions, renderers, status
+)
 from rest_framework.authentication import (
-    BaseAuthentication,
-    TokenAuthentication,
-    BasicAuthentication,
-    SessionAuthentication,
+    BaseAuthentication, BasicAuthentication, SessionAuthentication,
+    TokenAuthentication
 )
 from rest_framework.authtoken.models import Token
-from rest_framework.test import APIRequestFactory, APIClient
+from rest_framework.response import Response
+from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
-import base64
 
 factory = APIRequestFactory()
 
@@ -37,14 +38,13 @@ class MockView(APIView):
         return HttpResponse({'a': 1, 'b': 2, 'c': 3})
 
 
-urlpatterns = patterns(
-    '',
-    (r'^session/$', MockView.as_view(authentication_classes=[SessionAuthentication])),
-    (r'^basic/$', MockView.as_view(authentication_classes=[BasicAuthentication])),
-    (r'^token/$', MockView.as_view(authentication_classes=[TokenAuthentication])),
-    (r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
-    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework'))
-)
+urlpatterns = [
+    url(r'^session/$', MockView.as_view(authentication_classes=[SessionAuthentication])),
+    url(r'^basic/$', MockView.as_view(authentication_classes=[BasicAuthentication])),
+    url(r'^token/$', MockView.as_view(authentication_classes=[TokenAuthentication])),
+    url(r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
+    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
+]
 
 
 class BasicAuthTests(TestCase):
@@ -161,6 +161,12 @@ class TokenAuthTests(TestCase):
         auth = 'Token ' + self.key
         response = self.csrf_client.post('/token/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_fail_post_form_passing_invalid_token_auth(self):
+        # add an 'invalid' unicode character
+        auth = 'Token ' + self.key + "¸"
+        response = self.csrf_client.post('/token/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_post_json_passing_token_auth(self):
         """Ensure POSTing form over token auth with correct credentials passes and does not require CSRF"""

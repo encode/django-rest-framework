@@ -1,17 +1,20 @@
 <p class="badges" height=20px>
-<iframe src="http://ghbtns.com/github-btn.html?user=tomchristie&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" class="github-star-button" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
+    <iframe src="http://ghbtns.com/github-btn.html?user=tomchristie&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" class="github-star-button" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
 
-<a href="https://twitter.com/share" class="twitter-share-button" data-url="django-rest-framework.org" data-text="Checking out the totally awesome Django REST framework! http://www.django-rest-framework.org" data-count="none"></a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="http://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+    <a href="http://travis-ci.org/tomchristie/django-rest-framework?branch=master">
+        <img src="https://secure.travis-ci.org/tomchristie/django-rest-framework.svg?branch=master" class="status-badge">
+    </a>
 
-<img src="https://secure.travis-ci.org/tomchristie/django-rest-framework.svg?branch=master" class="travis-build-image">
+    <a href="https://pypi.python.org/pypi/djangorestframework">
+        <img src="https://img.shields.io/pypi/v/djangorestframework.svg" class="status-badge">
+    </a>
 </p>
 
 ---
 
-**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
+**Note**: This is the documentation for the **version 3.1** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
 
-For more details see the [3.0 release notes][3.0-announcement].
+For more details see the [3.1 release notes][3.1-announcement].
 
 ---
 
@@ -50,7 +53,7 @@ Some reasons you might want to use REST framework:
 REST framework requires the following:
 
 * Python (2.6.5+, 2.7, 3.2, 3.3, 3.4)
-* Django (1.4.11+, 1.5.6+, 1.6.3+, 1.7, 1.8-beta)
+* Django (1.4.11+, 1.5.6+, 1.6.3+, 1.7+, 1.8)
 
 The following packages are optional:
 
@@ -248,8 +251,6 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-[travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
-[travis-build-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master
 [mozilla]: http://www.mozilla.org/en-US/about/
 [eventbrite]: https://www.eventbrite.co.uk/about/
 [markdown]: http://pypi.python.org/pypi/Markdown/

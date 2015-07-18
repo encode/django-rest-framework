@@ -51,7 +51,8 @@ You can then apply your new style to a view using the `.pagination_class` attrib
 Or apply the style globally, using the `DEFAULT_PAGINATION_CLASS` settings key. For example:
 
     REST_FRAMEWORK = {
-        'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.StandardResultsSetPagination'    }
+        'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.StandardResultsSetPagination'
+        }
 
 ---
 
@@ -79,11 +80,11 @@ This pagination style accepts a single number page number in the request query p
 
 #### Setup
 
-To enable the `PageNumberPagination` style globally, use the following configuration, modifying the `DEFAULT_PAGE_SIZE` as desired:
+To enable the `PageNumberPagination` style globally, use the following configuration, modifying the `PAGE_SIZE` as desired:
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-        'DEFAULT_PAGE_SIZE': 100
+        'PAGE_SIZE': 100
     }
 
 On `GenericAPIView` subclasses you may also set the `pagination_class` attribute to select `PageNumberPagination` on a per-view basis.
@@ -94,7 +95,7 @@ The `PageNumberPagination` class includes a number of attributes that may be ove
 
 To set these attributes you should override the `PageNumberPagination` class, and then enable your custom pagination class as above.
 
-* `page_size` - A numeric value indicating the page size. If set, this overrides the `DEFAULT_PAGE_SIZE` setting. Defaults to the same value as the `DEFAULT_PAGE_SIZE` settings key.
+* `page_size` - A numeric value indicating the page size. If set, this overrides the `PAGE_SIZE` setting. Defaults to the same value as the `PAGE_SIZE` settings key.
 * `page_query_param` - A string value indicating the name of the query parameter to use for the pagination control.
 * `page_size_query_param` - If set, this is a string value indicating the name of a query parameter that allows the client to set the page size on a per-request basis. Defaults to `None`, indicating that the client may not control the requested page size.
 * `max_page_size` - If set, this is a numeric value indicating the maximum allowable requested page size. This attribute is only valid if `page_size_query_param` is also set.
@@ -126,13 +127,13 @@ This pagination style mirrors the syntax used when looking up multiple database 
 
 #### Setup
 
-To enable the `PageNumberPagination` style globally, use the following configuration:
+To enable the `LimitOffsetPagination` style globally, use the following configuration:
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
     }
 
-Optionally, you may also set a `DEFAULT_PAGE_SIZE` key. If the `DEFAULT_PAGE_SIZE` parameter is also used then the `limit` query parameter will be optional, and may be omitted by the client.
+Optionally, you may also set a `PAGE_SIZE` key. If the `PAGE_SIZE` parameter is also used then the `limit` query parameter will be optional, and may be omitted by the client.
 
 On `GenericAPIView` subclasses you may also set the `pagination_class` attribute to select `LimitOffsetPagination` on a per-view basis.
 
@@ -142,7 +143,7 @@ The `LimitOffsetPagination` class includes a number of attributes that may be ov
 
 To set these attributes you should override the `LimitOffsetPagination` class, and then enable your custom pagination class as above.
 
-* `default_limit` - A numeric value indicating the limit to use if one is not provided by the client in a query parameter. Defaults to the same value as the `DEFAULT_PAGE_SIZE` settings key.
+* `default_limit` - A numeric value indicating the limit to use if one is not provided by the client in a query parameter. Defaults to the same value as the `PAGE_SIZE` settings key.
 * `limit_query_param` - A string value indicating the name of the "limit" query parameter. Defaults to `'limit'`.
 * `offset_query_param` - A string value indicating the name of the "offset" query parameter. Defaults to `'offset'`.
 * `max_limit` - If set this is a numeric value indicating the maximum allowable limit that may be requested by the client. Defaults to `None`.
@@ -158,28 +159,33 @@ Cursor based pagination requires that there is a unique, unchanging ordering of 
 
 Cursor based pagination is more complex than other schemes. It also requires that the result set presents a fixed ordering, and does not allow the client to arbitrarily index into the result set. However it does provide the following benefits:
 
-* Provides a consistent pagination view. When used properly `CursorPagination` ensures that the client will never see the same item twice when paging through records.
+* Provides a consistent pagination view. When used properly `CursorPagination` ensures that the client will never see the same item twice when paging through records, even when new items are being inserted by other clients during the pagination process.
 * Supports usage with very large datasets. With extremely large datasets pagination using offset-based pagination styles may become inefficient or unusable. Cursor based pagination schemes instead have fixed-time properties, and do not slow down as the dataset size increases.
 
 #### Details and limitations
 
-This implementation of cursor pagination uses a smart "position plus offset" style that allows it to properly support not-strictly-unique values as the ordering.
+Proper use of cursor based pagination requires a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against. The default is to order by `"-created"`. This assumes that **there must be a 'created' timestamp field** on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.
 
-It should be noted that using non-unique values the ordering does introduce the possibility of paging artifacts, where pagination consistency is no longer 100% guaranteed.
+You can modify the ordering by overriding the `'ordering'` attribute on the pagination class, or by using the `OrderingFilter` filter class together with `CursorPagination`. When used with `OrderingFilter` you should strongly consider restricting the fields that the user may order by.
 
-**TODO**: Notes on `None`.
+Proper usage of cursor pagination should have an ordering field that satisfies the following:
 
-The implementation also supports both forward and reverse pagination, which is often not supported in other implementations.
+* Should be an unchanging value, such as a timestamp, slug, or other field that is only set once, on creation.
+* Should be unique, or nearly unique. Millisecond precision timestamps are a good example. This implementation of cursor pagination uses a smart "position plus offset" style that allows it to properly support not-strictly-unique values as the ordering.
+* Should be a non-nullable value that can be coerced to a string.
+* The field should have a database index.
+
+Using an ordering field that does not satisfy these constraints will generally still work, but you'll be loosing some of the benefits of cursor pagination.
 
 For more technical details on the implementation we use for cursor pagination, the ["Building cursors for the Disqus API"][disqus-cursor-api] blog post gives a good overview of the basic approach.
 
 #### Setup
 
-To enable the `CursorPagination` style globally, use the following configuration, modifying the `DEFAULT_PAGE_SIZE` as desired:
+To enable the `CursorPagination` style globally, use the following configuration, modifying the `PAGE_SIZE` as desired:
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
-        'DEFAULT_PAGE_SIZE': 100
+        'PAGE_SIZE': 100
     }
 
 On `GenericAPIView` subclasses you may also set the `pagination_class` attribute to select `CursorPagination` on a per-view basis.
@@ -190,9 +196,9 @@ The `CursorPagination` class includes a number of attributes that may be overrid
 
 To set these attributes you should override the `CursorPagination` class, and then enable your custom pagination class as above.
 
-* `page_size` = A numeric value indicating the page size. If set, this overrides the `DEFAULT_PAGE_SIZE` setting. Defaults to the same value as the `DEFAULT_PAGE_SIZE` settings key.
+* `page_size` = A numeric value indicating the page size. If set, this overrides the `PAGE_SIZE` setting. Defaults to the same value as the `PAGE_SIZE` settings key.
 * `cursor_query_param` = A string value indicating the name of the "cursor" query parameter. Defaults to `'cursor'`.
-* `ordering` = This should be a string, or list of strings, indicating the field against which the cursor based pagination will be applied. For example: `ordering = 'created'`. Any filters on the view which define a `get_ordering` will override this attribute. Defaults to `None`.
+* `ordering` = This should be a string, or list of strings, indicating the field against which the cursor based pagination will be applied. For example: `ordering = 'slug'`. Defaults to `-created`. This value may also be overridden by using `OrderingFilter` on the view.
 * `template` = The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to `None` to disable HTML pagination controls completely. Defaults to `"rest_framework/pagination/previous_and_next.html"`.
 
 ---
@@ -208,18 +214,43 @@ Note that the `paginate_queryset` method may set state on the pagination instanc
 
 ## Example
 
+Suppose we want to replace the default pagination output style with a modified format that  includes the next and previous links under in a nested 'links' key. We could specify a custom pagination class like so:
+
+    class CustomPagination(pagination.PageNumberPagination):
+        def get_paginated_response(self, data):
+            return Response({
+                'links': {
+                   'next': self.get_next_link(),
+                   'previous': self.get_previous_link()
+                },
+                'count': self.page.paginator.count,
+                'results': data
+            })
+
+We'd then need to setup the custom class in our configuration:
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.CustomPagination',
+        'PAGE_SIZE': 100
+    }
+
+Note that if you care about how the ordering of keys is displayed in responses in the browsable API you might choose to use an `OrderedDict` when constructing the body of paginated responses, but this is optional.
+
+## Header based pagination
+
 Let's modify the built-in `PageNumberPagination` style, so that instead of include the pagination links in the body of the response, we'll instead include a `Link` header, in a [similar style to the GitHub API][github-link-pagination].
 
     class LinkHeaderPagination(pagination.PageNumberPagination):
         def get_paginated_response(self, data):
-            next_url = self.get_next_link()            previous_url = self.get_previous_link()
+            next_url = self.get_next_link()
+            previous_url = self.get_previous_link()
 
             if next_url is not None and previous_url is not None:
-                link = '<{next_url}; rel="next">, <{previous_url}; rel="prev">'
+                link = '<{next_url}>; rel="next", <{previous_url}>; rel="prev"'
             elif next_url is not None:
-                link = '<{next_url}; rel="next">'
+                link = '<{next_url}>; rel="next"'
             elif previous_url is not None:
-                link = '<{previous_url}; rel="prev">'
+                link = '<{previous_url}>; rel="prev"'
             else:
                 link = ''
 
@@ -234,7 +265,7 @@ To have your custom pagination class be used by default, use the `DEFAULT_PAGINA
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.LinkHeaderPagination',
-        'DEFAULT_PAGE_SIZE': 10
+        'PAGE_SIZE': 100
     }
 
 API responses for list endpoints will now include a `Link` header, instead of including the pagination links as part of the body of the response, for example:

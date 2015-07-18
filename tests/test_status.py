@@ -1,7 +1,10 @@
 from __future__ import unicode_literals
+
 from django.test import TestCase
+
 from rest_framework.status import (
-    is_informational, is_success, is_redirect, is_client_error, is_server_error
+    is_client_error, is_informational, is_redirect, is_server_error,
+    is_success
 )
 
 

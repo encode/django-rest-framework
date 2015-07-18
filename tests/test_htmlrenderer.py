@@ -1,15 +1,17 @@
 from __future__ import unicode_literals
+
+import django.template.loader
+from django.conf.urls import url
 from django.core.exceptions import PermissionDenied
-from django.conf.urls import patterns, url
 from django.http import Http404
+from django.template import Template, TemplateDoesNotExist
 from django.test import TestCase
-from django.template import TemplateDoesNotExist, Template
 from django.utils import six
+
 from rest_framework import status
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
-import django.template.loader
 
 
 @api_view(('GET',))
@@ -34,12 +36,11 @@ def not_found(request):
     raise Http404()
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$', example),
     url(r'^permission_denied$', permission_denied),
     url(r'^not_found$', not_found),
-)
+]
 
 
 class TemplateHTMLRendererTests(TestCase):

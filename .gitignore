@@ -14,3 +14,4 @@ MANIFEST
 
 !.gitignore
 !.travis.yml
+!.isort.cfg

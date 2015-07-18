@@ -2,29 +2,30 @@
 Tests for content parsing, and form-overloaded content parsing.
 """
 from __future__ import unicode_literals
-from django.conf.urls import patterns
-from django.contrib.auth.models import User
+
+import json
+from io import BytesIO
+
+import django
+import pytest
+from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.handlers.wsgi import WSGIRequest
 from django.test import TestCase
 from django.utils import six
+
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.parsers import (
-    BaseParser,
-    FormParser,
-    MultiPartParser,
-    JSONParser
+    BaseParser, FormParser, JSONParser, MultiPartParser
 )
-from rest_framework.request import Request, Empty
+from rest_framework.request import Empty, Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.test import APIRequestFactory, APIClient
+from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
-from io import BytesIO
-import json
-
 
 factory = APIRequestFactory()
 
@@ -189,10 +190,9 @@ class MockView(APIView):
 
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-urlpatterns = patterns(
-    '',
-    (r'^$', MockView.as_view()),
-)
+urlpatterns = [
+    url(r'^$', MockView.as_view()),
+]
 
 
 class TestContentParsingWithAuthentication(TestCase):
@@ -276,3 +276,16 @@ class TestAuthSetter(TestCase):
         request = Request(factory.get('/'))
         request.auth = 'DUMMY'
         self.assertEqual(request.auth, 'DUMMY')
+
+
+@pytest.mark.skipif(django.VERSION < (1, 7),
+                    reason='secure argument is only available for django1.7+')
+class TestSecure(TestCase):
+
+    def test_default_secure_false(self):
+        request = Request(factory.get('/', secure=False))
+        self.assertEqual(request.scheme, 'http')
+
+    def test_default_secure_true(self):
+        request = Request(factory.get('/', secure=True))
+        self.assertEqual(request.scheme, 'https')

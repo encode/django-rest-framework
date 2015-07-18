@@ -1,5 +1,6 @@
-from rest_framework import serializers
 from django.utils.datastructures import MultiValueDict
+
+from rest_framework import serializers
 
 
 class BasicObject:

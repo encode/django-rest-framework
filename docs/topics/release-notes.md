@@ -38,8 +38,73 @@ You can determine your currently installed version using `pip freeze`:
 
 ---
 
-## 3.0.x series
+## 3.1.x series
 
+### 3.1.3
+
+**Date**: [4th June 2015][3.1.3-milestone].
+
+* Add `DurationField`. ([#2481][gh2481], [#2989][gh2989])
+* Add `format` argument to `UUIDField`. ([#2788][gh2788], [#3000][gh3000])
+* `MultipleChoiceField` empties incorrectly on a partial update using multipart/form-data ([#2993][gh2993], [#2894][gh2894])
+* Fix a bug in options related to read-only `RelatedField`. ([#2981][gh2981], [#2811][gh2811])
+* Fix nested serializers with `unique_together` relations. ([#2975][gh2975])
+* Allow unexpected values for `ChoiceField`/`MultipleChoiceField` representations. ([#2839][gh2839], [#2940][gh2940])
+* Rollback the transaction on error if `ATOMIC_REQUESTS` is set. ([#2887][gh2887], [#2034][gh2034])
+* Set the action on a view when override_method regardless of its None-ness. ([#2933][gh2933])
+* `DecimalField` accepts `2E+2` as 200 and validates decimal place correctly. ([#2948][gh2948], [#2947][gh2947])
+* Support basic authentication with custom `UserModel` that change `username`. ([#2952][gh2952])
+* `IPAddressField` improvements. ([#2747][gh2747], [#2618][gh2618], [#3008][gh3008])
+* Improve `DecimalField` for easier subclassing. ([#2695][gh2695])
+
+
+### 3.1.2
+
+**Date**: [13rd May 2015][3.1.2-milestone].
+
+* `DateField.to_representation` can handle str and empty values. ([#2656][gh2656], [#2687][gh2687], [#2869][gh2869])
+* Use default reason phrases from HTTP standard. ([#2764][gh2764], [#2763][gh2763])
+* Raise error when `ModelSerializer` used with abstract model. ([#2757][gh2757], [#2630][gh2630])
+* Handle reversal of non-API view_name in `HyperLinkedRelatedField` ([#2724][gh2724], [#2711][gh2711])
+* Dont require pk strictly for related fields. ([#2745][gh2745], [#2754][gh2754])
+* Metadata detects null boolean field type. ([#2762][gh2762])
+* Proper handling of depth in nested serializers. ([#2798][gh2798])
+* Display viewset without paginator. ([#2807][gh2807])
+* Don't check for deprecated `.model` attribute in permissions ([#2818][gh2818])
+* Restrict integer field to integers and strings. ([#2835][gh2835], [#2836][gh2836])
+* Improve `IntegerField` to use compiled decimal regex. ([#2853][gh2853])
+* Prevent empty `queryset` to raise AssertionError. ([#2862][gh2862])
+* `DjangoModelPermissions` rely on `get_queryset`. ([#2863][gh2863])
+* Check `AcceptHeaderVersioning` with content negotiation in place. ([#2868][gh2868])
+* Allow `DjangoObjectPermissions` to use views that define `get_queryset`. ([#2905][gh2905])
+
+
+### 3.1.1
+
+**Date**: [23rd March 2015][3.1.1-milestone].
+
+* **Security fix**: Escape tab switching cookie name in browsable API.
+* Display input forms in browsable API if `serializer_class` is used, even when `get_serializer` method does not exist on the view. ([#2743][gh2743])
+* Use a password input for the AuthTokenSerializer. ([#2741][gh2741])
+* Fix missing anchor closing tag after next button. ([#2691][gh2691])
+* Fix `lookup_url_kwarg` handling in viewsets. ([#2685][gh2685], [#2591][gh2591])
+* Fix problem with importing `rest_framework.views` in `apps.py` ([#2678][gh2678])
+* LimitOffsetPagination raises `TypeError` if PAGE_SIZE not set ([#2667][gh2667], [#2700][gh2700])
+* German translation for `min_value` field error message references `max_value`. ([#2645][gh2645])
+* Remove `MergeDict`. ([#2640][gh2640])
+* Support serializing unsaved models with related fields. ([#2637][gh2637], [#2641][gh2641])
+* Allow blank/null on radio.html choices. ([#2631][gh2631])
+
+
+### 3.1.0
+
+**Date**: [5th March 2015][3.1.0-milestone].
+
+For full details see the [3.1 release announcement](3.1-announcement.md).
+
+---
+
+## 3.0.x series
 
 ### 3.0.5
 
@@ -137,7 +202,7 @@ For full details see the [3.0 release announcement](3.0-announcement.md).
 
 ---
 
-For older release notes, [please see the version 2.x documentation](old-release-notes).
+For older release notes, [please see the version 2.x documentation][old-release-notes].
 
 [cite]: http://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s04.html
 [deprecation-policy]: #deprecation-policy
@@ -149,13 +214,17 @@ For older release notes, [please see the version 2.x documentation](old-release-
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
 [ticket-582]: https://github.com/tomchristie/django-rest-framework/issues/582
 [rfc-6266]: http://tools.ietf.org/html/rfc6266#section-4.3
-[old-release-notes]: http://tomchristie.github.io/rest-framework-2-docs/topics/release-notes#24x-series
+[old-release-notes]: https://github.com/tomchristie/django-rest-framework/blob/version-2.4.x/docs/topics/release-notes.md
 
 [3.0.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.1+Release%22
 [3.0.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.2+Release%22
 [3.0.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.3+Release%22
 [3.0.4-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.4+Release%22
 [3.0.5-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.5+Release%22
+[3.1.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.0+Release%22
+[3.1.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.1+Release%22
+[3.1.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.2+Release%22
+[3.1.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.3+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -254,3 +323,62 @@ For older release notes, [please see the version 2.x documentation](old-release-
 [gh2519]: https://github.com/tomchristie/django-rest-framework/issues/2519
 [gh2524]: https://github.com/tomchristie/django-rest-framework/issues/2524
 [gh2530]: https://github.com/tomchristie/django-rest-framework/issues/2530
+<!-- 3.1.1 -->
+[gh2691]: https://github.com/tomchristie/django-rest-framework/issues/2691
+[gh2685]: https://github.com/tomchristie/django-rest-framework/issues/2685
+[gh2591]: https://github.com/tomchristie/django-rest-framework/issues/2591
+[gh2678]: https://github.com/tomchristie/django-rest-framework/issues/2678
+[gh2667]: https://github.com/tomchristie/django-rest-framework/issues/2667
+[gh2700]: https://github.com/tomchristie/django-rest-framework/issues/2700
+[gh2645]: https://github.com/tomchristie/django-rest-framework/issues/2645
+[gh2640]: https://github.com/tomchristie/django-rest-framework/issues/2640
+[gh2637]: https://github.com/tomchristie/django-rest-framework/issues/2637
+[gh2641]: https://github.com/tomchristie/django-rest-framework/issues/2641
+[gh2631]: https://github.com/tomchristie/django-rest-framework/issues/2631
+[gh2741]: https://github.com/tomchristie/django-rest-framework/issues/2641
+[gh2743]: https://github.com/tomchristie/django-rest-framework/issues/2643
+<!-- 3.1.2 -->
+[gh2656]: https://github.com/tomchristie/django-rest-framework/issues/2656
+[gh2687]: https://github.com/tomchristie/django-rest-framework/issues/2687
+[gh2869]: https://github.com/tomchristie/django-rest-framework/issues/2869
+[gh2764]: https://github.com/tomchristie/django-rest-framework/issues/2764
+[gh2763]: https://github.com/tomchristie/django-rest-framework/issues/2763
+[gh2757]: https://github.com/tomchristie/django-rest-framework/issues/2757
+[gh2630]: https://github.com/tomchristie/django-rest-framework/issues/2630
+[gh2724]: https://github.com/tomchristie/django-rest-framework/issues/2724
+[gh2711]: https://github.com/tomchristie/django-rest-framework/issues/2711
+[gh2745]: https://github.com/tomchristie/django-rest-framework/issues/2745
+[gh2754]: https://github.com/tomchristie/django-rest-framework/issues/2754
+[gh2762]: https://github.com/tomchristie/django-rest-framework/issues/2762
+[gh2798]: https://github.com/tomchristie/django-rest-framework/issues/2798
+[gh2807]: https://github.com/tomchristie/django-rest-framework/issues/2807
+[gh2818]: https://github.com/tomchristie/django-rest-framework/issues/2818
+[gh2835]: https://github.com/tomchristie/django-rest-framework/issues/2835
+[gh2836]: https://github.com/tomchristie/django-rest-framework/issues/2836
+[gh2853]: https://github.com/tomchristie/django-rest-framework/issues/2853
+[gh2862]: https://github.com/tomchristie/django-rest-framework/issues/2862
+[gh2863]: https://github.com/tomchristie/django-rest-framework/issues/2863
+[gh2868]: https://github.com/tomchristie/django-rest-framework/issues/2868
+[gh2905]: https://github.com/tomchristie/django-rest-framework/issues/2905
+<!-- 3.1.3 -->
+[gh2481]: https://github.com/tomchristie/django-rest-framework/issues/2481
+[gh2989]: https://github.com/tomchristie/django-rest-framework/issues/2989
+[gh2788]: https://github.com/tomchristie/django-rest-framework/issues/2788
+[gh3000]: https://github.com/tomchristie/django-rest-framework/issues/3000
+[gh2993]: https://github.com/tomchristie/django-rest-framework/issues/2993
+[gh2894]: https://github.com/tomchristie/django-rest-framework/issues/2894
+[gh2981]: https://github.com/tomchristie/django-rest-framework/issues/2981
+[gh2811]: https://github.com/tomchristie/django-rest-framework/issues/2811
+[gh2975]: https://github.com/tomchristie/django-rest-framework/issues/2975
+[gh2839]: https://github.com/tomchristie/django-rest-framework/issues/2839
+[gh2940]: https://github.com/tomchristie/django-rest-framework/issues/2940
+[gh2887]: https://github.com/tomchristie/django-rest-framework/issues/2887
+[gh2034]: https://github.com/tomchristie/django-rest-framework/issues/2034
+[gh2933]: https://github.com/tomchristie/django-rest-framework/issues/2933
+[gh2948]: https://github.com/tomchristie/django-rest-framework/issues/2948
+[gh2947]: https://github.com/tomchristie/django-rest-framework/issues/2947
+[gh2952]: https://github.com/tomchristie/django-rest-framework/issues/2952
+[gh2747]: https://github.com/tomchristie/django-rest-framework/issues/2747
+[gh2618]: https://github.com/tomchristie/django-rest-framework/issues/2618
+[gh3008]: https://github.com/tomchristie/django-rest-framework/issues/3008
+[gh2695]: https://github.com/tomchristie/django-rest-framework/issues/2695

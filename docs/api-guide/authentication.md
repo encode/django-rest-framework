@@ -168,7 +168,6 @@ The `curl` command line tool may be useful for testing token authenticated APIs.
 If you want every user to have an automatically generated Token, you can simply catch the User's `post_save` signal.
 
     from django.conf import settings
-    from django.contrib.auth import get_user_model
     from django.db.models.signals import post_save
     from django.dispatch import receiver
     from rest_framework.authtoken.models import Token
@@ -247,6 +246,10 @@ If successfully authenticated, `SessionAuthentication` provides the following cr
 Unauthenticated responses that are denied permission will result in an `HTTP 403 Forbidden` response.
 
 If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `PATCH`, `POST` or `DELETE` requests.  See the [Django CSRF documentation][csrf-ajax] for more details.
+
+**Warning**: Always use Django's standard login view when creating login pages. This will ensure your login views are properly protected.
+
+CSRF validation in REST framework works slightly differently to standard Django due to the need to support both session and non-session based authentication to the same views. This means that only authenticated requests require CSRF tokens, and anonymous requests may be sent without CSRF tokens. This behaviour is not suitable for login views, which should always have CSRF validation applied.
 
 # Custom authentication
 

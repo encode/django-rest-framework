@@ -1,11 +1,5 @@
 source: fields.py
 
----
-
-**Note**: This is the documentation for the **version 3.0** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
-
----
-
 # Serializer fields
 
 > Each field in a Form class is responsible not only for validating data, but also for "cleaning" it &mdash; normalizing it to a consistent format.
@@ -25,6 +19,8 @@ Serializer fields handle converting between primitive values and internal dataty
 Each serializer field class constructor takes at least these arguments.  Some Field classes take additional, field-specific arguments, but the following should always be accepted:
 
 ### `read_only`
+
+Read-only fields are included in the API output, but should not be included in the input during create or update operations. Any 'read_only' fields that are incorrectly included in the serializer input will be ignored.
 
 Set this to `True` to ensure that the field is used when serializing a representation, but is not used when creating or updating an instance during deserialization.
 
@@ -189,6 +185,15 @@ A field that ensures the input is a valid UUID string. The `to_internal_value` m
 
     "de305d54-75b4-431b-adb2-eb6b9e546013"
 
+**Signature:** `UUIDField(format='hex_verbose')`
+
+- `format`: Determines the representation format of the uuid value
+    - `'hex_verbose'` - The cannoncical hex representation, including hyphens: `"5ce0e9a5-5ffa-654b-cee0-1238041fb31a"`
+    - `'hex'` - The compact hex representation of the UUID, not including hyphens: `"5ce0e9a55ffa654bcee01238041fb31a"`
+    - `'int'` - A 128 bit integer representation of the UUID: `"123456789012312313134124512351145145114"`
+    - `'urn'` - RFC 4122 URN representation of the UUID: `"urn:uuid:5ce0e9a5-5ffa-654b-cee0-1238041fb31a"`
+  Changing the `format` parameters only affects representation values. All formats are accepted by `to_internal_value`
+
 ## FilePathField
 
 A field whose choices are limited to the filenames in a certain directory on the filesystem
@@ -202,6 +207,17 @@ Corresponds to `django.forms.fields.FilePathField`.
 - `recursive` - Specifies whether all subdirectories of path should be included.  Default is `False`.
 - `allow_files` - Specifies whether files in the specified location should be included. Default is `True`. Either this or `allow_folders` must be `True`.
 - `allow_folders` - Specifies whether folders in the specified location should be included. Default is `False`. Either this or `allow_files` must be `True`.
+
+## IPAddressField
+
+A field that ensures the input is a valid IPv4 or IPv6 string.
+
+Corresponds to `django.forms.fields.IPAddressField` and `django.forms.fields.GenericIPAddressField`.
+
+**Signature**: `IPAddressField(protocol='both', unpack_ipv4=False, **options)`
+
+- `protocol` Limits valid inputs to the specified protocol. Accepted values are 'both' (default), 'IPv4' or 'IPv6'. Matching is case insensitive.
+- `unpack_ipv4` Unpacks IPv4 mapped addresses like ::ffff:192.0.2.1. If this option is enabled that address would be unpacked to 192.0.2.1. Default is disabled. Can only be used when protocol is set to 'both'.
 
 ---
 
@@ -321,6 +337,18 @@ Corresponds to `django.db.models.fields.TimeField`
 #### `TimeField` format strings
 
 Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style times should be used. (eg `'12:34:56.000000'`)
+
+## DurationField
+
+A Duration representation.
+Corresponds to `django.db.models.fields.DurationField`
+
+The `validated_data` for these fields will contain a `datetime.timedelta` instance.
+The representation is a string following this format `'[DD] [HH:[MM:]]ss[.uuuuuu]'`.
+
+**Note:** This field is only available with Django versions >= 1.8.
+
+**Signature:** `DurationField()`
 
 ---
 
@@ -454,7 +482,7 @@ A field class that does not take a value based on user input, but instead takes 
 
 For example, to include a field that always provides the current time as part of the serializer validated data, you would use the following:
 
-    modified = serializer.HiddenField(default=timezone.now)
+    modified = serializers.HiddenField(default=timezone.now)
 
 The `HiddenField` class is usually only needed if you have some validation that needs to run based on some pre-provided field values, but you do not want to expose all of those fields to the end user.
 
@@ -501,7 +529,7 @@ If you want to create a custom field, you'll need to subclass `Field` and then o
 
 The `.to_representation()` method is called to convert the initial datatype into a primitive, serializable datatype.
 
-The `to_internal_value()` method is called to restore a primitive datatype into its internal python representation. This method should raise a `serializer.ValidationError` if the data is invalid.
+The `to_internal_value()` method is called to restore a primitive datatype into its internal python representation. This method should raise a `serializers.ValidationError` if the data is invalid.
 
 Note that the `WritableField` class that was present in version 2.x no longer exists. You should subclass `Field` and override `to_internal_value()` if the field supports data input.
 

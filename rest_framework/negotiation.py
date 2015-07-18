@@ -3,11 +3,14 @@ Content negotiation deals with selecting an appropriate renderer given the
 incoming request.  Typically this will be based on the request's Accept header.
 """
 from __future__ import unicode_literals
+
 from django.http import Http404
-from rest_framework import exceptions
+
+from rest_framework import HTTP_HEADER_ENCODING, exceptions
 from rest_framework.settings import api_settings
-from rest_framework.utils.mediatypes import order_by_precedence, media_type_matches
-from rest_framework.utils.mediatypes import _MediaType
+from rest_framework.utils.mediatypes import (
+    _MediaType, media_type_matches, order_by_precedence
+)
 
 
 class BaseContentNegotiation(object):
@@ -54,13 +57,19 @@ class DefaultContentNegotiation(BaseContentNegotiation):
                 for media_type in media_type_set:
                     if media_type_matches(renderer.media_type, media_type):
                         # Return the most specific media type as accepted.
+                        media_type_wrapper = _MediaType(media_type)
                         if (
                             _MediaType(renderer.media_type).precedence >
-                            _MediaType(media_type).precedence
+                            media_type_wrapper.precedence
                         ):
                             # Eg client requests '*/*'
                             # Accepted media type is 'application/json'
-                            return renderer, renderer.media_type
+                            full_media_type = ';'.join(
+                                (renderer.media_type,) +
+                                tuple('{0}={1}'.format(
+                                    key, value.decode(HTTP_HEADER_ENCODING))
+                                    for key, value in media_type_wrapper.params.items()))
+                            return renderer, full_media_type
                         else:
                             # Eg client requests 'application/json; indent=8'
                             # Accepted media type is 'application/json; indent=8'

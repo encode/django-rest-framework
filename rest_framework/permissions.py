@@ -2,10 +2,12 @@
 Provides a set of pluggable permission policies.
 """
 from __future__ import unicode_literals
+
 from django.http import Http404
+
 from rest_framework.compat import get_model_name
 
-SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
+SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
 
 
 class BasePermission(object):
@@ -77,7 +79,7 @@ class DjangoModelPermissions(BasePermission):
     `add`/`change`/`delete` permissions on the model.
 
     This permission can only be applied against view classes that
-    provide a `.model` or `.queryset` attribute.
+    provide a `.queryset` attribute.
     """
 
     # Map methods into required permission codes.
@@ -107,24 +109,22 @@ class DjangoModelPermissions(BasePermission):
         return [perm % kwargs for perm in self.perms_map[method]]
 
     def has_permission(self, request, view):
-        # Note that `.model` attribute on views is deprecated, although we
-        # enforce the deprecation on the view `get_serializer_class()` and
-        # `get_queryset()` methods, rather than here.
-        model_cls = getattr(view, 'model', None)
-        queryset = getattr(view, 'queryset', None)
-
-        if model_cls is None and queryset is not None:
-            model_cls = queryset.model
-
         # Workaround to ensure DjangoModelPermissions are not applied
         # to the root view when using DefaultRouter.
-        if model_cls is None and getattr(view, '_ignore_model_permissions', False):
+        if getattr(view, '_ignore_model_permissions', False):
             return True
 
-        assert model_cls, ('Cannot apply DjangoModelPermissions on a view that'
-                           ' does not have `.model` or `.queryset` property.')
+        try:
+            queryset = view.get_queryset()
+        except AttributeError:
+            queryset = getattr(view, 'queryset', None)
 
-        perms = self.get_required_permissions(request.method, model_cls)
+        assert queryset is not None, (
+            'Cannot apply DjangoModelPermissions on a view that '
+            'does not have `.queryset` property or overrides the '
+            '`.get_queryset()` method.')
+
+        perms = self.get_required_permissions(request.method, queryset.model)
 
         return (
             request.user and
@@ -150,7 +150,7 @@ class DjangoObjectPermissions(DjangoModelPermissions):
     `add`/`change`/`delete` permissions on the object using .has_perms.
 
     This permission can only be applied against view classes that
-    provide a `.model` or `.queryset` attribute.
+    provide a `.queryset` attribute.
     """
 
     perms_map = {
@@ -171,21 +171,27 @@ class DjangoObjectPermissions(DjangoModelPermissions):
         return [perm % kwargs for perm in self.perms_map[method]]
 
     def has_object_permission(self, request, view, obj):
-        model_cls = getattr(view, 'model', None)
-        queryset = getattr(view, 'queryset', None)
+        try:
+            queryset = view.get_queryset()
+        except AttributeError:
+            queryset = getattr(view, 'queryset', None)
 
-        if model_cls is None and queryset is not None:
-            model_cls = queryset.model
+        assert queryset is not None, (
+            'Cannot apply DjangoObjectPermissions on a view that '
+            'does not have `.queryset` property or overrides the '
+            '`.get_queryset()` method.')
+
+        model_cls = queryset.model
+        user = request.user
 
         perms = self.get_required_object_permissions(request.method, model_cls)
-        user = request.user
 
         if not user.has_perms(perms, obj):
             # If the user does not have permissions we need to determine if
             # they have read permissions to see 403, or not, and simply see
             # a 404 response.
 
-            if request.method in ('GET', 'OPTIONS', 'HEAD'):
+            if request.method in SAFE_METHODS:
                 # Read permissions already checked and failed, no need
                 # to make another lookup.
                 raise Http404

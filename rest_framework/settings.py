@@ -18,9 +18,11 @@ REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
 from __future__ import unicode_literals
-from django.test.signals import setting_changed
+
 from django.conf import settings
+from django.test.signals import setting_changed
 from django.utils import six
+
 from rest_framework import ISO_8601
 from rest_framework.compat import importlib
 
@@ -61,9 +63,7 @@ DEFAULTS = {
     'NUM_PROXIES': None,
 
     # Pagination
-    'PAGINATE_BY': None,
-    'PAGINATE_BY_PARAM': None,
-    'MAX_PAGINATE_BY': None,
+    'PAGE_SIZE': None,
 
     # Filtering
     'SEARCH_PARAM': 'search',
@@ -117,7 +117,12 @@ DEFAULTS = {
     'UNICODE_JSON': True,
     'COMPACT_JSON': True,
     'COERCE_DECIMAL_TO_STRING': True,
-    'UPLOADED_FILES_USE_URL': True
+    'UPLOADED_FILES_USE_URL': True,
+
+    # Pending deprecation:
+    'PAGINATE_BY': None,
+    'PAGINATE_BY_PARAM': None,
+    'MAX_PAGINATE_BY': None
 }
 
 
@@ -166,7 +171,7 @@ def import_from_string(val, setting_name):
         module_path, class_name = '.'.join(parts[:-1]), parts[-1]
         module = importlib.import_module(module_path)
         return getattr(module, class_name)
-    except ImportError as e:
+    except (ImportError, AttributeError) as e:
         msg = "Could not import '%s' for API setting '%s'. %s: %s." % (val, setting_name, e.__class__.__name__, e)
         raise ImportError(msg)
 
@@ -199,7 +204,7 @@ class APISettings(object):
             val = self.defaults[attr]
 
         # Coerce import strings into classes
-        if val and attr in self.import_strings:
+        if attr in self.import_strings:
             val = perform_import(val, attr)
 
         # Cache the result

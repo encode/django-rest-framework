@@ -83,8 +83,6 @@ Rather than write multiple views we're grouping together all the common behavior
 
 We can easily break these down into individual views if we need to, but using viewsets keeps the view logic nicely organized as well as being very concise.
 
-Notice that our viewset classes here are a little different from those in the [frontpage example][readme-example-api], as they include `queryset` and `serializer_class` attributes, instead of a `model` attribute.
-
 For trivial cases you can simply set a `model` attribute on the `ViewSet` class and the serializer and queryset will be automatically generated for you.  Setting the `queryset` and/or `serializer_class` attributes gives you more explicit control of the API behaviour, and is the recommended style for most applications.
 
 ## URLs
@@ -123,7 +121,7 @@ We'd also like to set a few global settings.  We'd like to turn on pagination, a
 
     REST_FRAMEWORK = {
         'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
-        'PAGINATE_BY': 10
+        'PAGE_SIZE': 10
     }
 
 Okay, we're done.

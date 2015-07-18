@@ -1,10 +1,13 @@
 from __future__ import unicode_literals
-from django.core.validators import RegexValidator, MaxValueValidator
+
+import re
+
+from django.core.validators import MaxValueValidator, RegexValidator
 from django.db import models
 from django.test import TestCase
+
 from rest_framework import generics, serializers, status
 from rest_framework.test import APIRequestFactory
-import re
 
 factory = APIRequestFactory()
 

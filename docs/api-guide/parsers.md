@@ -144,17 +144,16 @@ By default this will include the following keys: `view`, `request`, `args`, `kwa
 The following is an example plaintext parser that will populate the `request.data` property with a string representing the body of the request.
 
     class PlainTextParser(BaseParser):
-    """
-    Plain text parser.
-    """
-
-    media_type = 'text/plain'
-
-    def parse(self, stream, media_type=None, parser_context=None):
         """
-        Simply return a string representing the body of the request.
+        Plain text parser.
         """
-        return stream.read()
+        media_type = 'text/plain'
+
+        def parse(self, stream, media_type=None, parser_context=None):
+            """
+            Simply return a string representing the body of the request.
+            """
+            return stream.read()
 
 ---
 
