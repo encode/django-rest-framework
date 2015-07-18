@@ -12,6 +12,7 @@ import django
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import connection, transaction
+from django.forms import FilePathField as DjangoFilePathField
 from django.test.client import FakePayload
 from django.utils import six
 from django.utils.encoding import force_text
@@ -291,3 +292,21 @@ def set_rollback():
     else:
         # transaction not managed
         pass
+
+
+def get_filepathfield(path, match=None, recursive=False, allow_files=True,
+                      allow_folders=False, required=None):
+    """Create proper Django FilePathField with allowed kwargs."""
+
+    if django.VERSION < (1, 5):
+        # django field doesn't have allow_folders, allow_files kwargs
+        field = DjangoFilePathField(
+            path, match=match, recursive=recursive, required=required
+        )
+    else:
+        field = DjangoFilePathField(
+            path, match=match, recursive=recursive, allow_files=allow_files,
+            allow_folders=allow_folders, required=required
+        )
+
+    return field

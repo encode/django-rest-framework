@@ -26,7 +26,7 @@ from rest_framework import ISO_8601
 from rest_framework.compat import (
     EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
     MinValueValidator, OrderedDict, URLValidator, duration_string,
-    parse_duration, unicode_repr, unicode_to_repr
+    parse_duration, unicode_repr, unicode_to_repr, get_filepathfield
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
@@ -717,16 +717,10 @@ class FilePathField(CharField):
         super(FilePathField, self).__init__(**kwargs)
 
         # create field and get options to avoid code duplication
-        if django.VERSION < (1, 5):
-            # django field doesn't have allow_folders, allow_files kwargs
-            field = DjangoFilePathField(
-                path, match=match, recursive=recursive, required=required
-            )
-        else:
-            field = DjangoFilePathField(
-                path, match=match, recursive=recursive, allow_files=allow_files,
-                allow_folders=allow_folders, required=required
-            )
+        field = get_filepathfield(
+            path, match=match, recursive=recursive, allow_files=allow_files,
+            allow_folders=allow_folders, required=required
+        )
 
         self.choices = OrderedDict(field.choices)
         self.choice_strings_to_values = dict([
