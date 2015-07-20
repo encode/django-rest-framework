@@ -83,8 +83,6 @@ Rather than write multiple views we're grouping together all the common behavior
 
 We can easily break these down into individual views if we need to, but using viewsets keeps the view logic nicely organized as well as being very concise.
 
-For trivial cases you can simply set a `model` attribute on the `ViewSet` class and the serializer and queryset will be automatically generated for you.  Setting the `queryset` and/or `serializer_class` attributes gives you more explicit control of the API behaviour, and is the recommended style for most applications.
-
 ## URLs
 
 Okay, now let's wire up the API URLs.  On to `tutorial/urls.py`...
