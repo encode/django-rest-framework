@@ -7,6 +7,7 @@ from django.test import TestCase
 from django.utils import six
 
 from rest_framework import generics, renderers, serializers, status
+from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from tests.models import (
     BasicModel, ForeignKeySource, ForeignKeyTarget, RESTFrameworkModel
@@ -507,3 +508,26 @@ class TestFilterBackendAppliedToViews(TestCase):
         response = view(request).render()
         self.assertContains(response, 'field_b')
         self.assertNotContains(response, 'field_a')
+
+
+class TestSupportPatchSetting(TestCase):
+    def test_patch_instance_view_support_patch(self):
+        """
+        PATCH requests should fail when SUPPORT_PATCH is set to False.
+        """
+        obj = BasicModel.objects.create(text='abc')
+
+        class InstanceView(generics.UpdateAPIView):
+            queryset = BasicModel.objects.all()
+            serializer_class = BasicSerializer
+
+        api_settings.SUPPORT_PATCH = False
+
+        data = {'text': 'foobar'}
+        request = factory.patch('/1', data, format='json')
+        view = InstanceView.as_view()
+        response = view(request, pk=obj.pk).render()
+
+        api_settings.SUPPORT_PATCH = True
+
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
