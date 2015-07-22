@@ -38,7 +38,7 @@ Some tips on good issue reporting:
 
 ## Triaging issues
 
-Getting involved in triaging incoming issues is a good way to start contributing.  Every single ticket that comes into the ticket tracker needs to be reviewed in order to determine what the next steps should be.  Anyone can help out with this, you just need to be willing to
+Getting involved in triaging incoming issues is a good way to start contributing.  Every single ticket that comes into the ticket tracker needs to be reviewed in order to determine what the next steps should be.  Anyone can help out with this, you just need to be willing to:
 
 * Read through the ticket - does it make sense, is it missing any context that would help explain it better?
 * Is the ticket reported in the correct place, would it be better suited as a discussion on the discussion group?
