@@ -119,6 +119,14 @@ Default: `None`
 
 #### PAGINATE_BY_PARAM
 
+---
+
+**This setting is pending deprecation.**
+
+See the pagination documentation for further guidance on [setting the pagination style](pagination.md#modifying-the-pagination-style).
+
+---
+
 The name of a query parameter, which can be used by the client to override the default page size to use for pagination.  If set to `None`, clients may not override the default page size.
 
 For example, given the following settings:
@@ -135,6 +143,14 @@ A client would be able to modify the pagination size by using the `page_size` qu
 Default: `None`
 
 #### MAX_PAGINATE_BY
+
+---
+
+**This setting is pending deprecation.**
+
+See the pagination documentation for further guidance on [setting the pagination style](pagination.md#modifying-the-pagination-style).
+
+---
 
 The maximum page size to allow when the page size is specified by the client.  If set to `None`, then no maximum limit is applied.
 
