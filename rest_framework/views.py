@@ -7,6 +7,7 @@ import inspect
 import warnings
 
 from django.core.exceptions import PermissionDenied
+from django.db import models
 from django.http import Http404
 from django.utils import six
 from django.utils.encoding import smart_text
@@ -118,8 +119,19 @@ class APIView(View):
         This allows us to discover information about the view when we do URL
         reverse lookups.  Used for breadcrumb generation.
         """
+        if isinstance(getattr(cls, 'queryset', None), models.QuerySet):
+            def force_evaluation():
+                raise AssertionError(
+                    'Do not evaluate the `.queryset` attribute directly, '
+                    'as the result will be cached and reused between requests. '
+                    'Use `.all()` or call `.get_queryset()` instead.'
+                )
+
+            cls.queryset._fetch_all = force_evaluation
+
         view = super(APIView, cls).as_view(**initkwargs)
         view.cls = cls
+
         # Note: session based authentication is explicitly CSRF validated,
         # all other authentication is CSRF exempt.
         return csrf_exempt(view)

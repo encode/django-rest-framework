@@ -1,12 +1,14 @@
 from __future__ import unicode_literals
 
 import django
+import pytest
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from django.utils import six
 
 from rest_framework import generics, renderers, serializers, status
+from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
 from tests.models import (
     BasicModel, ForeignKeySource, ForeignKeyTarget, RESTFrameworkModel
@@ -527,3 +529,17 @@ class TestFilterBackendAppliedToViews(TestCase):
         response = view(request).render()
         self.assertContains(response, 'field_b')
         self.assertNotContains(response, 'field_a')
+
+
+class TestGuardedQueryset(TestCase):
+    def test_guarded_queryset(self):
+        class QuerysetAccessError(generics.ListAPIView):
+            queryset = BasicModel.objects.all()
+
+            def get(self, request):
+                return Response(list(self.queryset))
+
+        view = QuerysetAccessError.as_view()
+        request = factory.get('/')
+        with pytest.raises(AssertionError):
+            view(request).render()
