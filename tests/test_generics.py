@@ -153,7 +153,7 @@ class TestRootView(TestCase):
         request = factory.post('/', data, HTTP_ACCEPT='text/html')
         response = self.view(request).render()
         expected_error = '<span class="help-block">Ensure this field has no more than 100 characters.</span>'
-        self.assertIn(expected_error, response.rendered_content)
+        self.assertIn(expected_error, response.rendered_content.decode('utf-8'))
 
 
 EXPECTED_QUERIES_FOR_PUT = 3 if django.VERSION < (1, 6) else 2
@@ -300,7 +300,7 @@ class TestInstanceView(TestCase):
         request = factory.put('/', data, HTTP_ACCEPT='text/html')
         response = self.view(request, pk=1).render()
         expected_error = '<span class="help-block">Ensure this field has no more than 100 characters.</span>'
-        self.assertIn(expected_error, response.rendered_content)
+        self.assertIn(expected_error, response.rendered_content.decode('utf-8'))
 
 
 class TestFKInstanceView(TestCase):
