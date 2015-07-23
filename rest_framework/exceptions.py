@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ungettext
 
 from rest_framework import status
+from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 
 
 def _force_text_recursive(data):
@@ -22,14 +23,20 @@ def _force_text_recursive(data):
     lazy translation strings into plain text.
     """
     if isinstance(data, list):
-        return [
+        ret = [
             _force_text_recursive(item) for item in data
         ]
+        if isinstance(data, ReturnList):
+            return ReturnList(ret, serializer=data.serializer)
+        return data
     elif isinstance(data, dict):
-        return dict([
+        ret = dict([
             (key, _force_text_recursive(value))
             for key, value in data.items()
         ])
+        if isinstance(data, ReturnDict):
+            return ReturnDict(ret, serializer=data.serializer)
+        return data
     return force_text(data)
 
 
