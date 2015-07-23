@@ -196,6 +196,31 @@
   </div>
 </div>
 
+{% if error_form %}
+<!-- Errors Modal -->
+<div class="modal" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">{{ error_title }}</h4>
+      </div>
+      <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
+        <div class="modal-body">
+          <fieldset>
+            {{ error_form }}
+          </fieldset>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="{{ request.method }}" type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
         {% block script %}
             <script src="{% static "rest_framework/js/jquery-1.8.1-min.js" %}"></script>
             <script src="{% static "rest_framework/js/bootstrap.min.js" %}"></script>

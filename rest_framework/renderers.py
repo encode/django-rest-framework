@@ -683,15 +683,26 @@ class AdminRenderer(BrowsableAPIRenderer):
         self.accepted_media_type = accepted_media_type or ''
         self.renderer_context = renderer_context or {}
 
+        response = renderer_context['response']
+        request = renderer_context['request']
+        view = self.renderer_context['view']
+
+        if response.status_code == status.HTTP_400_BAD_REQUEST:
+            # Errors still need to display the list or detail information.
+            # The only way we can get at that is to simulate a GET request.
+            self.error_form = self.get_rendered_html_form(data, view, request.method, request)
+            self.error_title = {'POST': 'Create', 'PUT': 'Edit'}.get(request.method, 'Errors')
+
+            with override_method(view, request, 'GET') as request:
+                response = view.get(request, *view.args, **view.kwargs)
+            data = response.data
+
         template = loader.get_template(self.template)
         context = self.get_context(data, accepted_media_type, renderer_context)
         context = RequestContext(renderer_context['request'], context)
         ret = template.render(context)
 
         # Creation and deletion should use redirects in the admin style.
-        response = renderer_context['response']
-        request = renderer_context['request']
-
         if (response.status_code == status.HTTP_201_CREATED) and ('Location' in response):
             response.status_code = status.HTTP_302_FOUND
             ret = ''
@@ -742,6 +753,8 @@ class AdminRenderer(BrowsableAPIRenderer):
         context['columns'] = columns
         context['details'] = details
         context['results'] = results
+        context['error_form'] = getattr(self, 'error_form', None)
+        context['error_title'] = getattr(self, 'error_title', None)
         return context
 
 
