@@ -5,13 +5,18 @@ versions of django/python, and compatibility wrappers around optional packages.
 
 # flake8: noqa
 from __future__ import unicode_literals
-from django.core.exceptions import ImproperlyConfigured
+
+import inspect
+
+import django
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
+from django.db import connection, transaction
+from django.test.client import FakePayload
+from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.six.moves.urllib.parse import urlparse as _urlparse
-from django.utils import six
-import django
-import inspect
+
 try:
     import importlib
 except ImportError:
@@ -119,6 +124,14 @@ def get_model_name(model_cls):
         return model_cls._meta.module_name
 
 
+# Support custom user models in Django 1.5+
+try:
+    from django.contrib.auth import get_user_model
+except ImportError:
+    from django.contrib.auth.models import User
+    get_user_model = lambda: User
+
+
 # View._allowed_methods only present from 1.5 onwards
 if django.VERSION >= (1, 5):
     from django.views.generic import View
@@ -190,9 +203,6 @@ if 'patch' not in View.http_method_names:
     View.http_method_names = View.http_method_names + ['patch']
 
 
-# RequestFactory only provides `generic` from 1.5 onwards
-from django.test.client import RequestFactory as DjangoRequestFactory
-from django.test.client import FakePayload
 
 try:
     # In 1.5 the test client uses force_bytes
@@ -202,24 +212,30 @@ except ImportError:
     from django.utils.encoding import smart_str as force_bytes_or_smart_bytes
 
 
-class RequestFactory(DjangoRequestFactory):
-    def generic(self, method, path,
-            data='', content_type='application/octet-stream', **extra):
-        parsed = _urlparse(path)
-        data = force_bytes_or_smart_bytes(data, settings.DEFAULT_CHARSET)
-        r = {
-            'PATH_INFO': self._get_path(parsed),
-            'QUERY_STRING': force_text(parsed[4]),
-            'REQUEST_METHOD': six.text_type(method),
-        }
-        if data:
-            r.update({
-                'CONTENT_LENGTH': len(data),
-                'CONTENT_TYPE': six.text_type(content_type),
-                'wsgi.input': FakePayload(data),
-            })
-        r.update(extra)
-        return self.request(**r)
+# RequestFactory only provides `generic` from 1.5 onwards
+if django.VERSION >= (1, 5):
+    from django.test.client import RequestFactory
+else:
+    from django.test.client import RequestFactory as DjangoRequestFactory
+
+    class RequestFactory(DjangoRequestFactory):
+        def generic(self, method, path,
+                data='', content_type='application/octet-stream', **extra):
+            parsed = _urlparse(path)
+            data = force_bytes_or_smart_bytes(data, settings.DEFAULT_CHARSET)
+            r = {
+                'PATH_INFO': self._get_path(parsed),
+                'QUERY_STRING': force_text(parsed[4]),
+                'REQUEST_METHOD': six.text_type(method),
+            }
+            if data:
+                r.update({
+                    'CONTENT_LENGTH': len(data),
+                    'CONTENT_TYPE': six.text_type(content_type),
+                    'wsgi.input': FakePayload(data),
+                })
+            r.update(extra)
+            return self.request(**r)
 
 
 # Markdown is optional
@@ -250,3 +266,28 @@ else:
     SHORT_SEPARATORS = (b',', b':')
     LONG_SEPARATORS = (b', ', b': ')
     INDENT_SEPARATORS = (b',', b': ')
+
+
+if django.VERSION >= (1, 8):
+    from django.db.models import DurationField
+    from django.utils.dateparse import parse_duration
+    from django.utils.duration import duration_string
+else:
+    DurationField = duration_string = parse_duration = None
+
+
+def set_rollback():
+    if hasattr(transaction, 'set_rollback'):
+        if connection.settings_dict.get('ATOMIC_REQUESTS', False):
+            # If running in >=1.6 then mark a rollback as required,
+            # and allow it to be handled by Django.
+            if connection.in_atomic_block:
+                transaction.set_rollback(True)
+    elif transaction.is_managed():
+        # Otherwise handle it explicitly if in managed mode.
+        if transaction.is_dirty():
+            transaction.rollback()
+        transaction.leave_transaction_management()
+    else:
+        # transaction not managed
+        pass

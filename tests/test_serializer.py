@@ -1,10 +1,14 @@
 # coding: utf-8
 from __future__ import unicode_literals
-from .utils import MockObject
+
+import pickle
+
+import pytest
+
 from rest_framework import serializers
 from rest_framework.compat import unicode_repr
-import pickle
-import pytest
+
+from .utils import MockObject
 
 
 # Tests for core functionality.

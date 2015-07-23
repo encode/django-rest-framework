@@ -1,16 +1,18 @@
-from __future__ import unicode_literals, absolute_import
-from django import template
-from django.core.urlresolvers import reverse, NoReverseMatch
-from django.template import loader, Context
-from django.utils import six
-from django.utils.encoding import iri_to_uri, force_text
-from django.utils.html import escape
-from django.utils.safestring import SafeData, mark_safe
-from django.utils.html import smart_urlquote
-from rest_framework.renderers import HTMLFormRenderer
-from rest_framework.utils.urls import replace_query_param
+from __future__ import absolute_import, unicode_literals
+
 import decimal
 import re
+
+from django import template
+from django.core.urlresolvers import NoReverseMatch, reverse
+from django.template import Context, loader
+from django.utils import six
+from django.utils.encoding import force_text, iri_to_uri
+from django.utils.html import escape, smart_urlquote
+from django.utils.safestring import SafeData, mark_safe
+
+from rest_framework.renderers import HTMLFormRenderer
+from rest_framework.utils.urls import replace_query_param
 
 register = template.Library()
 

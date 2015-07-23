@@ -9,16 +9,18 @@ The wrapped request then offers a richer API, in particular :
     - form overloading of HTTP method, content type and content
 """
 from __future__ import unicode_literals
+
+import sys
+import warnings
+
 from django.conf import settings
 from django.http import QueryDict
 from django.http.multipartparser import parse_header
 from django.utils import six
 from django.utils.datastructures import MultiValueDict
-from rest_framework import HTTP_HEADER_ENCODING
-from rest_framework import exceptions
+
+from rest_framework import HTTP_HEADER_ENCODING, exceptions
 from rest_framework.settings import api_settings
-import sys
-import warnings
 
 
 def is_form_media_type(media_type):
@@ -48,16 +50,14 @@ class override_method(object):
 
     def __enter__(self):
         self.view.request = clone_request(self.request, self.method)
-        if self.action is not None:
-            # For viewsets we also set the `.action` attribute.
-            action_map = getattr(self.view, 'action_map', {})
-            self.view.action = action_map.get(self.method.lower())
+        # For viewsets we also set the `.action` attribute.
+        action_map = getattr(self.view, 'action_map', {})
+        self.view.action = action_map.get(self.method.lower())
         return self.view.request
 
     def __exit__(self, *args, **kwarg):
         self.view.request = self.request
-        if self.action is not None:
-            self.view.action = self.action
+        self.view.action = self.action
 
 
 class Empty(object):

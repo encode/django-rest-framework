@@ -1,13 +1,16 @@
 # coding: utf-8
 from __future__ import unicode_literals
+
+import re
+
 from django.utils.translation import ugettext_lazy as _
+
 from rest_framework import exceptions
 from rest_framework.compat import unicode_http_header
 from rest_framework.reverse import _reverse
 from rest_framework.settings import api_settings
 from rest_framework.templatetags.rest_framework import replace_query_param
 from rest_framework.utils.mediatypes import _MediaType
-import re
 
 
 class BaseVersioning(object):
@@ -59,8 +62,8 @@ class URLPathVersioning(BaseVersioning):
     An example URL conf for two views that accept two different versions.
 
     urlpatterns = [
-        url(r'^(?P<version>{v1,v2})/users/$', users_list, name='users-list'),
-        url(r'^(?P<version>{v1,v2})/users/(?P<pk>[0-9]+)/$', users_detail, name='users-detail')
+        url(r'^(?P<version>[v1|v2]+)/users/$', users_list, name='users-list'),
+        url(r'^(?P<version>[v1|v2]+)/users/(?P<pk>[0-9]+)/$', users_detail, name='users-detail')
     ]
 
     GET /1.0/something/ HTTP/1.1

@@ -5,7 +5,6 @@ from django.conf import settings
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
-
 # Prior to Django 1.5, the AUTH_USER_MODEL setting does not exist.
 # Note that we don't perform this code in the compat module due to
 # bug report #1297

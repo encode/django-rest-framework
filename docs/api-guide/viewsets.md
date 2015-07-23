@@ -27,7 +27,7 @@ Let's define a simple viewset that can be used to list or retrieve all the users
 
     class UserViewSet(viewsets.ViewSet):
         """
-        A simple ViewSet that for listing or retrieving users.
+        A simple ViewSet for listing or retrieving users.
         """
         def list(self, request):
             queryset = User.objects.all()

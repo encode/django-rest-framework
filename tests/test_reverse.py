@@ -1,7 +1,9 @@
 from __future__ import unicode_literals
-from django.conf.urls import patterns, url
+
+from django.conf.urls import url
 from django.core.urlresolvers import NoReverseMatch
 from django.test import TestCase
+
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 
@@ -11,10 +13,9 @@ factory = APIRequestFactory()
 def null_view(request):
     pass
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^view$', null_view, name='view'),
-)
+]
 
 
 class MockVersioningScheme(object):

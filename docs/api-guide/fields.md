@@ -20,6 +20,8 @@ Each serializer field class constructor takes at least these arguments.  Some Fi
 
 ### `read_only`
 
+Read-only fields are included in the API output, but should not be included in the input during create or update operations. Any 'read_only' fields that are incorrectly included in the serializer input will be ignored. 
+
 Set this to `True` to ensure that the field is used when serializing a representation, but is not used when creating or updating an instance during deserialization.
 
 Defaults to `False`
@@ -183,6 +185,26 @@ A field that ensures the input is a valid UUID string. The `to_internal_value` m
 
     "de305d54-75b4-431b-adb2-eb6b9e546013"
 
+**Signature:** `UUIDField(format='hex_verbose')`
+
+- `format`: Determines the representation format of the uuid value
+    - `'hex_verbose'` - The cannoncical hex representation, including hyphens: `"5ce0e9a5-5ffa-654b-cee0-1238041fb31a"`
+    - `'hex'` - The compact hex representation of the UUID, not including hyphens: `"5ce0e9a55ffa654bcee01238041fb31a"`
+    - `'int'` - A 128 bit integer representation of the UUID: `"123456789012312313134124512351145145114"`
+    - `'urn'` - RFC 4122 URN representation of the UUID: `"urn:uuid:5ce0e9a5-5ffa-654b-cee0-1238041fb31a"`
+  Changing the `format` parameters only affects representation values. All formats are accepted by `to_internal_value`
+
+## IPAddressField
+
+A field that ensures the input is a valid IPv4 or IPv6 string.
+
+Corresponds to `django.forms.fields.IPAddressField` and `django.forms.fields.GenericIPAddressField`.
+
+**Signature**: `IPAddressField(protocol='both', unpack_ipv4=False, **options)`
+
+- `protocol` Limits valid inputs to the specified protocol. Accepted values are 'both' (default), 'IPv4' or 'IPv6'. Matching is case insensitive.
+- `unpack_ipv4` Unpacks IPv4 mapped addresses like ::ffff:192.0.2.1. If this option is enabled that address would be unpacked to 192.0.2.1. Default is disabled. Can only be used when protocol is set to 'both'.
+
 ---
 
 # Numeric fields
@@ -301,6 +323,18 @@ Corresponds to `django.db.models.fields.TimeField`
 #### `TimeField` format strings
 
 Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style times should be used. (eg `'12:34:56.000000'`)
+
+## DurationField
+
+A Duration representation.
+Corresponds to `django.db.models.fields.DurationField`
+
+The `validated_data` for these fields will contain a `datetime.timedelta` instance.
+The representation is a string following this format `'[DD] [HH:[MM:]]ss[.uuuuuu]'`.
+
+**Note:** This field is only available with Django versions >= 1.8.
+
+**Signature:** `DurationField()`
 
 ---
 

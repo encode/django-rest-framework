@@ -19,9 +19,11 @@ automatically.
 from __future__ import unicode_literals
 
 from functools import update_wrapper
+
 from django.utils.decorators import classonlymethod
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import views, generics, mixins
+
+from rest_framework import generics, mixins, views
 
 
 class ViewSetMixin(object):
@@ -104,7 +106,14 @@ class ViewSetMixin(object):
         depending on the request method.
         """
         request = super(ViewSetMixin, self).initialize_request(request, *args, **kwargs)
-        self.action = self.action_map.get(request.method.lower())
+        method = request.method.lower()
+        if method == 'options':
+            # This is a special case as we always provide handling for the
+            # options method in the base `View` class.
+            # Unlike the other explicitly defined actions, 'metadata' is implict.
+            self.action = 'metadata'
+        else:
+            self.action = self.action_map.get(method)
         return request
 
 

@@ -1,13 +1,18 @@
 # encoding: utf-8
 from __future__ import unicode_literals
-from django.conf.urls import patterns, url
+
+from io import BytesIO
+
+from django.conf.urls import url
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.test import TestCase
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.test import APIClient, APIRequestFactory, force_authenticate
-from io import BytesIO
+from rest_framework.test import (
+    APIClient, APIRequestFactory, force_authenticate
+)
 
 
 @api_view(['GET', 'POST'])
@@ -32,12 +37,11 @@ def redirect_view(request):
     return redirect('/view/')
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^view/$', view),
     url(r'^session-view/$', session_view),
     url(r'^redirect-view/$', redirect_view),
-)
+]
 
 
 class TestAPITestClient(TestCase):
@@ -167,6 +171,16 @@ class TestAPITestClient(TestCase):
         response = self.client.options('/redirect-view/', follow=True)
         self.assertIsNotNone(response.redirect_chain)
         self.assertEqual(response.status_code, 200)
+
+    def test_invalid_multipart_data(self):
+        """
+        MultiPart encoding cannot support nested data, so raise a helpful
+        error if the user attempts to do so.
+        """
+        self.assertRaises(
+            AssertionError, self.client.post,
+            path='/view/', data={'valid': 123, 'invalid': {'a': 123}}
+        )
 
 
 class TestAPIRequestFactory(TestCase):

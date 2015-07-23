@@ -565,7 +565,7 @@ Typically we would recommend *not* using inheritance on inner Meta classes, but 
 
 The ModelSerializer class also exposes an API that you can override in order to alter how serializer fields are automatically determined when instantiating the serializer.
 
-Normally if a `ModelSerializer` does not generate the fields you need by default the you should either add them to the class explicitly, or simply use a regular `Serializer` class instead. However in some cases you may want to create a new base class that defines how the serializer fields are created for any given model.
+Normally if a `ModelSerializer` does not generate the fields you need by default then you should either add them to the class explicitly, or simply use a regular `Serializer` class instead. However in some cases you may want to create a new base class that defines how the serializer fields are created for any given model.
 
 ### `.serializer_field_mapping`
 

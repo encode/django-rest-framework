@@ -150,7 +150,7 @@ Similar to `DjangoModelPermissions`, but also allows unauthenticated users to ha
 
 This permission class ties into Django's standard [object permissions framework][objectpermissions] that allows per-object permissions on models.  In order to use this permission class, you'll also need to add a permission backend that supports object-level permissions, such as [django-guardian][guardian].
 
-As with `DjangoModelPermissions`, this permission must only be applied to views that have a `.queryset` property. Authorization will only be granted if the user *is authenticated* and has the *relevant per-object permissions* and *relevant model permissions* assigned.
+As with `DjangoModelPermissions`, this permission must only be applied to views that have a `.queryset` property or `.get_queryset()` method. Authorization will only be granted if the user *is authenticated* and has the *relevant per-object permissions* and *relevant model permissions* assigned.
 
 * `POST` requests require the user to have the `add` permission on the model instance.
 * `PUT` and `PATCH` requests require the user to have the `change` permission on the model instance.
@@ -190,6 +190,16 @@ If you need to test if a request is a read operation or a write operation, you s
 
 ---
 
+Custom permissions will raise a `PermissionDenied` exception if the test fails. To change the error message associated with the exception, implement a `message` attribute directly on your custom permission. Otherwise the `default_detail` attribute from `PermissionDenied` will be used.
+    
+    from rest_framework import permissions
+
+    class CustomerAccessPermission(permissions.BasePermission):
+        message = 'Adding customers not allowed.'
+        
+        def has_permission(self, request, view):
+             ...
+        
 ## Examples
 
 The following is an example of a permission class that checks the incoming request's IP address against a blacklist, and denies the request if the IP has been blacklisted.
@@ -232,10 +242,6 @@ Also note that the generic views will only check the object-level permissions fo
 # Third party packages
 
 The following third party packages are also available.
-
-## DRF Any Permissions
-
-The [DRF Any Permissions][drf-any-permissions] packages provides a different permission behavior in contrast to REST framework.  Instead of all specified permissions being required, only one of the given permissions has to be true in order to get access to the view.
 
 ## Composed Permissions
 

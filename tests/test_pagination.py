@@ -1,10 +1,14 @@
 # coding: utf-8
 from __future__ import unicode_literals
-from rest_framework import exceptions, generics, pagination, serializers, status, filters
-from rest_framework.request import Request
-from rest_framework.pagination import PageLink, PAGE_BREAK
-from rest_framework.test import APIRequestFactory
+
 import pytest
+
+from rest_framework import (
+    exceptions, filters, generics, pagination, serializers, status
+)
+from rest_framework.pagination import PAGE_BREAK, PageLink
+from rest_framework.request import Request
+from rest_framework.test import APIRequestFactory
 
 factory = APIRequestFactory()
 
@@ -186,6 +190,7 @@ class TestPageNumberPagination:
     def setup(self):
         class ExamplePagination(pagination.PageNumberPagination):
             page_size = 5
+
         self.pagination = ExamplePagination()
         self.queryset = range(1, 101)
 
@@ -287,6 +292,8 @@ class TestLimitOffset:
     def setup(self):
         class ExamplePagination(pagination.LimitOffsetPagination):
             default_limit = 10
+            max_limit = 15
+
         self.pagination = ExamplePagination()
         self.queryset = range(1, 101)
 
@@ -428,6 +435,12 @@ class TestLimitOffset:
             ]
         }
 
+    def test_erronous_offset(self):
+        request = Request(factory.get('/', {'limit': 5, 'offset': 1000}))
+        queryset = self.paginate_queryset(request)
+        self.get_paginated_content(queryset)
+        self.get_html_context()
+
     def test_invalid_offset(self):
         """
         An invalid offset query param should be treated as 0.
@@ -442,7 +455,31 @@ class TestLimitOffset:
         """
         request = Request(factory.get('/', {'limit': 'invalid', 'offset': 0}))
         queryset = self.paginate_queryset(request)
+        content = self.get_paginated_content(queryset)
+        next_limit = self.pagination.default_limit
+        next_offset = self.pagination.default_limit
+        next_url = 'http://testserver/?limit={0}&offset={1}'.format(next_limit, next_offset)
         assert queryset == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        assert content.get('next') == next_url
+
+    def test_max_limit(self):
+        """
+        The limit defaults to the max_limit when there is a max_limit and the
+        requested limit is greater than the max_limit
+        """
+        offset = 50
+        request = Request(factory.get('/', {'limit': '11235', 'offset': offset}))
+        queryset = self.paginate_queryset(request)
+        content = self.get_paginated_content(queryset)
+        max_limit = self.pagination.max_limit
+        next_offset = offset + max_limit
+        prev_offset = offset - max_limit
+        base_url = 'http://testserver/?limit={0}'.format(max_limit)
+        next_url = base_url + '&offset={0}'.format(next_offset)
+        prev_url = base_url + '&offset={0}'.format(prev_offset)
+        assert queryset == list(range(51, 66))
+        assert content.get('next') == next_url
+        assert content.get('previous') == prev_url
 
 
 class TestCursorPagination:

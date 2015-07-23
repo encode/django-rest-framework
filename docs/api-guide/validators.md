@@ -204,12 +204,12 @@ A validator may be any callable that raises a `serializers.ValidationError` on f
 
 To write a class based validator, use the `__call__` method. Class based validators are useful as they allow you to parameterize and reuse behavior.
 
-    class MultipleOf:
+    class MultipleOf(object):
         def __init__(self, base):
             self.base = base
 
         def __call__(self, value):
-            if value % self.base != 0
+            if value % self.base != 0:
                 message = 'This field must be a multiple of %d.' % self.base
                 raise serializers.ValidationError(message)
 

@@ -3,11 +3,14 @@ Content negotiation deals with selecting an appropriate renderer given the
 incoming request.  Typically this will be based on the request's Accept header.
 """
 from __future__ import unicode_literals
+
 from django.http import Http404
+
 from rest_framework import HTTP_HEADER_ENCODING, exceptions
 from rest_framework.settings import api_settings
-from rest_framework.utils.mediatypes import order_by_precedence, media_type_matches
-from rest_framework.utils.mediatypes import _MediaType
+from rest_framework.utils.mediatypes import (
+    _MediaType, media_type_matches, order_by_precedence
+)
 
 
 class BaseContentNegotiation(object):

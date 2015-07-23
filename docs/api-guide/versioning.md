@@ -3,7 +3,7 @@ source: versioning.py
 # Versioning
 
 > Versioning an interface is just a "polite" way to kill deployed clients.
-> 
+>
 > &mdash; [Roy Fielding][cite].
 
 API versioning allows you to alter behavior between different clients. REST framework provides for a number of different versioning schemes.
@@ -71,8 +71,21 @@ You can also set the versioning scheme on an individual view. Typically you won'
 The following settings keys are also used to control versioning:
 
 * `DEFAULT_VERSION`. The value that should be used for `request.version` when no versioning information is present. Defaults to `None`.
-* `ALLOWED_VERSIONS`. If set, this value will restrict the set of versions that may be returned by the versioning scheme, and will raise an error if the provided version if not in this set. Defaults to `None`.
+* `ALLOWED_VERSIONS`. If set, this value will restrict the set of versions that may be returned by the versioning scheme, and will raise an error if the provided version if not in this set. Note that the value used for the `DEFAULT_VERSION` setting is always considered to be part of the `ALLOWED_VERSIONS` set. Defaults to `None`.
 * `VERSION_PARAMETER`. The string that should used for any versioning parameters, such as in the media type or URL query parameters. Defaults to `'version'`.
+
+You can also set your versioning class plus those three values on a per-view or a per-viewset basis by defining your own versioning scheme and using the `default_version`, `allowed_versions` and `version_param` class variables. For example, if you want to use `URLPathVersioning`:
+
+    from rest_framework.versioning import URLPathVersioning
+    from rest_framework.views import APIView
+
+    class ExampleVersioning(URLPathVersioning):
+        default_version = ...
+        allowed_versions = ...
+        version_param = ...
+
+    class ExampleView(APIVIew):
+        versioning_class = ExampleVersioning
 
 ---
 
@@ -117,12 +130,12 @@ Your URL conf must include a pattern that matches the version with a `'version'`
 
     urlpatterns = [
         url(
-            r'^(?P<version>{v1,v2})/bookings/$',
+            r'^(?P<version>[v1|v2]+)/bookings/$',
             bookings_list,
             name='bookings-list'
         ),
         url(
-            r'^(?P<version>{v1,v2})/bookings/(?P<pk>[0-9]+)/$',
+            r'^(?P<version>[v1|v2]+)/bookings/(?P<pk>[0-9]+)/$',
             bookings_detail,
             name='bookings-detail'
         )
