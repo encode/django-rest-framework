@@ -72,7 +72,7 @@ class BoundField(object):
         ))
 
     def as_form_field(self):
-        value = force_text(self.value)
+        value = '' if self.value is None else force_text(self.value)
         return self.__class__(self._field, value, self.errors, self._prefix)
 
 
@@ -100,7 +100,7 @@ class NestedBoundField(BoundField):
             if isinstance(value, (list, dict)):
                 values[key] = value
             else:
-                values[key] = force_text(value)
+                values[key] = '' if value is None else force_text(value)
         return self.__class__(self._field, values, self.errors, self._prefix)
 
 
