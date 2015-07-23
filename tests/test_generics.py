@@ -145,6 +145,16 @@ class TestRootView(TestCase):
         created = self.objects.get(id=4)
         self.assertEqual(created.text, 'foobar')
 
+    def test_post_error_root_view(self):
+        """
+        POST requests to ListCreateAPIView in HTML should include a form error.
+        """
+        data = {'text': 'foobar' * 100}
+        request = factory.post('/', data, HTTP_ACCEPT='text/html')
+        response = self.view(request).render()
+        expected_error = '<span class="help-block">Ensure this field has no more than 100 characters.</span>'
+        self.assertIn(expected_error, response.rendered_content.decode('utf-8'))
+
 
 EXPECTED_QUERIES_FOR_PUT = 3 if django.VERSION < (1, 6) else 2
 
@@ -281,6 +291,16 @@ class TestInstanceView(TestCase):
             response = self.view(request, pk=999).render()
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertFalse(self.objects.filter(id=999).exists())
+
+    def test_put_error_instance_view(self):
+        """
+        Incorrect PUT requests in HTML should include a form error.
+        """
+        data = {'text': 'foobar' * 100}
+        request = factory.put('/', data, HTTP_ACCEPT='text/html')
+        response = self.view(request, pk=1).render()
+        expected_error = '<span class="help-block">Ensure this field has no more than 100 characters.</span>'
+        self.assertIn(expected_error, response.rendered_content.decode('utf-8'))
 
 
 class TestFKInstanceView(TestCase):

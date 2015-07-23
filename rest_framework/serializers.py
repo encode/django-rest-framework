@@ -204,7 +204,7 @@ class BaseSerializer(Field):
                 self._errors = {}
 
         if self._errors and raise_exception:
-            raise ValidationError(self._errors)
+            raise ValidationError(self.errors)
 
         return not bool(self._errors)
 
