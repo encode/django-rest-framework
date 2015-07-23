@@ -119,7 +119,7 @@ class APIView(View):
         This allows us to discover information about the view when we do URL
         reverse lookups.  Used for breadcrumb generation.
         """
-        if isinstance(getattr(cls, 'queryset', None), models.QuerySet):
+        if isinstance(getattr(cls, 'queryset', None), models.query.QuerySet):
             def force_evaluation():
                 raise AssertionError(
                     'Do not evaluate the `.queryset` attribute directly, '
