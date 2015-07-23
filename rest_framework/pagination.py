@@ -419,6 +419,8 @@ class LimitOffsetPagination(BasePagination):
             _divide_with_ceil(self.count - self.offset, self.limit) +
             _divide_with_ceil(self.offset, self.limit)
         )
+        if current > final:
+            current = final
 
         def page_number_to_url(page_number):
             if page_number == 1:

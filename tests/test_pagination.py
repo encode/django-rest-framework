@@ -435,6 +435,12 @@ class TestLimitOffset:
             ]
         }
 
+    def test_erronous_offset(self):
+        request = Request(factory.get('/', {'limit': 5, 'offset': 1000}))
+        queryset = self.paginate_queryset(request)
+        self.get_paginated_content(queryset)
+        self.get_html_context()
+
     def test_invalid_offset(self):
         """
         An invalid offset query param should be treated as 0.
