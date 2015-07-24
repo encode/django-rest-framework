@@ -126,8 +126,8 @@ class APIView(View):
                     'as the result will be cached and reused between requests. '
                     'Use `.all()` or call `.get_queryset()` instead.'
                 )
-
             cls.queryset._fetch_all = force_evaluation
+            cls.queryset._result_iter = force_evaluation  # Django <= 1.5
 
         view = super(APIView, cls).as_view(**initkwargs)
         view.cls = cls
