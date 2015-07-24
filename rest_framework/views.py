@@ -121,7 +121,7 @@ class APIView(View):
         """
         if isinstance(getattr(cls, 'queryset', None), models.query.QuerySet):
             def force_evaluation():
-                raise AssertionError(
+                raise RuntimeError(
                     'Do not evaluate the `.queryset` attribute directly, '
                     'as the result will be cached and reused between requests. '
                     'Use `.all()` or call `.get_queryset()` instead.'

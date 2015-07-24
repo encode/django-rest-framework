@@ -541,5 +541,5 @@ class TestGuardedQueryset(TestCase):
 
         view = QuerysetAccessError.as_view()
         request = factory.get('/')
-        with pytest.raises(AssertionError):
+        with pytest.raises(RuntimeError):
             view(request).render()
