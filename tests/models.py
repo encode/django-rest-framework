@@ -49,7 +49,10 @@ class ForeignKeyTarget(RESTFrameworkModel):
     name = models.CharField(max_length=100)
 
     def get_first_source(self):
-        return self.sources.first()
+        try:
+            return self.sources.all()[0]
+        except IndexError:
+            return None
 
 
 class ForeignKeySource(RESTFrameworkModel):

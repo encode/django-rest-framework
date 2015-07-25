@@ -30,6 +30,16 @@ class ForeignKeyTargetSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'sources')
 
 
+class ForeignKeyTargetCallableSourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ForeignKeyTarget
+        fields = ('id', 'name', 'first_source')
+
+    first_source = serializers.PrimaryKeyRelatedField(
+        read_only=True,
+        source='get_first_source')
+
+
 class ForeignKeySourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForeignKeySource
@@ -450,3 +460,21 @@ class PKNullableOneToOneTests(TestCase):
             {'id': 2, 'name': 'target-2', 'nullable_source': 1},
         ]
         self.assertEqual(serializer.data, expected)
+
+
+class PKRelationCallableSourceTests(TestCase):
+
+    def setUp(self):
+        self.target = ForeignKeyTarget.objects.create(name='target-1')
+        self.first_source = ForeignKeySource.objects.create(id=10, name='source-1', target=self.target)
+        ForeignKeySource.objects.create(name='source-2', target=self.target)
+
+    def test_relation_field_callable_source(self):
+        serializer = ForeignKeyTargetCallableSourceSerializer(self.target)
+        expected = {
+            'id': 1,
+            'name': 'target-1',
+            'first_source': 10,
+        }
+        with self.assertNumQueries(1):
+            self.assertEqual(serializer.data, expected)
