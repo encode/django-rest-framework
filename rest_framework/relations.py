@@ -13,7 +13,9 @@ from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import OrderedDict
-from rest_framework.fields import Field, empty, get_attribute
+from rest_framework.fields import (
+    Field, empty, get_attribute, is_simple_callable
+)
 from rest_framework.reverse import reverse
 from rest_framework.utils import html
 
@@ -106,7 +108,12 @@ class RelatedField(Field):
             # Optimized case, return a mock object only containing the pk attribute.
             try:
                 instance = get_attribute(instance, self.source_attrs[:-1])
-                return PKOnlyObject(pk=instance.serializable_value(self.source_attrs[-1]))
+
+                value = instance.serializable_value(self.source_attrs[-1])
+                if is_simple_callable(value):
+                    value = value().pk
+
+                return PKOnlyObject(pk=value)
             except AttributeError:
                 pass
 
