@@ -73,84 +73,55 @@ class TestNotRequiredNestedSerializer:
 
 class TestNestedSerializerWithMany:
     def setup(self):
-        class PaymentInfoSerializer(serializers.Serializer):
-            url = serializers.URLField()
-            amount = serializers.DecimalField(max_digits=6, decimal_places=2)
-
         class NestedSerializer(serializers.Serializer):
-            foo = serializers.CharField()
+            example = serializers.IntegerField(max_value=10)
 
-        class AcceptRequestSerializer(serializers.Serializer):
-            ERROR_MESSAGE = '`payment_info` is required under this condition'
+        class TestSerializer(serializers.Serializer):
+            allow_null = NestedSerializer(many=True, allow_null=True)
+            not_allow_null = NestedSerializer(many=True)
 
-            nested = NestedSerializer(many=True)
-            payment_info = PaymentInfoSerializer(many=True, allow_null=True)
-
-            def validate_payment_info(self, value):
-                if value is None and not self.context['condition_to_allow_null']:
-                    raise serializers.ValidationError(self.ERROR_MESSAGE)
-
-                return value
-
-        self.Serializer = AcceptRequestSerializer
-
-    def get_serializer(self, data, condition_to_allow_null=True):
-        return self.Serializer(
-            data=data,
-            context={'condition_to_allow_null': condition_to_allow_null})
+        self.Serializer = TestSerializer
 
     def test_null_allowed_if_allow_null_is_set(self):
         input_data = {
-            'nested': [{'foo': 'bar'}],
-            'payment_info': None
+            'allow_null': None,
+            'not_allow_null': [{'example': '2'}, {'example': '3'}]
         }
         expected_data = {
-            'nested': [{'foo': 'bar'}],
-            'payment_info': None
+            'allow_null': None,
+            'not_allow_null': [{'example': 2}, {'example': 3}]
         }
-        serializer = self.get_serializer(input_data)
+        serializer = self.Serializer(data=input_data)
 
         assert serializer.is_valid(), serializer.errors
         assert serializer.validated_data == expected_data
 
     def test_null_is_not_allowed_if_allow_null_is_not_set(self):
         input_data = {
-            'nested': None,
-            'payment_info': None
+            'allow_null': None,
+            'not_allow_null': None
         }
-        serializer = self.get_serializer(input_data)
+        serializer = self.Serializer(data=input_data)
 
         assert not serializer.is_valid()
-        assert set(serializer.errors) == set(['nested'])
-        assert serializer.errors['nested'][0] == serializer.error_messages['null']
+
+        expected_errors = {'not_allow_null': [serializer.error_messages['null']]}
+        assert serializer.errors == expected_errors
 
     def test_run_the_field_validation_even_if_the_field_is_null(self):
-        input_data = {
-            'nested': [{'foo': 'bar'}],
-            'payment_info': None,
-        }
-        serializer = self.get_serializer(input_data, condition_to_allow_null=False)
+        class TestSerializer(self.Serializer):
+            validation_was_run = False
 
-        assert not serializer.is_valid()
-        assert set(serializer.errors) == set(['payment_info'])
-        assert serializer.errors['payment_info'][0] == serializer.ERROR_MESSAGE
+            def validate_allow_null(self, value):
+                TestSerializer.validation_was_run = True
+                return value
 
-    def test_expected_results_if_not_null(self):
         input_data = {
-            'nested': [{'foo': 'bar'}],
-            'payment_info': [
-                {'url': 'https://domain.org/api/payment-method/1/', 'amount': '22'},
-                {'url': 'https://domain.org/api/payment-method/2/', 'amount': '33'},
-            ]
+            'allow_null': None,
+            'not_allow_null': [{'example': 2}]
         }
-        expected_data = {
-            'nested': [{'foo': 'bar'}],
-            'payment_info': [
-                {'url': 'https://domain.org/api/payment-method/1/', 'amount': 22},
-                {'url': 'https://domain.org/api/payment-method/2/', 'amount': 33},
-            ]
-        }
-        serializer = self.get_serializer(input_data)
+        serializer = TestSerializer(data=input_data)
 
         assert serializer.is_valid()
-        assert serializer.validated_data == expected_data
+        assert serializer.validated_data == input_data
+        assert TestSerializer.validation_was_run
