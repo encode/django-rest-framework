@@ -75,7 +75,6 @@ All of the blocks available in the browsable API base template that can be used 
 * `bootstrap_navbar_variant`   - CSS class for the navbar.
 * `branding`                   - Branding section of the navbar, see [Bootstrap components][bcomponentsnav].
 * `breadcrumbs`                - Links showing resource nesting, allowing the user to go back up the resources.  It's recommended to preserve these, but they can be overridden using the breadcrumbs block.
-* `footer`                     - Any copyright notices or similar footer materials can go here (by default right-aligned).
 * `script`                     - JavaScript files for the page.
 * `style`                      - CSS stylesheets for the page.
 * `title`                      - Title of the page.
