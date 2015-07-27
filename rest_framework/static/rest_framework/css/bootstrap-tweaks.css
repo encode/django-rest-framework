@@ -1,6 +1,6 @@
 /*
 
-This CSS file contains some tweaks specific to the included Bootstrap theme. 
+This CSS file contains some tweaks specific to the included Bootstrap theme.
 It's separate from `style.css` so that it can be easily overridden by replacing
 a single block in the template.
 
@@ -212,4 +212,18 @@ body a:hover {
 
 .request-info {
   clear:both;
+}
+
+.horizontal-checkbox label {
+  padding-top: 0;
+}
+
+.horizontal-checkbox label {
+  padding-top: 0 !important;
+}
+
+.horizontal-checkbox input {
+  float: left;
+  width: 20px;
+  margin-top: 3px;
 }
