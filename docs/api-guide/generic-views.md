@@ -188,6 +188,14 @@ These override points are also particularly useful for adding behavior that occu
         instance = serializer.save()
         send_email_confirmation(user=self.request.user, modified=instance)
 
+You can also use these hooks to provide additional validation, by raising a `ValidationError()`. This can be useful if you need some validation logic to apply at the point of database save. For example:
+
+    def perform_create(self, serializer):
+        queryset = SignupRequest.objects.filter(user=self.request.user)
+        if queryset.exists():
+            raise ValidationError('You have already signed up')
+        serializer.save(user=self.request.user)
+
 **Note**: These methods replace the old-style version 2.x `pre_save`, `post_save`, `pre_delete` and `post_delete` methods, which are no longer available.
 
 **Other methods**:
