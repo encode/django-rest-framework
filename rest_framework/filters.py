@@ -201,4 +201,6 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
         if guardian.VERSION >= (1, 3):
             # Maintain behavior compatibility with versions prior to 1.3
             extra = {'accept_global_perms': False}
+        else:
+            extra = {}
         return guardian.shortcuts.get_objects_for_user(user, permission, queryset, **extra)
