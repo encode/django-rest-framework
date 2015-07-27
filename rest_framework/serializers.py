@@ -1430,7 +1430,7 @@ if hasattr(models, 'IPAddressField'):
 
 if postgres_fields:
     class CharMappingField(DictField):
-        child = CharField()
+        child = CharField(allow_blank=True)
 
     ModelSerializer.serializer_field_mapping[postgres_fields.HStoreField] = CharMappingField
     ModelSerializer.serializer_field_mapping[postgres_fields.ArrayField] = ListField
