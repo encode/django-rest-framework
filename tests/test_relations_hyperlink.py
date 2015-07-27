@@ -50,17 +50,6 @@ class ForeignKeyTargetSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'name', 'sources')
 
 
-class ForeignKeyTargetCallableSourceSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = ForeignKeyTarget
-        fields = ('url', 'name', 'first_source')
-
-    first_source = serializers.HyperlinkedRelatedField(
-        read_only=True,
-        source='get_first_source',
-        view_name='foreignkeysource-detail')
-
-
 class ForeignKeySourceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ForeignKeySource
@@ -455,22 +444,3 @@ class HyperlinkedNullableOneToOneTests(TestCase):
             {'url': 'http://testserver/onetoonetarget/2/', 'name': 'target-2', 'nullable_source': None},
         ]
         self.assertEqual(serializer.data, expected)
-
-
-class HyperlinkedRelationCallableSourceTests(TestCase):
-    urls = 'tests.test_relations_hyperlink'
-
-    def setUp(self):
-        self.target = ForeignKeyTarget.objects.create(name='target-1')
-        ForeignKeySource.objects.create(name='source-1', target=self.target)
-        ForeignKeySource.objects.create(name='source-2', target=self.target)
-
-    def test_relation_field_callable_source(self):
-        serializer = ForeignKeyTargetCallableSourceSerializer(self.target, context={'request': request})
-        expected = {
-            'url': 'http://testserver/foreignkeytarget/1/',
-            'name': 'target-1',
-            'first_source': 'http://testserver/foreignkeysource/1/',
-        }
-        with self.assertNumQueries(1):
-            self.assertEqual(serializer.data, expected)

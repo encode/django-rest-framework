@@ -109,6 +109,8 @@ class RelatedField(Field):
             try:
                 instance = get_attribute(instance, self.source_attrs[:-1])
 
+                # Handle edge case where the relationship `source` argument
+                # points to a `get_relationship()` method on the model
                 value = instance.serializable_value(self.source_attrs[-1])
                 if is_simple_callable(value):
                     value = value().pk
