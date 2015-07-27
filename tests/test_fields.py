@@ -1070,6 +1070,22 @@ class TestChoiceField(FieldValues):
         output = field.run_validation('')
         assert output == ''
 
+    def test_allow_null(self):
+        """
+        If `allow_null=True` then '' on HTML forms is treated as None.
+        """
+        field = serializers.ChoiceField(
+            allow_null=True,
+            choices=[
+                1, 2, 3
+            ]
+        )
+        field.field_name = 'example'
+        value = field.get_value(QueryDict('example='))
+        assert value is None
+        output = field.run_validation(None)
+        assert output is None
+
 
 class TestChoiceFieldWithType(FieldValues):
     """
