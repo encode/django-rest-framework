@@ -1,35 +1,35 @@
-function getSearchTerm()
-{
-    var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++)
-    {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == 'q')
-        {
-            return sParameterName[1];
-        }
+var getSearchTerm = function() {
+  var sPageURL = window.location.search.substring(1);
+  var sURLVariables = sPageURL.split('&');
+  for (var i = 0; i < sURLVariables.length; i++) {
+    var sParameterName = sURLVariables[i].split('=');
+    if (sParameterName[0] === 'q') {
+      return sParameterName[1];
     }
-}
+  }
+};
+
+var initilizeSearch = function() {
+  require.config({ baseUrl: '/mkdocs/js' });
+  require(['search']);
+};
 
 $(function() {
+  var searchTerm = getSearchTerm(),
+    $searchModal = $('#mkdocs_search_modal'),
+    $searchQuery = $searchModal.find('#mkdocs-search-query'),
+    $searchResults = $searchModal.find('#mkdocs-search-results');
 
-    var initialise_search = function(){
-        require.config({"baseUrl":"/mkdocs/js"});
-        require(["search",]);
-    }
+  $('pre code').parent().addClass('prettyprint well');
 
-    var search_term = getSearchTerm();
-    if(search_term){
-        $('#mkdocs_search_modal').modal();
-    }
+  if (searchTerm) {
+    $searchQuery.val(searchTerm);
+    $searchResults.text('Searching...');
+    $searchModal.modal();
+  }
 
-    $('pre code').parent().addClass('prettyprint well');
-
-    $(document).on("submit", "#mkdocs_search_modal form", function (e) {
-        $("#mkdocs-search-results").html("Searching...");
-        initialise_search();
-        return false;
-    });
-
+  $searchModal.on('shown', function() {
+    $searchQuery.focus();
+    initilizeSearch();
+  });
 });
