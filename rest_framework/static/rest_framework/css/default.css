@@ -3,7 +3,7 @@
 content running up underneath it. */
 
 h1 {
-  font-weight: 500;
+  font-weight: 300;
 }
 
 h2, h3 {
@@ -31,6 +31,14 @@ h2, h3 {
 .button-form {
   float: right;
   margin-right: 1em;
+}
+
+td.nested {
+  padding: 0 !important;
+}
+
+td.nested > table {
+  margin: 0;
 }
 
 form select, form input, form textarea {

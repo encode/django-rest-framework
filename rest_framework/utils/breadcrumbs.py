@@ -3,12 +3,12 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import get_script_prefix, resolve
 
 
-def get_breadcrumbs(url):
+def get_breadcrumbs(url, request=None):
     """
     Given a url returns a list of breadcrumbs, which are each a
     tuple of (name, url).
     """
-
+    from rest_framework.reverse import preserve_builtin_query_params
     from rest_framework.settings import api_settings
     from rest_framework.views import APIView
 
@@ -34,7 +34,8 @@ def get_breadcrumbs(url):
                 if not seen or seen[-1] != view:
                     suffix = getattr(view, 'suffix', None)
                     name = view_name_func(cls, suffix)
-                    breadcrumbs_list.insert(0, (name, prefix + url))
+                    insert_url = preserve_builtin_query_params(prefix + url, request)
+                    breadcrumbs_list.insert(0, (name, insert_url))
                     seen.append(view)
 
         if url == '':

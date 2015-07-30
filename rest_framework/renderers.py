@@ -593,7 +593,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         return view.get_view_description(html=True)
 
     def get_breadcrumbs(self, request):
-        return get_breadcrumbs(request.path)
+        return get_breadcrumbs(request.path, request)
 
     def get_context(self, data, accepted_media_type, renderer_context):
         """
@@ -673,6 +673,90 @@ class BrowsableAPIRenderer(BaseRenderer):
             response.status_code = status.HTTP_200_OK
 
         return ret
+
+
+class AdminRenderer(BrowsableAPIRenderer):
+    template = 'rest_framework/admin.html'
+    format = 'admin'
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        self.accepted_media_type = accepted_media_type or ''
+        self.renderer_context = renderer_context or {}
+
+        response = renderer_context['response']
+        request = renderer_context['request']
+        view = self.renderer_context['view']
+
+        if response.status_code == status.HTTP_400_BAD_REQUEST:
+            # Errors still need to display the list or detail information.
+            # The only way we can get at that is to simulate a GET request.
+            self.error_form = self.get_rendered_html_form(data, view, request.method, request)
+            self.error_title = {'POST': 'Create', 'PUT': 'Edit'}.get(request.method, 'Errors')
+
+            with override_method(view, request, 'GET') as request:
+                response = view.get(request, *view.args, **view.kwargs)
+            data = response.data
+
+        template = loader.get_template(self.template)
+        context = self.get_context(data, accepted_media_type, renderer_context)
+        context = RequestContext(renderer_context['request'], context)
+        ret = template.render(context)
+
+        # Creation and deletion should use redirects in the admin style.
+        if (response.status_code == status.HTTP_201_CREATED) and ('Location' in response):
+            response.status_code = status.HTTP_302_FOUND
+            response['Location'] = request.build_absolute_uri()
+            ret = ''
+
+        if response.status_code == status.HTTP_204_NO_CONTENT:
+            response.status_code = status.HTTP_302_FOUND
+            try:
+                # Attempt to get the parent breadcrumb URL.
+                response['Location'] = self.get_breadcrumbs(request)[-2][1]
+            except KeyError:
+                # Otherwise reload current URL to get a 'Not Found' page.
+                response['Location'] = request.full_path
+            ret = ''
+
+        return ret
+
+    def get_context(self, data, accepted_media_type, renderer_context):
+        """
+        Render the HTML for the browsable API representation.
+        """
+        context = super(AdminRenderer, self).get_context(
+            data, accepted_media_type, renderer_context
+        )
+
+        paginator = getattr(context['view'], 'paginator', None)
+        if (paginator is not None and data is not None):
+            try:
+                results = paginator.get_results(data)
+            except KeyError:
+                results = data
+        else:
+            results = data
+
+        if results is None:
+            header = {}
+            style = 'detail'
+        elif isinstance(results, list):
+            header = results[0] if results else {}
+            style = 'list'
+        else:
+            header = results
+            style = 'detail'
+
+        columns = [key for key in header.keys() if key != 'url']
+        details = [key for key in header.keys() if key != 'url']
+
+        context['style'] = style
+        context['columns'] = columns
+        context['details'] = details
+        context['results'] = results
+        context['error_form'] = getattr(self, 'error_form', None)
+        context['error_title'] = getattr(self, 'error_title', None)
+        return context
 
 
 class MultiPartRenderer(BaseRenderer):

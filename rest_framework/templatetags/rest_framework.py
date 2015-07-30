@@ -4,6 +4,7 @@ import re
 
 from django import template
 from django.core.urlresolvers import NoReverseMatch, reverse
+from django.template import Context, loader
 from django.utils import six
 from django.utils.encoding import force_text, iri_to_uri
 from django.utils.html import escape, smart_urlquote
@@ -104,6 +105,45 @@ def add_class(value, css_class):
     else:
         return mark_safe(html.replace('>', ' class="%s">' % css_class, 1))
     return value
+
+
+@register.filter
+def format_value(value):
+    if getattr(value, 'is_hyperlink', False):
+        return mark_safe('<a href=%s>%s</a>' % (value, escape(value.name)))
+    if value in (True, False, None):
+        return mark_safe('<code>%s</code>' % {True: 'true', False: 'false', None: 'null'}[value])
+    elif isinstance(value, list):
+        if any([isinstance(item, (list, dict)) for item in value]):
+            template = loader.get_template('rest_framework/admin/list_value.html')
+        else:
+            template = loader.get_template('rest_framework/admin/simple_list_value.html')
+        context = Context({'value': value})
+        return template.render(context)
+    elif isinstance(value, dict):
+        template = loader.get_template('rest_framework/admin/dict_value.html')
+        context = Context({'value': value})
+        return template.render(context)
+    elif isinstance(value, six.string_types):
+        if (
+            (value.startswith('http:') or value.startswith('https:')) and not
+            re.search(r'\s', value)
+        ):
+            return mark_safe('<a href="{value}">{value}</a>'.format(value=escape(value)))
+        elif '@' in value and not re.search(r'\s', value):
+            return mark_safe('<a href="mailto:{value}">{value}</a>'.format(value=escape(value)))
+        elif '\n' in value:
+            return mark_safe('<pre>%s</pre>' % escape(value))
+    return six.text_type(value)
+
+
+@register.filter
+def add_nested_class(value):
+    if isinstance(value, dict):
+        return 'class=nested'
+    if isinstance(value, list) and any([isinstance(item, (list, dict)) for item in value]):
+        return 'class=nested'
+    return ''
 
 
 # Bunch of stuff cloned from urlize
