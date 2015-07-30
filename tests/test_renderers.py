@@ -81,7 +81,7 @@ class MockGETView(APIView):
 
 class MockPOSTView(APIView):
     def post(self, request, **kwargs):
-        return Response({'foo': request.DATA})
+        return Response({'foo': request.data})
 
 
 class EmptyGETView(APIView):
