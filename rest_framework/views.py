@@ -3,9 +3,6 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
 
-import inspect
-import warnings
-
 from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.http import Http404
