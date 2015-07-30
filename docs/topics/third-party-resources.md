@@ -195,6 +195,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [drf-any-permissions][drf-any-permissions] - Provides alternative permission handling.
 * [djangorestframework-composed-permissions][djangorestframework-composed-permissions] - Provides a simple way to define complex permissions.
 * [rest_condition][rest-condition] - Another extension for building complex permissions in a simple and convenient way.
+* [dry-rest-permissions][dry-rest-permissions] - Provides a simple way to define permissions for individual api actions.
 
 ### Serializers
 
@@ -341,3 +342,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [cdrf.co]:http://www.cdrf.co
 [drf-tracking]: https://github.com/aschn/drf-tracking
 [django-rest-framework-braces]: https://github.com/dealertrack/django-rest-framework-braces
+[dry-rest-permissions]: https://github.com/Helioscene/dry-rest-permissions
