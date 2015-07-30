@@ -291,6 +291,8 @@ class DefaultRouter(SimpleRouter):
                     try:
                         ret[key] = reverse(
                             url_name,
+                            args=args,
+                            kwargs=kwargs,
                             request=request,
                             format=kwargs.get('format', None)
                         )
