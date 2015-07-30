@@ -11,7 +11,6 @@ The wrapped request then offers a richer API, in particular :
 from __future__ import unicode_literals
 
 import sys
-import warnings
 
 from django.conf import settings
 from django.http import QueryDict
