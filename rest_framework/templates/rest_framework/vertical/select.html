@@ -11,7 +11,7 @@
     {% endif %}
 
     {% for key, text in field.choices.items %}
-      <option value="{{ key }}" {% if key == field.value %}selected{% endif %}>{{ text }}</option>
+      <option value="{{ key }}" {% if key == field.value|slugify %}selected{% endif %}>{{ text }}</option>
     {% endfor %}
   </select>
 
