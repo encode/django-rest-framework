@@ -428,16 +428,8 @@ class APIView(View):
 
         exception_handler = self.settings.EXCEPTION_HANDLER
 
-        if len(inspect.getargspec(exception_handler).args) == 1:
-            warnings.warn(
-                'The `exception_handler(exc)` call signature is deprecated. '
-                'Use `exception_handler(exc, context) instead.',
-                DeprecationWarning
-            )
-            response = exception_handler(exc)
-        else:
-            context = self.get_exception_handler_context()
-            response = exception_handler(exc, context)
+        context = self.get_exception_handler_context()
+        response = exception_handler(exc, context)
 
         if response is None:
             raise

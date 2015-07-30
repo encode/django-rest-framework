@@ -25,7 +25,7 @@ class BasicView(APIView):
         return Response({'method': 'GET'})
 
     def post(self, request, *args, **kwargs):
-        return Response({'method': 'POST', 'data': request.DATA})
+        return Response({'method': 'POST', 'data': request.data})
 
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH'])
@@ -33,11 +33,11 @@ def basic_view(request):
     if request.method == 'GET':
         return {'method': 'GET'}
     elif request.method == 'POST':
-        return {'method': 'POST', 'data': request.DATA}
+        return {'method': 'POST', 'data': request.data}
     elif request.method == 'PUT':
-        return {'method': 'PUT', 'data': request.DATA}
+        return {'method': 'PUT', 'data': request.data}
     elif request.method == 'PATCH':
-        return {'method': 'PATCH', 'data': request.DATA}
+        return {'method': 'PATCH', 'data': request.data}
 
 
 class ErrorView(APIView):

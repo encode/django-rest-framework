@@ -205,56 +205,10 @@ class Request(object):
         return self._request.GET
 
     @property
-    def QUERY_PARAMS(self):
-        """
-        Synonym for `.query_params`, for backwards compatibility.
-        """
-        warnings.warn(
-            "`request.QUERY_PARAMS` is deprecated. Use `request.query_params` instead.",
-            DeprecationWarning,
-            stacklevel=1
-        )
-        return self._request.GET
-
-    @property
     def data(self):
         if not _hasattr(self, '_full_data'):
             self._load_data_and_files()
         return self._full_data
-
-    @property
-    def DATA(self):
-        """
-        Parses the request body and returns the data.
-
-        Similar to usual behaviour of `request.POST`, except that it handles
-        arbitrary parsers, and also works on methods other than POST (eg PUT).
-        """
-        warnings.warn(
-            "`request.DATA` is deprecated. Use `request.data` instead.",
-            DeprecationWarning,
-            stacklevel=1
-        )
-        if not _hasattr(self, '_data'):
-            self._load_data_and_files()
-        return self._data
-
-    @property
-    def FILES(self):
-        """
-        Parses the request body and returns any files uploaded in the request.
-
-        Similar to usual behaviour of `request.FILES`, except that it handles
-        arbitrary parsers, and also works on methods other than POST (eg PUT).
-        """
-        warnings.warn(
-            "`request.FILES` is deprecated. Use `request.data` instead.",
-            DeprecationWarning,
-            stacklevel=1
-        )
-        if not _hasattr(self, '_files'):
-            self._load_data_and_files()
-        return self._files
 
     @property
     def user(self):

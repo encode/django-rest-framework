@@ -195,7 +195,8 @@ class PageNumberPagination(BasePagination):
         """
         Prior to version 3.1, pagination was handled in the view, and the
         attributes were set there. The attributes should now be set on
-        the pagination class, but the old style is still pending deprecation.
+        the pagination class. The old style continues to work but is deprecated
+        and will be fully removed in version 3.3.
         """
         assert not (
             getattr(view, 'pagination_serializer_class', None) or
@@ -216,11 +217,11 @@ class PageNumberPagination(BasePagination):
             if value is not None:
                 setattr(self, attr_name, value)
                 warnings.warn(
-                    "The `%s` settings key is pending deprecation. "
+                    "The `%s` settings key is deprecated. "
                     "Use the `%s` attribute on the pagination class instead." % (
                         settings_key, attr_name
                     ),
-                    PendingDeprecationWarning,
+                    DeprecationWarning,
                 )
 
         for (view_attr, attr_name) in (
@@ -233,11 +234,11 @@ class PageNumberPagination(BasePagination):
             if value is not None:
                 setattr(self, attr_name, value)
                 warnings.warn(
-                    "The `%s` view attribute is pending deprecation. "
+                    "The `%s` view attribute is deprecated. "
                     "Use the `%s` attribute on the pagination class instead." % (
                         view_attr, attr_name
                     ),
-                    PendingDeprecationWarning,
+                    DeprecationWarning,
                 )
 
     def paginate_queryset(self, queryset, request, view=None):
