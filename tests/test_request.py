@@ -76,37 +76,37 @@ class TestMethodOverloading(TestCase):
 class TestContentParsing(TestCase):
     def test_standard_behaviour_determines_no_content_GET(self):
         """
-        Ensure request.DATA returns empty QueryDict for GET request.
+        Ensure request.data returns empty QueryDict for GET request.
         """
         request = Request(factory.get('/'))
-        self.assertEqual(request.DATA, {})
+        self.assertEqual(request.data, {})
 
     def test_standard_behaviour_determines_no_content_HEAD(self):
         """
-        Ensure request.DATA returns empty QueryDict for HEAD request.
+        Ensure request.data returns empty QueryDict for HEAD request.
         """
         request = Request(factory.head('/'))
-        self.assertEqual(request.DATA, {})
+        self.assertEqual(request.data, {})
 
     def test_request_DATA_with_form_content(self):
         """
-        Ensure request.DATA returns content for POST request with form content.
+        Ensure request.data returns content for POST request with form content.
         """
         data = {'qwerty': 'uiop'}
         request = Request(factory.post('/', data))
         request.parsers = (FormParser(), MultiPartParser())
-        self.assertEqual(list(request.DATA.items()), list(data.items()))
+        self.assertEqual(list(request.data.items()), list(data.items()))
 
     def test_request_DATA_with_text_content(self):
         """
-        Ensure request.DATA returns content for POST request with
+        Ensure request.data returns content for POST request with
         non-form content.
         """
         content = six.b('qwerty')
         content_type = 'text/plain'
         request = Request(factory.post('/', content, content_type=content_type))
         request.parsers = (PlainTextParser(),)
-        self.assertEqual(request.DATA, content)
+        self.assertEqual(request.data, content)
 
     def test_request_POST_with_form_content(self):
         """
@@ -119,27 +119,27 @@ class TestContentParsing(TestCase):
 
     def test_standard_behaviour_determines_form_content_PUT(self):
         """
-        Ensure request.DATA returns content for PUT request with form content.
+        Ensure request.data returns content for PUT request with form content.
         """
         data = {'qwerty': 'uiop'}
         request = Request(factory.put('/', data))
         request.parsers = (FormParser(), MultiPartParser())
-        self.assertEqual(list(request.DATA.items()), list(data.items()))
+        self.assertEqual(list(request.data.items()), list(data.items()))
 
     def test_standard_behaviour_determines_non_form_content_PUT(self):
         """
-        Ensure request.DATA returns content for PUT request with
+        Ensure request.data returns content for PUT request with
         non-form content.
         """
         content = six.b('qwerty')
         content_type = 'text/plain'
         request = Request(factory.put('/', content, content_type=content_type))
         request.parsers = (PlainTextParser(), )
-        self.assertEqual(request.DATA, content)
+        self.assertEqual(request.data, content)
 
     def test_overloaded_behaviour_allows_content_tunnelling(self):
         """
-        Ensure request.DATA returns content for overloaded POST request.
+        Ensure request.data returns content for overloaded POST request.
         """
         json_data = {'foobar': 'qwerty'}
         content = json.dumps(json_data)
@@ -150,7 +150,7 @@ class TestContentParsing(TestCase):
         }
         request = Request(factory.post('/', form_data))
         request.parsers = (JSONParser(), )
-        self.assertEqual(request.DATA, json_data)
+        self.assertEqual(request.data, json_data)
 
     def test_form_POST_unicode(self):
         """

@@ -12,8 +12,6 @@ response content is handled by parsers and renderers.
 """
 from __future__ import unicode_literals
 
-import warnings
-
 from django.db import models
 from django.db.models.fields import Field as DjangoModelField
 from django.db.models.fields import FieldDoesNotExist
@@ -1180,44 +1178,6 @@ class ModelSerializer(Serializer):
                 kwargs = extra_kwargs.get(field_name, {})
                 kwargs['read_only'] = True
                 extra_kwargs[field_name] = kwargs
-
-        # These are all pending deprecation.
-        write_only_fields = getattr(self.Meta, 'write_only_fields', None)
-        if write_only_fields is not None:
-            warnings.warn(
-                "The `Meta.write_only_fields` option is deprecated. "
-                "Use `Meta.extra_kwargs={<field_name>: {'write_only': True}}` instead.",
-                DeprecationWarning,
-                stacklevel=3
-            )
-            for field_name in write_only_fields:
-                kwargs = extra_kwargs.get(field_name, {})
-                kwargs['write_only'] = True
-                extra_kwargs[field_name] = kwargs
-
-        view_name = getattr(self.Meta, 'view_name', None)
-        if view_name is not None:
-            warnings.warn(
-                "The `Meta.view_name` option is deprecated. "
-                "Use `Meta.extra_kwargs={'url': {'view_name': ...}}` instead.",
-                DeprecationWarning,
-                stacklevel=3
-            )
-            kwargs = extra_kwargs.get(self.url_field_name, {})
-            kwargs['view_name'] = view_name
-            extra_kwargs[self.url_field_name] = kwargs
-
-        lookup_field = getattr(self.Meta, 'lookup_field', None)
-        if lookup_field is not None:
-            warnings.warn(
-                "The `Meta.lookup_field` option is deprecated. "
-                "Use `Meta.extra_kwargs={'url': {'lookup_field': ...}}` instead.",
-                DeprecationWarning,
-                stacklevel=3
-            )
-            kwargs = extra_kwargs.get(self.url_field_name, {})
-            kwargs['lookup_field'] = lookup_field
-            extra_kwargs[self.url_field_name] = kwargs
 
         return extra_kwargs
 
