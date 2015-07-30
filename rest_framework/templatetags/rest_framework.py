@@ -112,8 +112,8 @@ def add_class(value, css_class):
 def format_value(value):
     if getattr(value, 'is_hyperlink', False):
         return mark_safe('<a href=%s>%s</a>' % (value, escape(value.name)))
-    if isinstance(value, (int, float, decimal.Decimal, bool, type(None))):
-        return mark_safe('<code>%s</code>' % escape(value))
+    if value in (True, False, None):
+        return mark_safe('<code>%s</code>' % {True: 'true', False: 'false', None: 'null'}[value])
     elif isinstance(value, list):
         if any([isinstance(item, (list, dict)) for item in value]):
             template = loader.get_template('rest_framework/admin/list_value.html')
