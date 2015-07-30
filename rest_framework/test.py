@@ -8,12 +8,12 @@ import django
 from django.conf import settings
 from django.test import testcases
 from django.test.client import Client as DjangoClient
+from django.test.client import RequestFactory as DjangoRequestFactory
 from django.test.client import ClientHandler
 from django.utils import six
+from django.utils.encoding import force_bytes
 from django.utils.http import urlencode
 
-from rest_framework.compat import RequestFactory as DjangoRequestFactory
-from rest_framework.compat import force_bytes_or_smart_bytes
 from rest_framework.settings import api_settings
 
 
@@ -47,7 +47,7 @@ class APIRequestFactory(DjangoRequestFactory):
 
         if content_type:
             # Content type specified explicitly, treat data as a raw bytestring
-            ret = force_bytes_or_smart_bytes(data, settings.DEFAULT_CHARSET)
+            ret = force_bytes(data, settings.DEFAULT_CHARSET)
 
         else:
             format = format or self.default_format
