@@ -1,6 +1,5 @@
 from __future__ import absolute_import, unicode_literals
 
-import decimal
 import re
 
 from django import template
@@ -133,6 +132,8 @@ def format_value(value):
             return mark_safe('<a href="{value}">{value}</a>'.format(value=escape(value)))
         elif '@' in value and not re.search(r'\s', value):
             return mark_safe('<a href="mailto:{value}">{value}</a>'.format(value=escape(value)))
+        elif '\n' in value:
+            return mark_safe('<pre>%s</pre>' % escape(value))
     return six.text_type(value)
 
 
