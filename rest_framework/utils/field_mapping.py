@@ -225,6 +225,7 @@ def get_relation_kwargs(field_name, relation_info):
             # If this field is read-only, then return early.
             # No further keyword arguments are valid.
             return kwargs
+
         if model_field.has_default() or model_field.null:
             kwargs['required'] = False
         if model_field.null:
@@ -234,6 +235,8 @@ def get_relation_kwargs(field_name, relation_info):
         if getattr(model_field, 'unique', False):
             validator = UniqueValidator(queryset=model_field.model._default_manager)
             kwargs['validators'] = kwargs.get('validators', []) + [validator]
+        if to_many and not model_field.blank:
+            kwargs['allow_empty'] = False
 
     return kwargs
 
