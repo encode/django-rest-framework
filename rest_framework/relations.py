@@ -64,6 +64,7 @@ class RelatedField(Field):
             'when setting read_only=`True`.'
         )
         kwargs.pop('many', None)
+        kwargs.pop('allow_empty', None)
         super(RelatedField, self).__init__(**kwargs)
 
     def __new__(cls, *args, **kwargs):
