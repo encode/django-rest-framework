@@ -498,10 +498,10 @@ For example, if all your object URLs used both a account and a slug in the the U
             kwargs = {'account': obj.account, 'slug': obj.slug}
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
 
-        def get_object(self, queryset, view_name, view_args, view_kwargs):
+        def get_object(self, view_name, view_args, view_kwargs):
             account = view_kwargs['account']
             slug = view_kwargs['slug']
-            return queryset.get(account=account, slug=slug)
+            return self.get_queryset().get(account=account, slug=slug)
 
 ---
 
