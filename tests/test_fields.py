@@ -1,4 +1,5 @@
 import datetime
+import os
 import uuid
 from decimal import Decimal
 
@@ -635,6 +636,24 @@ class TestIPv6AddressField(FieldValues):
     }
     outputs = {}
     field = serializers.IPAddressField(protocol='IPv6')
+
+
+class TestFilePathField(FieldValues):
+    """
+    Valid and invalid values for `FilePathField`
+    """
+
+    valid_inputs = {
+        __file__: __file__,
+    }
+    invalid_inputs = {
+        'wrong_path': ['"wrong_path" is not a valid path choice.']
+    }
+    outputs = {
+    }
+    field = serializers.FilePathField(
+        path=os.path.abspath(os.path.dirname(__file__))
+    )
 
 
 # Number types...

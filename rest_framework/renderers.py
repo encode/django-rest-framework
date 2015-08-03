@@ -305,7 +305,10 @@ class HTMLFormRenderer(BaseRenderer):
         },
         serializers.ListSerializer: {
             'base_template': 'list_fieldset.html'
-        }
+        },
+        serializers.FilePathField: {
+            'base_template': 'select.html',
+        },
     })
 
     def render_field(self, field, parent_style):

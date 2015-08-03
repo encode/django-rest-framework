@@ -191,6 +191,7 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
     perm_format = '%(app_label)s.view_%(model_name)s'
 
     def filter_queryset(self, request, queryset, view):
+        extra = {}
         user = request.user
         model_cls = queryset.model
         kwargs = {
