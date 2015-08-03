@@ -12,6 +12,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator, ip_address_validators
+from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
@@ -23,7 +24,7 @@ from rest_framework import ISO_8601
 from rest_framework.compat import (
     EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
     MinValueValidator, OrderedDict, URLValidator, duration_string,
-    get_filepathfield, parse_duration, unicode_repr, unicode_to_repr
+    parse_duration, unicode_repr, unicode_to_repr
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
@@ -713,8 +714,9 @@ class FilePathField(CharField):
                  allow_folders=False, required=None, **kwargs):
         super(FilePathField, self).__init__(**kwargs)
 
-        # create field and get options to avoid code duplication
-        field = get_filepathfield(
+        # Defer to Django's FilePathField implmentation to get the
+        # valid set of choices.
+        field = DjangoFilePathField(
             path, match=match, recursive=recursive, allow_files=allow_files,
             allow_folders=allow_folders, required=required
         )
