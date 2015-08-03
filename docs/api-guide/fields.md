@@ -20,7 +20,7 @@ Each serializer field class constructor takes at least these arguments.  Some Fi
 
 ### `read_only`
 
-Read-only fields are included in the API output, but should not be included in the input during create or update operations. Any 'read_only' fields that are incorrectly included in the serializer input will be ignored. 
+Read-only fields are included in the API output, but should not be included in the input during create or update operations. Any 'read_only' fields that are incorrectly included in the serializer input will be ignored.
 
 Set this to `True` to ensure that the field is used when serializing a representation, but is not used when creating or updating an instance during deserialization.
 
@@ -193,6 +193,20 @@ A field that ensures the input is a valid UUID string. The `to_internal_value` m
     - `'int'` - A 128 bit integer representation of the UUID: `"123456789012312313134124512351145145114"`
     - `'urn'` - RFC 4122 URN representation of the UUID: `"urn:uuid:5ce0e9a5-5ffa-654b-cee0-1238041fb31a"`
   Changing the `format` parameters only affects representation values. All formats are accepted by `to_internal_value`
+
+## FilePathField
+
+A field whose choices are limited to the filenames in a certain directory on the filesystem
+
+Corresponds to `django.forms.fields.FilePathField`.
+
+**Signature:** `FilePathField(path, match=None, recursive=False, allow_files=True, allow_folders=False, required=None, **kwargs)`
+
+- `path` - The absolute filesystem path to a directory from which this FilePathField should get its choice.
+- `match` - A regular expression, as a string, that FilePathField will use to filter filenames.
+- `recursive` - Specifies whether all subdirectories of path should be included.  Default is `False`.
+- `allow_files` - Specifies whether files in the specified location should be included. Default is `True`. Either this or `allow_folders` must be `True`.
+- `allow_folders` - Specifies whether folders in the specified location should be included. Default is `False`. Either this or `allow_files` must be `True`.
 
 ## IPAddressField
 
