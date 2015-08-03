@@ -1,6 +1,7 @@
 # [Django REST framework][docs]
 
 [![build-status-image]][travis]
+[![coverage-status-image]][codecov]
 [![pypi-version]][pypi]
 
 **Awesome web-browsable Web APIs.**
@@ -159,6 +160,8 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 
 [build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.svg?branch=master
 [travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
+[coverage-status-image]: http://codecov.io/github/tomchristie/django-rest-framework/coverage.svg?branch=master
+[codecov]: http://codecov.io/github/tomchristie/django-rest-framework?branch=master
 [pypi-version]: https://img.shields.io/pypi/v/djangorestframework.svg
 [pypi]: https://pypi.python.org/pypi/djangorestframework
 [twitter]: https://twitter.com/_tomchristie
