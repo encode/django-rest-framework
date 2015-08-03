@@ -12,6 +12,7 @@ import django
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import connection, transaction
+from django.forms import FilePathField as DjangoFilePathField
 from django.test.client import FakePayload
 from django.utils import six
 from django.utils.encoding import force_text

@@ -771,6 +771,7 @@ class ModelSerializer(Serializer):
         models.TimeField: TimeField,
         models.URLField: URLField,
         models.GenericIPAddressField: IPAddressField,
+        models.FilePathField: FilePathField,
     }
     if ModelDurationField is not None:
         serializer_field_mapping[ModelDurationField] = DurationField
