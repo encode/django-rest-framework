@@ -705,42 +705,6 @@ class IPAddressField(CharField):
         return super(IPAddressField, self).to_internal_value(data)
 
 
-class FilePathField(CharField):
-    default_error_messages = {
-        'invalid_choice': _('"{input}" is not a valid path choice.')
-    }
-
-    def __init__(self, path, match=None, recursive=False, allow_files=True,
-                 allow_folders=False, required=None, **kwargs):
-        super(FilePathField, self).__init__(**kwargs)
-
-        # Defer to Django's FilePathField implmentation to get the
-        # valid set of choices.
-        field = DjangoFilePathField(
-            path, match=match, recursive=recursive, allow_files=allow_files,
-            allow_folders=allow_folders, required=required
-        )
-
-        self.choices = OrderedDict(field.choices)
-        self.choice_strings_to_values = dict([
-            (six.text_type(key), key) for key in self.choices.keys()
-        ])
-
-    def to_internal_value(self, data):
-        if data == '' and self.allow_blank:
-            return ''
-
-        try:
-            return self.choice_strings_to_values[six.text_type(data)]
-        except KeyError:
-            self.fail('invalid_choice', input=data)
-
-    def to_representation(self, value):
-        if value in ('', None):
-            return value
-        return self.choice_strings_to_values[six.text_type(value)]
-
-
 # Number types...
 
 class IntegerField(Field):
@@ -1213,6 +1177,23 @@ class MultipleChoiceField(ChoiceField):
         return set([
             self.choice_strings_to_values.get(six.text_type(item), item) for item in value
         ])
+
+
+class FilePathField(ChoiceField):
+    default_error_messages = {
+        'invalid_choice': _('"{input}" is not a valid path choice.')
+    }
+
+    def __init__(self, path, match=None, recursive=False, allow_files=True,
+                 allow_folders=False, required=None, **kwargs):
+        # Defer to Django's FilePathField implmentation to get the
+        # valid set of choices.
+        field = DjangoFilePathField(
+            path, match=match, recursive=recursive, allow_files=allow_files,
+            allow_folders=allow_folders, required=required
+        )
+        kwargs['choices'] = field.choices
+        super(FilePathField, self).__init__(**kwargs)
 
 
 # File types...
