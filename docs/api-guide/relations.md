@@ -151,6 +151,16 @@ Would serialize to a representation like this:
 
 By default this field is read-write, although you can change this behavior using the `read_only` flag.
 
+---
+
+**Note**: This field is designed for objects that map to a URL that accepts a single URL keyword argument, as set using the `lookup_field` and `lookup_url_kwarg` arguments.
+
+This is suitable for URLs that contain a single primary key or slug argument as part of the URL.
+
+If you require more complex hyperlinked representation you'll need to customize the field, as described in the [custom hyperlinked fields](#custom-hyperlinked-fields) section, below.
+
+---
+
 **Arguments**:
 
 * `view_name` - The view name that should be used as the target of the relationship.  If you're using [the standard router classes][routers] this will be a string with the format `<modelname>-detail`. **required**.
@@ -353,6 +363,63 @@ This custom field would then serialize to the following representation.
 
 ---
 
+# Custom hyperlinked fields
+
+In some cases you may need to customize the behavior of a hyperlinked field, in order to represent URLs that require more than a single lookup field.
+
+You can achieve this by overriding `HyperlinkedRelatedField`. There are two methods that may be overridden:
+
+**get_url(self, obj, view_name, request, format)**
+
+The `get_url` method is used to map the object instance to its URL representation.
+
+May raise a `NoReverseMatch` if the `view_name` and `lookup_field`
+attributes are not configured to correctly match the URL conf.
+
+**get_object(self, queryset, view_name, view_args, view_kwargs)**
+
+If you want to support a writable hyperlinked field then you'll also want to override `get_object`, in order to map incoming URLs back to the object they represent. For read-only hyperlinked fields there is no need to override this method.
+
+The return value of this method should the object that corresponds to the matched URL conf arguments.
+
+May raise an `ObjectDoesNotExist` exception.
+
+## Example
+
+Say we have a URL for a customer object that takes two keyword arguments, like so:
+
+    /api/<organization_slug>/customers/<customer_pk>/
+
+This cannot be represented with the default implementation, which accepts only a single lookup field.
+
+In this case we'd need to override `HyperlinkedRelatedField` to get the behavior we want:
+
+    from rest_framework import serializers
+    from rest_framework.reverse import reverse
+
+    class CustomerHyperlink(serializers.HyperlinkedRelatedField):
+        # We define these as class attributes, so we don't need to pass them as arguments.
+        view_name = 'customer-detail'
+        queryset = Customer.objects.all()
+
+        def get_url(self, obj, view_name, request, format):
+            url_kwargs = {
+                'organization_slug': obj.organization.slug,
+                'customer_pk': obj.pk            }
+            return reverse(view_name, url_kwargs, request=request, format=format)
+
+        def get_object(self, view_name, view_args, view_kwargs):
+            lookup_kwargs = {
+               'organization__slug': view_kwargs['organization_slug'],
+               'pk': view_kwargs['customer_pk']            }
+            return self.get_queryset().get(**lookup_kwargs)
+
+Note that if you wanted to use this style together with the generic views then you'd also need to override `.get_object` on the view in order to get the correct lookup behavior.
+
+Generally we recommend a flat style for API representations where possible, but the nested URL style can also be reasonable when used in moderation.
+
+---
+
 # Further notes
 
 ## The `queryset` argument
@@ -469,39 +536,6 @@ By default, relational fields that target a ``ManyToManyField`` with a
 If you explicitly specify a relational field pointing to a
 ``ManyToManyField`` with a through model, be sure to set ``read_only``
 to ``True``.
-
-## Advanced Hyperlinked fields
-
-If you have very specific requirements for the style of your hyperlinked relationships you can override `HyperlinkedRelatedField`.
-
-There are two methods you'll need to override.
-
-#### get_url(self, obj, view_name, request, format)
-
-This method should return the URL that corresponds to the given object.
-
-May raise a `NoReverseMatch` if the `view_name` and `lookup_field`
-attributes are not configured to correctly match the URL conf.
-
-#### get_object(self, queryset, view_name, view_args, view_kwargs)
-
-This method should the object that corresponds to the matched URL conf arguments.
-
-May raise an `ObjectDoesNotExist` exception.
-
-### Example
-
-For example, if all your object URLs used both a account and a slug in the the URL to reference the object, you might create a custom field like this:
-
-    class CustomHyperlinkedField(serializers.HyperlinkedRelatedField):
-        def get_url(self, obj, view_name, request, format):
-            kwargs = {'account': obj.account, 'slug': obj.slug}
-            return reverse(view_name, kwargs=kwargs, request=request, format=format)
-
-        def get_object(self, view_name, view_args, view_kwargs):
-            account = view_kwargs['account']
-            slug = view_kwargs['slug']
-            return self.get_queryset().get(account=account, slug=slug)
 
 ---
 

@@ -53,8 +53,10 @@ MANY_RELATION_KWARGS = (
 
 
 class RelatedField(Field):
+    queryset = None
+
     def __init__(self, **kwargs):
-        self.queryset = kwargs.pop('queryset', None)
+        self.queryset = kwargs.pop('queryset', self.queryset)
         assert self.queryset is not None or kwargs.get('read_only', None), (
             'Relational field must provide a `queryset` argument, '
             'or set read_only=`True`.'
@@ -198,6 +200,7 @@ class PrimaryKeyRelatedField(RelatedField):
 
 class HyperlinkedRelatedField(RelatedField):
     lookup_field = 'pk'
+    view_name = None
 
     default_error_messages = {
         'required': _('This field is required.'),
@@ -208,8 +211,9 @@ class HyperlinkedRelatedField(RelatedField):
     }
 
     def __init__(self, view_name=None, **kwargs):
-        assert view_name is not None, 'The `view_name` argument is required.'
-        self.view_name = view_name
+        if view_name is not None:
+            view_name = self.view_name = view_name
+        assert self.view_name is not None, 'The `view_name` argument is required.'
         self.lookup_field = kwargs.pop('lookup_field', self.lookup_field)
         self.lookup_url_kwarg = kwargs.pop('lookup_url_kwarg', self.lookup_field)
         self.format = kwargs.pop('format', None)
