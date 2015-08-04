@@ -161,7 +161,7 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.svg?branch=master
 [travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
 [coverage-status-image]: http://codecov.io/github/tomchristie/django-rest-framework/coverage.svg?branch=master
-[codecov]: http://codecov.io/github/tomchristie/django-rest-framework?branch=master
+[codecov]: https://img.shields.io/codecov/c/github/tomchristie/django-rest-framework/master.svg
 [pypi-version]: https://img.shields.io/pypi/v/djangorestframework.svg
 [pypi]: https://pypi.python.org/pypi/djangorestframework
 [twitter]: https://twitter.com/_tomchristie
