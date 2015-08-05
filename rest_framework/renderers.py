@@ -592,7 +592,9 @@ class BrowsableAPIRenderer(BaseRenderer):
     def get_name(self, view):
         return view.get_view_name()
 
-    def get_description(self, view):
+    def get_description(self, view, status_code):
+        if status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN):
+            return ''
         return view.get_view_description(html=True)
 
     def get_breadcrumbs(self, request):
@@ -631,7 +633,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             'view': view,
             'request': request,
             'response': response,
-            'description': self.get_description(view),
+            'description': self.get_description(view, response.status_code),
             'name': self.get_name(view),
             'version': VERSION,
             'paginator': paginator,
