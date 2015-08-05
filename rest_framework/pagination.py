@@ -665,6 +665,11 @@ class CursorPagination(BasePagination):
                 'Using cursor pagination, but no ordering attribute was declared '
                 'on the pagination class.'
             )
+            assert '__' not in ordering, (
+                'Cursor pagination does not support double underscore lookups '
+                'for orderings. Orderings should be an unchanging, unique or '
+                'nearly-unique field on the model, such as "-created" or "pk".'
+            )
 
         assert isinstance(ordering, (six.string_types, list, tuple)), (
             'Invalid ordering. Expected string or tuple, but got {type}'.format(
