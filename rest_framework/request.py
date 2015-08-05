@@ -448,3 +448,24 @@ class Request(object):
                 return getattr(self._request, attr)
             except AttributeError:
                 six.reraise(info[0], info[1], info[2].tb_next)
+
+    @property
+    def DATA(self):
+        raise NotImplementedError(
+            '`request.DATA` has been deprecated in favor of `request.data` '
+            'since version 3.0, and has been fully removed as of version 3.2.'
+        )
+
+    @property
+    def FILES(self):
+        raise NotImplementedError(
+            '`request.FILES` has been deprecated in favor of `request.files` '
+            'since version 3.0, and has been fully removed as of version 3.2.'
+        )
+
+    @property
+    def QUERY_PARAMS(self):
+        raise NotImplementedError(
+            '`request.QUERY_PARAMS` has been deprecated in favor of `request.query_params` '
+            'since version 3.0, and has been fully removed as of version 3.2.'
+        )
