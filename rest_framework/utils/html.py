@@ -62,7 +62,7 @@ def parse_html_list(dictionary, prefix=''):
     return [ret[item] for item in sorted(ret.keys())]
 
 
-def parse_html_dict(dictionary, prefix):
+def parse_html_dict(dictionary, prefix=''):
     """
     Used to support dictionary values in HTML forms.
 
