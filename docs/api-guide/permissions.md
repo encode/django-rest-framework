@@ -88,6 +88,8 @@ using the `APIView` class based views.
 
 Or, if you're using the `@api_view` decorator with function based views.
 
+    from rest_framework.decorators import permission_classes
+    
     @api_view('GET')
     @permission_classes((IsAuthenticated, ))
     def example_view(request, format=None):
