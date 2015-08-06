@@ -10,8 +10,14 @@
 
   <div class="col-sm-10">
     <select multiple {{ field.choices|yesno:",disabled" }} class="form-control" name="{{ field.name }}">
-      {% for key, text in field.choices.items %}
-        <option value="{{ key }}" {% if key in field.value %}selected{% endif %}>{{ text }}</option>
+      {% for select in field.iter_options %}
+        {% if select.start_option_group %}
+          <optgroup label="{{ select.label }}">
+        {% elif select.end_option_group %}
+          </optgroup>
+        {% else %}
+          <option value="{{ select.value }}" {% if select.value == field.value %}selected{% endif %}>{{ select.display_text }}</option>
+        {% endif %}
       {% empty %}
           <option>{{ no_items }}</option>
       {% endfor %}

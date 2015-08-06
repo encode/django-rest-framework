@@ -5,7 +5,6 @@ import copy
 import datetime
 import decimal
 import inspect
-import itertools
 import re
 import uuid
 
@@ -109,32 +108,54 @@ def set_value(dictionary, keys, value):
     dictionary[keys[-1]] = value
 
 
-def flatten_choice(choice):
+def pairwise_choices(choices):
     """
-    Convert a single choices choice into a flat list of choices.
+    Convert any single choices into key/value pairs instead.
 
-    Returns a list of choices pairs.
-
-    flatten_choice(1) -> [(1, 1)]
-    flatten_choice((1, '1st')) -> [(1, '1st')]
-    flatten_choice(('Grp', ((1, '1st'), (2, '2nd')))) -> [(1, '1st'), (2, '2nd')]
+    pairwise_choices([1]) -> [(1, 1)]
+    pairwise_choices([(1, '1st')]) -> [(1, '1st')]
+    pairwise_choices([('Group', ((1, '1st'), 2))]) -> [(1, '1st'), (2, 2)]
     """
     # Allow single, paired or grouped choices style:
     # choices = [1, 2, 3]
     # choices = [(1, 'First'), (2, 'Second'), (3, 'Third')]
     # choices = [('Category', ((1, 'First'), (2, 'Second'))), (3, 'Third')]
-    if (not isinstance(choice, (list, tuple))):
-        # single choice
-        return [(choice, choice)]
-    else:
-        key, display_value = choice
-        if isinstance(display_value, (list, tuple)):
-            # grouped choices
-            sub_choices = [flatten_choice(c) for c in display_value]
-            return list(itertools.chain(*sub_choices))
+    ret = []
+    for choice in choices:
+        if (not isinstance(choice, (list, tuple))):
+            # single choice
+            item = (choice, choice)
+            ret.append(item)
         else:
-            # paired choice
-            return [(key, display_value)]
+            key, value = choice
+            if isinstance(value, (list, tuple)):
+                # grouped choices (category, sub choices)
+                item = (key, pairwise_choices(value))
+                ret.append(item)
+            else:
+                # paired choice (key, display value)
+                item = (key, value)
+                ret.append(item)
+    return ret
+
+
+def flatten_choices(choices):
+    """
+    Convert a group choices into a flat list of choices.
+
+    flatten_choices([(1, '1st')]) -> [(1, '1st')]
+    flatten_choices([('Grp', ((1, '1st'), (2, '2nd')))]) -> [(1, '1st'), (2, '2nd')]
+    """
+    ret = []
+    for key, value in choices:
+        if isinstance(value, (list, tuple)):
+            # grouped choices (category, sub choices)
+            ret.extend(flatten_choices(value))
+        else:
+            # choice (key, display value)
+            item = (key, value)
+            ret.append(item)
+    return ret
 
 
 class CreateOnlyDefault(object):
@@ -1140,8 +1161,8 @@ class ChoiceField(Field):
     }
 
     def __init__(self, choices, **kwargs):
-        flat_choices = [flatten_choice(c) for c in choices]
-        self.choices = OrderedDict(list(itertools.chain(*flat_choices)))
+        self.grouped_choices = pairwise_choices(choices)
+        self.choices = OrderedDict(flatten_choices(self.grouped_choices))
 
         # Map the string representation of choices to the underlying value.
         # Allows us to deal with eg. integer choices while supporting either
@@ -1167,6 +1188,30 @@ class ChoiceField(Field):
         if value in ('', None):
             return value
         return self.choice_strings_to_values.get(six.text_type(value), value)
+
+    def iter_options(self):
+        class StartOptionGroup(object):
+            start_option_group = True
+
+            def __init__(self, label):
+                self.label = label
+
+        class EndOptionGroup(object):
+            end_option_group = True
+
+        class Option(object):
+            def __init__(self, value, display_text):
+                self.value = value
+                self.display_text = display_text
+
+        for key, value in self.grouped_choices:
+            if isinstance(value, (list, tuple)):
+                yield StartOptionGroup(label=key)
+                for sub_key, sub_value in value:
+                    yield Option(value=sub_key, display_text=sub_value)
+                yield EndOptionGroup()
+            else:
+                yield Option(value=key, display_text=value)
 
 
 class MultipleChoiceField(ChoiceField):
