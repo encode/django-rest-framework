@@ -278,6 +278,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -308,7 +312,7 @@
           </div>
 
           <div class="modal-body">
-            <form role="form">
+            <form role="form" autocomplete="off">
               <div class="form-group">
                 <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
               </div>
@@ -471,7 +475,7 @@ You probably want to also tag the version now:
 <h4 id="adding-to-the-django-rest-framework-grid">Adding to the Django REST framework grid</h4>
 <p>We suggest adding your package to the <a href="https://www.djangopackages.com/grids/g/django-rest-framework/">REST Framework</a> grid on Django Packages.</p>
 <h4 id="adding-to-the-django-rest-framework-docs">Adding to the Django REST framework docs</h4>
-<p>Create a <a href="https://github.com/tomchristie/django-rest-framework/compare">Pull Request</a> or <a href="https://github.com/tomchristie/django-rest-framework/issues/new">Issue</a> on GitHub, and we'll add a link to it from the main REST framework documentation. You can add your package under <strong>Third party packages</strong> of the API Guide section that best applies, like <a href="../../api-guide/authentication/">Authentication</a> or <a href="../../api-guide/permissions/">Permissions</a>. You can also link your package under the [Third Party Resources][third-party-resources] section.</p>
+<p>Create a <a href="https://github.com/tomchristie/django-rest-framework/compare">Pull Request</a> or <a href="https://github.com/tomchristie/django-rest-framework/issues/new">Issue</a> on GitHub, and we'll add a link to it from the main REST framework documentation. You can add your package under <strong>Third party packages</strong> of the API Guide section that best applies, like <a href="../../api-guide/authentication/">Authentication</a> or <a href="../../api-guide/permissions/">Permissions</a>. You can also link your package under the <a href="../../topics/third-party-resources/#existing-third-party-packages">Third Party Resources</a> section.</p>
 <h4 id="announce-on-the-discussion-group">Announce on the discussion group.</h4>
 <p>You can also let others know about your package through the <a href="https://groups.google.com/forum/#!forum/django-rest-framework">discussion group</a>.</p>
 <h2 id="existing-third-party-packages">Existing Third Party Packages</h2>
@@ -494,6 +498,7 @@ You probably want to also tag the version now:
 <li><a href="https://github.com/kevin-brown/drf-any-permissions">drf-any-permissions</a> - Provides alternative permission handling.</li>
 <li><a href="https://github.com/niwibe/djangorestframework-composed-permissions">djangorestframework-composed-permissions</a> - Provides a simple way to define complex permissions.</li>
 <li><a href="https://github.com/caxap/rest_condition">rest_condition</a> - Another extension for building complex permissions in a simple and convenient way.</li>
+<li><a href="https://github.com/Helioscene/dry-rest-permissions">dry-rest-permissions</a> - Provides a simple way to define permissions for individual api actions.</li>
 </ul>
 <h3 id="serializers">Serializers</h3>
 <ul>
@@ -510,6 +515,7 @@ You probably want to also tag the version now:
 <h3 id="views">Views</h3>
 <ul>
 <li><a href="https://github.com/miki725/django-rest-framework-bulk">djangorestframework-bulk</a> - Implements generic view mixins as well as some common concrete generic views to allow to apply bulk operations via API requests.</li>
+<li><a href="https://github.com/Axiologue/DjangoRestMultipleModels">django-rest-multiple-models</a> - Provides a generic view (and mixin) for sending multiple serialized models and/or querysets via a single API request.</li>
 </ul>
 <h3 id="routers">Routers</h3>
 <ul>
@@ -536,11 +542,12 @@ You probably want to also tag the version now:
 <li><a href="https://github.com/fredkingham/django_rest_model_hyperlink_serializers_project">djangorestrelationalhyperlink</a> - A hyperlinked serialiser that can can be used to alter relationships via hyperlinks, but otherwise like a hyperlink model serializer.</li>
 <li><a href="https://github.com/marcgibbons/django-rest-swagger">django-rest-swagger</a> - An API documentation generator for Swagger UI.</li>
 <li><a href="https://github.com/eofs/django-rest-framework-proxy">django-rest-framework-proxy</a> - Proxy to redirect incoming request to another API server.</li>
-<li><a href="https://github.com/AppsFuel/gaiarestframework">gaiarestframework</a> - Utils for django-rest-framewok</li>
+<li><a href="https://github.com/AppsFuel/gaiarestframework">gaiarestframework</a> - Utils for django-rest-framework</li>
 <li><a href="https://github.com/chibisov/drf-extensions">drf-extensions</a> - A collection of custom extensions</li>
 <li><a href="https://github.com/dustinfarris/ember-django-adapter">ember-django-adapter</a> - An adapter for working with Ember.js</li>
 <li><a href="https://github.com/WGBH/django-versatileimagefield">django-versatileimagefield</a> - Provides a drop-in replacement for Django's stock <code>ImageField</code> that makes it easy to serve images in multiple sizes/renditions from a single field. For DRF-specific implementation docs, <a href="http://django-versatileimagefield.readthedocs.org/en/latest/drf_integration.html">click here</a>.</li>
 <li><a href="https://github.com/aschn/drf-tracking">drf-tracking</a> - Utilities to track requests to DRF API views.</li>
+<li><a href="https://github.com/dealertrack/django-rest-framework-braces">django-rest-framework-braces</a> - Collection of utilities for working with Django Rest Framework. The most notable ones are <a href="https://django-rest-framework-braces.readthedocs.org/en/latest/overview.html#formserializer">FormSerializer</a> and <a href="https://django-rest-framework-braces.readthedocs.org/en/latest/overview.html#serializerform">SerializerForm</a>, which are adapters between DRF serializers and Django forms.</li>
 </ul>
 <h2 id="other-resources">Other Resources</h2>
 <h3 id="tutorials">Tutorials</h3>

@@ -278,6 +278,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -308,7 +312,7 @@
           </div>
 
           <div class="modal-body">
-            <form role="form">
+            <form role="form" autocomplete="off">
               <div class="form-group">
                 <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
               </div>
@@ -379,6 +383,10 @@
                   
                     <li>
                       <a href="#uuidfield">UUIDField</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#filepathfield">FilePathField</a>
                     </li>
                   
                     <li>
@@ -559,6 +567,7 @@
 <h2 id="core-arguments">Core arguments</h2>
 <p>Each serializer field class constructor takes at least these arguments.  Some Field classes take additional, field-specific arguments, but the following should always be accepted:</p>
 <h3 id="read_only"><code>read_only</code></h3>
+<p>Read-only fields are included in the API output, but should not be included in the input during create or update operations. Any 'read_only' fields that are incorrectly included in the serializer input will be ignored.</p>
 <p>Set this to <code>True</code> to ensure that the field is used when serializing a representation, but is not used when creating or updating an instance during deserialization.</p>
 <p>Defaults to <code>False</code></p>
 <h3 id="write_only"><code>write_only</code></h3>
@@ -661,6 +670,17 @@ color_channel = serializers.ChoiceField(
   Changing the <code>format</code> parameters only affects representation values. All formats are accepted by <code>to_internal_value</code></li>
 </ul>
 </li>
+</ul>
+<h2 id="filepathfield">FilePathField</h2>
+<p>A field whose choices are limited to the filenames in a certain directory on the filesystem</p>
+<p>Corresponds to <code>django.forms.fields.FilePathField</code>.</p>
+<p><strong>Signature:</strong> <code>FilePathField(path, match=None, recursive=False, allow_files=True, allow_folders=False, required=None, **kwargs)</code></p>
+<ul>
+<li><code>path</code> - The absolute filesystem path to a directory from which this FilePathField should get its choice.</li>
+<li><code>match</code> - A regular expression, as a string, that FilePathField will use to filter filenames.</li>
+<li><code>recursive</code> - Specifies whether all subdirectories of path should be included.  Default is <code>False</code>.</li>
+<li><code>allow_files</code> - Specifies whether files in the specified location should be included. Default is <code>True</code>. Either this or <code>allow_folders</code> must be <code>True</code>.</li>
+<li><code>allow_folders</code> - Specifies whether folders in the specified location should be included. Default is <code>False</code>. Either this or <code>allow_files</code> must be <code>True</code>.</li>
 </ul>
 <h2 id="ipaddressfield">IPAddressField</h2>
 <p>A field that ensures the input is a valid IPv4 or IPv6 string.</p>

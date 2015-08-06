@@ -278,6 +278,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -308,7 +312,7 @@
           </div>
 
           <div class="modal-body">
-            <form role="form">
+            <form role="form" autocomplete="off">
               <div class="form-group">
                 <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
               </div>
@@ -343,6 +347,10 @@
                   
                     <li>
                       <a href="#upgrading">Upgrading</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#32x-series">3.2.x series</a>
                     </li>
                   
                     <li>
@@ -396,6 +404,41 @@
 <p>You can determine your currently installed version using <code>pip freeze</code>:</p>
 <pre><code>pip freeze | grep djangorestframework
 </code></pre>
+<hr />
+<h2 id="32x-series">3.2.x series</h2>
+<h3 id="320">3.2.0</h3>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.0+Release%22">6th August 2015</a>.</p>
+<ul>
+<li>Add <code>AdminRenderer</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2926">#2926</a>)</li>
+<li>Add <code>FilePathField</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/1854">#1854</a>)</li>
+<li>Add <code>allow_empty</code> to <code>ListField</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2250">#2250</a>)</li>
+<li>Support django-guardian 1.3. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3165">#3165</a>)</li>
+<li>Support grouped choices. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3225">#3225</a>)</li>
+<li>Support error forms in browsable API. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3024">#3024</a>)</li>
+<li>Allow permission classes to customize the error message. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2539">#2539</a>)</li>
+<li>Support <code>source=&lt;method&gt;</code> on hyperlinked fields. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2690">#2690</a>)</li>
+<li><code>ListField(allow_null=True)</code> now allows null as the list value, not null items in the list. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2766">#2766</a>)</li>
+<li><code>ManyToMany()</code> maps to <code>allow_empty=False</code>, <code>ManyToMany(blank=True)</code> maps to <code>allow_empty=True</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2804">#2804</a>)</li>
+<li>Support custom serialization styles for primary key fields. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2789">#2789</a>)</li>
+<li><code>OPTIONS</code> requests support nested representations. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2915">#2915</a>)</li>
+<li>Set <code>view.action == "metadata"</code> for viewsets with <code>OPTIONS</code> requests. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3115">#3115</a>)</li>
+<li>Support <code>allow_blank</code> on <code>UUIDField</code>. ([#3130][gh#3130])</li>
+<li>Do not display view docstrings with 401 or 403 response codes. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3216">#3216</a>)</li>
+<li>Resolve Django 1.8 deprecation warnings. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2886">#2886</a>)</li>
+<li>Fix for <code>DecimalField</code> validation. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3139">#3139</a>)</li>
+<li>Fix behavior of <code>allow_blank=False</code> when used with <code>trim_whitespace=True</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2712">#2712</a>)</li>
+<li>Fix issue with some field combinations incorrectly mapping to an invalid <code>allow_blank</code> argument. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3011">#3011</a>)</li>
+<li>Fix for output representations with prefetches and modified querysets. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2704">#2704</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2727">#2727</a>)</li>
+<li>Fix assertion error when CursorPagination is provided with certains invalid query parameters. (#2920)<a href="https://github.com/tomchristie/django-rest-framework/issues/2920">gh2920</a>.</li>
+<li>Fix <code>UnicodeDecodeError</code> when invalid characters included in header with <code>TokenAuthentication</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2928">#2928</a>)</li>
+<li>Fix transaction rollbacks with <code>@non_atomic_requests</code> decorator. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3016">#3016</a>)</li>
+<li>Fix duplicate results issue with Oracle databases using <code>SearchFilter</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2935">#2935</a>)</li>
+<li>Fix checkbox alignment and rendering in browsable API forms. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2783">#2783</a>)</li>
+<li>Fix for unsaved file objects which should use <code>"url": null</code> in the representation. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2759">#2759</a>)</li>
+<li>Fix field value rendering in browsable API. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2416">#2416</a>)</li>
+<li>Fix <code>HStoreField</code> to include <code>allow_blank=True</code> in <code>DictField</code> mapping. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2659">#2659</a>)</li>
+<li>Numerous other cleanups, improvements to error messaging, private API &amp; minor fixes.</li>
+</ul>
 <hr />
 <h2 id="31x-series">3.1.x series</h2>
 <h3 id="313">3.1.3</h3>
@@ -550,6 +593,7 @@
 <!-- 3.1.1 -->
 <!-- 3.1.2 -->
 <!-- 3.1.3 --></p>
+<!-- 3.2.0 -->
             
 
           </div> <!--/span-->

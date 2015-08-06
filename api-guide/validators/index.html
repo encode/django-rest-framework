@@ -278,6 +278,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -308,7 +312,7 @@
           </div>
 
           <div class="modal-body">
-            <form role="form">
+            <form role="form" autocomplete="off">
               <div class="form-group">
                 <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
               </div>
@@ -556,7 +560,7 @@ It has two required arguments, and a single optional <code>messages</code> argum
 </code></pre>
 <h2 id="class-based">Class based</h2>
 <p>To write a class based validator, use the <code>__call__</code> method. Class based validators are useful as they allow you to parameterize and reuse behavior.</p>
-<pre><code>class MultipleOf:
+<pre><code>class MultipleOf(object):
     def __init__(self, base):
         self.base = base
 

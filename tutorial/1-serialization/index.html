@@ -278,6 +278,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -308,7 +312,7 @@
           </div>
 
           <div class="modal-body">
-            <form role="form">
+            <form role="form" autocomplete="off">
               <div class="form-group">
                 <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
               </div>
@@ -454,8 +458,7 @@ python manage.py migrate
 </code></pre>
 <h2 id="creating-a-serializer-class">Creating a Serializer class</h2>
 <p>The first thing we need to get started on our Web API is to provide a way of serializing and deserializing the snippet instances into representations such as <code>json</code>.  We can do this by declaring serializers that work very similar to Django's forms.  Create a file in the <code>snippets</code> directory named <code>serializers.py</code> and add the following.</p>
-<pre><code>from django.forms import widgets
-from rest_framework import serializers
+<pre><code>from rest_framework import serializers
 from snippets.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES
 
 
@@ -652,7 +655,7 @@ urlpatterns = [
 Validating models...
 
 0 errors found
-Django version 1.4.3, using settings 'tutorial.settings'
+Django version 1.8.3, using settings 'tutorial.settings'
 Development server is running at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 </code></pre>

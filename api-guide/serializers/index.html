@@ -278,6 +278,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -308,7 +312,7 @@
           </div>
 
           <div class="modal-body">
-            <form role="form">
+            <form role="form" autocomplete="off">
               <div class="form-group">
                 <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
               </div>
@@ -963,7 +967,7 @@ AccountSerializer():
 <p>Typically we would recommend <em>not</em> using inheritance on inner Meta classes, but instead declaring all options explicitly.</p>
 <h2 id="customizing-field-mappings">Customizing field mappings</h2>
 <p>The ModelSerializer class also exposes an API that you can override in order to alter how serializer fields are automatically determined when instantiating the serializer.</p>
-<p>Normally if a <code>ModelSerializer</code> does not generate the fields you need by default the you should either add them to the class explicitly, or simply use a regular <code>Serializer</code> class instead. However in some cases you may want to create a new base class that defines how the serializer fields are created for any given model.</p>
+<p>Normally if a <code>ModelSerializer</code> does not generate the fields you need by default then you should either add them to the class explicitly, or simply use a regular <code>Serializer</code> class instead. However in some cases you may want to create a new base class that defines how the serializer fields are created for any given model.</p>
 <h3 id="serializer_field_mapping"><code>.serializer_field_mapping</code></h3>
 <p>A mapping of Django model classes to REST framework serializer classes. You can override this mapping to alter the default serializer classes that should be used for each model class.</p>
 <h3 id="serializer_related_field"><code>.serializer_related_field</code></h3>

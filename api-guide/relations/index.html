@@ -278,6 +278,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -308,7 +312,7 @@
           </div>
 
           <div class="modal-body">
-            <form role="form">
+            <form role="form" autocomplete="off">
               <div class="form-group">
                 <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
               </div>
@@ -375,12 +379,28 @@
                   
                 
                   <li class="main">
+                    <a href="#writable-nested-serializers">Writable nested serializers</a>
+                  </li>
+
+                  
+                
+                  <li class="main">
                     <a href="#custom-relational-fields">Custom relational fields</a>
                   </li>
 
                   
                     <li>
                       <a href="#example_1">Example</a>
+                    </li>
+                  
+                
+                  <li class="main">
+                    <a href="#custom-hyperlinked-fields">Custom hyperlinked fields</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#example_2">Example</a>
                     </li>
                   
                 
@@ -403,10 +423,6 @@
                   
                     <li>
                       <a href="#manytomanyfields-with-a-through-model">ManyToManyFields with a Through Model</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#advanced-hyperlinked-fields">Advanced Hyperlinked fields</a>
                     </li>
                   
                 
@@ -561,6 +577,11 @@ class Track(models.Model):
 }
 </code></pre>
 <p>By default this field is read-write, although you can change this behavior using the <code>read_only</code> flag.</p>
+<hr />
+<p><strong>Note</strong>: This field is designed for objects that map to a URL that accepts a single URL keyword argument, as set using the <code>lookup_field</code> and <code>lookup_url_kwarg</code> arguments.</p>
+<p>This is suitable for URLs that contain a single primary key or slug argument as part of the URL.</p>
+<p>If you require more complex hyperlinked representation you'll need to customize the field, as described in the <a href="#custom-hyperlinked-fields">custom hyperlinked fields</a> section, below.</p>
+<hr />
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li><code>view_name</code> - The view name that should be used as the target of the relationship.  If you're using <a href="http://www.django-rest-framework.org/api-guide/routers#defaultrouter">the standard router classes</a> this will be a string with the format <code>&lt;modelname&gt;-detail</code>. <strong>required</strong>.</li>
@@ -649,16 +670,61 @@ class AlbumSerializer(serializers.ModelSerializer):
         fields = ('album_name', 'artist', 'tracks')
 </code></pre>
 <p>Would serialize to a nested representation like this:</p>
-<pre><code>{
+<pre><code>&gt;&gt;&gt; album = Album.objects.create(album_name="The Grey Album", artist='Danger Mouse')
+&gt;&gt;&gt; Track.objects.create(album=album, order=1, title='Public Service Announcement', duration=245)
+&lt;Track: Track object&gt;
+&gt;&gt;&gt; Track.objects.create(album=album, order=2, title='What More Can I Say', duration=264)
+&lt;Track: Track object&gt;
+&gt;&gt;&gt; Track.objects.create(album=album, order=3, title='Encore', duration=159)
+&lt;Track: Track object&gt;
+&gt;&gt;&gt; serializer = AlbumSerializer(instance=album)
+&gt;&gt;&gt; serializer.data
+{
     'album_name': 'The Grey Album',
     'artist': 'Danger Mouse',
     'tracks': [
-        {'order': 1, 'title': 'Public Service Announcement'},
-        {'order': 2, 'title': 'What More Can I Say'},
-        {'order': 3, 'title': 'Encore'},
+        {'order': 1, 'title': 'Public Service Announcement', 'duration': 245},
+        {'order': 2, 'title': 'What More Can I Say', 'duration': 264},
+        {'order': 3, 'title': 'Encore', 'duration': 159},
         ...
     ],
 }
+</code></pre>
+<h1 id="writable-nested-serializers">Writable nested serializers</h1>
+<p>Be default nested serializers are read-only. If you want to to support write-operations to a nested serializer field you'll need to create either or both of the <code>create()</code> and/or <code>update()</code> methods, in order to explicitly specify how the child relationships should be saved.</p>
+<pre><code>class TrackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Track
+        fields = ('order', 'title')
+
+class AlbumSerializer(serializers.ModelSerializer):
+    tracks = TrackSerializer(many=True)
+
+    class Meta:
+        model = Album
+        fields = ('album_name', 'artist', 'tracks')
+
+    def create(self, validated_data):
+        tracks_data = validated_data.pop('tracks')
+        album = Album.objects.create(**validated_data)
+        for track_data in tracks_data:
+            Track.objects.create(album=album, **track_data)
+        return album
+
+&gt;&gt;&gt; data = {
+    'album_name': 'The Grey Album',
+    'artist': 'Danger Mouse',
+    'tracks': [
+        {'order': 1, 'title': 'Public Service Announcement', 'duration': 245},
+        {'order': 2, 'title': 'What More Can I Say', 'duration': 264},
+        {'order': 3, 'title': 'Encore', 'duration': 159},
+    ],
+}
+&gt;&gt;&gt; serializer = AlbumSerializer(data=data)
+&gt;&gt;&gt; serializer.is_valid()
+True
+&gt;&gt;&gt; serializer.save()
+&lt;Album: Album object&gt;
 </code></pre>
 <h1 id="custom-relational-fields">Custom relational fields</h1>
 <p>To implement a custom relational field, you should override <code>RelatedField</code>, and implement the <code>.to_representation(self, value)</code> method. This method takes the target of the field as the <code>value</code> argument, and should return the representation that should be used to serialize the target. The <code>value</code> argument will typically be a model instance.</p>
@@ -691,6 +757,48 @@ class AlbumSerializer(serializers.ModelSerializer):
     ]
 }
 </code></pre>
+<hr />
+<h1 id="custom-hyperlinked-fields">Custom hyperlinked fields</h1>
+<p>In some cases you may need to customize the behavior of a hyperlinked field, in order to represent URLs that require more than a single lookup field.</p>
+<p>You can achieve this by overriding <code>HyperlinkedRelatedField</code>. There are two methods that may be overridden:</p>
+<p><strong>get_url(self, obj, view_name, request, format)</strong></p>
+<p>The <code>get_url</code> method is used to map the object instance to its URL representation.</p>
+<p>May raise a <code>NoReverseMatch</code> if the <code>view_name</code> and <code>lookup_field</code>
+attributes are not configured to correctly match the URL conf.</p>
+<p><strong>get_object(self, queryset, view_name, view_args, view_kwargs)</strong></p>
+<p>If you want to support a writable hyperlinked field then you'll also want to override <code>get_object</code>, in order to map incoming URLs back to the object they represent. For read-only hyperlinked fields there is no need to override this method.</p>
+<p>The return value of this method should the object that corresponds to the matched URL conf arguments.</p>
+<p>May raise an <code>ObjectDoesNotExist</code> exception.</p>
+<h2 id="example_2">Example</h2>
+<p>Say we have a URL for a customer object that takes two keyword arguments, like so:</p>
+<pre><code>/api/&lt;organization_slug&gt;/customers/&lt;customer_pk&gt;/
+</code></pre>
+<p>This cannot be represented with the default implementation, which accepts only a single lookup field.</p>
+<p>In this case we'd need to override <code>HyperlinkedRelatedField</code> to get the behavior we want:</p>
+<pre><code>from rest_framework import serializers
+from rest_framework.reverse import reverse
+
+class CustomerHyperlink(serializers.HyperlinkedRelatedField):
+    # We define these as class attributes, so we don't need to pass them as arguments.
+    view_name = 'customer-detail'
+    queryset = Customer.objects.all()
+
+    def get_url(self, obj, view_name, request, format):
+        url_kwargs = {
+            'organization_slug': obj.organization.slug,
+            'customer_pk': obj.pk
+        }
+        return reverse(view_name, url_kwargs, request=request, format=format)
+
+    def get_object(self, view_name, view_args, view_kwargs):
+        lookup_kwargs = {
+           'organization__slug': view_kwargs['organization_slug'],
+           'pk': view_kwargs['customer_pk']
+        }
+        return self.get_queryset().get(**lookup_kwargs)
+</code></pre>
+<p>Note that if you wanted to use this style together with the generic views then you'd also need to override <code>.get_object</code> on the view in order to get the correct lookup behavior.</p>
+<p>Generally we recommend a flat style for API representations where possible, but the nested URL style can also be reasonable when used in moderation.</p>
 <hr />
 <h1 id="further-notes">Further notes</h1>
 <h2 id="the-queryset-argument">The <code>queryset</code> argument</h2>
@@ -787,28 +895,6 @@ class Note(models.Model):
 <p>If you explicitly specify a relational field pointing to a
 <code>ManyToManyField</code> with a through model, be sure to set <code>read_only</code>
 to <code>True</code>.</p>
-<h2 id="advanced-hyperlinked-fields">Advanced Hyperlinked fields</h2>
-<p>If you have very specific requirements for the style of your hyperlinked relationships you can override <code>HyperlinkedRelatedField</code>.</p>
-<p>There are two methods you'll need to override.</p>
-<h4 id="get_urlself-obj-view_name-request-format">get_url(self, obj, view_name, request, format)</h4>
-<p>This method should return the URL that corresponds to the given object.</p>
-<p>May raise a <code>NoReverseMatch</code> if the <code>view_name</code> and <code>lookup_field</code>
-attributes are not configured to correctly match the URL conf.</p>
-<h4 id="get_objectself-queryset-view_name-view_args-view_kwargs">get_object(self, queryset, view_name, view_args, view_kwargs)</h4>
-<p>This method should the object that corresponds to the matched URL conf arguments.</p>
-<p>May raise an <code>ObjectDoesNotExist</code> exception.</p>
-<h3 id="example_2">Example</h3>
-<p>For example, if all your object URLs used both a account and a slug in the the URL to reference the object, you might create a custom field like this:</p>
-<pre><code>class CustomHyperlinkedField(serializers.HyperlinkedRelatedField):
-    def get_url(self, obj, view_name, request, format):
-        kwargs = {'account': obj.account, 'slug': obj.slug}
-        return reverse(view_name, kwargs=kwargs, request=request, format=format)
-
-    def get_object(self, queryset, view_name, view_args, view_kwargs):
-        account = view_kwargs['account']
-        slug = view_kwargs['slug']
-        return queryset.get(account=account, slug=slug)
-</code></pre>
 <hr />
 <h1 id="third-party-packages">Third Party Packages</h1>
 <p>The following third party packages are also available.</p>

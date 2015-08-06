@@ -278,6 +278,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -308,7 +312,7 @@
           </div>
 
           <div class="modal-body">
-            <form role="form">
+            <form role="form" autocomplete="off">
               <div class="form-group">
                 <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
               </div>
@@ -403,6 +407,10 @@
                       <a href="#rest-condition">REST Condition</a>
                     </li>
                   
+                    <li>
+                      <a href="#dry-rest-permissions">DRY Rest Permissions</a>
+                    </li>
+                  
                 
 
                 
@@ -486,7 +494,11 @@ class ExampleView(APIView):
         return Response(content)
 </code></pre>
 <p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
-<pre><code>@api_view('GET')
+<pre><code>from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+@api_view('GET')
 @permission_classes((IsAuthenticated, ))
 def example_view(request, format=None):
     content = {
@@ -553,6 +565,15 @@ else:
 <hr />
 <p><strong>Note</strong>: The instance-level <code>has_object_permission</code> method will only be called if the view-level <code>has_permission</code> checks have already passed. Also note that in order for the instance-level checks to run, the view code should explicitly call <code>.check_object_permissions(request, obj)</code>. If you are using the generic views then this will be handled for you by default.</p>
 <hr />
+<p>Custom permissions will raise a <code>PermissionDenied</code> exception if the test fails. To change the error message associated with the exception, implement a <code>message</code> attribute directly on your custom permission. Otherwise the <code>default_detail</code> attribute from <code>PermissionDenied</code> will be used.</p>
+<pre><code>from rest_framework import permissions
+
+class CustomerAccessPermission(permissions.BasePermission):
+    message = 'Adding customers not allowed.'
+
+    def has_permission(self, request, view):
+         ...
+</code></pre>
 <h2 id="examples">Examples</h2>
 <p>The following is an example of a permission class that checks the incoming request's IP address against a blacklist, and denies the request if the IP has been blacklisted.</p>
 <pre><code>from rest_framework import permissions
@@ -592,6 +613,8 @@ class BlacklistPermission(permissions.BasePermission):
 <p>The <a href="https://github.com/niwibe/djangorestframework-composed-permissions">Composed Permissions</a> package provides a simple way to define complex and multi-depth (with logic operators) permission objects, using small and reusable components.</p>
 <h2 id="rest-condition">REST Condition</h2>
 <p>The <a href="https://github.com/caxap/rest_condition">REST Condition</a> package is another extension for building complex permissions in a simple and convenient way.  The extension allows you to combine permissions with logical operators.</p>
+<h2 id="dry-rest-permissions">DRY Rest Permissions</h2>
+<p>The <a href="https://github.com/Helioscene/dry-rest-permissions">DRY Rest Permissions</a> package provides the ability to define different permissions for individual default and custom actions. This package is made for apps with permissions that are derived from relationships defined in the app's data model. It also supports permission checks being returned to a client app through the API's serializer. Additionally it supports adding permissions to the default and custom list actions to restrict the data they retrive per user.</p>
             
 
           </div> <!--/span-->

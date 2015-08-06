@@ -278,6 +278,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -308,7 +312,7 @@
           </div>
 
           <div class="modal-body">
-            <form role="form">
+            <form role="form" autocomplete="off">
               <div class="form-group">
                 <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
               </div>
@@ -443,6 +447,10 @@
                   
                     <li>
                       <a href="#django-rest-framework-bulk">Django REST Framework bulk</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#django-rest-multiple-models">Django Rest Multiple Models</a>
                     </li>
                   
                 
@@ -611,12 +619,19 @@ class UserList(generics.ListCreateAPIView):
     instance = serializer.save()
     send_email_confirmation(user=self.request.user, modified=instance)
 </code></pre>
+<p>You can also use these hooks to provide additional validation, by raising a <code>ValidationError()</code>. This can be useful if you need some validation logic to apply at the point of database save. For example:</p>
+<pre><code>def perform_create(self, serializer):
+    queryset = SignupRequest.objects.filter(user=self.request.user)
+    if queryset.exists():
+        raise ValidationError('You have already signed up')
+    serializer.save(user=self.request.user)
+</code></pre>
 <p><strong>Note</strong>: These methods replace the old-style version 2.x <code>pre_save</code>, <code>post_save</code>, <code>pre_delete</code> and <code>post_delete</code> methods, which are no longer available.</p>
 <p><strong>Other methods</strong>:</p>
 <p>You won't typically need to override the following methods, although you might need to call into them if you're writing custom views using <code>GenericAPIView</code>.</p>
 <ul>
 <li><code>get_serializer_context(self)</code> - Returns a dictionary containing any extra context that should be supplied to the serializer.  Defaults to including <code>'request'</code>, <code>'view'</code> and <code>'format'</code> keys.</li>
-<li><code>get_serializer(self, instance=None, data=None, files=None, many=False, partial=False, allow_add_remove=False)</code> - Returns a serializer instance.</li>
+<li><code>get_serializer(self, instance=None, data=None, many=False, partial=False)</code> - Returns a serializer instance.</li>
 <li><code>get_paginated_response(self, data)</code> - Returns a paginated style <code>Response</code> object.</li>
 <li><code>paginate_queryset(self, queryset)</code> - Paginate a queryset if required, either returning a page object, or <code>None</code> if pagination is not configured for this view.</li>
 <li><code>filter_queryset(self, queryset)</code> - Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.</li>
@@ -731,6 +746,8 @@ class BaseRetrieveUpdateDestroyView(MultipleFieldLookupMixin,
 <p>The following third party packages provide additional generic view implementations.</p>
 <h2 id="django-rest-framework-bulk">Django REST Framework bulk</h2>
 <p>The <a href="https://github.com/miki725/django-rest-framework-bulk">django-rest-framework-bulk package</a> implements generic view mixins as well as some common concrete generic views to allow to apply bulk operations via API requests.</p>
+<h2 id="django-rest-multiple-models">Django Rest Multiple Models</h2>
+<p><a href="https://github.com/Axiologue/DjangoRestMultipleModels">Django Rest Multiple Models</a> provides a generic view (and mixin) for sending multiple serialized models and/or querysets via a single API request.</p>
             
 
           </div> <!--/span-->

@@ -278,6 +278,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -308,7 +312,7 @@
           </div>
 
           <div class="modal-body">
-            <form role="form">
+            <form role="form" autocomplete="off">
               <div class="form-group">
                 <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
               </div>
@@ -364,11 +368,15 @@
                     </li>
                   
                     <li>
-                      <a href="#htmlformrenderer">HTMLFormRenderer</a>
+                      <a href="#browsableapirenderer">BrowsableAPIRenderer</a>
                     </li>
                   
                     <li>
-                      <a href="#browsableapirenderer">BrowsableAPIRenderer</a>
+                      <a href="#adminrenderer">AdminRenderer</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#htmlformrenderer">HTMLFormRenderer</a>
                     </li>
                   
                     <li>
@@ -590,25 +598,36 @@ def simple_html_view(request):
 <p><strong>.format</strong>: <code>'.html'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
 <p>See also: <code>TemplateHTMLRenderer</code></p>
-<h2 id="htmlformrenderer">HTMLFormRenderer</h2>
-<p>Renders data returned by a serializer into an HTML form.  The output of this renderer does not include the enclosing <code>&lt;form&gt;</code> tags or an submit actions, as you'll probably need those to include the desired method and URL.  Also note that the <code>HTMLFormRenderer</code> does not yet support including field error messages.</p>
-<p>Note that the template used by the <code>HTMLFormRenderer</code> class, and the context submitted to it <strong>may be subject to change</strong>.  If you need to use this renderer class it is advised that you either make a local copy of the class and templates, or follow the release note on REST framework upgrades closely.</p>
-<p><strong>.media_type</strong>: <code>text/html</code></p>
-<p><strong>.format</strong>: <code>'.form'</code></p>
-<p><strong>.charset</strong>: <code>utf-8</code></p>
-<p><strong>.template</strong>: <code>'rest_framework/form.html'</code></p>
 <h2 id="browsableapirenderer">BrowsableAPIRenderer</h2>
-<p>Renders data into HTML for the Browsable API.  This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.</p>
+<p>Renders data into HTML for the Browsable API:</p>
+<p><img alt="The BrowsableAPIRenderer" src="../../img/quickstart.png" /></p>
+<p>This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.</p>
 <p><strong>.media_type</strong>: <code>text/html</code></p>
 <p><strong>.format</strong>: <code>'.api'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
 <p><strong>.template</strong>: <code>'rest_framework/api.html'</code></p>
 <h4 id="customizing-browsableapirenderer">Customizing BrowsableAPIRenderer</h4>
-<p>By default the response content will be rendered with the highest priority renderer apart from <code>BrowseableAPIRenderer</code>.  If you need to customize this behavior, for example to use HTML as the default return format, but use JSON in the browsable API, you can do so by overriding the <code>get_default_renderer()</code> method.  For example:</p>
+<p>By default the response content will be rendered with the highest priority renderer apart from <code>BrowsableAPIRenderer</code>.  If you need to customize this behavior, for example to use HTML as the default return format, but use JSON in the browsable API, you can do so by overriding the <code>get_default_renderer()</code> method.  For example:</p>
 <pre><code>class CustomBrowsableAPIRenderer(BrowsableAPIRenderer):
     def get_default_renderer(self, view):
         return JSONRenderer()
 </code></pre>
+<h2 id="adminrenderer">AdminRenderer</h2>
+<p>Renders data into HTML for an admin-like display:</p>
+<p><img alt="The AdminRender view" src="../../img/admin.png" /></p>
+<p>This renderer is suitable for CRUD-style web APIs that should also present a user-friendly interface for managing the data.</p>
+<p>Note that views that have nested or list serializers for their input won't work well with the <code>AdminRenderer</code>, as the HTML forms are unable to properly support them.</p>
+<p><strong>.media_type</strong>: <code>text/html</code></p>
+<p><strong>.format</strong>: <code>'.admin'</code></p>
+<p><strong>.charset</strong>: <code>utf-8</code></p>
+<p><strong>.template</strong>: <code>'rest_framework/admin.html'</code></p>
+<h2 id="htmlformrenderer">HTMLFormRenderer</h2>
+<p>Renders data returned by a serializer into an HTML form.  The output of this renderer does not include the enclosing <code>&lt;form&gt;</code> tags or an submit actions, as you'll probably need those to include the desired method and URL.  Also note that the <code>HTMLFormRenderer</code> does not yet support including field error messages.</p>
+<p><strong>Note</strong>: The <code>HTMLFormRenderer</code> class is intended for internal use with the browsable API and admin interface. It should not be considered a fully documented or stable API. The template used by the <code>HTMLFormRenderer</code> class, and the context submitted to it <strong>may be subject to change</strong>.  If you need to use this renderer class it is advised that you either make a local copy of the class and templates, or follow the release note on REST framework upgrades closely.</p>
+<p><strong>.media_type</strong>: <code>text/html</code></p>
+<p><strong>.format</strong>: <code>'.form'</code></p>
+<p><strong>.charset</strong>: <code>utf-8</code></p>
+<p><strong>.template</strong>: <code>'rest_framework/form.html'</code></p>
 <h2 id="multipartrenderer">MultiPartRenderer</h2>
 <p>This renderer is used for rendering HTML multipart form data.  <strong>It is not suitable as a response renderer</strong>, but is instead used for creating test requests, using REST framework's <a href="../testing/">test client and test request factory</a>.</p>
 <p><strong>.media_type</strong>: <code>multipart/form-data; boundary=BoUnDaRyStRiNg</code></p>

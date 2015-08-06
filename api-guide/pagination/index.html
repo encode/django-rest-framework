@@ -278,6 +278,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -308,7 +312,7 @@
           </div>
 
           <div class="modal-body">
-            <form role="form">
+            <form role="form" autocomplete="off">
               <div class="form-group">
                 <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
               </div>
@@ -605,11 +609,11 @@ class StandardResultsSetPagination(PageNumberPagination):
         previous_url = self.get_previous_link()
 
         if next_url is not None and previous_url is not None:
-            link = '&lt;{next_url}; rel="next"&gt;, &lt;{previous_url}; rel="prev"&gt;'
+            link = '&lt;{next_url}&gt;; rel="next", &lt;{previous_url}&gt;; rel="prev"'
         elif next_url is not None:
-            link = '&lt;{next_url}; rel="next"&gt;'
+            link = '&lt;{next_url}&gt;; rel="next"'
         elif previous_url is not None:
-            link = '&lt;{previous_url}; rel="prev"&gt;'
+            link = '&lt;{previous_url}&gt;; rel="prev"'
         else:
             link = ''
 

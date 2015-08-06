@@ -4,11 +4,11 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <title>Project management - Django REST framework</title>
+  <title>3.2 Announcement - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/topics/project-management/" />
+  <link rel="canonical" href="http://www.django-rest-framework.org/topics/3.2-announcement/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Project management">
+  <meta name="description" content="Django, API, REST, 3.2 Announcement">
   <meta name="author" content="Tom Christie">
 
   <!-- Le styles -->
@@ -61,10 +61,10 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../3.0-announcement/">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../kickstarter-announcement/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../contributing/">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3.1-announcement/">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
@@ -265,8 +265,8 @@
                     <a href="../contributing/">Contributing to REST framework</a>
                   </li>
                   
-                  <li class="active" >
-                    <a href="./">Project management</a>
+                  <li >
+                    <a href="../project-management/">Project management</a>
                   </li>
                   
                   <li >
@@ -277,8 +277,8 @@
                     <a href="../3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
-                  <li >
-                    <a href="../3.2-announcement/">3.2 Announcement</a>
+                  <li class="active" >
+                    <a href="./">3.2 Announcement</a>
                   </li>
                   
                   <li >
@@ -333,28 +333,24 @@
 
                 
                   <li class="main">
-                    <a href="#project-management">Project management</a>
+                    <a href="#django-rest-framework-32">Django REST framework 3.2</a>
                   </li>
 
                   
                     <li>
-                      <a href="#maintenance-team">Maintenance team</a>
+                      <a href="#adminrenderer">AdminRenderer</a>
                     </li>
                   
                     <li>
-                      <a href="#release-process">Release process</a>
+                      <a href="#deprecations">Deprecations</a>
                     </li>
                   
                     <li>
-                      <a href="#translations">Translations</a>
+                      <a href="#modifications-to-list-behaviors">Modifications to list behaviors</a>
                     </li>
                   
                     <li>
-                      <a href="#project-requirements">Project requirements</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#project-ownership">Project ownership</a>
+                      <a href="#whats-next">What's next?</a>
                     </li>
                   
                 
@@ -369,167 +365,87 @@
             
               
 
-              <h1 id="project-management">Project management</h1>
-<blockquote>
-<p>"No one can whistle a symphony; it takes a whole orchestra to play it"</p>
-<p>&mdash; Halford E. Luccock</p>
-</blockquote>
-<p>This document outlines our project management processes for REST framework.</p>
-<p>The aim is to ensure that the project has a high 
-<a href="http://en.wikipedia.org/wiki/Bus_factor">"bus factor"</a>, and can continue to remain well supported for the foreseeable future. Suggestions for improvements to our process are welcome.</p>
-<hr />
-<h2 id="maintenance-team">Maintenance team</h2>
-<p>We have a quarterly maintenance cycle where new members may join the maintenance team. We currently cap the size of the team at 5 members, and may encourage folks to step out of the team for a cycle to allow new members to participate.</p>
-<h4 id="current-team">Current team</h4>
-<p>The <a href="https://github.com/tomchristie/django-rest-framework/issues/2190">maintenance team for Q1 2015</a>:</p>
-<ul>
-<li><a href="https://github.com/tomchristie/">@tomchristie</a></li>
-<li><a href="https://github.com/xordoquy/">@xordoquy</a> (Release manager.)</li>
-<li><a href="https://github.com/carltongibson/">@carltongibson</a></li>
-<li><a href="https://github.com/kevin-brown/">@kevin-brown</a></li>
-<li><a href="https://github.com/jpadilla/">@jpadilla</a></li>
-</ul>
-<h4 id="maintenance-cycles">Maintenance cycles</h4>
-<p>Each maintenance cycle is initiated by an issue being opened with the <code>Process</code> label.</p>
-<ul>
-<li>To be considered for a maintainer role simply comment against the issue.</li>
-<li>Existing members must explicitly opt-in to the next cycle by check-marking their name.</li>
-<li>The final decision on the incoming team will be made by <code>@tomchristie</code>.</li>
-</ul>
-<p>Members of the maintenance team will be added as collaborators to the repository.</p>
-<p>The following template should be used for the description of the issue, and serves as the formal process for selecting the team.</p>
-<pre><code>This issue is for determining the maintenance team for the *** period.
-
-Please see the [Project management](http://www.django-rest-framework.org/topics/project-management/) section of our documentation for more details.
-
----
-
-#### Renewing existing members.
-
-The following people are the current maintenance team. Please checkmark your name if you wish to continue to have write permission on the repository for the *** period.
-
-- [ ] @***
-- [ ] @***
-- [ ] @***
-- [ ] @***
-- [ ] @***
-
----
-
-#### New members.
-
-If you wish to be considered for this or a future date, please comment against this or subsequent issues.
-
-To modify this process for future maintenance cycles make a pull request to the [project management](http://www.django-rest-framework.org/topics/project-management/) documentation.
+              <h1 id="django-rest-framework-32">Django REST framework 3.2</h1>
+<p>The 3.2 release is the first version to include an admin interface for the browsable API.</p>
+<p><img alt="The AdminRenderer" src="../../img/admin.png" /></p>
+<p>This interface is intended to act as a more user-friendly interface to the API. It can be used either as a replacement to the existing <code>BrowsableAPIRenderer</code>, or used together with it, allowing you to switch between the two styles as required.</p>
+<p>We've also fixed a huge number of issues, and made numerous cleanups and improvements.</p>
+<p>Over the course of the 3.1.x series we've <a href="https://github.com/tomchristie/django-rest-framework/issues?utf8=%E2%9C%93&amp;q=closed%3A%3E2015-03-05">resolved nearly 600 tickets</a> on our GitHub issue tracker. This means we're currently running at a rate of <strong>closing around 100 issues or pull requests per month</strong>.</p>
+<p>None of this would have been possible without the support of our wonderful Kickstarter backers. If you're looking for a job in Django development we'd strongly recommend taking <a href="http://www.django-rest-framework.org/topics/kickstarter-announcement/#sponsors">a look through our sponsors</a> and finding out who's hiring.</p>
+<h2 id="adminrenderer">AdminRenderer</h2>
+<p>To include <code>AdminRenderer</code> simply add it to your settings:</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.AdminRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer'
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100
+}
 </code></pre>
-<h4 id="responsibilities-of-team-members">Responsibilities of team members</h4>
-<p>Team members have the following responsibilities.</p>
+<p>There are some limitations to the <code>AdminRenderer</code>, in particular it is not yet able to handle list or dictionary inputs, as we do not have any HTML form fields that support those.</p>
+<p>Also note that this is an initial release and we do not yet have a public API for modifying the behavior or documentation on overriding the templates.</p>
+<p>The idea is to get this released to users early, so we can start getting feedback and release a more fully featured version in 3.3.</p>
+<h2 id="deprecations">Deprecations</h2>
+<p>There are no new deprecations in 3.2, although a number of existing deprecations have now escalated in line with our deprecation policy.</p>
 <ul>
-<li>Close invalid or resolved tickets.</li>
-<li>Add triage labels and milestones to tickets.</li>
-<li>Merge finalized pull requests.</li>
-<li>Build and deploy the documentation, using <code>mkdocs gh-deploy</code>.</li>
-<li>Build and update the included translation packs.</li>
+<li><code>request.DATA</code> was put on the deprecation path in 3.0. It has now been removed and its usage will result in an error. Use the more pythonic style of <code>request.data</code> instead.</li>
+<li><code>request.FILES</code> was put on the deprecation path in 3.0. It has now been removed and its usage will result in an error. Use the more pythonic style of <code>request.files</code> instead.</li>
+<li><code>request.QUERY_PARAMS</code> was put on the deprecation path in 3.0. It has now been removed and its usage will result in an error. Use the more pythonic style of <code>request.query_params</code> instead.</li>
+<li>The following <code>ModelSerializer.Meta</code> options have now been removed: <code>write_only_fields</code>, <code>view_name</code>, <code>lookup_field</code>. Use the more general <code>extra_kwargs</code> option instead.</li>
 </ul>
-<p>Further notes for maintainers:</p>
+<p>The following pagination view attributes and settings have been moved into attributes on the pagination class since 3.1. Their usage was formerly in 'pending deprecation', and has now escalated to 'deprecated'. They will continue to function but will raise errors.</p>
 <ul>
-<li>Code changes should come in the form of a pull request - do not push directly to master.</li>
-<li>Maintainers should typically not merge their own pull requests.</li>
-<li>Each issue/pull request should have exactly one label once triaged.</li>
-<li>Search for un-triaged issues with <a href="https://github.com/tomchristie/django-rest-framework/issues?q=is%3Aopen+no%3Alabel">is:open no:label</a>.</li>
+<li><code>view.paginate_by</code> - Use <code>paginator.page_size</code> instead.</li>
+<li><code>view.page_query_param</code> - Use <code>paginator.page_query_param</code> instead.</li>
+<li><code>view.paginate_by_param</code> - Use <code>paginator.page_size_query_param</code> instead.</li>
+<li><code>view.max_paginate_by</code> - Use <code>paginator.max_page_size</code> instead.</li>
+<li><code>settings.PAGINATE_BY</code> - Use <code>paginator.page_size</code> instead.</li>
+<li><code>settings.PAGINATE_BY_PARAM</code> - Use <code>paginator.page_size_query_param</code> instead.</li>
+<li><code>settings.MAX_PAGINATE_BY</code> - Use <code>max_page_size</code> instead.</li>
 </ul>
-<p>It should be noted that participating actively in the REST framework project clearly <strong>does not require being part of the maintenance team</strong>. Almost every import part of issue triage and project improvement can be actively worked on regardless of your collaborator status on the repository.</p>
-<hr />
-<h2 id="release-process">Release process</h2>
-<p>The release manager is selected on every quarterly maintenance cycle.</p>
+<h2 id="modifications-to-list-behaviors">Modifications to list behaviors</h2>
+<p>There are a couple of bug fixes that are worth calling out as they introduce differing behavior.</p>
+<p>These are a little subtle and probably won't affect most users, but are worth understanding before upgrading your project.</p>
+<h3 id="manytomany-fields-and-blanktrue">ManyToMany fields and blank=True</h3>
+<p>We've now added an <code>allow_empty</code> argument, which can be used with <code>ListSerializer</code>, or with  <code>many=True</code> relationships. This is <code>True</code> by default, but can be set to <code>False</code> if you want to disallow empty lists as valid input.</p>
+<p>As a follow-up to this we are now able to properly mirror the behavior of Django's <code>ModelForm</code> with respect to how many-to-many fields are validated.</p>
+<p>Previously a many-to-many field on a model would map to a serializer field that would allow either empty or non-empty list inputs. Now, a many-to-many field will map to a serializer field that requires at least one input, unless the model field has <code>blank=True</code> set.</p>
+<p>Here's what the mapping looks like in practice:</p>
 <ul>
-<li>The manager should be selected by <code>@tomchristie</code>.</li>
-<li>The manager will then have the maintainer role added to PyPI package.</li>
-<li>The previous manager will then have the maintainer role removed from the PyPI package.</li>
+<li><code>models.ManyToManyField()</code> → <code>serializers.PrimaryKeyRelatedField(many=True, allow_empty=False)</code></li>
+<li><code>models.ManyToManyField(blank=True)</code> → <code>serializers.PrimaryKeyRelatedField(many=True)</code></li>
 </ul>
-<p>Our PyPI releases will be handled by either the current release manager, or by <code>@tomchristie</code>. Every release should have an open issue tagged with the <code>Release</code> label and marked against the appropriate milestone.</p>
-<p>The following template should be used for the description of the issue, and serves as a release checklist.</p>
-<pre><code>Release manager is @***.
-Pull request is #***.
-
-During development cycle:
-
-- [ ] Upload the new content to be translated to [transifex](http://www.django-rest-framework.org/topics/project-management/#translations).
-
-
-Checklist:
-
-- [ ] Create pull request for [release notes](https://github.com/tomchristie/django-rest-framework/blob/master/docs/topics/release-notes.md) based on the [*.*.* milestone](https://github.com/tomchristie/django-rest-framework/milestones/***).
-- [ ] Update the translations from [transifex](http://www.django-rest-framework.org/topics/project-management/#translations).
-- [ ] Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/tomchristie/django-rest-framework/blob/master/rest_framework/__init__.py).
-- [ ] Confirm with @tomchristie that release is finalized and ready to go.
-- [ ] Ensure that release date is included in pull request.
-- [ ] Merge the release pull request.
-- [ ] Push the package to PyPI with `./setup.py publish`.
-- [ ] Tag the release, with `git tag -a *.*.* -m 'version *.*.*'; git push --tags`.
-- [ ] Deploy the documentation with `mkdocs gh-deploy`.
-- [ ] Make a release announcement on the [discussion group](https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework).
-- [ ] Make a release announcement on twitter.
-- [ ] Close the milestone on GitHub.
-
-To modify this process for future releases make a pull request to the [project management](http://www.django-rest-framework.org/topics/project-management/) documentation.
+<p>The upshot is this: If you have many to many fields in your models, then make sure you've included the argument <code>blank=True</code> if you want to allow empty inputs in the equivalent <code>ModelSerializer</code> fields.</p>
+<h3 id="list-fields-and-allow_null">List fields and allow_null</h3>
+<p>When using <code>allow_null</code> with <code>ListField</code> or a nested <code>mant=True</code> serializer the previous behavior was to allow <code>null</code> values as items in the list. The behavior is now to allow <code>null</code> values instead of the list.</p>
+<p>For example, take the following field:</p>
+<pre><code>NestedSerializer(many=True, allow_null=True)
 </code></pre>
-<p>When pushing the release to PyPI ensure that your environment has been installed from our development <code>requirement.txt</code>, so that documentation and PyPI installs are consistently being built against a pinned set of packages.</p>
-<hr />
-<h2 id="translations">Translations</h2>
-<p>The maintenance team are responsible for managing the translation packs include in REST framework. Translating the source strings into multiple languages is managed through the <a href="https://www.transifex.com/projects/p/django-rest-framework/">transifex service</a>.</p>
-<h3 id="managing-transifex">Managing Transifex</h3>
-<p>The <a href="https://pypi.python.org/pypi/transifex-client">official Transifex client</a> is used to upload and download translations to Transifex. The client is installed using pip:</p>
-<pre><code>pip install transifex-client
-</code></pre>
-<p>To use it you'll need a login to Transifex which has a password, and you'll need to have administrative access to the Transifex project. You'll need to create a <code>~/.transifexrc</code> file which contains your credentials.</p>
-<pre><code>[https://www.transifex.com]
-username = ***
-token = ***
-password = ***
-hostname = https://www.transifex.com
-</code></pre>
-<h3 id="upload-new-source-files">Upload new source files</h3>
-<p>When any user visible strings are changed, they should be uploaded to Transifex so that the translators can start to translate them. To do this, just run:</p>
-<pre><code># 1. Update the source django.po file, which is the US English version.
-cd rest_framework
-django-admin.py makemessages -l en_US
-# 2. Push the source django.po file to Transifex.
-cd ..
-tx push -s
-</code></pre>
-<p>When pushing source files, Transifex will update the source strings of a resource to match those from the new source file.</p>
-<p>Here's how differences between the old and new source files will be handled:</p>
+<p>Previously the validation behavior would be:</p>
 <ul>
-<li>New strings will be added.</li>
-<li>Modified strings will be added as well.</li>
-<li>Strings which do not exist in the new source file will be removed from the database, along with their translations. If that source strings gets re-added later then <a href="http://docs.transifex.com/guides/tm#let-tm-automatically-populate-translations">Transifex Translation Memory</a> will automatically include the translation string.</li>
+<li><code>[{…}, null, {…}]</code> is <strong>valid</strong>.</li>
+<li><code>null</code> is <strong>invalid</strong>.</li>
 </ul>
-<h3 id="download-translations">Download translations</h3>
-<p>When a translator has finished translating their work needs to be downloaded from Transifex into the REST framework repository. To do this, run:</p>
-<pre><code># 3. Pull the translated django.po files from Transifex.
-tx pull -a
-cd rest_framework
-# 4. Compile the binary .mo files for all supported languages.
-django-admin.py compilemessages
-</code></pre>
-<hr />
-<h2 id="project-requirements">Project requirements</h2>
-<p>All our test requirements are pinned to exact versions, in order to ensure that our test runs are reproducible. We maintain the requirements in the <code>requirements</code> directory. The requirements files are referenced from the <code>tox.ini</code> configuration file, ensuring we have a single source of truth for package versions used in testing.</p>
-<p>Package upgrades should generally be treated as isolated pull requests. You can check if there are any packages available at a newer version, by using the <code>pip list --outdated</code>.</p>
-<hr />
-<h2 id="project-ownership">Project ownership</h2>
-<p>The PyPI package is owned by <code>@tomchristie</code>. As a backup <code>@j4mie</code> also has ownership of the package.</p>
-<p>If <code>@tomchristie</code> ceases to participate in the project then <code>@j4mie</code> has responsibility for handing over ownership duties.</p>
-<h4 id="outstanding-management-ownership-issues">Outstanding management &amp; ownership issues</h4>
-<p>The following issues still need to be addressed:</p>
+<p>Our validation behavior as of 3.2.0 is now:</p>
 <ul>
-<li><a href="https://github.com/tomchristie/django-rest-framework/issues/2162">Consider moving the repo into a proper GitHub organization</a>.</li>
-<li>Ensure <code>@jamie</code> has back-up access to the <code>django-rest-framework.org</code> domain setup and admin.</li>
-<li>Document ownership of the <a href="http://restframework.herokuapp.com/">live example</a> API.</li>
-<li>Document ownership of the <a href="https://groups.google.com/forum/#!forum/django-rest-framework">mailing list</a> and IRC channel.</li>
-<li>Document ownership and management of the security mailing list.</li>
+<li><code>[{…}, null, {…}]</code> is <strong>invalid</strong>.</li>
+<li><code>null</code> is <strong>valid</strong>.</li>
 </ul>
+<p>If you want to allow <code>null</code> child items, you'll need to instead specify <code>allow_null</code> on the child class, using an explicit <code>ListField</code> instead of <code>many=True</code>. For example:</p>
+<pre><code>ListField(child=NestedSerializer(allow_null=True))
+</code></pre>
+<h2 id="whats-next">What's next?</h2>
+<p>The 3.3 release is currently planned for the start of October, and will be the last Kickstarter-funded release.</p>
+<p>This release is planned to include:</p>
+<ul>
+<li>Search and filtering controls in the browsable API and admin interface.</li>
+<li>Improvements and public API for the admin interface.</li>
+<li>Improvements and public API for our templated HTML forms and fields.</li>
+<li>Nested object and list support in HTML forms.</li>
+</ul>
+<p>Thanks once again to all our sponsors and supporters.</p>
             
 
           </div> <!--/span-->

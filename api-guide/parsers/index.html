@@ -278,6 +278,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -308,7 +312,7 @@
           </div>
 
           <div class="modal-body">
-            <form role="form">
+            <form role="form" autocomplete="off">
               <div class="form-group">
                 <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
               </div>
@@ -522,17 +526,16 @@ def example_view(request, format=None):
 <h2 id="example">Example</h2>
 <p>The following is an example plaintext parser that will populate the <code>request.data</code> property with a string representing the body of the request.</p>
 <pre><code>class PlainTextParser(BaseParser):
-"""
-Plain text parser.
-"""
-
-media_type = 'text/plain'
-
-def parse(self, stream, media_type=None, parser_context=None):
     """
-    Simply return a string representing the body of the request.
+    Plain text parser.
     """
-    return stream.read()
+    media_type = 'text/plain'
+
+    def parse(self, stream, media_type=None, parser_context=None):
+        """
+        Simply return a string representing the body of the request.
+        """
+        return stream.read()
 </code></pre>
 <hr />
 <h1 id="third-party-packages">Third party packages</h1>

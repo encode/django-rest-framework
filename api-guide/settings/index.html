@@ -278,6 +278,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -308,7 +312,7 @@
           </div>
 
           <div class="modal-body">
-            <form role="form">
+            <form role="form" autocomplete="off">
               <div class="form-group">
                 <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
               </div>
@@ -480,6 +484,10 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 <p>The default page size to use for pagination.  If set to <code>None</code>, pagination is disabled by default.</p>
 <p>Default: <code>None</code></p>
 <h4 id="paginate_by_param">PAGINATE_BY_PARAM</h4>
+<hr />
+<p><strong>This setting is pending deprecation.</strong></p>
+<p>See the pagination documentation for further guidance on <a href="../pagination/#modifying-the-pagination-style">setting the pagination style</a>.</p>
+<hr />
 <p>The name of a query parameter, which can be used by the client to override the default page size to use for pagination.  If set to <code>None</code>, clients may not override the default page size.</p>
 <p>For example, given the following settings:</p>
 <pre><code>REST_FRAMEWORK = {
@@ -492,6 +500,10 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 </code></pre>
 <p>Default: <code>None</code></p>
 <h4 id="max_paginate_by">MAX_PAGINATE_BY</h4>
+<hr />
+<p><strong>This setting is pending deprecation.</strong></p>
+<p>See the pagination documentation for further guidance on <a href="../pagination/#modifying-the-pagination-style">setting the pagination style</a>.</p>
+<hr />
 <p>The maximum page size to allow when the page size is specified by the client.  If set to <code>None</code>, then no maximum limit is applied.</p>
 <p>For example, given the following settings:</p>
 <pre><code>REST_FRAMEWORK = {
@@ -567,6 +579,7 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 <p>Default: <code>'accept'</code></p>
 <h4 id="url_format_override">URL_FORMAT_OVERRIDE</h4>
 <p>The name of a URL parameter that may be used to override the default <code>Accept</code> header based content negotiation.</p>
+<p>If the value of this setting is <code>None</code> then URL format overloading will be disabled.</p>
 <p>Default: <code>'format'</code></p>
 <hr />
 <h2 id="date-and-time-formatting">Date and time formatting</h2>

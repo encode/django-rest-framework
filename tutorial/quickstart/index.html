@@ -278,6 +278,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -308,7 +312,7 @@
           </div>
 
           <div class="modal-body">
-            <form role="form">
+            <form role="form" autocomplete="off">
               <div class="form-group">
                 <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
               </div>
@@ -427,7 +431,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
 
 
@@ -440,7 +444,6 @@ class GroupViewSet(viewsets.ModelViewSet):
 </code></pre>
 <p>Rather than write multiple views we're grouping together all the common behavior into classes called <code>ViewSets</code>.</p>
 <p>We can easily break these down into individual views if we need to, but using viewsets keeps the view logic nicely organized as well as being very concise.</p>
-<p>For trivial cases you can simply set a <code>model</code> attribute on the <code>ViewSet</code> class and the serializer and queryset will be automatically generated for you.  Setting the <code>queryset</code> and/or <code>serializer_class</code> attributes gives you more explicit control of the API behaviour, and is the recommended style for most applications.</p>
 <h2 id="urls">URLs</h2>
 <p>Okay, now let's wire up the API URLs.  On to <code>tutorial/urls.py</code>...</p>
 <pre><code>from django.conf.urls import url, include
