@@ -766,15 +766,17 @@ class TestDecimalField(FieldValues):
         0: Decimal('0'),
         12.3: Decimal('12.3'),
         0.1: Decimal('0.1'),
-        '2E+2': Decimal('200'),
+        '2E+1': Decimal('20'),
     }
     invalid_inputs = (
         ('abc', ["A valid number is required."]),
         (Decimal('Nan'), ["A valid number is required."]),
         (Decimal('Inf'), ["A valid number is required."]),
         ('12.345', ["Ensure that there are no more than 3 digits in total."]),
+        (200000000000.0, ["Ensure that there are no more than 3 digits in total."]),
         ('0.01', ["Ensure that there are no more than 1 decimal places."]),
-        (123, ["Ensure that there are no more than 2 digits before the decimal point."])
+        (123, ["Ensure that there are no more than 2 digits before the decimal point."]),
+        ('2E+2', ["Ensure that there are no more than 2 digits before the decimal point."])
     )
     outputs = {
         '1': '1.0',
