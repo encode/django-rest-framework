@@ -74,8 +74,8 @@ You can also set the authentication policy on a per-view, or per-viewset basis,
 using the `APIView` class based views.
 
     from rest_framework.permissions import IsAuthenticated
-	from rest_framework.response import Response
-	from rest_framework.views import APIView
+    from rest_framework.response import Response
+    from rest_framework.views import APIView
 
     class ExampleView(APIView):
         permission_classes = (IsAuthenticated,)
@@ -88,8 +88,10 @@ using the `APIView` class based views.
 
 Or, if you're using the `@api_view` decorator with function based views.
 
-    from rest_framework.decorators import permission_classes
-    
+    from rest_framework.decorators import api_view, permission_classes
+    from rest_framework.permissions import IsAuthenticated
+    from rest_framework.response import Response
+
     @api_view('GET')
     @permission_classes((IsAuthenticated, ))
     def example_view(request, format=None):
