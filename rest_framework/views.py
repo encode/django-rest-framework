@@ -6,13 +6,15 @@ from __future__ import unicode_literals
 from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.http import Http404
+from django.http.response import HttpResponseBase
 from django.utils import six
 from django.utils.encoding import smart_text
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import View
 
 from rest_framework import exceptions, status
-from rest_framework.compat import HttpResponseBase, View, set_rollback
+from rest_framework.compat import set_rollback
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
