@@ -1114,7 +1114,8 @@ class TestChoiceField(FieldValues):
         field = serializers.ChoiceField(
             choices=[
                 ('Numbers', ['integer', 'float']),
-                ('Strings', ['text', 'email', 'url'])
+                ('Strings', ['text', 'email', 'url']),
+                'boolean'
             ]
         )
         items = list(field.iter_options())
@@ -1131,6 +1132,8 @@ class TestChoiceField(FieldValues):
         assert items[6].value == 'email'
         assert items[7].value == 'url'
         assert items[8].end_option_group
+
+        assert items[9].value == 'boolean'
 
 
 class TestChoiceFieldWithType(FieldValues):
