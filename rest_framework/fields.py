@@ -1192,20 +1192,25 @@ class ChoiceField(Field):
         """
         class StartOptionGroup(object):
             start_option_group = True
+            end_option_group = False
 
             def __init__(self, label):
                 self.label = label
 
         class EndOptionGroup(object):
+            start_option_group = False
             end_option_group = True
 
         class Option(object):
+            start_option_group = False
+            end_option_group = False
+
             def __init__(self, value, display_text):
                 self.value = value
                 self.display_text = display_text
 
         for key, value in self.grouped_choices.items():
-            if isinstance(value, (list, tuple)):
+            if isinstance(value, dict):
                 yield StartOptionGroup(label=key)
                 for sub_key, sub_value in value.items():
                     yield Option(value=sub_key, display_text=sub_value)
