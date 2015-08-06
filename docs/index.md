@@ -12,9 +12,9 @@
 
 ---
 
-**Note**: This is the documentation for the **version 3.1** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
+**Note**: This is the documentation for the **version 3.2** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
 
-For more details see the [3.1 release notes][3.1-announcement].
+For more details see the 3.2 [announcement][3.2-announcement] and [release notes][release-notes].
 
 ---
 
