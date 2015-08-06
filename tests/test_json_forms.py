@@ -1,5 +1,6 @@
-from rest_framework.utils import html
 from django.utils.datastructures import MultiValueDict
+
+from rest_framework.utils import html
 
 
 class TestHtmlJsonExamples:
