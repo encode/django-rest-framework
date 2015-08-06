@@ -3,371 +3,364 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# mikedingjan <mike@mikedingjan.nl>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-03 17:30+0100\n"
-"PO-Revision-Date: 2015-06-03 16:30+0000\n"
-"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
-"Language-Team: Dutch (http://www.transifex.com/projects/p/django-rest-framework/language/nl/)\n"
+"POT-Creation-Date: 2015-08-06 13:21+0100\n"
+"PO-Revision-Date: 2015-08-06 12:21+0000\n"
+"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"Language-Team: Dutch (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: nl\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: authentication.py:70
-msgid "Invalid basic header. No credentials provided."
-msgstr ""
-
 #: authentication.py:73
+msgid "Invalid basic header. No credentials provided."
+msgstr "Ongeldige basic header. Geen login gegevens opgegeven."
+
+#: authentication.py:76
 msgid "Invalid basic header. Credentials string should not contain spaces."
-msgstr ""
+msgstr "Ongeldige basic header. login gegevens kunnen geen spaties bevatten."
 
-#: authentication.py:79
+#: authentication.py:82
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
-msgstr ""
+msgstr "Ongeldige basic header. login gegevens zijn niet correct base64 versleuteld."
 
-#: authentication.py:97
+#: authentication.py:100
 msgid "Invalid username/password."
-msgstr ""
+msgstr "Ongeldige gebruikersnaam/wachtwoord."
 
-#: authentication.py:100 authentication.py:182
+#: authentication.py:103 authentication.py:191
 msgid "User inactive or deleted."
-msgstr ""
-
-#: authentication.py:167
-msgid "Invalid token header. No credentials provided."
-msgstr ""
+msgstr "Gebruiker inactief of verwijderd."
 
 #: authentication.py:170
+msgid "Invalid token header. No credentials provided."
+msgstr "Ongeldige token header. Geen login gegevens opgegeven"
+
+#: authentication.py:173
 msgid "Invalid token header. Token string should not contain spaces."
-msgstr ""
+msgstr "Ongeldige token header. Token kan geen spaties bevatten."
 
 #: authentication.py:179
-msgid "Invalid token."
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
 msgstr ""
+
+#: authentication.py:188
+msgid "Invalid token."
+msgstr "Ongeldige token."
 
 #: authtoken/serializers.py:20
 msgid "User account is disabled."
-msgstr ""
+msgstr "Gebruikers account is inactief."
 
 #: authtoken/serializers.py:23
 msgid "Unable to log in with provided credentials."
-msgstr ""
+msgstr "Kan niet inloggen met opgegeven gegevens."
 
 #: authtoken/serializers.py:26
 msgid "Must include \"username\" and \"password\"."
-msgstr ""
+msgstr "Moet een \"gebruikersnaam\" en \"wachtwoord\" bevatten."
 
-#: exceptions.py:38
+#: exceptions.py:49
 msgid "A server error occurred."
-msgstr ""
+msgstr "Er is een server fout opgetreden."
 
-#: exceptions.py:73
+#: exceptions.py:84
 msgid "Malformed request."
-msgstr ""
+msgstr "Ongeldig samengestelde request."
 
-#: exceptions.py:78
+#: exceptions.py:89
 msgid "Incorrect authentication credentials."
-msgstr ""
+msgstr "Ongeldige authenticatie gegevens."
 
-#: exceptions.py:83
+#: exceptions.py:94
 msgid "Authentication credentials were not provided."
-msgstr ""
+msgstr "Authenticatie gegevens zijn niet opgegeven."
 
-#: exceptions.py:88
+#: exceptions.py:99
 msgid "You do not have permission to perform this action."
-msgstr ""
+msgstr "Je hebt geen toegang om deze actie uit te voeren."
 
-#: exceptions.py:93 views.py:78
+#: exceptions.py:104 views.py:79
 msgid "Not found."
-msgstr ""
-
-#: exceptions.py:98
-#, python-brace-format
-msgid "Method \"{method}\" not allowed."
-msgstr ""
+msgstr "Niet gevonden."
 
 #: exceptions.py:109
+msgid "Method \"{method}\" not allowed."
+msgstr "Methode \"{method}\" niet toegestaan."
+
+#: exceptions.py:120
 msgid "Could not satisfy the request Accept header."
-msgstr ""
+msgstr "Kan niet voldoen aan de opgegeven \"Accept\" header."
 
-#: exceptions.py:121
-#, python-brace-format
+#: exceptions.py:132
 msgid "Unsupported media type \"{media_type}\" in request."
-msgstr ""
+msgstr "Ongeldig media type \"{media_type}\" in aanvraag."
 
-#: exceptions.py:134
+#: exceptions.py:145
 msgid "Request was throttled."
-msgstr ""
+msgstr "Aanvraag was verstikt."
 
-#: fields.py:162 relations.py:132 relations.py:156 validators.py:77
-#: validators.py:160
+#: fields.py:167 relations.py:173 relations.py:206 validators.py:79
+#: validators.py:162
 msgid "This field is required."
-msgstr ""
+msgstr "Dit veld is verplicht."
 
-#: fields.py:163
+#: fields.py:168
 msgid "This field may not be null."
-msgstr ""
+msgstr "Dit veld mag niet leeg zijn."
 
-#: fields.py:496 fields.py:524
-#, python-brace-format
+#: fields.py:504 fields.py:532
 msgid "\"{input}\" is not a valid boolean."
-msgstr ""
+msgstr "\"{input}\" is een ongeldige boolean waarde."
 
-#: fields.py:559
+#: fields.py:567
 msgid "This field may not be blank."
-msgstr ""
+msgstr "Dit veld mag niet leeg zijn."
 
-#: fields.py:560 fields.py:1386
-#, python-brace-format
+#: fields.py:568 fields.py:1482
 msgid "Ensure this field has no more than {max_length} characters."
-msgstr ""
+msgstr "Zorg ervoor dat dit veld niet meer dan {max_length} karakters bevat."
 
-#: fields.py:561
-#, python-brace-format
+#: fields.py:569
 msgid "Ensure this field has at least {min_length} characters."
-msgstr ""
+msgstr "Zorg ervoor dat dit veld minimaal {min_length} karakters bevat."
 
-#: fields.py:598
+#: fields.py:606
 msgid "Enter a valid email address."
-msgstr ""
+msgstr "Voer een geldig e-mailadres in."
 
-#: fields.py:609
+#: fields.py:617
 msgid "This value does not match the required pattern."
-msgstr ""
+msgstr "Deze waarde voldoet niet aan het benodigde formaat."
 
-#: fields.py:620
+#: fields.py:628
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
-msgstr ""
+msgstr "Voer een geldige \"slug\" in bestaande uit letters, cijfers, underscore of streepjes."
 
-#: fields.py:632
+#: fields.py:640
 msgid "Enter a valid URL."
-msgstr ""
+msgstr "Voer een geldige URL in."
 
-#: fields.py:645
-#, python-brace-format
+#: fields.py:653
 msgid "\"{value}\" is not a valid UUID."
+msgstr "\"{value}\" in een ongeldige UUID."
+
+#: fields.py:687
+msgid "Enter a valid IPv4 or IPv6 address."
 msgstr ""
 
-#: fields.py:679
+#: fields.py:712
 msgid "A valid integer is required."
-msgstr ""
+msgstr "Een geldig getal is vereist."
 
-#: fields.py:680 fields.py:715 fields.py:748
-#, python-brace-format
+#: fields.py:713 fields.py:748 fields.py:781
 msgid "Ensure this value is less than or equal to {max_value}."
-msgstr ""
+msgstr "Zorg ervoor dat deze waarde minder of gelijk is aan {max_value}."
 
-#: fields.py:681 fields.py:716 fields.py:749
-#, python-brace-format
+#: fields.py:714 fields.py:749 fields.py:782
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr ""
+msgstr "Zorg ervoor dat deze waarde groter of gelijk is aan {min_value}."
 
-#: fields.py:682 fields.py:717 fields.py:753
+#: fields.py:715 fields.py:750 fields.py:786
 msgid "String value too large."
-msgstr ""
+msgstr "Tekstuele waarde is te lang."
 
-#: fields.py:714 fields.py:747
+#: fields.py:747 fields.py:780
 msgid "A valid number is required."
-msgstr ""
+msgstr "Een geldig nummer is verplicht."
 
-#: fields.py:750
-#, python-brace-format
+#: fields.py:783
 msgid "Ensure that there are no more than {max_digits} digits in total."
-msgstr ""
+msgstr "Zorg ervoor dat er niet meer dan {max_digits} getallen zijn in totaal."
 
-#: fields.py:751
-#, python-brace-format
+#: fields.py:784
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
-msgstr ""
+msgstr "zorg ervoor dat er niet meer dan {max_decimal_places} getallen achter de komma zijn."
 
-#: fields.py:752
-#, python-brace-format
+#: fields.py:785
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
-msgstr ""
+msgstr "Zorg ervoor dat er niet meer dan {max_whole_digits} getallen voor de komma zijn."
 
-#: fields.py:842
-#, python-brace-format
+#: fields.py:899
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Datetime heeft een ongeldig formaat, gebruik 1 van de volgende formaten: {format}."
 
-#: fields.py:843
+#: fields.py:900
 msgid "Expected a datetime but got a date."
-msgstr ""
+msgstr "Verwacht een datetime, in plaats kreeg een date."
 
-#: fields.py:907
-#, python-brace-format
+#: fields.py:965
 msgid "Date has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Date heeft het verkeerde formaat, gebruik 1 van de onderstaande formaten: {format}."
 
-#: fields.py:908
+#: fields.py:966
 msgid "Expected a date but got a datetime."
-msgstr ""
+msgstr "Verwacht een date, in plaats kreeg een datetime"
 
-#: fields.py:971
-#, python-brace-format
+#: fields.py:1030
 msgid "Time has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Time heeft het verkeerde formaat, gebruik 1 van onderstaande formaten: {format}."
 
-#: fields.py:1025
-#, python-brace-format
+#: fields.py:1085
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Tijdsduur heeft een verkeerd formaat, gebruik 1 van onderstaande formaten: {format}."
 
-#: fields.py:1050 fields.py:1094
-#, python-brace-format
+#: fields.py:1110 fields.py:1154
 msgid "\"{input}\" is not a valid choice."
-msgstr ""
+msgstr "\"{input}\" is een ongeldige keuze."
 
-#: fields.py:1095 fields.py:1213 serializers.py:487
-#, python-brace-format
+#: fields.py:1155 fields.py:1301 relations.py:405 serializers.py:504
 msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "Verwacht een lijst met items, kreeg een type \"{input_type}\" in plaats."
+
+#: fields.py:1156
+msgid "This selection may not be empty."
 msgstr ""
 
-#: fields.py:1129
+#: fields.py:1194
+msgid "\"{input}\" is not a valid path choice."
+msgstr ""
+
+#: fields.py:1213
 msgid "No file was submitted."
-msgstr ""
+msgstr "Er is geen bestand opgestuurd"
 
-#: fields.py:1130
+#: fields.py:1214
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
-msgstr ""
+msgstr "De verstuurde data was geen bestand. Controleer de encoding type op het formulier."
 
-#: fields.py:1131
+#: fields.py:1215
 msgid "No filename could be determined."
-msgstr ""
+msgstr "Bestandsnaam kan niet vastgesteld worden."
 
-#: fields.py:1132
+#: fields.py:1216
 msgid "The submitted file is empty."
-msgstr ""
+msgstr "Het verstuurde bestand is leeg."
 
-#: fields.py:1133
-#, python-brace-format
+#: fields.py:1217
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
-msgstr ""
+msgstr "Zorg ervoor dat deze bestandsnaam minstens {max_length} karakters heeft (momenteel {length})."
 
-#: fields.py:1175
+#: fields.py:1263
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
+msgstr "Upload een geldige afbeelding, de geüploade afbeelding is geen afbeelding of mogelijk corrupt geraakt,"
+
+#: fields.py:1302 relations.py:406 serializers.py:505
+msgid "This list may not be empty."
 msgstr ""
 
-#: fields.py:1250
-#, python-brace-format
+#: fields.py:1346
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Verwacht een dictionary van items, in plaats kreeg een type \"{input_type}\"."
 
-#: pagination.py:231
-#, python-brace-format
+#: pagination.py:192
 msgid "Invalid page \"{page_number}\": {message}."
-msgstr ""
+msgstr "Ongeldige pagina \"{page_number}\": {message}."
 
-#: pagination.py:492
+#: pagination.py:459
 msgid "Invalid cursor"
-msgstr ""
+msgstr "Ongeldige cursor."
 
-#: relations.py:133
-#, python-brace-format
+#: relations.py:174
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
-msgstr ""
+msgstr "Ongeldige pk \"{pk_value}\" - object bestaat niet."
 
-#: relations.py:134
-#, python-brace-format
+#: relations.py:175
 msgid "Incorrect type. Expected pk value, received {data_type}."
-msgstr ""
+msgstr "Ongeldig type. Verwacht een pk waarde, ontving {data_type}."
 
-#: relations.py:157
+#: relations.py:207
 msgid "Invalid hyperlink - No URL match."
-msgstr ""
+msgstr "Ongeldige hyperlink - Geen overeenkomende URL."
 
-#: relations.py:158
+#: relations.py:208
 msgid "Invalid hyperlink - Incorrect URL match."
-msgstr ""
+msgstr "Ongeldige hyperlink - Ongeldige URL"
 
-#: relations.py:159
+#: relations.py:209
 msgid "Invalid hyperlink - Object does not exist."
-msgstr ""
+msgstr "Ongeldige hyperlink - Object bestaat niet."
 
-#: relations.py:160
-#, python-brace-format
+#: relations.py:210
 msgid "Incorrect type. Expected URL string, received {data_type}."
-msgstr ""
+msgstr "Ongeldig type. Verwacht een URL, ontving {data_type}."
 
-#: relations.py:302
-#, python-brace-format
+#: relations.py:369
 msgid "Object with {slug_name}={value} does not exist."
-msgstr ""
+msgstr "Object met {slug_name}={value} bestaat niet."
 
-#: relations.py:303
+#: relations.py:370
 msgid "Invalid value."
-msgstr ""
+msgstr "Ongeldige waarde."
 
-#: serializers.py:304
-#, python-brace-format
+#: serializers.py:310
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
-msgstr ""
+msgstr "Ongeldige data. Verwacht een dictionary, kreeg een {datatype}."
 
 #: templates/rest_framework/horizontal/radio.html:2
 #: templates/rest_framework/inline/radio.html:2
 #: templates/rest_framework/vertical/radio.html:2
 msgid "None"
-msgstr ""
+msgstr "Geen"
 
 #: templates/rest_framework/horizontal/select_multiple.html:2
 #: templates/rest_framework/inline/select_multiple.html:2
 #: templates/rest_framework/vertical/select_multiple.html:2
 msgid "No items to select."
-msgstr ""
+msgstr "Geen items geselecteerd."
 
-#: validators.py:22
+#: validators.py:24
 msgid "This field must be unique."
-msgstr ""
+msgstr "Dit veld moet uniek zijn."
 
-#: validators.py:76
-#, python-brace-format
+#: validators.py:78
 msgid "The fields {field_names} must make a unique set."
-msgstr ""
+msgstr "De velden {field_names} moeten een unieke set zijn."
 
-#: validators.py:224
-#, python-brace-format
+#: validators.py:226
 msgid "This field must be unique for the \"{date_field}\" date."
-msgstr ""
+msgstr "Dit veld moet uniek zijn voor de \"{date_field}\" datum."
 
-#: validators.py:239
-#, python-brace-format
+#: validators.py:241
 msgid "This field must be unique for the \"{date_field}\" month."
-msgstr ""
+msgstr "Dit veld moet uniek zijn voor de \"{date_field}\" maand."
 
-#: validators.py:252
-#, python-brace-format
+#: validators.py:254
 msgid "This field must be unique for the \"{date_field}\" year."
-msgstr ""
+msgstr "Dit veld moet uniek zijn voor de \"{date_field}\" year."
 
-#: versioning.py:39
+#: versioning.py:42
 msgid "Invalid version in \"Accept\" header."
-msgstr ""
+msgstr "Ongeldige versie in \"Accept\" header."
 
-#: versioning.py:70 versioning.py:112
+#: versioning.py:73 versioning.py:115
 msgid "Invalid version in URL path."
-msgstr ""
+msgstr "Ongeldige versie in URL pad."
 
-#: versioning.py:141
+#: versioning.py:144
 msgid "Invalid version in hostname."
-msgstr ""
+msgstr "Ongeldige versie in host naam."
 
-#: versioning.py:163
+#: versioning.py:166
 msgid "Invalid version in query parameter."
-msgstr ""
+msgstr "Ongeldige versie in query parameter."
 
-#: views.py:85
+#: views.py:86
 msgid "Permission denied."
-msgstr ""
+msgstr "Toegang niet toegestaan."
