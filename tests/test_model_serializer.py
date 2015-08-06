@@ -181,7 +181,7 @@ class TestRegularFieldMappings(TestCase):
                 null_field = IntegerField(allow_null=True, required=False)
                 default_field = IntegerField(required=False)
                 descriptive_field = IntegerField(help_text='Some help text', label='A label')
-                choices_field = ChoiceField(choices=[('red', 'Red'), ('blue', 'Blue'), ('green', 'Green')])
+                choices_field = ChoiceField(choices=(('red', 'Red'), ('blue', 'Blue'), ('green', 'Green')))
         """)
         if six.PY2:
             # This particular case is too awkward to resolve fully across

@@ -108,6 +108,53 @@ def set_value(dictionary, keys, value):
     dictionary[keys[-1]] = value
 
 
+def to_choices_dict(choices):
+    """
+    Convert choices into key/value dicts.
+
+    pairwise_choices([1]) -> {1: 1}
+    pairwise_choices([(1, '1st'), (2, '2nd')]) -> {1: '1st', 2: '2nd'}
+    pairwise_choices([('Group', ((1, '1st'), 2))]) -> {'Group': {1: '1st', 2: '2nd'}}
+    """
+    # Allow single, paired or grouped choices style:
+    # choices = [1, 2, 3]
+    # choices = [(1, 'First'), (2, 'Second'), (3, 'Third')]
+    # choices = [('Category', ((1, 'First'), (2, 'Second'))), (3, 'Third')]
+    ret = OrderedDict()
+    for choice in choices:
+        if (not isinstance(choice, (list, tuple))):
+            # single choice
+            ret[choice] = choice
+        else:
+            key, value = choice
+            if isinstance(value, (list, tuple)):
+                # grouped choices (category, sub choices)
+                ret[key] = to_choices_dict(value)
+            else:
+                # paired choice (key, display value)
+                ret[key] = value
+    return ret
+
+
+def flatten_choices_dict(choices):
+    """
+    Convert a group choices dict into a flat dict of choices.
+
+    flatten_choices({1: '1st', 2: '2nd'}) -> {1: '1st', 2: '2nd'}
+    flatten_choices({'Group': {1: '1st', 2: '2nd'}}) -> {1: '1st', 2: '2nd'}
+    """
+    ret = OrderedDict()
+    for key, value in choices.items():
+        if isinstance(value, dict):
+            # grouped choices (category, sub choices)
+            for sub_key, sub_value in value.items():
+                ret[sub_key] = sub_value
+        else:
+            # choice (key, display value)
+            ret[key] = value
+    return ret
+
+
 class CreateOnlyDefault(object):
     """
     This class may be used to provide default values that are only used
@@ -1111,17 +1158,8 @@ class ChoiceField(Field):
     }
 
     def __init__(self, choices, **kwargs):
-        # Allow either single or paired choices style:
-        # choices = [1, 2, 3]
-        # choices = [(1, 'First'), (2, 'Second'), (3, 'Third')]
-        pairs = [
-            isinstance(item, (list, tuple)) and len(item) == 2
-            for item in choices
-        ]
-        if all(pairs):
-            self.choices = OrderedDict([(key, display_value) for key, display_value in choices])
-        else:
-            self.choices = OrderedDict([(item, item) for item in choices])
+        self.grouped_choices = to_choices_dict(choices)
+        self.choices = flatten_choices_dict(self.grouped_choices)
 
         # Map the string representation of choices to the underlying value.
         # Allows us to deal with eg. integer choices while supporting either
@@ -1147,6 +1185,38 @@ class ChoiceField(Field):
         if value in ('', None):
             return value
         return self.choice_strings_to_values.get(six.text_type(value), value)
+
+    def iter_options(self):
+        """
+        Helper method for use with templates rendering select widgets.
+        """
+        class StartOptionGroup(object):
+            start_option_group = True
+            end_option_group = False
+
+            def __init__(self, label):
+                self.label = label
+
+        class EndOptionGroup(object):
+            start_option_group = False
+            end_option_group = True
+
+        class Option(object):
+            start_option_group = False
+            end_option_group = False
+
+            def __init__(self, value, display_text):
+                self.value = value
+                self.display_text = display_text
+
+        for key, value in self.grouped_choices.items():
+            if isinstance(value, dict):
+                yield StartOptionGroup(label=key)
+                for sub_key, sub_value in value.items():
+                    yield Option(value=sub_key, display_text=sub_value)
+                yield EndOptionGroup()
+            else:
+                yield Option(value=key, display_text=value)
 
 
 class MultipleChoiceField(ChoiceField):

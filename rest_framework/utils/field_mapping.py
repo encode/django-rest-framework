@@ -107,10 +107,10 @@ def get_field_kwargs(field_name, model_field):
                               isinstance(model_field, models.TextField)):
         kwargs['allow_blank'] = True
 
-    if model_field.flatchoices:
+    if model_field.choices:
         # If this model field contains choices, then return early.
         # Further keyword arguments are not valid.
-        kwargs['choices'] = model_field.flatchoices
+        kwargs['choices'] = model_field.choices
         return kwargs
 
     # Ensure that max_length is passed explicitly as a keyword arg,
