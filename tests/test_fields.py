@@ -1153,6 +1153,66 @@ class TestChoiceFieldWithListChoices(FieldValues):
     field = serializers.ChoiceField(choices=('poor', 'medium', 'good'))
 
 
+class TestChoiceFieldWithGroupedChoices(FieldValues):
+    """
+    Valid and invalid values for a `Choice` field that uses a grouped list for the
+    choices, rather than a list of pairs of (`value`, `description`).
+    """
+    valid_inputs = {
+        'poor': 'poor',
+        'medium': 'medium',
+        'good': 'good',
+    }
+    invalid_inputs = {
+        'awful': ['"awful" is not a valid choice.']
+    }
+    outputs = {
+        'good': 'good'
+    }
+    field = serializers.ChoiceField(
+        choices=[
+            (
+                'Category',
+                (
+                    ('poor', 'Poor quality'),
+                    ('medium', 'Medium quality'),
+                ),
+            ),
+            ('good', 'Good quality'),
+        ]
+    )
+
+
+class TestChoiceFieldWithMixedChoices(FieldValues):
+    """
+    Valid and invalid values for a `Choice` field that uses a single paired or
+    grouped.
+    """
+    valid_inputs = {
+        'poor': 'poor',
+        'medium': 'medium',
+        'good': 'good',
+    }
+    invalid_inputs = {
+        'awful': ['"awful" is not a valid choice.']
+    }
+    outputs = {
+        'good': 'good'
+    }
+    field = serializers.ChoiceField(
+        choices=[
+            (
+                'Category',
+                (
+                    ('poor', 'Poor quality'),
+                ),
+            ),
+            'medium',
+            ('good', 'Good quality'),
+        ]
+    )
+
+
 class TestMultipleChoiceField(FieldValues):
     """
     Valid and invalid values for `MultipleChoiceField`.

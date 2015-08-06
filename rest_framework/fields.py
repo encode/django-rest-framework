@@ -5,6 +5,7 @@ import copy
 import datetime
 import decimal
 import inspect
+import itertools
 import re
 import uuid
 
@@ -106,6 +107,34 @@ def set_value(dictionary, keys, value):
         dictionary = dictionary[key]
 
     dictionary[keys[-1]] = value
+
+
+def flatten_choice(choice):
+    """
+    Convert a single choices choice into a flat list of choices.
+
+    Returns a list of choices pairs.
+
+    flatten_choice(1) -> [(1, 1)]
+    flatten_choice((1, '1st')) -> [(1, '1st')]
+    flatten_choice(('Grp', ((1, '1st'), (2, '2nd')))) -> [(1, '1st'), (2, '2nd')]
+    """
+    # Allow single, paired or grouped choices style:
+    # choices = [1, 2, 3]
+    # choices = [(1, 'First'), (2, 'Second'), (3, 'Third')]
+    # choices = [('Category', ((1, 'First'), (2, 'Second'))), (3, 'Third')]
+    if (not isinstance(choice, (list, tuple))):
+        # single choice
+        return [(choice, choice)]
+    else:
+        key, display_value = choice
+        if isinstance(display_value, (list, tuple)):
+            # grouped choices
+            sub_choices = [flatten_choice(c) for c in display_value]
+            return list(itertools.chain(*sub_choices))
+        else:
+            # paired choice
+            return [(key, display_value)]
 
 
 class CreateOnlyDefault(object):
@@ -1111,17 +1140,8 @@ class ChoiceField(Field):
     }
 
     def __init__(self, choices, **kwargs):
-        # Allow either single or paired choices style:
-        # choices = [1, 2, 3]
-        # choices = [(1, 'First'), (2, 'Second'), (3, 'Third')]
-        pairs = [
-            isinstance(item, (list, tuple)) and len(item) == 2
-            for item in choices
-        ]
-        if all(pairs):
-            self.choices = OrderedDict([(key, display_value) for key, display_value in choices])
-        else:
-            self.choices = OrderedDict([(item, item) for item in choices])
+        flat_choices = [flatten_choice(c) for c in choices]
+        self.choices = OrderedDict(list(itertools.chain(*flat_choices)))
 
         # Map the string representation of choices to the underlying value.
         # Allows us to deal with eg. integer choices while supporting either
