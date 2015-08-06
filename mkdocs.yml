@@ -55,5 +55,6 @@ pages:
      - 'Project management': 'topics/project-management.md'
      - '3.0 Announcement': 'topics/3.0-announcement.md'
      - '3.1 Announcement': 'topics/3.1-announcement.md'
+     - '3.2 Announcement': 'topics/3.2-announcement.md'
      - 'Kickstarter Announcement': 'topics/kickstarter-announcement.md'
      - 'Release Notes': 'topics/release-notes.md'

@@ -200,6 +200,7 @@ General guides to using REST framework.
 * [Project management][project-management]
 * [3.0 Announcement][3.0-announcement]
 * [3.1 Announcement][3.1-announcement]
+* [3.2 Announcement][3.2-announcement]
 * [Kickstarter Announcement][kickstarter-announcement]
 * [Release Notes][release-notes]
 
@@ -312,6 +313,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [third-party-resources]: topics/third-party-resources.md
 [3.0-announcement]: topics/3.0-announcement.md
 [3.1-announcement]: topics/3.1-announcement.md
+[3.2-announcement]: topics/3.2-announcement.md
 [kickstarter-announcement]: topics/kickstarter-announcement.md
 [release-notes]: topics/release-notes.md
 
