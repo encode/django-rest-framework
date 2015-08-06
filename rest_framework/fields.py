@@ -1190,6 +1190,9 @@ class ChoiceField(Field):
         return self.choice_strings_to_values.get(six.text_type(value), value)
 
     def iter_options(self):
+        """
+        Helper method for use with templates rendering select widgets.
+        """
         class StartOptionGroup(object):
             start_option_group = True
 
