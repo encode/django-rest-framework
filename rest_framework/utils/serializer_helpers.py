@@ -2,7 +2,9 @@ from __future__ import unicode_literals
 
 import collections
 
-from rest_framework.compat import OrderedDict, force_text, unicode_to_repr
+from django.utils.encoding import force_text
+
+from rest_framework.compat import OrderedDict, unicode_to_repr
 
 
 class ReturnDict(OrderedDict):
@@ -11,6 +13,7 @@ class ReturnDict(OrderedDict):
     Includes a backlink to the serializer instance for renderers
     to use if they need richer field information.
     """
+
     def __init__(self, *args, **kwargs):
         self.serializer = kwargs.pop('serializer')
         super(ReturnDict, self).__init__(*args, **kwargs)
@@ -33,6 +36,7 @@ class ReturnList(list):
     Includes a backlink to the serializer instance for renderers
     to use if they need richer field information.
     """
+
     def __init__(self, *args, **kwargs):
         self.serializer = kwargs.pop('serializer')
         super(ReturnList, self).__init__(*args, **kwargs)
@@ -52,6 +56,7 @@ class BoundField(object):
     Returned when iterating over a serializer instance,
     providing an API similar to Django forms and form fields.
     """
+
     def __init__(self, field, value, errors, prefix=''):
         self._field = field
         self._prefix = prefix
@@ -82,6 +87,7 @@ class NestedBoundField(BoundField):
     in order to support nested bound fields. This class is the type of
     `BoundField` that is used for serializer fields.
     """
+
     def __iter__(self):
         for field in self.fields.values():
             yield self[field.field_name]
@@ -112,6 +118,7 @@ class BindingDict(collections.MutableMapping):
     `field.bind()` so that the `field_name` and `parent` attributes
     can be set correctly.
     """
+
     def __init__(self, serializer):
         self.serializer = serializer
         self.fields = OrderedDict()
