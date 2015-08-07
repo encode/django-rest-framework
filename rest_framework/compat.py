@@ -1,27 +1,22 @@
 """
 The `compat` module provides support for backwards compatibility with older
-versions of django/python, and compatibility wrappers around optional packages.
+versions of Django/Python, and compatibility wrappers around optional packages.
 """
 
 # flake8: noqa
 from __future__ import unicode_literals
 
-import inspect
-
 import django
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 from django.db import connection, transaction
-from django.forms import FilePathField as DjangoFilePathField
-from django.test.client import FakePayload
 from django.utils import six
-from django.utils.encoding import force_text
-from django.utils.six.moves.urllib.parse import urlparse as _urlparse
+from django.views.generic import View
 
 try:
-    import importlib
+    import importlib  # Available in Python 3.1+
 except ImportError:
-    from django.utils import importlib
+    from django.utils import importlib  # Will be removed in Django 1.9
+
 
 def unicode_repr(instance):
     # Get the repr of an instance, but ensure it is a unicode string
@@ -65,28 +60,11 @@ except ImportError:
     from django.utils.datastructures import SortedDict as OrderedDict
 
 
-# HttpResponseBase only exists from 1.5 onwards
-try:
-    from django.http.response import HttpResponseBase
-except ImportError:
-    from django.http import HttpResponse as HttpResponseBase
-
-
 # contrib.postgres only supported from 1.8 onwards.
 try:
     from django.contrib.postgres import fields as postgres_fields
 except ImportError:
     postgres_fields = None
-
-
-# request only provides `resolver_match` from 1.5 onwards.
-def get_resolver_match(request):
-    try:
-        return request.resolver_match
-    except AttributeError:
-        # Django < 1.5
-        from django.core.urlresolvers import resolve
-        return resolve(request.path_info)
 
 
 # django-filter is optional
@@ -125,25 +103,6 @@ def get_model_name(model_cls):
         return model_cls._meta.module_name
 
 
-# Support custom user models in Django 1.5+
-try:
-    from django.contrib.auth import get_user_model
-except ImportError:
-    from django.contrib.auth.models import User
-    get_user_model = lambda: User
-
-
-# View._allowed_methods only present from 1.5 onwards
-if django.VERSION >= (1, 5):
-    from django.views.generic import View
-else:
-    from django.views.generic import View as DjangoView
-
-    class View(DjangoView):
-        def _allowed_methods(self):
-            return [m.upper() for m in self.http_method_names if hasattr(self, m)]
-
-
 # MinValueValidator, MaxValueValidator et al. only accept `message` in 1.8+
 if django.VERSION >= (1, 8):
     from django.core.validators import MinValueValidator, MaxValueValidator
@@ -154,20 +113,24 @@ else:
     from django.core.validators import MinLengthValidator as DjangoMinLengthValidator
     from django.core.validators import MaxLengthValidator as DjangoMaxLengthValidator
 
+
     class MinValueValidator(DjangoMinValueValidator):
         def __init__(self, *args, **kwargs):
             self.message = kwargs.pop('message', self.message)
             super(MinValueValidator, self).__init__(*args, **kwargs)
+
 
     class MaxValueValidator(DjangoMaxValueValidator):
         def __init__(self, *args, **kwargs):
             self.message = kwargs.pop('message', self.message)
             super(MaxValueValidator, self).__init__(*args, **kwargs)
 
+
     class MinLengthValidator(DjangoMinLengthValidator):
         def __init__(self, *args, **kwargs):
             self.message = kwargs.pop('message', self.message)
             super(MinLengthValidator, self).__init__(*args, **kwargs)
+
 
     class MaxLengthValidator(DjangoMaxLengthValidator):
         def __init__(self, *args, **kwargs):
@@ -180,6 +143,7 @@ if django.VERSION >= (1, 6):
     from django.core.validators import URLValidator
 else:
     from django.core.validators import URLValidator as DjangoURLValidator
+
 
     class URLValidator(DjangoURLValidator):
         def __init__(self, *args, **kwargs):
@@ -194,6 +158,7 @@ else:
     from django.core.validators import EmailValidator as DjangoEmailValidator
     from django.core.validators import email_re
 
+
     class EmailValidator(DjangoEmailValidator):
         def __init__(self, *args, **kwargs):
             super(EmailValidator, self).__init__(email_re, *args, **kwargs)
@@ -207,6 +172,7 @@ if 'patch' not in View.http_method_names:
 # Markdown is optional
 try:
     import markdown
+
 
     def apply_markdown(text):
         """
@@ -232,7 +198,6 @@ else:
     SHORT_SEPARATORS = (b',', b':')
     LONG_SEPARATORS = (b', ', b': ')
     INDENT_SEPARATORS = (b',', b': ')
-
 
 if django.VERSION >= (1, 8):
     from django.db.models import DurationField
