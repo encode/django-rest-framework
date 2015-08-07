@@ -219,7 +219,7 @@ class HyperlinkedRelatedField(RelatedField):
 
     def __init__(self, view_name=None, **kwargs):
         if view_name is not None:
-            view_name = self.view_name = view_name
+            self.view_name = view_name
         assert self.view_name is not None, 'The `view_name` argument is required.'
         self.lookup_field = kwargs.pop('lookup_field', self.lookup_field)
         self.lookup_url_kwarg = kwargs.pop('lookup_url_kwarg', self.lookup_field)
