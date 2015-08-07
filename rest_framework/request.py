@@ -458,10 +458,8 @@ class Request(object):
 
     @property
     def FILES(self):
-        raise NotImplementedError(
-            '`request.FILES` has been deprecated in favor of `request.files` '
-            'since version 3.0, and has been fully removed as of version 3.2.'
-        )
+        # Leave this one alone for backwards compat with Django's request.FILES
+        return self.files
 
     @property
     def QUERY_PARAMS(self):
