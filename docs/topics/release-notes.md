@@ -40,6 +40,15 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.2.x series
 
+### 3.2.1
+
+**Date**: [7th August 2015][3.2.1-milestone].
+
+* Fix for relational select widgets rendering without any choices. ([#3237][gh3237])
+* Fix for `1`, `0` rendering as `true`, `false` in the admin interface. [#3227][gh3227])
+* Fix for ListFields with single value in HTML form input. ([#3238][gh3238])
+* Allow `request.FILES` for compat with Django's `HTTPRequest` class. ([#3239][gh3239])
+
 ### 3.2.0
 
 **Date**: [6th August 2015][3.2.0-milestone].
@@ -264,6 +273,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.1.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.2+Release%22
 [3.1.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.3+Release%22
 [3.2.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.0+Release%22
+[3.2.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.1+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -451,3 +461,9 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh3165]: https://github.com/tomchristie/django-rest-framework/issues/3165
 [gh3216]: https://github.com/tomchristie/django-rest-framework/issues/3216
 [gh3225]: https://github.com/tomchristie/django-rest-framework/issues/3225
+
+<!-- 3.2.1 -->
+[gh3237]: https://github.com/tomchristie/django-rest-framework/issues/3237
+[gh3227]: https://github.com/tomchristie/django-rest-framework/issues/3227
+[gh3238]: https://github.com/tomchristie/django-rest-framework/issues/3238
+[gh3239]: https://github.com/tomchristie/django-rest-framework/issues/3239
