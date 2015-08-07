@@ -14,7 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import OrderedDict
 from rest_framework.fields import (
-    Field, empty, get_attribute, is_simple_callable
+    Field, empty, get_attribute, is_simple_callable, iter_options
 )
 from rest_framework.reverse import reverse
 from rest_framework.utils import html
@@ -152,6 +152,13 @@ class RelatedField(Field):
             )
             for item in queryset
         ])
+
+    @property
+    def grouped_choices(self):
+        return self.choices
+
+    def iter_options(self):
+        return iter_options(self.grouped_choices)
 
 
 class StringRelatedField(RelatedField):
@@ -453,3 +460,10 @@ class ManyRelatedField(Field):
     @property
     def choices(self):
         return self.child_relation.choices
+
+    @property
+    def grouped_choices(self):
+        return self.choices
+
+    def iter_options(self):
+        return iter_options(self.grouped_choices)

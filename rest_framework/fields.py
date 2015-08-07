@@ -155,6 +155,39 @@ def flatten_choices_dict(choices):
     return ret
 
 
+def iter_options(grouped_choices):
+    """
+    Helper function for options and option groups in templates.
+    """
+    class StartOptionGroup(object):
+        start_option_group = True
+        end_option_group = False
+
+        def __init__(self, label):
+            self.label = label
+
+    class EndOptionGroup(object):
+        start_option_group = False
+        end_option_group = True
+
+    class Option(object):
+        start_option_group = False
+        end_option_group = False
+
+        def __init__(self, value, display_text):
+            self.value = value
+            self.display_text = display_text
+
+    for key, value in grouped_choices.items():
+        if isinstance(value, dict):
+            yield StartOptionGroup(label=key)
+            for sub_key, sub_value in value.items():
+                yield Option(value=sub_key, display_text=sub_value)
+            yield EndOptionGroup()
+        else:
+            yield Option(value=key, display_text=value)
+
+
 class CreateOnlyDefault(object):
     """
     This class may be used to provide default values that are only used
@@ -1190,33 +1223,7 @@ class ChoiceField(Field):
         """
         Helper method for use with templates rendering select widgets.
         """
-        class StartOptionGroup(object):
-            start_option_group = True
-            end_option_group = False
-
-            def __init__(self, label):
-                self.label = label
-
-        class EndOptionGroup(object):
-            start_option_group = False
-            end_option_group = True
-
-        class Option(object):
-            start_option_group = False
-            end_option_group = False
-
-            def __init__(self, value, display_text):
-                self.value = value
-                self.display_text = display_text
-
-        for key, value in self.grouped_choices.items():
-            if isinstance(value, dict):
-                yield StartOptionGroup(label=key)
-                for sub_key, sub_value in value.items():
-                    yield Option(value=sub_key, display_text=sub_value)
-                yield EndOptionGroup()
-            else:
-                yield Option(value=key, display_text=value)
+        return iter_options(self.grouped_choices)
 
 
 class MultipleChoiceField(ChoiceField):
