@@ -342,6 +342,10 @@
                     </li>
                   
                     <li>
+                      <a href="#supported-versions">Supported versions</a>
+                    </li>
+                  
+                    <li>
                       <a href="#deprecations">Deprecations</a>
                     </li>
                   
@@ -387,6 +391,9 @@
 <p>There are some limitations to the <code>AdminRenderer</code>, in particular it is not yet able to handle list or dictionary inputs, as we do not have any HTML form fields that support those.</p>
 <p>Also note that this is an initial release and we do not yet have a public API for modifying the behavior or documentation on overriding the templates.</p>
 <p>The idea is to get this released to users early, so we can start getting feedback and release a more fully featured version in 3.3.</p>
+<h2 id="supported-versions">Supported versions</h2>
+<p>This release drops support for Django 1.4.</p>
+<p>Our supported Django versions are now 1.5.6+, 1.6.3+, 1.7 and 1.8.</p>
 <h2 id="deprecations">Deprecations</h2>
 <p>There are no new deprecations in 3.2, although a number of existing deprecations have now escalated in line with our deprecation policy.</p>
 <ul>
@@ -419,7 +426,7 @@
 </ul>
 <p>The upshot is this: If you have many to many fields in your models, then make sure you've included the argument <code>blank=True</code> if you want to allow empty inputs in the equivalent <code>ModelSerializer</code> fields.</p>
 <h3 id="list-fields-and-allow_null">List fields and allow_null</h3>
-<p>When using <code>allow_null</code> with <code>ListField</code> or a nested <code>mant=True</code> serializer the previous behavior was to allow <code>null</code> values as items in the list. The behavior is now to allow <code>null</code> values instead of the list.</p>
+<p>When using <code>allow_null</code> with <code>ListField</code> or a nested <code>many=True</code> serializer the previous behavior was to allow <code>null</code> values as items in the list. The behavior is now to allow <code>null</code> values instead of the list.</p>
 <p>For example, take the following field:</p>
 <pre><code>NestedSerializer(many=True, allow_null=True)
 </code></pre>
