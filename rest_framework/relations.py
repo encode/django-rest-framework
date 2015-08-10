@@ -148,7 +148,7 @@ class RelatedField(Field):
         return OrderedDict([
             (
                 six.text_type(self.to_representation(item)),
-                six.text_type(item)
+                self.display_value(item)
             )
             for item in queryset
         ])
@@ -159,6 +159,9 @@ class RelatedField(Field):
 
     def iter_options(self):
         return iter_options(self.grouped_choices)
+
+    def display_value(self, instance):
+        return six.text_type(instance)
 
 
 class StringRelatedField(RelatedField):
