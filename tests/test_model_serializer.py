@@ -21,7 +21,7 @@ from django.utils import six
 
 from rest_framework import serializers
 from rest_framework.compat import DurationField as ModelDurationField
-from rest_framework.compat import unicode_repr
+from rest_framework.compat import OrderedDict, unicode_repr
 
 
 def dedent(blocktext):
@@ -544,6 +544,50 @@ class TestRelationalFieldMappings(TestCase):
                 reverse_through = PrimaryKeyRelatedField(many=True, read_only=True)
         """)
         self.assertEqual(unicode_repr(TestSerializer()), expected)
+
+
+class DisplayValueTargetModel(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return '%s Color' % (self.name)
+
+
+class DisplayValueModel(models.Model):
+    color = models.ForeignKey(DisplayValueTargetModel)
+
+
+class TestRelationalFieldDisplayValue(TestCase):
+    def setUp(self):
+        DisplayValueTargetModel.objects.bulk_create([
+            DisplayValueTargetModel(name='Red'),
+            DisplayValueTargetModel(name='Yellow'),
+            DisplayValueTargetModel(name='Green'),
+        ])
+
+    def test_default_display_value(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DisplayValueModel
+
+        serializer = TestSerializer()
+        expected = OrderedDict([('1', 'Red Color'), ('2', 'Yellow Color'), ('3', 'Green Color')])
+        self.assertEqual(serializer.fields['color'].choices, expected)
+
+    def test_custom_display_value(self):
+        class TestField(serializers.PrimaryKeyRelatedField):
+            def display_value(self, instance):
+                return 'My %s Color' % (instance.name)
+
+        class TestSerializer(serializers.ModelSerializer):
+            color = TestField(queryset=DisplayValueTargetModel.objects.all())
+
+            class Meta:
+                model = DisplayValueModel
+
+        serializer = TestSerializer()
+        expected = OrderedDict([('1', 'My Red Color'), ('2', 'My Yellow Color'), ('3', 'My Green Color')])
+        self.assertEqual(serializer.fields['color'].choices, expected)
 
 
 class TestIntegration(TestCase):
