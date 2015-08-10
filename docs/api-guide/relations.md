@@ -432,6 +432,16 @@ This behavior is now replaced with *always* using an explicit `queryset` argumen
 
 Doing so reduces the amount of hidden 'magic' that `ModelSerializer` provides, makes the behavior of the field more clear, and ensures that it is trivial to move between using the `ModelSerializer` shortcut, or using fully explicit `Serializer` classes.
 
+## Customizing the HTML display
+
+The built-in `__str__` method of the model will be used to generate string representations of the objects used to populate the `choices` property. These choices are used to populate select HTML inputs in the browsable API.
+
+To provide customized representations for such inputs, override `display_value()` of a `RelatedField` subclass. This method will receive a model object, and should return a string suitable for representing it. For example:
+
+    class TrackPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
+        def display_value(self, instance):
+            return 'Track: %s' % (instance.title)
+
 ## Reverse relations
 
 Note that reverse relationships are not automatically included by the `ModelSerializer` and `HyperlinkedModelSerializer` classes.  To include a reverse relationship, you must explicitly add it to the fields list.  For example:
@@ -536,14 +546,6 @@ By default, relational fields that target a ``ManyToManyField`` with a
 If you explicitly specify a relational field pointing to a
 ``ManyToManyField`` with a through model, be sure to set ``read_only``
 to ``True``.
-
-## The `display_value` method
-
-The `__str__` (`__unicode__` on Python 2) method of the model will be called to generate string representations of the objects used to populate the `choices` property. These choices are used to populate select HTML inputs in the browsable API. To provide customized representations for such inputs, override `display_value` of a `RelatedField` subclass. This method will receive a model object, and should return a string suitable for representing it. For example:
-
-    class TrackPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
-        def display_value(self, instance):
-            return 'Track: %s' % (instance.title)
 
 ---
 
