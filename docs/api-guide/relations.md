@@ -537,6 +537,14 @@ If you explicitly specify a relational field pointing to a
 ``ManyToManyField`` with a through model, be sure to set ``read_only``
 to ``True``.
 
+## The `display_value` method
+
+The `__str__` (`__unicode__` on Python 2) method of the model will be called to generate string representations of the objects used to populate the `choices` property. To provide customized representations, override `display_value` of a `RelatedField` subclass. This method will receive a model object, and should return a string suitable for representing it. For example:
+
+    class TrackPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
+        def display_value(self, instance):
+            return 'Track: %s' % (instance.title)
+
 ---
 
 # Third Party Packages
