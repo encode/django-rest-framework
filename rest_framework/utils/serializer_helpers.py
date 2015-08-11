@@ -88,6 +88,11 @@ class NestedBoundField(BoundField):
     `BoundField` that is used for serializer fields.
     """
 
+    def __init__(self, field, value, errors, prefix=''):
+        if value is None:
+            value = {}
+        super(NestedBoundField, self).__init__(field, value, errors, prefix)
+
     def __iter__(self):
         for field in self.fields.values():
             yield self[field.field_name]
@@ -101,9 +106,6 @@ class NestedBoundField(BoundField):
         return BoundField(field, value, error, prefix=self.name + '.')
 
     def as_form_field(self):
-        if self.value is None:
-            return ''
-
         values = {}
         for key, value in self.value.items():
             if isinstance(value, (list, dict)):
