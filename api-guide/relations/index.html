@@ -414,6 +414,10 @@
                     </li>
                   
                     <li>
+                      <a href="#customizing-the-html-display">Customizing the HTML display</a>
+                    </li>
+                  
+                    <li>
                       <a href="#reverse-relations">Reverse relations</a>
                     </li>
                   
@@ -806,6 +810,13 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
 <p>In version 2.x a serializer class could <em>sometimes</em> automatically determine the <code>queryset</code> argument <em>if</em> a <code>ModelSerializer</code> class was being used.</p>
 <p>This behavior is now replaced with <em>always</em> using an explicit <code>queryset</code> argument for writable relational fields.</p>
 <p>Doing so reduces the amount of hidden 'magic' that <code>ModelSerializer</code> provides, makes the behavior of the field more clear, and ensures that it is trivial to move between using the <code>ModelSerializer</code> shortcut, or using fully explicit <code>Serializer</code> classes.</p>
+<h2 id="customizing-the-html-display">Customizing the HTML display</h2>
+<p>The built-in <code>__str__</code> method of the model will be used to generate string representations of the objects used to populate the <code>choices</code> property. These choices are used to populate select HTML inputs in the browsable API.</p>
+<p>To provide customized representations for such inputs, override <code>display_value()</code> of a <code>RelatedField</code> subclass. This method will receive a model object, and should return a string suitable for representing it. For example:</p>
+<pre><code>class TrackPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
+    def display_value(self, instance):
+        return 'Track: %s' % (instance.title)
+</code></pre>
 <h2 id="reverse-relations">Reverse relations</h2>
 <p>Note that reverse relationships are not automatically included by the <code>ModelSerializer</code> and <code>HyperlinkedModelSerializer</code> classes.  To include a reverse relationship, you must explicitly add it to the fields list.  For example:</p>
 <pre><code>class AlbumSerializer(serializers.ModelSerializer):
