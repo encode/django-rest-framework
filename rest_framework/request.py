@@ -459,7 +459,11 @@ class Request(object):
     @property
     def FILES(self):
         # Leave this one alone for backwards compat with Django's request.FILES
-        return self.files
+        # Different from the other two cases, which are not valid property
+        # names on the WSGIRequest class.
+        if not _hasattr(self, '_files'):
+            self._load_data_and_files()
+        return self._files
 
     @property
     def QUERY_PARAMS(self):

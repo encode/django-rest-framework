@@ -30,14 +30,6 @@ For more details see the [parsers documentation].
 
 For clarity inside your code, we recommend using `request.query_params` instead of the Django's standard `request.GET`. Doing so will help keep your codebase more correct and obvious - any HTTP method type may include query parameters, not just `GET` requests.
 
-## .DATA and .FILES
-
-The old-style version 2.x `request.DATA` and `request.FILES` attributes are still available, but are now pending deprecation in favor of the unified `request.data` attribute.
-
-## .QUERY_PARAMS
-
-The old-style version 2.x `request.QUERY_PARAMS` attribute is still available, but is now pending deprecation in favor of the more pythonic `request.query_params`.
-
 ## .parsers
 
 The `APIView` class or `@api_view` decorator will ensure that this property is automatically set to a list of `Parser` instances, based on the `parser_classes` set on the view or based on the `DEFAULT_PARSER_CLASSES` setting.
