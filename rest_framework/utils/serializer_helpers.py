@@ -101,6 +101,9 @@ class NestedBoundField(BoundField):
         return BoundField(field, value, error, prefix=self.name + '.')
 
     def as_form_field(self):
+        if self.value is None:
+            return ''
+
         values = {}
         for key, value in self.value.items():
             if isinstance(value, (list, dict)):
