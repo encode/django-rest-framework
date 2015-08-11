@@ -77,7 +77,7 @@ class BoundField(object):
         ))
 
     def as_form_field(self):
-        value = '' if self.value is None else force_text(self.value)
+        value = '' if (self.value is None or self.value is False) else force_text(self.value)
         return self.__class__(self._field, value, self.errors, self._prefix)
 
 
