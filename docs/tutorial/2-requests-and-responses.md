@@ -157,8 +157,8 @@ We can control the format of the response that we get back, either by using the 
 
 Or by appending a format suffix:
 
-    http http://127.0.0.1:8000/snippets/.json  # JSON suffix
-    http http://127.0.0.1:8000/snippets/.api   # Browsable API suffix
+    http http://127.0.0.1:8000/snippets.json  # JSON suffix
+    http http://127.0.0.1:8000/snippets.api   # Browsable API suffix
 
 Similarly, we can control the format of the request that we send, using the `Content-Type` header.
 
