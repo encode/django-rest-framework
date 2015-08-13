@@ -202,6 +202,7 @@ General guides to using REST framework.
 * [3.1 Announcement][3.1-announcement]
 * [3.2 Announcement][3.2-announcement]
 * [Kickstarter Announcement][kickstarter-announcement]
+* [Funding][funding]
 * [Release Notes][release-notes]
 
 ## Development
@@ -315,6 +316,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [3.1-announcement]: topics/3.1-announcement.md
 [3.2-announcement]: topics/3.2-announcement.md
 [kickstarter-announcement]: topics/kickstarter-announcement.md
+[funding]: topics/funding.md
 [release-notes]: topics/release-notes.md
 
 [tox]: http://testrun.org/tox/latest/
