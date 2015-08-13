@@ -40,6 +40,17 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.2.x series
 
+### 3.2.2
+
+**Date**: [13th August 2015][3.2.2-milestone].
+
+* Add `display_value()` method for use when displaying relational field select inputs. ([#3254][gh3254])
+* Fix issue with `BooleanField` checkboxes incorrectly displaying as checked. ([#3258][gh3258])
+* Ensure empty checkboxes properly set `BooleanField` to `False` in all cases. ([#2776][gh2776])
+* Allow `WSGIRequest.FILES` property without raising incorrect deprecated error. ([#3261][gh3261])
+* Resolve issue with rendering nested serializers in forms. ([#3260][gh3260])
+* Raise an error if user accidentally pass a serializer instance to a response, rather than data. ([#3241][gh3241])
+
 ### 3.2.1
 
 **Date**: [7th August 2015][3.2.1-milestone].
@@ -274,6 +285,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.1.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.3+Release%22
 [3.2.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.0+Release%22
 [3.2.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.1+Release%22
+[3.2.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.1+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -467,3 +479,11 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh3227]: https://github.com/tomchristie/django-rest-framework/issues/3227
 [gh3238]: https://github.com/tomchristie/django-rest-framework/issues/3238
 [gh3239]: https://github.com/tomchristie/django-rest-framework/issues/3239
+
+<!-- 3.2.2 -->
+[gh3254]: https://github.com/tomchristie/django-rest-framework/issues/3254
+[gh3258]: https://github.com/tomchristie/django-rest-framework/issues/3258
+[gh2776]: https://github.com/tomchristie/django-rest-framework/issues/2776
+[gh3261]: https://github.com/tomchristie/django-rest-framework/issues/3261
+[gh3260]: https://github.com/tomchristie/django-rest-framework/issues/3260
+[gh3241]: https://github.com/tomchristie/django-rest-framework/issues/3241
