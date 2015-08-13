@@ -92,7 +92,7 @@ If you are using REST framework as an full-time employee, consider recommending 
 								Credited on the site
 							</div>
 						</div>
-						<form class="signup" action="/signup/" method="POST">
+						<form class="signup" action="/signup/individual/" method="POST">
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="pk_test_pSlS9x7p9l5capgZrXLrwchb"
@@ -137,7 +137,7 @@ Our professional and premium plans also include **priority support**. At any tim
 								<span class="variable">Funding page</span> ad placement
 							</div>
 						</div>
-						<form class="signup" action="/signup/" method="POST">
+						<form class="signup" action="/signup/startup/" method="POST">
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="pk_test_pSlS9x7p9l5capgZrXLrwchb"
@@ -171,7 +171,7 @@ Our professional and premium plans also include **priority support**. At any tim
 								<span class="variable">Priority support</span> for your engineers
 							</div>
 						</div>
-						<form class="signup" action="/signup/" method="POST">
+						<form class="signup" action="/signup/professional/" method="POST">
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="pk_test_pSlS9x7p9l5capgZrXLrwchb"
@@ -205,7 +205,7 @@ Our professional and premium plans also include **priority support**. At any tim
 								<span class="variable">Priority support</span> for your engineers
 							</div>
 						</div>
-						<form class="signup" action="/signup/" method="POST">
+						<form class="signup" action="/signup/premium/" method="POST">
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="pk_test_pSlS9x7p9l5capgZrXLrwchb"
