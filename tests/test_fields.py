@@ -227,19 +227,27 @@ class TestInvalidErrorKey:
 
 
 class TestBooleanHTMLInput:
-    def setup(self):
-        class TestSerializer(serializers.Serializer):
-            archived = serializers.BooleanField()
-        self.Serializer = TestSerializer
-
     def test_empty_html_checkbox(self):
         """
         HTML checkboxes do not send any value, but should be treated
         as `False` by BooleanField.
         """
-        # This class mocks up a dictionary like object, that behaves
-        # as if it was returned for multipart or urlencoded data.
-        serializer = self.Serializer(data=QueryDict(''))
+        class TestSerializer(serializers.Serializer):
+            archived = serializers.BooleanField()
+
+        serializer = TestSerializer(data=QueryDict(''))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'archived': False}
+
+    def test_empty_html_checkbox_not_required(self):
+        """
+        HTML checkboxes do not send any value, but should be treated
+        as `False` by BooleanField, even if the field is required=False.
+        """
+        class TestSerializer(serializers.Serializer):
+            archived = serializers.BooleanField(required=False)
+
+        serializer = TestSerializer(data=QueryDict(''))
         assert serializer.is_valid()
         assert serializer.validated_data == {'archived': False}
 

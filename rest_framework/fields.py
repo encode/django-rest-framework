@@ -280,9 +280,7 @@ class Field(object):
         self.allow_null = allow_null
 
         if self.default_empty_html is not empty:
-            if not required:
-                self.default_empty_html = empty
-            elif default is not empty:
+            if default is not empty:
                 self.default_empty_html = default
 
         if validators is not None:
