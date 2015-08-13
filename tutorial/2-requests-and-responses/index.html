@@ -511,8 +511,8 @@ HTTP/1.1 200 OK
 http http://127.0.0.1:8000/snippets/ Accept:text/html         # Request HTML
 </code></pre>
 <p>Or by appending a format suffix:</p>
-<pre><code>http http://127.0.0.1:8000/snippets/.json  # JSON suffix
-http http://127.0.0.1:8000/snippets/.api   # Browsable API suffix
+<pre><code>http http://127.0.0.1:8000/snippets.json  # JSON suffix
+http http://127.0.0.1:8000/snippets.api   # Browsable API suffix
 </code></pre>
 <p>Similarly, we can control the format of the request that we send, using the <code>Content-Type</code> header.</p>
 <pre><code># POST using form data
