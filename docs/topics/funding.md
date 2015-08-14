@@ -286,7 +286,7 @@ The roadmap below is a broad indication of just some of the ongoing and future w
 * Third party GraphQL support.
 * Documentation & support for integration with realtime systems.
 * Improved third party package visibility.
+* Increasing our "bus factor" through documented organizational process & safeguards.
 * Continuing triage & community support.
-* Organizational safeguards
 
 By taking out a paid plan you'll be directly contributing towards making these features happen.
