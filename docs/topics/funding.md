@@ -1,7 +1,7 @@
 <style>
 .chart {
-	    background-color: #e3e3e3;
-	    background: -webkit-linear-gradient(top, #fff 0, #e3e3e3 100%);
+    background-color: #e3e3e3;
+    background: -webkit-linear-gradient(top, #fff 0, #e3e3e3 100%);
     border: 1px solid #E6E6E6;
     border-radius: 5px;
     box-shadow: 0px 0px 2px 0px rgba(181, 181, 181, 0.3);
@@ -11,9 +11,10 @@
     width: 97%;
     min-height: 255px;
     position: relative;
-    top: 37px;}
+    top: 37px;
+    margin-bottom: 20px}
 .quantity {
-	text-align: center}
+    text-align: center}
 .dollar {
     font-size: 19px;
     position: relative;
@@ -37,25 +38,37 @@
     margin: 0 auto;
     margin-top: 8px;}
 .specs {
-	    margin-top: 20px;}
+    margin-top: 20px;}
 .specs.startup {
-	margin-bottom: 90px}
+    margin-bottom: 93px}
 .spec {
-	    font-size: 15px;
+    font-size: 15px;
     color: #474747;
     text-align: center;
     font-weight: 300;
     margin-bottom: 13px;}
 .variable {
-	color: #1FBEE7;
+    color: #1FBEE7;
     font-weight: 400;}
 form.signup {
-	margin-top: 35px}
+    margin-top: 35px}
 .clear-promo {
-	padding-top: 30px}
+    padding-top: 30px}
+#main-content h1:first-of-type {
+    margin: 0 0 50px;
+    font-size: 60px;
+    font-weight: 200;
+    text-align: center
+}
+#main-content {
+    padding-top: 10px; line-height: 23px
+}
+#main-content li {
+    line-height: 23px
+}
 </style>
 
-# Funding
+# Paid plans
 
 If you use REST framework commercially we strongly encourage you to invest in its continued development by signing up for a paid plan.
 
@@ -67,11 +80,35 @@ Signing up for a paid plan will:
 * Allow more time to be invested in documentation, issue triage and community support.
 * Safeguard the future development of REST framework.
 
+REST framework will always be open source and permissively licensed, but we firmly believe it is in the commercial best-interest for users of the project to fund its ongoing development.
+
+---
+
+## Making the business case
+
+Our successful Kickstarter campaign demonstrates the cost-reward ratio of shared development funding.
+
+With *typical corporate fundings of just £100-£1000 per organization* we successfully delivered:
+
+* The comprehensive 3.0 serializer redesign.
+* Pagination API including new offset/limit and cursor pagination implementations, plus  on-page controls.
+* The versioning API, including URL based and header based versioning schemes.
+* Customizable exception handling.
+* The metadata APIs for handling `OPTIONS` requests.
+* Templated HTML form support, including HTML forms with nested list and objects.
+* Internationalization support for API responses, currently with 27 languages.
+* Improvements to the browsable API.
+* The admin interface.
+* Support for Django's PostgreSQL HStoreField, ArrayField and JSONField.
+* Ongoing triage and community support, closing over 1600 tickets.
+
+This incredible level of return on investment is *only possible through collaboratively funded models*, which is why we believe that supporting our paid plans is in everyone's best interest.
+
 ---
 
 ## Individual plan
 
-This subscription is recommended for freelancers and other individuals with an interest in seeing REST framework continue to&nbsp;improve. Billing is monthly and you can cancel at any time.
+This subscription is recommended for freelancers and other individuals with an interest in seeing REST framework continue to&nbsp;improve.
 
 If you are using REST framework as an full-time employee, consider recommending that your company takes out a [corporate&nbsp;plan](#corporate-plans).
 
@@ -108,7 +145,9 @@ If you are using REST framework as an full-time employee, consider recommending 
 					</div>
 				</div>
 			</div>
-<div style="clear: both; padding-top: 70px"></div>
+<div style="clear: both; padding-top: 50px"></div>
+
+*Billing is monthly and you can cancel at any time.*
 
 ---
 
@@ -118,17 +157,17 @@ These subscriptions are recommended for companies and organizations using REST f
 
 In exchange for funding you'll also receive advertising space on our site, allowing you to **promote your company or product to many tens of thousands of developers worldwide**.
 
-Our professional and premium plans also include **priority support**. At any time your engineers can escalate an issue or discussion group thread, and we'll ensure it gets a guaranteed response on the next available project day.
+Our professional and premium plans also include **priority support**. At any time your engineers can escalate an issue or discussion group thread, and we'll ensure it gets a guaranteed response within the next working day.
 
 <div class="pricing">
 				<div class="span4">
 					<div class="chart first">
 						<div class="quantity">
 							<span class="dollar">$</span>
-							<span class="price">40</span>
+							<span class="price">50</span>
 							<span class="period">/month</span>
 						</div>
-						<div class="plan-name">Startup</div>
+						<div class="plan-name">Basic</div>
 						<div class="specs startup">
 							<div class="spec">
 								Support ongoing development
@@ -141,9 +180,9 @@ Our professional and premium plans also include **priority support**. At any tim
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="pk_test_pSlS9x7p9l5capgZrXLrwchb"
-    data-amount="4000"
+    data-amount="5000"
     data-name="Django REST framework"
-    data-description="Startup"
+    data-description="Basic"
     data-currency="usd"
     data-allow-remember-me=false
     data-label='Sign up'
@@ -156,7 +195,7 @@ Our professional and premium plans also include **priority support**. At any tim
 					<div class="chart">
 						<div class="quantity">
 							<span class="dollar">$</span>
-							<span class="price">200</span>
+							<span class="price">250</span>
 							<span class="period">/month</span>
 						</div>
 						<div class="plan-name">Professional</div>
@@ -175,7 +214,7 @@ Our professional and premium plans also include **priority support**. At any tim
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="pk_test_pSlS9x7p9l5capgZrXLrwchb"
-    data-amount="20000"
+    data-amount="25000"
     data-name="Django REST framework"
     data-description="Professional"
     data-currency="usd"
@@ -190,7 +229,7 @@ Our professional and premium plans also include **priority support**. At any tim
 					<div class="chart last">
 						<div class="quantity">
 							<span class="dollar">$</span>
-							<span class="price">400</span>
+							<span class="price">500</span>
 							<span class="period">/month</span>
 						</div>
 						<div class="plan-name">Premium</div>
@@ -209,7 +248,7 @@ Our professional and premium plans also include **priority support**. At any tim
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="pk_test_pSlS9x7p9l5capgZrXLrwchb"
-    data-amount="40000"
+    data-amount="50000"
     data-name="Django REST framework"
     data-description="Premium"
     data-currency="usd"
@@ -222,7 +261,9 @@ Our professional and premium plans also include **priority support**. At any tim
 				</div>
 			</div>
 
-<div style="clear: both; padding-top: 70px"></div>
+<div style="clear: both; padding-top: 50px"></div>
+
+*Billing is monthly and you can cancel at any time.*
 
 Once you've signed up we'll contact you via email and arrange your ad placements on the site.
 
@@ -232,7 +273,20 @@ For further enquires please contact <a href=mailto:tom@tomchristie.com>tom@tomch
 
 ## Roadmap
 
-The roadmap below is an indication of some of the ongoing and future work we believe is important to REST framework.
+The roadmap below is a broad indication of just some of the ongoing and future work we believe is important to REST framework.
 
-* Support & documentation for alternative backends, including SQLalchemy.
-* Improved support for HTTP Caching, in particular support for conditional database lookups.
+* Support for alternative backends such as SQLAlchemy.
+* HTTP Caching API & support for conditional database lookups.
+* Performance improvements.
+* Improved project documentation, including versioned & internationalized docs.
+* Hypermedia support and client libraries.
+* API metric tools.
+* Debug & logging tools.
+* In depth documentation on advanced usage and best practices.
+* Third party GraphQL support.
+* Documentation & support for integration with realtime systems.
+* Improved third party package visibility.
+* Continuing triage & community support.
+* Organizational safeguards
+
+By taking out a paid plan you'll be directly contributing towards making these features happen.
