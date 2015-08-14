@@ -31,6 +31,7 @@ class NestedResourceRoot(APIView):
 class NestedResourceInstance(APIView):
     pass
 
+
 class CustomNameResourceInstance(APIView):
     def get_view_name(self):
         return "Foo"
@@ -89,7 +90,7 @@ class BreadcrumbTests(TestCase):
                 ('Resource Root', '/resource/'),
                 ('Foo', '/resource/customname')
             ]
-        )  
+        )
 
     def test_nested_resource_breadcrumbs(self):
         url = '/resource/123/'

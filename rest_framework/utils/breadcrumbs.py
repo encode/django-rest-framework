@@ -9,10 +9,7 @@ def get_breadcrumbs(url, request=None):
     tuple of (name, url).
     """
     from rest_framework.reverse import preserve_builtin_query_params
-    from rest_framework.settings import api_settings
     from rest_framework.views import APIView
-
-    view_name_func = api_settings.VIEW_NAME_FUNCTION
 
     def breadcrumbs_recursive(url, breadcrumbs_list, prefix, seen):
         """
