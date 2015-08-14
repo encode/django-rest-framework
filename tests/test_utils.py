@@ -31,10 +31,15 @@ class NestedResourceRoot(APIView):
 class NestedResourceInstance(APIView):
     pass
 
+class CustomNameResourceInstance(APIView):
+    def get_view_name(self):
+        return "Foo"
+
 
 urlpatterns = [
     url(r'^$', Root.as_view()),
     url(r'^resource/$', ResourceRoot.as_view()),
+    url(r'^resource/customname$', CustomNameResourceInstance.as_view()),
     url(r'^resource/(?P<key>[0-9]+)$', ResourceInstance.as_view()),
     url(r'^resource/(?P<key>[0-9]+)/$', NestedResourceRoot.as_view()),
     url(r'^resource/(?P<key>[0-9]+)/(?P<other>[A-Za-z]+)$', NestedResourceInstance.as_view()),
@@ -74,6 +79,17 @@ class BreadcrumbTests(TestCase):
                 ('Resource Instance', '/resource/123')
             ]
         )
+
+    def test_resource_instance_customname_breadcrumbs(self):
+        url = '/resource/customname'
+        self.assertEqual(
+            get_breadcrumbs(url),
+            [
+                ('Root', '/'),
+                ('Resource Root', '/resource/'),
+                ('Foo', '/resource/customname')
+            ]
+        )  
 
     def test_nested_resource_breadcrumbs(self):
         url = '/resource/123/'
