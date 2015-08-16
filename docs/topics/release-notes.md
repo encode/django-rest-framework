@@ -40,6 +40,15 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.4.x series
 
+### 2.4.7
+
+**Date**: [18 August 2015](https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%222.4.7+Release%22+)
+
+* Upgrade guardian support to 1.3
+
+
+### 2.4.6
+
 ### 2.4.5
 
 **Date**: 24 March 2015
