@@ -278,6 +278,7 @@ class Field(object):
         self.help_text = help_text
         self.style = {} if style is None else style
         self.allow_null = allow_null
+        self.is_bound = False
 
         if self.default_empty_html is not empty:
             if default is not empty:
@@ -302,6 +303,9 @@ class Field(object):
         Initializes the field name and parent for the field instance.
         Called when a field is added to the parent serializer instance.
         """
+
+        if self.is_bound:
+            return
 
         # In order to enforce a consistent style, we error if a redundant
         # 'source' argument has been used. For example:
@@ -330,6 +334,8 @@ class Field(object):
             self.source_attrs = []
         else:
             self.source_attrs = self.source.split('.')
+
+        self.is_bound = True
 
     # .validators is a lazily loaded property, that gets its default
     # value from `get_validators`.

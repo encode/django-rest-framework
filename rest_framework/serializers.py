@@ -493,6 +493,11 @@ class Serializer(BaseSerializer):
         return ReturnDict(ret, serializer=self)
 
 
+class ImmutableSerializer(Serializer):
+    def get_fields(self):
+        return self._declared_fields
+
+
 # There's some replication of `ListField` here,
 # but that's probably better than obfuscating the call hierarchy.
 
@@ -787,6 +792,12 @@ class ModelSerializer(Serializer):
     # views, to correctly handle the 'Location' response header for
     # "HTTP 201 Created" responses.
     url_field_name = api_settings.URL_FIELD_NAME
+    
+    @cached_property
+    def _depth(self):
+        return getattr(self.Meta, 'depth', 0)
+
+    # Default `create` and `update` behavior...
 
     # Default `create` and `update` behavior...
     def create(self, validated_data):
@@ -864,11 +875,7 @@ class ModelSerializer(Serializer):
 
     # Determine the fields to apply...
 
-    def get_fields(self):
-        """
-        Return the dict of field names -> field instances that should be
-        used for `self.fields` when instantiating the serializer.
-        """
+    def _validate_serializer_meta(self):
         assert hasattr(self, 'Meta'), (
             'Class {serializer_class} missing "Meta" attribute'.format(
                 serializer_class=self.__class__.__name__
@@ -884,14 +891,14 @@ class ModelSerializer(Serializer):
                 'Cannot use ModelSerializer with Abstract Models.'
             )
 
-        declared_fields = copy.deepcopy(self._declared_fields)
-        model = getattr(self.Meta, 'model')
-        depth = getattr(self.Meta, 'depth', 0)
-
+        depth = self._depth
         if depth is not None:
             assert depth >= 0, "'depth' may not be negative."
             assert depth <= 10, "'depth' may not be greater than 10."
 
+    def _get_serializer_fields_from_declared_fields(self, declared_fields, depth):
+        model = getattr(self.Meta, 'model')
+        
         # Retrieve metadata about fields & relationships on the model class.
         info = model_meta.get_field_info(model)
         field_names = self.get_field_names(declared_fields, info)
@@ -928,6 +935,16 @@ class ModelSerializer(Serializer):
 
         # Add in any hidden fields.
         fields.update(hidden_fields)
+        return fields
+
+    def get_fields(self):
+        """
+        Return the dict of field names -> field instances that should be
+        used for `self.fields` when instantiating the serializer.
+        """
+        self._validate_serializer_meta()
+        declared_fields = copy.deepcopy(self._declared_fields)
+        fields = self._get_serializer_fields_from_declared_fields(declared_fields, self._depth)
 
         return fields
 
@@ -1380,6 +1397,14 @@ class ModelSerializer(Serializer):
                 validators.append(validator)
 
         return validators
+
+
+class ImmutableModelSerializer(ModelSerializer):
+    def get_fields(self):
+        self._validate_serializer_meta()
+        fields = self._get_serializer_fields_from_declared_fields(self._declared_fields, self._depth)
+
+        return fields
 
 
 if hasattr(models, 'UUIDField'):
