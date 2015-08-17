@@ -792,7 +792,7 @@ class ModelSerializer(Serializer):
     # views, to correctly handle the 'Location' response header for
     # "HTTP 201 Created" responses.
     url_field_name = api_settings.URL_FIELD_NAME
-    
+
     @cached_property
     def _depth(self):
         return getattr(self.Meta, 'depth', 0)
@@ -898,7 +898,7 @@ class ModelSerializer(Serializer):
 
     def _get_serializer_fields_from_declared_fields(self, declared_fields, depth):
         model = getattr(self.Meta, 'model')
-        
+
         # Retrieve metadata about fields & relationships on the model class.
         info = model_meta.get_field_info(model)
         field_names = self.get_field_names(declared_fields, info)
