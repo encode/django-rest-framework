@@ -47,7 +47,7 @@ class FormatSuffixTests(TestCase):
 
         test_paths = [
             (URLTestPath('/test.api', (), {'format': 'api'}), True),
-            (URLTestPath('/test/.api', (), {'format': 'api'}), False),
+            (URLTestPath('/test/.api', (), {'format': 'api'}), True),
             (URLTestPath('/test.api/', (), {'format': 'api'}), True),
         ]
 
