@@ -774,6 +774,11 @@ Here's an example of how you might choose to implement multiple updates:
 
     class BookSerializer(serializers.Serializer):
         ...
+        id = serializers.IntegerField(
+            read_only=False,
+            required=False
+        )
+    
         class Meta:
             list_serializer_class = BookListSerializer
 
