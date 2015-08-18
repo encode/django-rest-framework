@@ -40,6 +40,13 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.4.x series
 
+### 2.4.8
+
+**Date**: 18 August 2015
+
+* Repackage 2.4.7 without pyc files.
+
+
 ### 2.4.7
 
 **Date**: [18 August 2015](https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%222.4.7+Release%22+)
