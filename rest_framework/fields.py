@@ -247,7 +247,7 @@ class Field(object):
         'required': _('This field is required.'),
         'null': _('This field may not be null.')
     }
-    default_validators = []
+    default_validators = ()
     default_empty_html = empty
     initial = None
 
