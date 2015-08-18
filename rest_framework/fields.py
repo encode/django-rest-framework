@@ -24,8 +24,8 @@ from rest_framework import ISO_8601
 from rest_framework.compat import (
     EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
     MinValueValidator, OrderedDict, URLValidator, duration_string,
-    parse_duration, unicode_repr, unicode_to_repr
-)
+    parse_duration, unicode_repr, unicode_to_repr,
+    lru_cache)
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, representation
@@ -240,6 +240,18 @@ MISSING_ERROR_MESSAGE = (
 )
 
 
+@lru_cache()
+def get_field_label(field_name):
+    return field_name.replace('_', ' ').capitalize()
+
+
+@lru_cache()
+def get_source_attributes(source):
+    if source == '*':
+        return ()
+    return tuple(source.split('.'))
+
+
 class Field(object):
     _creation_counter = 0
 
@@ -318,7 +330,7 @@ class Field(object):
 
         # `self.label` should default to being based on the field name.
         if self.label is None:
-            self.label = field_name.replace('_', ' ').capitalize()
+            self.label = get_field_label(field_name)
 
         # self.source should default to being the same as the field name.
         if self.source is None:
@@ -326,10 +338,7 @@ class Field(object):
 
         # self.source_attrs is a list of attributes that need to be looked up
         # when serializing the instance, or populating the validated data.
-        if self.source == '*':
-            self.source_attrs = []
-        else:
-            self.source_attrs = self.source.split('.')
+        self.source_attrs = get_source_attributes(self.source)
 
     # .validators is a lazily loaded property, that gets its default
     # value from `get_validators`.
