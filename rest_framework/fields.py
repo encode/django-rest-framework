@@ -1392,7 +1392,7 @@ class ListField(Field):
             message = self.error_messages['max_length'].format(max_length=max_length)
             self.validators.append(MaxLengthValidator(max_length, message=message))
         if min_length is not None:
-            message = self.error_messages['min_length'].format(min_length=self.min_length)
+            message = self.error_messages['min_length'].format(min_length=min_length)
             self.validators.append(MinLengthValidator(min_length, message=message))
 
     def get_value(self, dictionary):
