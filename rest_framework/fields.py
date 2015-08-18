@@ -23,9 +23,9 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import ISO_8601
 from rest_framework.compat import (
     EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, OrderedDict, URLValidator, duration_string,
-    parse_duration, unicode_repr, unicode_to_repr,
-    lru_cache)
+    MinValueValidator, OrderedDict, URLValidator, duration_string, lru_cache,
+    parse_duration, unicode_repr, unicode_to_repr
+)
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, representation
