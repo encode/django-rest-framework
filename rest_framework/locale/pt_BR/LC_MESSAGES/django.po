@@ -86,7 +86,7 @@ msgstr "As credenciais de autenticação não foram fornecidas."
 
 #: exceptions.py:99
 msgid "You do not have permission to perform this action."
-msgstr "Você não tem persmissao para executar essa ação."
+msgstr "Você não tem permissão para executar essa ação."
 
 #: exceptions.py:104 views.py:79
 msgid "Not found."
