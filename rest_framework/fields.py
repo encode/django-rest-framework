@@ -1375,15 +1375,25 @@ class ListField(Field):
     initial = []
     default_error_messages = {
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
-        'empty': _('This list may not be empty.')
+        'empty': _('This list may not be empty.'),
+        'min_length': _('Ensure this field has at least {min_length} elements.'),
+        'max_length': _('Ensure this field has no more than {max_length} elements.'),
     }
 
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         self.allow_empty = kwargs.pop('allow_empty', True)
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
+        max_length = kwargs.pop('max_length', None)
+        min_length = kwargs.pop('min_length', None)
         super(ListField, self).__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
+        if max_length is not None:
+            message = self.error_messages['max_length'].format(max_length=max_length)
+            self.validators.append(MaxLengthValidator(max_length, message=message))
+        if min_length is not None:
+            message = self.error_messages['min_length'].format(min_length=min_length)
+            self.validators.append(MinLengthValidator(min_length, message=message))
 
     def get_value(self, dictionary):
         # We override the default field access in order to support
