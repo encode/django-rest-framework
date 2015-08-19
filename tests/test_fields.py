@@ -1416,6 +1416,15 @@ class TestListField(FieldValues):
     ]
     field = serializers.ListField(child=serializers.IntegerField())
 
+    def test_no_source_on_child(self):
+        with pytest.raises(AssertionError) as exc_info:
+            serializers.ListField(child=serializers.IntegerField(source='other'))
+
+        assert str(exc_info.value) == (
+            "The `source` argument is not meaningful when applied to a `child=` field. "
+            "Remove `source=` from the field declaration."
+        )
+
 
 class TestEmptyListField(FieldValues):
     """
@@ -1460,6 +1469,15 @@ class TestDictField(FieldValues):
         ({'a': 1, 'b': '2', 3: 3}, {'a': '1', 'b': '2', '3': '3'}),
     ]
     field = serializers.DictField(child=serializers.CharField())
+
+    def test_no_source_on_child(self):
+        with pytest.raises(AssertionError) as exc_info:
+            serializers.DictField(child=serializers.CharField(source='other'))
+
+        assert str(exc_info.value) == (
+            "The `source` argument is not meaningful when applied to a `child=` field. "
+            "Remove `source=` from the field declaration."
+        )
 
 
 class TestUnvalidatedDictField(FieldValues):

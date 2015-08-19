@@ -1381,7 +1381,13 @@ class ListField(Field):
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         self.allow_empty = kwargs.pop('allow_empty', True)
+
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
+        assert self.child.source is None, (
+            "The `source` argument is not meaningful when applied to a `child=` field. "
+            "Remove `source=` from the field declaration."
+        )
+
         super(ListField, self).__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
 
@@ -1424,7 +1430,13 @@ class DictField(Field):
 
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
+
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
+        assert self.child.source is None, (
+            "The `source` argument is not meaningful when applied to a `child=` field. "
+            "Remove `source=` from the field declaration."
+        )
+
         super(DictField, self).__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
 
