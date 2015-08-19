@@ -163,6 +163,7 @@ For more advanced filtering requirements you can specify a `FilterSet` class tha
     import django_filters
     from myapp.models import Product
     from myapp.serializers import ProductSerializer
+    from rest_framework import filters
     from rest_framework import generics
 
     class ProductFilter(django_filters.FilterSet):
