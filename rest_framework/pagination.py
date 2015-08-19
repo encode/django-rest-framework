@@ -423,6 +423,11 @@ class LimitOffsetPagination(BasePagination):
             _divide_with_ceil(self.count - self.offset, self.limit) +
             _divide_with_ceil(self.offset, self.limit)
         )
+
+        # Final page must be at least first page
+        if not final:
+            final = 1
+
         if current > final:
             current = final
 
