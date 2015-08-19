@@ -1,3 +1,12 @@
+<script>
+// Imperfect, but easier to fit in with the existing docs build.
+// Hyperlinks should point directly to the "fund." subdomain, but this'll
+// handle the nav bar links without requiring any docs build changes for the moment.
+if (window.location.hostname == "www.django-rest-framework.org") {
+    window.location.replace("https://fund.django-rest-framework.org/topics/funding/");
+}
+</script>
+
 <style>
 .chart {
     background-color: #e3e3e3;
