@@ -737,7 +737,7 @@ class AdminRenderer(BrowsableAPIRenderer):
         if (paginator is not None and data is not None):
             try:
                 results = paginator.get_results(data)
-            except KeyError:
+            except (TypeError, KeyError):
                 results = data
         else:
             results = data
