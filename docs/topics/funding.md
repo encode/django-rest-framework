@@ -141,14 +141,14 @@ If you are using REST framework as an full-time employee, consider recommending 
 						<form class="signup" action="/signup/individual/" method="POST">
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-    data-key="pk_test_pSlS9x7p9l5capgZrXLrwchb"
+    data-key="{{ stripe_public }}"
     data-amount="1500"
     data-name="Django REST framework"
     data-description="Individual"
     data-currency="usd"
     data-allow-remember-me=false
     data-label='Sign up'
-    data-panel-label='Sign up - {{amount}}/mo'>
+    data-panel-label='Sign up - {% verbatim %}{{amount}}{% endverbatim %}/mo'>
   </script>
 </form>
 					</div>
@@ -188,14 +188,14 @@ Our professional and premium plans also include **priority support**. At any tim
 						<form class="signup" action="/signup/startup/" method="POST">
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-    data-key="pk_test_pSlS9x7p9l5capgZrXLrwchb"
+    data-key="{{ stripe_public }}"
     data-amount="5000"
     data-name="Django REST framework"
     data-description="Basic"
     data-currency="usd"
     data-allow-remember-me=false
     data-label='Sign up'
-    data-panel-label='Sign up - {{amount}}/mo'>
+    data-panel-label='Sign up - {% verbatim %}{{amount}}{% endverbatim %}/mo'>
   </script>
 </form>
 					</div>
@@ -222,14 +222,14 @@ Our professional and premium plans also include **priority support**. At any tim
 						<form class="signup" action="/signup/professional/" method="POST">
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-    data-key="pk_test_pSlS9x7p9l5capgZrXLrwchb"
+    data-key="{{ stripe_public }}"
     data-amount="25000"
     data-name="Django REST framework"
     data-description="Professional"
     data-currency="usd"
     data-allow-remember-me=false
     data-label='Sign up'
-    data-panel-label='Sign up - {{amount}}/mo'>
+    data-panel-label='Sign up - {% verbatim %}{{amount}}{% endverbatim %}/mo'>
   </script>
 </form>
 					</div>
@@ -256,14 +256,14 @@ Our professional and premium plans also include **priority support**. At any tim
 						<form class="signup" action="/signup/premium/" method="POST">
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-    data-key="pk_test_pSlS9x7p9l5capgZrXLrwchb"
+    data-key="{{ stripe_public }}"
     data-amount="50000"
     data-name="Django REST framework"
     data-description="Premium"
     data-currency="usd"
     data-allow-remember-me=false
     data-label='Sign up'
-    data-panel-label='Sign up - {{amount}}/mo'>
+    data-panel-label='Sign up - {% verbatim %}{{amount}}{% endverbatim %}/mo'>
   </script>
 </form>
 					</div>
