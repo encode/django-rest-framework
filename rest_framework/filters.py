@@ -7,12 +7,13 @@ from __future__ import unicode_literals
 import operator
 from functools import reduce
 
-from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import six
 
-from rest_framework.compat import django_filters, get_model_name, guardian
+from rest_framework.compat import (
+    distinct, django_filters, get_model_name, guardian
+)
 from rest_framework.settings import api_settings
 
 FilterSet = django_filters and django_filters.FilterSet or None
@@ -99,25 +100,27 @@ class SearchFilter(BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         search_fields = getattr(view, 'search_fields', None)
 
-        if not search_fields:
+        orm_lookups = [
+            self.construct_search(six.text_type(search_field))
+            for search_field in search_fields
+        ]
+        search_terms = self.get_search_terms(request)
+
+        if not search_fields or not search_terms:
             return queryset
 
-        original_queryset = queryset
-        orm_lookups = [self.construct_search(six.text_type(search_field))
-                       for search_field in search_fields]
+        base = queryset
+        for search_term in search_terms:
+            queries = [
+                models.Q(**{orm_lookup: search_term})
+                for orm_lookup in orm_lookups
+            ]
+            queryset = queryset.filter(reduce(operator.or_, queries))
 
-        for search_term in self.get_search_terms(request):
-            or_queries = [models.Q(**{orm_lookup: search_term})
-                          for orm_lookup in orm_lookups]
-            queryset = queryset.filter(reduce(operator.or_, or_queries))
-
-        if settings.DATABASES[queryset.db]["ENGINE"] == "django.db.backends.oracle":
-            # distinct analogue for Oracle users
-            queryset = original_queryset.filter(pk__in=set(queryset.values_list('pk', flat=True)))
-        else:
-            queryset = queryset.distinct()
-
-        return queryset
+        # Filtering against a many-to-many field requires us to
+        # call queryset.distinct() in order to avoid duplicate items
+        # in the resulting queryset.
+        return distinct(queryset, base)
 
 
 class OrderingFilter(BaseFilterBackend):

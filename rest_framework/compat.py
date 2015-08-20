@@ -50,6 +50,13 @@ def total_seconds(timedelta):
         return (timedelta.days * 86400.0) + float(timedelta.seconds) + (timedelta.microseconds / 1000000.0)
 
 
+def distinct(queryset, base):
+    if settings.DATABASES[queryset.db]["ENGINE"] == "django.db.backends.oracle":
+        # distinct analogue for Oracle users
+        return base.filter(pk__in=set(queryset.values_list('pk', flat=True)))
+    return queryset.distinct()
+
+
 # OrderedDict only available in Python 2.7.
 # This will always be the case in Django 1.7 and above, as these versions
 # no longer support Python 2.6.
