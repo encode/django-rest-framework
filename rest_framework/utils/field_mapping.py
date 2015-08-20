@@ -185,6 +185,13 @@ def get_field_kwargs(field_name, model_field):
             if validator is not validators.validate_slug
         ]
 
+    # IPAddressField do not need to include the 'validate_ipv46_address' argument,
+    if isinstance(model_field, models.GenericIPAddressField):
+        validator_kwarg = [
+            validator for validator in validator_kwarg
+            if validator is not validators.validate_ipv46_address
+        ]
+
     if getattr(model_field, 'unique', False):
         validator = UniqueValidator(queryset=model_field.model._default_manager)
         validator_kwarg.append(validator)
