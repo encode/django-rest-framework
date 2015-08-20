@@ -15,7 +15,7 @@
         {% elif select.end_option_group %}
           </optgroup>
         {% else %}
-          <option value="{{ select.value }}" {% if select.value == field.value %}selected{% endif %}>{{ select.display_text }}</option>
+          <option value="{{ select.value }}" {% if select.value in field.value %}selected{% endif %}>{{ select.display_text }}</option>
         {% endif %}
     {% empty %}
         <option>{{ no_items }}</option>
