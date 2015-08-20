@@ -423,6 +423,9 @@ class LimitOffsetPagination(BasePagination):
             _divide_with_ceil(self.count - self.offset, self.limit) +
             _divide_with_ceil(self.offset, self.limit)
         )
+        if final < 1:
+            final = 1
+
         if current > final:
             current = final
 
