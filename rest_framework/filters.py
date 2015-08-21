@@ -9,6 +9,7 @@ from functools import reduce
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
+from django.template import Context, Template, loader
 from django.utils import six
 
 from rest_framework.compat import (
@@ -36,6 +37,7 @@ class DjangoFilterBackend(BaseFilterBackend):
     A filter backend that uses django-filter.
     """
     default_filter_set = FilterSet
+    template = 'rest_framework/filters/django_filter.html'
 
     def __init__(self):
         assert django_filters, 'Using DjangoFilterBackend, but django-filter is not installed'
@@ -57,10 +59,32 @@ class DjangoFilterBackend(BaseFilterBackend):
             return filter_class
 
         if filter_fields:
+            from crispy_forms.helper import FormHelper
+            from crispy_forms.layout import Field, Fieldset, Layout, Submit
+
             class AutoFilterSet(self.default_filter_set):
                 class Meta:
                     model = queryset.model
                     fields = filter_fields
+
+                @property
+                def form(self):
+                    self._form = super(AutoFilterSet, self).form
+                    for field in self._form.fields.values():
+                        field.help_text = None
+                    layout_components = filter_fields + [
+                        Submit('', 'Apply', css_class='btn-default'),
+                    ]
+
+                    helper = FormHelper()
+                    helper.form_method = 'get'
+                    helper.form_action = '.'
+                    helper.template_pack = 'bootstrap3'
+
+                    helper.layout = Layout(*layout_components)
+
+                    self._form.helper = helper
+                    return self._form
 
             return AutoFilterSet
 
@@ -73,6 +97,15 @@ class DjangoFilterBackend(BaseFilterBackend):
             return filter_class(request.query_params, queryset=queryset).qs
 
         return queryset
+
+    def to_html(self, request, queryset, view):
+        cls = self.get_filter_class(view, queryset)
+        filter_instance = cls(request.query_params, queryset=queryset)
+        context = Context({
+            'filter': filter_instance
+        })
+        template = loader.get_template(self.template)
+        return template.render(context)
 
 
 class SearchFilter(BaseFilterBackend):
@@ -127,6 +160,7 @@ class OrderingFilter(BaseFilterBackend):
     # The URL query parameter used for the ordering.
     ordering_param = api_settings.ORDERING_PARAM
     ordering_fields = None
+    template = 'rest_framework/filters/ordering.html'
 
     def get_ordering(self, request, queryset, view):
         """
@@ -152,7 +186,7 @@ class OrderingFilter(BaseFilterBackend):
             return (ordering,)
         return ordering
 
-    def remove_invalid_fields(self, queryset, fields, view):
+    def get_valid_fields(self, queryset, view):
         valid_fields = getattr(view, 'ordering_fields', self.ordering_fields)
 
         if valid_fields is None:
@@ -172,6 +206,10 @@ class OrderingFilter(BaseFilterBackend):
             valid_fields = [field.name for field in queryset.model._meta.fields]
             valid_fields += queryset.query.aggregates.keys()
 
+        return valid_fields
+
+    def remove_invalid_fields(self, queryset, fields, view):
+        valid_fields = self.get_valid_fields(queryset, view)
         return [term for term in fields if term.lstrip('-') in valid_fields]
 
     def filter_queryset(self, request, queryset, view):
@@ -181,6 +219,18 @@ class OrderingFilter(BaseFilterBackend):
             return queryset.order_by(*ordering)
 
         return queryset
+
+    def get_template_context(self, request, queryset, view):
+        #default_tuple = self.get_default_ordering()
+        #default = None if default_tuple is None else default_tuple[0]
+        {
+            'options': self.get_valid_fields(queryset, view),
+        }
+
+    def to_html(self, request, queryset, view):
+        template = loader.get_template(self.template)
+        context = Context(self.get_template_context(request, queryset, view))
+        return template.render(context)
 
 
 class DjangoObjectPermissionsFilter(BaseFilterBackend):
