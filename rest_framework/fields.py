@@ -156,7 +156,7 @@ def flatten_choices_dict(choices):
     return ret
 
 
-def iter_options(grouped_choices, cutoff=1000, cutoff_text=None):
+def iter_options(grouped_choices, cutoff=None, cutoff_text=None):
     """
     Helper function for options and option groups in templates.
     """
