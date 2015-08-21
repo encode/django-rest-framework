@@ -1202,7 +1202,7 @@ class ChoiceField(Field):
     default_error_messages = {
         'invalid_choice': _('"{input}" is not a valid choice.')
     }
-    html_cutoff = 1000
+    html_cutoff = None
     html_cutoff_text = _('More than {count} items...')
 
     def __init__(self, choices, **kwargs):
