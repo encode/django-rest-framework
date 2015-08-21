@@ -156,7 +156,7 @@ def flatten_choices_dict(choices):
     return ret
 
 
-def iter_options(grouped_choices):
+def iter_options(grouped_choices, cutoff=1000, cutoff_text=None):
     """
     Helper function for options and option groups in templates.
     """
@@ -175,18 +175,32 @@ def iter_options(grouped_choices):
         start_option_group = False
         end_option_group = False
 
-        def __init__(self, value, display_text):
+        def __init__(self, value, display_text, disabled=False):
             self.value = value
             self.display_text = display_text
+            self.disabled = disabled
+
+    count = 0
 
     for key, value in grouped_choices.items():
+        if cutoff and count >= cutoff:
+            break
+
         if isinstance(value, dict):
             yield StartOptionGroup(label=key)
             for sub_key, sub_value in value.items():
+                if cutoff and count >= cutoff:
+                    break
                 yield Option(value=sub_key, display_text=sub_value)
+                count += 1
             yield EndOptionGroup()
         else:
             yield Option(value=key, display_text=value)
+            count += 1
+
+    if cutoff and count >= cutoff and cutoff_text:
+        cutoff_text = cutoff_text.format(count=cutoff)
+        yield Option(value='n/a', display_text=cutoff_text, disabled=True)
 
 
 class CreateOnlyDefault(object):
@@ -1188,10 +1202,14 @@ class ChoiceField(Field):
     default_error_messages = {
         'invalid_choice': _('"{input}" is not a valid choice.')
     }
+    html_cutoff = 1000
+    html_cutoff_text = _('More than {count} items...')
 
     def __init__(self, choices, **kwargs):
         self.grouped_choices = to_choices_dict(choices)
         self.choices = flatten_choices_dict(self.grouped_choices)
+        self.html_cutoff = kwargs.pop('html_cutoff', self.html_cutoff)
+        self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
 
         # Map the string representation of choices to the underlying value.
         # Allows us to deal with eg. integer choices while supporting either
@@ -1222,7 +1240,11 @@ class ChoiceField(Field):
         """
         Helper method for use with templates rendering select widgets.
         """
-        return iter_options(self.grouped_choices)
+        return iter_options(
+            self.grouped_choices,
+            cutoff=self.html_cutoff,
+            cutoff_text=self.html_cutoff_text
+        )
 
 
 class MultipleChoiceField(ChoiceField):

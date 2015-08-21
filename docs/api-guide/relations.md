@@ -16,7 +16,7 @@ Relational fields are used to represent model relationships.  They can be applie
 
 ---
 
-#### Inspecting automatically generated relationships.
+#### Inspecting relationships.
 
 When using the `ModelSerializer` class, serializer fields and relationships will be automatically generated for you. Inspecting these automatically generated fields can be a useful tool for determining how to customize the relationship style.
 
@@ -441,6 +441,25 @@ To provide customized representations for such inputs, override `display_value()
     class TrackPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
         def display_value(self, instance):
             return 'Track: %s' % (instance.title)
+
+## Select field cutoffs
+
+When rendered in the browsable API relational fields will default to only displaying a maximum of 1000 selectable items. If more items are present then a disabled option with "More than 1000 items…" will be displayed.
+
+This behavior is intended to prevent a template from being unable to render in an acceptable timespan due to a very large number of relationships being displayed.
+
+There are two keyword arguments you can use to control this behavior:
+
+- `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Set to `None` to disable any limiting. Defaults to `1000`.
+- `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
+
+In cases where the cutoff is being enforced you may want to instead use a plain input field in the HTML form. You can do so using the `style` keyword argument. For example:
+
+    assigned_to = serializers.SlugRelatedField(
+       queryset=User.objects.all(),
+       slug field='username',
+       style={'base_template': 'input.html'}
+    )
 
 ## Reverse relations
 
