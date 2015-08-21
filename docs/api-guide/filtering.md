@@ -260,6 +260,7 @@ The search behavior may be restricted by prepending various characters to the `s
 * '^' Starts-with search.
 * '=' Exact matches.
 * '@' Full-text search.  (Currently only supported Django's MySQL backend.)
+* '$' Regex search.
 
 For example:
 

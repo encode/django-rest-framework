@@ -407,6 +407,23 @@ class SearchFilterTests(TestCase):
             ]
         )
 
+    def test_regexp_search(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('$title', '$text')
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'z{2} ^b'})
+        response = view(request)
+        self.assertEqual(
+            response.data,
+            [
+                {'id': 2, 'title': 'zz', 'text': 'bcd'}
+            ]
+        )
+
     def test_search_with_nonstandard_search_param(self):
         with override_settings(REST_FRAMEWORK={'SEARCH_PARAM': 'query'}):
             reload_module(filters)
