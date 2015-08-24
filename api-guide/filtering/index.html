@@ -556,6 +556,7 @@ class UserListView(generics.ListAPIView):
 <pre><code>import django_filters
 from myapp.models import Product
 from myapp.serializers import ProductSerializer
+from rest_framework import filters
 from rest_framework import generics
 
 class ProductFilter(django_filters.FilterSet):
@@ -637,6 +638,7 @@ class ProductFilter(django_filters.FilterSet):
 <li>'^' Starts-with search.</li>
 <li>'=' Exact matches.</li>
 <li>'@' Full-text search.  (Currently only supported Django's MySQL backend.)</li>
+<li>'$' Regex search.</li>
 </ul>
 <p>For example:</p>
 <pre><code>search_fields = ('=username', '=email')

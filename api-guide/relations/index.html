@@ -338,7 +338,7 @@
 
                   
                     <li>
-                      <a href="#inspecting-automatically-generated-relationships">Inspecting automatically generated relationships.</a>
+                      <a href="#inspecting-relationships">Inspecting relationships.</a>
                     </li>
                   
                 
@@ -418,6 +418,10 @@
                     </li>
                   
                     <li>
+                      <a href="#select-field-cutoffs">Select field cutoffs</a>
+                    </li>
+                  
+                    <li>
                       <a href="#reverse-relations">Reverse relations</a>
                     </li>
                   
@@ -467,7 +471,7 @@ Good programmers worry about data structures and their relationships.</p>
 <hr />
 <p><strong>Note:</strong> The relational fields are declared in <code>relations.py</code>, but by convention you should import them from the <code>serializers</code> module, using <code>from rest_framework import serializers</code> and refer to fields as <code>serializers.&lt;FieldName&gt;</code>.</p>
 <hr />
-<h4 id="inspecting-automatically-generated-relationships">Inspecting automatically generated relationships.</h4>
+<h4 id="inspecting-relationships">Inspecting relationships.</h4>
 <p>When using the <code>ModelSerializer</code> class, serializer fields and relationships will be automatically generated for you. Inspecting these automatically generated fields can be a useful tool for determining how to customize the relationship style.</p>
 <p>To do so, open the Django shell, using <code>python manage.py shell</code>, then import the serializer class, instantiate it, and print the object representation…</p>
 <pre><code>&gt;&gt;&gt; from myapp.serializers import AccountSerializer
@@ -816,6 +820,21 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
 <pre><code>class TrackPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
     def display_value(self, instance):
         return 'Track: %s' % (instance.title)
+</code></pre>
+<h2 id="select-field-cutoffs">Select field cutoffs</h2>
+<p>When rendered in the browsable API relational fields will default to only displaying a maximum of 1000 selectable items. If more items are present then a disabled option with "More than 1000 items…" will be displayed.</p>
+<p>This behavior is intended to prevent a template from being unable to render in an acceptable timespan due to a very large number of relationships being displayed.</p>
+<p>There are two keyword arguments you can use to control this behavior:</p>
+<ul>
+<li><code>html_cutoff</code> - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Set to <code>None</code> to disable any limiting. Defaults to <code>1000</code>.</li>
+<li><code>html_cutoff_text</code> - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to <code>"More than {count} items…"</code></li>
+</ul>
+<p>In cases where the cutoff is being enforced you may want to instead use a plain input field in the HTML form. You can do so using the <code>style</code> keyword argument. For example:</p>
+<pre><code>assigned_to = serializers.SlugRelatedField(
+   queryset=User.objects.all(),
+   slug field='username',
+   style={'base_template': 'input.html'}
+)
 </code></pre>
 <h2 id="reverse-relations">Reverse relations</h2>
 <p>Note that reverse relationships are not automatically included by the <code>ModelSerializer</code> and <code>HyperlinkedModelSerializer</code> classes.  To include a reverse relationship, you must explicitly add it to the fields list.  For example:</p>

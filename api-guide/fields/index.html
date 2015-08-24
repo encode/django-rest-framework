@@ -613,7 +613,7 @@ color_channel = serializers.ChoiceField(
     style = {'base_template': 'radio.html'}
 }
 </code></pre>
-<p><strong>Note</strong>: The <code>style</code> argument replaces the old-style version 2.x <code>widget</code> keyword argument. Because REST framework 3 now uses templated HTML form generation, the <code>widget</code> option that was used to support Django built-in widgets can no longer be supported. Version 3.1 is planned to include public API support for customizing HTML form generation.</p>
+<p><strong>Note</strong>: The <code>style</code> argument replaces the old-style version 2.x <code>widget</code> keyword argument. Because REST framework 3 now uses templated HTML form generation, the <code>widget</code> option that was used to support Django built-in widgets can no longer be supported. Version 3.3 is planned to include public API support for customizing HTML form generation.</p>
 <hr />
 <h1 id="boolean-fields">Boolean fields</h1>
 <h2 id="booleanfield">BooleanField</h2>
@@ -787,6 +787,8 @@ The representation is a string following this format <code>'[DD] [HH:[MM:]]ss[.u
 <ul>
 <li><code>choices</code> - A list of valid values, or a list of <code>(key, display_name)</code> tuples.</li>
 <li><code>allow_blank</code> - If set to <code>True</code> then the empty string should be considered a valid value. If set to <code>False</code> then the empty string is considered invalid and will raise a validation error. Defaults to <code>False</code>.</li>
+<li><code>html_cutoff</code> - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Can be used to ensure that automatically generated ChoiceFields with very large possible selections do not prevent a template from rendering. Defaults to <code>None</code>.</li>
+<li><code>html_cutoff_text</code> - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to <code>"More than {count} items…"</code></li>
 </ul>
 <p>Both the <code>allow_blank</code> and <code>allow_null</code> are valid options on <code>ChoiceField</code>, although it is highly recommended that you only use one and not both. <code>allow_blank</code> should be preferred for textual choices, and <code>allow_null</code> should be preferred for numeric or other non-textual choices.</p>
 <h2 id="multiplechoicefield">MultipleChoiceField</h2>
@@ -795,6 +797,8 @@ The representation is a string following this format <code>'[DD] [HH:[MM:]]ss[.u
 <ul>
 <li><code>choices</code> - A list of valid values, or a list of <code>(key, display_name)</code> tuples.</li>
 <li><code>allow_blank</code> - If set to <code>True</code> then the empty string should be considered a valid value. If set to <code>False</code> then the empty string is considered invalid and will raise a validation error. Defaults to <code>False</code>.</li>
+<li><code>html_cutoff</code> - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Can be used to ensure that automatically generated ChoiceFields with very large possible selections do not prevent a template from rendering. Defaults to <code>None</code>.</li>
+<li><code>html_cutoff_text</code> - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to <code>"More than {count} items…"</code></li>
 </ul>
 <p>As with <code>ChoiceField</code>, both the <code>allow_blank</code> and <code>allow_null</code> options are valid, although it is highly recommended that you only use one and not both. <code>allow_blank</code> should be preferred for textual choices, and <code>allow_null</code> should be preferred for numeric or other non-textual choices.</p>
 <hr />
