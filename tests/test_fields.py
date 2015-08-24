@@ -253,13 +253,29 @@ class TestBooleanHTMLInput:
 
 
 class TestHTMLInput:
-    def test_empty_html_charfield(self):
+    def test_empty_html_charfield_with_default(self):
         class TestSerializer(serializers.Serializer):
             message = serializers.CharField(default='happy')
 
         serializer = TestSerializer(data=QueryDict(''))
         assert serializer.is_valid()
         assert serializer.validated_data == {'message': 'happy'}
+
+    def test_empty_html_charfield_without_default(self):
+        class TestSerializer(serializers.Serializer):
+            message = serializers.CharField(allow_blank=True)
+
+        serializer = TestSerializer(data=QueryDict('message='))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'message': ''}
+
+    def test_empty_html_charfield_without_default_not_required(self):
+        class TestSerializer(serializers.Serializer):
+            message = serializers.CharField(allow_blank=True, required=False)
+
+        serializer = TestSerializer(data=QueryDict('message='))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'message': ''}
 
     def test_empty_html_integerfield(self):
         class TestSerializer(serializers.Serializer):
