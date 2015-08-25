@@ -102,14 +102,15 @@ class SearchFilter(BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         search_fields = getattr(view, 'search_fields', None)
 
-        orm_lookups = [
-            self.construct_search(six.text_type(search_field))
-            for search_field in search_fields
-        ]
         search_terms = self.get_search_terms(request)
 
         if not search_fields or not search_terms:
             return queryset
+
+        orm_lookups = [
+            self.construct_search(six.text_type(search_field))
+            for search_field in search_fields
+        ]
 
         base = queryset
         for search_term in search_terms:
