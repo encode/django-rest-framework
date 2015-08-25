@@ -282,20 +282,26 @@ For further enquires please contact <a href=mailto:tom@tomchristie.com>tom@tomch
 
 ## Roadmap
 
+Although we're incredibly proud of REST framework in its current state we believe there is still huge scope for improvement. What we're aiming for here is a *highly polished, rock solid product*. This needs to backed up with impeccable documentation and a great third party ecosystem.
+
 The roadmap below is a broad indication of just some of the ongoing and future work we believe is important to REST framework.
 
+* Increasing our "bus factor" through documented organizational process & safeguards.
+* More time towards testing and hardening releases, with only gradual, well-documented deprecations.
+* A formal policy on security backports for non-current releases.
+* Continuing triage & community support.
+* Improved project documentation, including versioned & internationalized docs.
+* Improved third party package visibility.
+* Further work on the the admin API, making it suitable as a customizable end-user facing application.
 * Support for alternative backends such as SQLAlchemy.
 * HTTP Caching API & support for conditional database lookups.
-* Performance improvements.
-* Improved project documentation, including versioned & internationalized docs.
+* Benchmarking and performance improvements.
+* In depth documentation on advanced usage and best practices.
+* Documentation & support for integration with realtime systems.
 * Hypermedia support and client libraries.
+* Support for JSON schema as endpoints or `OPTIONS` responses.
 * API metric tools.
 * Debug & logging tools.
-* In depth documentation on advanced usage and best practices.
 * Third party GraphQL support.
-* Documentation & support for integration with realtime systems.
-* Improved third party package visibility.
-* Increasing our "bus factor" through documented organizational process & safeguards.
-* Continuing triage & community support.
 
 By taking out a paid plan you'll be directly contributing towards making these features happen.
