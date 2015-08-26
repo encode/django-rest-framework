@@ -102,8 +102,8 @@ With *typical corporate fundings of just £100-£1000 per organization* we succe
 * The comprehensive 3.0 serializer redesign.
 * Substantial improvements to the Browsable API.
 * The admin interface.
-* A new pagination API including new offset/limit and cursor pagination implementations, plus on-page controls.
-* A versioning API, including URL based and header based versioning schemes.
+* A new pagination API including offset/limit and cursor pagination implementations, plus on-page controls.
+* A versioning API, including URL-based and header-based versioning schemes.
 * Support for customizable exception handling.
 * Support for Django's PostgreSQL HStoreField, ArrayField and JSONField.
 * Templated HTML form support, including HTML forms with nested list and objects.
