@@ -100,15 +100,16 @@ Our successful Kickstarter campaign demonstrates the cost-reward ratio of shared
 With *typical corporate fundings of just £100-£1000 per organization* we successfully delivered:
 
 * The comprehensive 3.0 serializer redesign.
-* Pagination API including new offset/limit and cursor pagination implementations, plus  on-page controls.
-* The versioning API, including URL based and header based versioning schemes.
-* Customizable exception handling.
-* The metadata APIs for handling `OPTIONS` requests.
+* Substantial improvements to the Browsable API.
+* The admin interface.
+* A new pagination API including new offset/limit and cursor pagination implementations, plus on-page controls.
+* A versioning API, including URL based and header based versioning schemes.
+* Support for customizable exception handling.
+* Support for Django's PostgreSQL HStoreField, ArrayField and JSONField.
 * Templated HTML form support, including HTML forms with nested list and objects.
 * Internationalization support for API responses, currently with 27 languages.
-* Improvements to the browsable API.
-* The admin interface.
-* Support for Django's PostgreSQL HStoreField, ArrayField and JSONField.
+* The metadata APIs for handling `OPTIONS` requests and schema endpoints.
+* Numerous minor improvements and better quality throughout the codebase.
 * Ongoing triage and community support, closing over 1600 tickets.
 
 This incredible level of return on investment is *only possible through collaboratively funded models*, which is why we believe that supporting our paid plans is in everyone's best interest.
