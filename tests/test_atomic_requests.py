@@ -5,9 +5,9 @@ from django.db import connection, connections, transaction
 from django.http import Http404
 from django.test import TestCase, TransactionTestCase
 from django.utils.decorators import method_decorator
-from django.utils.unittest import skipUnless
 
 from rest_framework import status
+from rest_framework.compat import unittest
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
@@ -35,7 +35,7 @@ class APIExceptionView(APIView):
         raise APIException
 
 
-@skipUnless(connection.features.uses_savepoints,
+@unittest.skipUnless(connection.features.uses_savepoints,
             "'atomic' requires transactions and savepoints.")
 class DBTransactionTests(TestCase):
     def setUp(self):
@@ -55,7 +55,7 @@ class DBTransactionTests(TestCase):
         assert BasicModel.objects.count() == 1
 
 
-@skipUnless(connection.features.uses_savepoints,
+@unittest.skipUnless(connection.features.uses_savepoints,
             "'atomic' requires transactions and savepoints.")
 class DBTransactionErrorTests(TestCase):
     def setUp(self):
@@ -83,7 +83,7 @@ class DBTransactionErrorTests(TestCase):
         assert BasicModel.objects.count() == 1
 
 
-@skipUnless(connection.features.uses_savepoints,
+@unittest.skipUnless(connection.features.uses_savepoints,
             "'atomic' requires transactions and savepoints.")
 class DBTransactionAPIExceptionTests(TestCase):
     def setUp(self):
@@ -113,7 +113,7 @@ class DBTransactionAPIExceptionTests(TestCase):
         assert BasicModel.objects.count() == 0
 
 
-@skipUnless(connection.features.uses_savepoints,
+@unittest.skipUnless(connection.features.uses_savepoints,
             "'atomic' requires transactions and savepoints.")
 class NonAtomicDBTransactionAPIExceptionTests(TransactionTestCase):
     @property

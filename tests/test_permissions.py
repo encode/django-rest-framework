@@ -6,13 +6,12 @@ from django.contrib.auth.models import Group, Permission, User
 from django.core.urlresolvers import ResolverMatch
 from django.db import models
 from django.test import TestCase
-from django.utils import unittest
 
 from rest_framework import (
     HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
     status
 )
-from rest_framework.compat import get_model_name, guardian
+from rest_framework.compat import get_model_name, guardian, unittest
 from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
