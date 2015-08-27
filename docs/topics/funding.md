@@ -293,8 +293,10 @@ The roadmap below is a broad indication of just some of the ongoing and future w
 * Continuing triage & community support.
 * Improved project documentation, including versioned & internationalized docs.
 * Improved third party package visibility.
-* Further work on the the admin API, making it suitable as a customizable end-user facing application.
+* Refining the admin interface, ensuring it has a fully customizable API and making it suitable as end-user facing application.
+* Cleaning up internal complexities including the `BrowsableAPIRenderer` and `Request` object.
 * Support for alternative backends such as SQLAlchemy.
+* Support for non-database backed services.
 * HTTP Caching API & support for conditional database lookups.
 * Benchmarking and performance improvements.
 * In depth documentation on advanced usage and best practices.
