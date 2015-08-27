@@ -321,6 +321,21 @@ class TestRegularFieldMappings(TestCase):
 
         ExampleSerializer()
 
+    def test_fields_and_exclude_behavior(self):
+        class ImplicitFieldsSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+
+        class ExplicitFieldsSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+                fields = '__all__'
+
+        implicit = ImplicitFieldsSerializer()
+        explicit = ExplicitFieldsSerializer()
+
+        assert implicit.data == explicit.data
+
 
 @pytest.mark.skipif(django.VERSION < (1, 8),
                     reason='DurationField is only available for django1.8+')
