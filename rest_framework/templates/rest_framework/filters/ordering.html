@@ -1,10 +1,13 @@
+{% load rest_framework %}
 <h2>Ordering</h2>
 <div class="list-group">
-    <a href="." class="list-group-item active">
-    Most recently created
-    <span class="glyphicon glyphicon-ok" style="float: right" aria-hidden="true"></span>
-    </a>
-    <a href="." class="list-group-item">Least recently created</a>
-    <a href="." class="list-group-item">Username ascending</a>
-    <a href="." class="list-group-item">Username descending</a>
+    {% for key, label in options %}
+        {% if key == current %}
+            <a href="{% add_query_param request param key %}" class="list-group-item active">
+                <span class="glyphicon glyphicon-ok" style="float: right" aria-hidden="true"></span> {{ label }}
+            </a>
+        {% else %}
+            <a href="{% add_query_param request param key %}" class="list-group-item">{{ label }}</a>
+        {% endif %}
+    {% endfor %}
 </div>

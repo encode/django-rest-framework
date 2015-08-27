@@ -80,6 +80,14 @@ try:
 except ImportError:
     django_filters = None
 
+
+# django-crispy-forms is optional
+try:
+    import crispy_forms
+except ImportError:
+    crispy_forms = None
+
+
 if django.VERSION >= (1, 6):
     def clean_manytomany_helptext(text):
         return text
