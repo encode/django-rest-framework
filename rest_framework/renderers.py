@@ -601,8 +601,18 @@ class BrowsableAPIRenderer(BaseRenderer):
     def get_breadcrumbs(self, request):
         return get_breadcrumbs(request.path, request)
 
-    def get_filter_form(self, view, request):
+    def get_filter_form(self, data, view, request):
         if not hasattr(view, 'get_queryset') or not hasattr(view, 'filter_backends'):
+            return
+
+        # Infer if this is a list view or not.
+        paginator = getattr(view, 'paginator', None)
+        if (paginator is not None and data is not None):
+            try:
+                paginator.get_results(data)
+            except (TypeError, KeyError):
+                return
+        elif not isinstance(data, list):
             return
 
         queryset = view.get_queryset()
@@ -667,7 +677,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             'delete_form': self.get_rendered_html_form(data, view, 'DELETE', request),
             'options_form': self.get_rendered_html_form(data, view, 'OPTIONS', request),
 
-            'filter_form': self.get_filter_form(view, request),
+            'filter_form': self.get_filter_form(data, view, request),
 
             'raw_data_put_form': raw_data_put_form,
             'raw_data_post_form': raw_data_post_form,
