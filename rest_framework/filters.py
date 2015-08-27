@@ -10,7 +10,7 @@ from functools import reduce
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
-from django.template import Context, Template, loader
+from django.template import Context, loader
 from django.utils import six
 
 from rest_framework.compat import (
@@ -18,12 +18,11 @@ from rest_framework.compat import (
 )
 from rest_framework.settings import api_settings
 
-
 if 'crispy_forms' in settings.INSTALLED_APPS and crispy_forms and django_filters:
     # If django-crispy-forms is installed, use it to get a bootstrap3 rendering
     # of the DjangoFilterBackend controls when displayed as HTML.
     from crispy_forms.helper import FormHelper
-    from crispy_forms.layout import Field, Fieldset, Layout, Submit
+    from crispy_forms.layout import Layout, Submit
 
     class FilterSet(django_filters.FilterSet):
         def __init__(self, *args, **kwargs):
@@ -238,7 +237,7 @@ class OrderingFilter(BaseFilterBackend):
         elif valid_fields == '__all__':
             # View explicitly allows filtering on any model field
             valid_fields = [
-                (field.name, field.label)
+                (field.name, getattr(field, 'label', field.name.title()))
                 for field in queryset.model._meta.fields
             ]
             valid_fields += [
