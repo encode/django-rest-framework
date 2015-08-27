@@ -40,6 +40,18 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.2.x series
 
+### 3.2.3
+
+**Date**: [24th August 2015][3.2.3-milestone].
+
+* Added `html_cutoff` and `html_cutoff_text` for limiting select dropdowns. ([#3313][gh3313])
+* Added regex style to `SearchFilter`. ([#3316][gh3316])
+* Resolve issues with setting blank HTML fields. ([#3318][gh3318]) ([#3321][gh3321])
+* Correctly display existing 'select multiple' values in browsable API forms. ([#3290][gh3290])
+* Resolve duplicated validation message for `IPAddressField`. ([#3249[gh3249]) ([#3250][gh3250])
+* Fix to ensure admin renderer continues to work when pagination is disabled. ([#3275][gh3275])
+* Resolve error with `LimitOffsetPagination` when count=0, offset=0. ([#3303][gh3303])
+
 ### 3.2.2
 
 **Date**: [13th August 2015][3.2.2-milestone].
@@ -285,7 +297,8 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.1.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.3+Release%22
 [3.2.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.0+Release%22
 [3.2.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.1+Release%22
-[3.2.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.1+Release%22
+[3.2.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.2+Release%22
+[3.2.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.3+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -487,3 +500,19 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh3261]: https://github.com/tomchristie/django-rest-framework/issues/3261
 [gh3260]: https://github.com/tomchristie/django-rest-framework/issues/3260
 [gh3241]: https://github.com/tomchristie/django-rest-framework/issues/3241
+
+<!-- 3.2.3 -->
+[gh3249]: https://github.com/tomchristie/django-rest-framework/issues/3249
+[gh3250]: https://github.com/tomchristie/django-rest-framework/issues/3250
+[gh3275]: https://github.com/tomchristie/django-rest-framework/issues/3275
+[gh3288]: https://github.com/tomchristie/django-rest-framework/issues/3288
+[gh3290]: https://github.com/tomchristie/django-rest-framework/issues/3290
+[gh3303]: https://github.com/tomchristie/django-rest-framework/issues/3303
+[gh3313]: https://github.com/tomchristie/django-rest-framework/issues/3313
+[gh3316]: https://github.com/tomchristie/django-rest-framework/issues/3316
+[gh3318]: https://github.com/tomchristie/django-rest-framework/issues/3318
+[gh3321]: https://github.com/tomchristie/django-rest-framework/issues/3321
+
+
+
+

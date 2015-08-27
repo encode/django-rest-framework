@@ -15,7 +15,7 @@ The pagination API can support either:
 
 The built-in styles currently all use links included as part of the content of the response. This style is more accessible when using the browsable API.
 
-Pagination is only performed automatically if you're using the generic views or viewsets. If you're using a regular `APIView`, you'll need to call into the pagination API yourself to ensure you return a paginated response. See the source code for the `mixins.ListMixin` and `generics.GenericAPIView` classes for an example.
+Pagination is only performed automatically if you're using the generic views or viewsets. If you're using a regular `APIView`, you'll need to call into the pagination API yourself to ensure you return a paginated response. See the source code for the `mixins.ListModelMixin` and `generics.GenericAPIView` classes for an example.
 
 ## Setting the pagination style
 

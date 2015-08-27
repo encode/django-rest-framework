@@ -127,20 +127,23 @@ class SearchFilter(BaseFilterBackend):
             return "%s__iexact" % field_name[1:]
         elif field_name.startswith('@'):
             return "%s__search" % field_name[1:]
+        if field_name.startswith('$'):
+            return "%s__iregex" % field_name[1:]
         else:
             return "%s__icontains" % field_name
 
     def filter_queryset(self, request, queryset, view):
         search_fields = getattr(view, 'search_fields', None)
 
-        orm_lookups = [
-            self.construct_search(six.text_type(search_field))
-            for search_field in search_fields
-        ]
         search_terms = self.get_search_terms(request)
 
         if not search_fields or not search_terms:
             return queryset
+
+        orm_lookups = [
+            self.construct_search(six.text_type(search_field))
+            for search_field in search_fields
+        ]
 
         base = queryset
         for search_term in search_terms:
