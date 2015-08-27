@@ -82,6 +82,14 @@ except ImportError:
     postgres_fields = None
 
 
+# Apps only exists from 1.7 onwards.
+try:
+    from django.apps import apps
+    get_model = apps.get_model
+except ImportError:
+    from django.db.models import get_model
+
+
 # django-filter is optional
 try:
     import django_filters
