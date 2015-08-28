@@ -432,6 +432,7 @@ Declaring a `ModelSerializer` looks like this:
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
+            fields = ('id', 'account_name', 'users', 'created')
 
 By default, all the model fields on the class will be mapped to a corresponding serializer fields.
 
@@ -453,7 +454,7 @@ To do so, open the Django shell, using `python manage.py shell`, then import the
 
 ## Specifying which fields to include
 
-If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`.
+If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`. It is strongly recommended that you explicitly set all fields that should be serialized using the `fields` attribute. This will make it less likely to result in unintentionally exposing data when your models change.
 
 For example:
 
@@ -462,7 +463,27 @@ For example:
             model = Account
             fields = ('id', 'account_name', 'users', 'created')
 
-The names in the `fields` option will normally map to model fields on the model class.
+You can also set the `fields` attribute to the special value `'__all__'` to indicate that all fields in the model should be used.
+
+For example:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            fields = '__all__'
+
+You can set the `exclude` attribute of the to a list of fields to be excluded from the serializer.
+
+For example:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            exclude = ('users',)
+
+In the example above, if the `Account` model had 3 fields `account_name`, `users`, and `created`, this will result in the fields `account_name` and `created` to be serialized.
+
+The names in the `fields` and `exclude` attributes will normally map to model fields on the model class.
 
 Alternatively names in the `fields` options can map to properties or methods which take no arguments that exist on the model class.
 
