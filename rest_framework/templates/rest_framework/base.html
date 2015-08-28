@@ -1,5 +1,6 @@
 {% load staticfiles %}
 {% load rest_framework %}
+{% load i18n %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -112,7 +113,7 @@
         {% if filter_form %}
             <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
                 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
-                Filters
+                {% trans "Filters" %}
             </button>
         {% endif %}
 

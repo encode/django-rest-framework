@@ -12,6 +12,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.template import Context, loader
 from django.utils import six
+from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import (
     crispy_forms, distinct, django_filters, get_model_name, guardian
@@ -31,7 +32,7 @@ if 'crispy_forms' in settings.INSTALLED_APPS and crispy_forms and django_filters
                 field.help_text = None
 
             layout_components = list(self.form.fields.keys()) + [
-                Submit('', 'Submit', css_class='btn-default'),
+                Submit('', _('Submit'), css_class='btn-default'),
             ]
 
             helper = FormHelper()

@@ -1,5 +1,6 @@
 {% load rest_framework %}
-<h2>Ordering</h2>
+{% load i18n %}
+<h2>{% trans "Ordering" %}</h2>
 <div class="list-group">
     {% for key, label in options %}
         {% if key == current %}
