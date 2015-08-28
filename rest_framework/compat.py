@@ -72,7 +72,7 @@ try:
     import unittest
     unittest.skipUnless
 except (ImportError, AttributeError):
-    from django.test.utils import unittest
+    from django.utils import unittest
 
 
 # contrib.postgres only supported from 1.8 onwards.
