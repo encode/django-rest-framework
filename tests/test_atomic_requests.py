@@ -35,8 +35,10 @@ class APIExceptionView(APIView):
         raise APIException
 
 
-@unittest.skipUnless(connection.features.uses_savepoints,
-            "'atomic' requires transactions and savepoints.")
+@unittest.skipUnless(
+    connection.features.uses_savepoints,
+    "'atomic' requires transactions and savepoints."
+)
 class DBTransactionTests(TestCase):
     def setUp(self):
         self.view = BasicView.as_view()
@@ -55,8 +57,10 @@ class DBTransactionTests(TestCase):
         assert BasicModel.objects.count() == 1
 
 
-@unittest.skipUnless(connection.features.uses_savepoints,
-            "'atomic' requires transactions and savepoints.")
+@unittest.skipUnless(
+    connection.features.uses_savepoints,
+    "'atomic' requires transactions and savepoints."
+)
 class DBTransactionErrorTests(TestCase):
     def setUp(self):
         self.view = ErrorView.as_view()
@@ -83,8 +87,10 @@ class DBTransactionErrorTests(TestCase):
         assert BasicModel.objects.count() == 1
 
 
-@unittest.skipUnless(connection.features.uses_savepoints,
-            "'atomic' requires transactions and savepoints.")
+@unittest.skipUnless(
+    connection.features.uses_savepoints,
+    "'atomic' requires transactions and savepoints."
+)
 class DBTransactionAPIExceptionTests(TestCase):
     def setUp(self):
         self.view = APIExceptionView.as_view()
@@ -113,8 +119,10 @@ class DBTransactionAPIExceptionTests(TestCase):
         assert BasicModel.objects.count() == 0
 
 
-@unittest.skipUnless(connection.features.uses_savepoints,
-            "'atomic' requires transactions and savepoints.")
+@unittest.skipUnless(
+    connection.features.uses_savepoints,
+    "'atomic' requires transactions and savepoints."
+)
 class NonAtomicDBTransactionAPIExceptionTests(TransactionTestCase):
     @property
     def urls(self):
