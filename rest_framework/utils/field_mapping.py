@@ -233,6 +233,9 @@ def get_relation_kwargs(field_name, relation_info):
             # No further keyword arguments are valid.
             return kwargs
 
+        # Currently required for 1.9 master behavior,
+        # may be able to remove this with 1.9 alpha.
+        # See https://code.djangoproject.com/ticket/25320
         null = model_field.null and not to_many
 
         if model_field.has_default() or model_field.blank or null:
