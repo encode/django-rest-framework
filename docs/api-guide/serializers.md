@@ -453,14 +453,31 @@ To do so, open the Django shell, using `python manage.py shell`, then import the
 
 ## Specifying which fields to include
 
-If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`.
+It is strongly recommended that you explicitly set all fields that should be edited in the serializer using the `fields` attribute. Failure to do so can easily lead to security problems when a serializer unexpectedly allows a user to set certain fields, especially when new fields are added to a model.
+
+The alternative approach would be to include all fields automatically, or blacklist only some. This fundamental approach is known to be much less secure and has led to serious exploits on major websites (e.g. [GitHub][github-vuln-blog]).
+
+There are, however, two shortcuts available for cases where you can guarantee these security concerns do not apply to you:
+
+1. Set the `fields` attribute to the special value `'__all__'` to indicate that all fields in the model should be used.
 
 For example:
 
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
-            fields = ('id', 'account_name', 'users', 'created')
+            fields = '__all__'
+
+2. Set the exclude attribute of the ModelForm’s inner Meta class to a list of fields to be excluded from the form.
+
+For example:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            exclude = 'users'
+
+In the example above, if the `Account` model had 3 fields `account_name`, `users`, and `created`, this will result in the fields `account_name` and `created` to be serialized.
 
 The names in the `fields` option will normally map to model fields on the model class.
 
@@ -1035,6 +1052,7 @@ The [django-rest-framework-gis][django-rest-framework-gis] package provides a `G
 The [django-rest-framework-hstore][django-rest-framework-hstore] package provides an `HStoreSerializer` to support [django-hstore][django-hstore] `DictionaryField` model field and its `schema-mode` feature.
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
+[github-vuln-blog]: https://github.com/blog/1068-public-key-security-vulnerability-and-mitigation
 [relations]: relations.md
 [model-managers]: https://docs.djangoproject.com/en/dev/topics/db/managers/
 [encapsulation-blogpost]: http://www.dabapps.com/blog/django-models-and-encapsulation/
