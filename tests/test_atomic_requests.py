@@ -135,9 +135,8 @@ class NonAtomicDBTransactionAPIExceptionTests(TransactionTestCase):
                 BasicModel.objects.all()
                 raise Http404
 
-        return patterns(
-            '',
-            url(r'^$', NonAtomicAPIExceptionView.as_view())
+        return (
+            url(r'^$', NonAtomicAPIExceptionView.as_view()),
         )
 
     def setUp(self):
