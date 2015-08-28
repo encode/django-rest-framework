@@ -90,6 +90,16 @@ except ImportError:
     from django.db.models import get_model
 
 
+# Import path changes from 1.7 onwards.
+try:
+    from django.contrib.contenttypes.fields import (
+        GenericForeignKey, GenericRelation
+    )
+except ImportError:
+    from django.contrib.contenttypes.generic import (
+        GenericForeignKey, GenericRelation
+    )
+
 # django-filter is optional
 try:
     import django_filters
