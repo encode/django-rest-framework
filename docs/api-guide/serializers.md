@@ -483,6 +483,12 @@ The names in the `fields` option will normally map to model fields on the model 
 
 Alternatively names in the `fields` options can map to properties or methods which take no arguments that exist on the model class.
 
+---
+
+**Note**: Before version 3.3, the `'__all__'` shortcut did not exist, but omitting the fields attribute had the same effect. Omitting both fields and exclude is now deprecated, but will continue to work as before until version 3.5
+
+---
+
 ## Specifying nested serialization
 
 The default `ModelSerializer` uses primary keys for relationships, but you can also easily generate nested representations using the `depth` option:
