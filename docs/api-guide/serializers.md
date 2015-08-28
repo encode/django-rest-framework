@@ -432,6 +432,7 @@ Declaring a `ModelSerializer` looks like this:
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
+            fields = ('id', 'account_name', 'users', 'created')
 
 By default, all the model fields on the class will be mapped to a corresponding serializer fields.
 
@@ -453,13 +454,16 @@ To do so, open the Django shell, using `python manage.py shell`, then import the
 
 ## Specifying which fields to include
 
-It is strongly recommended that you explicitly set all fields that should be edited in the serializer using the `fields` attribute. Failure to do so can easily lead to security problems when a serializer unexpectedly allows a user to set certain fields, especially when new fields are added to a model.
+If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`. It is strongly recommended that you explicitly set all fields that should be serialized using the `fields` attribute. This will make it less likely to result in unintentionally exposing data when your models change.
 
-The alternative approach would be to include all fields automatically, or blacklist only some. This fundamental approach is known to be much less secure and has led to serious exploits on major websites (e.g. [GitHub][github-vuln-blog]).
+For example:
 
-There are, however, two shortcuts available for cases where you can guarantee these security concerns do not apply to you:
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            fields = ('id', 'account_name', 'users', 'created')
 
-1. Set the `fields` attribute to the special value `'__all__'` to indicate that all fields in the model should be used.
+You can also set the `fields` attribute to the special value `'__all__'` to indicate that all fields in the model should be used.
 
 For example:
 
@@ -468,26 +472,20 @@ For example:
             model = Account
             fields = '__all__'
 
-2. Set the exclude attribute of the ModelForm’s inner Meta class to a list of fields to be excluded from the form.
+You can set the `exclude` attribute of the to a list of fields to be excluded from the serializer.
 
 For example:
 
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
-            exclude = 'users'
+            exclude = ('users',)
 
 In the example above, if the `Account` model had 3 fields `account_name`, `users`, and `created`, this will result in the fields `account_name` and `created` to be serialized.
 
-The names in the `fields` option will normally map to model fields on the model class.
+The names in the `fields` and `exclude` attributes will normally map to model fields on the model class.
 
 Alternatively names in the `fields` options can map to properties or methods which take no arguments that exist on the model class.
-
----
-
-**Note**: Before version 3.3, the `'__all__'` shortcut did not exist, but omitting the fields attribute had the same effect. Omitting both fields and exclude is now deprecated, but will continue to work as before until version 3.5
-
----
 
 ## Specifying nested serialization
 
@@ -1058,7 +1056,6 @@ The [django-rest-framework-gis][django-rest-framework-gis] package provides a `G
 The [django-rest-framework-hstore][django-rest-framework-hstore] package provides an `HStoreSerializer` to support [django-hstore][django-hstore] `DictionaryField` model field and its `schema-mode` feature.
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
-[github-vuln-blog]: https://github.com/blog/1068-public-key-security-vulnerability-and-mitigation
 [relations]: relations.md
 [model-managers]: https://docs.djangoproject.com/en/dev/topics/db/managers/
 [encapsulation-blogpost]: http://www.dabapps.com/blog/django-models-and-encapsulation/
