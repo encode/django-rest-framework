@@ -233,9 +233,11 @@ def get_relation_kwargs(field_name, relation_info):
             # No further keyword arguments are valid.
             return kwargs
 
-        if model_field.has_default() or model_field.blank or model_field.null:
+        null = model_field.null and not to_many
+
+        if model_field.has_default() or model_field.blank or null:
             kwargs['required'] = False
-        if model_field.null:
+        if null:
             kwargs['allow_null'] = True
         if model_field.validators:
             kwargs['validators'] = model_field.validators
