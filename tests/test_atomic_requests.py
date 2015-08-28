@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.db import connection, connections, transaction
 from django.http import Http404
 from django.test import TestCase, TransactionTestCase
