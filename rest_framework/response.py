@@ -91,4 +91,5 @@ class Response(SimpleTemplateResponse):
         for key in ('accepted_renderer', 'renderer_context', 'data'):
             if key in state:
                 del state[key]
+        state['_closable_objects'] = []
         return state
