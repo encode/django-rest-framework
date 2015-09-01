@@ -403,6 +403,10 @@ The [django-rest-framework-filters package][django-rest-framework-filters] works
 
 The [djangorestframework-word-filter][django-rest-framework-word-search-filter] developed as alternative to `filters.SearchFilter` which will search full word in text, or exact match.
 
+## Django URL Filter
+
+[django-url-filter][django-url-filter] provides a safe way to filter data via human-friendly URLs. It works very similar to DRF serializers and fields in a sense that they can be nested except they are called filtersets and filters. That provides easy way to filter related data. Also this library is generic-purpose so it can be used to filter other sources of data and not only Django `QuerySet`s.
+
 [cite]: https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter]: https://github.com/alex/django-filter
 [django-filter-docs]: https://django-filter.readthedocs.org/en/latest/index.html
@@ -413,3 +417,4 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [search-django-admin]: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
 [django-rest-framework-filters]: https://github.com/philipn/django-rest-framework-filters
 [django-rest-framework-word-search-filter]: https://github.com/trollknurr/django-rest-framework-word-search-filter
+[django-url-filter]: https://github.com/miki725/django-url-filter

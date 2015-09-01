@@ -233,6 +233,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 ### Filtering
 
 * [djangorestframework-chain][djangorestframework-chain] - Allows arbitrary chaining of both relations and lookup filters.
+* [django-url-filter][django-url-filter] - Allows a safe way to filter data via human-friendly URLs. It is a generic library which is not tied to DRF but it provides easy integration with DRF.
 
 ### Misc
 
@@ -343,3 +344,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [drf-tracking]: https://github.com/aschn/drf-tracking
 [django-rest-framework-braces]: https://github.com/dealertrack/django-rest-framework-braces
 [dry-rest-permissions]: https://github.com/Helioscene/dry-rest-permissions
+[django-url-filter]: https://github.com/miki725/django-url-filter
