@@ -125,10 +125,10 @@ class TestListSerializerContainingNestedSerializer:
         style prefixes.
         """
         input_data = MultiValueDict({
-            "[0]integer": ["123"],
-            "[0]boolean": ["true"],
-            "[1]integer": ["456"],
-            "[1]boolean": ["false"]
+            "[0][integer]": ["123"],
+            "[0][boolean]": ["true"],
+            "[1][integer]": ["456"],
+            "[1][boolean]": ["false"]
         })
         expected_output = [
             {"integer": 123, "boolean": True},
