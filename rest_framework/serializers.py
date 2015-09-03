@@ -786,7 +786,7 @@ class ModelSerializer(Serializer):
     # you'll also need to ensure you update the `create` method on any generic
     # views, to correctly handle the 'Location' response header for
     # "HTTP 201 Created" responses.
-    url_field_name = api_settings.URL_FIELD_NAME
+    url_field_name = None
 
     # Default `create` and `update` behavior...
     def create(self, validated_data):
@@ -869,6 +869,9 @@ class ModelSerializer(Serializer):
         Return the dict of field names -> field instances that should be
         used for `self.fields` when instantiating the serializer.
         """
+        if self.url_field_name is None:
+            self.url_field_name = api_settings.URL_FIELD_NAME
+
         assert hasattr(self, 'Meta'), (
             'Class {serializer_class} missing "Meta" attribute'.format(
                 serializer_class=self.__class__.__name__

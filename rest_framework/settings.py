@@ -26,7 +26,6 @@ from django.utils import six
 from rest_framework import ISO_8601
 from rest_framework.compat import importlib
 
-USER_SETTINGS = getattr(settings, 'REST_FRAMEWORK', None)
 
 DEFAULTS = {
     # Base API policies
@@ -188,9 +187,16 @@ class APISettings(object):
     and return the class, rather than the string literal.
     """
     def __init__(self, user_settings=None, defaults=None, import_strings=None):
-        self.user_settings = user_settings or {}
+        if user_settings:
+            self._user_settings = user_settings
         self.defaults = defaults or DEFAULTS
         self.import_strings = import_strings or IMPORT_STRINGS
+
+    @property
+    def user_settings(self):
+        if not hasattr(self, '_user_settings'):
+            self._user_settings = getattr(settings, 'REST_FRAMEWORK', {})
+        return self._user_settings
 
     def __getattr__(self, attr):
         if attr not in self.defaults.keys():
@@ -212,7 +218,7 @@ class APISettings(object):
         return val
 
 
-api_settings = APISettings(USER_SETTINGS, DEFAULTS, IMPORT_STRINGS)
+api_settings = APISettings(None, DEFAULTS, IMPORT_STRINGS)
 
 
 def reload_api_settings(*args, **kwargs):
