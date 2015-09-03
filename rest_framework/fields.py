@@ -10,7 +10,7 @@ import uuid
 
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator, ip_address_validators
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
@@ -1020,10 +1020,7 @@ class DateTimeField(Field):
         return value
 
     def default_timezone(self):
-        try:
-            return timezone.get_default_timezone() if settings.USE_TZ else None
-        except ImproperlyConfigured:
-            return None
+        return timezone.get_default_timezone() if settings.USE_TZ else None
 
     def to_internal_value(self, value):
         input_formats = getattr(self, 'input_formats', api_settings.DATETIME_INPUT_FORMATS)
