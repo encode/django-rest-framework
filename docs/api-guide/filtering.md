@@ -331,8 +331,6 @@ The `ordering` attribute may be either a string or a list/tuple of strings.
 
 The `DjangoObjectPermissionsFilter` is intended to be used together with the [`django-guardian`][guardian] package, with custom `'view'` permissions added.  The filter will ensure that querysets only returns objects for which the user has the appropriate view permission.
 
-This filter class must be used with views that provide either a `queryset` or a `model` attribute.
-
 If you're using `DjangoObjectPermissionsFilter`, you'll probably also want to add an appropriate object permissions class, to ensure that users can only operate on instances if they have the appropriate object permissions.  The easiest way to do this is to subclass `DjangoObjectPermissions` and add `'view'` permissions to the `perms_map` attribute.
 
 A complete example using both `DjangoObjectPermissionsFilter` and `DjangoObjectPermissions` might look something like this.
