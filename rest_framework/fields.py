@@ -1189,7 +1189,7 @@ class DurationField(Field):
     def to_internal_value(self, value):
         if isinstance(value, datetime.timedelta):
             return value
-        parsed = parse_duration(value)
+        parsed = parse_duration(six.text_type(value))
         if parsed is not None:
             return parsed
         self.fail('invalid', format='[DD] [HH:[MM:]]ss[.uuuuuu]')
