@@ -26,7 +26,6 @@ from django.utils import six
 from rest_framework import ISO_8601
 from rest_framework.compat import importlib
 
-
 DEFAULTS = {
     # Base API policies
     'DEFAULT_RENDERER_CLASSES': (

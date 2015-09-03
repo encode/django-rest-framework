@@ -9,9 +9,8 @@ import re
 import uuid
 
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.validators import RegexValidator, ip_address_validators
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
