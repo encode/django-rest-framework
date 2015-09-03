@@ -78,7 +78,7 @@ def parse_html_dict(dictionary, prefix=''):
         }
     }
     """
-    ret = {}
+    ret = MultiValueDict()
     regex = re.compile(r'^%s\.(.+)$' % re.escape(prefix))
     for field, value in dictionary.items():
         match = regex.match(field)
