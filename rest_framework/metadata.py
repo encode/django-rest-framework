@@ -135,7 +135,21 @@ class SimpleMetadata(BaseMetadata):
             field_info['child'] = self.get_field_info(field.child)
         elif getattr(field, 'fields', None):
             field_info['children'] = self.get_serializer_info(field)
-
+            
+        if isinstance(field, serializers.PrimaryKeyRelatedField):
+            try:
+                perm_format = '%(app_label)s.view_%(model_name)s'
+                model_cls = field.queryset.model
+                kwargs = {
+                    'app_label': model_cls._meta.app_label,
+                    'model_name': get_model_name(model_cls)
+                }
+                permission = perm_format % kwargs
+                
+                field.queryset= guardian.shortcuts.get_objects_for_user(request.user, permission, field.queryset, accept_global_perms= False)
+            except:
+                field.queryset=[]
+            
         if not field_info.get('read_only') and hasattr(field, 'choices'):
             field_info['choices'] = [
                 {
