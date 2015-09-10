@@ -53,6 +53,7 @@ class JSONParser(BaseParser):
     """
 
     media_type = 'application/json'
+    decoder_class = json.JSONDecoder
     renderer_class = renderers.JSONRenderer
 
     def parse(self, stream, media_type=None, parser_context=None):
@@ -64,7 +65,7 @@ class JSONParser(BaseParser):
 
         try:
             data = stream.read().decode(encoding)
-            return json.loads(data)
+            return json.loads(data, cls=self.decoder_class)
         except ValueError as exc:
             raise ParseError('JSON parse error - %s' % six.text_type(exc))
 
