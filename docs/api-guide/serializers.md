@@ -189,6 +189,12 @@ Your `validate_<field_name>` methods should return the validated value or raise 
                 raise serializers.ValidationError("Blog post is not about Django")
             return value
 
+---
+
+**Note:** If your `<field_name>` is declared on your serializer with the parameter `required=False` then this validation step will not take place if the field is not included.
+
+---
+
 #### Object-level validation
 
 To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass.  This method takes a single argument, which is a dictionary of field values.  It should raise a `ValidationError` if necessary, or just return the validated values.  For example:
