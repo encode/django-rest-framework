@@ -868,7 +868,7 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
     tagged_object = GenericForeignKey('content_type', 'object_id')
 
     def __unicode__(self):
-        return self.tag
+        return self.tag_name
 </code></pre>
 <p>And the following two models, which may be have associated tags:</p>
 <pre><code>class Bookmark(models.Model):

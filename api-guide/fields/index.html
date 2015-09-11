@@ -583,7 +583,7 @@ Set to false if this field is not required to be present during deserialization.
 <p>Defaults to <code>False</code></p>
 <h3 id="default"><code>default</code></h3>
 <p>If set, this gives the default value that will be used for the field if no input value is supplied.  If not set the default behavior is to not populate the attribute at all.</p>
-<p>May be set to a function or other callable, in which case the value will be evaluated each time it is used.</p>
+<p>May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a <code>set_context</code> method, that will be called each time before getting the value with the field instance as only argument. This works the same way as for <a href="../validators/#using-set_context">validators</a>.</p>
 <p>Note that setting a <code>default</code> value implies that the field is not required. Including both the <code>default</code> and <code>required</code> keyword arguments is invalid and will raise an error.</p>
 <h3 id="source"><code>source</code></h3>
 <p>The name of the attribute that will be used to populate the field.  May be a method that only takes a <code>self</code> argument, such as <code>URLField('get_absolute_url')</code>, or may use dotted notation to traverse attributes, such as <code>EmailField(source='user.email')</code>.</p>

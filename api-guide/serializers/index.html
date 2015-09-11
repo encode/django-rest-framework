@@ -498,6 +498,10 @@
 
                   
                     <li>
+                      <a href="#django-rest-marshmallow">Django REST marshmallow</a>
+                    </li>
+                  
+                    <li>
                       <a href="#mongoenginemodelserializer">MongoengineModelSerializer</a>
                     </li>
                   
@@ -677,6 +681,9 @@ class BlogPostSerializer(serializers.Serializer):
             raise serializers.ValidationError("Blog post is not about Django")
         return value
 </code></pre>
+<hr />
+<p><strong>Note:</strong> If your <code>&lt;field_name&gt;</code> is declared on your serializer with the parameter <code>required=False</code> then this validation step will not take place if the field is not included.</p>
+<hr />
 <h4 id="object-level-validation">Object-level validation</h4>
 <p>To do any other validation that requires access to multiple fields, add a method called <code>.validate()</code> to your <code>Serializer</code> subclass.  This method takes a single argument, which is a dictionary of field values.  It should raise a <code>ValidationError</code> if necessary, or just return the validated values.  For example:</p>
 <pre><code>from rest_framework import serializers
@@ -1314,6 +1321,8 @@ def all_high_scores(request):
 <hr />
 <h1 id="third-party-packages">Third party packages</h1>
 <p>The following third party packages are also available.</p>
+<h2 id="django-rest-marshmallow">Django REST marshmallow</h2>
+<p>The <a href="http://tomchristie.github.io/django-rest-marshmallow/">django-rest-marshmallow</a> package provides an alternative implementation for serializers, using the python <a href="https://marshmallow.readthedocs.org/en/latest/">marshmallow</a> library. It exposes the same API as the REST framework serializers, and can be used as a drop-in replacement in some use-cases.</p>
 <h2 id="mongoenginemodelserializer">MongoengineModelSerializer</h2>
 <p>The <a href="https://github.com/umutbozkurt/django-rest-framework-mongoengine">django-rest-framework-mongoengine</a> package provides a <code>MongoEngineModelSerializer</code> serializer class that supports using MongoDB as the storage layer for Django REST framework.</p>
 <h2 id="geofeaturemodelserializer">GeoFeatureModelSerializer</h2>

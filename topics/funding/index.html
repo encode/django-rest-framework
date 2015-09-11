@@ -475,15 +475,16 @@ form.signup {
 <p>With <em>typical corporate fundings of just £100-£1000 per organization</em> we successfully delivered:</p>
 <ul>
 <li>The comprehensive 3.0 serializer redesign.</li>
-<li>Pagination API including new offset/limit and cursor pagination implementations, plus  on-page controls.</li>
-<li>The versioning API, including URL based and header based versioning schemes.</li>
-<li>Customizable exception handling.</li>
-<li>The metadata APIs for handling <code>OPTIONS</code> requests.</li>
+<li>Substantial improvements to the Browsable API.</li>
+<li>The admin interface.</li>
+<li>A new pagination API including offset/limit and cursor pagination implementations, plus on-page controls.</li>
+<li>A versioning API, including URL-based and header-based versioning schemes.</li>
+<li>Support for customizable exception handling.</li>
+<li>Support for Django's PostgreSQL HStoreField, ArrayField and JSONField.</li>
 <li>Templated HTML form support, including HTML forms with nested list and objects.</li>
 <li>Internationalization support for API responses, currently with 27 languages.</li>
-<li>Improvements to the browsable API.</li>
-<li>The admin interface.</li>
-<li>Support for Django's PostgreSQL HStoreField, ArrayField and JSONField.</li>
+<li>The metadata APIs for handling <code>OPTIONS</code> requests and schema endpoints.</li>
+<li>Numerous minor improvements and better quality throughout the codebase.</li>
 <li>Ongoing triage and community support, closing over 1600 tickets.</li>
 </ul>
 <p>This incredible level of return on investment is <em>only possible through collaboratively funded models</em>, which is why we believe that supporting our paid plans is in everyone's best interest.</p>
@@ -642,21 +643,28 @@ form.signup {
 <p>For further enquires please contact <a href=mailto:tom@tomchristie.com>tom@tomchristie.com</a>.</p>
 <hr />
 <h2 id="roadmap">Roadmap</h2>
+<p>Although we're incredibly proud of REST framework in its current state we believe there is still huge scope for improvement. What we're aiming for here is a <em>highly polished, rock solid product</em>. This needs to backed up with impeccable documentation and a great third party ecosystem.</p>
 <p>The roadmap below is a broad indication of just some of the ongoing and future work we believe is important to REST framework.</p>
 <ul>
-<li>Support for alternative backends such as SQLAlchemy.</li>
-<li>HTTP Caching API &amp; support for conditional database lookups.</li>
-<li>Performance improvements.</li>
+<li>Increasing our "bus factor" through documented organizational process &amp; safeguards.</li>
+<li>More time towards testing and hardening releases, with only gradual, well-documented deprecations.</li>
+<li>A formal policy on security backports for non-current releases.</li>
+<li>Continuing triage &amp; community support.</li>
 <li>Improved project documentation, including versioned &amp; internationalized docs.</li>
+<li>Improved third party package visibility.</li>
+<li>Refining the admin interface, ensuring it has a fully customizable API and making it suitable as end-user facing application.</li>
+<li>Cleaning up internal complexities including the <code>BrowsableAPIRenderer</code> and <code>Request</code> object.</li>
+<li>Support for alternative backends such as SQLAlchemy.</li>
+<li>Support for non-database backed services.</li>
+<li>HTTP Caching API &amp; support for conditional database lookups.</li>
+<li>Benchmarking and performance improvements.</li>
+<li>In depth documentation on advanced usage and best practices.</li>
+<li>Documentation &amp; support for integration with realtime systems.</li>
 <li>Hypermedia support and client libraries.</li>
+<li>Support for JSON schema as endpoints or <code>OPTIONS</code> responses.</li>
 <li>API metric tools.</li>
 <li>Debug &amp; logging tools.</li>
-<li>In depth documentation on advanced usage and best practices.</li>
 <li>Third party GraphQL support.</li>
-<li>Documentation &amp; support for integration with realtime systems.</li>
-<li>Improved third party package visibility.</li>
-<li>Increasing our "bus factor" through documented organizational process &amp; safeguards.</li>
-<li>Continuing triage &amp; community support.</li>
 </ul>
 <p>By taking out a paid plan you'll be directly contributing towards making these features happen.</p>
             

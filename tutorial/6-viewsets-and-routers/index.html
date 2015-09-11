@@ -411,7 +411,7 @@ class SnippetViewSet(viewsets.ModelViewSet):
         return Response(snippet.highlighted)
 
     def perform_create(self, serializer):
-            serializer.save(owner=self.request.user)
+        serializer.save(owner=self.request.user)
 </code></pre>
 <p>This time we've used the <code>ModelViewSet</code> class in order to get the complete set of default read and write operations.</p>
 <p>Notice that we've also used the <code>@detail_route</code> decorator to create a custom action, named <code>highlight</code>.  This decorator can be used to add any custom endpoints that don't fit into the standard <code>create</code>/<code>update</code>/<code>delete</code> style.</p>
