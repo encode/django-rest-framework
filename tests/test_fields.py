@@ -466,6 +466,18 @@ class TestBooleanField(FieldValues):
     }
     field = serializers.BooleanField()
 
+    def test_disallow_unhashable_collection_types(self):
+        inputs = (
+            [],
+            {},
+        )
+        field = serializers.BooleanField()
+        for input_value in inputs:
+            with pytest.raises(serializers.ValidationError) as exc_info:
+                field.run_validation(input_value)
+            expected = ['"{0}" is not a valid boolean.'.format(input_value)]
+            assert exc_info.value.detail == expected
+
 
 class TestNullBooleanField(FieldValues):
     """
