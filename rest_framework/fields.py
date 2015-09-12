@@ -661,7 +661,8 @@ class CharField(Field):
     default_error_messages = {
         'blank': _('This field may not be blank.'),
         'max_length': _('Ensure this field has no more than {max_length} characters.'),
-        'min_length': _('Ensure this field has at least {min_length} characters.')
+        'min_length': _('Ensure this field has at least {min_length} characters.'),
+        'invalid': _('{input} is not a valid string.'),
     }
     initial = ''
 
@@ -686,6 +687,9 @@ class CharField(Field):
             if not self.allow_blank:
                 self.fail('blank')
             return ''
+        if not isinstance(data, (six.text_type, six.binary_type, type(None))):
+            if data is not empty:
+                self.fail('invalid', input=data)
         return super(CharField, self).run_validation(data)
 
     def to_internal_value(self, data):

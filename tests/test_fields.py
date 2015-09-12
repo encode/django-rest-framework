@@ -501,10 +501,11 @@ class TestCharField(FieldValues):
     Valid and invalid values for `CharField`.
     """
     valid_inputs = {
-        1: '1',
         'abc': 'abc'
     }
     invalid_inputs = {
+        1: ['1 is not a valid string.'],
+        42.0: ['42.0 is not a valid string.'],
         '': ['This field may not be blank.']
     }
     outputs = {
@@ -527,6 +528,21 @@ class TestCharField(FieldValues):
         with pytest.raises(serializers.ValidationError) as exc_info:
             field.run_validation('   ')
         assert exc_info.value.detail == ['This field may not be blank.']
+
+    def test_collection_types_are_invalid_input(self):
+        field = serializers.CharField()
+        input_values = (
+            42,
+            {},
+            [],
+            tuple(),
+            set(),
+        )
+        for value in input_values:
+            with pytest.raises(serializers.ValidationError) as exc_info:
+                field.run_validation(value)
+            expected = ['{0} is not a valid string.'.format(value)]
+            assert exc_info.value.detail == expected
 
 
 class TestEmailField(FieldValues):
