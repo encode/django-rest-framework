@@ -25,12 +25,14 @@ env:
     - TOX_ENV=py26-django15
     - TOX_ENV=py27-djangomaster
     - TOX_ENV=py34-djangomaster
+    - TOX_ENV=py35-djangomaster
 
 matrix:
   fast_finish: true
   allow_failures:
     - env: TOX_ENV=py27-djangomaster
     - env: TOX_ENV=py34-djangomaster
+    - env: TOX_ENV=py35-djangomaster
 
 install:
   - pip install tox
