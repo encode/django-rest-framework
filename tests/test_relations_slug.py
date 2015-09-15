@@ -1,9 +1,9 @@
 from django.test import TestCase
-
-from rest_framework import serializers
 from tests.models import (
     ForeignKeySource, ForeignKeyTarget, NullableForeignKeySource
 )
+
+from rest_framework import serializers
 
 
 class ForeignKeyTargetSerializer(serializers.ModelSerializer):

@@ -7,6 +7,7 @@ from django.core.urlresolvers import ResolverMatch
 from django.db import models
 from django.test import TestCase
 from django.utils import unittest
+from tests.models import BasicModel
 
 from rest_framework import (
     HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
@@ -16,7 +17,6 @@ from rest_framework.compat import get_model_name, guardian
 from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
-from tests.models import BasicModel
 
 factory = APIRequestFactory()
 

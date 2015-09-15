@@ -16,6 +16,7 @@ from django.views.generic import View
 
 from rest_framework import VERSION
 
+
 def deprecated(since, message):
     current_version = [int(i) for i in VERSION.split('.')]
 

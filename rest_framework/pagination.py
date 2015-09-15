@@ -215,11 +215,11 @@ class PageNumberPagination(BasePagination):
             value = getattr(api_settings, settings_key, None)
             if value is not None:
                 setattr(self, attr_name, value)
-                deprecated((3,0,0), "The `%s` settings key is deprecated. "
-                    "Use the `%s` attribute on the pagination class instead." % (
-                        settings_key, attr_name
-                    )
-                )
+                deprecated((3, 0, 0),
+                           "The `%s` settings key is deprecated. "
+                           "Use the `%s` attribute on the pagination class instead." % (
+                           settings_key, attr_name)
+                           )
 
         for (view_attr, attr_name) in (
             ('paginate_by', 'page_size'),
@@ -230,11 +230,11 @@ class PageNumberPagination(BasePagination):
             value = getattr(view, view_attr, None)
             if value is not None:
                 setattr(self, attr_name, value)
-                deprecated((3,0,0), "The `%s` view attribute is deprecated. "
-                    "Use the `%s` attribute on the pagination class instead." % (
-                        view_attr, attr_name
-                    )
-                )
+                deprecated((3, 0, 0),
+                           "The `%s` view attribute is deprecated. "
+                           "Use the `%s` attribute on the pagination class instead." % (
+                           view_attr, attr_name)
+                           )
 
     def paginate_queryset(self, queryset, request, view=None):
         """
