@@ -6,11 +6,30 @@ versions of Django/Python, and compatibility wrappers around optional packages.
 # flake8: noqa
 from __future__ import unicode_literals
 
+import warnings
+
 import django
 from django.conf import settings
 from django.db import connection, transaction
 from django.utils import six
 from django.views.generic import View
+
+from rest_framework import VERSION
+
+def deprecated(since, message):
+    current_version = [int(i) for i in VERSION.split('.')]
+
+    assert current_version[0] == since[0], "Deprecated code must be removed before major version change. Current: {0} vs Deprecated Since: {1}".format(current_version[0], since[0])
+
+    minor_version_difference = current_version[1] - since[1]
+    assert minor_version_difference in [1,2], "Deprecated code must be removed within two minor versions"
+
+    warning_type = PendingDeprecationWarning if minor_version_difference == 1 else DeprecationWarning
+
+    warnings.warn(message, warning_type)
+
+
+
 
 try:
     import importlib  # Available in Python 3.1+

@@ -5,7 +5,6 @@ be used for paginated responses.
 """
 from __future__ import unicode_literals
 
-import warnings
 from base64 import b64decode, b64encode
 from collections import namedtuple
 
@@ -16,7 +15,7 @@ from django.utils import six
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import OrderedDict
+from rest_framework.compat import OrderedDict, deprecated
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -216,12 +215,10 @@ class PageNumberPagination(BasePagination):
             value = getattr(api_settings, settings_key, None)
             if value is not None:
                 setattr(self, attr_name, value)
-                warnings.warn(
-                    "The `%s` settings key is deprecated. "
+                deprecated((3,0,0), "The `%s` settings key is deprecated. "
                     "Use the `%s` attribute on the pagination class instead." % (
                         settings_key, attr_name
-                    ),
-                    DeprecationWarning,
+                    )
                 )
 
         for (view_attr, attr_name) in (
@@ -233,12 +230,10 @@ class PageNumberPagination(BasePagination):
             value = getattr(view, view_attr, None)
             if value is not None:
                 setattr(self, attr_name, value)
-                warnings.warn(
-                    "The `%s` view attribute is deprecated. "
+                deprecated((3,0,0), "The `%s` view attribute is deprecated. "
                     "Use the `%s` attribute on the pagination class instead." % (
                         view_attr, attr_name
-                    ),
-                    DeprecationWarning,
+                    )
                 )
 
     def paginate_queryset(self, queryset, request, view=None):
