@@ -675,11 +675,9 @@ class CharField(Field):
         self.min_length = kwargs.pop('min_length', None)
         super(CharField, self).__init__(**kwargs)
         if self.max_length is not None:
-            message = self.error_messages['max_length'].format(max_length=self.max_length)
-            self.validators.append(MaxLengthValidator(self.max_length, message=message))
+            self.validators.append(MaxLengthValidator(self.max_length))
         if self.min_length is not None:
-            message = self.error_messages['min_length'].format(min_length=self.min_length)
-            self.validators.append(MinLengthValidator(self.min_length, message=message))
+            self.validators.append(MinLengthValidator(self.min_length))
 
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,
@@ -820,11 +818,9 @@ class IntegerField(Field):
         self.min_value = kwargs.pop('min_value', None)
         super(IntegerField, self).__init__(**kwargs)
         if self.max_value is not None:
-            message = self.error_messages['max_value'].format(max_value=self.max_value)
-            self.validators.append(MaxValueValidator(self.max_value, message=message))
+            self.validators.append(MaxValueValidator(self.max_value))
         if self.min_value is not None:
-            message = self.error_messages['min_value'].format(min_value=self.min_value)
-            self.validators.append(MinValueValidator(self.min_value, message=message))
+            self.validators.append(MinValueValidator(self.min_value))
 
     def to_internal_value(self, data):
         if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
@@ -854,11 +850,9 @@ class FloatField(Field):
         self.min_value = kwargs.pop('min_value', None)
         super(FloatField, self).__init__(**kwargs)
         if self.max_value is not None:
-            message = self.error_messages['max_value'].format(max_value=self.max_value)
-            self.validators.append(MaxValueValidator(self.max_value, message=message))
+            self.validators.append(MaxValueValidator(self.max_value))
         if self.min_value is not None:
-            message = self.error_messages['min_value'].format(min_value=self.min_value)
-            self.validators.append(MinValueValidator(self.min_value, message=message))
+            self.validators.append(MinValueValidator(self.min_value))
 
     def to_internal_value(self, data):
         if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
@@ -903,11 +897,9 @@ class DecimalField(Field):
         super(DecimalField, self).__init__(**kwargs)
 
         if self.max_value is not None:
-            message = self.error_messages['max_value'].format(max_value=self.max_value)
-            self.validators.append(MaxValueValidator(self.max_value, message=message))
+            self.validators.append(MaxValueValidator(self.max_value))
         if self.min_value is not None:
-            message = self.error_messages['min_value'].format(min_value=self.min_value)
-            self.validators.append(MinValueValidator(self.min_value, message=message))
+            self.validators.append(MinValueValidator(self.min_value))
 
     def to_internal_value(self, data):
         """
@@ -1604,8 +1596,7 @@ class ModelField(Field):
         max_length = kwargs.pop('max_length', None)
         super(ModelField, self).__init__(**kwargs)
         if max_length is not None:
-            message = self.error_messages['max_length'].format(max_length=max_length)
-            self.validators.append(MaxLengthValidator(max_length, message=message))
+            self.validators.append(MaxLengthValidator(max_length))
 
     def to_internal_value(self, data):
         rel = getattr(self.model_field, 'rel', None)
