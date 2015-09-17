@@ -86,7 +86,7 @@ def clone_request(request, method):
     ret._full_data = request._full_data
     ret._content_type = request._content_type
     ret._stream = request._stream
-    ret._method = method
+    ret.method = method
     if hasattr(request, '_user'):
         ret._user = request._user
     if hasattr(request, '_auth'):
@@ -139,7 +139,6 @@ class Request(object):
         self._data = Empty
         self._files = Empty
         self._full_data = Empty
-        self._method = Empty
         self._content_type = Empty
         self._stream = Empty
 

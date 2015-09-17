@@ -3,27 +3,22 @@ Tests for content parsing, and form-overloaded content parsing.
 """
 from __future__ import unicode_literals
 
-import json
-from io import BytesIO
-
 import django
 import pytest
 from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.core.handlers.wsgi import WSGIRequest
 from django.test import TestCase
 from django.utils import six
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.parsers import (
-    BaseParser, FormParser, JSONParser, MultiPartParser
+    BaseParser, FormParser, MultiPartParser
 )
-from rest_framework.request import Empty, Request
+from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.settings import api_settings
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
 
