@@ -129,11 +129,6 @@ class Request(object):
         - authentication_classes(list/tuple). The authentications used to try
           authenticating the request's user.
     """
-
-    _METHOD_PARAM = api_settings.FORM_METHOD_OVERRIDE
-    _CONTENT_PARAM = api_settings.FORM_CONTENT_OVERRIDE
-    _CONTENTTYPE_PARAM = api_settings.FORM_CONTENTTYPE_OVERRIDE
-
     def __init__(self, request, parsers=None, authenticators=None,
                  negotiator=None, parser_context=None):
         self._request = request
@@ -163,29 +158,9 @@ class Request(object):
         return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()
 
     @property
-    def method(self):
-        """
-        Returns the HTTP method.
-
-        This allows the `method` to be overridden by using a hidden `form`
-        field on a form POST request.
-        """
-        if not _hasattr(self, '_method'):
-            self._load_method_and_content_type()
-        return self._method
-
-    @property
     def content_type(self):
-        """
-        Returns the content type header.
-
-        This should be used instead of `request.META.get('HTTP_CONTENT_TYPE')`,
-        as it allows the content type to be overridden by using a hidden form
-        field on a form POST request.
-        """
-        if not _hasattr(self, '_content_type'):
-            self._load_method_and_content_type()
-        return self._content_type
+        meta = self._request.META
+        return meta.get('CONTENT_TYPE', meta.get('HTTP_CONTENT_TYPE', ''))
 
     @property
     def stream(self):
@@ -265,9 +240,6 @@ class Request(object):
         """
         Parses the request content into `self.data`.
         """
-        if not _hasattr(self, '_content_type'):
-            self._load_method_and_content_type()
-
         if not _hasattr(self, '_data'):
             self._data, self._files = self._parse()
             if self._files:
@@ -276,32 +248,14 @@ class Request(object):
             else:
                 self._full_data = self._data
 
-    def _load_method_and_content_type(self):
-        """
-        Sets the method and content_type, and then check if they've
-        been overridden.
-        """
-        self._content_type = self.META.get('HTTP_CONTENT_TYPE',
-                                           self.META.get('CONTENT_TYPE', ''))
-
-        self._perform_form_overloading()
-
-        if not _hasattr(self, '_method'):
-            self._method = self._request.method
-
-            # Allow X-HTTP-METHOD-OVERRIDE header
-            if 'HTTP_X_HTTP_METHOD_OVERRIDE' in self.META:
-                self._method = self.META['HTTP_X_HTTP_METHOD_OVERRIDE'].upper()
-
     def _load_stream(self):
         """
         Return the content body of the request, as a stream.
         """
+        meta = self._request.META
         try:
             content_length = int(
-                self.META.get(
-                    'CONTENT_LENGTH', self.META.get('HTTP_CONTENT_LENGTH')
-                )
+                meta.get('CONTENT_LENGTH', meta.get('HTTP_CONTENT_LENGTH', 0))
             )
         except (ValueError, TypeError):
             content_length = 0
@@ -312,50 +266,6 @@ class Request(object):
             self._stream = self._request
         else:
             self._stream = six.BytesIO(self.raw_post_data)
-
-    def _perform_form_overloading(self):
-        """
-        If this is a form POST request, then we need to check if the method and
-        content/content_type have been overridden by setting them in hidden
-        form fields or not.
-        """
-
-        USE_FORM_OVERLOADING = (
-            self._METHOD_PARAM or
-            (self._CONTENT_PARAM and self._CONTENTTYPE_PARAM)
-        )
-
-        # We only need to use form overloading on form POST requests.
-        if (
-            self._request.method != 'POST' or
-            not USE_FORM_OVERLOADING or
-            not is_form_media_type(self._content_type)
-        ):
-            return
-
-        # At this point we're committed to parsing the request as form data.
-        self._data = self._request.POST
-        self._files = self._request.FILES
-        self._full_data = self._data.copy()
-        self._full_data.update(self._files)
-
-        # Method overloading - change the method and remove the param from the content.
-        if (
-            self._METHOD_PARAM and
-            self._METHOD_PARAM in self._data
-        ):
-            self._method = self._data[self._METHOD_PARAM].upper()
-
-        # Content overloading - modify the content type, and force re-parse.
-        if (
-            self._CONTENT_PARAM and
-            self._CONTENTTYPE_PARAM and
-            self._CONTENT_PARAM in self._data and
-            self._CONTENTTYPE_PARAM in self._data
-        ):
-            self._content_type = self._data[self._CONTENTTYPE_PARAM]
-            self._stream = six.BytesIO(self._data[self._CONTENT_PARAM].encode(self.parser_context['encoding']))
-            self._data, self._files, self._full_data = (Empty, Empty, Empty)
 
     def _parse(self):
         """

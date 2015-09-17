@@ -94,9 +94,6 @@ DEFAULTS = {
     'TEST_REQUEST_DEFAULT_FORMAT': 'multipart',
 
     # Browser enhancements
-    'FORM_METHOD_OVERRIDE': '_method',
-    'FORM_CONTENT_OVERRIDE': '_content',
-    'FORM_CONTENTTYPE_OVERRIDE': '_content_type',
     'URL_ACCEPT_OVERRIDE': 'accept',
     'URL_FORMAT_OVERRIDE': 'format',
 
