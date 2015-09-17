@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.utils import six
 
 from rest_framework import generics, routers, serializers, status, viewsets
+from rest_framework.parsers import JSONParser
 from rest_framework.renderers import (
     BaseRenderer, BrowsableAPIRenderer, JSONRenderer
 )
@@ -79,6 +80,14 @@ class MockViewSettingContentType(APIView):
         return Response(DUMMYCONTENT, status=DUMMYSTATUS, content_type='setbyview')
 
 
+class JSONView(APIView):
+    parser_classes = (JSONParser,)
+
+    def post(self, request, **kwargs):
+        assert request.data
+        return Response(DUMMYCONTENT)
+
+
 class HTMLView(APIView):
     renderer_classes = (BrowsableAPIRenderer, )
 
@@ -114,6 +123,7 @@ urlpatterns = [
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
     url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
     url(r'^html$', HTMLView.as_view()),
+    url(r'^json$', JSONView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
     url(r'^html_new_model$', HTMLNewModelView.as_view()),
     url(r'^html_new_model_viewset', include(new_model_viewset_router.urls)),
@@ -201,6 +211,25 @@ class RendererIntegrationTests(TestCase):
         self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
+
+
+class UnsupportedMediaTypeTests(TestCase):
+    urls = 'tests.test_response'
+
+    def test_should_allow_posting_json(self):
+        response = self.client.post('/json', data='{"test": 123}', content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_should_not_allow_posting_xml(self):
+        response = self.client.post('/json', data='<test>123</test>', content_type='application/xml')
+
+        self.assertEqual(response.status_code, 415)
+
+    def test_should_not_allow_posting_a_form(self):
+        response = self.client.post('/json', data={'test': 123})
+
+        self.assertEqual(response.status_code, 415)
 
 
 class Issue122Tests(TestCase):
