@@ -14,9 +14,7 @@ from django.utils import six
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.parsers import (
-    BaseParser, FormParser, MultiPartParser
-)
+from rest_framework.parsers import BaseParser, FormParser, MultiPartParser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
