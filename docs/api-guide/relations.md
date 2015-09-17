@@ -501,7 +501,7 @@ For example, given the following model for a tag, which has a generic relationsh
         tagged_object = GenericForeignKey('content_type', 'object_id')
 
         def __unicode__(self):
-            return self.tag
+            return self.tag_name
 
 And the following two models, which may be have associated tags:
 

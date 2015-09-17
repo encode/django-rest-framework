@@ -120,12 +120,11 @@ else:
 # Django-guardian is optional. Import only if guardian is in INSTALLED_APPS
 # Fixes (#1712). We keep the try/except for the test suite.
 guardian = None
-if 'guardian' in settings.INSTALLED_APPS:
-    try:
-        import guardian
-        import guardian.shortcuts  # Fixes #1624
-    except ImportError:
-        pass
+try:
+    import guardian
+    import guardian.shortcuts  # Fixes #1624
+except ImportError:
+    pass
 
 
 def get_model_name(model_cls):

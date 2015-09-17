@@ -79,17 +79,23 @@ class TestNestedSerializerWithMany:
         class TestSerializer(serializers.Serializer):
             allow_null = NestedSerializer(many=True, allow_null=True)
             not_allow_null = NestedSerializer(many=True)
+            allow_empty = NestedSerializer(many=True, allow_empty=True)
+            not_allow_empty = NestedSerializer(many=True, allow_empty=False)
 
         self.Serializer = TestSerializer
 
     def test_null_allowed_if_allow_null_is_set(self):
         input_data = {
             'allow_null': None,
-            'not_allow_null': [{'example': '2'}, {'example': '3'}]
+            'not_allow_null': [{'example': '2'}, {'example': '3'}],
+            'allow_empty': [{'example': '2'}],
+            'not_allow_empty': [{'example': '2'}],
         }
         expected_data = {
             'allow_null': None,
-            'not_allow_null': [{'example': 2}, {'example': 3}]
+            'not_allow_null': [{'example': 2}, {'example': 3}],
+            'allow_empty': [{'example': 2}],
+            'not_allow_empty': [{'example': 2}],
         }
         serializer = self.Serializer(data=input_data)
 
@@ -99,7 +105,9 @@ class TestNestedSerializerWithMany:
     def test_null_is_not_allowed_if_allow_null_is_not_set(self):
         input_data = {
             'allow_null': None,
-            'not_allow_null': None
+            'not_allow_null': None,
+            'allow_empty': [{'example': '2'}],
+            'not_allow_empty': [{'example': '2'}],
         }
         serializer = self.Serializer(data=input_data)
 
@@ -118,10 +126,44 @@ class TestNestedSerializerWithMany:
 
         input_data = {
             'allow_null': None,
-            'not_allow_null': [{'example': 2}]
+            'not_allow_null': [{'example': 2}],
+            'allow_empty': [{'example': 2}],
+            'not_allow_empty': [{'example': 2}],
         }
         serializer = TestSerializer(data=input_data)
 
         assert serializer.is_valid()
         assert serializer.validated_data == input_data
         assert TestSerializer.validation_was_run
+
+    def test_empty_allowed_if_allow_empty_is_set(self):
+        input_data = {
+            'allow_null': [{'example': '2'}],
+            'not_allow_null': [{'example': '2'}],
+            'allow_empty': [],
+            'not_allow_empty': [{'example': '2'}],
+        }
+        expected_data = {
+            'allow_null': [{'example': 2}],
+            'not_allow_null': [{'example': 2}],
+            'allow_empty': [],
+            'not_allow_empty': [{'example': 2}],
+        }
+        serializer = self.Serializer(data=input_data)
+
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == expected_data
+
+    def test_empty_not_allowed_if_allow_empty_is_set_to_false(self):
+        input_data = {
+            'allow_null': [{'example': '2'}],
+            'not_allow_null': [{'example': '2'}],
+            'allow_empty': [],
+            'not_allow_empty': [],
+        }
+        serializer = self.Serializer(data=input_data)
+
+        assert not serializer.is_valid()
+
+        expected_errors = {'not_allow_empty': {'non_field_errors': [serializers.ListSerializer.default_error_messages['empty']]}}
+        assert serializer.errors == expected_errors

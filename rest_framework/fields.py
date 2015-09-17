@@ -608,10 +608,13 @@ class BooleanField(Field):
         super(BooleanField, self).__init__(**kwargs)
 
     def to_internal_value(self, data):
-        if data in self.TRUE_VALUES:
-            return True
-        elif data in self.FALSE_VALUES:
-            return False
+        try:
+            if data in self.TRUE_VALUES:
+                return True
+            elif data in self.FALSE_VALUES:
+                return False
+        except TypeError:  # Input is an unhashable type
+            pass
         self.fail('invalid', input=data)
 
     def to_representation(self, value):
@@ -1189,7 +1192,7 @@ class DurationField(Field):
     def to_internal_value(self, value):
         if isinstance(value, datetime.timedelta):
             return value
-        parsed = parse_duration(value)
+        parsed = parse_duration(six.text_type(value))
         if parsed is not None:
             return parsed
         self.fail('invalid', format='[DD] [HH:[MM:]]ss[.uuuuuu]')
