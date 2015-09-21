@@ -46,6 +46,9 @@ class GenericAPIView(views.APIView):
     # The style to use for queryset pagination.
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
 
+    # The database router classes to use as queryset aliases
+    db_router_classes = api_settings.DEFAULT_DB_ROUTER_CLASSES
+
     def get_queryset(self):
         """
         Get the list of items for this view.
@@ -71,7 +74,18 @@ class GenericAPIView(views.APIView):
         if isinstance(queryset, QuerySet):
             # Ensure queryset is re-evaluated on each request.
             queryset = queryset.all()
+
+        return self.apply_db_routing(queryset)
+
+    def apply_db_routing(self, queryset):
+        for router in self.get_db_routers():
+            alias = router.get_db_alias(self.request, queryset.model)
+            if alias:
+                return queryset.using(alias)
         return queryset
+
+    def get_db_routers(self):
+        return [db_router() for db_router in self.db_router_classes]
 
     def get_object(self):
         """
