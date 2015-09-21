@@ -170,19 +170,6 @@ else:
             super(MaxLengthValidator, self).__init__(*args, **kwargs)
 
 
-# URLValidator only accepts `message` in 1.6+
-if django.VERSION >= (1, 6):
-    from django.core.validators import URLValidator
-else:
-    from django.core.validators import URLValidator as DjangoURLValidator
-
-
-    class URLValidator(DjangoURLValidator):
-        def __init__(self, *args, **kwargs):
-            self.message = kwargs.pop('message', self.message)
-            super(URLValidator, self).__init__(*args, **kwargs)
-
-
 # PATCH method is not implemented by Django
 if 'patch' not in View.http_method_names:
     View.http_method_names = View.http_method_names + ['patch']
