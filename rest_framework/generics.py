@@ -46,7 +46,7 @@ class GenericAPIView(views.APIView):
     # The style to use for queryset pagination.
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
 
-    # The database router classes to use as queryset aliases
+    # The database router classes to find the correct db alias for queryset
     db_router_classes = api_settings.DEFAULT_DB_ROUTER_CLASSES
 
     def get_queryset(self):
