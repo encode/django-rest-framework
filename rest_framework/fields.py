@@ -608,10 +608,13 @@ class BooleanField(Field):
         super(BooleanField, self).__init__(**kwargs)
 
     def to_internal_value(self, data):
-        if data in self.TRUE_VALUES:
-            return True
-        elif data in self.FALSE_VALUES:
-            return False
+        try:
+            if data in self.TRUE_VALUES:
+                return True
+            elif data in self.FALSE_VALUES:
+                return False
+        except TypeError:  # Input is an unhashable type
+            pass
         self.fail('invalid', input=data)
 
     def to_representation(self, value):
@@ -1262,14 +1265,13 @@ class MultipleChoiceField(ChoiceField):
         super(MultipleChoiceField, self).__init__(*args, **kwargs)
 
     def get_value(self, dictionary):
+        if self.field_name not in dictionary:
+            if getattr(self.root, 'partial', False):
+                return empty
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
-            ret = dictionary.getlist(self.field_name)
-            if getattr(self.root, 'partial', False) and not ret:
-                ret = empty
-            return ret
-
+            return dictionary.getlist(self.field_name)
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
@@ -1416,6 +1418,9 @@ class ListField(Field):
         self.child.bind(field_name='', parent=self)
 
     def get_value(self, dictionary):
+        if self.field_name not in dictionary:
+            if getattr(self.root, 'partial', False):
+                return empty
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
