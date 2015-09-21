@@ -525,9 +525,9 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh3321]: https://github.com/tomchristie/django-rest-framework/issues/3321
 
 <!-- 3.2.4 -->
-[gh3314]: https://github.com/tomchristie/django-rest-framework/issues/@3314
-[gh3323]: https://github.com/tomchristie/django-rest-framework/issues/@3323
-[gh3324]: https://github.com/tomchristie/django-rest-framework/issues/@3324
-[gh3359]: https://github.com/tomchristie/django-rest-framework/issues/@3359
-[gh3361]: https://github.com/tomchristie/django-rest-framework/issues/@3361
-[gh3364]: https://github.com/tomchristie/django-rest-framework/issues/@3364
+[gh3314]: https://github.com/tomchristie/django-rest-framework/issues/3314
+[gh3323]: https://github.com/tomchristie/django-rest-framework/issues/3323
+[gh3324]: https://github.com/tomchristie/django-rest-framework/issues/3324
+[gh3359]: https://github.com/tomchristie/django-rest-framework/issues/3359
+[gh3361]: https://github.com/tomchristie/django-rest-framework/issues/3361
+[gh3364]: https://github.com/tomchristie/django-rest-framework/issues/3364
