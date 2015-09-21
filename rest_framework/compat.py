@@ -127,14 +127,6 @@ except ImportError:
     pass
 
 
-def get_model_name(model_cls):
-    try:
-        return model_cls._meta.model_name
-    except AttributeError:
-        # < 1.6 used module_name instead of model_name
-        return model_cls._meta.module_name
-
-
 # MinValueValidator, MaxValueValidator et al. only accept `message` in 1.8+
 if django.VERSION >= (1, 8):
     from django.core.validators import MinValueValidator, MaxValueValidator

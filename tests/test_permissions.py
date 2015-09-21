@@ -11,7 +11,7 @@ from rest_framework import (
     HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
     status
 )
-from rest_framework.compat import get_model_name, guardian, unittest
+from rest_framework.compat import guardian, unittest
 from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
@@ -278,7 +278,7 @@ class ObjectPermissionsIntegrationTests(TestCase):
 
         # give everyone model level permissions, as we are not testing those
         everyone = Group.objects.create(name='everyone')
-        model_name = get_model_name(BasicPermModel)
+        model_name = BasicPermModel._meta.model_name
         app_label = BasicPermModel._meta.app_label
         f = '{0}_{1}'.format
         perms = {
