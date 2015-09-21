@@ -38,6 +38,14 @@ You can determine your currently installed version using `pip freeze`:
 
 ---
 
+## 3.3.x series
+
+### 3.0.0
+
+**Date**: NOT YET RELEASED
+
+* Removed support for Django Version 1.5 ([#3421][gh3421])
+
 ## 3.2.x series
 
 ### 3.2.3
@@ -514,5 +522,6 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh3321]: https://github.com/tomchristie/django-rest-framework/issues/3321
 
 
-
+<!-- 3.0.0 -->
+[gh3421]: https://github.com/tomchristie/django-rest-framework/pulls/3421
 
