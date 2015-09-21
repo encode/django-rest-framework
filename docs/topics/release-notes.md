@@ -48,7 +48,7 @@ You can determine your currently installed version using `pip freeze`:
 * Fix `allow_empty` not working on serializers with `many=True`. ([#3361][gh3361], [#3364][gh3364])
 * Let `DurationField` accepts integers. ([#3359][gh3359])
 * Multi-level dictionaries not supported in multipart requests. ([#3314][gh3314])
-
+* Fix `ListField` truncation on HTTP PATCH ([#3415][gh3415], [#2761][gh2761])
 
 ### 3.2.3
 
@@ -525,9 +525,11 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh3321]: https://github.com/tomchristie/django-rest-framework/issues/3321
 
 <!-- 3.2.4 -->
+[gh2761]: https://github.com/tomchristie/django-rest-framework/issues/2761
 [gh3314]: https://github.com/tomchristie/django-rest-framework/issues/3314
 [gh3323]: https://github.com/tomchristie/django-rest-framework/issues/3323
 [gh3324]: https://github.com/tomchristie/django-rest-framework/issues/3324
 [gh3359]: https://github.com/tomchristie/django-rest-framework/issues/3359
 [gh3361]: https://github.com/tomchristie/django-rest-framework/issues/3361
 [gh3364]: https://github.com/tomchristie/django-rest-framework/issues/3364
+[gh3415]: https://github.com/tomchristie/django-rest-framework/issues/3415
