@@ -79,6 +79,7 @@ class BaseSerializer(Field):
     .errors - Not available.
     .data - Available.
     """
+    _called_data_property = False
 
     def __init__(self, instance=None, data=empty, **kwargs):
         self.instance = instance
@@ -166,6 +167,13 @@ class BaseSerializer(Field):
             "For example: 'serializer.save(owner=request.user)'.'"
         )
 
+        # Guard against calling 'serializer.data' before calling 'serializer.save()'
+        assert not self._called_data_property, (
+            "You should not access `.data` property before calling `.save()`."
+            "If you need to access data before committing to the database then "
+            "inspect 'serializer.validated_data' instead. "
+        )
+
         validated_data = dict(
             list(self.validated_data.items()) +
             list(kwargs.items())
@@ -230,6 +238,8 @@ class BaseSerializer(Field):
                 self._data = self.to_representation(self.validated_data)
             else:
                 self._data = self.get_initial()
+
+        self._called_data_property = True
         return self._data
 
     @property
