@@ -8,7 +8,6 @@ from django.core import validators
 from django.db import models
 from django.utils.text import capfirst
 
-from rest_framework.compat import clean_manytomany_helptext
 from rest_framework.validators import UniqueValidator
 
 NUMERIC_FIELD_TYPES = (
@@ -222,7 +221,7 @@ def get_relation_kwargs(field_name, relation_info):
     if model_field:
         if model_field.verbose_name and needs_label(model_field, field_name):
             kwargs['label'] = capfirst(model_field.verbose_name)
-        help_text = clean_manytomany_helptext(model_field.help_text)
+        help_text = model_field.help_text
         if help_text:
             kwargs['help_text'] = help_text
         if not model_field.editable:
