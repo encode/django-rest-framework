@@ -1265,14 +1265,13 @@ class MultipleChoiceField(ChoiceField):
         super(MultipleChoiceField, self).__init__(*args, **kwargs)
 
     def get_value(self, dictionary):
+        if self.field_name not in dictionary:
+            if getattr(self.root, 'partial', False):
+                return empty
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
-            ret = dictionary.getlist(self.field_name)
-            if getattr(self.root, 'partial', False) and not ret:
-                ret = empty
-            return ret
-
+            return dictionary.getlist(self.field_name)
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
@@ -1419,6 +1418,9 @@ class ListField(Field):
         self.child.bind(field_name='', parent=self)
 
     def get_value(self, dictionary):
+        if self.field_name not in dictionary:
+            if getattr(self.root, 'partial', False):
+                return empty
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
