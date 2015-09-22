@@ -16,14 +16,13 @@ For example, you might have a `urls.py` that looks something like this:
 from __future__ import unicode_literals
 
 import itertools
-from collections import namedtuple
+from collections import OrderedDict, namedtuple
 
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
 
 from rest_framework import views
-from rest_framework.compat import OrderedDict
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.urlpatterns import format_suffix_patterns

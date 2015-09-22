@@ -7,6 +7,7 @@ import decimal
 import inspect
 import re
 import uuid
+from collections import OrderedDict
 
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -26,8 +27,8 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import ISO_8601
 from rest_framework.compat import (
     MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, OrderedDict, duration_string, parse_duration,
-    unicode_repr, unicode_to_repr
+    MinValueValidator, duration_string, parse_duration, unicode_repr,
+    unicode_to_repr
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
