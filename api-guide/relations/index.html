@@ -668,7 +668,7 @@ class Track(models.Model):
 <pre><code>class TrackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Track
-        fields = ('order', 'title')
+        fields = ('order', 'title', 'duration')
 
 class AlbumSerializer(serializers.ModelSerializer):
     tracks = TrackSerializer(many=True, read_only=True)
@@ -703,7 +703,7 @@ class AlbumSerializer(serializers.ModelSerializer):
 <pre><code>class TrackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Track
-        fields = ('order', 'title')
+        fields = ('order', 'title', 'duration')
 
 class AlbumSerializer(serializers.ModelSerializer):
     tracks = TrackSerializer(many=True)

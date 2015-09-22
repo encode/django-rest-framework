@@ -537,7 +537,7 @@ serializer.save()
 <p>We can also serialize querysets instead of model instances.  To do so we simply add a <code>many=True</code> flag to the serializer arguments.</p>
 <pre><code>serializer = SnippetSerializer(Snippet.objects.all(), many=True)
 serializer.data
-# [{'pk': 1, 'title': u'', 'code': u'foo = "bar"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}, {'pk': 2, 'title': u'', 'code': u'print "hello, world"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}]
+# [OrderedDict([('pk', 1), ('title', u''), ('code', u'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('pk', 2), ('title', u''), ('code', u'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('pk', 3), ('title', u''), ('code', u'print "hello, world"'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
 </code></pre>
 <h2 id="using-modelserializers">Using ModelSerializers</h2>
 <p>Our <code>SnippetSerializer</code> class is replicating a lot of information that's also contained in the <code>Snippet</code> model.  It would be nice if we could keep our code a bit  more concise.</p>
