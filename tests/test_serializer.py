@@ -61,6 +61,7 @@ class TestSerializer:
         with pytest.raises(AssertionError):
             serializer.save()
 
+
 class TestValidateMethod:
     def test_non_field_error_validate_method(self):
         class ExampleSerializer(serializers.Serializer):
