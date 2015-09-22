@@ -51,6 +51,15 @@ class TestSerializer:
         with pytest.raises(AttributeError):
             serializer.data
 
+    def test_data_access_before_save_raises_error(self):
+        def create(validated_data):
+            return validated_data
+        serializer = self.Serializer(data={'char': 'abc', 'integer': 123})
+        serializer.create = create
+        assert serializer.is_valid()
+        assert serializer.data == {'char': 'abc', 'integer': 123}
+        with pytest.raises(AssertionError):
+            serializer.save()
 
 class TestValidateMethod:
     def test_non_field_error_validate_method(self):
