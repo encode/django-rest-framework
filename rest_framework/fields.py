@@ -11,7 +11,9 @@ import uuid
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.validators import RegexValidator, ip_address_validators
+from django.core.validators import (
+    EmailValidator, RegexValidator, URLValidator, ip_address_validators
+)
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
@@ -23,9 +25,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, OrderedDict, URLValidator, duration_string,
-    parse_duration, unicode_repr, unicode_to_repr
+    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MinValueValidator, OrderedDict, duration_string, parse_duration,
+    unicode_repr, unicode_to_repr
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
