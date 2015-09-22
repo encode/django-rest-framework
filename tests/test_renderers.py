@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import json
 import re
-from collections import MutableMapping
+from collections import MutableMapping, OrderedDict
 
 from django.conf.urls import include, url
 from django.core.cache import cache
@@ -13,7 +13,6 @@ from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import permissions, serializers, status
-from rest_framework.compat import OrderedDict
 from rest_framework.renderers import (
     BaseRenderer, BrowsableAPIRenderer, HTMLFormRenderer, JSONRenderer
 )

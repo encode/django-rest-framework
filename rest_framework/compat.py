@@ -57,48 +57,12 @@ def distinct(queryset, base):
     return queryset.distinct()
 
 
-# OrderedDict only available in Python 2.7.
-# This will always be the case in Django 1.7 and above, as these versions
-# no longer support Python 2.6.
-# For Django <= 1.6 and Python 2.6 fall back to SortedDict.
-try:
-    from collections import OrderedDict
-except ImportError:
-    from django.utils.datastructures import SortedDict as OrderedDict
-
-
-# unittest.SkipUnless only available in Python 2.7.
-try:
-    import unittest
-    unittest.skipUnless
-except (ImportError, AttributeError):
-    from django.utils import unittest
-
-
 # contrib.postgres only supported from 1.8 onwards.
 try:
     from django.contrib.postgres import fields as postgres_fields
 except ImportError:
     postgres_fields = None
 
-
-# Apps only exists from 1.7 onwards.
-try:
-    from django.apps import apps
-    get_model = apps.get_model
-except ImportError:
-    from django.db.models import get_model
-
-
-# Import path changes from 1.7 onwards.
-try:
-    from django.contrib.contenttypes.fields import (
-        GenericForeignKey, GenericRelation
-    )
-except ImportError:
-    from django.contrib.contenttypes.generic import (
-        GenericForeignKey, GenericRelation
-    )
 
 # django-filter is optional
 try:
