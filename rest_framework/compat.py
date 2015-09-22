@@ -67,14 +67,6 @@ except ImportError:
     from django.utils.datastructures import SortedDict as OrderedDict
 
 
-# unittest.SkipUnless only available in Python 2.7.
-try:
-    import unittest
-    unittest.skipUnless
-except (ImportError, AttributeError):
-    from django.utils import unittest
-
-
 # contrib.postgres only supported from 1.8 onwards.
 try:
     from django.contrib.postgres import fields as postgres_fields
