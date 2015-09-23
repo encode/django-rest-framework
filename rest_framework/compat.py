@@ -8,11 +8,14 @@ from __future__ import unicode_literals
 
 import django
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.core.validators import (
+    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MinValueValidator
+)
 from django.db import connection, transaction
 from django.utils import six
 from django.views.generic import View
-from django.core.exceptions import ValidationError
-
 
 try:
     import importlib  # Available in Python 3.1+
@@ -111,10 +114,6 @@ def get_model_name(model_cls):
         return model_cls._meta.module_name
 
 
-from django.core.validators import MinValueValidator
-from django.core.validators import MaxValueValidator
-from django.core.validators import MinLengthValidator
-from django.core.validators import MaxLengthValidator
 
 
 class CustomValidatorMessage(object):
