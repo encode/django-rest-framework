@@ -11,6 +11,8 @@ from django.conf import settings
 from django.db import connection, transaction
 from django.utils import six
 from django.views.generic import View
+from django.core.exceptions import ValidationError
+
 
 try:
     import importlib  # Available in Python 3.1+
@@ -109,39 +111,43 @@ def get_model_name(model_cls):
         return model_cls._meta.module_name
 
 
-# MinValueValidator, MaxValueValidator et al. only accept `message` in 1.8+
-if django.VERSION >= (1, 8):
-    from django.core.validators import MinValueValidator, MaxValueValidator
-    from django.core.validators import MinLengthValidator, MaxLengthValidator
-else:
-    from django.core.validators import MinValueValidator as DjangoMinValueValidator
-    from django.core.validators import MaxValueValidator as DjangoMaxValueValidator
-    from django.core.validators import MinLengthValidator as DjangoMinLengthValidator
-    from django.core.validators import MaxLengthValidator as DjangoMaxLengthValidator
+from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator
+from django.core.validators import MinLengthValidator
+from django.core.validators import MaxLengthValidator
 
 
-    class MinValueValidator(DjangoMinValueValidator):
-        def __init__(self, *args, **kwargs):
-            self.message = kwargs.pop('message', self.message)
-            super(MinValueValidator, self).__init__(*args, **kwargs)
+class CustomValidatorMessage(object):
+    def __init__(self, *args, **kwargs):
+        self.message = kwargs.pop('message', self.message)
+        self.format = kwargs.pop('string_format', '%')
+        super(CustomValidatorMessage, self).__init__(*args, **kwargs)
+
+    def __call__(self, value):
+        cleaned = self.clean(value)
+        params = {'limit_value': self.limit_value, 'show_value': cleaned, 'value': value}
+        if self.compare(cleaned, self.limit_value):
+            message = self.message
+            if self.format == '{':
+                args = {self.code: self.limit_value}
+                message = message.format(**args)
+            raise ValidationError(message, code=self.code, params=params)
 
 
-    class MaxValueValidator(DjangoMaxValueValidator):
-        def __init__(self, *args, **kwargs):
-            self.message = kwargs.pop('message', self.message)
-            super(MaxValueValidator, self).__init__(*args, **kwargs)
+class MinValueValidator(CustomValidatorMessage, MinValueValidator):
+    pass
 
 
-    class MinLengthValidator(DjangoMinLengthValidator):
-        def __init__(self, *args, **kwargs):
-            self.message = kwargs.pop('message', self.message)
-            super(MinLengthValidator, self).__init__(*args, **kwargs)
+class MaxValueValidator(CustomValidatorMessage, MaxValueValidator):
+    pass
 
 
-    class MaxLengthValidator(DjangoMaxLengthValidator):
-        def __init__(self, *args, **kwargs):
-            self.message = kwargs.pop('message', self.message)
-            super(MaxLengthValidator, self).__init__(*args, **kwargs)
+class MinLengthValidator(CustomValidatorMessage, MinLengthValidator):
+    pass
+
+
+class MaxLengthValidator(CustomValidatorMessage, MaxLengthValidator):
+    pass
 
 
 # URLValidator only accepts `message` in 1.6+
