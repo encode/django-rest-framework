@@ -1,9 +1,10 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Mikkel Munch Mortensen <3xm@detfalskested.dk>, 2015
+# Mads Jensen, <mje@inducks.org>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
@@ -49,7 +50,7 @@ msgstr "Ugyldig token header. Token-strenge må ikke indeholde mellemrum."
 #: authentication.py:177
 msgid ""
 "Invalid token header. Token string should not contain invalid characters."
-msgstr ""
+msgstr "Ugyldig token header. Token-strengen bør ikke indeholde ugyldige karakterer."
 
 #: authentication.py:186
 msgid "Invalid token."
@@ -162,7 +163,7 @@ msgstr "\"{value}\" er ikke et gyldigt UUID."
 
 #: fields.py:782
 msgid "Enter a valid IPv4 or IPv6 address."
-msgstr ""
+msgstr "Indtast en gyldig IPv4 eller IPv6 adresse."
 
 #: fields.py:807
 msgid "A valid integer is required."
@@ -230,7 +231,7 @@ msgstr "Klokkeslæt har forkert format. Brug i stedet et af disse formater: {for
 #: fields.py:1180
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Varighed har forkert format. Brug istedet et af følgende formater: {format}"
 
 #: fields.py:1205 fields.py:1254
 #, python-brace-format
@@ -240,7 +241,7 @@ msgstr "\"{input}\" er ikke et gyldigt valg."
 #: fields.py:1208 relations.py:58 relations.py:427
 #, python-brace-format
 msgid "More than {count} items..."
-msgstr ""
+msgstr "Flere end {count} punkter..."
 
 #: fields.py:1255 fields.py:1401 relations.py:423 serializers.py:504
 #, python-brace-format
@@ -249,12 +250,12 @@ msgstr "Forventede en liste, men fik noget af typen \"{input_type}\"."
 
 #: fields.py:1256
 msgid "This selection may not be empty."
-msgstr ""
+msgstr "Dette valg kan være tomt."
 
 #: fields.py:1294
 #, python-brace-format
 msgid "\"{input}\" is not a valid path choice."
-msgstr ""
+msgstr "\"{input}\" er ikke et gyldigt stivalg"
 
 #: fields.py:1313
 msgid "No file was submitted."
@@ -287,7 +288,7 @@ msgstr "Medsend et gyldigt billede. Den medsendte fil var enten ikke et billede 
 
 #: fields.py:1402 relations.py:424 serializers.py:505
 msgid "This list may not be empty."
-msgstr ""
+msgstr "Denne liste er muligvis ikke tom."
 
 #: fields.py:1452
 #, python-brace-format
