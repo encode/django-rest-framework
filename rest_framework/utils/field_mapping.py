@@ -193,7 +193,15 @@ def get_field_kwargs(field_name, model_field):
         ]
 
     if getattr(model_field, 'unique', False):
-        validator = UniqueValidator(queryset=model_field.model._default_manager)
+        unique_error_message = model_field.error_messages.get('unique', None)
+        if unique_error_message:
+            unique_error_message = unique_error_message % {
+                'model_name': model_field.model._meta.object_name,
+                'field_label': model_field.verbose_name
+            }
+        validator = UniqueValidator(
+            queryset=model_field.model._default_manager,
+            message=unique_error_message)
         validator_kwarg.append(validator)
 
     if validator_kwarg:
