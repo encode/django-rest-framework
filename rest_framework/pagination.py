@@ -389,39 +389,43 @@ class LimitOffsetPagination(BasePagination):
             return 0
 
     def get_next_link(self):
+        limit = self.limit if self.limit > 0 else self.default_limit
         if self.offset + self.limit >= self.count:
             return None
 
         url = self.request.build_absolute_uri()
-        url = replace_query_param(url, self.limit_query_param, self.limit)
+        url = replace_query_param(url, self.limit_query_param, limit)
 
-        offset = self.offset + self.limit
+        offset = self.offset + limit
         return replace_query_param(url, self.offset_query_param, offset)
 
     def get_previous_link(self):
+        limit = self.limit if self.limit > 0 else self.default_limit
         if self.offset <= 0:
             return None
 
         url = self.request.build_absolute_uri()
-        url = replace_query_param(url, self.limit_query_param, self.limit)
+        url = replace_query_param(url, self.limit_query_param, limit)
 
-        if self.offset - self.limit <= 0:
+        if self.offset - limit <= 0:
             return remove_query_param(url, self.offset_query_param)
 
-        offset = self.offset - self.limit
+        offset = self.offset - limit
         return replace_query_param(url, self.offset_query_param, offset)
 
     def get_html_context(self):
         base_url = self.request.build_absolute_uri()
-        current = _divide_with_ceil(self.offset, self.limit) + 1
+        limit = self.limit if self.limit > 0 else self.default_limit
+        base_url = replace_query_param(base_url, self.limit_query_param, limit)
+        current = _divide_with_ceil(self.offset, limit) + 1
         # The number of pages is a little bit fiddly.
         # We need to sum both the number of pages from current offset to end
         # plus the number of pages up to the current offset.
         # When offset is not strictly divisible by the limit then we may
         # end up introducing an extra page as an artifact.
         final = (
-            _divide_with_ceil(self.count - self.offset, self.limit) +
-            _divide_with_ceil(self.offset, self.limit)
+            _divide_with_ceil(self.count - self.offset, limit) +
+            _divide_with_ceil(self.offset, limit)
         )
         if final < 1:
             final = 1
@@ -433,7 +437,7 @@ class LimitOffsetPagination(BasePagination):
             if page_number == 1:
                 return remove_query_param(base_url, self.offset_query_param)
             else:
-                offset = self.offset + ((page_number - current) * self.limit)
+                offset = self.offset + ((page_number - current) * limit)
                 return replace_query_param(base_url, self.offset_query_param, offset)
 
         page_numbers = _get_displayed_page_numbers(current, final)
