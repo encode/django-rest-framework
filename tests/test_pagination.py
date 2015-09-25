@@ -496,8 +496,7 @@ class TestLimitOffset:
         assert queryset == []
         assert content.get('next') == next_url
         assert context.get('page_links')[0] == \
-                PageLink('http://testserver/?limit={0}'.format(next_limit), 1, True, False)
-
+            PageLink('http://testserver/?limit={0}'.format(next_limit), 1, True, False)
 
 
 class TestCursorPagination:
