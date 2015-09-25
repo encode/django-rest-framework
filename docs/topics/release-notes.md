@@ -24,6 +24,12 @@ The timeline for deprecation of a feature present in version 1.0 would work as f
 
 * Version 1.3 would remove the deprecated bits of API entirely.
 
+Deprecations are marked using `rest_framework.compat.deprecated`, which accepts a version tuple for the version when code is first deprecated and message to pass to the `warnings` module:
+
+    from rest_framework.compat import deprecated
+    ...
+    deprecated((3,1,0), "Using X for Y is deprecated. Prefer Z")
+
 Note that in line with Django's policy, any parts of the framework not mentioned in the documentation should generally be considered private API, and may be subject to change.
 
 ## Upgrading
