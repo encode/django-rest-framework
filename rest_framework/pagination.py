@@ -390,7 +390,7 @@ class LimitOffsetPagination(BasePagination):
 
     def get_next_link(self):
         limit = self.limit if self.limit > 0 else self.default_limit
-        if self.offset + self.limit >= self.count:
+        if self.offset + limit >= self.count:
             return None
 
         url = self.request.build_absolute_uri()
