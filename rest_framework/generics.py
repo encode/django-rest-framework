@@ -75,12 +75,19 @@ class GenericAPIView(views.APIView):
 
     def get_object(self):
         """
-        Returns the object the view is displaying.
+        Returns the object the view is displaying. The value is memoized across
+        the lifecycle of the view to reduce database hits when e.g. delegating
+        from custom actions in a ModelViewSet to built-in actions.
 
         You may want to override this if you need to provide non-standard
         queryset lookups.  Eg if objects are referenced using multiple
         keyword arguments in the url conf.
         """
+        # Check if obj has been looked up (and therefore memoized) before.
+        obj = getattr(self, 'obj', None)
+        if obj is not None:
+            return obj
+
         queryset = self.filter_queryset(self.get_queryset())
 
         # Perform the lookup filtering.
@@ -98,6 +105,9 @@ class GenericAPIView(views.APIView):
 
         # May raise a permission denied
         self.check_object_permissions(self.request, obj)
+
+        # Memoize obj for potential lookups in the future.
+        self.obj = obj
 
         return obj
 
