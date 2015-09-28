@@ -459,6 +459,14 @@ You can also use the declarative style, as with `ListField`. For example:
     class DocumentField(DictField):
         child = CharField()
 
+## JSONField
+
+A field class that validates that the incoming data structure consists of valid JSON primitives. In its alternate binary mode, it will represent and validate JSON encoded strings.
+
+**Signature**: `JSONField(binary)`
+
+- `binary` - If set to `True` then the field will output and validate a JSON encoded string, rather that a primitive data structure. Defaults to `False`.
+
 ---
 
 # Miscellaneous fields

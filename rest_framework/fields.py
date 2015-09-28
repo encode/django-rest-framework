@@ -5,6 +5,7 @@ import copy
 import datetime
 import decimal
 import inspect
+import json
 import re
 import uuid
 from collections import OrderedDict
@@ -1520,6 +1521,31 @@ class DictField(Field):
             (six.text_type(key), self.child.to_representation(val))
             for key, val in value.items()
         ])
+
+
+class JSONField(Field):
+    default_error_messages = {
+        'invalid': _('Value must be valid JSON.')
+    }
+
+    def __init__(self, *args, **kwargs):
+        self.binary = kwargs.pop('binary', False)
+        super(JSONField, self).__init__(*args, **kwargs)
+
+    def to_internal_value(self, data):
+        try:
+            if self.binary:
+                return json.loads(data)
+            else:
+                json.dumps(data)
+        except (TypeError, ValueError):
+            self.fail('invalid')
+        return data
+
+    def to_representation(self, value):
+        if self.binary:
+            return json.dumps(value)
+        return value
 
 
 # Miscellaneous field types...
