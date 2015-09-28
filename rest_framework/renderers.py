@@ -420,9 +420,6 @@ class BrowsableAPIRenderer(BaseRenderer):
         if method not in view.allowed_methods:
             return  # Not a valid method
 
-        if not api_settings.FORM_METHOD_OVERRIDE:
-            return  # Cannot use form overloading
-
         try:
             view.check_permissions(request)
             if obj is not None:
@@ -530,13 +527,6 @@ class BrowsableAPIRenderer(BaseRenderer):
             instance = None
 
         with override_method(view, request, method) as request:
-            # If we're not using content overloading there's no point in
-            # supplying a generic form, as the view won't treat the form's
-            # value as the content of the request.
-            if not (api_settings.FORM_CONTENT_OVERRIDE and
-                    api_settings.FORM_CONTENTTYPE_OVERRIDE):
-                return None
-
             # Check permissions
             if not self.show_form_for_method(view, method, request, instance):
                 return
@@ -564,28 +554,22 @@ class BrowsableAPIRenderer(BaseRenderer):
 
             # Generate a generic form that includes a content type field,
             # and a content field.
-            content_type_field = api_settings.FORM_CONTENTTYPE_OVERRIDE
-            content_field = api_settings.FORM_CONTENT_OVERRIDE
-
             media_types = [parser.media_type for parser in view.parser_classes]
             choices = [(media_type, media_type) for media_type in media_types]
             initial = media_types[0]
 
-            # NB. http://jacobian.org/writing/dynamic-form-generation/
             class GenericContentForm(forms.Form):
-                def __init__(self):
-                    super(GenericContentForm, self).__init__()
-
-                    self.fields[content_type_field] = forms.ChoiceField(
-                        label='Media type',
-                        choices=choices,
-                        initial=initial
-                    )
-                    self.fields[content_field] = forms.CharField(
-                        label='Content',
-                        widget=forms.Textarea,
-                        initial=content
-                    )
+                _content_type = forms.ChoiceField(
+                    label='Media type',
+                    choices=choices,
+                    initial=initial,
+                    widget=forms.Select(attrs={'data-override': 'content-type'})
+                )
+                _content = forms.CharField(
+                    label='Content',
+                    widget=forms.Textarea(attrs={'data-override': 'content'}),
+                    initial=content
+                )
 
             return GenericContentForm()
 
