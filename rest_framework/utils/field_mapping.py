@@ -112,6 +112,14 @@ def get_field_kwargs(field_name, model_field):
         kwargs['choices'] = model_field.choices
         return kwargs
 
+    # Our decimal validation is handled in the field code, not validator code.
+    # (In Django 1.9+ this differs from previous style)
+    if isinstance(model_field, models.DecimalField):
+        validator_kwarg = [
+            validator for validator in validator_kwarg
+            if not isinstance(validator, validators.DecimalValidator)
+        ]
+
     # Ensure that max_length is passed explicitly as a keyword arg,
     # rather than as a validator.
     max_length = getattr(model_field, 'max_length', None)
