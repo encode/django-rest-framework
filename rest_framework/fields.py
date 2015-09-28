@@ -1544,7 +1544,11 @@ class JSONField(Field):
 
     def to_representation(self, value):
         if self.binary:
-            return json.dumps(value)
+            value = json.dumps(value)
+            # On python 2.x the return type for json.dumps() is underspecified.
+            # On python 3.x json.dumps() returns unicode strings.
+            if isinstance(value, six.text_type):
+                value = bytes(value.encode('utf-8'))
         return value
 
 

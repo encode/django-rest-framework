@@ -1562,7 +1562,7 @@ class TestBinaryJSONField(FieldValues):
     Values for `JSONField` with binary=True.
     """
     valid_inputs = [
-        ('{"a": 1, "3": null, "b": ["some", "list", true, 1.23]}', {
+        (b'{"a": 1, "3": null, "b": ["some", "list", true, 1.23]}', {
             'a': 1,
             'b': ['some', 'list', True, 1.23],
             '3': None
@@ -1576,7 +1576,7 @@ class TestBinaryJSONField(FieldValues):
             'a': 1,
             'b': ['some', 'list', True, 1.23],
             '3': None
-        }, '{"a": 1, "3": null, "b": ["some", "list", true, 1.23]}'),
+        }, b'{"a": 1, "3": null, "b": ["some", "list", true, 1.23]}'),
     ]
     field = serializers.JSONField(binary=True)
 
