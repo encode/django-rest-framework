@@ -64,6 +64,13 @@ except ImportError:
     postgres_fields = None
 
 
+# JSONField is only supported from 1.9 onwards
+try:
+    from django.contrib.postgres.fields import JSONField
+except ImportError:
+    JSONField = None
+
+
 # django-filter is optional
 try:
     import django_filters
