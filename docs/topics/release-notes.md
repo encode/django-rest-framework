@@ -44,7 +44,7 @@ You can determine your currently installed version using `pip freeze`:
 
 **Date**: NOT YET RELEASED
 
-* Removed support for Django Version 1.5 ([#3421][gh3421])
+* Removed support for Django Versions 1.5 & 1.6 ([#3421][gh3421], [#3429][gh3429])
 
 ## 3.2.x series
 
@@ -544,3 +544,4 @@ For older release notes, [please see the version 2.x documentation][old-release-
 
 <!-- 3.3.0 -->
 [gh3421]: https://github.com/tomchristie/django-rest-framework/pulls/3421
+[gh3429]: https://github.com/tomchristie/django-rest-framework/pull/3429

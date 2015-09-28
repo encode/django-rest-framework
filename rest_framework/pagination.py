@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 
 import warnings
 from base64 import b64decode, b64encode
-from collections import namedtuple
+from collections import OrderedDict, namedtuple
 
 from django.core.paginator import Paginator as DjangoPaginator
 from django.core.paginator import InvalidPage
@@ -16,7 +16,6 @@ from django.utils import six
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import OrderedDict
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings

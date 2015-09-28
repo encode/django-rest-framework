@@ -8,6 +8,7 @@ an appropriate set of serializer fields for each case.
 from __future__ import unicode_literals
 
 import decimal
+from collections import OrderedDict
 
 import django
 import pytest
@@ -21,7 +22,7 @@ from django.utils import six
 
 from rest_framework import serializers
 from rest_framework.compat import DurationField as ModelDurationField
-from rest_framework.compat import OrderedDict, unicode_repr
+from rest_framework.compat import unicode_repr
 
 
 def dedent(blocktext):

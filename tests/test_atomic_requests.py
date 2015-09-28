@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import unittest
+
 from django.conf.urls import url
 from django.db import connection, connections, transaction
 from django.http import Http404
@@ -7,7 +9,6 @@ from django.test import TestCase, TransactionTestCase
 from django.utils.decorators import method_decorator
 
 from rest_framework import status
-from rest_framework.compat import unittest
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
