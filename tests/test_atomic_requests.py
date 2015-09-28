@@ -47,7 +47,7 @@ class DBTransactionTests(TestCase):
     def tearDown(self):
         connections.databases['default']['ATOMIC_REQUESTS'] = False
 
-    def test_no_exception_conmmit_transaction(self):
+    def test_no_exception_commit_transaction(self):
         request = factory.post('/')
 
         with self.assertNumQueries(1):

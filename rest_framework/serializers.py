@@ -170,6 +170,12 @@ class BaseSerializer(Field):
             "For example: 'serializer.save(owner=request.user)'.'"
         )
 
+        assert not hasattr(self, '_data'), (
+            "You cannot call `.save()` after accessing `serializer.data`."
+            "If you need to access data before committing to the database then "
+            "inspect 'serializer.validated_data' instead. "
+        )
+
         validated_data = dict(
             list(self.validated_data.items()) +
             list(kwargs.items())
@@ -795,7 +801,7 @@ class ModelSerializer(Serializer):
     # you'll also need to ensure you update the `create` method on any generic
     # views, to correctly handle the 'Location' response header for
     # "HTTP 201 Created" responses.
-    url_field_name = api_settings.URL_FIELD_NAME
+    url_field_name = None
 
     # Default `create` and `update` behavior...
     def create(self, validated_data):
@@ -878,6 +884,9 @@ class ModelSerializer(Serializer):
         Return the dict of field names -> field instances that should be
         used for `self.fields` when instantiating the serializer.
         """
+        if self.url_field_name is None:
+            self.url_field_name = api_settings.URL_FIELD_NAME
+
         assert hasattr(self, 'Meta'), (
             'Class {serializer_class} missing "Meta" attribute'.format(
                 serializer_class=self.__class__.__name__
@@ -954,11 +963,11 @@ class ModelSerializer(Serializer):
 
         if fields and fields != ALL_FIELDS and not isinstance(fields, (list, tuple)):
             raise TypeError(
-                'The `fields` option must be a list or tuple. Got %s.' %
-                type(fields).__name__
+                'The `fields` option must be a list or tuple or "__all__". '
+                'Got %s.' % type(fields).__name__
             )
 
-        if exclude and exclude != ALL_FIELDS and not isinstance(exclude, (list, tuple)):
+        if exclude and not isinstance(exclude, (list, tuple)):
             raise TypeError(
                 'The `exclude` option must be a list or tuple. Got %s.' %
                 type(exclude).__name__
@@ -973,9 +982,10 @@ class ModelSerializer(Serializer):
 
         if fields is None and exclude is None:
             warnings.warn(
-                "Creating a ModelSerializer without either the 'fields' attribute "
-                "or the 'exclude' attribute will be prohibited. "
-                "The {serializer_class} serializer needs updating.".format(
+                "Creating a ModelSerializer without either the 'fields' "
+                "attribute or the 'exclude' attribute is pending deprecation "
+                "since 3.3.0. Add an explicit fields = '__all__' to the "
+                "{serializer_class} serializer.".format(
                     serializer_class=self.__class__.__name__
                 ),
                 PendingDeprecationWarning
