@@ -150,12 +150,12 @@ class ResolveModelWithPatchedDjangoTests(TestCase):
 
     def setUp(self):
         """Monkeypatch get_model."""
-        self.get_model = rest_framework.utils.model_meta.models.get_model
+        self.get_model = rest_framework.utils.model_meta.get_model
 
         def get_model(app_label, model_name):
             return None
 
-        rest_framework.utils.model_meta.models.get_model = get_model
+        rest_framework.utils.model_meta.get_model = get_model
 
     def tearDown(self):
         """Revert monkeypatching."""

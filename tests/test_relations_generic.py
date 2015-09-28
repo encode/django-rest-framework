@@ -1,14 +1,12 @@
 from __future__ import unicode_literals
 
-from django.contrib.contenttypes.generic import (
-    GenericForeignKey, GenericRelation
-)
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.test import TestCase
 from django.utils.encoding import python_2_unicode_compatible
 
 from rest_framework import serializers
+from rest_framework.compat import GenericForeignKey, GenericRelation
 
 
 @python_2_unicode_compatible

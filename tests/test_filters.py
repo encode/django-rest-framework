@@ -8,12 +8,11 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.test import TestCase
 from django.test.utils import override_settings
-from django.utils import unittest
 from django.utils.dateparse import parse_date
 from django.utils.six.moves import reload_module
 
 from rest_framework import filters, generics, serializers, status
-from rest_framework.compat import django_filters
+from rest_framework.compat import django_filters, unittest
 from rest_framework.test import APIRequestFactory
 
 from .models import BaseFilterableItem, BasicModel, FilterableItem

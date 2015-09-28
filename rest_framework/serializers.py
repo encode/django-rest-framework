@@ -12,6 +12,8 @@ response content is handled by parsers and renderers.
 """
 from __future__ import unicode_literals
 
+import warnings
+
 from django.db import models
 from django.db.models.fields import Field as DjangoModelField
 from django.db.models.fields import FieldDoesNotExist
@@ -50,6 +52,8 @@ LIST_SERIALIZER_KWARGS = (
     'label', 'help_text', 'style', 'error_messages', 'allow_empty',
     'instance', 'data', 'partial', 'context', 'allow_null'
 )
+
+ALL_FIELDS = '__all__'
 
 
 # BaseSerializer
@@ -957,10 +961,10 @@ class ModelSerializer(Serializer):
         fields = getattr(self.Meta, 'fields', None)
         exclude = getattr(self.Meta, 'exclude', None)
 
-        if fields and not isinstance(fields, (list, tuple)):
+        if fields and fields != ALL_FIELDS and not isinstance(fields, (list, tuple)):
             raise TypeError(
-                'The `fields` option must be a list or tuple. Got %s.' %
-                type(fields).__name__
+                'The `fields` option must be a list or tuple or "__all__". '
+                'Got %s.' % type(fields).__name__
             )
 
         if exclude and not isinstance(exclude, (list, tuple)):
@@ -975,6 +979,20 @@ class ModelSerializer(Serializer):
                 serializer_class=self.__class__.__name__
             )
         )
+
+        if fields is None and exclude is None:
+            warnings.warn(
+                "Creating a ModelSerializer without either the 'fields' "
+                "attribute or the 'exclude' attribute is pending deprecation "
+                "since 3.3.0. Add an explicit fields = '__all__' to the "
+                "{serializer_class} serializer.".format(
+                    serializer_class=self.__class__.__name__
+                ),
+                PendingDeprecationWarning
+            )
+
+        if fields == ALL_FIELDS:
+            fields = None
 
         if fields is not None:
             # Ensure that all declared fields have also been included in the

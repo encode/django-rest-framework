@@ -67,6 +67,14 @@ except ImportError:
     from django.utils.datastructures import SortedDict as OrderedDict
 
 
+# unittest.SkipUnless only available in Python 2.7.
+try:
+    import unittest
+    unittest.skipUnless
+except (ImportError, AttributeError):
+    from django.utils import unittest
+
+
 # contrib.postgres only supported from 1.8 onwards.
 try:
     from django.contrib.postgres import fields as postgres_fields
@@ -74,22 +82,29 @@ except ImportError:
     postgres_fields = None
 
 
+# Apps only exists from 1.7 onwards.
+try:
+    from django.apps import apps
+    get_model = apps.get_model
+except ImportError:
+    from django.db.models import get_model
+
+
+# Import path changes from 1.7 onwards.
+try:
+    from django.contrib.contenttypes.fields import (
+        GenericForeignKey, GenericRelation
+    )
+except ImportError:
+    from django.contrib.contenttypes.generic import (
+        GenericForeignKey, GenericRelation
+    )
+
 # django-filter is optional
 try:
     import django_filters
 except ImportError:
     django_filters = None
-
-if django.VERSION >= (1, 6):
-    def clean_manytomany_helptext(text):
-        return text
-else:
-    # Up to version 1.5 many to many fields automatically suffix
-    # the `help_text` attribute with hardcoded text.
-    def clean_manytomany_helptext(text):
-        if text.endswith(' Hold down "Control", or "Command" on a Mac, to select more than one.'):
-            text = text[:-69]
-        return text
 
 # Django-guardian is optional. Import only if guardian is in INSTALLED_APPS
 # Fixes (#1712). We keep the try/except for the test suite.
@@ -99,14 +114,6 @@ try:
     import guardian.shortcuts  # Fixes #1624
 except ImportError:
     pass
-
-
-def get_model_name(model_cls):
-    try:
-        return model_cls._meta.model_name
-    except AttributeError:
-        # < 1.6 used module_name instead of model_name
-        return model_cls._meta.module_name
 
 
 # MinValueValidator, MaxValueValidator et al. only accept `message` in 1.8+
@@ -142,32 +149,6 @@ else:
         def __init__(self, *args, **kwargs):
             self.message = kwargs.pop('message', self.message)
             super(MaxLengthValidator, self).__init__(*args, **kwargs)
-
-
-# URLValidator only accepts `message` in 1.6+
-if django.VERSION >= (1, 6):
-    from django.core.validators import URLValidator
-else:
-    from django.core.validators import URLValidator as DjangoURLValidator
-
-
-    class URLValidator(DjangoURLValidator):
-        def __init__(self, *args, **kwargs):
-            self.message = kwargs.pop('message', self.message)
-            super(URLValidator, self).__init__(*args, **kwargs)
-
-
-# EmailValidator requires explicit regex prior to 1.6+
-if django.VERSION >= (1, 6):
-    from django.core.validators import EmailValidator
-else:
-    from django.core.validators import EmailValidator as DjangoEmailValidator
-    from django.core.validators import email_re
-
-
-    class EmailValidator(DjangoEmailValidator):
-        def __init__(self, *args, **kwargs):
-            super(EmailValidator, self).__init__(email_re, *args, **kwargs)
 
 
 # PATCH method is not implemented by Django
