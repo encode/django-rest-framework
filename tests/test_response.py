@@ -10,7 +10,6 @@ from rest_framework.renderers import (
     BaseRenderer, BrowsableAPIRenderer, JSONRenderer
 )
 from rest_framework.response import Response
-from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from tests.models import BasicModel
 
@@ -176,17 +175,6 @@ class RendererIntegrationTests(TestCase):
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
-    def test_specified_renderer_serializes_content_on_accept_query(self):
-        """The '_accept' query string should behave in the same way as the Accept header."""
-        param = '?%s=%s' % (
-            api_settings.URL_ACCEPT_OVERRIDE,
-            RendererB.media_type
-        )
-        resp = self.client.get('/' + param)
-        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
-        self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEqual(resp.status_code, DUMMYSTATUS)
-
     def test_specified_renderer_serializes_content_on_format_query(self):
         """If a 'format' query is specified, the renderer with the matching
         format attribute should serialize the response."""
@@ -298,16 +286,6 @@ class Issue807Tests(TestCase):
         headers = {"HTTP_ACCEPT": RendererC.media_type}
         resp = self.client.get('/setbyview', **headers)
         self.assertEqual('setbyview', resp['Content-Type'])
-
-    def test_viewset_label_help_text(self):
-        param = '?%s=%s' % (
-            api_settings.URL_ACCEPT_OVERRIDE,
-            'text/html'
-        )
-        resp = self.client.get('/html_new_model_viewset/' + param)
-        self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
-        # self.assertContains(resp, 'Text comes here')
-        # self.assertContains(resp, 'Text description.')
 
     def test_form_has_label_and_help_text(self):
         resp = self.client.get('/html_new_model')

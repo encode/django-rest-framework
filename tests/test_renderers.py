@@ -191,17 +191,6 @@ class RendererEndToEndTests(TestCase):
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
-    def test_specified_renderer_serializes_content_on_accept_query(self):
-        """The '_accept' query string should behave in the same way as the Accept header."""
-        param = '?%s=%s' % (
-            api_settings.URL_ACCEPT_OVERRIDE,
-            RendererB.media_type
-        )
-        resp = self.client.get('/' + param)
-        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
-        self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEqual(resp.status_code, DUMMYSTATUS)
-
     def test_unsatisfiable_accept_header_on_request_returns_406_status(self):
         """If the Accept header is unsatisfiable we should return a 406 Not Acceptable response."""
         resp = self.client.get('/', HTTP_ACCEPT='foo/bar')

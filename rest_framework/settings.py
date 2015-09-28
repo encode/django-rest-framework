@@ -91,10 +91,8 @@ DEFAULTS = {
     ),
     'TEST_REQUEST_DEFAULT_FORMAT': 'multipart',
 
-    # Browser enhancements
-    'URL_ACCEPT_OVERRIDE': 'accept',
+    # Hyperlink settings
     'URL_FORMAT_OVERRIDE': 'format',
-
     'FORMAT_SUFFIX_KWARG': 'format',
     'URL_FIELD_NAME': 'url',
 
