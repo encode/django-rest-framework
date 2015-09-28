@@ -69,6 +69,16 @@ If using the `i18n_patterns` function provided by Django, as well as `format_suf
 
 ---
 
+## Query parameter formats
+
+An alternative to the format suffixes is to include the requested format in a query parameter. REST framework provides this option by default, and it is used in the browsable API to switch between differing available representations.
+
+To select a representation using its short format, use the `format` query parameter. For example: `http://example.com/organizations/?format=csv`.
+
+The name of this query parameter can be modified using the `URL_FORMAT_OVERRIDE` setting. Set the value to `None` to disable this behavior.
+
+---
+
 ## Accept headers vs. format suffixes
 
 There seems to be a view among some of the Web community that filename extensions are not a RESTful pattern, and that `HTTP Accept` headers should always be used instead.

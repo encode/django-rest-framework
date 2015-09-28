@@ -22,7 +22,6 @@ def preserve_builtin_query_params(url, request=None):
 
     overrides = [
         api_settings.URL_FORMAT_OVERRIDE,
-        api_settings.URL_ACCEPT_OVERRIDE
     ]
 
     for param in overrides:
