@@ -11,9 +11,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import six
 
-from rest_framework.compat import (
-    distinct, django_filters, get_model_name, guardian
-)
+from rest_framework.compat import distinct, django_filters, guardian
 from rest_framework.settings import api_settings
 
 FilterSet = django_filters and django_filters.FilterSet or None
@@ -202,7 +200,7 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
         model_cls = queryset.model
         kwargs = {
             'app_label': model_cls._meta.app_label,
-            'model_name': get_model_name(model_cls)
+            'model_name': model_cls._meta.model_name
         }
         permission = self.perm_format % kwargs
         if guardian.VERSION >= (1, 3):

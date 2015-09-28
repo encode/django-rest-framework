@@ -12,6 +12,8 @@ response content is handled by parsers and renderers.
 """
 from __future__ import unicode_literals
 
+import warnings
+
 from django.db import models
 from django.db.models.fields import Field as DjangoModelField
 from django.db.models.fields import FieldDoesNotExist
@@ -50,6 +52,8 @@ LIST_SERIALIZER_KWARGS = (
     'label', 'help_text', 'style', 'error_messages', 'allow_empty',
     'instance', 'data', 'partial', 'context', 'allow_null'
 )
+
+ALL_FIELDS = '__all__'
 
 
 # BaseSerializer
@@ -164,6 +168,12 @@ class BaseSerializer(Field):
             "You can also pass additional keyword arguments to 'save()' if you "
             "need to set extra attributes on the saved model instance. "
             "For example: 'serializer.save(owner=request.user)'.'"
+        )
+
+        assert not hasattr(self, '_data'), (
+            "You cannot call `.save()` after accessing `serializer.data`."
+            "If you need to access data before committing to the database then "
+            "inspect 'serializer.validated_data' instead. "
         )
 
         validated_data = dict(
@@ -791,7 +801,7 @@ class ModelSerializer(Serializer):
     # you'll also need to ensure you update the `create` method on any generic
     # views, to correctly handle the 'Location' response header for
     # "HTTP 201 Created" responses.
-    url_field_name = api_settings.URL_FIELD_NAME
+    url_field_name = None
 
     # Default `create` and `update` behavior...
     def create(self, validated_data):
@@ -874,6 +884,9 @@ class ModelSerializer(Serializer):
         Return the dict of field names -> field instances that should be
         used for `self.fields` when instantiating the serializer.
         """
+        if self.url_field_name is None:
+            self.url_field_name = api_settings.URL_FIELD_NAME
+
         assert hasattr(self, 'Meta'), (
             'Class {serializer_class} missing "Meta" attribute'.format(
                 serializer_class=self.__class__.__name__
@@ -948,10 +961,10 @@ class ModelSerializer(Serializer):
         fields = getattr(self.Meta, 'fields', None)
         exclude = getattr(self.Meta, 'exclude', None)
 
-        if fields and not isinstance(fields, (list, tuple)):
+        if fields and fields != ALL_FIELDS and not isinstance(fields, (list, tuple)):
             raise TypeError(
-                'The `fields` option must be a list or tuple. Got %s.' %
-                type(fields).__name__
+                'The `fields` option must be a list or tuple or "__all__". '
+                'Got %s.' % type(fields).__name__
             )
 
         if exclude and not isinstance(exclude, (list, tuple)):
@@ -966,6 +979,20 @@ class ModelSerializer(Serializer):
                 serializer_class=self.__class__.__name__
             )
         )
+
+        if fields is None and exclude is None:
+            warnings.warn(
+                "Creating a ModelSerializer without either the 'fields' "
+                "attribute or the 'exclude' attribute is pending deprecation "
+                "since 3.3.0. Add an explicit fields = '__all__' to the "
+                "{serializer_class} serializer.".format(
+                    serializer_class=self.__class__.__name__
+                ),
+                PendingDeprecationWarning
+            )
+
+        if fields == ALL_FIELDS:
+            fields = None
 
         if fields is not None:
             # Ensure that all declared fields have also been included in the
