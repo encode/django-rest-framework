@@ -461,7 +461,7 @@ You can also use the declarative style, as with `ListField`. For example:
 
 ## JSONField
 
-A field class that validates that the incoming data structure consists of valid JSON primitives. In its alternate binary mode, it will represent and validate JSON encoded strings.
+A field class that validates that the incoming data structure consists of valid JSON primitives. In its alternate binary mode, it will represent and validate JSON-encoded binary strings.
 
 **Signature**: `JSONField(binary)`
 
