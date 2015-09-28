@@ -1572,11 +1572,7 @@ class TestBinaryJSONField(FieldValues):
         ('{"a": "unterminated string}', ['Value must be valid JSON.']),
     ]
     outputs = [
-        ({
-            'a': 1,
-            'b': ['some', 'list', True, 1.23],
-            '3': None
-        }, b'{"a": 1, "3": null, "b": ["some", "list", true, 1.23]}'),
+        (['some', 'list', True, 1.23], b'["some", "list", true, 1.23]'),
     ]
     field = serializers.JSONField(binary=True)
 
