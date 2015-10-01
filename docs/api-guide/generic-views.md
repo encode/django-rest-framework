@@ -226,7 +226,19 @@ If the queryset is populated, this returns a `200 OK` response, with a serialize
 
 Provides a `.create(request, *args, **kwargs)` method, that implements creating and saving a new model instance.
 
-If an object is created this returns a `201 Created` response, with a serialized representation of the object as the body of the response.  If the representation contains a key named `url`, then the `Location` header of the response will be populated with that value.
+If an object is created this returns a `201 Created` response, with a serialized representation of the object as the body of the response.
+
+If the representation contains a key named `url`, then the `Location` header of the response will be populated with that value. This behaviour can be altered like so:
+
+        class DocumentView(CreateModelMixin):
+                # ....
+                
+                def get_success_headers(self, data):
+                        """data is the object ready for JSON serialization
+                        or similar.
+                        Returned is a dict of headers, so for example {'X-Header':'OK'}
+                        """
+                        return {}
 
 If the request data provided for creating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
 
