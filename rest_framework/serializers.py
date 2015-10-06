@@ -91,7 +91,7 @@ class BaseSerializer(Field):
             self.initial_data = data
         self.partial = kwargs.pop('partial', False)
         self._context = kwargs.pop('context', {})
-        kwargs.pop('many', None)
+        self.many = kwargs.pop('many', None)
         super(BaseSerializer, self).__init__(**kwargs)
 
     def __new__(cls, *args, **kwargs):
@@ -212,10 +212,10 @@ class BaseSerializer(Field):
             try:
                 self._validated_data = self.run_validation(self.initial_data)
             except ValidationError as exc:
-                self._validated_data = {}
+                self._validated_data = [] if self.many else {}
                 self._errors = exc.detail
             else:
-                self._errors = {}
+                self._errors = [] if self.many else {}
 
         if self._errors and raise_exception:
             raise ValidationError(self.errors)
@@ -670,16 +670,25 @@ class ListSerializer(BaseSerializer):
     # Allows renderers such as HTMLFormRenderer to get the full field info.
 
     @property
-    def data(self):
-        ret = super(ListSerializer, self).data
+    def errors(self):
+        ret = super(ListSerializer, self).errors
+
+        if ret == {}:
+            return ReturnList([], serializer=self)
+
+        if isinstance(ret, dict):
+            return ReturnDict(ret, serializer=self)
+
         return ReturnList(ret, serializer=self)
 
     @property
-    def errors(self):
-        ret = super(ListSerializer, self).errors
-        if isinstance(ret, dict):
-            return ReturnDict(ret, serializer=self)
-        return ReturnList(ret, serializer=self)
+    def validated_data(self):
+        validated_data = super(ListSerializer, self).validated_data
+
+        if validated_data == {}:
+            return ReturnList([], serializer=self)
+
+        return validated_data
 
 
 # ModelSerializer & HyperlinkedModelSerializer
