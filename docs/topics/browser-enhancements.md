@@ -4,58 +4,36 @@
 >
 > &mdash; [RESTful Web Services][cite], Leonard Richardson & Sam Ruby.
 
+In order to allow the browsable API to function, there are a couple of browser enhancements that REST framework needs to provide.
+
+As of version 3.3.0 onwards these are enabled with javascript, using the [ajax-form][ajax-form] library.
+
 ## Browser based PUT, DELETE, etc...
 
-REST framework supports browser-based `PUT`, `DELETE` and other methods, by
-overloading `POST` requests using a hidden form field.
+The [AJAX form library][ajax-form] supports browser-based `PUT`, `DELETE` and other methods on HTML forms.
 
-Note that this is the same strategy as is used in [Ruby on Rails][rails].
+After including the library, use the `data-method` attribute on the form, like so:
 
-For example, given the following form:
-
-    <form action="/news-items/5" method="POST">
-        <input type="hidden" name="_method" value="DELETE">
+    <form action="/" data-method="PUT">
+        <input name='foo'/>
+        ...
     </form>
 
-`request.method` would return `"DELETE"`.
-
-## HTTP header based method overriding
-
-REST framework also supports method overriding via the semi-standard `X-HTTP-Method-Override` header.  This can be useful if you are working with non-form content such as JSON and are working with an older web server and/or hosting provider that doesn't recognise particular HTTP methods such as `PATCH`.  For example [Amazon Web Services ELB][aws_elb].
-
-To use it, make a `POST` request, setting the `X-HTTP-Method-Override` header.
-
-For example, making a `PATCH` request via `POST` in jQuery:
-
-	$.ajax({
-		url: '/myresource/',
-		method: 'POST',
-		headers: {'X-HTTP-Method-Override': 'PATCH'},
-		...
-	});
+Note that prior to 3.3.0, this support was server-side rather than javascript based. The method overloading style (as used in [Ruby on Rails][rails]) is no longer supported due to subtle issues that it introduces in request parsing.
 
 ## Browser based submission of non-form content
 
-Browser-based submission of content types other than form are supported by
-using form fields named `_content` and `_content_type`:
+Browser-based submission of content types such as JSON are supported by the [AJAX form library][ajax-form], using form fields with `data-override='content-type'` and `data-override='content'` attributes.
 
-For example, given the following form:
+For example:
 
-    <form action="/news-items/5" method="PUT">
-        <input type="hidden" name="_content_type" value="application/json">
-        <input name="_content" value="{'count': 1}">
-    </form>
+        <form action="/">
+            <input data-override='content-type' value='application/json' type='hidden'/>
+            <textarea data-override='content'>{}</textarea>
+            <input type="submit"/>
+        </form>
 
-`request.content_type` would return `"application/json"`, and
-`request.stream` would return `"{'count': 1}"`
-
-## URL based accept headers
-
-REST framework can take `?accept=application/json` style URL parameters,
-which allow the `Accept` header to be overridden.
-
-This can be useful for testing the API from a web browser, where you don't
-have any control over what is sent in the `Accept` header.
+Note that prior to 3.3.0, this support was server-side rather than javascript based.
 
 ## URL based format suffixes
 
@@ -63,8 +41,37 @@ REST framework can take `?format=json` style URL parameters, which can be a
 useful shortcut for determining which content type should be returned from
 the view.
 
-This is a more concise than using the `accept` override, but it also gives
-you less control.  (For example you can't specify any media type parameters)
+This behavior is controlled using the `URL_FORMAT_OVERRIDE` setting.
+
+## HTTP header based method overriding
+
+Prior to version 3.3.0 the semi extension header `X-HTTP-Method-Override` was supported for overriding the request method. This behavior is no longer in core, but can be adding if needed using middleware.
+
+For example:
+
+    METHOD_OVERRIDE_HEADER = 'HTTP_X_HTTP_METHOD_OVERRIDE'
+ 
+    class MethodOverrideMiddleware(object):
+        def process_view(self, request, callback, callback_args, callback_kwargs):
+            if request.method != 'POST':
+                return
+            if METHOD_OVERRIDE_HEADER not in request.META:
+                return
+            request.method = request.META[METHOD_OVERRIDE_HEADER]
+
+## URL based accept headers
+
+Until version 3.3.0 REST framework included built-in support for `?accept=application/json` style URL parameters, which would allow the `Accept` header to be overridden.
+
+Since the introduction of the content negotiation API this behavior is no longer included in core, but may be added using a custom content negotiation class, if needed.
+
+For example:
+
+    class AcceptQueryParamOverride()
+        def get_accept_list(self, request):
+           header = request.META.get('HTTP_ACCEPT', '*/*')
+           header = request.query_params.get('_accept', header)
+           return [token.strip() for token in header.split(',')]
 
 ## Doesn't HTML5 support PUT and DELETE forms?
 
@@ -74,7 +81,7 @@ was later [dropped from the spec][html5].  There remains
 as well as how to support content types other than form-encoded data.
 
 [cite]: http://www.amazon.com/Restful-Web-Services-Leonard-Richardson/dp/0596529260
+[ajax-form]: https://github.com/tomchristie/ajax-form
 [rails]: http://guides.rubyonrails.org/form_helpers.html#how-do-forms-with-put-or-delete-methods-work
 [html5]: http://www.w3.org/TR/html5-diff/#changes-2010-06-24
 [put_delete]: http://amundsen.com/examples/put-delete-forms/
-[aws_elb]: https://forums.aws.amazon.com/thread.jspa?messageID=400724

@@ -1525,6 +1525,58 @@ class TestUnvalidatedDictField(FieldValues):
     field = serializers.DictField()
 
 
+class TestJSONField(FieldValues):
+    """
+    Values for `JSONField`.
+    """
+    valid_inputs = [
+        ({
+            'a': 1,
+            'b': ['some', 'list', True, 1.23],
+            '3': None
+        }, {
+            'a': 1,
+            'b': ['some', 'list', True, 1.23],
+            '3': None
+        }),
+    ]
+    invalid_inputs = [
+        ({'a': set()}, ['Value must be valid JSON.']),
+    ]
+    outputs = [
+        ({
+            'a': 1,
+            'b': ['some', 'list', True, 1.23],
+            '3': 3
+        }, {
+            'a': 1,
+            'b': ['some', 'list', True, 1.23],
+            '3': 3
+        }),
+    ]
+    field = serializers.JSONField()
+
+
+class TestBinaryJSONField(FieldValues):
+    """
+    Values for `JSONField` with binary=True.
+    """
+    valid_inputs = [
+        (b'{"a": 1, "3": null, "b": ["some", "list", true, 1.23]}', {
+            'a': 1,
+            'b': ['some', 'list', True, 1.23],
+            '3': None
+        }),
+    ]
+    invalid_inputs = [
+        ('{"a": "unterminated string}', ['Value must be valid JSON.']),
+    ]
+    outputs = [
+        (['some', 'list', True, 1.23], b'["some", "list", true, 1.23]'),
+    ]
+    field = serializers.JSONField(binary=True)
+
+
 # Tests for FieldField.
 # ---------------------
 

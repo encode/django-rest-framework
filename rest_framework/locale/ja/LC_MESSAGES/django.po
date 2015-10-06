@@ -1,0 +1,400 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-09-21 10:55+0200\n"
+"PO-Revision-Date: 2015-09-21 08:56+0000\n"
+"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
+"Language-Team: Japanese (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/ja/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: authentication.py:72
+msgid "Invalid basic header. No credentials provided."
+msgstr "不正な基本ヘッダです。認証情報が含まれていません。"
+
+#: authentication.py:75
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "不正な基本ヘッダです。認証情報文字列に空白を含めてはいけません。"
+
+#: authentication.py:81
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "不正な基本ヘッダです。認証情報がBASE64で正しくエンコードされていません。"
+
+#: authentication.py:98
+msgid "Invalid username/password."
+msgstr "ユーザ名かパスワードが違います。"
+
+#: authentication.py:101 authentication.py:189
+msgid "User inactive or deleted."
+msgstr "ユーザが無効か削除されています。"
+
+#: authentication.py:168
+msgid "Invalid token header. No credentials provided."
+msgstr "不正なトークンヘッダです。認証情報が含まれていません。"
+
+#: authentication.py:171
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "不正なトークンヘッダです。トークン文字列に空白を含めてはいけません。"
+
+#: authentication.py:177
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr "不正なトークンヘッダです。トークン文字列に不正な文字を含めてはいけません。"
+
+#: authentication.py:186
+msgid "Invalid token."
+msgstr "不正なトークンです。"
+
+#: authtoken/serializers.py:20
+msgid "User account is disabled."
+msgstr "ユーザアカウントが無効化されています。"
+
+#: authtoken/serializers.py:23
+msgid "Unable to log in with provided credentials."
+msgstr "提供された認証情報でログインできません。"
+
+#: authtoken/serializers.py:26
+msgid "Must include \"username\" and \"password\"."
+msgstr "\"username\"と\"password\"を含まなければなりません。"
+
+#: exceptions.py:49
+msgid "A server error occurred."
+msgstr "サーバエラーが発生しました。"
+
+#: exceptions.py:84
+msgid "Malformed request."
+msgstr "不正な形式のリクエストです。"
+
+#: exceptions.py:89
+msgid "Incorrect authentication credentials."
+msgstr "認証情報が正しくありません。"
+
+#: exceptions.py:94
+msgid "Authentication credentials were not provided."
+msgstr "認証情報が含まれていません。"
+
+#: exceptions.py:99
+msgid "You do not have permission to perform this action."
+msgstr "このアクションを実行する権限がありません。"
+
+#: exceptions.py:104 views.py:81
+msgid "Not found."
+msgstr "見つかりませんでした。"
+
+#: exceptions.py:109
+#, python-brace-format
+msgid "Method \"{method}\" not allowed."
+msgstr "メソッド \"{method}\" は許されていません。"
+
+#: exceptions.py:120
+msgid "Could not satisfy the request Accept header."
+msgstr "リクエストのAcceptヘッダを満たすことができませんでした。"
+
+#: exceptions.py:132
+#, python-brace-format
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "リクエストのメディアタイプ \"{media_type}\" はサポートされていません。"
+
+#: exceptions.py:145
+msgid "Request was throttled."
+msgstr "リクエストの処理は絞られました。"
+
+#: fields.py:262 relations.py:191 relations.py:224 validators.py:79
+#: validators.py:162
+msgid "This field is required."
+msgstr "この項目は必須です。"
+
+#: fields.py:263
+msgid "This field may not be null."
+msgstr "この項目はnullにできません。"
+
+#: fields.py:599 fields.py:627
+#, python-brace-format
+msgid "\"{input}\" is not a valid boolean."
+msgstr "\"{input}\" は有効なブーリアンではありません。"
+
+#: fields.py:662
+msgid "This field may not be blank."
+msgstr "この項目は空にできません。"
+
+#: fields.py:663 fields.py:1594
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "この項目が{max_length}文字より長くならないようにしてください。"
+
+#: fields.py:664
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "この項目は少なくとも{min_length}文字以上にしてください。"
+
+#: fields.py:701
+msgid "Enter a valid email address."
+msgstr "有効なメールアドレスを入力してください。"
+
+#: fields.py:712
+msgid "This value does not match the required pattern."
+msgstr "この値は所要のパターンにマッチしません。"
+
+#: fields.py:723
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "文字、数字、アンダースコア、またはハイフンから成る有効な \"slug\" を入力してください。"
+
+#: fields.py:735
+msgid "Enter a valid URL."
+msgstr "有効なURLを入力してください。"
+
+#: fields.py:748
+#, python-brace-format
+msgid "\"{value}\" is not a valid UUID."
+msgstr "\"{value}\" は有効なUUIDではありません。"
+
+#: fields.py:782
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "有効なIPv4またはIPv6アドレスを入力してください。"
+
+#: fields.py:807
+msgid "A valid integer is required."
+msgstr "有効な整数を入力してください。"
+
+#: fields.py:808 fields.py:843 fields.py:876
+#, python-brace-format
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "この値は{max_value}以下にしてください。"
+
+#: fields.py:809 fields.py:844 fields.py:877
+#, python-brace-format
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "この値は{min_value}以上にしてください。"
+
+#: fields.py:810 fields.py:845 fields.py:881
+msgid "String value too large."
+msgstr "文字列が長過ぎます。"
+
+#: fields.py:842 fields.py:875
+msgid "A valid number is required."
+msgstr "有効な数値を入力してください。"
+
+#: fields.py:878
+#, python-brace-format
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "合計で最大{max_digits}桁以下になるようにしてください。"
+
+#: fields.py:879
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "小数点以下の桁数を{max_decimal_places}を超えないようにしてください。"
+
+#: fields.py:880
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "整数部の桁数を{max_whole_digits}を超えないようにしてください。"
+
+#: fields.py:994
+#, python-brace-format
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "日時の形式が違います。以下のどれかの形式にしてください: {format}。"
+
+#: fields.py:995
+msgid "Expected a datetime but got a date."
+msgstr "日付ではなく日時を入力してください。"
+
+#: fields.py:1060
+#, python-brace-format
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "日付の形式が違います。以下のどれかの形式にしてください: {format}。"
+
+#: fields.py:1061
+msgid "Expected a date but got a datetime."
+msgstr "日時ではなく日付を入力してください。"
+
+#: fields.py:1125
+#, python-brace-format
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "時刻の形式が違います。以下のどれかの形式にしてください: {format}。"
+
+#: fields.py:1180
+#, python-brace-format
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr "機関の形式が違います。以下のどれかの形式にしてください: {format}。"
+
+#: fields.py:1205 fields.py:1254
+#, python-brace-format
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\"は有効な選択肢ではありません。"
+
+#: fields.py:1208 relations.py:58 relations.py:427
+#, python-brace-format
+msgid "More than {count} items..."
+msgstr ""
+
+#: fields.py:1255 fields.py:1401 relations.py:423 serializers.py:504
+#, python-brace-format
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "\"{input_type}\" 型のデータではなく項目のリストを入力してください。"
+
+#: fields.py:1256
+msgid "This selection may not be empty."
+msgstr "空でない項目を選択してください。"
+
+#: fields.py:1294
+#, python-brace-format
+msgid "\"{input}\" is not a valid path choice."
+msgstr "\"{input}\"は有効なパスの選択肢ではありません。"
+
+#: fields.py:1313
+msgid "No file was submitted."
+msgstr "ファイルが添付されていません。"
+
+#: fields.py:1314
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "添付されたデータはファイルではありません。フォームのエンコーディングタイプを確認してください。"
+
+#: fields.py:1315
+msgid "No filename could be determined."
+msgstr "ファイル名が取得できませんでした。"
+
+#: fields.py:1316
+msgid "The submitted file is empty."
+msgstr "添付ファイルの中身が空でした。"
+
+#: fields.py:1317
+#, python-brace-format
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "ファイル名は最大{max_length}文字にしてください({length}文字でした)。"
+
+#: fields.py:1363
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "有効な画像をアップロードしてください。アップロードされたファイルは画像でないか壊れた画像です。"
+
+#: fields.py:1402 relations.py:424 serializers.py:505
+msgid "This list may not be empty."
+msgstr "リストは空ではいけません。"
+
+#: fields.py:1452
+#, python-brace-format
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "\"{input_type}\" 型のデータではなく項目の辞書を入力してください。"
+
+#: pagination.py:192
+#, python-brace-format
+msgid "Invalid page \"{page_number}\": {message}."
+msgstr "ページ番号 \"{page_number}\" は不正です: {message}。"
+
+#: pagination.py:462
+msgid "Invalid cursor"
+msgstr "カーソルが不正です。"
+
+#: relations.py:192
+#, python-brace-format
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "主キー \"{pk_value}\" は不正です - データが存在しません。"
+
+#: relations.py:193
+#, python-brace-format
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "不正な型です。{data_type} 型ではなく主キーの値を入力してください。"
+
+#: relations.py:225
+msgid "Invalid hyperlink - No URL match."
+msgstr "ハイパーリンクが不正です - URLにマッチしません。"
+
+#: relations.py:226
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "ハイパーリンクが不正です - 不正なURLにマッチします。"
+
+#: relations.py:227
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "ハイパーリンクが不正です - リンク先が存在しません。"
+
+#: relations.py:228
+#, python-brace-format
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "不正なデータ型です。{data_type} 型ではなくURL文字列を入力してください。"
+
+#: relations.py:387
+#, python-brace-format
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "{slug_name}={value} のデータが存在しません。"
+
+#: relations.py:388
+msgid "Invalid value."
+msgstr "不正な値です。"
+
+#: serializers.py:310
+#, python-brace-format
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "不正なデータです。{datatype} 型ではなく辞書を入力してください。"
+
+#: templates/rest_framework/horizontal/radio.html:2
+#: templates/rest_framework/inline/radio.html:2
+#: templates/rest_framework/vertical/radio.html:2
+msgid "None"
+msgstr "なし"
+
+#: templates/rest_framework/horizontal/select_multiple.html:2
+#: templates/rest_framework/inline/select_multiple.html:2
+#: templates/rest_framework/vertical/select_multiple.html:2
+msgid "No items to select."
+msgstr "選択する項目がありません。"
+
+#: validators.py:24
+msgid "This field must be unique."
+msgstr "この項目は一意でなければなりません。"
+
+#: validators.py:78
+#, python-brace-format
+msgid "The fields {field_names} must make a unique set."
+msgstr "項目 {field_names} は一意な組でなければなりません。"
+
+#: validators.py:226
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "この項目は \"{date_field}\" の日に対して一意でなければなりません。"
+
+#: validators.py:241
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "この項目は \"{date_field}\" の月に対して一意でなければなりません。"
+
+#: validators.py:254
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "この項目は \"{date_field}\" の年に対して一意でなければなりません。"
+
+#: versioning.py:42
+msgid "Invalid version in \"Accept\" header."
+msgstr "\"Accept\" 内のバージョンが不正です。"
+
+#: versioning.py:73 versioning.py:115
+msgid "Invalid version in URL path."
+msgstr "URLパス内のバージョンが不正です。"
+
+#: versioning.py:144
+msgid "Invalid version in hostname."
+msgstr "ホスト名内のバージョンが不正です。"
+
+#: versioning.py:166
+msgid "Invalid version in query parameter."
+msgstr "クエリパラメータ内のバージョンが不正です。"
+
+#: views.py:88
+msgid "Permission denied."
+msgstr "権限がありません。"
