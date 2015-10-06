@@ -7,13 +7,13 @@ from django.db import connection, connections, transaction
 from django.http import Http404
 from django.test import TestCase, TransactionTestCase
 from django.utils.decorators import method_decorator
-from tests.models import BasicModel
 
 from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView
+from tests.models import BasicModel
 
 factory = APIRequestFactory()
 

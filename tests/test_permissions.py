@@ -7,7 +7,6 @@ from django.contrib.auth.models import Group, Permission, User
 from django.core.urlresolvers import ResolverMatch
 from django.db import models
 from django.test import TestCase
-from tests.models import BasicModel
 
 from rest_framework import (
     HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
@@ -17,6 +16,7 @@ from rest_framework.compat import guardian
 from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
+from tests.models import BasicModel
 
 factory = APIRequestFactory()
 
