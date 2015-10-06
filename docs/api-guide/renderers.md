@@ -197,9 +197,17 @@ Note that views that have nested or list serializers for their input won't work 
 
 ## HTMLFormRenderer
 
-Renders data returned by a serializer into an HTML form.  The output of this renderer does not include the enclosing `<form>` tags or an submit actions, as you'll probably need those to include the desired method and URL.  Also note that the `HTMLFormRenderer` does not yet support including field error messages.
+Renders data returned by a serializer into an HTML form. The output of this renderer does not include the enclosing `<form>` tags, a hidden CSRF input or any submit buttons.
 
-**Note**: The `HTMLFormRenderer` class is intended for internal use with the browsable API and admin interface. It should not be considered a fully documented or stable API. The template used by the `HTMLFormRenderer` class, and the context submitted to it **may be subject to change**.  If you need to use this renderer class it is advised that you either make a local copy of the class and templates, or follow the release note on REST framework upgrades closely.
+This renderer is not intended to be used directly, but can instead be used in templates by passing a serializer instance to the `render_form` template tag.
+
+    {% load rest_framework %}
+
+    <form action="/submit-report/" method="post">
+        {% csrf_token %}
+        {% render_form serializer %}
+        <input type="submit" value="Save" />
+    </form>
 
 **.media_type**: `text/html`
 
@@ -207,7 +215,7 @@ Renders data returned by a serializer into an HTML form.  The output of this ren
 
 **.charset**: `utf-8`
 
-**.template**: `'rest_framework/form.html'`
+**.template**: `'rest_framework/horizontal/form.html'`
 
 ## MultiPartRenderer
 

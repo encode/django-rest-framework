@@ -1,16 +1,6 @@
 {% load rest_framework %}
-
-<form class="form-horizontal" role="form" action="." method="POST" novalidate>
-  {% csrf_token %}
-  {% for field in form %}
-    {% if not field.read_only %}
-      {% render_field field style=style %}
-    {% endif %}
-  {% endfor %}
-
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-default">Submit</button>
-    </div>
-  </div>
-</form>
+{% for field in form %}
+  {% if not field.read_only %}
+    {% render_field field style=style %}
+  {% endif %}
+{% endfor %}

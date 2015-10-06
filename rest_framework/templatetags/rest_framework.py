@@ -25,8 +25,14 @@ def get_pagination_html(pager):
 
 
 @register.simple_tag
-def render_field(field, style=None):
-    style = style or {}
+def render_form(serializer, template_pack=None):
+    style = {'template_pack': template_pack} if template_pack else {}
+    renderer = HTMLFormRenderer()
+    return renderer.render(serializer.data, None, {'style': style})
+
+
+@register.simple_tag
+def render_field(field, style):
     renderer = style.get('renderer', HTMLFormRenderer())
     return renderer.render_field(field, style)
 
