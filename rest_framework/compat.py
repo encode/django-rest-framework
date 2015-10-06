@@ -14,22 +14,32 @@ from django.db import connection, transaction
 from django.utils import six
 from django.views.generic import View
 
-from rest_framework import VERSION
+import rest_framework
 
 
 def deprecated(since, message):
-    current_version = [int(i) for i in VERSION.split('.')]
+    """
+    Issue a deprecation warning `message`. `since` is a tuple of major, minor
+    indicating when the deprecation should start.
+    """
+    current_version = [int(i) for i in rest_framework.VERSION.split('.')]
 
-    assert current_version[0] == since[0], "Deprecated code must be removed before major version change. Current: {0} vs Deprecated Since: {1}".format(current_version[0], since[0])
+    major_message = (
+        "Deprecated code must be removed before major version change. "
+        "Current: {0} vs Deprecated Since: {1}".format(
+            current_version[0], since[0])
+    )
+    minor_message = "Deprecated code must be removed within two minor versions"
+
+    assert current_version[0] == since[0], major_message
 
     minor_version_difference = current_version[1] - since[1]
-    assert minor_version_difference in [1,2], "Deprecated code must be removed within two minor versions"
+    assert minor_version_difference in [1, 2], minor_message
 
-    warning_type = PendingDeprecationWarning if minor_version_difference == 1 else DeprecationWarning
-
+    warning_type = DeprecationWarning
+    if minor_version_difference == 1:
+        warning_type = PendingDeprecationWarning
     warnings.warn(message, warning_type)
-
-
 
 
 try:
