@@ -309,3 +309,28 @@ class TestCacheSerializerData:
         pickled = pickle.dumps(serializer.data)
         data = pickle.loads(pickled)
         assert data == {'field1': 'a', 'field2': 'b'}
+
+
+class TestMapping:
+    def setup(self):
+        class ExampleSerializer(serializers.Serializer):
+            entries = serializers.ListField()
+            last_entry = serializers.CharField()
+        self.Serializer = ExampleSerializer
+        self.data = {'entries': ['a', 'b', 'c']}
+        self.expected = {'entries': ['a', 'b', 'c'], 'last_entry': 'c'}
+
+    def test_mapping_with_method(self):
+        class Mapping(dict):
+            def last_entry(self):
+                return self['entries'][-1]
+        serializer = self.Serializer(Mapping(self.data))
+        assert serializer.data == self.expected
+
+    def test_mapping_with_property(self):
+        class Mapping(dict):
+            @property
+            def last_entry(self):
+                return self['entries'][-1]
+        serializer = self.Serializer(Mapping(self.data))
+        assert serializer.data == self.expected
