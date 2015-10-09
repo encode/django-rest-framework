@@ -776,6 +776,20 @@ class OrderingFilterTests(TestCase):
             ]
         )
 
+    def test_ordering_with_improper_configuration(self):
+        class OrderingListView(generics.ListAPIView):
+            queryset = OrderingFilterModel.objects.all()
+            filter_backends = (filters.OrderingFilter,)
+            ordering = ('title',)
+            # note: no ordering_fields and serializer_class
+            # or get_serializer_class speficied
+
+        view = OrderingListView.as_view()
+        request = factory.get('/', {'ordering': 'text'})
+        # BUG: I think this should raise ImproperlyConfigured
+        with self.assertRaises(AssertionError):
+            view(request)
+
 
 class SensitiveOrderingFilterModel(models.Model):
     username = models.CharField(max_length=20)
