@@ -5,6 +5,7 @@ import unittest
 from decimal import Decimal
 
 from django.conf.urls import url
+from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.test import TestCase
@@ -786,8 +787,7 @@ class OrderingFilterTests(TestCase):
 
         view = OrderingListView.as_view()
         request = factory.get('/', {'ordering': 'text'})
-        # BUG: I think this should raise ImproperlyConfigured
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ImproperlyConfigured):
             view(request)
 
 
