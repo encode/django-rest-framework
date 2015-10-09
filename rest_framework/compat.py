@@ -81,8 +81,9 @@ except ImportError:
 # Fixes (#1712). We keep the try/except for the test suite.
 guardian = None
 try:
-    import guardian
-    import guardian.shortcuts  # Fixes #1624
+    if 'guardian' in settings.INSTALLED_APPS:
+        import guardian
+        import guardian.shortcuts  # Fixes #1624
 except ImportError:
     pass
 
