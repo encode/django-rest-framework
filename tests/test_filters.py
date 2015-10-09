@@ -754,6 +754,28 @@ class OrderingFilterTests(TestCase):
 
         self.assertContains(response, 'verbose title')
 
+    def test_ordering_with_overridden_get_serializer_class(self):
+        class OrderingListView(generics.ListAPIView):
+            queryset = OrderingFilterModel.objects.all()
+            filter_backends = (filters.OrderingFilter,)
+            ordering = ('title',)
+            # note: no ordering_fields and serializer_class speficied
+
+            def get_serializer_class(self):
+                return OrderingFilterSerializer
+
+        view = OrderingListView.as_view()
+        request = factory.get('/', {'ordering': 'text'})
+        response = view(request)
+        self.assertEqual(
+            response.data,
+            [
+                {'id': 1, 'title': 'zyx', 'text': 'abc'},
+                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+                {'id': 3, 'title': 'xwv', 'text': 'cde'},
+            ]
+        )
+
 
 class SensitiveOrderingFilterModel(models.Model):
     username = models.CharField(max_length=20)
