@@ -209,6 +209,8 @@ This renderer is not intended to be used directly, but can instead be used in te
         <input type="submit" value="Save" />
     </form>
 
+For more information see the [HTML & Forms][html-and-forms] documentation.
+
 **.media_type**: `text/html`
 
 **.format**: `'.form'`
@@ -463,6 +465,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
+[html-and-forms]: ../topics/html-and-forms.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
 [testing]: testing.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas

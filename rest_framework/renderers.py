@@ -249,7 +249,7 @@ class HTMLFormRenderer(BaseRenderer):
     media_type = 'text/html'
     format = 'form'
     charset = 'utf-8'
-    template_pack = 'rest_framework/horizontal/'
+    template_pack = 'rest_framework/vertical/'
     base_template = 'form.html'
 
     default_style = ClassLookupDict({
@@ -495,7 +495,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             return form_renderer.render(
                 serializer.data,
                 self.accepted_media_type,
-                self.renderer_context
+                {'style': {'template_pack': 'rest_framework/horizontal'}}
             )
 
     def get_raw_data_form(self, data, view, method, request):

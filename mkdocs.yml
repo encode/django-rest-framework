@@ -47,6 +47,7 @@ pages:
      - 'Documenting your API': 'topics/documenting-your-api.md'
      - 'Internationalization': 'topics/internationalization.md'
      - 'AJAX, CSRF & CORS': 'topics/ajax-csrf-cors.md'
+     - 'HTML & Forms': 'topics/html-and-forms.md'
      - 'Browser Enhancements': 'topics/browser-enhancements.md'
      - 'The Browsable API': 'topics/browsable-api.md'
      - 'REST, Hypermedia & HATEOAS': 'topics/rest-hypermedia-hateoas.md'
