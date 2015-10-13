@@ -8,6 +8,7 @@ object creation, and makes it possible to switch between using the implicit
 """
 from __future__ import unicode_literals
 
+from django.db import DataError
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import unicode_to_repr
@@ -59,7 +60,14 @@ class UniqueValidator(object):
         queryset = self.queryset
         queryset = self.filter_queryset(value, queryset)
         queryset = self.exclude_current_instance(queryset)
-        if queryset.exists():
+
+        # catch DataError for PostgrSQL fields
+        try:
+            exists = queryset.exists()
+        except DataError:
+            return
+
+        if exists:
             raise ValidationError(self.message)
 
     def __repr__(self):
