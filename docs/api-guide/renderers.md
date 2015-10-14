@@ -187,6 +187,15 @@ This renderer is suitable for CRUD-style web APIs that should also present a use
 
 Note that views that have nested or list serializers for their input won't work well with the `AdminRenderer`, as the HTML forms are unable to properly support them.
 
+**Note**: To get proper links to detail page in `ListCreateAPIView` or `ListAPIView` you should implement `url` field in serializer which return correct link. For example here we use models `get_absolute_url` method:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        url = serializers.CharField(source='get_absolute_url', read_only=True)
+
+        class Meta:
+            model = Account
+
+
 **.media_type**: `text/html`
 
 **.format**: `'.admin'`
