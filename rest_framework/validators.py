@@ -65,7 +65,7 @@ class UniqueValidator(object):
         try:
             exists = queryset.exists()
         except DataError:
-            return
+            exists = False
 
         if exists:
             raise ValidationError(self.message)

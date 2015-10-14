@@ -79,7 +79,7 @@ class TestUniquenessValidation(TestCase):
         data = {'ip': 'test', 'username': 'test'}
         serializer = UniquenessSerializer(data=data)
         assert not serializer.is_valid()
-        assert serializer.errors == {'ip': [u'Enter a valid IPv4 address.', u'Enter a valid IPv4 or IPv6 address.']}
+        assert serializer.errors == {'ip': ['Enter a valid IPv4 address.', 'Enter a valid IPv4 or IPv6 address.']}
 
 
 # Tests for `UniqueTogetherValidator`
