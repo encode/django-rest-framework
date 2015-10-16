@@ -71,6 +71,30 @@ except ImportError:
     JSONField = None
 
 
+# Models Options old meta api
+# Django 1.8 introduced the `Options.get_fields` method that can be used to
+# implement *old* meta api methods
+# See: https://docs.djangoproject.com/en/1.9/ref/models/meta/#migrating-from-the-old-api
+if django.VERSION >= (1, 8):
+    def get_all_related_objects(opts):
+        return [
+            f for f in opts.get_fields()
+            if (f.one_to_many or f.one_to_one) and f.auto_created
+        ]
+
+    def get_all_related_many_to_many_objects(opts):
+        return [
+            f for f in opts.get_fields(include_hidden=True)
+            if f.many_to_many and f.auto_created
+        ]
+else:
+    def get_all_related_objects(opts):
+        return opts.get_all_related_objects()
+
+    def get_all_related_many_to_many_objects(opts):
+        return opts.get_all_related_many_to_many_objects()
+
+
 # django-filter is optional
 try:
     import django_filters
