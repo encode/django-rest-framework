@@ -147,7 +147,7 @@ def _get_reverse_relationships(opts):
     # The backward implementation can be found in the Django Documentation
     # See: https://docs.djangoproject.com/en/1.9/ref/models/meta/#migrating-from-the-old-api
     all_related_to_many_objects = [
-         f for f in opts.get_fields(include_hidden=True)
+        f for f in opts.get_fields(include_hidden=True)
         if f.many_to_many and f.auto_created
     ]
 
