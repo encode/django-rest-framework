@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from sets import Set
 
 import collections
 import copy
@@ -1461,7 +1462,7 @@ class ListField(Field):
         """
         if html.is_html_input(data):
             data = html.parse_html_list(data)
-        if not isinstance(data, list):
+        if not isinstance(data, (list, tuple, Set)):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
