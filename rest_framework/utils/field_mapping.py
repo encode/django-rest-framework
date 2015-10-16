@@ -123,7 +123,8 @@ def get_field_kwargs(field_name, model_field):
     # Ensure that max_length is passed explicitly as a keyword arg,
     # rather than as a validator.
     max_length = getattr(model_field, 'max_length', None)
-    if max_length is not None and isinstance(model_field, models.CharField):
+    if max_length is not None and (isinstance(model_field, models.CharField) or
+                                   isinstance(model_field, models.TextField)):
         kwargs['max_length'] = max_length
         validator_kwarg = [
             validator for validator in validator_kwarg
