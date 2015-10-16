@@ -126,7 +126,15 @@ def _get_reverse_relationships(opts):
     # See: https://code.djangoproject.com/ticket/24208
 
     reverse_relations = OrderedDict()
-    for relation in opts.get_all_related_objects():
+
+    # The backward implementation can be found in the Django Documentation
+    # See: https://docs.djangoproject.com/en/1.9/ref/models/meta/#migrating-from-the-old-api
+    related_objects = [
+        f for f in opts.get_fields()
+        if (f.one_to_many or f.one_to_one) and f.auto_created
+    ]
+
+    for relation in related_objects:
         accessor_name = relation.get_accessor_name()
         related = getattr(relation, 'related_model', relation.model)
         reverse_relations[accessor_name] = RelationInfo(
@@ -136,8 +144,15 @@ def _get_reverse_relationships(opts):
             has_through_model=False
         )
 
+    # The backward implementation can be found in the Django Documentation
+    # See: https://docs.djangoproject.com/en/1.9/ref/models/meta/#migrating-from-the-old-api
+    all_related_to_many_objects = [
+         f for f in opts.get_fields(include_hidden=True)
+        if f.many_to_many and f.auto_created
+    ]
+
     # Deal with reverse many-to-many relationships.
-    for relation in opts.get_all_related_many_to_many_objects():
+    for relation in all_related_to_many_objects:
         accessor_name = relation.get_accessor_name()
         related = getattr(relation, 'related_model', relation.model)
         reverse_relations[accessor_name] = RelationInfo(
