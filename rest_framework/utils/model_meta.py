@@ -14,10 +14,8 @@ from django.db import models
 from django.utils import six
 
 from rest_framework.compat import (
-    get_all_related_objects,
-    get_all_related_many_to_many_objects,
-    get_relation_accessor_name,
-    get_relation_field
+    get_all_related_many_to_many_objects, get_all_related_objects,
+    get_relation_accessor_name, get_relation_field
 )
 
 FieldInfo = namedtuple('FieldResult', [
