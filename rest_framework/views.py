@@ -52,7 +52,7 @@ def get_view_description(view_cls, html=False):
     return description
 
 
-def exception_handler(exc, context):
+def exception_handler(exc, **context):
     """
     Returns the response that should be used for any given exception.
 
