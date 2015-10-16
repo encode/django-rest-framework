@@ -118,9 +118,9 @@ class DjangoModelPermissions(BasePermission):
             queryset = getattr(view, 'queryset', None)
 
         assert queryset is not None, (
-            'Cannot apply DjangoModelPermissions on a view that '
+            'Cannot apply DjangoModelPermissions on view "%s" that '
             'does not have `.queryset` property or overrides the '
-            '`.get_queryset()` method.')
+            '`.get_queryset()` method.' % view.get_view_name())
 
         perms = self.get_required_permissions(request.method, queryset.model)
 
