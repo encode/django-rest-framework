@@ -95,6 +95,21 @@ else:
         return opts.get_all_related_many_to_many_objects()
 
 
+# Compatibility for the *field* instance returned by either
+# the old `Options.get_all_related_objects` or our own implementation above
+def get_relation_accessor_name(relation):
+    if not hasattr(relation, 'get_accessor_name'):
+        # special case for the `OneToOneField` instances
+        return relation.name
+    return relation.get_accessor_name()
+
+def get_relation_field(relation):
+    if not hasattr(relation, 'get_accessor_name'):
+        # special case for the `OneToOneField` instances
+        return relation
+    return relation.field
+
+
 # django-filter is optional
 try:
     import django_filters

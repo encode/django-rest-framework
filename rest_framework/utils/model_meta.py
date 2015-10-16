@@ -14,7 +14,10 @@ from django.db import models
 from django.utils import six
 
 from rest_framework.compat import (
-    get_all_related_objects, get_all_related_many_to_many_objects
+    get_all_related_objects,
+    get_all_related_many_to_many_objects,
+    get_relation_accessor_name,
+    get_relation_field
 )
 
 FieldInfo = namedtuple('FieldResult', [
@@ -131,26 +134,28 @@ def _get_reverse_relationships(opts):
 
     reverse_relations = OrderedDict()
     for relation in get_all_related_objects(opts):
-        accessor_name = relation.get_accessor_name()
+        accessor_name = get_relation_accessor_name(relation)
+        field = get_relation_field(relation)
         related = getattr(relation, 'related_model', relation.model)
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
             related_model=related,
-            to_many=relation.field.rel.multiple,
+            to_many=field.rel.multiple,
             has_through_model=False
         )
 
     # Deal with reverse many-to-many relationships.
     for relation in get_all_related_many_to_many_objects(opts):
-        accessor_name = relation.get_accessor_name()
+        accessor_name = get_relation_accessor_name(relation)
+        field = get_relation_field(relation)
         related = getattr(relation, 'related_model', relation.model)
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
             related_model=related,
             to_many=True,
             has_through_model=(
-                (getattr(relation.field.rel, 'through', None) is not None) and
-                not relation.field.rel.through._meta.auto_created
+                (getattr(field.rel, 'through', None) is not None) and
+                not field.rel.through._meta.auto_created
             )
         )
 
