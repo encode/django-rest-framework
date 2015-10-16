@@ -1461,7 +1461,7 @@ class ListField(Field):
         """
         if html.is_html_input(data):
             data = html.parse_html_list(data)
-        if isinstance(data, type('')) or not hasattr(data, '__iter__'):
+        if not isinstance(data, list):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
