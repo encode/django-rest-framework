@@ -347,3 +347,39 @@ class NestedModelSerializerUpdateTests(TestCase):
         result = deserialize.object
         result.save()
         self.assertEqual(result.id, john.id)
+
+
+class PlainObjectWithNestedRepresentationDeserializationTest(TestCase):
+    def setUp(self):
+        class ArtistSerializer(serializers.Serializer):
+            artist_name = serializers.CharField(max_length=100)
+            artist_origin = serializers.CharField(max_length=100)
+
+        class AlbumSerializer(serializers.Serializer):
+            album_name = serializers.CharField(max_length=100)
+            artist = ArtistSerializer(source='*')
+
+        self.AlbumSerializer = AlbumSerializer
+
+    def test_deserialize_invalid_nested_representation_error(self):
+        """
+        Incorrect nested deserialization should return appropiate error data.
+        """
+
+        data = {
+            'album_name': 'Discovery',
+            'artist': {
+                'artist_name': 'Daft Punk'
+                # Missing origin
+            }
+        }
+
+        expected_errors = {
+            'artist': [
+                {'artist_origin': ['This field is required.']}
+            ]
+        }
+
+        serializer = self.AlbumSerializer(data=data)
+        self.assertEqual(serializer.is_valid(), False)
+        self.assertEqual(serializer.errors, expected_errors)
