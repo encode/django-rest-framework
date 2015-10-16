@@ -63,7 +63,7 @@ class RegularFieldsModel(models.Model):
     positive_small_integer_field = models.PositiveSmallIntegerField()
     slug_field = models.SlugField(max_length=100)
     small_integer_field = models.SmallIntegerField()
-    text_field = models.TextField()
+    text_field = models.TextField(max_length=100)
     time_field = models.TimeField()
     url_field = models.URLField(max_length=100)
     custom_field = CustomField()
@@ -161,11 +161,12 @@ class TestRegularFieldMappings(TestCase):
                 positive_small_integer_field = IntegerField()
                 slug_field = SlugField(max_length=100)
                 small_integer_field = IntegerField()
-                text_field = CharField(style={'base_template': 'textarea.html'})
+                text_field = CharField(max_length=100, style={'base_template': 'textarea.html'})
                 time_field = TimeField()
                 url_field = URLField(max_length=100)
                 custom_field = ModelField(model_field=<tests.test_model_serializer.CustomField: custom_field>)
         """)
+
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
     def test_field_options(self):
