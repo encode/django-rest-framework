@@ -852,7 +852,7 @@ class ModelSerializer(Serializer):
                 'serializer class that is not a valid argument to '
                 '`%s.objects.create()`. You may need to make the field '
                 'read-only, or override the %s.create() method to handle '
-                'this correctly.\nOriginal exception was:\n %s.' %
+                'this correctly.\nOriginal exception was:\n %s' %
                 (
                     ModelClass.__name__,
                     ModelClass.__name__,
