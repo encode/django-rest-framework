@@ -844,7 +844,7 @@ class ModelSerializer(Serializer):
 
         try:
             instance = ModelClass.objects.create(**validated_data)
-        except TypeError as exc:
+        except TypeError:
             tb = traceback.format_exc()
             msg = (
                 'Got a `TypeError` when calling `%s.objects.create()`. '
