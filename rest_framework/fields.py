@@ -604,8 +604,8 @@ class BooleanField(Field):
     }
     default_empty_html = False
     initial = False
-    TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
-    FALSE_VALUES = set(('f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False))
+    TRUE_VALUES = {'t', 'T', 'true', 'True', 'TRUE', '1', 1, True}
+    FALSE_VALUES = {'f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False}
 
     def __init__(self, **kwargs):
         assert 'allow_null' not in kwargs, '`allow_null` is not a valid option. Use `NullBooleanField` instead.'
@@ -634,9 +634,9 @@ class NullBooleanField(Field):
         'invalid': _('"{input}" is not a valid boolean.')
     }
     initial = None
-    TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
-    FALSE_VALUES = set(('f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False))
-    NULL_VALUES = set(('n', 'N', 'null', 'Null', 'NULL', '', None))
+    TRUE_VALUES = {'t', 'T', 'true', 'True', 'TRUE', '1', 1, True}
+    FALSE_VALUES = {'f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False}
+    NULL_VALUES = {'n', 'N', 'null', 'Null', 'NULL', '', None}
 
     def __init__(self, **kwargs):
         assert 'allow_null' not in kwargs, '`allow_null` is not a valid option.'
@@ -1241,9 +1241,9 @@ class ChoiceField(Field):
         # Map the string representation of choices to the underlying value.
         # Allows us to deal with eg. integer choices while supporting either
         # integer or string input, but still get the correct datatype out.
-        self.choice_strings_to_values = dict([
-            (six.text_type(key), key) for key in self.choices.keys()
-        ])
+        self.choice_strings_to_values = {
+            six.text_type(key): key for key in self.choices.keys()
+        }
 
         self.allow_blank = kwargs.pop('allow_blank', False)
 
@@ -1302,15 +1302,15 @@ class MultipleChoiceField(ChoiceField):
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
 
-        return set([
+        return {
             super(MultipleChoiceField, self).to_internal_value(item)
             for item in data
-        ])
+        }
 
     def to_representation(self, value):
-        return set([
+        return {
             self.choice_strings_to_values.get(six.text_type(item), item) for item in value
-        ])
+        }
 
 
 class FilePathField(ChoiceField):
@@ -1508,19 +1508,19 @@ class DictField(Field):
             data = html.parse_html_dict(data)
         if not isinstance(data, dict):
             self.fail('not_a_dict', input_type=type(data).__name__)
-        return dict([
-            (six.text_type(key), self.child.run_validation(value))
+        return {
+            six.text_type(key): self.child.run_validation(value)
             for key, value in data.items()
-        ])
+        }
 
     def to_representation(self, value):
         """
         List of object instances -> List of dicts of primitive datatypes.
         """
-        return dict([
-            (six.text_type(key), self.child.to_representation(val))
+        return {
+            six.text_type(key): self.child.to_representation(val)
             for key, val in value.items()
-        ])
+        }
 
 
 class JSONField(Field):

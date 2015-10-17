@@ -30,10 +30,10 @@ def _force_text_recursive(data):
             return ReturnList(ret, serializer=data.serializer)
         return data
     elif isinstance(data, dict):
-        ret = dict([
-            (key, _force_text_recursive(value))
+        ret = {
+            key: _force_text_recursive(value)
             for key, value in data.items()
-        ])
+        }
         if isinstance(data, ReturnDict):
             return ReturnDict(ret, serializer=data.serializer)
         return data
