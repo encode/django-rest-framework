@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from django.contrib.contenttypes.generic import (
+from django.contrib.contenttypes.fields import (
     GenericForeignKey, GenericRelation
 )
 from django.contrib.contenttypes.models import ContentType

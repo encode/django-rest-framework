@@ -331,8 +331,6 @@ The `ordering` attribute may be either a string or a list/tuple of strings.
 
 The `DjangoObjectPermissionsFilter` is intended to be used together with the [`django-guardian`][guardian] package, with custom `'view'` permissions added.  The filter will ensure that querysets only returns objects for which the user has the appropriate view permission.
 
-This filter class must be used with views that provide either a `queryset` or a `model` attribute.
-
 If you're using `DjangoObjectPermissionsFilter`, you'll probably also want to add an appropriate object permissions class, to ensure that users can only operate on instances if they have the appropriate object permissions.  The easiest way to do this is to subclass `DjangoObjectPermissions` and add `'view'` permissions to the `perms_map` attribute.
 
 A complete example using both `DjangoObjectPermissionsFilter` and `DjangoObjectPermissions` might look something like this.
@@ -403,6 +401,10 @@ The [django-rest-framework-filters package][django-rest-framework-filters] works
 
 The [djangorestframework-word-filter][django-rest-framework-word-search-filter] developed as alternative to `filters.SearchFilter` which will search full word in text, or exact match.
 
+## Django URL Filter
+
+[django-url-filter][django-url-filter] provides a safe way to filter data via human-friendly URLs. It works very similar to DRF serializers and fields in a sense that they can be nested except they are called filtersets and filters. That provides easy way to filter related data. Also this library is generic-purpose so it can be used to filter other sources of data and not only Django `QuerySet`s.
+
 [cite]: https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter]: https://github.com/alex/django-filter
 [django-filter-docs]: https://django-filter.readthedocs.org/en/latest/index.html
@@ -413,3 +415,4 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [search-django-admin]: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
 [django-rest-framework-filters]: https://github.com/philipn/django-rest-framework-filters
 [django-rest-framework-word-search-filter]: https://github.com/trollknurr/django-rest-framework-word-search-filter
+[django-url-filter]: https://github.com/miki725/django-url-filter

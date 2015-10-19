@@ -15,7 +15,7 @@ from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import (
-    crispy_forms, distinct, django_filters, get_model_name, guardian
+    crispy_forms, distinct, django_filters, guardian
 )
 from rest_framework.settings import api_settings
 
@@ -301,7 +301,7 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
         model_cls = queryset.model
         kwargs = {
             'app_label': model_cls._meta.app_label,
-            'model_name': get_model_name(model_cls)
+            'model_name': model_cls._meta.model_name
         }
         permission = self.perm_format % kwargs
         if guardian.VERSION >= (1, 3):

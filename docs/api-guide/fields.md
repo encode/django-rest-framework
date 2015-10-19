@@ -51,13 +51,13 @@ Defaults to `False`
 
 If set, this gives the default value that will be used for the field if no input value is supplied.  If not set the default behavior is to not populate the attribute at all.
 
-May be set to a function or other callable, in which case the value will be evaluated each time it is used.
+May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a `set_context` method, that will be called each time before getting the value with the field instance as only argument. This works the same way as for [validators](validators.md#using-set_context).
 
 Note that setting a `default` value implies that the field is not required. Including both the `default` and `required` keyword arguments is invalid and will raise an error.
 
 ### `source`
 
-The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `URLField('get_absolute_url')`, or may use dotted notation to traverse attributes, such as `EmailField(source='user.email')`.
+The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `URLField(source='get_absolute_url')`, or may use dotted notation to traverse attributes, such as `EmailField(source='user.email')`.
 
 The value `source='*'` has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.
 
@@ -458,6 +458,14 @@ You can also use the declarative style, as with `ListField`. For example:
 
     class DocumentField(DictField):
         child = CharField()
+
+## JSONField
+
+A field class that validates that the incoming data structure consists of valid JSON primitives. In its alternate binary mode, it will represent and validate JSON-encoded binary strings.
+
+**Signature**: `JSONField(binary)`
+
+- `binary` - If set to `True` then the field will output and validate a JSON encoded string, rather that a primitive data structure. Defaults to `False`.
 
 ---
 

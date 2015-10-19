@@ -36,8 +36,8 @@ There is a live example API for testing purposes, [available here][sandbox].
 
 # Requirements
 
-* Python (2.6.5+, 2.7, 3.2, 3.3, 3.4)
-* Django (1.5.6+, 1.6.3+, 1.7, 1.8)
+* Python (2.7, 3.2, 3.3, 3.4, 3.5)
+* Django (1.7, 1.8, 1.9)
 
 # Installation
 
@@ -156,7 +156,6 @@ You may also want to [follow the author on Twitter][twitter].
 If you believe you’ve found something in Django REST framework which has security implications, please **do not raise the issue in a public forum**.
 
 Send a description of the issue via email to [rest-framework-security@googlegroups.com][security-mail].  The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
-
 
 [build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.svg?branch=master
 [travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master

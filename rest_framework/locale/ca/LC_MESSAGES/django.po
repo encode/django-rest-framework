@@ -1,0 +1,400 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-09-21 10:55+0200\n"
+"PO-Revision-Date: 2015-09-21 08:56+0000\n"
+"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
+"Language-Team: Catalan (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/ca/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ca\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: authentication.py:72
+msgid "Invalid basic header. No credentials provided."
+msgstr "Header Basic invàlid. No hi ha disponibles les credencials."
+
+#: authentication.py:75
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "Header Basic invàlid. Les credencials no poden contenir espais."
+
+#: authentication.py:81
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "Header Basic invàlid. Les credencials no estan codificades correctament en base64."
+
+#: authentication.py:98
+msgid "Invalid username/password."
+msgstr "Usuari/Contrasenya incorrectes."
+
+#: authentication.py:101 authentication.py:189
+msgid "User inactive or deleted."
+msgstr "Usuari inactiu o esborrat."
+
+#: authentication.py:168
+msgid "Invalid token header. No credentials provided."
+msgstr "Token header invàlid. No s'han indicat les credencials."
+
+#: authentication.py:171
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "Token header invàlid. El token no ha de contenir espais."
+
+#: authentication.py:177
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr "Token header invàlid. El token no pot contenir caràcters invàlids."
+
+#: authentication.py:186
+msgid "Invalid token."
+msgstr "Token invàlid."
+
+#: authtoken/serializers.py:20
+msgid "User account is disabled."
+msgstr "Compte d'usuari desactivat."
+
+#: authtoken/serializers.py:23
+msgid "Unable to log in with provided credentials."
+msgstr "No es possible loguejar-se amb les credencials introduïdes."
+
+#: authtoken/serializers.py:26
+msgid "Must include \"username\" and \"password\"."
+msgstr "S'ha d'incloure \"username\" i \"password\"."
+
+#: exceptions.py:49
+msgid "A server error occurred."
+msgstr "S'ha produït un error en el servidor."
+
+#: exceptions.py:84
+msgid "Malformed request."
+msgstr "Request amb format incorrecte."
+
+#: exceptions.py:89
+msgid "Incorrect authentication credentials."
+msgstr "Credencials d'autenticació incorrectes."
+
+#: exceptions.py:94
+msgid "Authentication credentials were not provided."
+msgstr "Credencials d'autenticació no disponibles."
+
+#: exceptions.py:99
+msgid "You do not have permission to perform this action."
+msgstr "No té permisos per realitzar aquesta acció."
+
+#: exceptions.py:104 views.py:81
+msgid "Not found."
+msgstr "No trobat."
+
+#: exceptions.py:109
+#, python-brace-format
+msgid "Method \"{method}\" not allowed."
+msgstr "Mètode \"{method}\" no permès."
+
+#: exceptions.py:120
+msgid "Could not satisfy the request Accept header."
+msgstr "No s'ha pogut satisfer l'Accept header de la petició."
+
+#: exceptions.py:132
+#, python-brace-format
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "Media type \"{media_type}\" no suportat."
+
+#: exceptions.py:145
+msgid "Request was throttled."
+msgstr "La petició ha estat limitada pel número màxim de peticions definit."
+
+#: fields.py:262 relations.py:191 relations.py:224 validators.py:79
+#: validators.py:162
+msgid "This field is required."
+msgstr "Aquest camp és obligatori."
+
+#: fields.py:263
+msgid "This field may not be null."
+msgstr "Aquest camp no pot ser nul."
+
+#: fields.py:599 fields.py:627
+#, python-brace-format
+msgid "\"{input}\" is not a valid boolean."
+msgstr "\"{input}\" no és un booleà."
+
+#: fields.py:662
+msgid "This field may not be blank."
+msgstr "Aquest camp no pot estar en blanc."
+
+#: fields.py:663 fields.py:1594
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "Aquest camp no pot tenir més de {max_length} caràcters."
+
+#: fields.py:664
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "Aquest camp ha de tenir un mínim de {min_length} caràcters."
+
+#: fields.py:701
+msgid "Enter a valid email address."
+msgstr "Introdueixi una adreça de correu vàlida."
+
+#: fields.py:712
+msgid "This value does not match the required pattern."
+msgstr "Aquest valor no compleix el patró requerit."
+
+#: fields.py:723
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "Introdueix un \"slug\" vàlid consistent en lletres, números, guions o guions baixos."
+
+#: fields.py:735
+msgid "Enter a valid URL."
+msgstr "Introdueixi una URL vàlida."
+
+#: fields.py:748
+#, python-brace-format
+msgid "\"{value}\" is not a valid UUID."
+msgstr "\"{value}\" no és un UUID vàlid."
+
+#: fields.py:782
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "Introdueixi una adreça IPv4 o IPv6 vàlida."
+
+#: fields.py:807
+msgid "A valid integer is required."
+msgstr "Es requereix un nombre enter vàlid."
+
+#: fields.py:808 fields.py:843 fields.py:876
+#, python-brace-format
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "Aquest valor ha de ser menor o igual a {max_value}."
+
+#: fields.py:809 fields.py:844 fields.py:877
+#, python-brace-format
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "Aquest valor ha de ser més gran o igual a {min_value}."
+
+#: fields.py:810 fields.py:845 fields.py:881
+msgid "String value too large."
+msgstr "Valor del text massa gran."
+
+#: fields.py:842 fields.py:875
+msgid "A valid number is required."
+msgstr "Es requereix un nombre vàlid."
+
+#: fields.py:878
+#, python-brace-format
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "No pot haver-hi més de {max_digits} dígits en total."
+
+#: fields.py:879
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "No pot haver-hi més de {max_decimal_places} decimals."
+
+#: fields.py:880
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "No pot haver-hi més de {max_whole_digits} dígits abans del punt decimal."
+
+#: fields.py:994
+#, python-brace-format
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "El Datetime té un format incorrecte. Utilitzi un d'aquests formats: {format}."
+
+#: fields.py:995
+msgid "Expected a datetime but got a date."
+msgstr "S'espera un Datetime però s'ha rebut un Date."
+
+#: fields.py:1060
+#, python-brace-format
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "El Date té un format incorrecte. Utilitzi un d'aquests formats: {format}."
+
+#: fields.py:1061
+msgid "Expected a date but got a datetime."
+msgstr "S'espera un Date però s'ha rebut un Datetime."
+
+#: fields.py:1125
+#, python-brace-format
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "El Time té un format incorrecte. Utilitzi un d'aquests formats: {format}."
+
+#: fields.py:1180
+#, python-brace-format
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr "La durada té un format incorrecte. Utilitzi un d'aquests formats: {format}."
+
+#: fields.py:1205 fields.py:1254
+#, python-brace-format
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" no és una opció vàlida."
+
+#: fields.py:1208 relations.py:58 relations.py:427
+#, python-brace-format
+msgid "More than {count} items..."
+msgstr ""
+
+#: fields.py:1255 fields.py:1401 relations.py:423 serializers.py:504
+#, python-brace-format
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "S'espera una llista d'ítems però s'ha rebut el tipus \"{input_type}\"."
+
+#: fields.py:1256
+msgid "This selection may not be empty."
+msgstr "Aquesta selecció no pot estar buida."
+
+#: fields.py:1294
+#, python-brace-format
+msgid "\"{input}\" is not a valid path choice."
+msgstr "\"{input}\" no és un path vàlid."
+
+#: fields.py:1313
+msgid "No file was submitted."
+msgstr "No s'ha enviat cap fitxer."
+
+#: fields.py:1314
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "Les dades enviades no són un fitxer. Comproveu l'encoding type del formulari."
+
+#: fields.py:1315
+msgid "No filename could be determined."
+msgstr "No s'ha pogut determinar el nom del fitxer."
+
+#: fields.py:1316
+msgid "The submitted file is empty."
+msgstr "El fitxer enviat està buit."
+
+#: fields.py:1317
+#, python-brace-format
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "El nom del fitxer ha de tenir com a màxim {max_length} caràcters (en té {length})."
+
+#: fields.py:1363
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Envieu una imatge vàlida. El fitxer enviat no és una imatge o és una imatge corrompuda."
+
+#: fields.py:1402 relations.py:424 serializers.py:505
+msgid "This list may not be empty."
+msgstr "Aquesta llista no pot estar buida."
+
+#: fields.py:1452
+#, python-brace-format
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "S'espera un diccionari però s'ha rebut el tipus \"{input_type}\"."
+
+#: pagination.py:192
+#, python-brace-format
+msgid "Invalid page \"{page_number}\": {message}."
+msgstr "Pàgina invàlida \"{page_number}\": {message}."
+
+#: pagination.py:462
+msgid "Invalid cursor"
+msgstr "Cursor invàlid."
+
+#: relations.py:192
+#, python-brace-format
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "PK invàlida \"{pk_value}\" - l'objecte no existeix."
+
+#: relations.py:193
+#, python-brace-format
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "Tipus incorrecte. S'espera el valor d'una PK, s'ha rebut {data_type}."
+
+#: relations.py:225
+msgid "Invalid hyperlink - No URL match."
+msgstr "Hyperlink invàlid - Cap match d'URL."
+
+#: relations.py:226
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "Hyperlink invàlid - Match d'URL incorrecta."
+
+#: relations.py:227
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "Hyperlink invàlid - L'objecte no existeix."
+
+#: relations.py:228
+#, python-brace-format
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "Tipus incorrecte. S'espera una URL, s'ha rebut {data_type}."
+
+#: relations.py:387
+#, python-brace-format
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "L'objecte amb {slug_name}={value} no existeix."
+
+#: relations.py:388
+msgid "Invalid value."
+msgstr "Valor invàlid."
+
+#: serializers.py:310
+#, python-brace-format
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "Dades invàlides. S'espera un diccionari però s'ha rebut {datatype}."
+
+#: templates/rest_framework/horizontal/radio.html:2
+#: templates/rest_framework/inline/radio.html:2
+#: templates/rest_framework/vertical/radio.html:2
+msgid "None"
+msgstr "Cap"
+
+#: templates/rest_framework/horizontal/select_multiple.html:2
+#: templates/rest_framework/inline/select_multiple.html:2
+#: templates/rest_framework/vertical/select_multiple.html:2
+msgid "No items to select."
+msgstr "Cap opció seleccionada."
+
+#: validators.py:24
+msgid "This field must be unique."
+msgstr "Aquest camp ha de ser únic."
+
+#: validators.py:78
+#, python-brace-format
+msgid "The fields {field_names} must make a unique set."
+msgstr "Aquests camps {field_names} han de constituir un conjunt únic."
+
+#: validators.py:226
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "Aquest camp ha de ser únic per a la data \"{date_field}\"."
+
+#: validators.py:241
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "Aquest camp ha de ser únic per al mes \"{date_field}\"."
+
+#: validators.py:254
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "Aquest camp ha de ser únic per a l'any \"{date_field}\"."
+
+#: versioning.py:42
+msgid "Invalid version in \"Accept\" header."
+msgstr "Versió invàlida al header \"Accept\"."
+
+#: versioning.py:73 versioning.py:115
+msgid "Invalid version in URL path."
+msgstr "Versió invàlida a la URL."
+
+#: versioning.py:144
+msgid "Invalid version in hostname."
+msgstr "Versió invàlida al hostname."
+
+#: versioning.py:166
+msgid "Invalid version in query parameter."
+msgstr "Versió invàlida al paràmetre de consulta."
+
+#: views.py:88
+msgid "Permission denied."
+msgstr "Permís denegat."

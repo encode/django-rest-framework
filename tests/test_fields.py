@@ -466,6 +466,18 @@ class TestBooleanField(FieldValues):
     }
     field = serializers.BooleanField()
 
+    def test_disallow_unhashable_collection_types(self):
+        inputs = (
+            [],
+            {},
+        )
+        field = serializers.BooleanField()
+        for input_value in inputs:
+            with pytest.raises(serializers.ValidationError) as exc_info:
+                field.run_validation(input_value)
+            expected = ['"{0}" is not a valid boolean.'.format(input_value)]
+            assert exc_info.value.detail == expected
+
 
 class TestNullBooleanField(FieldValues):
     """
@@ -1069,6 +1081,7 @@ class TestDurationField(FieldValues):
         '3 08:32:01.000123': datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
         '08:01': datetime.timedelta(minutes=8, seconds=1),
         datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123): datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
+        3600: datetime.timedelta(hours=1),
     }
     invalid_inputs = {
         'abc': ['Duration has wrong format. Use one of these formats instead: [DD] [HH:[MM:]]ss[.uuuuuu].'],
@@ -1510,6 +1523,58 @@ class TestUnvalidatedDictField(FieldValues):
         ({'a': 1, 'b': [4, 5, 6]}, {'a': 1, 'b': [4, 5, 6]}),
     ]
     field = serializers.DictField()
+
+
+class TestJSONField(FieldValues):
+    """
+    Values for `JSONField`.
+    """
+    valid_inputs = [
+        ({
+            'a': 1,
+            'b': ['some', 'list', True, 1.23],
+            '3': None
+        }, {
+            'a': 1,
+            'b': ['some', 'list', True, 1.23],
+            '3': None
+        }),
+    ]
+    invalid_inputs = [
+        ({'a': set()}, ['Value must be valid JSON.']),
+    ]
+    outputs = [
+        ({
+            'a': 1,
+            'b': ['some', 'list', True, 1.23],
+            '3': 3
+        }, {
+            'a': 1,
+            'b': ['some', 'list', True, 1.23],
+            '3': 3
+        }),
+    ]
+    field = serializers.JSONField()
+
+
+class TestBinaryJSONField(FieldValues):
+    """
+    Values for `JSONField` with binary=True.
+    """
+    valid_inputs = [
+        (b'{"a": 1, "3": null, "b": ["some", "list", true, 1.23]}', {
+            'a': 1,
+            'b': ['some', 'list', True, 1.23],
+            '3': None
+        }),
+    ]
+    invalid_inputs = [
+        ('{"a": "unterminated string}', ['Value must be valid JSON.']),
+    ]
+    outputs = [
+        (['some', 'list', True, 1.23], b'["some", "list", true, 1.23]'),
+    ]
+    field = serializers.JSONField(binary=True)
 
 
 # Tests for FieldField.

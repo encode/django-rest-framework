@@ -189,6 +189,12 @@ Your `validate_<field_name>` methods should return the validated value or raise 
                 raise serializers.ValidationError("Blog post is not about Django")
             return value
 
+---
+
+**Note:** If your `<field_name>` is declared on your serializer with the parameter `required=False` then this validation step will not take place if the field is not included.
+
+---
+
 #### Object-level validation
 
 To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass.  This method takes a single argument, which is a dictionary of field values.  It should raise a `ValidationError` if necessary, or just return the validated values.  For example:
@@ -281,7 +287,7 @@ Similarly if a nested representation should be a list of items, you should pass 
 
 ## Writable nested representations
 
-When dealing with nested representations that support deserializing the data, an errors with nested objects will be nested under the field name of the nested object.
+When dealing with nested representations that support deserializing the data, any errors with nested objects will be nested under the field name of the nested object.
 
     serializer = CommentSerializer(data={'user': {'email': 'foobar', 'username': 'doe'}, 'content': 'baz'})
     serializer.is_valid()
@@ -350,7 +356,7 @@ It is possible that a third party package, providing automatic support some kind
 
 #### Handling saving related instances in model manager classes
 
-An alternative to saving multiple related instances in the serializer is to write custom model manager classes handle creating the correct instances.
+An alternative to saving multiple related instances in the serializer is to write custom model manager classes that handle creating the correct instances.
 
 For example, suppose we wanted to ensure that `User` instances and `Profile` instances are always created together as a pair. We might write a custom manager class that looks something like this:
 
@@ -432,6 +438,7 @@ Declaring a `ModelSerializer` looks like this:
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
+            fields = ('id', 'account_name', 'users', 'created')
 
 By default, all the model fields on the class will be mapped to a corresponding serializer fields.
 
@@ -453,7 +460,7 @@ To do so, open the Django shell, using `python manage.py shell`, then import the
 
 ## Specifying which fields to include
 
-If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`.
+If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`. It is strongly recommended that you explicitly set all fields that should be serialized using the `fields` attribute. This will make it less likely to result in unintentionally exposing data when your models change.
 
 For example:
 
@@ -462,7 +469,27 @@ For example:
             model = Account
             fields = ('id', 'account_name', 'users', 'created')
 
-The names in the `fields` option will normally map to model fields on the model class.
+You can also set the `fields` attribute to the special value `'__all__'` to indicate that all fields in the model should be used.
+
+For example:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            fields = '__all__'
+
+You can set the `exclude` attribute to a list of fields to be excluded from the serializer.
+
+For example:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            exclude = ('users',)
+
+In the example above, if the `Account` model had 3 fields `account_name`, `users`, and `created`, this will result in the fields `account_name` and `created` to be serialized.
+
+The names in the `fields` and `exclude` attributes will normally map to model fields on the model class.
 
 Alternatively names in the `fields` options can map to properties or methods which take no arguments that exist on the model class.
 
@@ -524,7 +551,7 @@ Please review the [Validators Documentation](/api-guide/validators/) for details
 
 ## Additional keyword arguments
 
-There is also a shortcut allowing you to specify arbitrary additional keyword arguments on fields, using the `extra_kwargs` option. Similarly to `read_only_fields` this means you do not need to explicitly declare the field on the serializer.
+There is also a shortcut allowing you to specify arbitrary additional keyword arguments on fields, using the `extra_kwargs` option. As in the case of `read_only_fields`, this means you do not need to explicitly declare the field on the serializer.
 
 This option is a dictionary, mapping field names to a dictionary of keyword arguments. For example:
 
@@ -805,7 +832,7 @@ This class implements the same basic API as the `Serializer` class:
 * `.data` - Returns the outgoing primitive representation.
 * `.is_valid()` - Deserializes and validates incoming data.
 * `.validated_data` - Returns the validated incoming data.
-* `.errors` - Returns an errors during validation.
+* `.errors` - Returns any errors during validation.
 * `.save()` - Persists the validated data into an object instance.
 
 There are four methods that can be overridden, depending on what functionality you want the serializer class to support:
@@ -1022,6 +1049,13 @@ A new interface for controlling this behavior is currently planned for REST fram
 
 The following third party packages are also available.
 
+## Django REST marshmallow
+
+The [django-rest-marshmallow][django-rest-marshmallow] package provides an alternative implementation for serializers, using the python [marshmallow][marshmallow] library. It exposes the same API as the REST framework serializers, and can be used as a drop-in replacement in some use-cases.
+
+## Serpy
+The [serpy][serpy] package is an alternative implementation for serializers that is built for speed. [Serpy][serpy] serializes complex datatypes to simple native types. The native types can be easily converted to JSON or any other format needed.
+
 ## MongoengineModelSerializer
 
 The [django-rest-framework-mongoengine][mongoengine] package provides a `MongoEngineModelSerializer` serializer class that supports using MongoDB as the storage layer for Django REST framework.
@@ -1038,6 +1072,9 @@ The [django-rest-framework-hstore][django-rest-framework-hstore] package provide
 [relations]: relations.md
 [model-managers]: https://docs.djangoproject.com/en/dev/topics/db/managers/
 [encapsulation-blogpost]: http://www.dabapps.com/blog/django-models-and-encapsulation/
+[django-rest-marshmallow]: http://tomchristie.github.io/django-rest-marshmallow/
+[marshmallow]: https://marshmallow.readthedocs.org/en/latest/
+[serpy]: https://github.com/clarkduvall/serpy
 [mongoengine]: https://github.com/umutbozkurt/django-rest-framework-mongoengine
 [django-rest-framework-gis]: https://github.com/djangonauts/django-rest-framework-gis
 [django-rest-framework-hstore]: https://github.com/djangonauts/django-rest-framework-hstore

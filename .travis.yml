@@ -5,6 +5,9 @@ sudo: false
 env:
     - TOX_ENV=py27-lint
     - TOX_ENV=py27-docs
+    - TOX_ENV=py35-django19
+    - TOX_ENV=py34-django19
+    - TOX_ENV=py27-django19
     - TOX_ENV=py34-django18
     - TOX_ENV=py33-django18
     - TOX_ENV=py32-django18
@@ -13,28 +16,12 @@ env:
     - TOX_ENV=py33-django17
     - TOX_ENV=py32-django17
     - TOX_ENV=py27-django17
-    - TOX_ENV=py34-django16
-    - TOX_ENV=py33-django16
-    - TOX_ENV=py32-django16
-    - TOX_ENV=py27-django16
-    - TOX_ENV=py26-django16
-    - TOX_ENV=py34-django15
-    - TOX_ENV=py33-django15
-    - TOX_ENV=py32-django15
-    - TOX_ENV=py27-django15
-    - TOX_ENV=py26-django15
-    - TOX_ENV=py27-djangomaster
-    - TOX_ENV=py32-djangomaster
-    - TOX_ENV=py33-djangomaster
-    - TOX_ENV=py34-djangomaster
 
 matrix:
+    # Python 3.5 not yet available on travis, watch this to see when it is.
   fast_finish: true
   allow_failures:
-    - env: TOX_ENV=py27-djangomaster
-    - env: TOX_ENV=py32-djangomaster
-    - env: TOX_ENV=py33-djangomaster
-    - env: TOX_ENV=py34-djangomaster
+    - env: TOX_ENV=py35-django19
 
 install:
   - pip install tox
@@ -44,4 +31,4 @@ script:
 
 after_success:
     - pip install codecov
-    - codecov
+    - codecov -e TOX_ENV

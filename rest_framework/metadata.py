@@ -8,12 +8,13 @@ to return this information in a more standardized way.
 """
 from __future__ import unicode_literals
 
+from collections import OrderedDict
+
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.encoding import force_text
 
 from rest_framework import exceptions, serializers
-from rest_framework.compat import OrderedDict
 from rest_framework.request import clone_request
 from rest_framework.utils.field_mapping import ClassLookupDict
 
@@ -76,7 +77,7 @@ class SimpleMetadata(BaseMetadata):
         the fields that are accepted for 'PUT' and 'POST' methods.
         """
         actions = {}
-        for method in set(['PUT', 'POST']) & set(view.allowed_methods):
+        for method in {'PUT', 'POST'} & set(view.allowed_methods):
             view.request = clone_request(request, method)
             try:
                 # Test global permissions

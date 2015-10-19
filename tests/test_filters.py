@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import datetime
+import unittest
 from decimal import Decimal
 
 from django.conf.urls import url
@@ -8,7 +9,6 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.test import TestCase
 from django.test.utils import override_settings
-from django.utils import unittest
 from django.utils.dateparse import parse_date
 from django.utils.six.moves import reload_module
 

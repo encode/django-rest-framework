@@ -8,6 +8,7 @@ an appropriate set of serializer fields for each case.
 from __future__ import unicode_literals
 
 import decimal
+from collections import OrderedDict
 
 import django
 import pytest
@@ -21,7 +22,7 @@ from django.utils import six
 
 from rest_framework import serializers
 from rest_framework.compat import DurationField as ModelDurationField
-from rest_framework.compat import OrderedDict, unicode_repr
+from rest_framework.compat import unicode_repr
 
 
 def dedent(blocktext):
@@ -62,7 +63,7 @@ class RegularFieldsModel(models.Model):
     positive_small_integer_field = models.PositiveSmallIntegerField()
     slug_field = models.SlugField(max_length=100)
     small_integer_field = models.SmallIntegerField()
-    text_field = models.TextField()
+    text_field = models.TextField(max_length=100)
     time_field = models.TimeField()
     url_field = models.URLField(max_length=100)
     custom_field = CustomField()
@@ -160,11 +161,12 @@ class TestRegularFieldMappings(TestCase):
                 positive_small_integer_field = IntegerField()
                 slug_field = SlugField(max_length=100)
                 small_integer_field = IntegerField()
-                text_field = CharField(style={'base_template': 'textarea.html'})
+                text_field = CharField(max_length=100, style={'base_template': 'textarea.html'})
                 time_field = TimeField()
                 url_field = URLField(max_length=100)
                 custom_field = ModelField(model_field=<tests.test_model_serializer.CustomField: custom_field>)
         """)
+
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
     def test_field_options(self):
@@ -320,6 +322,21 @@ class TestRegularFieldMappings(TestCase):
                 model = ChoicesModel
 
         ExampleSerializer()
+
+    def test_fields_and_exclude_behavior(self):
+        class ImplicitFieldsSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+
+        class ExplicitFieldsSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+                fields = '__all__'
+
+        implicit = ImplicitFieldsSerializer()
+        explicit = ExplicitFieldsSerializer()
+
+        assert implicit.data == explicit.data
 
 
 @pytest.mark.skipif(django.VERSION < (1, 8),

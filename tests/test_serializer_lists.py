@@ -289,3 +289,32 @@ class TestListSerializerClass:
         serializer = TestSerializer(data=[], many=True)
         assert not serializer.is_valid()
         assert serializer.errors == {'non_field_errors': ['Non field error']}
+
+
+class TestSerializerPartialUsage:
+    """
+    When not submitting key for list fields or multiple choice, partial
+    serialization should result in an empty state (key not there), not
+    an empty list.
+
+    Regression test for Github issue #2761.
+    """
+    def test_partial_listfield(self):
+        class ListSerializer(serializers.Serializer):
+            listdata = serializers.ListField()
+        serializer = ListSerializer(data=MultiValueDict(), partial=True)
+        result = serializer.to_internal_value(data={})
+        assert "listdata" not in result
+        assert serializer.is_valid()
+        assert serializer.validated_data == {}
+        assert serializer.errors == {}
+
+    def test_partial_multiplechoice(self):
+        class MultipleChoiceSerializer(serializers.Serializer):
+            multiplechoice = serializers.MultipleChoiceField(choices=[1, 2, 3])
+        serializer = MultipleChoiceSerializer(data=MultiValueDict(), partial=True)
+        result = serializer.to_internal_value(data={})
+        assert "multiplechoice" not in result
+        assert serializer.is_valid()
+        assert serializer.validated_data == {}
+        assert serializer.errors == {}

@@ -95,17 +95,13 @@
         {% endif %}
 
         {% if options_form %}
-          <form class="button-form" action="{{ request.get_full_path }}" method="POST">
-            {% csrf_token %}
-            <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
+          <form class="button-form" action="{{ request.get_full_path }}" data-method="OPTIONS">
             <button class="btn btn-primary js-tooltip" title="Make an OPTIONS request on the {{ name }} resource">OPTIONS</button>
           </form>
         {% endif %}
 
         {% if delete_form %}
-          <form class="button-form" action="{{ request.get_full_path }}" method="POST">
-            {% csrf_token %}
-            <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
+          <form class="button-form" action="{{ request.get_full_path }}" data-method="DELETE">
             <button class="btn btn-danger js-tooltip" title="Make a DELETE request on the {{ name }} resource">DELETE</button>
           </form>
         {% endif %}
@@ -176,7 +172,7 @@
                     </div>
                   {% endif %}
 
-                  <div {% if post_form %}class="tab-pane"{% endif %} id="post-generic-content-form">
+                  <div {% if raw_data_post_form %}class="tab-pane"{% endif %} id="post-generic-content-form">
                     {% with form=raw_data_post_form %}
                       <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
                         <fieldset>
@@ -208,11 +204,11 @@
                 <div class="well tab-content">
                   {% if put_form %}
                     <div class="tab-pane" id="put-object-form">
-                      <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
+                      <form action="{{ request.get_full_path }}" data-method="PUT" enctype="multipart/form-data" class="form-horizontal" novalidate>
                         <fieldset>
                           {{ put_form }}
                           <div class="form-actions">
-                            <button class="btn btn-primary js-tooltip" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" title="Make a PUT request on the {{ name }} resource">PUT</button>
+                            <button class="btn btn-primary js-tooltip" title="Make a PUT request on the {{ name }} resource">PUT</button>
                           </div>
                         </fieldset>
                       </form>
@@ -221,15 +217,15 @@
 
                   <div {% if put_form %}class="tab-pane"{% endif %} id="put-generic-content-form">
                     {% with form=raw_data_put_or_patch_form %}
-                      <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
+                      <form action="{{ request.get_full_path }}" data-method="PUT" class="form-horizontal">
                         <fieldset>
                           {% include "rest_framework/raw_data_form.html" %}
                           <div class="form-actions">
                             {% if raw_data_put_form %}
-                              <button class="btn btn-primary js-tooltip" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" title="Make a PUT request on the {{ name }} resource">PUT</button>
+                              <button class="btn btn-primary js-tooltip" title="Make a PUT request on the {{ name }} resource">PUT</button>
                             {% endif %}
                             {% if raw_data_patch_form %}
-                              <button class="btn btn-primary js-tooltip" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PATCH" title="Make a PATCH request on the {{ name }} resource">PATCH</button>
+                            <button data-method="PATCH" class="btn btn-primary js-tooltip" title="Make a PATCH request on the {{ name }} resource">PATCH</button>
                               {% endif %}
                           </div>
                         </fieldset>
@@ -245,10 +241,17 @@
   </div><!-- ./wrapper -->
 
   {% block script %}
-    <script src="{% static "rest_framework/js/jquery-1.8.1-min.js" %}"></script>
+    <script src="{% static "rest_framework/js/jquery-1.11.3.min.js" %}"></script>
+    <script src="{% static "rest_framework/js/ajax-form.js" %}"></script>
+    <script src="{% static "rest_framework/js/csrf.js" %}"></script>
     <script src="{% static "rest_framework/js/bootstrap.min.js" %}"></script>
     <script src="{% static "rest_framework/js/prettify-min.js" %}"></script>
     <script src="{% static "rest_framework/js/default.js" %}"></script>
+    <script>
+        $(document).ready(function() {
+            $('form').ajaxForm();
+        });
+    </script>
   {% endblock %}
 
   {% if filter_form %}

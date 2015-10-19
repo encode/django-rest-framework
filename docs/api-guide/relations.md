@@ -255,7 +255,7 @@ For example, the following serializer:
     class TrackSerializer(serializers.ModelSerializer):
         class Meta:
             model = Track
-            fields = ('order', 'title')
+            fields = ('order', 'title', 'duration')
 
     class AlbumSerializer(serializers.ModelSerializer):
         tracks = TrackSerializer(many=True, read_only=True)
@@ -293,7 +293,7 @@ Be default nested serializers are read-only. If you want to to support write-ope
     class TrackSerializer(serializers.ModelSerializer):
         class Meta:
             model = Track
-            fields = ('order', 'title')
+            fields = ('order', 'title', 'duration')
 
     class AlbumSerializer(serializers.ModelSerializer):
         tracks = TrackSerializer(many=True)
@@ -405,13 +405,15 @@ In this case we'd need to override `HyperlinkedRelatedField` to get the behavior
         def get_url(self, obj, view_name, request, format):
             url_kwargs = {
                 'organization_slug': obj.organization.slug,
-                'customer_pk': obj.pk            }
+                'customer_pk': obj.pk
+            }
             return reverse(view_name, url_kwargs, request=request, format=format)
 
         def get_object(self, view_name, view_args, view_kwargs):
             lookup_kwargs = {
                'organization__slug': view_kwargs['organization_slug'],
-               'pk': view_kwargs['customer_pk']            }
+               'pk': view_kwargs['customer_pk']
+            }
             return self.get_queryset().get(**lookup_kwargs)
 
 Note that if you wanted to use this style together with the generic views then you'd also need to override `.get_object` on the view in order to get the correct lookup behavior.
@@ -501,7 +503,7 @@ For example, given the following model for a tag, which has a generic relationsh
         tagged_object = GenericForeignKey('content_type', 'object_id')
 
         def __unicode__(self):
-            return self.tag
+            return self.tag_name
 
 And the following two models, which may be have associated tags:
 
