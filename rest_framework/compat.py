@@ -114,23 +114,10 @@ def get_model_name(model_cls):
         return model_cls._meta.module_name
 
 
-
-
 class CustomValidatorMessage(object):
     def __init__(self, *args, **kwargs):
         self.message = kwargs.pop('message', self.message)
-        self.format = kwargs.pop('string_format', '%')
         super(CustomValidatorMessage, self).__init__(*args, **kwargs)
-
-    def __call__(self, value):
-        cleaned = self.clean(value)
-        params = {'limit_value': self.limit_value, 'show_value': cleaned, 'value': value}
-        if self.compare(cleaned, self.limit_value):
-            message = self.message
-            if self.format == '{':
-                args = {self.code: self.limit_value}
-                message = message.format(**args)
-            raise ValidationError(message, code=self.code, params=params)
 
 
 class MinValueValidator(CustomValidatorMessage, MinValueValidator):
