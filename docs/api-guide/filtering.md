@@ -389,6 +389,12 @@ For example, you might need to restrict users to only being able to see objects 
 
 We could achieve the same behavior by overriding `get_queryset()` on the views, but using a filter backend allows you to more easily add this restriction to multiple views, or to apply it across the entire API.
 
+## Customizing the interface
+
+Generic filters may also present an interface in the browsable API. To do so you should implement a `to_html()` method which returns a rendered HTML representation of the filter. This method should have the following signature:
+
+`to_html(self, request, queryset, view)`
+
 # Third party packages
 
 The following third party packages provide additional filter implementations.
