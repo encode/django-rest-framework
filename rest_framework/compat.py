@@ -62,21 +62,18 @@ def distinct(queryset, base):
     return queryset.distinct()
 
 
-# OrderedDict only available in Python 2.7.
-# This will always be the case in Django 1.7 and above, as these versions
-# no longer support Python 2.6.
-# For Django <= 1.6 and Python 2.6 fall back to SortedDict.
-try:
-    from collections import OrderedDict
-except ImportError:
-    from django.utils.datastructures import SortedDict as OrderedDict
-
-
 # contrib.postgres only supported from 1.8 onwards.
 try:
     from django.contrib.postgres import fields as postgres_fields
 except ImportError:
     postgres_fields = None
+
+
+# JSONField is only supported from 1.9 onwards
+try:
+    from django.contrib.postgres.fields import JSONField
+except ImportError:
+    JSONField = None
 
 
 # django-filter is optional
@@ -85,33 +82,15 @@ try:
 except ImportError:
     django_filters = None
 
-if django.VERSION >= (1, 6):
-    def clean_manytomany_helptext(text):
-        return text
-else:
-    # Up to version 1.5 many to many fields automatically suffix
-    # the `help_text` attribute with hardcoded text.
-    def clean_manytomany_helptext(text):
-        if text.endswith(' Hold down "Control", or "Command" on a Mac, to select more than one.'):
-            text = text[:-69]
-        return text
-
 # Django-guardian is optional. Import only if guardian is in INSTALLED_APPS
 # Fixes (#1712). We keep the try/except for the test suite.
 guardian = None
 try:
-    import guardian
-    import guardian.shortcuts  # Fixes #1624
+    if 'guardian' in settings.INSTALLED_APPS:
+        import guardian
+        import guardian.shortcuts  # Fixes #1624
 except ImportError:
     pass
-
-
-def get_model_name(model_cls):
-    try:
-        return model_cls._meta.model_name
-    except AttributeError:
-        # < 1.6 used module_name instead of model_name
-        return model_cls._meta.module_name
 
 
 class CustomValidatorMessage(object):
@@ -134,32 +113,6 @@ class MinLengthValidator(CustomValidatorMessage, MinLengthValidator):
 
 class MaxLengthValidator(CustomValidatorMessage, MaxLengthValidator):
     pass
-
-
-# URLValidator only accepts `message` in 1.6+
-if django.VERSION >= (1, 6):
-    from django.core.validators import URLValidator
-else:
-    from django.core.validators import URLValidator as DjangoURLValidator
-
-
-    class URLValidator(DjangoURLValidator):
-        def __init__(self, *args, **kwargs):
-            self.message = kwargs.pop('message', self.message)
-            super(URLValidator, self).__init__(*args, **kwargs)
-
-
-# EmailValidator requires explicit regex prior to 1.6+
-if django.VERSION >= (1, 6):
-    from django.core.validators import EmailValidator
-else:
-    from django.core.validators import EmailValidator as DjangoEmailValidator
-    from django.core.validators import email_re
-
-
-    class EmailValidator(DjangoEmailValidator):
-        def __init__(self, *args, **kwargs):
-            super(EmailValidator, self).__init__(email_re, *args, **kwargs)
 
 
 # PATCH method is not implemented by Django

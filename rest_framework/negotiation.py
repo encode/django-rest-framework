@@ -92,9 +92,6 @@ class DefaultContentNegotiation(BaseContentNegotiation):
         """
         Given the incoming request, return a tokenised list of media
         type strings.
-
-        Allows URL style accept override.  eg. "?accept=application/json"
         """
         header = request.META.get('HTTP_ACCEPT', '*/*')
-        header = request.query_params.get(self.settings.URL_ACCEPT_OVERRIDE, header)
         return [token.strip() for token in header.split(',')]

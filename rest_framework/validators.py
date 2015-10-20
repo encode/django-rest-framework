@@ -100,11 +100,11 @@ class UniqueTogetherValidator(object):
         if self.instance is not None:
             return
 
-        missing = dict([
-            (field_name, self.missing_message)
+        missing = {
+            field_name: self.missing_message
             for field_name in self.fields
             if field_name not in attrs
-        ])
+        }
         if missing:
             raise ValidationError(missing)
 
@@ -120,10 +120,10 @@ class UniqueTogetherValidator(object):
                     attrs[field_name] = getattr(self.instance, field_name)
 
         # Determine the filter keyword arguments and filter the queryset.
-        filter_kwargs = dict([
-            (field_name, attrs[field_name])
+        filter_kwargs = {
+            field_name: attrs[field_name]
             for field_name in self.fields
-        ])
+        }
         return queryset.filter(**filter_kwargs)
 
     def exclude_current_instance(self, attrs, queryset):
@@ -184,11 +184,11 @@ class BaseUniqueForValidator(object):
         The `UniqueFor<Range>Validator` classes always force an implied
         'required' state on the fields they are applied to.
         """
-        missing = dict([
-            (field_name, self.missing_message)
+        missing = {
+            field_name: self.missing_message
             for field_name in [self.field, self.date_field]
             if field_name not in attrs
-        ])
+        }
         if missing:
             raise ValidationError(missing)
 

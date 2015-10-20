@@ -57,7 +57,7 @@ Note that setting a `default` value implies that the field is not required. Incl
 
 ### `source`
 
-The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `URLField('get_absolute_url')`, or may use dotted notation to traverse attributes, such as `EmailField(source='user.email')`.
+The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `URLField(source='get_absolute_url')`, or may use dotted notation to traverse attributes, such as `EmailField(source='user.email')`.
 
 The value `source='*'` has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.
 
@@ -458,6 +458,14 @@ You can also use the declarative style, as with `ListField`. For example:
 
     class DocumentField(DictField):
         child = CharField()
+
+## JSONField
+
+A field class that validates that the incoming data structure consists of valid JSON primitives. In its alternate binary mode, it will represent and validate JSON-encoded binary strings.
+
+**Signature**: `JSONField(binary)`
+
+- `binary` - If set to `True` then the field will output and validate a JSON encoded string, rather that a primitive data structure. Defaults to `False`.
 
 ---
 
