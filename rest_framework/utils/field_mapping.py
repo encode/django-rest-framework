@@ -222,7 +222,7 @@ def get_relation_kwargs(field_name, relation_info):
     """
     Creates a default instance of a flat relational field.
     """
-    model_field, related_model, to_many, has_through_model = relation_info
+    model_field, related_model, to_many, to_field, has_through_model = relation_info
     kwargs = {
         'queryset': related_model._default_manager,
         'view_name': get_detail_view_name(related_model)
@@ -230,6 +230,9 @@ def get_relation_kwargs(field_name, relation_info):
 
     if to_many:
         kwargs['many'] = True
+
+    if to_field:
+        kwargs['to_field'] = to_field
 
     if has_through_model:
         kwargs['read_only'] = True
