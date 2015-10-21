@@ -288,7 +288,7 @@ Would serialize to a nested representation like this:
 
 # Writable nested serializers
 
-Be default nested serializers are read-only. If you want to to support write-operations to a nested serializer field you'll need to create either or both of the `create()` and/or `update()` methods, in order to explicitly specify how the child relationships should be saved.
+By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create `create()` and/or `update()` methods in order to explicitly specify how the child relationships should be saved.
 
     class TrackSerializer(serializers.ModelSerializer):
         class Meta:
