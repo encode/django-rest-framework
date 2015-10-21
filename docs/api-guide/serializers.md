@@ -405,7 +405,7 @@ To serialize a queryset or list of objects instead of a single object instance, 
 
 #### Deserializing multiple objects
 
-The default behavior for deserializing multiple objects is to support multiple object creation, but not support multiple object updates. For more information on how to support or customize either of these cases, see the [ListSerializer](#ListSerializer) documentation below.
+The default behavior for deserializing multiple objects is to support multiple object creation, but not support multiple object updates. For more information on how to support or customize either of these cases, see the [ListSerializer](#listserializer) documentation below.
 
 ## Including extra context
 
