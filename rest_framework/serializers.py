@@ -794,6 +794,7 @@ class ModelSerializer(Serializer):
     if ModelJSONField is not None:
         serializer_field_mapping[ModelJSONField] = JSONField
     serializer_related_field = PrimaryKeyRelatedField
+    serializer_related_to_field = SlugRelatedField
     serializer_url_field = HyperlinkedIdentityField
     serializer_choice_field = ChoiceField
 
@@ -1128,6 +1129,11 @@ class ModelSerializer(Serializer):
         """
         field_class = self.serializer_related_field
         field_kwargs = get_relation_kwargs(field_name, relation_info)
+
+        to_field = field_kwargs.pop('to_field', None)
+        if to_field and to_field != 'id':
+            field_kwargs['slug_field'] = to_field
+            field_class = self.serializer_related_to_field
 
         # `view_name` is only valid for hyperlinked relationships.
         if not issubclass(field_class, HyperlinkedRelatedField):
