@@ -79,11 +79,7 @@ def _get_displayed_page_numbers(current, final):
 
     # We always include the first two pages, last two pages, and
     # two pages either side of the current page.
-    included = set((
-        1,
-        current - 1, current, current + 1,
-        final
-    ))
+    included = {1, current - 1, current, current + 1, final}
 
     # If the break would only exclude a single page number then we
     # may as well include the page number instead of the break.
