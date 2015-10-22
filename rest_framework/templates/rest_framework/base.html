@@ -154,6 +154,7 @@
                       {% with form=post_form %}
                         <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
                           <fieldset>
+                            {% csrf_token %}
                             {{ post_form }}
                             <div class="form-actions">
                               <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>

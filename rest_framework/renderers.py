@@ -249,7 +249,7 @@ class HTMLFormRenderer(BaseRenderer):
     media_type = 'text/html'
     format = 'form'
     charset = 'utf-8'
-    template_pack = 'rest_framework/horizontal/'
+    template_pack = 'rest_framework/vertical/'
     base_template = 'form.html'
 
     default_style = ClassLookupDict({
@@ -341,26 +341,16 @@ class HTMLFormRenderer(BaseRenderer):
         Render serializer data and return an HTML form, as a string.
         """
         form = data.serializer
-        meta = getattr(form, 'Meta', None)
-        style = getattr(meta, 'style', {})
+
+        style = renderer_context.get('style', {})
         if 'template_pack' not in style:
             style['template_pack'] = self.template_pack
-        if 'base_template' not in style:
-            style['base_template'] = self.base_template
         style['renderer'] = self
 
-        # This API needs to be finessed and finalized for 3.1
-        if 'template' in renderer_context:
-            template_name = renderer_context['template']
-        elif 'template' in style:
-            template_name = style['template']
-        else:
-            template_name = style['template_pack'].strip('/') + '/' + style['base_template']
-
-        renderer_context = renderer_context or {}
-        request = renderer_context['request']
+        template_pack = style['template_pack'].strip('/')
+        template_name = template_pack + '/' + self.base_template
         template = loader.get_template(template_name)
-        context = RequestContext(request, {
+        context = Context({
             'form': form,
             'style': style
         })
@@ -505,10 +495,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             return form_renderer.render(
                 serializer.data,
                 self.accepted_media_type,
-                dict(
-                    list(self.renderer_context.items()) +
-                    [('template', 'rest_framework/api_form.html')]
-                )
+                {'style': {'template_pack': 'rest_framework/horizontal'}}
             )
 
     def get_raw_data_form(self, data, view, method, request):
