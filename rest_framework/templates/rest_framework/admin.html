@@ -111,6 +111,13 @@
                     </form>
                 {% endif %}
 
+                {% if filter_form %}
+                    <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
+                        <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+                        {% trans "Filters" %}
+                    </button>
+                {% endif %}
+
                 <div class="content-main">
                     <div class="page-header">
                         <h1>{{ name }}</h1>
@@ -217,6 +224,8 @@
   </div>
 </div>
 {% endif %}
+
+{% if filter_form %}{{ filter_form }}{% endif %}
 
         {% block script %}
             <script src="{% static "rest_framework/js/jquery-1.11.3.min.js" %}"></script>

@@ -1,5 +1,6 @@
 {% load staticfiles %}
 {% load rest_framework %}
+{% load i18n %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -103,6 +104,13 @@
           <form class="button-form" action="{{ request.get_full_path }}" data-method="DELETE">
             <button class="btn btn-danger js-tooltip" title="Make a DELETE request on the {{ name }} resource">DELETE</button>
           </form>
+        {% endif %}
+
+        {% if filter_form %}
+            <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
+                <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+                {% trans "Filters" %}
+            </button>
         {% endif %}
 
           <div class="content-main">
@@ -246,6 +254,11 @@
         });
     </script>
   {% endblock %}
+
+  {% if filter_form %}
+  {{ filter_form }}
+  {% endif %}
+
 </body>
 {% endblock %}
 </html>

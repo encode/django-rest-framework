@@ -7,14 +7,57 @@ from __future__ import unicode_literals
 import operator
 from functools import reduce
 
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
+from django.template import Context, loader
 from django.utils import six
+from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import distinct, django_filters, guardian
+from rest_framework.compat import (
+    crispy_forms, distinct, django_filters, guardian
+)
 from rest_framework.settings import api_settings
 
-FilterSet = django_filters and django_filters.FilterSet or None
+if 'crispy_forms' in settings.INSTALLED_APPS and crispy_forms and django_filters:
+    # If django-crispy-forms is installed, use it to get a bootstrap3 rendering
+    # of the DjangoFilterBackend controls when displayed as HTML.
+    from crispy_forms.helper import FormHelper
+    from crispy_forms.layout import Layout, Submit
+
+    class FilterSet(django_filters.FilterSet):
+        def __init__(self, *args, **kwargs):
+            super(FilterSet, self).__init__(*args, **kwargs)
+            for field in self.form.fields.values():
+                field.help_text = None
+
+            layout_components = list(self.form.fields.keys()) + [
+                Submit('', _('Submit'), css_class='btn-default'),
+            ]
+
+            helper = FormHelper()
+            helper.form_method = 'GET'
+            helper.template_pack = 'bootstrap3'
+            helper.layout = Layout(*layout_components)
+
+            self.form.helper = helper
+
+    filter_template = 'rest_framework/filters/django_filter_crispyforms.html'
+
+elif django_filters:
+    # If django-crispy-forms is not installed, use the standard
+    # 'form.as_p' rendering when DjangoFilterBackend is displayed as HTML.
+    class FilterSet(django_filters.FilterSet):
+        def __init__(self, *args, **kwargs):
+            super(FilterSet, self).__init__(*args, **kwargs)
+            for field in self.form.fields.values():
+                field.help_text = None
+
+    filter_template = 'rest_framework/filters/django_filter.html'
+
+else:
+    FilterSet = None
+    filter_template = None
 
 
 class BaseFilterBackend(object):
@@ -34,6 +77,7 @@ class DjangoFilterBackend(BaseFilterBackend):
     A filter backend that uses django-filter.
     """
     default_filter_set = FilterSet
+    template = filter_template
 
     def __init__(self):
         assert django_filters, 'Using DjangoFilterBackend, but django-filter is not installed'
@@ -55,7 +99,7 @@ class DjangoFilterBackend(BaseFilterBackend):
             return filter_class
 
         if filter_fields:
-            class AutoFilterSet(self.default_filter_set):
+            class AutoFilterSet(FilterSet):
                 class Meta:
                     model = queryset.model
                     fields = filter_fields
@@ -72,10 +116,20 @@ class DjangoFilterBackend(BaseFilterBackend):
 
         return queryset
 
+    def to_html(self, request, queryset, view):
+        cls = self.get_filter_class(view, queryset)
+        filter_instance = cls(request.query_params, queryset=queryset)
+        context = Context({
+            'filter': filter_instance
+        })
+        template = loader.get_template(self.template)
+        return template.render(context)
+
 
 class SearchFilter(BaseFilterBackend):
     # The URL query parameter used for the search.
     search_param = api_settings.SEARCH_PARAM
+    template = 'rest_framework/filters/search.html'
 
     def get_search_terms(self, request):
         """
@@ -99,7 +153,6 @@ class SearchFilter(BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         search_fields = getattr(view, 'search_fields', None)
-
         search_terms = self.get_search_terms(request)
 
         if not search_fields or not search_terms:
@@ -123,11 +176,25 @@ class SearchFilter(BaseFilterBackend):
         # in the resulting queryset.
         return distinct(queryset, base)
 
+    def to_html(self, request, queryset, view):
+        if not getattr(view, 'search_fields', None):
+            return ''
+
+        term = self.get_search_terms(request)
+        term = term[0] if term else ''
+        context = Context({
+            'param': self.search_param,
+            'term': term
+        })
+        template = loader.get_template(self.template)
+        return template.render(context)
+
 
 class OrderingFilter(BaseFilterBackend):
     # The URL query parameter used for the ordering.
     ordering_param = api_settings.ORDERING_PARAM
     ordering_fields = None
+    template = 'rest_framework/filters/ordering.html'
 
     def get_ordering(self, request, queryset, view):
         """
@@ -153,7 +220,7 @@ class OrderingFilter(BaseFilterBackend):
             return (ordering,)
         return ordering
 
-    def remove_invalid_fields(self, queryset, fields, view):
+    def get_valid_fields(self, queryset, view):
         valid_fields = getattr(view, 'ordering_fields', self.ordering_fields)
 
         if valid_fields is None:
@@ -164,15 +231,30 @@ class OrderingFilter(BaseFilterBackend):
                        "'serializer_class' or 'ordering_fields' attribute.")
                 raise ImproperlyConfigured(msg % self.__class__.__name__)
             valid_fields = [
-                field.source or field_name
+                (field.source or field_name, field.label)
                 for field_name, field in serializer_class().fields.items()
-                if not getattr(field, 'write_only', False)
+                if not getattr(field, 'write_only', False) and not field.source == '*'
             ]
         elif valid_fields == '__all__':
             # View explicitly allows filtering on any model field
-            valid_fields = [field.name for field in queryset.model._meta.fields]
-            valid_fields += queryset.query.aggregates.keys()
+            valid_fields = [
+                (field.name, getattr(field, 'label', field.name.title()))
+                for field in queryset.model._meta.fields
+            ]
+            valid_fields += [
+                (key, key.title().split('__'))
+                for key in queryset.query.aggregates.keys()
+            ]
+        else:
+            valid_fields = [
+                (item, item) if isinstance(item, six.string_types) else item
+                for item in valid_fields
+            ]
 
+        return valid_fields
+
+    def remove_invalid_fields(self, queryset, fields, view):
+        valid_fields = [item[0] for item in self.get_valid_fields(queryset, view)]
         return [term for term in fields if term.lstrip('-') in valid_fields]
 
     def filter_queryset(self, request, queryset, view):
@@ -182,6 +264,25 @@ class OrderingFilter(BaseFilterBackend):
             return queryset.order_by(*ordering)
 
         return queryset
+
+    def get_template_context(self, request, queryset, view):
+        current = self.get_ordering(request, queryset, view)
+        current = None if current is None else current[0]
+        options = []
+        for key, label in self.get_valid_fields(queryset, view):
+            options.append((key, '%s - ascending' % label))
+            options.append(('-' + key, '%s - descending' % label))
+        return {
+            'request': request,
+            'current': current,
+            'param': self.ordering_param,
+            'options': options,
+        }
+
+    def to_html(self, request, queryset, view):
+        template = loader.get_template(self.template)
+        context = Context(self.get_template_context(request, queryset, view))
+        return template.render(context)
 
 
 class DjangoObjectPermissionsFilter(BaseFilterBackend):
