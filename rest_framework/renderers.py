@@ -591,7 +591,9 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         # Infer if this is a list view or not.
         paginator = getattr(view, 'paginator', None)
-        if (paginator is not None and data is not None):
+        if isinstance(data, list):
+            pass
+        elif (paginator is not None and data is not None):
             try:
                 paginator.get_results(data)
             except (TypeError, KeyError):
