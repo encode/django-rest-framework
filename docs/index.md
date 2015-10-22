@@ -12,9 +12,7 @@
 
 ---
 
-**Note**: This is the documentation for the **version 3.2** of REST framework. Documentation for [version 2.4](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
-
-For more details see the 3.2 [announcement][3.2-announcement] and [release notes][release-notes].
+**Note**: This is the documentation for the **version 3** of REST framework. Documentation for [version 2](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
 
 ---
 
@@ -31,7 +29,7 @@ For more details see the 3.2 [announcement][3.2-announcement] and [release notes
 <img alt="Django REST Framework" title="Logo by Jake 'Sid' Smith" src="img/logo.png" width="600px" style="display: block; margin: 0 auto 0 auto">
 </p>
 
-Django REST framework is a powerful and flexible toolkit that makes it easy to build Web APIs.
+Django REST framework is a powerful and flexible toolkit for building Web APIs.
 
 Some reasons you might want to use REST framework:
 
@@ -52,13 +50,14 @@ Some reasons you might want to use REST framework:
 
 REST framework requires the following:
 
-* Python (2.6.5+, 2.7, 3.2, 3.3, 3.4, 3.5)
+* Python (2.7, 3.2, 3.3, 3.4, 3.5)
 * Django (1.7+, 1.8, 1.9)
 
 The following packages are optional:
 
 * [Markdown][markdown] (2.1.0+) - Markdown support for the browsable API.
 * [django-filter][django-filter] (0.9.2+) - Filtering support.
+* [django-crispy-forms][django-crispy-forms] - Improved HTML display for filtering.
 * [django-guardian][django-guardian] (1.1.1+) - Object level permissions support.
 
 ## Installation
@@ -203,6 +202,7 @@ General guides to using REST framework.
 * [3.0 Announcement][3.0-announcement]
 * [3.1 Announcement][3.1-announcement]
 * [3.2 Announcement][3.2-announcement]
+* [3.3 Announcement][3.3-announcement]
 * [Kickstarter Announcement][kickstarter-announcement]
 * [Release Notes][release-notes]
 
@@ -317,6 +317,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [3.0-announcement]: topics/3.0-announcement.md
 [3.1-announcement]: topics/3.1-announcement.md
 [3.2-announcement]: topics/3.2-announcement.md
+[3.3-announcement]: topics/3.3-announcement.md
 [kickstarter-announcement]: topics/kickstarter-announcement.md
 [release-notes]: topics/release-notes.md
 
