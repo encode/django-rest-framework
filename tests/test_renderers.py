@@ -14,12 +14,14 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import permissions, serializers, status
 from rest_framework.renderers import (
-    BaseRenderer, BrowsableAPIRenderer, HTMLFormRenderer, JSONRenderer
+    AdminRenderer, BaseRenderer, BrowsableAPIRenderer, HTMLFormRenderer,
+    JSONRenderer
 )
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView
+from tests.utils import mock_reverse
 
 DUMMYSTATUS = status.HTTP_200_OK
 DUMMYCONTENT = 'dummycontent'
@@ -40,6 +42,12 @@ expected_results = [
 
 class DummyTestModel(models.Model):
     name = models.CharField(max_length=42, default='')
+
+
+class DummySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DummyTestModel
+        fields = ('pk', 'name',)
 
 
 class BasicRendererTests(TestCase):
@@ -103,6 +111,12 @@ class HTMLView1(APIView):
     def get(self, request, **kwargs):
         return Response('text')
 
+
+class AdminRendererView(APIView):
+    renderer_classes = (AdminRenderer, JSONRenderer)
+    serializer_class = DummySerializer
+
+
 urlpatterns = [
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
     url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
@@ -111,6 +125,7 @@ urlpatterns = [
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
     url(r'^empty$', EmptyGETView.as_view()),
+    url(r'^admin_renderer$', AdminRendererView.as_view()),
     url(r'^api', include('rest_framework.urls', namespace='rest_framework'))
 ]
 
@@ -459,3 +474,19 @@ class TestHiddenFieldHTMLFormRenderer(TestCase):
         field = serializer['published']
         rendered = renderer.render_field(field, {})
         assert rendered == ''
+
+
+class TestAdminRenderer(TestCase):
+    def test_admin_renderer_adds_url(self):
+        """AdminRenderer should add a URL to the results if they come from a ModelSerializer"""
+        renderer = AdminRenderer()
+        data = [OrderedDict([('pk', 1), ('name', 'dummyname')])]
+        view = AdminRendererView()
+        request = view.initialize_request(APIRequestFactory().request())
+        context = {'view': view, 'request': request,
+                   'response': view.as_view()(request)}
+
+        rendered_context = renderer.get_context(data, 'text/html', context, reverse_func=mock_reverse)
+
+        results = rendered_context['results'][0]
+        assert results['url'] == 'http://example.org/dummytestmodel-detail/1/'

@@ -25,10 +25,13 @@ from rest_framework.compat import (
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
+from rest_framework.reverse import reverse
 from rest_framework.settings import api_settings
-from rest_framework.utils import encoders
+from rest_framework.utils import encoders, model_meta
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
-from rest_framework.utils.field_mapping import ClassLookupDict
+from rest_framework.utils.field_mapping import (
+    ClassLookupDict, get_detail_view_name
+)
 
 
 def zero_as_none(value):
@@ -730,10 +733,13 @@ class AdminRenderer(BrowsableAPIRenderer):
 
         return ret
 
-    def get_context(self, data, accepted_media_type, renderer_context):
+    def get_context(self, data, accepted_media_type, renderer_context, reverse_func=None):
         """
         Render the HTML for the browsable API representation.
         """
+        if not reverse_func:
+            reverse_func = reverse
+
         context = super(AdminRenderer, self).get_context(
             data, accepted_media_type, renderer_context
         )
@@ -756,6 +762,31 @@ class AdminRenderer(BrowsableAPIRenderer):
         else:
             header = results
             style = 'detail'
+
+        if style == 'list' and results:
+            serializer_class = getattr(context['view'], 'serializer_class', None)
+            fields = getattr(serializer_class.Meta, 'fields', None)
+
+            if issubclass(serializer_class, serializers.ModelSerializer) and fields \
+               and 'url' not in fields:
+                request = context['request']
+
+                def add_url(item):
+                    info = model_meta.get_field_info(serializer_class.Meta.model)
+                    pk = None
+
+                    for field_name, field in info.fields_and_pk.items():
+                        if field.primary_key and (field_name in item):
+                            pk = item[field_name]
+
+                    if pk:
+                        view_name = get_detail_view_name(serializer_class.Meta.model)
+                        url = reverse_func(view_name, kwargs={'pk': pk}, request=request)
+                        item['url'] = url
+
+                    return item
+
+                results = [add_url(result) for result in results]
 
         columns = [key for key in header.keys() if key != 'url']
         details = [key for key in header.keys() if key != 'url']
