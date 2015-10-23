@@ -5,7 +5,6 @@ be used for paginated responses.
 """
 from __future__ import unicode_literals
 
-import warnings
 from base64 import b64decode, b64encode
 from collections import OrderedDict, namedtuple
 
