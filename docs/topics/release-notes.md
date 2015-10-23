@@ -49,6 +49,7 @@ You can determine your currently installed version using `pip freeze`:
 * AJAX browsable API. ([#3410][gh3410])
 * Added JSONField. ([#3454][gh3454])
 * Correctly map `to_field` when creating `ModelSerializer` relational fields. ([#3526][gh3526])
+* Include keyword arguments when mapping `FilePathField` to a serializer field. ([#3536][gh3536])
 * Map appropriate model `error_messages` on `ModelSerializer` uniqueness constraints. ([#3435][gh3435])
 * Include `max_length` constraint for `ModelSerializer` fields mapped from TextField. ([#3509][gh3509])
 * Added support for Django 1.9. ([#3450][gh3450], [#3525][gh3525])
@@ -564,4 +565,5 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh3525]: https://github.com/tomchristie/django-rest-framework/issues/3525
 [gh3526]: https://github.com/tomchristie/django-rest-framework/issues/3526
 [gh3429]: https://github.com/tomchristie/django-rest-framework/issues/3429
+[gh3536]: https://github.com/tomchristie/django-rest-framework/issues/3536
 
