@@ -148,7 +148,7 @@ For example, given the following views...
         throttle_scope = 'contacts'
         ...
 
-    class ContactDetailView(ApiView):
+    class ContactDetailView(APIView):
         throttle_scope = 'contacts'
         ...
 
@@ -184,7 +184,7 @@ If the `.wait()` method is implemented and the request is throttled, then a `Ret
 
 The following is an example of a rate throttle, that will randomly throttle 1 in every 10 requests.
 
-    class RandomRateThrottle(throttles.BaseThrottle):
+    class RandomRateThrottle(throttling.BaseThrottle):
         def allow_request(self, request, view):
             return random.randint(1, 10) == 1
 

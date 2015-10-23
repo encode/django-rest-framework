@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import json
 import re
-from collections import MutableMapping
+from collections import MutableMapping, OrderedDict
 
 from django.conf.urls import include, url
 from django.core.cache import cache
@@ -13,7 +13,6 @@ from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import permissions, serializers, status
-from rest_framework.compat import OrderedDict
 from rest_framework.renderers import (
     BaseRenderer, BrowsableAPIRenderer, HTMLFormRenderer, JSONRenderer
 )
@@ -188,17 +187,6 @@ class RendererEndToEndTests(TestCase):
         """If the Accept header is set the specified renderer should serialize the response.
         (In this case we check that works for a non-default renderer)"""
         resp = self.client.get('/', HTTP_ACCEPT=RendererB.media_type)
-        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
-        self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEqual(resp.status_code, DUMMYSTATUS)
-
-    def test_specified_renderer_serializes_content_on_accept_query(self):
-        """The '_accept' query string should behave in the same way as the Accept header."""
-        param = '?%s=%s' % (
-            api_settings.URL_ACCEPT_OVERRIDE,
-            RendererB.media_type
-        )
-        resp = self.client.get('/' + param)
         self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)

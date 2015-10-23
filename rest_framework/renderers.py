@@ -4,7 +4,7 @@ Renderers are used to serialize a response into specific media types.
 They give us a generic way of being able to handle various media types
 on the response, such as JSON encoded data or HTML output.
 
-REST framework also provides an HTML renderer the renders the browsable API.
+REST framework also provides an HTML renderer that renders the browsable API.
 """
 from __future__ import unicode_literals
 
@@ -249,7 +249,7 @@ class HTMLFormRenderer(BaseRenderer):
     media_type = 'text/html'
     format = 'form'
     charset = 'utf-8'
-    template_pack = 'rest_framework/horizontal/'
+    template_pack = 'rest_framework/vertical/'
     base_template = 'form.html'
 
     default_style = ClassLookupDict({
@@ -341,26 +341,16 @@ class HTMLFormRenderer(BaseRenderer):
         Render serializer data and return an HTML form, as a string.
         """
         form = data.serializer
-        meta = getattr(form, 'Meta', None)
-        style = getattr(meta, 'style', {})
+
+        style = renderer_context.get('style', {})
         if 'template_pack' not in style:
             style['template_pack'] = self.template_pack
-        if 'base_template' not in style:
-            style['base_template'] = self.base_template
         style['renderer'] = self
 
-        # This API needs to be finessed and finalized for 3.1
-        if 'template' in renderer_context:
-            template_name = renderer_context['template']
-        elif 'template' in style:
-            template_name = style['template']
-        else:
-            template_name = style['template_pack'].strip('/') + '/' + style['base_template']
-
-        renderer_context = renderer_context or {}
-        request = renderer_context['request']
+        template_pack = style['template_pack'].strip('/')
+        template_name = template_pack + '/' + self.base_template
         template = loader.get_template(template_name)
-        context = RequestContext(request, {
+        context = Context({
             'form': form,
             'style': style
         })
@@ -374,6 +364,7 @@ class BrowsableAPIRenderer(BaseRenderer):
     media_type = 'text/html'
     format = 'api'
     template = 'rest_framework/api.html'
+    filter_template = 'rest_framework/filters/base.html'
     charset = 'utf-8'
     form_renderer_class = HTMLFormRenderer
 
@@ -419,9 +410,6 @@ class BrowsableAPIRenderer(BaseRenderer):
         """
         if method not in view.allowed_methods:
             return  # Not a valid method
-
-        if not api_settings.FORM_METHOD_OVERRIDE:
-            return  # Cannot use form overloading
 
         try:
             view.check_permissions(request)
@@ -508,10 +496,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             return form_renderer.render(
                 serializer.data,
                 self.accepted_media_type,
-                dict(
-                    list(self.renderer_context.items()) +
-                    [('template', 'rest_framework/api_form.html')]
-                )
+                {'style': {'template_pack': 'rest_framework/horizontal'}}
             )
 
     def get_raw_data_form(self, data, view, method, request):
@@ -530,13 +515,6 @@ class BrowsableAPIRenderer(BaseRenderer):
             instance = None
 
         with override_method(view, request, method) as request:
-            # If we're not using content overloading there's no point in
-            # supplying a generic form, as the view won't treat the form's
-            # value as the content of the request.
-            if not (api_settings.FORM_CONTENT_OVERRIDE and
-                    api_settings.FORM_CONTENTTYPE_OVERRIDE):
-                return None
-
             # Check permissions
             if not self.show_form_for_method(view, method, request, instance):
                 return
@@ -564,28 +542,22 @@ class BrowsableAPIRenderer(BaseRenderer):
 
             # Generate a generic form that includes a content type field,
             # and a content field.
-            content_type_field = api_settings.FORM_CONTENTTYPE_OVERRIDE
-            content_field = api_settings.FORM_CONTENT_OVERRIDE
-
             media_types = [parser.media_type for parser in view.parser_classes]
             choices = [(media_type, media_type) for media_type in media_types]
             initial = media_types[0]
 
-            # NB. http://jacobian.org/writing/dynamic-form-generation/
             class GenericContentForm(forms.Form):
-                def __init__(self):
-                    super(GenericContentForm, self).__init__()
-
-                    self.fields[content_type_field] = forms.ChoiceField(
-                        label='Media type',
-                        choices=choices,
-                        initial=initial
-                    )
-                    self.fields[content_field] = forms.CharField(
-                        label='Content',
-                        widget=forms.Textarea,
-                        initial=content
-                    )
+                _content_type = forms.ChoiceField(
+                    label='Media type',
+                    choices=choices,
+                    initial=initial,
+                    widget=forms.Select(attrs={'data-override': 'content-type'})
+                )
+                _content = forms.CharField(
+                    label='Content',
+                    widget=forms.Textarea(attrs={'data-override': 'content'}),
+                    initial=content
+                )
 
             return GenericContentForm()
 
@@ -599,6 +571,37 @@ class BrowsableAPIRenderer(BaseRenderer):
 
     def get_breadcrumbs(self, request):
         return get_breadcrumbs(request.path, request)
+
+    def get_filter_form(self, data, view, request):
+        if not hasattr(view, 'get_queryset') or not hasattr(view, 'filter_backends'):
+            return
+
+        # Infer if this is a list view or not.
+        paginator = getattr(view, 'paginator', None)
+        if isinstance(data, list):
+            pass
+        elif (paginator is not None and data is not None):
+            try:
+                paginator.get_results(data)
+            except (TypeError, KeyError):
+                return
+        elif not isinstance(data, list):
+            return
+
+        queryset = view.get_queryset()
+        elements = []
+        for backend in view.filter_backends:
+            if hasattr(backend, 'to_html'):
+                html = backend().to_html(request, queryset, view)
+                if html:
+                    elements.append(html)
+
+        if not elements:
+            return
+
+        template = loader.get_template(self.filter_template)
+        context = Context({'elements': elements})
+        return template.render(context)
 
     def get_context(self, data, accepted_media_type, renderer_context):
         """
@@ -646,6 +649,8 @@ class BrowsableAPIRenderer(BaseRenderer):
             'post_form': self.get_rendered_html_form(data, view, 'POST', request),
             'delete_form': self.get_rendered_html_form(data, view, 'DELETE', request),
             'options_form': self.get_rendered_html_form(data, view, 'OPTIONS', request),
+
+            'filter_form': self.get_filter_form(data, view, request),
 
             'raw_data_put_form': raw_data_put_form,
             'raw_data_post_form': raw_data_post_form,
@@ -737,7 +742,7 @@ class AdminRenderer(BrowsableAPIRenderer):
         if (paginator is not None and data is not None):
             try:
                 results = paginator.get_results(data)
-            except KeyError:
+            except (TypeError, KeyError):
                 results = data
         else:
             results = data

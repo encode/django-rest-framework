@@ -16,7 +16,7 @@ Relational fields are used to represent model relationships.  They can be applie
 
 ---
 
-#### Inspecting automatically generated relationships.
+#### Inspecting relationships.
 
 When using the `ModelSerializer` class, serializer fields and relationships will be automatically generated for you. Inspecting these automatically generated fields can be a useful tool for determining how to customize the relationship style.
 
@@ -255,7 +255,7 @@ For example, the following serializer:
     class TrackSerializer(serializers.ModelSerializer):
         class Meta:
             model = Track
-            fields = ('order', 'title')
+            fields = ('order', 'title', 'duration')
 
     class AlbumSerializer(serializers.ModelSerializer):
         tracks = TrackSerializer(many=True, read_only=True)
@@ -288,12 +288,12 @@ Would serialize to a nested representation like this:
 
 # Writable nested serializers
 
-Be default nested serializers are read-only. If you want to to support write-operations to a nested serializer field you'll need to create either or both of the `create()` and/or `update()` methods, in order to explicitly specify how the child relationships should be saved.
+By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create `create()` and/or `update()` methods in order to explicitly specify how the child relationships should be saved.
 
     class TrackSerializer(serializers.ModelSerializer):
         class Meta:
             model = Track
-            fields = ('order', 'title')
+            fields = ('order', 'title', 'duration')
 
     class AlbumSerializer(serializers.ModelSerializer):
         tracks = TrackSerializer(many=True)
@@ -405,13 +405,15 @@ In this case we'd need to override `HyperlinkedRelatedField` to get the behavior
         def get_url(self, obj, view_name, request, format):
             url_kwargs = {
                 'organization_slug': obj.organization.slug,
-                'customer_pk': obj.pk            }
+                'customer_pk': obj.pk
+            }
             return reverse(view_name, url_kwargs, request=request, format=format)
 
         def get_object(self, view_name, view_args, view_kwargs):
             lookup_kwargs = {
                'organization__slug': view_kwargs['organization_slug'],
-               'pk': view_kwargs['customer_pk']            }
+               'pk': view_kwargs['customer_pk']
+            }
             return self.get_queryset().get(**lookup_kwargs)
 
 Note that if you wanted to use this style together with the generic views then you'd also need to override `.get_object` on the view in order to get the correct lookup behavior.
@@ -441,6 +443,25 @@ To provide customized representations for such inputs, override `display_value()
     class TrackPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
         def display_value(self, instance):
             return 'Track: %s' % (instance.title)
+
+## Select field cutoffs
+
+When rendered in the browsable API relational fields will default to only displaying a maximum of 1000 selectable items. If more items are present then a disabled option with "More than 1000 items…" will be displayed.
+
+This behavior is intended to prevent a template from being unable to render in an acceptable timespan due to a very large number of relationships being displayed.
+
+There are two keyword arguments you can use to control this behavior:
+
+- `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Set to `None` to disable any limiting. Defaults to `1000`.
+- `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
+
+In cases where the cutoff is being enforced you may want to instead use a plain input field in the HTML form. You can do so using the `style` keyword argument. For example:
+
+    assigned_to = serializers.SlugRelatedField(
+       queryset=User.objects.all(),
+       slug field='username',
+       style={'base_template': 'input.html'}
+    )
 
 ## Reverse relations
 
@@ -482,7 +503,7 @@ For example, given the following model for a tag, which has a generic relationsh
         tagged_object = GenericForeignKey('content_type', 'object_id')
 
         def __unicode__(self):
-            return self.tag
+            return self.tag_name
 
 And the following two models, which may be have associated tags:
 

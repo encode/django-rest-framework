@@ -104,13 +104,18 @@
                 {% endif %}
 
                 {% if delete_form %}
-                    <form class="button-form" action="{{ request.get_full_path }}" method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
+                    <form class="button-form" action="{{ request.get_full_path }}" data-method="DELETE">
                         <button class="btn btn-danger">
                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
                         </button>
                     </form>
+                {% endif %}
+
+                {% if filter_form %}
+                    <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
+                        <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+                        {% trans "Filters" %}
+                    </button>
                 {% endif %}
 
                 <div class="content-main">
@@ -180,7 +185,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">Edit</h4>
       </div>
-      <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
+      <form action="{{ request.get_full_path }}" data-method="PUT" enctype="multipart/form-data" class="form-horizontal" novalidate>
         <div class="modal-body">
           <fieldset>
             {{ put_form }}
@@ -188,7 +193,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" type="submit" class="btn btn-primary">Save</button>
+          <button type="submit" class="btn btn-primary">Save</button>
         </div>
       </form>
     </div>
@@ -204,7 +209,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">{{ error_title }}</h4>
       </div>
-      <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
+      <form action="{{ request.get_full_path }}" data-method="{{ request.method }}" enctype="multipart/form-data" class="form-horizontal" novalidate>
         <div class="modal-body">
           <fieldset>
             {{ error_form }}
@@ -212,7 +217,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="{{ request.method }}" type="submit" class="btn btn-primary">Save</button>
+          <button type="submit" class="btn btn-primary">Save</button>
         </div>
       </form>
     </div>
@@ -220,11 +225,20 @@
 </div>
 {% endif %}
 
+{% if filter_form %}{{ filter_form }}{% endif %}
+
         {% block script %}
-            <script src="{% static "rest_framework/js/jquery-1.8.1-min.js" %}"></script>
+            <script src="{% static "rest_framework/js/jquery-1.11.3.min.js" %}"></script>
+            <script src="{% static "rest_framework/js/ajax-form.js" %}"></script>
+            <script src="{% static "rest_framework/js/csrf.js" %}"></script>
             <script src="{% static "rest_framework/js/bootstrap.min.js" %}"></script>
             <script src="{% static "rest_framework/js/prettify-min.js" %}"></script>
             <script src="{% static "rest_framework/js/default.js" %}"></script>
+            <script>
+                $(document).ready(function() {
+                    $('form').ajaxForm();
+                });
+            </script>
         {% endblock %}
     </body>
     {% endblock %}

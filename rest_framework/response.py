@@ -98,7 +98,7 @@ class Response(SimpleTemplateResponse):
         state = super(Response, self).__getstate__()
         for key in (
             'accepted_renderer', 'renderer_context', 'resolver_match',
-            'client', 'request', 'wsgi_request'
+            'client', 'request', 'json', 'wsgi_request'
         ):
             if key in state:
                 del state[key]

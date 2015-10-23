@@ -233,9 +233,11 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 ### Filtering
 
 * [djangorestframework-chain][djangorestframework-chain] - Allows arbitrary chaining of both relations and lookup filters.
+* [django-url-filter][django-url-filter] - Allows a safe way to filter data via human-friendly URLs. It is a generic library which is not tied to DRF but it provides easy integration with DRF.
 
 ### Misc
 
+* [cookiecutter-django-rest][cookiecutter-django-rest] - A cookiecutter template that takes care of the setup and configuration so you can focus on making your REST apis awesome.
 * [djangorestrelationalhyperlink][djangorestrelationalhyperlink] - A hyperlinked serialiser that can can be used to alter relationships via hyperlinks, but otherwise like a hyperlink model serializer.
 * [django-rest-swagger][django-rest-swagger] - An API documentation generator for Swagger UI.
 * [django-rest-framework-proxy][django-rest-framework-proxy] - Proxy to redirect incoming request to another API server.
@@ -245,6 +247,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-versatileimagefield][django-versatileimagefield] - Provides a drop-in replacement for Django's stock `ImageField` that makes it easy to serve images in multiple sizes/renditions from a single field. For DRF-specific implementation docs, [click here][django-versatileimagefield-drf-docs].
 * [drf-tracking][drf-tracking] - Utilities to track requests to DRF API views.
 * [django-rest-framework-braces][django-rest-framework-braces] - Collection of utilities for working with Django Rest Framework. The most notable ones are [FormSerializer](https://django-rest-framework-braces.readthedocs.org/en/latest/overview.html#formserializer) and [SerializerForm](https://django-rest-framework-braces.readthedocs.org/en/latest/overview.html#serializerform), which are adapters between DRF serializers and Django forms.
+* [drf-haystack][drf-haystack] - Haystack search for Django Rest Framework
 
 ## Other Resources
 
@@ -343,3 +346,6 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [drf-tracking]: https://github.com/aschn/drf-tracking
 [django-rest-framework-braces]: https://github.com/dealertrack/django-rest-framework-braces
 [dry-rest-permissions]: https://github.com/Helioscene/dry-rest-permissions
+[django-url-filter]: https://github.com/miki725/django-url-filter
+[cookiecutter-django-rest]:  https://github.com/agconti/cookiecutter-django-rest
+[drf-haystack]: http://drf-haystack.readthedocs.org/en/latest/

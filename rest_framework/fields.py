@@ -5,26 +5,31 @@ import copy
 import datetime
 import decimal
 import inspect
+import json
 import re
 import uuid
+from collections import OrderedDict
 
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.validators import RegexValidator, ip_address_validators
+from django.core.validators import (
+    EmailValidator, RegexValidator, URLValidator, ip_address_validators
+)
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import is_protected_type, smart_text
+from django.utils.functional import cached_property
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, OrderedDict, URLValidator, duration_string,
-    parse_duration, unicode_repr, unicode_to_repr
+    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MinValueValidator, duration_string, parse_duration, unicode_repr,
+    unicode_to_repr
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
@@ -155,7 +160,7 @@ def flatten_choices_dict(choices):
     return ret
 
 
-def iter_options(grouped_choices):
+def iter_options(grouped_choices, cutoff=None, cutoff_text=None):
     """
     Helper function for options and option groups in templates.
     """
@@ -174,18 +179,32 @@ def iter_options(grouped_choices):
         start_option_group = False
         end_option_group = False
 
-        def __init__(self, value, display_text):
+        def __init__(self, value, display_text, disabled=False):
             self.value = value
             self.display_text = display_text
+            self.disabled = disabled
+
+    count = 0
 
     for key, value in grouped_choices.items():
+        if cutoff and count >= cutoff:
+            break
+
         if isinstance(value, dict):
             yield StartOptionGroup(label=key)
             for sub_key, sub_value in value.items():
+                if cutoff and count >= cutoff:
+                    break
                 yield Option(value=sub_key, display_text=sub_value)
+                count += 1
             yield EndOptionGroup()
         else:
             yield Option(value=key, display_text=value)
+            count += 1
+
+    if cutoff and count >= cutoff and cutoff_text:
+        cutoff_text = cutoff_text.format(count=cutoff)
+        yield Option(value='n/a', display_text=cutoff_text, disabled=True)
 
 
 class CreateOnlyDefault(object):
@@ -370,8 +389,10 @@ class Field(object):
                 # If the field is blank, and null is a valid value then
                 # determine if we should use null instead.
                 return '' if getattr(self, 'allow_blank', False) else None
-            elif ret == '' and self.default:
-                return empty
+            elif ret == '' and not self.required:
+                # If the field is blank, and emptyness is valid then
+                # determine if we should use emptyness instead.
+                return '' if getattr(self, 'allow_blank', False) else empty
             return ret
         return dictionary.get(self.field_name, empty)
 
@@ -522,7 +543,7 @@ class Field(object):
         message_string = msg.format(**kwargs)
         raise ValidationError(message_string)
 
-    @property
+    @cached_property
     def root(self):
         """
         Returns the top-level serializer for this field.
@@ -532,7 +553,7 @@ class Field(object):
             root = root.parent
         return root
 
-    @property
+    @cached_property
     def context(self):
         """
         Returns the context as passed to the root serializer on initialization.
@@ -583,18 +604,21 @@ class BooleanField(Field):
     }
     default_empty_html = False
     initial = False
-    TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
-    FALSE_VALUES = set(('f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False))
+    TRUE_VALUES = {'t', 'T', 'true', 'True', 'TRUE', '1', 1, True}
+    FALSE_VALUES = {'f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False}
 
     def __init__(self, **kwargs):
         assert 'allow_null' not in kwargs, '`allow_null` is not a valid option. Use `NullBooleanField` instead.'
         super(BooleanField, self).__init__(**kwargs)
 
     def to_internal_value(self, data):
-        if data in self.TRUE_VALUES:
-            return True
-        elif data in self.FALSE_VALUES:
-            return False
+        try:
+            if data in self.TRUE_VALUES:
+                return True
+            elif data in self.FALSE_VALUES:
+                return False
+        except TypeError:  # Input is an unhashable type
+            pass
         self.fail('invalid', input=data)
 
     def to_representation(self, value):
@@ -610,9 +634,9 @@ class NullBooleanField(Field):
         'invalid': _('"{input}" is not a valid boolean.')
     }
     initial = None
-    TRUE_VALUES = set(('t', 'T', 'true', 'True', 'TRUE', '1', 1, True))
-    FALSE_VALUES = set(('f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False))
-    NULL_VALUES = set(('n', 'N', 'null', 'Null', 'NULL', '', None))
+    TRUE_VALUES = {'t', 'T', 'true', 'True', 'TRUE', '1', 1, True}
+    FALSE_VALUES = {'f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False}
+    NULL_VALUES = {'n', 'N', 'null', 'Null', 'NULL', '', None}
 
     def __init__(self, **kwargs):
         assert 'allow_null' not in kwargs, '`allow_null` is not a valid option.'
@@ -865,12 +889,11 @@ class DecimalField(Field):
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
-    coerce_to_string = api_settings.COERCE_DECIMAL_TO_STRING
-
     def __init__(self, max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None, **kwargs):
         self.max_digits = max_digits
         self.decimal_places = decimal_places
-        self.coerce_to_string = coerce_to_string if (coerce_to_string is not None) else self.coerce_to_string
+        if coerce_to_string is not None:
+            self.coerce_to_string = coerce_to_string
 
         self.max_value = max_value
         self.min_value = min_value
@@ -950,12 +973,14 @@ class DecimalField(Field):
         return value
 
     def to_representation(self, value):
+        coerce_to_string = getattr(self, 'coerce_to_string', api_settings.COERCE_DECIMAL_TO_STRING)
+
         if not isinstance(value, decimal.Decimal):
             value = decimal.Decimal(six.text_type(value).strip())
 
         quantized = self.quantize(value)
 
-        if not self.coerce_to_string:
+        if not coerce_to_string:
             return quantized
         return '{0:f}'.format(quantized)
 
@@ -977,15 +1002,15 @@ class DateTimeField(Field):
         'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}.'),
         'date': _('Expected a datetime but got a date.'),
     }
-    format = api_settings.DATETIME_FORMAT
-    input_formats = api_settings.DATETIME_INPUT_FORMATS
-    default_timezone = timezone.get_default_timezone() if settings.USE_TZ else None
     datetime_parser = datetime.datetime.strptime
 
     def __init__(self, format=empty, input_formats=None, default_timezone=None, *args, **kwargs):
-        self.format = format if format is not empty else self.format
-        self.input_formats = input_formats if input_formats is not None else self.input_formats
-        self.default_timezone = default_timezone if default_timezone is not None else self.default_timezone
+        if format is not empty:
+            self.format = format
+        if input_formats is not None:
+            self.input_formats = input_formats
+        if default_timezone is not None:
+            self.timezone = default_timezone
         super(DateTimeField, self).__init__(*args, **kwargs)
 
     def enforce_timezone(self, value):
@@ -993,21 +1018,28 @@ class DateTimeField(Field):
         When `self.default_timezone` is `None`, always return naive datetimes.
         When `self.default_timezone` is not `None`, always return aware datetimes.
         """
-        if (self.default_timezone is not None) and not timezone.is_aware(value):
-            return timezone.make_aware(value, self.default_timezone)
-        elif (self.default_timezone is None) and timezone.is_aware(value):
+        field_timezone = getattr(self, 'timezone', self.default_timezone())
+
+        if (field_timezone is not None) and not timezone.is_aware(value):
+            return timezone.make_aware(value, field_timezone)
+        elif (field_timezone is None) and timezone.is_aware(value):
             return timezone.make_naive(value, timezone.UTC())
         return value
 
+    def default_timezone(self):
+        return timezone.get_default_timezone() if settings.USE_TZ else None
+
     def to_internal_value(self, value):
+        input_formats = getattr(self, 'input_formats', api_settings.DATETIME_INPUT_FORMATS)
+
         if isinstance(value, datetime.date) and not isinstance(value, datetime.datetime):
             self.fail('date')
 
         if isinstance(value, datetime.datetime):
             return self.enforce_timezone(value)
 
-        for format in self.input_formats:
-            if format.lower() == ISO_8601:
+        for input_format in input_formats:
+            if input_format.lower() == ISO_8601:
                 try:
                     parsed = parse_datetime(value)
                 except (ValueError, TypeError):
@@ -1017,25 +1049,27 @@ class DateTimeField(Field):
                         return self.enforce_timezone(parsed)
             else:
                 try:
-                    parsed = self.datetime_parser(value, format)
+                    parsed = self.datetime_parser(value, input_format)
                 except (ValueError, TypeError):
                     pass
                 else:
                     return self.enforce_timezone(parsed)
 
-        humanized_format = humanize_datetime.datetime_formats(self.input_formats)
+        humanized_format = humanize_datetime.datetime_formats(input_formats)
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
-        if self.format is None:
+        output_format = getattr(self, 'format', api_settings.DATETIME_FORMAT)
+
+        if output_format is None:
             return value
 
-        if self.format.lower() == ISO_8601:
+        if output_format.lower() == ISO_8601:
             value = value.isoformat()
             if value.endswith('+00:00'):
                 value = value[:-6] + 'Z'
             return value
-        return value.strftime(self.format)
+        return value.strftime(output_format)
 
 
 class DateField(Field):
@@ -1043,24 +1077,26 @@ class DateField(Field):
         'invalid': _('Date has wrong format. Use one of these formats instead: {format}.'),
         'datetime': _('Expected a date but got a datetime.'),
     }
-    format = api_settings.DATE_FORMAT
-    input_formats = api_settings.DATE_INPUT_FORMATS
     datetime_parser = datetime.datetime.strptime
 
     def __init__(self, format=empty, input_formats=None, *args, **kwargs):
-        self.format = format if format is not empty else self.format
-        self.input_formats = input_formats if input_formats is not None else self.input_formats
+        if format is not empty:
+            self.format = format
+        if input_formats is not None:
+            self.input_formats = input_formats
         super(DateField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, value):
+        input_formats = getattr(self, 'input_formats', api_settings.DATE_INPUT_FORMATS)
+
         if isinstance(value, datetime.datetime):
             self.fail('datetime')
 
         if isinstance(value, datetime.date):
             return value
 
-        for format in self.input_formats:
-            if format.lower() == ISO_8601:
+        for input_format in input_formats:
+            if input_format.lower() == ISO_8601:
                 try:
                     parsed = parse_date(value)
                 except (ValueError, TypeError):
@@ -1070,20 +1106,22 @@ class DateField(Field):
                         return parsed
             else:
                 try:
-                    parsed = self.datetime_parser(value, format)
+                    parsed = self.datetime_parser(value, input_format)
                 except (ValueError, TypeError):
                     pass
                 else:
                     return parsed.date()
 
-        humanized_format = humanize_datetime.date_formats(self.input_formats)
+        humanized_format = humanize_datetime.date_formats(input_formats)
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
+        output_format = getattr(self, 'format', api_settings.DATE_FORMAT)
+
         if not value:
             return None
 
-        if self.format is None:
+        if output_format is None:
             return value
 
         # Applying a `DateField` to a datetime value is almost always
@@ -1095,33 +1133,35 @@ class DateField(Field):
             'read-only field and deal with timezone issues explicitly.'
         )
 
-        if self.format.lower() == ISO_8601:
+        if output_format.lower() == ISO_8601:
             if (isinstance(value, str)):
                 value = datetime.datetime.strptime(value, '%Y-%m-%d').date()
             return value.isoformat()
 
-        return value.strftime(self.format)
+        return value.strftime(output_format)
 
 
 class TimeField(Field):
     default_error_messages = {
         'invalid': _('Time has wrong format. Use one of these formats instead: {format}.'),
     }
-    format = api_settings.TIME_FORMAT
-    input_formats = api_settings.TIME_INPUT_FORMATS
     datetime_parser = datetime.datetime.strptime
 
     def __init__(self, format=empty, input_formats=None, *args, **kwargs):
-        self.format = format if format is not empty else self.format
-        self.input_formats = input_formats if input_formats is not None else self.input_formats
+        if format is not empty:
+            self.format = format
+        if input_formats is not None:
+            self.input_formats = input_formats
         super(TimeField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, value):
+        input_formats = getattr(self, 'input_formats', api_settings.TIME_INPUT_FORMATS)
+
         if isinstance(value, datetime.time):
             return value
 
-        for format in self.input_formats:
-            if format.lower() == ISO_8601:
+        for input_format in input_formats:
+            if input_format.lower() == ISO_8601:
                 try:
                     parsed = parse_time(value)
                 except (ValueError, TypeError):
@@ -1131,17 +1171,19 @@ class TimeField(Field):
                         return parsed
             else:
                 try:
-                    parsed = self.datetime_parser(value, format)
+                    parsed = self.datetime_parser(value, input_format)
                 except (ValueError, TypeError):
                     pass
                 else:
                     return parsed.time()
 
-        humanized_format = humanize_datetime.time_formats(self.input_formats)
+        humanized_format = humanize_datetime.time_formats(input_formats)
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
-        if self.format is None:
+        output_format = getattr(self, 'format', api_settings.TIME_FORMAT)
+
+        if output_format is None:
             return value
 
         # Applying a `TimeField` to a datetime value is almost always
@@ -1153,9 +1195,9 @@ class TimeField(Field):
             'read-only field and deal with timezone issues explicitly.'
         )
 
-        if self.format.lower() == ISO_8601:
+        if output_format.lower() == ISO_8601:
             return value.isoformat()
-        return value.strftime(self.format)
+        return value.strftime(output_format)
 
 
 class DurationField(Field):
@@ -1172,7 +1214,7 @@ class DurationField(Field):
     def to_internal_value(self, value):
         if isinstance(value, datetime.timedelta):
             return value
-        parsed = parse_duration(value)
+        parsed = parse_duration(six.text_type(value))
         if parsed is not None:
             return parsed
         self.fail('invalid', format='[DD] [HH:[MM:]]ss[.uuuuuu]')
@@ -1187,17 +1229,21 @@ class ChoiceField(Field):
     default_error_messages = {
         'invalid_choice': _('"{input}" is not a valid choice.')
     }
+    html_cutoff = None
+    html_cutoff_text = _('More than {count} items...')
 
     def __init__(self, choices, **kwargs):
         self.grouped_choices = to_choices_dict(choices)
         self.choices = flatten_choices_dict(self.grouped_choices)
+        self.html_cutoff = kwargs.pop('html_cutoff', self.html_cutoff)
+        self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
 
         # Map the string representation of choices to the underlying value.
         # Allows us to deal with eg. integer choices while supporting either
         # integer or string input, but still get the correct datatype out.
-        self.choice_strings_to_values = dict([
-            (six.text_type(key), key) for key in self.choices.keys()
-        ])
+        self.choice_strings_to_values = {
+            six.text_type(key): key for key in self.choices.keys()
+        }
 
         self.allow_blank = kwargs.pop('allow_blank', False)
 
@@ -1221,7 +1267,11 @@ class ChoiceField(Field):
         """
         Helper method for use with templates rendering select widgets.
         """
-        return iter_options(self.grouped_choices)
+        return iter_options(
+            self.grouped_choices,
+            cutoff=self.html_cutoff,
+            cutoff_text=self.html_cutoff_text
+        )
 
 
 class MultipleChoiceField(ChoiceField):
@@ -1237,14 +1287,13 @@ class MultipleChoiceField(ChoiceField):
         super(MultipleChoiceField, self).__init__(*args, **kwargs)
 
     def get_value(self, dictionary):
+        if self.field_name not in dictionary:
+            if getattr(self.root, 'partial', False):
+                return empty
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
-            ret = dictionary.getlist(self.field_name)
-            if getattr(self.root, 'partial', False) and not ret:
-                ret = empty
-            return ret
-
+            return dictionary.getlist(self.field_name)
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
@@ -1253,15 +1302,15 @@ class MultipleChoiceField(ChoiceField):
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
 
-        return set([
+        return {
             super(MultipleChoiceField, self).to_internal_value(item)
             for item in data
-        ])
+        }
 
     def to_representation(self, value):
-        return set([
+        return {
             self.choice_strings_to_values.get(six.text_type(item), item) for item in value
-        ])
+        }
 
 
 class FilePathField(ChoiceField):
@@ -1291,12 +1340,12 @@ class FileField(Field):
         'empty': _('The submitted file is empty.'),
         'max_length': _('Ensure this filename has at most {max_length} characters (it has {length}).'),
     }
-    use_url = api_settings.UPLOADED_FILES_USE_URL
 
     def __init__(self, *args, **kwargs):
         self.max_length = kwargs.pop('max_length', None)
         self.allow_empty_file = kwargs.pop('allow_empty_file', False)
-        self.use_url = kwargs.pop('use_url', self.use_url)
+        if 'use_url' in kwargs:
+            self.use_url = kwargs.pop('use_url')
         super(FileField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, data):
@@ -1317,10 +1366,12 @@ class FileField(Field):
         return data
 
     def to_representation(self, value):
+        use_url = getattr(self, 'use_url', api_settings.UPLOADED_FILES_USE_URL)
+
         if not value:
             return None
 
-        if self.use_url:
+        if use_url:
             if not getattr(value, 'url', None):
                 # If the file has not been saved it may not have a URL.
                 return None
@@ -1380,11 +1431,20 @@ class ListField(Field):
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         self.allow_empty = kwargs.pop('allow_empty', True)
+
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
+        assert self.child.source is None, (
+            "The `source` argument is not meaningful when applied to a `child=` field. "
+            "Remove `source=` from the field declaration."
+        )
+
         super(ListField, self).__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
 
     def get_value(self, dictionary):
+        if self.field_name not in dictionary:
+            if getattr(self.root, 'partial', False):
+                return empty
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
@@ -1423,7 +1483,13 @@ class DictField(Field):
 
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
+
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
+        assert self.child.source is None, (
+            "The `source` argument is not meaningful when applied to a `child=` field. "
+            "Remove `source=` from the field declaration."
+        )
+
         super(DictField, self).__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
 
@@ -1442,19 +1508,50 @@ class DictField(Field):
             data = html.parse_html_dict(data)
         if not isinstance(data, dict):
             self.fail('not_a_dict', input_type=type(data).__name__)
-        return dict([
-            (six.text_type(key), self.child.run_validation(value))
+        return {
+            six.text_type(key): self.child.run_validation(value)
             for key, value in data.items()
-        ])
+        }
 
     def to_representation(self, value):
         """
         List of object instances -> List of dicts of primitive datatypes.
         """
-        return dict([
-            (six.text_type(key), self.child.to_representation(val))
+        return {
+            six.text_type(key): self.child.to_representation(val)
             for key, val in value.items()
-        ])
+        }
+
+
+class JSONField(Field):
+    default_error_messages = {
+        'invalid': _('Value must be valid JSON.')
+    }
+
+    def __init__(self, *args, **kwargs):
+        self.binary = kwargs.pop('binary', False)
+        super(JSONField, self).__init__(*args, **kwargs)
+
+    def to_internal_value(self, data):
+        try:
+            if self.binary:
+                if isinstance(data, six.binary_type):
+                    data = data.decode('utf-8')
+                return json.loads(data)
+            else:
+                json.dumps(data)
+        except (TypeError, ValueError):
+            self.fail('invalid')
+        return data
+
+    def to_representation(self, value):
+        if self.binary:
+            value = json.dumps(value)
+            # On python 2.x the return type for json.dumps() is underspecified.
+            # On python 3.x json.dumps() returns unicode strings.
+            if isinstance(value, six.text_type):
+                value = bytes(value.encode('utf-8'))
+        return value
 
 
 # Miscellaneous field types...

@@ -45,7 +45,7 @@ Next we're going to replace the `SnippetList`, `SnippetDetail` and `SnippetHighl
             return Response(snippet.highlighted)
 
         def perform_create(self, serializer):
-                serializer.save(owner=self.request.user)
+            serializer.save(owner=self.request.user)
 
 This time we've used the `ModelViewSet` class in order to get the complete set of default read and write operations.
 

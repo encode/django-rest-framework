@@ -74,21 +74,6 @@ class ClassBasedViewIntegrationTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(sanitise_json_error(response.data), expected)
 
-    def test_400_parse_error_tunneled_content(self):
-        content = 'f00bar'
-        content_type = 'application/json'
-        form_data = {
-            api_settings.FORM_CONTENT_OVERRIDE: content,
-            api_settings.FORM_CONTENTTYPE_OVERRIDE: content_type
-        }
-        request = factory.post('/', form_data)
-        response = self.view(request)
-        expected = {
-            'detail': JSON_ERROR
-        }
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(sanitise_json_error(response.data), expected)
-
 
 class FunctionBasedViewIntegrationTests(TestCase):
     def setUp(self):
@@ -96,21 +81,6 @@ class FunctionBasedViewIntegrationTests(TestCase):
 
     def test_400_parse_error(self):
         request = factory.post('/', 'f00bar', content_type='application/json')
-        response = self.view(request)
-        expected = {
-            'detail': JSON_ERROR
-        }
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(sanitise_json_error(response.data), expected)
-
-    def test_400_parse_error_tunneled_content(self):
-        content = 'f00bar'
-        content_type = 'application/json'
-        form_data = {
-            api_settings.FORM_CONTENT_OVERRIDE: content,
-            api_settings.FORM_CONTENTTYPE_OVERRIDE: content_type
-        }
-        request = factory.post('/', form_data)
         response = self.view(request)
         expected = {
             'detail': JSON_ERROR

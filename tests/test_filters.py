@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import datetime
+import unittest
 from decimal import Decimal
 
 from django.conf.urls import url
@@ -8,7 +9,6 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.test import TestCase
 from django.test.utils import override_settings
-from django.utils import unittest
 from django.utils.dateparse import parse_date
 from django.utils.six.moves import reload_module
 
@@ -399,6 +399,23 @@ class SearchFilterTests(TestCase):
 
         view = SearchListView.as_view()
         request = factory.get('/', {'search': 'b'})
+        response = view(request)
+        self.assertEqual(
+            response.data,
+            [
+                {'id': 2, 'title': 'zz', 'text': 'bcd'}
+            ]
+        )
+
+    def test_regexp_search(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('$title', '$text')
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'z{2} ^b'})
         response = view(request)
         self.assertEqual(
             response.data,

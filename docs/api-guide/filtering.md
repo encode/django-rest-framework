@@ -83,6 +83,10 @@ We can override `.get_queryset()` to deal with URLs such as `http://example.com/
 
 As well as being able to override the default queryset, REST framework also includes support for generic filtering backends that allow you to easily construct complex searches and filters.
 
+Generic filters can also present themselves as HTML controls in the browsable API and admin API.
+
+![Filter Example](../img/filter-controls.png)
+
 ## Setting filter backends
 
 The default filter backends may be set globally, using the `DEFAULT_FILTER_BACKENDS` setting.  For example.
@@ -95,9 +99,9 @@ You can also set the filter backends on a per-view, or per-viewset basis,
 using the `GenericAPIView` class based views.
 
     from django.contrib.auth.models import User
-	from myapp.serializers import UserSerializer
+    from myapp.serializers import UserSerializer
     from rest_framework import filters
-	from rest_framework import generics
+    from rest_framework import generics
 
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
@@ -141,6 +145,13 @@ To use REST framework's `DjangoFilterBackend`, first install `django-filter`.
 
     pip install django-filter
 
+If you are using the browsable API or admin API you may also want to install `crispy-forms`, which will enhance the presentation of the filter forms in HTML views, by allowing them to render Bootstrap 3 HTML.
+
+    pip install django-crispy-forms
+
+With crispy forms installed, the browsable API will present a filtering control for `DjangoFilterBackend`, like so:
+
+![Django Filter](../../docs/img/django-filter.png)
 
 #### Specifying filter fields
 
@@ -163,6 +174,7 @@ For more advanced filtering requirements you can specify a `FilterSet` class tha
     import django_filters
     from myapp.models import Product
     from myapp.serializers import ProductSerializer
+    from rest_framework import filters
     from rest_framework import generics
 
     class ProductFilter(django_filters.FilterSet):
@@ -236,6 +248,10 @@ For more details on using filter sets see the [django-filter documentation][djan
 
 The `SearchFilter` class supports simple single query parameter based searching, and is based on the [Django admin's search functionality][search-django-admin].
 
+When in use, the browsable API will include a `SearchFilter` control:
+
+![Search Filter](../../docs/img/search-filter.png)
+
 The `SearchFilter` class will only be applied if the view has a `search_fields` attribute set.  The `search_fields` attribute should be a list of names of text type fields on the model, such as `CharField` or `TextField`.
 
     class UserListView(generics.ListAPIView):
@@ -259,6 +275,7 @@ The search behavior may be restricted by prepending various characters to the `s
 * '^' Starts-with search.
 * '=' Exact matches.
 * '@' Full-text search.  (Currently only supported Django's MySQL backend.)
+* '$' Regex search.
 
 For example:
 
@@ -272,7 +289,11 @@ For more details, see the [Django documentation][search-django-admin].
 
 ## OrderingFilter
 
-The `OrderingFilter` class supports simple query parameter controlled ordering of results.  By default, the query parameter is named `'ordering'`, but this may by overridden with the `ORDERING_PARAM` setting.
+The `OrderingFilter` class supports simple query parameter controlled ordering of results.
+
+![Ordering Filter](../../docs/img/ordering-filter.png)
+
+By default, the query parameter is named `'ordering'`, but this may by overridden with the `ORDERING_PARAM` setting.
 
 For example, to order users by username:
 
@@ -328,8 +349,6 @@ The `ordering` attribute may be either a string or a list/tuple of strings.
 ## DjangoObjectPermissionsFilter
 
 The `DjangoObjectPermissionsFilter` is intended to be used together with the [`django-guardian`][guardian] package, with custom `'view'` permissions added.  The filter will ensure that querysets only returns objects for which the user has the appropriate view permission.
-
-This filter class must be used with views that provide either a `queryset` or a `model` attribute.
 
 If you're using `DjangoObjectPermissionsFilter`, you'll probably also want to add an appropriate object permissions class, to ensure that users can only operate on instances if they have the appropriate object permissions.  The easiest way to do this is to subclass `DjangoObjectPermissions` and add `'view'` permissions to the `perms_map` attribute.
 
@@ -389,6 +408,14 @@ For example, you might need to restrict users to only being able to see objects 
 
 We could achieve the same behavior by overriding `get_queryset()` on the views, but using a filter backend allows you to more easily add this restriction to multiple views, or to apply it across the entire API.
 
+## Customizing the interface
+
+Generic filters may also present an interface in the browsable API. To do so you should implement a `to_html()` method which returns a rendered HTML representation of the filter. This method should have the following signature:
+
+`to_html(self, request, queryset, view)`
+
+The method should return a rendered HTML string.
+
 # Third party packages
 
 The following third party packages provide additional filter implementations.
@@ -401,6 +428,10 @@ The [django-rest-framework-filters package][django-rest-framework-filters] works
 
 The [djangorestframework-word-filter][django-rest-framework-word-search-filter] developed as alternative to `filters.SearchFilter` which will search full word in text, or exact match.
 
+## Django URL Filter
+
+[django-url-filter][django-url-filter] provides a safe way to filter data via human-friendly URLs. It works very similar to DRF serializers and fields in a sense that they can be nested except they are called filtersets and filters. That provides easy way to filter related data. Also this library is generic-purpose so it can be used to filter other sources of data and not only Django `QuerySet`s.
+
 [cite]: https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter]: https://github.com/alex/django-filter
 [django-filter-docs]: https://django-filter.readthedocs.org/en/latest/index.html
@@ -411,3 +442,4 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [search-django-admin]: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
 [django-rest-framework-filters]: https://github.com/philipn/django-rest-framework-filters
 [django-rest-framework-word-search-filter]: https://github.com/trollknurr/django-rest-framework-word-search-filter
+[django-url-filter]: https://github.com/miki725/django-url-filter
