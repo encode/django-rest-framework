@@ -106,6 +106,21 @@ def get_field_kwargs(field_name, model_field):
                               isinstance(model_field, models.TextField)):
         kwargs['allow_blank'] = True
 
+    if isinstance(model_field, models.FilePathField):
+        kwargs['path'] = model_field.path
+
+        if model_field.match is not None:
+            kwargs['match'] = model_field.match
+
+        if model_field.recursive is not False:
+            kwargs['recursive'] = model_field.recursive
+
+        if model_field.allow_files is not True:
+            kwargs['allow_files'] = model_field.allow_files
+
+        if model_field.allow_folders is not False:
+            kwargs['allow_folders'] = model_field.allow_folders
+
     if model_field.choices:
         # If this model field contains choices, then return early.
         # Further keyword arguments are not valid.
