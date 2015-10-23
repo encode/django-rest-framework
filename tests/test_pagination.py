@@ -147,41 +147,6 @@ class TestPaginationDisabledIntegration:
         assert response.data == list(range(1, 101))
 
 
-class TestDeprecatedStylePagination:
-    """
-    Integration tests for deprecated style of setting pagination
-    attributes on the view.
-    """
-
-    def setup(self):
-        class PassThroughSerializer(serializers.BaseSerializer):
-            def to_representation(self, item):
-                return item
-
-        class ExampleView(generics.ListAPIView):
-            serializer_class = PassThroughSerializer
-            queryset = range(1, 101)
-            pagination_class = pagination.PageNumberPagination
-            paginate_by = 20
-            page_query_param = 'page_number'
-
-        self.view = ExampleView.as_view()
-
-    def test_paginate_by_attribute_on_view(self):
-        request = factory.get('/?page_number=2')
-        response = self.view(request)
-        assert response.status_code == status.HTTP_200_OK
-        assert response.data == {
-            'results': [
-                21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-                31, 32, 33, 34, 35, 36, 37, 38, 39, 40
-            ],
-            'previous': 'http://testserver/',
-            'next': 'http://testserver/?page_number=3',
-            'count': 100
-        }
-
-
 class TestPageNumberPagination:
     """
     Unit tests for `pagination.PageNumberPagination`.

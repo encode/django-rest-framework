@@ -42,9 +42,19 @@ You can determine your currently installed version using `pip freeze`:
 
 ### 3.3.0
 
-**Date**: NOT YET RELEASED
+**Date**: [27th October 2015][3.3.0-milestone]
 
-* Removed support for Django Versions 1.5 & 1.6 ([#3421][gh3421], [#3429][gh3429])
+* HTML controls for filters. ([#3315][gh3315])
+* Forms API. ([#3475][gh3475])
+* AJAX browsable API. ([#3410][gh3410])
+* Added JSONField. ([#3454][gh3454])
+* Correctly map `to_field` when creating `ModelSerializer` relational fields. ([#3526][gh3526])
+* Include keyword arguments when mapping `FilePathField` to a serializer field. ([#3536][gh3536])
+* Map appropriate model `error_messages` on `ModelSerializer` uniqueness constraints. ([#3435][gh3435])
+* Include `max_length` constraint for `ModelSerializer` fields mapped from TextField. ([#3509][gh3509])
+* Added support for Django 1.9. ([#3450][gh3450], [#3525][gh3525])
+* Removed support for Django 1.5 & 1.6. ([#3421][gh3421], [#3429][gh3429])
+* Removed 'south' migrations. ([#3495][gh3495])
 
 ## 3.2.x series
 
@@ -543,5 +553,17 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh3415]: https://github.com/tomchristie/django-rest-framework/issues/3415
 
 <!-- 3.3.0 -->
-[gh3421]: https://github.com/tomchristie/django-rest-framework/pulls/3421
-[gh3429]: https://github.com/tomchristie/django-rest-framework/pull/3429
+[gh3315]: https://github.com/tomchristie/django-rest-framework/issues/3315
+[gh3410]: https://github.com/tomchristie/django-rest-framework/issues/3410
+[gh3435]: https://github.com/tomchristie/django-rest-framework/issues/3435
+[gh3450]: https://github.com/tomchristie/django-rest-framework/issues/3450
+[gh3454]: https://github.com/tomchristie/django-rest-framework/issues/3454
+[gh3475]: https://github.com/tomchristie/django-rest-framework/issues/3475
+[gh3495]: https://github.com/tomchristie/django-rest-framework/issues/3495
+[gh3509]: https://github.com/tomchristie/django-rest-framework/issues/3509
+[gh3421]: https://github.com/tomchristie/django-rest-framework/issues/3421
+[gh3525]: https://github.com/tomchristie/django-rest-framework/issues/3525
+[gh3526]: https://github.com/tomchristie/django-rest-framework/issues/3526
+[gh3429]: https://github.com/tomchristie/django-rest-framework/issues/3429
+[gh3536]: https://github.com/tomchristie/django-rest-framework/issues/3536
+

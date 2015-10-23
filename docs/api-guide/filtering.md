@@ -83,6 +83,10 @@ We can override `.get_queryset()` to deal with URLs such as `http://example.com/
 
 As well as being able to override the default queryset, REST framework also includes support for generic filtering backends that allow you to easily construct complex searches and filters.
 
+Generic filters can also present themselves as HTML controls in the browsable API and admin API.
+
+![Filter Example](../img/filter-controls.png)
+
 ## Setting filter backends
 
 The default filter backends may be set globally, using the `DEFAULT_FILTER_BACKENDS` setting.  For example.
