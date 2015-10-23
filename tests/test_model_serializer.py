@@ -67,6 +67,7 @@ class RegularFieldsModel(models.Model):
     time_field = models.TimeField()
     url_field = models.URLField(max_length=100)
     custom_field = CustomField()
+    file_path_field = models.FilePathField(path='/tmp/')
 
     def method(self):
         return 'method'
@@ -165,6 +166,7 @@ class TestRegularFieldMappings(TestCase):
                 time_field = TimeField()
                 url_field = URLField(max_length=100)
                 custom_field = ModelField(model_field=<tests.test_model_serializer.CustomField: custom_field>)
+                file_path_field = FilePathField(path='/tmp/')
         """)
 
         self.assertEqual(unicode_repr(TestSerializer()), expected)
