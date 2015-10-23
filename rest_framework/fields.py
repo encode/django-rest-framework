@@ -807,6 +807,19 @@ class IPAddressField(CharField):
         return super(IPAddressField, self).to_internal_value(data)
 
 
+class PasswordField(CharField):
+    """
+    A write-only subclass of Charfield that doesn't trim whitespaces by default
+    and sets the appropiate input style.
+    """
+
+    def __init__(self, **kwargs):
+        kwargs.setdefault('write_only', True)
+        kwargs.setdefault('trim_whitespace', False)
+        kwargs.setdefault('style', {'input_type': 'password'})
+        super(PasswordField, self).__init__(**kwargs)
+
+
 # Number types...
 
 class IntegerField(Field):

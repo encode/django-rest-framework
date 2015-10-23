@@ -682,6 +682,39 @@ class TestIPv6AddressField(FieldValues):
     field = serializers.IPAddressField(protocol='IPv6')
 
 
+class TestPasswordField(FieldValues):
+    """
+    Valid and invalid values for `PasswordField`.
+    """
+    valid_inputs = {
+        '  password with spaces  ': '  password with spaces  ',
+        '    ': '    '
+    }
+    invalid_inputs = {
+        '': ['This field may not be blank.']
+    }
+    outputs = {
+        '  password with spaces  ': '  password with spaces  ',
+        '    ': '    '
+    }
+    field = serializers.PasswordField()
+
+    def test_trim_whitespace_default(self):
+        field = serializers.PasswordField()
+        assert field.to_internal_value(' abc ') == ' abc '
+
+    def test_trim_whitespace_enabled(self):
+        field = serializers.PasswordField(trim_whitespace=True)
+        assert field.to_internal_value(' abc ') == 'abc'
+
+    def test_disallow_blank_with_trim_whitespace(self):
+        field = serializers.PasswordField(allow_blank=False, trim_whitespace=True)
+
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation('   ')
+        assert exc_info.value.detail == ['This field may not be blank.']
+
+
 class TestFilePathField(FieldValues):
     """
     Valid and invalid values for `FilePathField`

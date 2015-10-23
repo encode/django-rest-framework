@@ -219,6 +219,10 @@ Corresponds to `django.forms.fields.IPAddressField` and `django.forms.fields.Gen
 - `protocol` Limits valid inputs to the specified protocol. Accepted values are 'both' (default), 'IPv4' or 'IPv6'. Matching is case insensitive.
 - `unpack_ipv4` Unpacks IPv4 mapped addresses like ::ffff:192.0.2.1. If this option is enabled that address would be unpacked to 192.0.2.1. Default is disabled. Can only be used when protocol is set to 'both'.
 
+## PasswordField
+
+A write-only field that doesn't trim whitespaces by default and sets the appropiate input style.
+
 ---
 
 # Numeric fields
