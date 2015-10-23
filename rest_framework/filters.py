@@ -136,8 +136,13 @@ class SearchFilter(BaseFilterBackend):
         Search terms are set by a ?search=... query parameter,
         and may be comma and/or whitespace delimited.
         """
-        params = request.query_params.get(self.search_param, '')
-        return params.replace(',', ' ').split()
+        params = request.query_params.getlist(self.search_param, '')
+        if params == '':
+            return []
+        elif len(params) == 1:
+            return params[0].replace(',', ' ').split()
+        else:
+            return params
 
     def construct_search(self, field_name):
         if field_name.startswith('^'):
