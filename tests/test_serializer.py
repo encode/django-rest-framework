@@ -61,6 +61,18 @@ class TestSerializer:
         with pytest.raises(AssertionError):
             serializer.save()
 
+    def test_error_on_undefined(self):
+        class ExampleSerializer(serializers.Serializer):
+            char = serializers.CharField()
+
+            class Meta():
+                error_on_undefined = True
+
+        serializer = ExampleSerializer(data={'char': 'abc', 'foo': 'bar'})
+        assert not serializer.is_valid()
+        assert serializer.validated_data == {}
+        assert serializer.errors == {'foo': 'Not a supported field.'}
+
 
 class TestValidateMethod:
     def test_non_field_error_validate_method(self):

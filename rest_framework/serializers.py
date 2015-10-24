@@ -323,7 +323,8 @@ def get_validation_error_detail(exc):
 @six.add_metaclass(SerializerMetaclass)
 class Serializer(BaseSerializer):
     default_error_messages = {
-        'invalid': _('Invalid data. Expected a dictionary, but got {datatype}.')
+        'invalid': _('Invalid data. Expected a dictionary, but got {datatype}.'),
+        'undefined': _('Not a supported field.')
     }
 
     @property
@@ -445,6 +446,13 @@ class Serializer(BaseSerializer):
                 pass
             else:
                 set_value(ret, field.source_attrs, validated_value)
+
+        if getattr(self, 'Meta', None) and \
+                getattr(self.Meta, 'error_on_undefined', False):
+            undefined_fields = set(data) - set(self.fields)
+            if undefined_fields:
+                errors.update({field: self.error_messages['undefined']
+                               for field in undefined_fields})
 
         if errors:
             raise ValidationError(errors)
