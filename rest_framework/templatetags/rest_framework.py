@@ -7,7 +7,7 @@ from django.core.urlresolvers import NoReverseMatch, reverse
 from django.template import Context, loader
 from django.utils import six
 from django.utils.encoding import force_text, iri_to_uri
-from django.utils.html import escape, smart_urlquote
+from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
 
 from rest_framework.renderers import HTMLFormRenderer
@@ -48,7 +48,8 @@ def optional_login(request):
         return ''
 
     snippet = "<li><a href='{href}?next={next}'>Log in</a></li>"
-    snippet = snippet.format(href=login_url, next=escape(request.path))
+    snippet = format_html(snippet, href=login_url, next=escape(request.path))
+
     return mark_safe(snippet)
 
 
@@ -71,7 +72,8 @@ def optional_logout(request, user):
             <li><a href='{href}?next={next}'>Log out</a></li>
         </ul>
     </li>"""
-    snippet = snippet.format(user=escape(user), href=logout_url, next=escape(request.path))
+    snippet = format_html(snippet, user=escape(user), href=logout_url, next=escape(request.path))
+
     return mark_safe(snippet)
 
 
