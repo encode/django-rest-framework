@@ -53,7 +53,7 @@ def optional_logout(request, user):
     try:
         logout_url = reverse('rest_framework:logout')
     except NoReverseMatch:
-        return '<li class="navbar-text">{user}</li>'.format(user=user)
+        return '<li class="navbar-text">{user}</li>'.format(user=escape(user))
 
     snippet = """<li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
