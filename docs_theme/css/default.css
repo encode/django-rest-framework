@@ -413,3 +413,7 @@ ul.sponsor {
 #mkdocs_search_modal article p{
   word-wrap: break-word;
 }
+
+.toclink {
+  color: #333;
+}
