@@ -41,8 +41,8 @@ def optional_login(request):
     except NoReverseMatch:
         return ''
 
-    snippet = "<li><a href='{href}?next={next}'>Log in</a></li>".format(href=login_url, next=escape(request.path))
-    return snippet
+    snippet = "<li><a href='{href}?next={next}'>Log in</a></li>"
+    return format_html(snippet, href=login_url, next=escape(request.path))
 
 
 @register.simple_tag
@@ -53,7 +53,8 @@ def optional_logout(request, user):
     try:
         logout_url = reverse('rest_framework:logout')
     except NoReverseMatch:
-        return '<li class="navbar-text">{user}</li>'.format(user=escape(user))
+        snippet = '<li class="navbar-text">{user}</li>'
+        return format_html(snippet, user=escape(user))
 
     snippet = """<li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -64,8 +65,7 @@ def optional_logout(request, user):
             <li><a href='{href}?next={next}'>Log out</a></li>
         </ul>
     </li>"""
-
-    return snippet.format(user=user, href=logout_url, next=escape(request.path))
+    return format_html(snippet, user=escape(user), href=logout_url, next=escape(request.path))
 
 
 @register.simple_tag
