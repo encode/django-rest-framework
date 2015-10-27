@@ -62,6 +62,7 @@ def exception_handler(exc, context):
     Any unhandled exceptions may return `None`, which will cause a 500 error
     to be raised.
     """
+    exception_detail_key = api_settings.EXCEPTION_DETAIL_KEY
     if isinstance(exc, exceptions.APIException):
         headers = {}
         if getattr(exc, 'auth_header', None):
@@ -72,21 +73,21 @@ def exception_handler(exc, context):
         if isinstance(exc.detail, (list, dict)):
             data = exc.detail
         else:
-            data = {'detail': exc.detail}
+            data = {exception_detail_key: exc.detail}
 
         set_rollback()
         return Response(data, status=exc.status_code, headers=headers)
 
     elif isinstance(exc, Http404):
         msg = _('Not found.')
-        data = {'detail': six.text_type(msg)}
+        data = {exception_detail_key: six.text_type(msg)}
 
         set_rollback()
         return Response(data, status=status.HTTP_404_NOT_FOUND)
 
     elif isinstance(exc, PermissionDenied):
         msg = _('Permission denied.')
-        data = {'detail': six.text_type(msg)}
+        data = {exception_detail_key: six.text_type(msg)}
 
         set_rollback()
         return Response(data, status=status.HTTP_403_FORBIDDEN)
