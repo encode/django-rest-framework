@@ -40,6 +40,12 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.2.x series
 
+### 3.2.5
+
+**Date**: [27th October 2015][3.2.5-milestone].
+
+* Escape `username` in optional logout tag.
+
 ### 3.2.4
 
 **Date**: [21th September 2015][3.2.4-milestone].
@@ -310,6 +316,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.2.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.2+Release%22
 [3.2.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.3+Release%22
 [3.2.4-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.4+Release%22
+[3.2.5-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.5+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013

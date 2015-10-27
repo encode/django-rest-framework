@@ -7,7 +7,7 @@ from django.core.urlresolvers import NoReverseMatch, reverse
 from django.template import Context, loader
 from django.utils import six
 from django.utils.encoding import force_text, iri_to_uri
-from django.utils.html import escape, smart_urlquote
+from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
 
 from rest_framework.renderers import HTMLFormRenderer
