@@ -148,6 +148,7 @@ If you are using REST framework as an full-time employee, consider recommending 
     data-description="Individual"
     data-currency="usd"
     data-allow-remember-me=false
+    data-billing-address=true
     data-label='Sign up'
     data-panel-label='Sign up - {% verbatim %}{{amount}}{% endverbatim %}/mo'>
   </script>
@@ -195,6 +196,7 @@ Our professional and premium plans also include **priority support**. At any tim
     data-description="Basic"
     data-currency="usd"
     data-allow-remember-me=false
+    data-billing-address=true
     data-label='Sign up'
     data-panel-label='Sign up - {% verbatim %}{{amount}}{% endverbatim %}/mo'>
   </script>
@@ -229,6 +231,7 @@ Our professional and premium plans also include **priority support**. At any tim
     data-description="Professional"
     data-currency="usd"
     data-allow-remember-me=false
+    data-billing-address=true
     data-label='Sign up'
     data-panel-label='Sign up - {% verbatim %}{{amount}}{% endverbatim %}/mo'>
   </script>
@@ -263,6 +266,7 @@ Our professional and premium plans also include **priority support**. At any tim
     data-description="Premium"
     data-currency="usd"
     data-allow-remember-me=false
+    data-billing-address=true
     data-label='Sign up'
     data-panel-label='Sign up - {% verbatim %}{{amount}}{% endverbatim %}/mo'>
   </script>
