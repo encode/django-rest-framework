@@ -26,6 +26,7 @@ RelationInfo = namedtuple('RelationInfo', [
     'model_field',
     'related_model',
     'to_many',
+    'to_field',
     'has_through_model'
 ])
 
@@ -90,6 +91,10 @@ def _get_fields(opts):
     return fields
 
 
+def _get_to_field(field):
+    return field.to_fields[0] if field.to_fields else None
+
+
 def _get_forward_relationships(opts):
     """
     Returns an `OrderedDict` of field names to `RelationInfo`.
@@ -100,6 +105,7 @@ def _get_forward_relationships(opts):
             model_field=field,
             related_model=_resolve_model(field.rel.to),
             to_many=False,
+            to_field=_get_to_field(field),
             has_through_model=False
         )
 
@@ -109,6 +115,8 @@ def _get_forward_relationships(opts):
             model_field=field,
             related_model=_resolve_model(field.rel.to),
             to_many=True,
+            # manytomany do not have to_fields
+            to_field=None,
             has_through_model=(
                 not field.rel.through._meta.auto_created
             )
@@ -133,6 +141,7 @@ def _get_reverse_relationships(opts):
             model_field=None,
             related_model=related,
             to_many=relation.field.rel.multiple,
+            to_field=_get_to_field(relation.field),
             has_through_model=False
         )
 
@@ -144,6 +153,8 @@ def _get_reverse_relationships(opts):
             model_field=None,
             related_model=related,
             to_many=True,
+            # manytomany do not have to_fields
+            to_field=None,
             has_through_model=(
                 (getattr(relation.field.rel, 'through', None) is not None) and
                 not relation.field.rel.through._meta.auto_created

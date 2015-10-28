@@ -5,7 +5,6 @@ be used for paginated responses.
 """
 from __future__ import unicode_literals
 
-import warnings
 from base64 import b64decode, b64encode
 from collections import OrderedDict, namedtuple
 
@@ -79,11 +78,7 @@ def _get_displayed_page_numbers(current, final):
 
     # We always include the first two pages, last two pages, and
     # two pages either side of the current page.
-    included = set((
-        1,
-        current - 1, current, current + 1,
-        final
-    ))
+    included = {1, current - 1, current, current + 1, final}
 
     # If the break would only exclude a single page number then we
     # may as well include the page number instead of the break.
@@ -190,63 +185,11 @@ class PageNumberPagination(BasePagination):
 
     invalid_page_message = _('Invalid page "{page_number}": {message}.')
 
-    def _handle_backwards_compat(self, view):
-        """
-        Prior to version 3.1, pagination was handled in the view, and the
-        attributes were set there. The attributes should now be set on
-        the pagination class. The old style continues to work but is deprecated
-        and will be fully removed in version 3.3.
-        """
-        assert not (
-            getattr(view, 'pagination_serializer_class', None) or
-            getattr(api_settings, 'DEFAULT_PAGINATION_SERIALIZER_CLASS', None)
-        ), (
-            "The pagination_serializer_class attribute and "
-            "DEFAULT_PAGINATION_SERIALIZER_CLASS setting have been removed as "
-            "part of the 3.1 pagination API improvement. See the pagination "
-            "documentation for details on the new API."
-        )
-
-        for (settings_key, attr_name) in (
-            ('PAGINATE_BY', 'page_size'),
-            ('PAGINATE_BY_PARAM', 'page_size_query_param'),
-            ('MAX_PAGINATE_BY', 'max_page_size')
-        ):
-            value = getattr(api_settings, settings_key, None)
-            if value is not None:
-                setattr(self, attr_name, value)
-                warnings.warn(
-                    "The `%s` settings key is deprecated. "
-                    "Use the `%s` attribute on the pagination class instead." % (
-                        settings_key, attr_name
-                    ),
-                    DeprecationWarning,
-                )
-
-        for (view_attr, attr_name) in (
-            ('paginate_by', 'page_size'),
-            ('page_query_param', 'page_query_param'),
-            ('paginate_by_param', 'page_size_query_param'),
-            ('max_paginate_by', 'max_page_size')
-        ):
-            value = getattr(view, view_attr, None)
-            if value is not None:
-                setattr(self, attr_name, value)
-                warnings.warn(
-                    "The `%s` view attribute is deprecated. "
-                    "Use the `%s` attribute on the pagination class instead." % (
-                        view_attr, attr_name
-                    ),
-                    DeprecationWarning,
-                )
-
     def paginate_queryset(self, queryset, request, view=None):
         """
         Paginate a queryset if required, either returning a
         page object, or `None` if pagination is not configured for this view.
         """
-        self._handle_backwards_compat(view)
-
         page_size = self.get_page_size(request)
         if not page_size:
             return None

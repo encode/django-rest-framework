@@ -287,7 +287,7 @@ Similarly if a nested representation should be a list of items, you should pass 
 
 ## Writable nested representations
 
-When dealing with nested representations that support deserializing the data, an errors with nested objects will be nested under the field name of the nested object.
+When dealing with nested representations that support deserializing the data, any errors with nested objects will be nested under the field name of the nested object.
 
     serializer = CommentSerializer(data={'user': {'email': 'foobar', 'username': 'doe'}, 'content': 'baz'})
     serializer.is_valid()
@@ -356,7 +356,7 @@ It is possible that a third party package, providing automatic support some kind
 
 #### Handling saving related instances in model manager classes
 
-An alternative to saving multiple related instances in the serializer is to write custom model manager classes handle creating the correct instances.
+An alternative to saving multiple related instances in the serializer is to write custom model manager classes that handle creating the correct instances.
 
 For example, suppose we wanted to ensure that `User` instances and `Profile` instances are always created together as a pair. We might write a custom manager class that looks something like this:
 
@@ -405,7 +405,7 @@ To serialize a queryset or list of objects instead of a single object instance, 
 
 #### Deserializing multiple objects
 
-The default behavior for deserializing multiple objects is to support multiple object creation, but not support multiple object updates. For more information on how to support or customize either of these cases, see the [ListSerializer](#ListSerializer) documentation below.
+The default behavior for deserializing multiple objects is to support multiple object creation, but not support multiple object updates. For more information on how to support or customize either of these cases, see the [ListSerializer](#listserializer) documentation below.
 
 ## Including extra context
 
@@ -478,7 +478,7 @@ For example:
             model = Account
             fields = '__all__'
 
-You can set the `exclude` attribute of the to a list of fields to be excluded from the serializer.
+You can set the `exclude` attribute to a list of fields to be excluded from the serializer.
 
 For example:
 
@@ -551,7 +551,7 @@ Please review the [Validators Documentation](/api-guide/validators/) for details
 
 ## Additional keyword arguments
 
-There is also a shortcut allowing you to specify arbitrary additional keyword arguments on fields, using the `extra_kwargs` option. Similarly to `read_only_fields` this means you do not need to explicitly declare the field on the serializer.
+There is also a shortcut allowing you to specify arbitrary additional keyword arguments on fields, using the `extra_kwargs` option. As in the case of `read_only_fields`, this means you do not need to explicitly declare the field on the serializer.
 
 This option is a dictionary, mapping field names to a dictionary of keyword arguments. For example:
 
@@ -832,7 +832,7 @@ This class implements the same basic API as the `Serializer` class:
 * `.data` - Returns the outgoing primitive representation.
 * `.is_valid()` - Deserializes and validates incoming data.
 * `.validated_data` - Returns the validated incoming data.
-* `.errors` - Returns an errors during validation.
+* `.errors` - Returns any errors during validation.
 * `.save()` - Persists the validated data into an object instance.
 
 There are four methods that can be overridden, depending on what functionality you want the serializer class to support:

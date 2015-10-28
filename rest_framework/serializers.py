@@ -125,10 +125,10 @@ class BaseSerializer(Field):
         }
         if allow_empty is not None:
             list_kwargs['allow_empty'] = allow_empty
-        list_kwargs.update(dict([
-            (key, value) for key, value in kwargs.items()
+        list_kwargs.update({
+            key: value for key, value in kwargs.items()
             if key in LIST_SERIALIZER_KWARGS
-        ]))
+        })
         meta = getattr(cls, 'Meta', None)
         list_serializer_class = getattr(meta, 'list_serializer_class', ListSerializer)
         return list_serializer_class(*args, **list_kwargs)
@@ -305,10 +305,10 @@ def get_validation_error_detail(exc):
     elif isinstance(exc.detail, dict):
         # If errors may be a dict we use the standard {key: list of values}.
         # Here we ensure that all the values are *lists* of errors.
-        return dict([
-            (key, value if isinstance(value, list) else [value])
+        return {
+            key: value if isinstance(value, list) else [value]
             for key, value in exc.detail.items()
-        ])
+        }
     elif isinstance(exc.detail, list):
         # Errors raised as a list are non-field errors.
         return {
@@ -794,6 +794,7 @@ class ModelSerializer(Serializer):
     if ModelJSONField is not None:
         serializer_field_mapping[ModelJSONField] = JSONField
     serializer_related_field = PrimaryKeyRelatedField
+    serializer_related_to_field = SlugRelatedField
     serializer_url_field = HyperlinkedIdentityField
     serializer_choice_field = ChoiceField
 
@@ -1129,6 +1130,11 @@ class ModelSerializer(Serializer):
         field_class = self.serializer_related_field
         field_kwargs = get_relation_kwargs(field_name, relation_info)
 
+        to_field = field_kwargs.pop('to_field', None)
+        if to_field and to_field != 'id':
+            field_kwargs['slug_field'] = to_field
+            field_class = self.serializer_related_to_field
+
         # `view_name` is only valid for hyperlinked relationships.
         if not issubclass(field_class, HyperlinkedRelatedField):
             field_kwargs.pop('view_name', None)
@@ -1237,13 +1243,10 @@ class ModelSerializer(Serializer):
 
         for model_field in model_fields.values():
             # Include each of the `unique_for_*` field names.
-            unique_constraint_names |= set([
-                model_field.unique_for_date,
-                model_field.unique_for_month,
-                model_field.unique_for_year
-            ])
+            unique_constraint_names |= {model_field.unique_for_date, model_field.unique_for_month,
+                                        model_field.unique_for_year}
 
-        unique_constraint_names -= set([None])
+        unique_constraint_names -= {None}
 
         # Include each of the `unique_together` field names,
         # so long as all the field names are included on the serializer.
@@ -1357,10 +1360,10 @@ class ModelSerializer(Serializer):
         # which may map onto a model field. Any dotted field name lookups
         # cannot map to a field, and must be a traversal, so we're not
         # including those.
-        field_names = set([
+        field_names = {
             field.source for field in self.fields.values()
             if (field.source != '*') and ('.' not in field.source)
-        ])
+        }
 
         # Note that we make sure to check `unique_together` both on the
         # base model class, but also on any parent classes.

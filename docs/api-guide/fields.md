@@ -57,7 +57,7 @@ Note that setting a `default` value implies that the field is not required. Incl
 
 ### `source`
 
-The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `URLField('get_absolute_url')`, or may use dotted notation to traverse attributes, such as `EmailField(source='user.email')`.
+The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `URLField(source='get_absolute_url')`, or may use dotted notation to traverse attributes, such as `EmailField(source='user.email')`.
 
 The value `source='*'` has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.
 
@@ -85,9 +85,9 @@ A value that should be used for pre-populating the value of HTML form fields.
 
 ### `style`
 
-A dictionary of key-value pairs that can be used to control how renderers should render the field. The API for this should still be considered experimental, and will be formalized with the 3.1 release.
+A dictionary of key-value pairs that can be used to control how renderers should render the field.
 
-Two options are currently used in HTML form generation, `'input_type'` and `'base_template'`.
+Two examples here are `'input_type'` and `'base_template'`:
 
     # Use <input type="password"> for the input.
     password = serializers.CharField(
@@ -100,7 +100,7 @@ Two options are currently used in HTML form generation, `'input_type'` and `'bas
         style = {'base_template': 'radio.html'}
     }
 
-**Note**: The `style` argument replaces the old-style version 2.x `widget` keyword argument. Because REST framework 3 now uses templated HTML form generation, the `widget` option that was used to support Django built-in widgets can no longer be supported. Version 3.3 is planned to include public API support for customizing HTML form generation.
+For more details see the [HTML & Forms][html-and-forms] documentation.
 
 ---
 
@@ -658,6 +658,7 @@ The [django-rest-framework-gis][django-rest-framework-gis] package provides geog
 The [django-rest-framework-hstore][django-rest-framework-hstore] package provides an `HStoreField` to support [django-hstore][django-hstore] `DictionaryField` model field.
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data
+[html-and-forms]: ../topics/html-and-forms.md
 [FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS
 [ecma262]: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
 [strftime]: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
