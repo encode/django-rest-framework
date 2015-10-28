@@ -204,7 +204,6 @@ General guides to using REST framework.
 * [3.2 Announcement][3.2-announcement]
 * [3.3 Announcement][3.3-announcement]
 * [Kickstarter Announcement][kickstarter-announcement]
-* [Funding][funding]
 * [Release Notes][release-notes]
 
 ## Development
