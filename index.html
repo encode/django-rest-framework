@@ -246,6 +246,10 @@
                   </li>
                   
                   <li >
+                    <a href="topics/html-and-forms/">HTML & Forms</a>
+                  </li>
+                  
+                  <li >
                     <a href="topics/browser-enhancements/">Browser Enhancements</a>
                   </li>
                   
@@ -279,6 +283,10 @@
                   
                   <li >
                     <a href="topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="topics/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
@@ -431,8 +439,7 @@
 </p>
 
 <hr />
-<p><strong>Note</strong>: This is the documentation for the <strong>version 3.2</strong> of REST framework. Documentation for <a href="http://tomchristie.github.io/rest-framework-2-docs/">version 2.4</a> is also available.</p>
-<p>For more details see the 3.2 <a href="topics/3.2-announcement/">announcement</a> and <a href="topics/release-notes/">release notes</a>.</p>
+<p><strong>Note</strong>: This is the documentation for the <strong>version 3</strong> of REST framework. Documentation for <a href="http://tomchristie.github.io/rest-framework-2-docs/">version 2</a> is also available.</p>
 <hr />
 <p>
 <h1 style="position: absolute;
@@ -447,7 +454,7 @@
 <img alt="Django REST Framework" title="Logo by Jake 'Sid' Smith" src="img/logo.png" width="600px" style="display: block; margin: 0 auto 0 auto">
 </p>
 
-<p>Django REST framework is a powerful and flexible toolkit that makes it easy to build Web APIs.</p>
+<p>Django REST framework is a powerful and flexible toolkit for building Web APIs.</p>
 <p>Some reasons you might want to use REST framework:</p>
 <ul>
 <li>The <a href="http://restframework.herokuapp.com/">Web browsable API</a> is a huge usability win for your developers.</li>
@@ -463,13 +470,14 @@
 <h2 id="requirements">Requirements</h2>
 <p>REST framework requires the following:</p>
 <ul>
-<li>Python (2.6.5+, 2.7, 3.2, 3.3, 3.4)</li>
-<li>Django (1.5.6+, 1.6.3+, 1.7+, 1.8)</li>
+<li>Python (2.7, 3.2, 3.3, 3.4, 3.5)</li>
+<li>Django (1.7+, 1.8, 1.9)</li>
 </ul>
 <p>The following packages are optional:</p>
 <ul>
 <li><a href="http://pypi.python.org/pypi/Markdown/">Markdown</a> (2.1.0+) - Markdown support for the browsable API.</li>
 <li><a href="http://pypi.python.org/pypi/django-filter">django-filter</a> (0.9.2+) - Filtering support.</li>
+<li>[django-crispy-forms][django-crispy-forms] - Improved HTML display for filtering.</li>
 <li><a href="https://github.com/lukaszb/django-guardian">django-guardian</a> (1.1.1+) - Object level permissions support.</li>
 </ul>
 <h2 id="installation">Installation</h2>
@@ -583,7 +591,9 @@ urlpatterns = [
 <p>General guides to using REST framework.</p>
 <ul>
 <li><a href="topics/documenting-your-api/">Documenting your API</a></li>
+<li><a href="topics/internationalization/">Internationalization</a></li>
 <li><a href="topics/ajax-csrf-cors/">AJAX, CSRF &amp; CORS</a></li>
+<li><a href="topics/html-and-forms/">HTML &amp; Forms</a></li>
 <li><a href="topics/browser-enhancements/">Browser enhancements</a></li>
 <li><a href="topics/browsable-api/">The Browsable API</a></li>
 <li><a href="topics/rest-hypermedia-hateoas/">REST, Hypermedia &amp; HATEOAS</a></li>
@@ -593,6 +603,7 @@ urlpatterns = [
 <li><a href="topics/3.0-announcement/">3.0 Announcement</a></li>
 <li><a href="topics/3.1-announcement/">3.1 Announcement</a></li>
 <li><a href="topics/3.2-announcement/">3.2 Announcement</a></li>
+<li><a href="topics/3.3-announcement/">3.3 Announcement</a></li>
 <li><a href="topics/kickstarter-announcement/">Kickstarter Announcement</a></li>
 <li><a href="topics/release-notes/">Release Notes</a></li>
 </ul>
@@ -639,7 +650,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
   </div> <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
     </p>
   </footer>
 

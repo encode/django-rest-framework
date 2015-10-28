@@ -246,6 +246,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
                   </li>
                   
@@ -279,6 +283,10 @@
                   
                   <li >
                     <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
@@ -399,6 +407,10 @@
                       <a href="#example">Example</a>
                     </li>
                   
+                    <li>
+                      <a href="#customizing-the-interface">Customizing the interface</a>
+                    </li>
+                  
                 
                   <li class="main">
                     <a href="#third-party-packages">Third party packages</a>
@@ -499,6 +511,8 @@ class PurchaseList(generics.ListAPIView):
 <hr />
 <h1 id="generic-filtering">Generic Filtering</h1>
 <p>As well as being able to override the default queryset, REST framework also includes support for generic filtering backends that allow you to easily construct complex searches and filters.</p>
+<p>Generic filters can also present themselves as HTML controls in the browsable API and admin API.</p>
+<p><img alt="Filter Example" src="../../img/filter-controls.png" /></p>
 <h2 id="setting-filter-backends">Setting filter backends</h2>
 <p>The default filter backends may be set globally, using the <code>DEFAULT_FILTER_BACKENDS</code> setting.  For example.</p>
 <pre><code>REST_FRAMEWORK = {
@@ -544,6 +558,11 @@ class UserListView(generics.ListAPIView):
 <p>To use REST framework's <code>DjangoFilterBackend</code>, first install <code>django-filter</code>.</p>
 <pre><code>pip install django-filter
 </code></pre>
+<p>If you are using the browsable API or admin API you may also want to install <code>crispy-forms</code>, which will enhance the presentation of the filter forms in HTML views, by allowing them to render Bootstrap 3 HTML.</p>
+<pre><code>pip install django-crispy-forms
+</code></pre>
+<p>With crispy forms installed, the browsable API will present a filtering control for <code>DjangoFilterBackend</code>, like so:</p>
+<p><img alt="Django Filter" src="../../../docs/img/django-filter.png" /></p>
 <h4 id="specifying-filter-fields">Specifying filter fields</h4>
 <p>If all you need is simple equality-based filtering, you can set a <code>filter_fields</code> attribute on the view, or viewset, listing the set of fields you wish to filter against.</p>
 <pre><code>class ProductList(generics.ListAPIView):
@@ -623,6 +642,8 @@ class ProductFilter(django_filters.FilterSet):
 <hr />
 <h2 id="searchfilter">SearchFilter</h2>
 <p>The <code>SearchFilter</code> class supports simple single query parameter based searching, and is based on the <a href="https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields">Django admin's search functionality</a>.</p>
+<p>When in use, the browsable API will include a <code>SearchFilter</code> control:</p>
+<p><img alt="Search Filter" src="../../../docs/img/search-filter.png" /></p>
 <p>The <code>SearchFilter</code> class will only be applied if the view has a <code>search_fields</code> attribute set.  The <code>search_fields</code> attribute should be a list of names of text type fields on the model, such as <code>CharField</code> or <code>TextField</code>.</p>
 <pre><code>class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
@@ -651,7 +672,9 @@ class ProductFilter(django_filters.FilterSet):
 <p>For more details, see the <a href="https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields">Django documentation</a>.</p>
 <hr />
 <h2 id="orderingfilter">OrderingFilter</h2>
-<p>The <code>OrderingFilter</code> class supports simple query parameter controlled ordering of results.  By default, the query parameter is named <code>'ordering'</code>, but this may by overridden with the <code>ORDERING_PARAM</code> setting.</p>
+<p>The <code>OrderingFilter</code> class supports simple query parameter controlled ordering of results.</p>
+<p><img alt="Ordering Filter" src="../../../docs/img/ordering-filter.png" /></p>
+<p>By default, the query parameter is named <code>'ordering'</code>, but this may by overridden with the <code>ORDERING_PARAM</code> setting.</p>
 <p>For example, to order users by username:</p>
 <pre><code>http://example.com/api/users?ordering=username
 </code></pre>
@@ -737,6 +760,10 @@ class ProductFilter(django_filters.FilterSet):
         return queryset.filter(owner=request.user)
 </code></pre>
 <p>We could achieve the same behavior by overriding <code>get_queryset()</code> on the views, but using a filter backend allows you to more easily add this restriction to multiple views, or to apply it across the entire API.</p>
+<h2 id="customizing-the-interface">Customizing the interface</h2>
+<p>Generic filters may also present an interface in the browsable API. To do so you should implement a <code>to_html()</code> method which returns a rendered HTML representation of the filter. This method should have the following signature:</p>
+<p><code>to_html(self, request, queryset, view)</code></p>
+<p>The method should return a rendered HTML string.</p>
 <h1 id="third-party-packages">Third party packages</h1>
 <p>The following third party packages provide additional filter implementations.</p>
 <h2 id="django-rest-framework-filters-package">Django REST framework filters package</h2>
@@ -755,7 +782,7 @@ class ProductFilter(django_filters.FilterSet):
   </div> <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
     </p>
   </footer>
 

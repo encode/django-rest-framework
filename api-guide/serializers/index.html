@@ -246,6 +246,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
                   </li>
                   
@@ -279,6 +283,10 @@
                   
                   <li >
                     <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
@@ -763,7 +771,7 @@ class CommentSerializer(serializers.Serializer):
     created = serializers.DateTimeField()
 </code></pre>
 <h2 id="writable-nested-representations">Writable nested representations</h2>
-<p>When dealing with nested representations that support deserializing the data, an errors with nested objects will be nested under the field name of the nested object.</p>
+<p>When dealing with nested representations that support deserializing the data, any errors with nested objects will be nested under the field name of the nested object.</p>
 <pre><code>serializer = CommentSerializer(data={'user': {'email': 'foobar', 'username': 'doe'}, 'content': 'baz'})
 serializer.is_valid()
 # False
@@ -822,7 +830,7 @@ serializer.errors
 <p>Because the behavior of nested creates and updates can be ambiguous, and may require complex dependencies between related models, REST framework 3 requires you to always write these methods explicitly. The default <code>ModelSerializer</code> <code>.create()</code> and <code>.update()</code> methods do not include support for writable nested representations.</p>
 <p>It is possible that a third party package, providing automatic support some kinds of automatic writable nested representations may be released alongside the 3.1 release.</p>
 <h4 id="handling-saving-related-instances-in-model-manager-classes">Handling saving related instances in model manager classes</h4>
-<p>An alternative to saving multiple related instances in the serializer is to write custom model manager classes handle creating the correct instances.</p>
+<p>An alternative to saving multiple related instances in the serializer is to write custom model manager classes that handle creating the correct instances.</p>
 <p>For example, suppose we wanted to ensure that <code>User</code> instances and <code>Profile</code> instances are always created together as a pair. We might write a custom manager class that looks something like this:</p>
 <pre><code>class UserManager(models.Manager):
     ...
@@ -862,7 +870,7 @@ serializer.data
 # ]
 </code></pre>
 <h4 id="deserializing-multiple-objects">Deserializing multiple objects</h4>
-<p>The default behavior for deserializing multiple objects is to support multiple object creation, but not support multiple object updates. For more information on how to support or customize either of these cases, see the <a href="#ListSerializer">ListSerializer</a> documentation below.</p>
+<p>The default behavior for deserializing multiple objects is to support multiple object creation, but not support multiple object updates. For more information on how to support or customize either of these cases, see the <a href="#listserializer">ListSerializer</a> documentation below.</p>
 <h2 id="including-extra-context">Including extra context</h2>
 <p>There are some cases where you need to provide extra context to the serializer in addition to the object being serialized.  One common case is if you're using a serializer that includes hyperlinked relations, which requires the serializer to have access to the current request so that it can properly generate fully qualified URLs.</p>
 <p>You can provide arbitrary additional context by passing a <code>context</code> argument when instantiating the serializer.  For example:</p>
@@ -885,6 +893,7 @@ serializer.data
 <pre><code>class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
+        fields = ('id', 'account_name', 'users', 'created')
 </code></pre>
 <p>By default, all the model fields on the class will be mapped to a corresponding serializer fields.</p>
 <p>Any relationships such as foreign keys on the model will be mapped to <code>PrimaryKeyRelatedField</code>. Reverse relationships are not included by default unless explicitly included as described below.</p>
@@ -900,14 +909,29 @@ AccountSerializer():
     owner = PrimaryKeyRelatedField(queryset=User.objects.all())
 </code></pre>
 <h2 id="specifying-which-fields-to-include">Specifying which fields to include</h2>
-<p>If you only want a subset of the default fields to be used in a model serializer, you can do so using <code>fields</code> or <code>exclude</code> options, just as you would with a <code>ModelForm</code>.</p>
+<p>If you only want a subset of the default fields to be used in a model serializer, you can do so using <code>fields</code> or <code>exclude</code> options, just as you would with a <code>ModelForm</code>. It is strongly recommended that you explicitly set all fields that should be serialized using the <code>fields</code> attribute. This will make it less likely to result in unintentionally exposing data when your models change.</p>
 <p>For example:</p>
 <pre><code>class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = ('id', 'account_name', 'users', 'created')
 </code></pre>
-<p>The names in the <code>fields</code> option will normally map to model fields on the model class.</p>
+<p>You can also set the <code>fields</code> attribute to the special value <code>'__all__'</code> to indicate that all fields in the model should be used.</p>
+<p>For example:</p>
+<pre><code>class AccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = '__all__'
+</code></pre>
+<p>You can set the <code>exclude</code> attribute to a list of fields to be excluded from the serializer.</p>
+<p>For example:</p>
+<pre><code>class AccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        exclude = ('users',)
+</code></pre>
+<p>In the example above, if the <code>Account</code> model had 3 fields <code>account_name</code>, <code>users</code>, and <code>created</code>, this will result in the fields <code>account_name</code> and <code>created</code> to be serialized.</p>
+<p>The names in the <code>fields</code> and <code>exclude</code> attributes will normally map to model fields on the model class.</p>
 <p>Alternatively names in the <code>fields</code> options can map to properties or methods which take no arguments that exist on the model class.</p>
 <h2 id="specifying-nested-serialization">Specifying nested serialization</h2>
 <p>The default <code>ModelSerializer</code> uses primary keys for relationships, but you can also easily generate nested representations using the <code>depth</code> option:</p>
@@ -948,7 +972,7 @@ AccountSerializer():
 <p>Please review the <a href="../../api-guide/validators/">Validators Documentation</a> for details on the <a href="../../api-guide/validators/#uniquetogethervalidator">UniqueTogetherValidator</a> and <a href="../../api-guide/validators/#currentuserdefault">CurrentUserDefault</a> classes.</p>
 <hr />
 <h2 id="additional-keyword-arguments">Additional keyword arguments</h2>
-<p>There is also a shortcut allowing you to specify arbitrary additional keyword arguments on fields, using the <code>extra_kwargs</code> option. Similarly to <code>read_only_fields</code> this means you do not need to explicitly declare the field on the serializer.</p>
+<p>There is also a shortcut allowing you to specify arbitrary additional keyword arguments on fields, using the <code>extra_kwargs</code> option. As in the case of <code>read_only_fields</code>, this means you do not need to explicitly declare the field on the serializer.</p>
 <p>This option is a dictionary, mapping field names to a dictionary of keyword arguments. For example:</p>
 <pre><code>class CreateUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -1148,7 +1172,7 @@ class BookSerializer(serializers.Serializer):
 <li><code>.data</code> - Returns the outgoing primitive representation.</li>
 <li><code>.is_valid()</code> - Deserializes and validates incoming data.</li>
 <li><code>.validated_data</code> - Returns the validated incoming data.</li>
-<li><code>.errors</code> - Returns an errors during validation.</li>
+<li><code>.errors</code> - Returns any errors during validation.</li>
 <li><code>.save()</code> - Persists the validated data into an object instance.</li>
 </ul>
 <p>There are four methods that can be overridden, depending on what functionality you want the serializer class to support:</p>
@@ -1345,7 +1369,7 @@ def all_high_scores(request):
   </div> <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
     </p>
   </footer>
 

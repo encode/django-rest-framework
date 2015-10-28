@@ -246,6 +246,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
                   </li>
                   
@@ -279,6 +283,10 @@
                   
                   <li >
                     <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
@@ -622,12 +630,21 @@ def simple_html_view(request):
 <p><strong>.charset</strong>: <code>utf-8</code></p>
 <p><strong>.template</strong>: <code>'rest_framework/admin.html'</code></p>
 <h2 id="htmlformrenderer">HTMLFormRenderer</h2>
-<p>Renders data returned by a serializer into an HTML form.  The output of this renderer does not include the enclosing <code>&lt;form&gt;</code> tags or an submit actions, as you'll probably need those to include the desired method and URL.  Also note that the <code>HTMLFormRenderer</code> does not yet support including field error messages.</p>
-<p><strong>Note</strong>: The <code>HTMLFormRenderer</code> class is intended for internal use with the browsable API and admin interface. It should not be considered a fully documented or stable API. The template used by the <code>HTMLFormRenderer</code> class, and the context submitted to it <strong>may be subject to change</strong>.  If you need to use this renderer class it is advised that you either make a local copy of the class and templates, or follow the release note on REST framework upgrades closely.</p>
+<p>Renders data returned by a serializer into an HTML form. The output of this renderer does not include the enclosing <code>&lt;form&gt;</code> tags, a hidden CSRF input or any submit buttons.</p>
+<p>This renderer is not intended to be used directly, but can instead be used in templates by passing a serializer instance to the <code>render_form</code> template tag.</p>
+<pre><code>{% load rest_framework %}
+
+&lt;form action="/submit-report/" method="post"&gt;
+    {% csrf_token %}
+    {% render_form serializer %}
+    &lt;input type="submit" value="Save" /&gt;
+&lt;/form&gt;
+</code></pre>
+<p>For more information see the <a href="../../topics/html-and-forms/">HTML &amp; Forms</a> documentation.</p>
 <p><strong>.media_type</strong>: <code>text/html</code></p>
 <p><strong>.format</strong>: <code>'.form'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
-<p><strong>.template</strong>: <code>'rest_framework/form.html'</code></p>
+<p><strong>.template</strong>: <code>'rest_framework/horizontal/form.html'</code></p>
 <h2 id="multipartrenderer">MultiPartRenderer</h2>
 <p>This renderer is used for rendering HTML multipart form data.  <strong>It is not suitable as a response renderer</strong>, but is instead used for creating test requests, using REST framework's <a href="../testing/">test client and test request factory</a>.</p>
 <p><strong>.media_type</strong>: <code>multipart/form-data; boundary=BoUnDaRyStRiNg</code></p>
@@ -807,7 +824,7 @@ In this case you can underspecify the media types it should respond to, by using
   </div> <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
     </p>
   </footer>
 

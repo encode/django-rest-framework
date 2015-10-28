@@ -246,6 +246,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
                   </li>
                   
@@ -279,6 +283,10 @@
                   
                   <li >
                     <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
@@ -699,7 +707,7 @@ class AlbumSerializer(serializers.ModelSerializer):
 }
 </code></pre>
 <h1 id="writable-nested-serializers">Writable nested serializers</h1>
-<p>Be default nested serializers are read-only. If you want to to support write-operations to a nested serializer field you'll need to create either or both of the <code>create()</code> and/or <code>update()</code> methods, in order to explicitly specify how the child relationships should be saved.</p>
+<p>By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create <code>create()</code> and/or <code>update()</code> methods in order to explicitly specify how the child relationships should be saved.</p>
 <pre><code>class TrackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Track
@@ -940,7 +948,7 @@ to <code>True</code>.</p>
   </div> <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
     </p>
   </footer>
 

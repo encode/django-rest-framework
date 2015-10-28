@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Funding - Django REST framework</title>
+  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
+  <link rel="canonical" href="http://www.django-rest-framework.org/topics/funding/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django, API, REST, Funding">
+  <meta name="author" content="Tom Christie">
+
+  <!-- Le styles -->
+  <link href="../../css/prettify.css" rel="stylesheet">
+  <link href="../../css/bootstrap.css" rel="stylesheet">
+  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="../../css/default.css" rel="stylesheet">
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18852272-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <style>
+    span.fusion-wrap a {
+      display: block;
+      margin-top: 10px;
+      color: black;
+    }
+    a.fusion-poweredby {
+      display: block;
+      margin-top: 10px;
+    }
+    @media (max-width: 767px) {
+      div.promo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body onload="prettyPrint()" class="-page">
+
+  <div class="wrapper">
+        <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../release-notes/">
+            Next <i class="icon-arrow-right icon-white"></i>
+          </a>
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../kickstarter-announcement/">
+            <i class="icon-arrow-left icon-white"></i> Previous
+          </a>
+          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+               
+              <li >
+                <a href="../..">Home</a>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../tutorial/quickstart/">Quickstart</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/1-serialization/">1 - Serialization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/2-requests-and-responses/">2 - Requests and responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/3-class-based-views/">3 - Class based views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/4-authentication-and-permissions/">4 - Authentication and permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../api-guide/requests/">Requests</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/responses/">Responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/views/">Views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/generic-views/">Generic views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/viewsets/">Viewsets</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/routers/">Routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/parsers/">Parsers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/renderers/">Renderers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/serializers/">Serializers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/fields/">Serializer fields</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/relations/">Serializer relations</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/validators/">Validators</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/authentication/">Authentication</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/permissions/">Permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/throttling/">Throttling</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/filtering/">Filtering</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/pagination/">Pagination</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/versioning/">Versioning</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/content-negotiation/">Content negotiation</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/metadata/">Metadata</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/format-suffixes/">Format suffixes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/reverse/">Returning URLs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/exceptions/">Exceptions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/status-codes/">Status codes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/testing/">Testing</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/settings/">Settings</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../documenting-your-api/">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../internationalization/">Internationalization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../ajax-csrf-cors/">AJAX, CSRF & CORS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../html-and-forms/">HTML & Forms</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../browser-enhancements/">Browser Enhancements</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../browsable-api/">The Browsable API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../third-party-resources/">Third Party Resources</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../contributing/">Contributing to REST framework</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../project-management/">Project management</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.0-announcement/">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.1-announcement/">3.1 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.3-announcement/">3.3 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../kickstarter-announcement/">Kickstarter Announcement</a>
+                  </li>
+                  
+                  <li class="active" >
+                    <a href="./">Funding</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../release-notes/">Release Notes</a>
+                  </li>
+                  
+                </ul>
+              </li>
+               
+
+            </ul>
+            
+          </div>
+          <!--/.nav-collapse -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="body-content">
+      <div class="container-fluid">
+        <!-- Search Modal -->
+        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Documentation search</h3>
+          </div>
+
+          <div class="modal-body">
+            <form role="form" autocomplete="off">
+              <div class="form-group">
+                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+              </div>
+            </form>
+            <div id="mkdocs-search-results"></div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                
+
+                
+                  <li class="main">
+                    <a href="#funding">Funding</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#making-the-business-case">Making the business case</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#individual-plan">Individual plan</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#corporate-plans">Corporate plans</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#roadmap">Roadmap</a>
+                    </li>
+                  
+                
+
+                
+              </ul>
+
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            
+              
+
+              <script>
+// Imperfect, but easier to fit in with the existing docs build.
+// Hyperlinks should point directly to the "fund." subdomain, but this'll
+// handle the nav bar links without requiring any docs build changes for the moment.
+if (window.location.hostname == "www.django-rest-framework.org") {
+    window.location.replace("https://fund.django-rest-framework.org/topics/funding/");
+}
+</script>
+
+<style>
+.chart {
+    background-color: #e3e3e3;
+    background: -webkit-linear-gradient(top, #fff 0, #e3e3e3 100%);
+    border: 1px solid #E6E6E6;
+    border-radius: 5px;
+    box-shadow: 0px 0px 2px 0px rgba(181, 181, 181, 0.3);
+    padding: 40px 0px 5px;
+    position: relative;
+    text-align: center;
+    width: 97%;
+    min-height: 255px;
+    position: relative;
+    top: 37px;
+    margin-bottom: 20px
+}
+.quantity {
+    text-align: center
+}
+.dollar {
+    font-size: 19px;
+    position: relative;
+    top: -18px;
+}
+.price {
+    font-size: 49px;
+}
+.period {
+    font-size: 17px;
+    position: relative;
+    top: -8px;
+    margin-left: 4px;
+}
+.plan-name {
+     text-align: center;
+    font-size: 20px;
+    font-weight: 400;
+    color: #777;
+    border-bottom: 1px solid #d5d5d5;
+    padding-bottom: 15px;
+    width: 90%;
+    margin: 0 auto;
+    margin-top: 8px;
+}
+.specs {
+    margin-top: 20px;
+}
+.specs.startup {
+    margin-bottom: 93px
+}
+.spec {
+    font-size: 15px;
+    color: #474747;
+    text-align: center;
+    font-weight: 300;
+    margin-bottom: 13px;
+}
+.variable {
+    color: #1FBEE7;
+    font-weight: 400;
+}
+form.signup {
+    margin-top: 35px
+}
+.clear-promo {
+    padding-top: 30px
+}
+#main-content h1:first-of-type {
+    margin: 0 0 50px;
+    font-size: 60px;
+    font-weight: 200;
+    text-align: center
+}
+#main-content {
+    padding-top: 10px; line-height: 23px
+}
+#main-content li {
+    line-height: 23px
+}
+</style>
+
+<h1 id="funding">Funding</h1>
+<p>If you use REST framework commercially we strongly encourage you to invest in its continued development by signing up for a paid plan.</p>
+<p><strong>We believe that collaboratively funded software can offer outstanding returns on investment, by allowing users and clients to collectively share the cost of development.</strong></p>
+<p>Signing up for a paid plan will:</p>
+<ul>
+<li>Directly contribute to faster releases, more features and higher quality software.</li>
+<li>Allow more time to be invested in documentation, issue triage and community support.</li>
+<li>Safeguard the future development of REST framework.</li>
+</ul>
+<p>REST framework will always be open source and permissively licensed, but we firmly believe it is in the commercial best-interest for users of the project to fund its ongoing development.</p>
+<hr />
+<h2 id="making-the-business-case">Making the business case</h2>
+<p>Our successful Kickstarter campaign demonstrates the cost-reward ratio of shared development funding.</p>
+<p>With <em>typical corporate fundings of just £100-£1000 per organization</em> we successfully delivered:</p>
+<ul>
+<li>The comprehensive 3.0 serializer redesign.</li>
+<li>Substantial improvements to the Browsable API.</li>
+<li>The admin interface.</li>
+<li>A new pagination API including offset/limit and cursor pagination implementations, plus on-page controls.</li>
+<li>A versioning API, including URL-based and header-based versioning schemes.</li>
+<li>Support for customizable exception handling.</li>
+<li>Support for Django's PostgreSQL HStoreField, ArrayField and JSONField.</li>
+<li>Templated HTML form support, including HTML forms with nested list and objects.</li>
+<li>Internationalization support for API responses, currently with 27 languages.</li>
+<li>The metadata APIs for handling <code>OPTIONS</code> requests and schema endpoints.</li>
+<li>Numerous minor improvements and better quality throughout the codebase.</li>
+<li>Ongoing triage and community support, closing over 1600 tickets.</li>
+</ul>
+<p>This incredible level of return on investment is <em>only possible through collaboratively funded models</em>, which is why we believe that supporting our paid plans is in everyone's best interest.</p>
+<hr />
+<h2 id="individual-plan">Individual plan</h2>
+<p>This subscription is recommended for freelancers and other individuals with an interest in seeing REST framework continue to&nbsp;improve.</p>
+<p>If you are using REST framework as an full-time employee, consider recommending that your company takes out a <a href="#corporate-plans">corporate&nbsp;plan</a>.</p>
+<div class="pricing">
+                <div class="span4">
+                    <div class="chart first">
+                        <div class="quantity">
+                            <span class="dollar">$</span>
+                            <span class="price">15</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <div class="plan-name">Individual</div>
+                        <div class="specs">
+                            <div class="spec">
+                                Support ongoing development
+                            </div>
+                            <div class="spec">
+                                Credited on the site
+                            </div>
+                        </div>
+                        <form class="signup" action="/signup/individual/" method="POST">
+  <script
+    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+    data-key="{{ stripe_public }}"
+    data-amount="1500"
+    data-name="Django REST framework"
+    data-description="Individual"
+    data-currency="usd"
+    data-allow-remember-me=false
+    data-billing-address=true
+    data-label='Sign up'
+    data-panel-label='Sign up - {% verbatim %}{{amount}}{% endverbatim %}/mo'>
+  </script>
+</form>
+                    </div>
+                </div>
+            </div>
+
+<div style="clear: both; padding-top: 50px"></div>
+
+<p><em>Billing is monthly and you can cancel at any time.</em></p>
+<hr />
+<h2 id="corporate-plans">Corporate plans</h2>
+<p>These subscriptions are recommended for companies and organizations using REST framework either publicly or privately.</p>
+<p>In exchange for funding you'll also receive advertising space on our site, allowing you to <strong>promote your company or product to many tens of thousands of developers worldwide</strong>.</p>
+<p>Our professional and premium plans also include <strong>priority support</strong>. At any time your engineers can escalate an issue or discussion group thread, and we'll ensure it gets a guaranteed response within the next working day.</p>
+<div class="pricing">
+                <div class="span4">
+                    <div class="chart first">
+                        <div class="quantity">
+                            <span class="dollar">$</span>
+                            <span class="price">50</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <div class="plan-name">Basic</div>
+                        <div class="specs startup">
+                            <div class="spec">
+                                Support ongoing development
+                            </div>
+                            <div class="spec">
+                                <span class="variable">Funding page</span> ad placement
+                            </div>
+                        </div>
+                        <form class="signup" action="/signup/startup/" method="POST">
+  <script
+    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+    data-key="{{ stripe_public }}"
+    data-amount="5000"
+    data-name="Django REST framework"
+    data-description="Basic"
+    data-currency="usd"
+    data-allow-remember-me=false
+    data-billing-address=true
+    data-label='Sign up'
+    data-panel-label='Sign up - {% verbatim %}{{amount}}{% endverbatim %}/mo'>
+  </script>
+</form>
+                    </div>
+                </div>
+                <div class="span4">
+                    <div class="chart">
+                        <div class="quantity">
+                            <span class="dollar">$</span>
+                            <span class="price">250</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <div class="plan-name">Professional</div>
+                        <div class="specs">
+                            <div class="spec">
+                                Add a <span class="variable">half day per&nbsp;month</span> development time to the project
+                            </div>
+                            <div class="spec">
+                                <span class="variable">Homepage</span> ad placement
+                            </div>
+                            <div class="spec">
+                                <span class="variable">Priority support</span> for your engineers
+                            </div>
+                        </div>
+                        <form class="signup" action="/signup/professional/" method="POST">
+  <script
+    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+    data-key="{{ stripe_public }}"
+    data-amount="25000"
+    data-name="Django REST framework"
+    data-description="Professional"
+    data-currency="usd"
+    data-allow-remember-me=false
+    data-billing-address=true
+    data-label='Sign up'
+    data-panel-label='Sign up - {% verbatim %}{{amount}}{% endverbatim %}/mo'>
+  </script>
+</form>
+                    </div>
+                </div>
+                <div class="span4">
+                    <div class="chart last">
+                        <div class="quantity">
+                            <span class="dollar">$</span>
+                            <span class="price">500</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <div class="plan-name">Premium</div>
+                        <div class="specs">
+                            <div class="spec">
+                                Add <span class="variable">one full day per&nbsp;month</span> development time to the project
+                            </div>
+                            <div class="spec">
+                                <span class="variable">Full site</span> ad placement
+                            </div>
+                            <div class="spec">
+                                <span class="variable">Priority support</span> for your engineers
+                            </div>
+                        </div>
+                        <form class="signup" action="/signup/premium/" method="POST">
+  <script
+    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+    data-key="{{ stripe_public }}"
+    data-amount="50000"
+    data-name="Django REST framework"
+    data-description="Premium"
+    data-currency="usd"
+    data-allow-remember-me=false
+    data-billing-address=true
+    data-label='Sign up'
+    data-panel-label='Sign up - {% verbatim %}{{amount}}{% endverbatim %}/mo'>
+  </script>
+</form>
+                    </div>
+                </div>
+            </div>
+
+<div style="clear: both; padding-top: 50px"></div>
+
+<p><em>Billing is monthly and you can cancel at any time.</em></p>
+<p>Once you've signed up we'll contact you via email and arrange your ad placements on the site.</p>
+<p>For further enquires please contact <a href=mailto:tom@tomchristie.com>tom@tomchristie.com</a>.</p>
+<hr />
+<h2 id="roadmap">Roadmap</h2>
+<p>Although we're incredibly proud of REST framework in its current state we believe there is still huge scope for improvement. What we're aiming for here is a <em>highly polished, rock solid product</em>. This needs to backed up with impeccable documentation and a great third party ecosystem.</p>
+<p>The roadmap below is a broad indication of just some of the ongoing and future work we believe is important to REST framework.</p>
+<ul>
+<li>Increasing our "bus factor" through documented organizational process &amp; safeguards.</li>
+<li>More time towards testing and hardening releases, with only gradual, well-documented deprecations.</li>
+<li>A formal policy on security backports for non-current releases.</li>
+<li>Continuing triage &amp; community support.</li>
+<li>Improved project documentation, including versioned &amp; internationalized docs.</li>
+<li>Improved third party package visibility.</li>
+<li>Refining the admin interface, ensuring it has a fully customizable API and making it suitable as end-user facing application.</li>
+<li>Cleaning up internal complexities including the <code>BrowsableAPIRenderer</code> and <code>Request</code> object.</li>
+<li>Support for alternative backends such as SQLAlchemy.</li>
+<li>Support for non-database backed services.</li>
+<li>HTTP Caching API &amp; support for conditional database lookups.</li>
+<li>Benchmarking and performance improvements.</li>
+<li>In depth documentation on advanced usage and best practices.</li>
+<li>Documentation &amp; support for integration with realtime systems.</li>
+<li>Hypermedia support and client libraries.</li>
+<li>Support for JSON schema as endpoints or <code>OPTIONS</code> responses.</li>
+<li>API metric tools.</li>
+<li>Debug &amp; logging tools.</li>
+<li>Third party GraphQL support.</li>
+</ul>
+<p>By taking out a paid plan you'll be directly contributing towards making these features happen.</p>
+            
+
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
+    <div id="push"></div>
+  </div> <!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
+    </p>
+  </footer>
+
+  <!-- Le javascript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="../../js/jquery-1.8.1-min.js"></script>
+  <script src="../../js/prettify-1.0.js"></script>
+  <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script>var base_url = '../..';</script>
+  <script src="../../mkdocs/js/require.js"></script>
+  <script src="../../js/theme.js"></script>
+
+  <script>
+    var shiftWindow = function() {
+      scrollBy(0, -50)
+    };
+
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+
+    $('.dropdown-menu').on('click touchstart', function(event) {
+      event.stopPropagation();
+    });
+
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
+
+    $(function() {
+      $(window).resize(function() {
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
+      });
+    });
+  </script>
+</body>
+
+</html>

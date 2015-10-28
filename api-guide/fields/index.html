@@ -246,6 +246,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
                   </li>
                   
@@ -279,6 +283,10 @@
                   
                   <li >
                     <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
@@ -479,6 +487,10 @@
                       <a href="#dictfield">DictField</a>
                     </li>
                   
+                    <li>
+                      <a href="#jsonfield">JSONField</a>
+                    </li>
+                  
                 
                   <li class="main">
                     <a href="#miscellaneous-fields">Miscellaneous fields</a>
@@ -586,7 +598,7 @@ Set to false if this field is not required to be present during deserialization.
 <p>May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a <code>set_context</code> method, that will be called each time before getting the value with the field instance as only argument. This works the same way as for <a href="../validators/#using-set_context">validators</a>.</p>
 <p>Note that setting a <code>default</code> value implies that the field is not required. Including both the <code>default</code> and <code>required</code> keyword arguments is invalid and will raise an error.</p>
 <h3 id="source"><code>source</code></h3>
-<p>The name of the attribute that will be used to populate the field.  May be a method that only takes a <code>self</code> argument, such as <code>URLField('get_absolute_url')</code>, or may use dotted notation to traverse attributes, such as <code>EmailField(source='user.email')</code>.</p>
+<p>The name of the attribute that will be used to populate the field.  May be a method that only takes a <code>self</code> argument, such as <code>URLField(source='get_absolute_url')</code>, or may use dotted notation to traverse attributes, such as <code>EmailField(source='user.email')</code>.</p>
 <p>The value <code>source='*'</code> has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.</p>
 <p>Defaults to the name of the field.</p>
 <h3 id="validators"><code>validators</code></h3>
@@ -600,8 +612,8 @@ Set to false if this field is not required to be present during deserialization.
 <h3 id="initial"><code>initial</code></h3>
 <p>A value that should be used for pre-populating the value of HTML form fields.</p>
 <h3 id="style"><code>style</code></h3>
-<p>A dictionary of key-value pairs that can be used to control how renderers should render the field. The API for this should still be considered experimental, and will be formalized with the 3.1 release.</p>
-<p>Two options are currently used in HTML form generation, <code>'input_type'</code> and <code>'base_template'</code>.</p>
+<p>A dictionary of key-value pairs that can be used to control how renderers should render the field.</p>
+<p>Two examples here are <code>'input_type'</code> and <code>'base_template'</code>:</p>
 <pre><code># Use &lt;input type="password"&gt; for the input.
 password = serializers.CharField(
     style={'input_type': 'password'}
@@ -613,7 +625,7 @@ color_channel = serializers.ChoiceField(
     style = {'base_template': 'radio.html'}
 }
 </code></pre>
-<p><strong>Note</strong>: The <code>style</code> argument replaces the old-style version 2.x <code>widget</code> keyword argument. Because REST framework 3 now uses templated HTML form generation, the <code>widget</code> option that was used to support Django built-in widgets can no longer be supported. Version 3.3 is planned to include public API support for customizing HTML form generation.</p>
+<p>For more details see the <a href="../../topics/html-and-forms/">HTML &amp; Forms</a> documentation.</p>
 <hr />
 <h1 id="boolean-fields">Boolean fields</h1>
 <h2 id="booleanfield">BooleanField</h2>
@@ -856,6 +868,12 @@ Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#st
 <pre><code>class DocumentField(DictField):
     child = CharField()
 </code></pre>
+<h2 id="jsonfield">JSONField</h2>
+<p>A field class that validates that the incoming data structure consists of valid JSON primitives. In its alternate binary mode, it will represent and validate JSON-encoded binary strings.</p>
+<p><strong>Signature</strong>: <code>JSONField(binary)</code></p>
+<ul>
+<li><code>binary</code> - If set to <code>True</code> then the field will output and validate a JSON encoded string, rather that a primitive data structure. Defaults to <code>False</code>.</li>
+</ul>
 <hr />
 <h1 id="miscellaneous-fields">Miscellaneous fields</h1>
 <h2 id="readonlyfield">ReadOnlyField</h2>
@@ -1009,7 +1027,7 @@ def to_internal_value(self, data):
   </div> <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
     </p>
   </footer>
 

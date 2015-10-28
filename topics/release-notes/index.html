@@ -246,6 +246,10 @@
                   </li>
                   
                   <li >
+                    <a href="../html-and-forms/">HTML & Forms</a>
+                  </li>
+                  
+                  <li >
                     <a href="../browser-enhancements/">Browser Enhancements</a>
                   </li>
                   
@@ -279,6 +283,10 @@
                   
                   <li >
                     <a href="../3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
@@ -350,6 +358,10 @@
                     </li>
                   
                     <li>
+                      <a href="#33x-series">3.3.x series</a>
+                    </li>
+                  
+                    <li>
                       <a href="#32x-series">3.2.x series</a>
                     </li>
                   
@@ -405,16 +417,32 @@
 <pre><code>pip freeze | grep djangorestframework
 </code></pre>
 <hr />
+<h2 id="33x-series">3.3.x series</h2>
+<h3 id="330">3.3.0</h3>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.0+Release%22">28th October 2015</a>.</p>
+<ul>
+<li>HTML controls for filters. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3315">#3315</a>)</li>
+<li>Forms API. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3475">#3475</a>)</li>
+<li>AJAX browsable API. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3410">#3410</a>)</li>
+<li>Added JSONField. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3454">#3454</a>)</li>
+<li>Correctly map <code>to_field</code> when creating <code>ModelSerializer</code> relational fields. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3526">#3526</a>)</li>
+<li>Include keyword arguments when mapping <code>FilePathField</code> to a serializer field. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3536">#3536</a>)</li>
+<li>Map appropriate model <code>error_messages</code> on <code>ModelSerializer</code> uniqueness constraints. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3435">#3435</a>)</li>
+<li>Include <code>max_length</code> constraint for <code>ModelSerializer</code> fields mapped from TextField. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3509">#3509</a>)</li>
+<li>Added support for Django 1.9. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3450">#3450</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3525">#3525</a>)</li>
+<li>Removed support for Django 1.5 &amp; 1.6. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3421">#3421</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3429">#3429</a>)</li>
+<li>Removed 'south' migrations. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3495">#3495</a>)</li>
+</ul>
 <h2 id="32x-series">3.2.x series</h2>
 <h3 id="325">3.2.5</h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.5+Release%22">27th October 2015</a>.</p>
 <ul>
-<li>Escape <code>username</code> in optional logout tag.</li>
+<li>Escape <code>username</code> in optional logout tag. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3550">#3550</a>)</li>
 </ul>
 <h3 id="324">3.2.4</h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.4+Release%22">21th September 2015</a>.</p>
 <ul>
-<li>Don't error on missing <code>ViewSet.search_fields</code> attribute.(<a href="https://github.com/tomchristie/django-rest-framework/issues/3324">#3324</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3323">#3323</a>)</li>
+<li>Don't error on missing <code>ViewSet.search_fields</code> attribute. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3324">#3324</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3323">#3323</a>)</li>
 <li>Fix <code>allow_empty</code> not working on serializers with <code>many=True</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3361">#3361</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3364">#3364</a>)</li>
 <li>Let <code>DurationField</code> accepts integers. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3359">#3359</a>)</li>
 <li>Multi-level dictionaries not supported in multipart requests. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3314">#3314</a>)</li>
@@ -645,6 +673,10 @@
 <!-- 3.2.3 -->
 
 <!-- 3.2.4 -->
+
+<!-- 3.2.5 -->
+
+<!-- 3.3.0 -->
             
 
           </div> <!--/span-->
@@ -655,7 +687,7 @@
   </div> <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
     </p>
   </footer>
 

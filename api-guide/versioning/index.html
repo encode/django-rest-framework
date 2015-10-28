@@ -246,6 +246,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
                   </li>
                   
@@ -279,6 +283,10 @@
                   
                   <li >
                     <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
@@ -452,7 +460,7 @@ reverse('bookings-list', request=request)
 <ul>
 <li><code>DEFAULT_VERSION</code>. The value that should be used for <code>request.version</code> when no versioning information is present. Defaults to <code>None</code>.</li>
 <li><code>ALLOWED_VERSIONS</code>. If set, this value will restrict the set of versions that may be returned by the versioning scheme, and will raise an error if the provided version if not in this set. Note that the value used for the <code>DEFAULT_VERSION</code> setting is always considered to be part of the <code>ALLOWED_VERSIONS</code> set. Defaults to <code>None</code>.</li>
-<li><code>VERSION_PARAMETER</code>. The string that should used for any versioning parameters, such as in the media type or URL query parameters. Defaults to <code>'version'</code>.</li>
+<li><code>VERSION_PARAM</code>. The string that should used for any versioning parameters, such as in the media type or URL query parameters. Defaults to <code>'version'</code>.</li>
 </ul>
 <p>You can also set your versioning class plus those three values on a per-view or a per-viewset basis by defining your own versioning scheme and using the <code>default_version</code>, <code>allowed_versions</code> and <code>version_param</code> class variables. For example, if you want to use <code>URLPathVersioning</code>:</p>
 <pre><code>from rest_framework.versioning import URLPathVersioning
@@ -567,7 +575,7 @@ Accept: application/json
   </div> <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
     </p>
   </footer>
 

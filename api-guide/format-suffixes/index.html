@@ -246,6 +246,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
                   </li>
                   
@@ -279,6 +283,10 @@
                   
                   <li >
                     <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
@@ -339,6 +347,10 @@
                   
                     <li>
                       <a href="#format_suffix_patterns">format_suffix_patterns</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#query-parameter-formats">Query parameter formats</a>
                     </li>
                   
                     <li>
@@ -418,6 +430,11 @@ urlpatterns = i18n_patterns(
 )
 </code></pre>
 <hr />
+<h2 id="query-parameter-formats">Query parameter formats</h2>
+<p>An alternative to the format suffixes is to include the requested format in a query parameter. REST framework provides this option by default, and it is used in the browsable API to switch between differing available representations.</p>
+<p>To select a representation using its short format, use the <code>format</code> query parameter. For example: <code>http://example.com/organizations/?format=csv</code>.</p>
+<p>The name of this query parameter can be modified using the <code>URL_FORMAT_OVERRIDE</code> setting. Set the value to <code>None</code> to disable this behavior.</p>
+<hr />
 <h2 id="accept-headers-vs-format-suffixes">Accept headers vs. format suffixes</h2>
 <p>There seems to be a view among some of the Web community that filename extensions are not a RESTful pattern, and that <code>HTTP Accept</code> headers should always be used instead.</p>
 <p>It is actually a misconception.  For example, take the following quote from Roy Fielding discussing the relative merits of query parameter media-type indicators vs. file extension media-type indicators:</p>
@@ -433,7 +450,7 @@ urlpatterns = i18n_patterns(
   </div> <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
     </p>
   </footer>
 

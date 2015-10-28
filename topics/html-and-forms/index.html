@@ -4,11 +4,11 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <title>Browser Enhancements - Django REST framework</title>
+  <title>HTML & Forms - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/topics/browser-enhancements/" />
+  <link rel="canonical" href="http://www.django-rest-framework.org/topics/html-and-forms/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Browser Enhancements">
+  <meta name="description" content="Django, API, REST, HTML & Forms">
   <meta name="author" content="Tom Christie">
 
   <!-- Le styles -->
@@ -61,10 +61,10 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../browsable-api/">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../browser-enhancements/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../html-and-forms/">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../ajax-csrf-cors/">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
@@ -245,12 +245,12 @@
                     <a href="../ajax-csrf-cors/">AJAX, CSRF & CORS</a>
                   </li>
                   
-                  <li >
-                    <a href="../html-and-forms/">HTML & Forms</a>
+                  <li class="active" >
+                    <a href="./">HTML & Forms</a>
                   </li>
                   
-                  <li class="active" >
-                    <a href="./">Browser Enhancements</a>
+                  <li >
+                    <a href="../browser-enhancements/">Browser Enhancements</a>
                   </li>
                   
                   <li >
@@ -341,32 +341,20 @@
 
                 
                   <li class="main">
-                    <a href="#browser-enhancements">Browser enhancements</a>
+                    <a href="#html-forms">HTML  Forms</a>
                   </li>
 
                   
                     <li>
-                      <a href="#browser-based-put-delete-etc">Browser based PUT, DELETE, etc...</a>
+                      <a href="#rendering-html">Rendering HTML</a>
                     </li>
                   
                     <li>
-                      <a href="#browser-based-submission-of-non-form-content">Browser based submission of non-form content</a>
+                      <a href="#rendering-forms">Rendering Forms</a>
                     </li>
                   
                     <li>
-                      <a href="#url-based-format-suffixes">URL based format suffixes</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#http-header-based-method-overriding">HTTP header based method overriding</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#url-based-accept-headers">URL based accept headers</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#doesnt-html5-support-put-and-delete-forms">Doesn't HTML5 support PUT and DELETE forms?</a>
+                      <a href="#field-styles">Field styles</a>
                     </li>
                   
                 
@@ -381,65 +369,227 @@
             
               
 
-              <h1 id="browser-enhancements">Browser enhancements</h1>
-<blockquote>
-<p>"There are two noncontroversial uses for overloaded POST.  The first is to <em>simulate</em> HTTP's uniform interface for clients like web browsers that don't support PUT or DELETE"</p>
-<p>&mdash; <a href="http://www.amazon.com/Restful-Web-Services-Leonard-Richardson/dp/0596529260">RESTful Web Services</a>, Leonard Richardson &amp; Sam Ruby.</p>
-</blockquote>
-<p>In order to allow the browsable API to function, there are a couple of browser enhancements that REST framework needs to provide.</p>
-<p>As of version 3.3.0 onwards these are enabled with javascript, using the <a href="https://github.com/tomchristie/ajax-form">ajax-form</a> library.</p>
-<h2 id="browser-based-put-delete-etc">Browser based PUT, DELETE, etc...</h2>
-<p>The <a href="https://github.com/tomchristie/ajax-form">AJAX form library</a> supports browser-based <code>PUT</code>, <code>DELETE</code> and other methods on HTML forms.</p>
-<p>After including the library, use the <code>data-method</code> attribute on the form, like so:</p>
-<pre><code>&lt;form action="/" data-method="PUT"&gt;
-    &lt;input name='foo'/&gt;
-    ...
+              <h1 id="html-forms">HTML &amp; Forms</h1>
+<p>REST framework is suitable for returning both API style responses, and regular HTML pages. Additionally, serializers can used as HTML forms and rendered in templates.</p>
+<h2 id="rendering-html">Rendering HTML</h2>
+<p>In order to return HTML responses you'll need to either <code>TemplateHTMLRenderer</code>, or <code>StaticHTMLRenderer</code>.</p>
+<p>The <code>TemplateHTMLRenderer</code> class expects the response to contain a dictionary of context data, and renders an HTML page based on a template that must be specified either in the view or on the response.</p>
+<p>The <code>StaticHTMLRender</code> class expects the response to contain a string of the pre-rendered HTML content.</p>
+<p>Because static HTML pages typically have different behavior from API responses you'll probably need to write any HTML views explicitly, rather than relying on the built-in generic views.</p>
+<p>Here's an example of a view that returns a list of "Profile" instances, rendered in an HTML template:</p>
+<p><strong>views.py</strong>:</p>
+<pre><code>from my_project.example.models import Profile
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.views import APIView
+
+
+class ProfileList(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'profile_list.html'
+
+    def get(self, request):
+        queryset = Profile.objects.all()
+        return Response({'profiles': queryset})
+</code></pre>
+<p><strong>profile_list.html</strong>:</p>
+<pre><code>&lt;html&gt;&lt;body&gt;
+&lt;h1&gt;Profiles&lt;/h1&gt;
+&lt;ul&gt;
+    {% for profile in profiles %}
+    &lt;li&gt;{{ profile.name }}&lt;/li&gt;
+    {% endfor %}
+&lt;/ul&gt;
+&lt;/body&gt;&lt;/html&gt;
+</code></pre>
+<h2 id="rendering-forms">Rendering Forms</h2>
+<p>Serializers may be rendered as forms by using the <code>render_form</code> template tag, and including the serializer instance as context to the template.</p>
+<p>The following view demonstrates an example of using a serializer in a template for viewing and updating a model instance:</p>
+<p><strong>views.py</strong>:</p>
+<pre><code>from django.shortcuts import get_object_or_404
+from my_project.example.models import Profile
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.views import APIView
+
+
+class ProfileDetail(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'profile_detail.html'
+
+    def get(self, request, pk):
+        profile = get_object_or_404(Profile, pk=pk)
+        serializer = ProfileSerializer(profile)
+        return Response({'serializer': serializer, 'profile': profile})
+
+    def post(self, request, pk):
+        profile = get_object_or_404(Profile, pk=pk)
+        serializer = ProfileSerializer(profile)
+        if not serializer.is_valid():
+            return Response({'serializer': serializer, 'profile': profile})
+        return redirect('profile-list')
+</code></pre>
+<p><strong>profile_detail.html</strong>:</p>
+<pre><code>{% load rest_framework %}
+
+&lt;html&gt;&lt;body&gt;
+
+&lt;h1&gt;Profile - {{ profile.name }}&lt;/h1&gt;
+
+&lt;form action="{% url 'profile-detail' pk=profile.pk '%}" method="POST"&gt;
+    {% csrf_token %}
+    {% render_form serializer %}
+    &lt;input type="submit" value="Save"&gt;
+&lt;/form&gt;
+
+&lt;/body&gt;&lt;/html&gt;
+</code></pre>
+<h3 id="using-template-packs">Using template packs</h3>
+<p>The <code>render_form</code> tag takes an optional <code>template_pack</code> argument, that specifies which template directory should be used for rendering the form and form fields.</p>
+<p>REST framework includes three built-in template packs, all based on Bootstrap 3. The built-in styles are <code>horizontal</code>, <code>vertical</code>, and <code>inline</code>. The default style is <code>horizontal</code>. To use any of these template packs you'll want to also include the Bootstrap 3 CSS.</p>
+<p>The following HTML will link to a CDN hosted version of the Bootstrap 3 CSS:</p>
+<pre><code>&lt;head&gt;
+    …
+    &lt;link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"&gt;
+&lt;/head&gt;
+</code></pre>
+<p>Third party packages may include alternate template packs, by bundling a template directory containing the necessary form and field templates.</p>
+<p>Let's take a look at how to render each of the three available template packs. For these examples we'll use a single serializer class to present a "Login" form.</p>
+<pre><code>class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField(
+        max_length=100,
+        style={'placeholder': 'Email'}
+    )
+    password = serializers.CharField(
+        max_length=100,
+        style={'input_type': 'password', 'placeholder': 'Password'}
+    )
+    remember_me = serializers.BooleanField()
+</code></pre>
+<hr />
+<h4 id="rest_frameworkvertical"><code>rest_framework/vertical</code></h4>
+<p>Presents form labels above their corresponding control inputs, using the standard Bootstrap layout.</p>
+<p><em>This is the default template pack.</em></p>
+<pre><code>{% load rest_framework %}
+
+...
+
+&lt;form action="{% url 'login' %}" method="post" novalidate&gt;
+    {% csrf_token %}
+    {% render_form serializer template_pack='rest_framework/vertical' %}
+    &lt;button type="submit" class="btn btn-default"&gt;Sign in&lt;/button&gt;
 &lt;/form&gt;
 </code></pre>
-<p>Note that prior to 3.3.0, this support was server-side rather than javascript based. The method overloading style (as used in <a href="http://guides.rubyonrails.org/form_helpers.html#how-do-forms-with-put-or-delete-methods-work">Ruby on Rails</a>) is no longer supported due to subtle issues that it introduces in request parsing.</p>
-<h2 id="browser-based-submission-of-non-form-content">Browser based submission of non-form content</h2>
-<p>Browser-based submission of content types such as JSON are supported by the <a href="https://github.com/tomchristie/ajax-form">AJAX form library</a>, using form fields with <code>data-override='content-type'</code> and <code>data-override='content'</code> attributes.</p>
-<p>For example:</p>
-<pre><code>    &lt;form action="/"&gt;
-        &lt;input data-override='content-type' value='application/json' type='hidden'/&gt;
-        &lt;textarea data-override='content'&gt;{}&lt;/textarea&gt;
-        &lt;input type="submit"/&gt;
-    &lt;/form&gt;
-</code></pre>
-<p>Note that prior to 3.3.0, this support was server-side rather than javascript based.</p>
-<h2 id="url-based-format-suffixes">URL based format suffixes</h2>
-<p>REST framework can take <code>?format=json</code> style URL parameters, which can be a
-useful shortcut for determining which content type should be returned from
-the view.</p>
-<p>This behavior is controlled using the <code>URL_FORMAT_OVERRIDE</code> setting.</p>
-<h2 id="http-header-based-method-overriding">HTTP header based method overriding</h2>
-<p>Prior to version 3.3.0 the semi extension header <code>X-HTTP-Method-Override</code> was supported for overriding the request method. This behavior is no longer in core, but can be adding if needed using middleware.</p>
-<p>For example:</p>
-<pre><code>METHOD_OVERRIDE_HEADER = 'HTTP_X_HTTP_METHOD_OVERRIDE'
+<p><img alt="Vertical form example" src="../../img/vertical.png" /></p>
+<hr />
+<h4 id="rest_frameworkhorizontal"><code>rest_framework/horizontal</code></h4>
+<p>Presents labels and controls alongside each other, using a 2/10 column split.</p>
+<p><em>This is the form style used in the browsable API and admin renderers.</em></p>
+<pre><code>{% load rest_framework %}
 
-class MethodOverrideMiddleware(object):
-    def process_view(self, request, callback, callback_args, callback_kwargs):
-        if request.method != 'POST':
-            return
-        if METHOD_OVERRIDE_HEADER not in request.META:
-            return
-        request.method = request.META[METHOD_OVERRIDE_HEADER]
+...
+
+&lt;form class="form-horizontal" action="{% url 'login' %}" method="post" novalidate&gt;
+    {% csrf_token %}
+    {% render_form serializer %}
+    &lt;div class="form-group"&gt;
+        &lt;div class="col-sm-offset-2 col-sm-10"&gt;
+            &lt;button type="submit" class="btn btn-default"&gt;Sign in&lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/form&gt;
 </code></pre>
-<h2 id="url-based-accept-headers">URL based accept headers</h2>
-<p>Until version 3.3.0 REST framework included built-in support for <code>?accept=application/json</code> style URL parameters, which would allow the <code>Accept</code> header to be overridden.</p>
-<p>Since the introduction of the content negotiation API this behavior is no longer included in core, but may be added using a custom content negotiation class, if needed.</p>
-<p>For example:</p>
-<pre><code>class AcceptQueryParamOverride()
-    def get_accept_list(self, request):
-       header = request.META.get('HTTP_ACCEPT', '*/*')
-       header = request.query_params.get('_accept', header)
-       return [token.strip() for token in header.split(',')]
+<p><img alt="Horizontal form example" src="../../img/horizontal.png" /></p>
+<hr />
+<h4 id="rest_frameworkinline"><code>rest_framework/inline</code></h4>
+<p>A compact form style that presents all the controls inline.</p>
+<pre><code>{% load rest_framework %}
+
+...
+
+&lt;form class="form-inline" action="{% url 'login' %}" method="post" novalidate&gt;
+    {% csrf_token %}
+    {% render_form serializer template_pack='rest_framework/inline' %}
+    &lt;button type="submit" class="btn btn-default"&gt;Sign in&lt;/button&gt;
+&lt;/form&gt;
 </code></pre>
-<h2 id="doesnt-html5-support-put-and-delete-forms">Doesn't HTML5 support PUT and DELETE forms?</h2>
-<p>Nope.  It was at one point intended to support <code>PUT</code> and <code>DELETE</code> forms, but
-was later <a href="http://www.w3.org/TR/html5-diff/#changes-2010-06-24">dropped from the spec</a>.  There remains
-<a href="http://amundsen.com/examples/put-delete-forms/">ongoing discussion</a> about adding support for <code>PUT</code> and <code>DELETE</code>,
-as well as how to support content types other than form-encoded data.</p>
+<p><img alt="Inline form example" src="../../img/inline.png" /></p>
+<h2 id="field-styles">Field styles</h2>
+<p>Serializer fields can have their rendering style customized by using the <code>style</code> keyword argument. This argument is a dictionary of options that control the template and layout used.</p>
+<p>The most common way to customize the field style is to use the <code>base_template</code> style keyword argument to select which template in the template pack should be use.</p>
+<p>For example, to render a <code>CharField</code> as an HTML textarea rather than the default HTML input, you would use something like this:</p>
+<pre><code>details = serializers.CharField(
+    max_length=1000,
+    style={'base_template': 'textarea.html'}
+)
+</code></pre>
+<p>If you instead want a field to be rendered using a custom template that is <em>not part of an included template pack</em>, you can instead use the <code>template</code> style option, to fully specify a template name:</p>
+<pre><code>details = serializers.CharField(
+    max_length=1000,
+    style={'template': 'my-field-templates/custom-input.html'}
+)
+</code></pre>
+<p>Field templates can also use additional style properties, depending on their type. For example, the <code>textarea.html</code> template also accepts a <code>rows</code> property that can be used to affect the sizing of the control.</p>
+<pre><code>details = serializers.CharField(
+    max_length=1000,
+    style={'base_template': 'textarea.html', 'rows': 10}
+)
+</code></pre>
+<p>The complete list of <code>base_template</code> options and their associated style options is listed below.</p>
+<table>
+<thead>
+<tr>
+<th>base_template</th>
+<th>Valid field types</th>
+<th>Additional style options</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>input.html</td>
+<td>Any string, numeric or date/time field</td>
+<td>input_type, placeholder, hide_label</td>
+</tr>
+<tr>
+<td>textarea.html</td>
+<td><code>CharField</code></td>
+<td>rows, placeholder, hide_label</td>
+</tr>
+<tr>
+<td>select.html</td>
+<td><code>ChoiceField</code> or relational field types</td>
+<td>hide_label</td>
+</tr>
+<tr>
+<td>radio.html</td>
+<td><code>ChoiceField</code> or relational field types</td>
+<td>inline, hide_label</td>
+</tr>
+<tr>
+<td>select_multiple.html</td>
+<td><code>MultipleChoiceField</code> or relational fields with <code>many=True</code></td>
+<td>hide_label</td>
+</tr>
+<tr>
+<td>checkbox_multiple.html</td>
+<td><code>MultipleChoiceField</code> or relational fields with <code>many=True</code></td>
+<td>inline, hide_label</td>
+</tr>
+<tr>
+<td>checkbox.html</td>
+<td><code>BooleanField</code></td>
+<td>hide_label</td>
+</tr>
+<tr>
+<td>fieldset.html</td>
+<td>Nested serializer</td>
+<td>hide_label</td>
+</tr>
+<tr>
+<td>list_fieldset.html</td>
+<td><code>ListField</code> or nested serializer with <code>many=True</code></td>
+<td>hide_label</td>
+</tr>
+</tbody>
+</table>
             
 
           </div> <!--/span-->

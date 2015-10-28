@@ -246,6 +246,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
                   </li>
                   
@@ -279,6 +283,10 @@
                   
                   <li >
                     <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
@@ -536,7 +544,7 @@ class UploadView(APIView):
 <p>If the <code>.wait()</code> method is implemented and the request is throttled, then a <code>Retry-After</code> header will be included in the response.</p>
 <h2 id="example">Example</h2>
 <p>The following is an example of a rate throttle, that will randomly throttle 1 in every 10 requests.</p>
-<pre><code>class RandomRateThrottle(throttles.BaseThrottle):
+<pre><code>class RandomRateThrottle(throttling.BaseThrottle):
     def allow_request(self, request, view):
         return random.randint(1, 10) == 1
 </code></pre>
@@ -550,7 +558,7 @@ class UploadView(APIView):
   </div> <!--/.wrapper -->
 
   <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</a>
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
     </p>
   </footer>
 
