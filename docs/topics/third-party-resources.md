@@ -350,3 +350,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-url-filter]: https://github.com/miki725/django-url-filter
 [cookiecutter-django-rest]:  https://github.com/agconti/cookiecutter-django-rest
 [drf-haystack]: http://drf-haystack.readthedocs.org/en/latest/
+[django-rest-framework-version-transforms]: https://github.com/mrhwick/django-rest-framework-version-transforms
