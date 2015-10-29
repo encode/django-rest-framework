@@ -271,6 +271,11 @@ class HyperlinkedRelatedField(RelatedField):
 
         lookup_value = getattr(obj, self.lookup_field)
         kwargs = {self.lookup_url_kwarg: lookup_value}
+
+        namespace = request.resolver_match.namespace
+        if namespace and not view_name.startswith(namespace + ':'):
+            view_name = namespace + ':' + view_name
+
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
 
     def get_name(self, obj):
