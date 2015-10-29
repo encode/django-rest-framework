@@ -18,6 +18,7 @@ Here's an example of a view that returns a list of "Profile" instances, rendered
 
     from my_project.example.models import Profile
     from rest_framework.renderers import TemplateHTMLRenderer
+    from rest_framework.response import Response
     from rest_framework.views import APIView
 
 
