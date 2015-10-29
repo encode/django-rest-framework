@@ -185,6 +185,11 @@ if django.VERSION >= (1, 8):
 else:
     DurationField = duration_string = parse_duration = None
 
+try:
+    # DecimalValidator is unavailable in Django < 1.9
+    from django.core.validators import DecimalValidator
+except ImportError:
+    DecimalValidator = None
 
 def set_rollback():
     if hasattr(transaction, 'set_rollback'):
