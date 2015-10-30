@@ -8,6 +8,7 @@ from django.core import validators
 from django.db import models
 from django.utils.text import capfirst
 
+from rest_framework.compat import DecimalValidator
 from rest_framework.validators import UniqueValidator
 
 NUMERIC_FIELD_TYPES = (
@@ -132,7 +133,7 @@ def get_field_kwargs(field_name, model_field):
     if isinstance(model_field, models.DecimalField):
         validator_kwarg = [
             validator for validator in validator_kwarg
-            if not isinstance(validator, validators.DecimalValidator)
+            if DecimalValidator and not isinstance(validator, DecimalValidator)
         ]
 
     # Ensure that max_length is passed explicitly as a keyword arg,
