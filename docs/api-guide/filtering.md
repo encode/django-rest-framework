@@ -151,7 +151,7 @@ If you are using the browsable API or admin API you may also want to install `cr
 
 With crispy forms installed, the browsable API will present a filtering control for `DjangoFilterBackend`, like so:
 
-![Django Filter](../../docs/img/django-filter.png)
+![Django Filter](../img/django-filter.png)
 
 #### Specifying filter fields
 
@@ -250,7 +250,7 @@ The `SearchFilter` class supports simple single query parameter based searching,
 
 When in use, the browsable API will include a `SearchFilter` control:
 
-![Search Filter](../../docs/img/search-filter.png)
+![Search Filter](../img/search-filter.png)
 
 The `SearchFilter` class will only be applied if the view has a `search_fields` attribute set.  The `search_fields` attribute should be a list of names of text type fields on the model, such as `CharField` or `TextField`.
 
@@ -291,7 +291,7 @@ For more details, see the [Django documentation][search-django-admin].
 
 The `OrderingFilter` class supports simple query parameter controlled ordering of results.
 
-![Ordering Filter](../../docs/img/ordering-filter.png)
+![Ordering Filter](../img/ordering-filter.png)
 
 By default, the query parameter is named `'ordering'`, but this may by overridden with the `ORDERING_PARAM` setting.
 
