@@ -465,7 +465,7 @@ A field class that validates that the incoming data structure consists of valid 
 
 **Signature**: `JSONField(binary)`
 
-- `binary` - If set to `True` then the field will output and validate a JSON encoded string, rather that a primitive data structure. Defaults to `False`.
+- `binary` - If set to `True` then the field will output and validate a JSON encoded string, rather than a primitive data structure. Defaults to `False`.
 
 ---
 
