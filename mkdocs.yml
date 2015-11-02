@@ -6,6 +6,10 @@ repo_url: https://github.com/tomchristie/django-rest-framework
 
 theme_dir: docs_theme
 
+markdown_extensions:
+ - toc:
+    anchorlink: True
+
 pages:
  - Home: 'index.md'
  - Tutorial:
