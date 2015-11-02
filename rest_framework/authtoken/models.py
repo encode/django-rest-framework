@@ -31,7 +31,13 @@ class Token(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.key:
-            self.key = self.generate_key()
+            while True:
+                generated_key = self.generate_key()
+                try:
+                    self.objects.get(key=generated_key)
+                except:
+                    self.key = generated_key
+                    break
         return super(Token, self).save(*args, **kwargs)
 
     def generate_key(self):
