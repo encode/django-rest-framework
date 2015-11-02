@@ -72,6 +72,10 @@ class RegularFieldsModel(models.Model):
     def method(self):
         return 'method'
 
+    def docstring_method(self):
+        """test"""
+        return 'method'
+
 
 COLOR_CHOICES = (('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'))
 DECIMAL_CHOICES = (('low', decimal.Decimal('0.1')), ('medium', decimal.Decimal('0.5')), ('high', decimal.Decimal('0.9')))
@@ -204,12 +208,13 @@ class TestRegularFieldMappings(TestCase):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RegularFieldsModel
-                fields = ('auto_field', 'method')
+                fields = ('auto_field', 'method', 'docstring_method')
 
         expected = dedent("""
             TestSerializer():
                 auto_field = IntegerField(read_only=True)
                 method = ReadOnlyField()
+                docstring_method = ReadOnlyField(help_text='test')
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
