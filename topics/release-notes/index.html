@@ -385,16 +385,16 @@
             
               
 
-              <h1 id="release-notes">Release Notes</h1>
+              <h1 id="release-notes"><a class="toclink" href="#release-notes">Release Notes</a></h1>
 <blockquote>
 <p>Release Early, Release Often</p>
 <p>&mdash; Eric S. Raymond, <a href="http://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s04.html">The Cathedral and the Bazaar</a>.</p>
 </blockquote>
-<h2 id="versioning">Versioning</h2>
+<h2 id="versioning"><a class="toclink" href="#versioning">Versioning</a></h2>
 <p>Minor version numbers (0.0.x) are used for changes that are API compatible.  You should be able to upgrade between minor point releases without any other code changes.</p>
 <p>Medium version numbers (0.x.0) may include API changes, in line with the <a href="#deprecation-policy">deprecation policy</a>.  You should read the release notes carefully before upgrading between medium point releases.</p>
 <p>Major version numbers (x.0.0) are reserved for substantial project milestones.</p>
-<h2 id="deprecation-policy">Deprecation policy</h2>
+<h2 id="deprecation-policy"><a class="toclink" href="#deprecation-policy">Deprecation policy</a></h2>
 <p>REST framework releases follow a formal deprecation policy, which is in line with <a href="https://docs.djangoproject.com/en/dev/internals/release-process/#internal-release-deprecation-policy">Django's deprecation policy</a>.</p>
 <p>The timeline for deprecation of a feature present in version 1.0 would work as follows:</p>
 <ul>
@@ -409,7 +409,7 @@
 </li>
 </ul>
 <p>Note that in line with Django's policy, any parts of the framework not mentioned in the documentation should generally be considered private API, and may be subject to change.</p>
-<h2 id="upgrading">Upgrading</h2>
+<h2 id="upgrading"><a class="toclink" href="#upgrading">Upgrading</a></h2>
 <p>To upgrade Django REST framework to the latest version, use pip:</p>
 <pre><code>pip install -U djangorestframework
 </code></pre>
@@ -417,8 +417,17 @@
 <pre><code>pip freeze | grep djangorestframework
 </code></pre>
 <hr />
-<h2 id="33x-series">3.3.x series</h2>
-<h3 id="330">3.3.0</h3>
+<h2 id="33x-series"><a class="toclink" href="#33x-series">3.3.x series</a></h2>
+<h3 id="331"><a class="toclink" href="#331">3.3.1</a></h3>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.1+Release%22">4th November 2015</a>.</p>
+<ul>
+<li>Resolve parsing bug when accessing <code>request.POST</code> (<a href="https://github.com/tomchristie/django-rest-framework/issues/3592">#3592</a>)</li>
+<li>Correctly deal with <code>to_field</code> referring to primary key. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3593">#3593</a>)</li>
+<li>Allow filter HTML to render when no <code>filter_class</code> is defined. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3560">#3560</a>)</li>
+<li>Fix admin rendering issues. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3564">#3564</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3556">#3556</a>)</li>
+<li>Fix issue with DecimalValidator. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3568">#3568</a>)</li>
+</ul>
+<h3 id="330"><a class="toclink" href="#330">3.3.0</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.0+Release%22">28th October 2015</a>.</p>
 <ul>
 <li>HTML controls for filters. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3315">#3315</a>)</li>
@@ -433,13 +442,13 @@
 <li>Removed support for Django 1.5 &amp; 1.6. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3421">#3421</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3429">#3429</a>)</li>
 <li>Removed 'south' migrations. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3495">#3495</a>)</li>
 </ul>
-<h2 id="32x-series">3.2.x series</h2>
-<h3 id="325">3.2.5</h3>
+<h2 id="32x-series"><a class="toclink" href="#32x-series">3.2.x series</a></h2>
+<h3 id="325"><a class="toclink" href="#325">3.2.5</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.5+Release%22">27th October 2015</a>.</p>
 <ul>
 <li>Escape <code>username</code> in optional logout tag. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3550">#3550</a>)</li>
 </ul>
-<h3 id="324">3.2.4</h3>
+<h3 id="324"><a class="toclink" href="#324">3.2.4</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.4+Release%22">21th September 2015</a>.</p>
 <ul>
 <li>Don't error on missing <code>ViewSet.search_fields</code> attribute. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3324">#3324</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3323">#3323</a>)</li>
@@ -448,7 +457,7 @@
 <li>Multi-level dictionaries not supported in multipart requests. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3314">#3314</a>)</li>
 <li>Fix <code>ListField</code> truncation on HTTP PATCH (<a href="https://github.com/tomchristie/django-rest-framework/issues/3415">#3415</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2761">#2761</a>)</li>
 </ul>
-<h3 id="323">3.2.3</h3>
+<h3 id="323"><a class="toclink" href="#323">3.2.3</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.3+Release%22">24th August 2015</a>.</p>
 <ul>
 <li>Added <code>html_cutoff</code> and <code>html_cutoff_text</code> for limiting select dropdowns. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3313">#3313</a>)</li>
@@ -459,7 +468,7 @@
 <li>Fix to ensure admin renderer continues to work when pagination is disabled. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3275">#3275</a>)</li>
 <li>Resolve error with <code>LimitOffsetPagination</code> when count=0, offset=0. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3303">#3303</a>)</li>
 </ul>
-<h3 id="322">3.2.2</h3>
+<h3 id="322"><a class="toclink" href="#322">3.2.2</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.2+Release%22">13th August 2015</a>.</p>
 <ul>
 <li>Add <code>display_value()</code> method for use when displaying relational field select inputs. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3254">#3254</a>)</li>
@@ -469,7 +478,7 @@
 <li>Resolve issue with rendering nested serializers in forms. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3260">#3260</a>)</li>
 <li>Raise an error if user accidentally pass a serializer instance to a response, rather than data. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3241">#3241</a>)</li>
 </ul>
-<h3 id="321">3.2.1</h3>
+<h3 id="321"><a class="toclink" href="#321">3.2.1</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.1+Release%22">7th August 2015</a>.</p>
 <ul>
 <li>Fix for relational select widgets rendering without any choices. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3237">#3237</a>)</li>
@@ -477,7 +486,7 @@
 <li>Fix for ListFields with single value in HTML form input. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3238">#3238</a>)</li>
 <li>Allow <code>request.FILES</code> for compat with Django's <code>HTTPRequest</code> class. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3239">#3239</a>)</li>
 </ul>
-<h3 id="320">3.2.0</h3>
+<h3 id="320"><a class="toclink" href="#320">3.2.0</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.0+Release%22">6th August 2015</a>.</p>
 <ul>
 <li>Add <code>AdminRenderer</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2926">#2926</a>)</li>
@@ -511,8 +520,8 @@
 <li>Numerous other cleanups, improvements to error messaging, private API &amp; minor fixes.</li>
 </ul>
 <hr />
-<h2 id="31x-series">3.1.x series</h2>
-<h3 id="313">3.1.3</h3>
+<h2 id="31x-series"><a class="toclink" href="#31x-series">3.1.x series</a></h2>
+<h3 id="313"><a class="toclink" href="#313">3.1.3</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.3+Release%22">4th June 2015</a>.</p>
 <ul>
 <li>Add <code>DurationField</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2481">#2481</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2989">#2989</a>)</li>
@@ -528,7 +537,7 @@
 <li><code>IPAddressField</code> improvements. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2747">#2747</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2618">#2618</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3008">#3008</a>)</li>
 <li>Improve <code>DecimalField</code> for easier subclassing. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2695">#2695</a>)</li>
 </ul>
-<h3 id="312">3.1.2</h3>
+<h3 id="312"><a class="toclink" href="#312">3.1.2</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.2+Release%22">13rd May 2015</a>.</p>
 <ul>
 <li><code>DateField.to_representation</code> can handle str and empty values. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2656">#2656</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2687">#2687</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2869">#2869</a>)</li>
@@ -547,7 +556,7 @@
 <li>Check <code>AcceptHeaderVersioning</code> with content negotiation in place. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2868">#2868</a>)</li>
 <li>Allow <code>DjangoObjectPermissions</code> to use views that define <code>get_queryset</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2905">#2905</a>)</li>
 </ul>
-<h3 id="311">3.1.1</h3>
+<h3 id="311"><a class="toclink" href="#311">3.1.1</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.1+Release%22">23rd March 2015</a>.</p>
 <ul>
 <li><strong>Security fix</strong>: Escape tab switching cookie name in browsable API.</li>
@@ -562,12 +571,12 @@
 <li>Support serializing unsaved models with related fields. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2637">#2637</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2641">#2641</a>)</li>
 <li>Allow blank/null on radio.html choices. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2631">#2631</a>)</li>
 </ul>
-<h3 id="310">3.1.0</h3>
+<h3 id="310"><a class="toclink" href="#310">3.1.0</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.1.0+Release%22">5th March 2015</a>.</p>
 <p>For full details see the <a href="../3.1-announcement/">3.1 release announcement</a>.</p>
 <hr />
-<h2 id="30x-series">3.0.x series</h2>
-<h3 id="305">3.0.5</h3>
+<h2 id="30x-series"><a class="toclink" href="#30x-series">3.0.x series</a></h2>
+<h3 id="305"><a class="toclink" href="#305">3.0.5</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.5+Release%22">10th February 2015</a>.</p>
 <ul>
 <li>Fix a bug where <code>_closable_objects</code> breaks pickling. (<a href="https://github.com/tomchristie/django-rest-framework/issues/1850">#1850</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2492">#2492</a>)</li>
@@ -579,7 +588,7 @@
 <li>Fix <code>detail_route</code> and <code>list_route</code> mutable argument. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2518">#2518</a>)</li>
 <li>Prefetching the user object when getting the token in <code>TokenAuthentication</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2519">#2519</a>)</li>
 </ul>
-<h3 id="304">3.0.4</h3>
+<h3 id="304"><a class="toclink" href="#304">3.0.4</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.4+Release%22">28th January 2015</a>.</p>
 <ul>
 <li>Django 1.8a1 support. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2425">#2425</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2446">#2446</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2441">#2441</a>)</li>
@@ -596,7 +605,7 @@
 <li>Fix the serializer inheritance. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2388">#2388</a>)</li>
 <li>Fix caching issues with <code>ReturnDict</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2360">#2360</a>)</li>
 </ul>
-<h3 id="303">3.0.3</h3>
+<h3 id="303"><a class="toclink" href="#303">3.0.3</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.3+Release%22">8th January 2015</a>.</p>
 <ul>
 <li>Fix <code>MinValueValidator</code> on <code>models.DateField</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2369">#2369</a>)</li>
@@ -615,7 +624,7 @@
 <li>Ability to customize router URLs for custom actions, using <code>url_path</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2010">#2010</a>)</li>
 <li>Don't install Django REST Framework as egg. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2386">#2386</a>)</li>
 </ul>
-<h3 id="302">3.0.2</h3>
+<h3 id="302"><a class="toclink" href="#302">3.0.2</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.2+Release%22">17th December 2014</a>.</p>
 <ul>
 <li>Ensure <code>request.user</code> is made available to response middleware. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2155">#2155</a>)</li>
@@ -626,7 +635,7 @@
 <li>Fix empty HTML values when a default is provided. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2280">#2280</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2294">#2294</a>)</li>
 <li>Fix <code>SlugRelatedField</code> raising <code>UnicodeEncodeError</code> when used as a multiple choice input. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2290">#2290</a>)</li>
 </ul>
-<h3 id="301">3.0.1</h3>
+<h3 id="301"><a class="toclink" href="#301">3.0.1</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.1+Release%22">11th December 2014</a>.</p>
 <ul>
 <li>More helpful error message when the default Serializer <code>create()</code> fails. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2013">#2013</a>)</li>
@@ -650,7 +659,7 @@
 <li>Improve field lookup behavior for dicts/mappings. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2244">#2244</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/2243">#2243</a>)</li>
 <li>Optimized hyperlinked PK. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2242">#2242</a>)</li>
 </ul>
-<h3 id="300">3.0.0</h3>
+<h3 id="300"><a class="toclink" href="#300">3.0.0</a></h3>
 <p><strong>Date</strong>: 1st December 2014</p>
 <p>For full details see the <a href="../3.0-announcement/">3.0 release announcement</a>.</p>
 <hr />
@@ -677,6 +686,8 @@
 <!-- 3.2.5 -->
 
 <!-- 3.3.0 -->
+
+<!-- 3.3.1 -->
             
 
           </div> <!--/span-->

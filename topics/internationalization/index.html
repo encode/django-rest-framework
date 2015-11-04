@@ -369,7 +369,7 @@
             
               
 
-              <h1 id="internationalization">Internationalization</h1>
+              <h1 id="internationalization"><a class="toclink" href="#internationalization">Internationalization</a></h1>
 <blockquote>
 <p>Supporting internationalization is not optional. It must be a core feature.</p>
 <p>&mdash; <a href="http://youtu.be/Wa0VfS2q94Y">Jannis Leidel, speaking at Django Under the Hood, 2015</a>.</p>
@@ -380,7 +380,7 @@
 <li>Select a language other than English as the default, using the standard <code>LANGUAGE_CODE</code> Django setting.</li>
 <li>Allow clients to choose a language themselves, using the <code>LocaleMiddleware</code> included with Django. A typical usage for API clients would be to include an <code>Accept-Language</code> request header.</li>
 </ul>
-<h2 id="enabling-internationalized-apis">Enabling internationalized APIs</h2>
+<h2 id="enabling-internationalized-apis"><a class="toclink" href="#enabling-internationalized-apis">Enabling internationalized APIs</a></h2>
 <p>You can change the default language by using the standard Django <code>LANGUAGE_CODE</code> setting:</p>
 <pre><code>LANGUAGE_CODE = "es-es"
 </code></pre>
@@ -407,7 +407,7 @@ Host: example.org
 <pre><code>{"detail": {"username": ["Esse campo deve ser unico."]}}
 </code></pre>
 <p>If you want to use different string for parts of the response such as <code>detail</code> and <code>non_field_errors</code> then you can modify this behavior by using a <a href="../../api-guide/exceptions/#custom-exception-handling">custom exception handler</a>.</p>
-<h4 id="specifying-the-set-of-supported-languages">Specifying the set of supported languages.</h4>
+<h4 id="specifying-the-set-of-supported-languages"><a class="toclink" href="#specifying-the-set-of-supported-languages">Specifying the set of supported languages.</a></h4>
 <p>By default all available languages will be supported.</p>
 <p>If you only wish to support a subset of the available languages, use Django's standard <code>LANGUAGES</code> setting:</p>
 <pre><code>LANGUAGES = [
@@ -415,14 +415,14 @@ Host: example.org
     ('en', _('English')),
 ]
 </code></pre>
-<h2 id="adding-new-translations">Adding new translations</h2>
+<h2 id="adding-new-translations"><a class="toclink" href="#adding-new-translations">Adding new translations</a></h2>
 <p>REST framework translations are managed online using <a href="https://www.transifex.com/projects/p/django-rest-framework/">Transifex</a>. You can use the Transifex service to add new translation languages. The maintenance team will then ensure that these translation strings are included in the REST framework package.</p>
 <p>Sometimes you may need to add translation strings to your project locally. You may need to do this if:</p>
 <ul>
 <li>You want to use REST Framework in a language which has not been translated yet on Transifex.</li>
 <li>Your project includes custom error messages, which are not part of REST framework's default translation strings.</li>
 </ul>
-<h4 id="translating-a-new-language-locally">Translating a new language locally</h4>
+<h4 id="translating-a-new-language-locally"><a class="toclink" href="#translating-a-new-language-locally">Translating a new language locally</a></h4>
 <p>This guide assumes you are already familiar with how to translate a Django app.  If you're not, start by reading <a href="https://docs.djangoproject.com/en/1.7/topics/i18n/translation">Django's translation docs</a>.</p>
 <p>If you're translating a new language you'll need to translate the existing REST framework error messages:</p>
 <ol>
@@ -447,7 +447,7 @@ available for Django to use. You should see a message like <code>processing file
 </li>
 </ol>
 <p>If you're only translating custom error messages that exist inside your project codebase you don't need to copy the REST framework source <code>django.po</code> file into a <code>LOCALE_PATHS</code> folder, and can instead simply run Django's standard <code>makemessages</code> process.</p>
-<h2 id="how-the-language-is-determined">How the language is determined</h2>
+<h2 id="how-the-language-is-determined"><a class="toclink" href="#how-the-language-is-determined">How the language is determined</a></h2>
 <p>If you want to allow per-request language preferences you'll need to include <code>django.middleware.locale.LocaleMiddleware</code> in your <code>MIDDLEWARE_CLASSES</code> setting.</p>
 <p>You can find more information on how the language preference is determined in the <a href="https://docs.djangoproject.com/en/1.7/topics/i18n/translation/#how-django-discovers-language-preference">Django documentation</a>. For reference, the method is:</p>
 <ol>

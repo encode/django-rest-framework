@@ -413,7 +413,7 @@
                 
               
 
-              <h1 id="settings">Settings</h1>
+              <h1 id="settings"><a class="toclink" href="#settings">Settings</a></h1>
 <blockquote>
 <p>Namespaces are one honking great idea - let's do more of those!</p>
 <p>&mdash; <a href="http://www.python.org/dev/peps/pep-0020/">The Zen of Python</a></p>
@@ -429,7 +429,7 @@
     )
 }
 </code></pre>
-<h2 id="accessing-settings">Accessing settings</h2>
+<h2 id="accessing-settings"><a class="toclink" href="#accessing-settings">Accessing settings</a></h2>
 <p>If you need to access the values of REST framework's API settings in your project,
 you should use the <code>api_settings</code> object.  For example.</p>
 <pre><code>from rest_framework.settings import api_settings
@@ -438,10 +438,10 @@ print api_settings.DEFAULT_AUTHENTICATION_CLASSES
 </code></pre>
 <p>The <code>api_settings</code> object will check for any user-defined settings, and otherwise fall back to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.</p>
 <hr />
-<h1 id="api-reference">API Reference</h1>
-<h2 id="api-policy-settings">API policy settings</h2>
+<h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
+<h2 id="api-policy-settings"><a class="toclink" href="#api-policy-settings">API policy settings</a></h2>
 <p><em>The following settings control the basic API policies, and are applied to every <code>APIView</code> class based view, or <code>@api_view</code> function based view.</em></p>
-<h4 id="default_renderer_classes">DEFAULT_RENDERER_CLASSES</h4>
+<h4 id="default_renderer_classes"><a class="toclink" href="#default_renderer_classes">DEFAULT_RENDERER_CLASSES</a></h4>
 <p>A list or tuple of renderer classes, that determines the default set of renderers that may be used when returning a <code>Response</code> object.</p>
 <p>Default:</p>
 <pre><code>(
@@ -449,7 +449,7 @@ print api_settings.DEFAULT_AUTHENTICATION_CLASSES
     'rest_framework.renderers.BrowsableAPIRenderer',
 )
 </code></pre>
-<h4 id="default_parser_classes">DEFAULT_PARSER_CLASSES</h4>
+<h4 id="default_parser_classes"><a class="toclink" href="#default_parser_classes">DEFAULT_PARSER_CLASSES</a></h4>
 <p>A list or tuple of parser classes, that determines the default set of parsers used when accessing the <code>request.data</code> property.</p>
 <p>Default:</p>
 <pre><code>(
@@ -458,7 +458,7 @@ print api_settings.DEFAULT_AUTHENTICATION_CLASSES
     'rest_framework.parsers.MultiPartParser'
 )
 </code></pre>
-<h4 id="default_authentication_classes">DEFAULT_AUTHENTICATION_CLASSES</h4>
+<h4 id="default_authentication_classes"><a class="toclink" href="#default_authentication_classes">DEFAULT_AUTHENTICATION_CLASSES</a></h4>
 <p>A list or tuple of authentication classes, that determines the default set of authenticators used when accessing the <code>request.user</code> or <code>request.auth</code> properties.</p>
 <p>Default:</p>
 <pre><code>(
@@ -466,32 +466,32 @@ print api_settings.DEFAULT_AUTHENTICATION_CLASSES
     'rest_framework.authentication.BasicAuthentication'
 )
 </code></pre>
-<h4 id="default_permission_classes">DEFAULT_PERMISSION_CLASSES</h4>
+<h4 id="default_permission_classes"><a class="toclink" href="#default_permission_classes">DEFAULT_PERMISSION_CLASSES</a></h4>
 <p>A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view. Permission must be granted by every class in the list.</p>
 <p>Default:</p>
 <pre><code>(
     'rest_framework.permissions.AllowAny',
 )
 </code></pre>
-<h4 id="default_throttle_classes">DEFAULT_THROTTLE_CLASSES</h4>
+<h4 id="default_throttle_classes"><a class="toclink" href="#default_throttle_classes">DEFAULT_THROTTLE_CLASSES</a></h4>
 <p>A list or tuple of throttle classes, that determines the default set of throttles checked at the start of a view.</p>
 <p>Default: <code>()</code></p>
-<h4 id="default_content_negotiation_class">DEFAULT_CONTENT_NEGOTIATION_CLASS</h4>
+<h4 id="default_content_negotiation_class"><a class="toclink" href="#default_content_negotiation_class">DEFAULT_CONTENT_NEGOTIATION_CLASS</a></h4>
 <p>A content negotiation class, that determines how a renderer is selected for the response, given an incoming request.</p>
 <p>Default: <code>'rest_framework.negotiation.DefaultContentNegotiation'</code></p>
 <hr />
-<h2 id="generic-view-settings">Generic view settings</h2>
+<h2 id="generic-view-settings"><a class="toclink" href="#generic-view-settings">Generic view settings</a></h2>
 <p><em>The following settings control the behavior of the generic class based views.</em></p>
-<h4 id="default_pagination_serializer_class">DEFAULT_PAGINATION_SERIALIZER_CLASS</h4>
+<h4 id="default_pagination_serializer_class"><a class="toclink" href="#default_pagination_serializer_class">DEFAULT_PAGINATION_SERIALIZER_CLASS</a></h4>
 <p>A class the determines the default serialization style for paginated responses.</p>
 <p>Default: <code>rest_framework.pagination.PaginationSerializer</code></p>
-<h4 id="default_filter_backends">DEFAULT_FILTER_BACKENDS</h4>
+<h4 id="default_filter_backends"><a class="toclink" href="#default_filter_backends">DEFAULT_FILTER_BACKENDS</a></h4>
 <p>A list of filter backend classes that should be used for generic filtering.
 If set to <code>None</code> then generic filtering is disabled.</p>
-<h4 id="paginate_by">PAGINATE_BY</h4>
+<h4 id="paginate_by"><a class="toclink" href="#paginate_by">PAGINATE_BY</a></h4>
 <p>The default page size to use for pagination.  If set to <code>None</code>, pagination is disabled by default.</p>
 <p>Default: <code>None</code></p>
-<h4 id="paginate_by_param">PAGINATE_BY_PARAM</h4>
+<h4 id="paginate_by_param"><a class="toclink" href="#paginate_by_param">PAGINATE_BY_PARAM</a></h4>
 <hr />
 <p><strong>This setting is pending deprecation.</strong></p>
 <p>See the pagination documentation for further guidance on <a href="../pagination/#modifying-the-pagination-style">setting the pagination style</a>.</p>
@@ -507,7 +507,7 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 <pre><code>GET http://example.com/api/accounts?page_size=25
 </code></pre>
 <p>Default: <code>None</code></p>
-<h4 id="max_paginate_by">MAX_PAGINATE_BY</h4>
+<h4 id="max_paginate_by"><a class="toclink" href="#max_paginate_by">MAX_PAGINATE_BY</a></h4>
 <hr />
 <p><strong>This setting is pending deprecation.</strong></p>
 <p>See the pagination documentation for further guidance on <a href="../pagination/#modifying-the-pagination-style">setting the pagination style</a>.</p>
@@ -524,40 +524,40 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 <pre><code>GET http://example.com/api/accounts?page_size=999
 </code></pre>
 <p>Default: <code>None</code></p>
-<h3 id="search_param">SEARCH_PARAM</h3>
+<h3 id="search_param"><a class="toclink" href="#search_param">SEARCH_PARAM</a></h3>
 <p>The name of a query parameter, which can be used to specify the search term used by <code>SearchFilter</code>.</p>
 <p>Default: <code>search</code></p>
-<h4 id="ordering_param">ORDERING_PARAM</h4>
+<h4 id="ordering_param"><a class="toclink" href="#ordering_param">ORDERING_PARAM</a></h4>
 <p>The name of a query parameter, which can be used to specify the ordering of results returned by <code>OrderingFilter</code>.</p>
 <p>Default: <code>ordering</code></p>
 <hr />
-<h2 id="versioning-settings">Versioning settings</h2>
-<h4 id="default_version">DEFAULT_VERSION</h4>
+<h2 id="versioning-settings"><a class="toclink" href="#versioning-settings">Versioning settings</a></h2>
+<h4 id="default_version"><a class="toclink" href="#default_version">DEFAULT_VERSION</a></h4>
 <p>The value that should be used for <code>request.version</code> when no versioning information is present.</p>
 <p>Default: <code>None</code></p>
-<h4 id="allowed_versions">ALLOWED_VERSIONS</h4>
+<h4 id="allowed_versions"><a class="toclink" href="#allowed_versions">ALLOWED_VERSIONS</a></h4>
 <p>If set, this value will restrict the set of versions that may be returned by the versioning scheme, and will raise an error if the provided version if not in this set.</p>
 <p>Default: <code>None</code></p>
-<h4 id="version_parameter">VERSION_PARAMETER</h4>
+<h4 id="version_parameter"><a class="toclink" href="#version_parameter">VERSION_PARAMETER</a></h4>
 <p>The string that should used for any versioning parameters, such as in the media type or URL query parameters.</p>
 <p>Default: <code>'version'</code></p>
 <hr />
-<h2 id="authentication-settings">Authentication settings</h2>
+<h2 id="authentication-settings"><a class="toclink" href="#authentication-settings">Authentication settings</a></h2>
 <p><em>The following settings control the behavior of unauthenticated requests.</em></p>
-<h4 id="unauthenticated_user">UNAUTHENTICATED_USER</h4>
+<h4 id="unauthenticated_user"><a class="toclink" href="#unauthenticated_user">UNAUTHENTICATED_USER</a></h4>
 <p>The class that should be used to initialize <code>request.user</code> for unauthenticated requests.</p>
 <p>Default: <code>django.contrib.auth.models.AnonymousUser</code></p>
-<h4 id="unauthenticated_token">UNAUTHENTICATED_TOKEN</h4>
+<h4 id="unauthenticated_token"><a class="toclink" href="#unauthenticated_token">UNAUTHENTICATED_TOKEN</a></h4>
 <p>The class that should be used to initialize <code>request.auth</code> for unauthenticated requests.</p>
 <p>Default: <code>None</code></p>
 <hr />
-<h2 id="test-settings">Test settings</h2>
+<h2 id="test-settings"><a class="toclink" href="#test-settings">Test settings</a></h2>
 <p><em>The following settings control the behavior of APIRequestFactory and APIClient</em></p>
-<h4 id="test_request_default_format">TEST_REQUEST_DEFAULT_FORMAT</h4>
+<h4 id="test_request_default_format"><a class="toclink" href="#test_request_default_format">TEST_REQUEST_DEFAULT_FORMAT</a></h4>
 <p>The default format that should be used when making test requests.</p>
 <p>This should match up with the format of one of the renderer classes in the <code>TEST_REQUEST_RENDERER_CLASSES</code> setting.</p>
 <p>Default: <code>'multipart'</code></p>
-<h4 id="test_request_renderer_classes">TEST_REQUEST_RENDERER_CLASSES</h4>
+<h4 id="test_request_renderer_classes"><a class="toclink" href="#test_request_renderer_classes">TEST_REQUEST_RENDERER_CLASSES</a></h4>
 <p>The renderer classes that are supported when building test requests.</p>
 <p>The format of any of these renderer classes may be used when constructing a test request, for example: <code>client.post('/users', {'username': 'jamie'}, format='json')</code></p>
 <p>Default:</p>
@@ -567,46 +567,46 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 )
 </code></pre>
 <hr />
-<h2 id="content-type-controls">Content type controls</h2>
-<h4 id="url_format_override">URL_FORMAT_OVERRIDE</h4>
+<h2 id="content-type-controls"><a class="toclink" href="#content-type-controls">Content type controls</a></h2>
+<h4 id="url_format_override"><a class="toclink" href="#url_format_override">URL_FORMAT_OVERRIDE</a></h4>
 <p>The name of a URL parameter that may be used to override the default content negotiation <code>Accept</code> header behavior, by using a <code>format=…</code> query parameter in the request URL.</p>
 <p>For example: <code>http://example.com/organizations/?format=csv</code></p>
 <p>If the value of this setting is <code>None</code> then URL format overrides will be disabled.</p>
 <p>Default: <code>'format'</code></p>
-<h4 id="format_suffix_kwarg">FORMAT_SUFFIX_KWARG</h4>
+<h4 id="format_suffix_kwarg"><a class="toclink" href="#format_suffix_kwarg">FORMAT_SUFFIX_KWARG</a></h4>
 <p>The name of a parameter in the URL conf that may be used to provide a format suffix. This setting is applied when using <code>format_suffix_patterns</code> to include suffixed URL patterns.</p>
 <p>For example: <code>http://example.com/organizations.csv/</code></p>
 <p>Default: <code>'format'</code></p>
 <hr />
-<h2 id="date-and-time-formatting">Date and time formatting</h2>
+<h2 id="date-and-time-formatting"><a class="toclink" href="#date-and-time-formatting">Date and time formatting</a></h2>
 <p><em>The following settings are used to control how date and time representations may be parsed and rendered.</em></p>
-<h4 id="datetime_format">DATETIME_FORMAT</h4>
+<h4 id="datetime_format"><a class="toclink" href="#datetime_format">DATETIME_FORMAT</a></h4>
 <p>A format string that should be used by default for rendering the output of <code>DateTimeField</code> serializer fields.  If <code>None</code>, then <code>DateTimeField</code> serializer fields will return Python <code>datetime</code> objects, and the datetime encoding will be determined by the renderer.</p>
 <p>May be any of <code>None</code>, <code>'iso-8601'</code> or a Python <a href="http://docs.python.org/2/library/time.html#time.strftime">strftime format</a> string.</p>
 <p>Default: <code>'iso-8601'</code></p>
-<h4 id="datetime_input_formats">DATETIME_INPUT_FORMATS</h4>
+<h4 id="datetime_input_formats"><a class="toclink" href="#datetime_input_formats">DATETIME_INPUT_FORMATS</a></h4>
 <p>A list of format strings that should be used by default for parsing inputs to <code>DateTimeField</code> serializer fields.</p>
 <p>May be a list including the string <code>'iso-8601'</code> or Python <a href="http://docs.python.org/2/library/time.html#time.strftime">strftime format</a> strings.</p>
 <p>Default: <code>['iso-8601']</code></p>
-<h4 id="date_format">DATE_FORMAT</h4>
+<h4 id="date_format"><a class="toclink" href="#date_format">DATE_FORMAT</a></h4>
 <p>A format string that should be used by default for rendering the output of <code>DateField</code> serializer fields.  If <code>None</code>, then <code>DateField</code> serializer fields will return Python <code>date</code> objects, and the date encoding will be determined by the renderer.</p>
 <p>May be any of <code>None</code>, <code>'iso-8601'</code> or a Python <a href="http://docs.python.org/2/library/time.html#time.strftime">strftime format</a> string.</p>
 <p>Default: <code>'iso-8601'</code></p>
-<h4 id="date_input_formats">DATE_INPUT_FORMATS</h4>
+<h4 id="date_input_formats"><a class="toclink" href="#date_input_formats">DATE_INPUT_FORMATS</a></h4>
 <p>A list of format strings that should be used by default for parsing inputs to <code>DateField</code> serializer fields.</p>
 <p>May be a list including the string <code>'iso-8601'</code> or Python <a href="http://docs.python.org/2/library/time.html#time.strftime">strftime format</a> strings.</p>
 <p>Default: <code>['iso-8601']</code></p>
-<h4 id="time_format">TIME_FORMAT</h4>
+<h4 id="time_format"><a class="toclink" href="#time_format">TIME_FORMAT</a></h4>
 <p>A format string that should be used by default for rendering the output of <code>TimeField</code> serializer fields.  If <code>None</code>, then <code>TimeField</code> serializer fields will return Python <code>time</code> objects, and the time encoding will be determined by the renderer.</p>
 <p>May be any of <code>None</code>, <code>'iso-8601'</code> or a Python <a href="http://docs.python.org/2/library/time.html#time.strftime">strftime format</a> string.</p>
 <p>Default: <code>'iso-8601'</code></p>
-<h4 id="time_input_formats">TIME_INPUT_FORMATS</h4>
+<h4 id="time_input_formats"><a class="toclink" href="#time_input_formats">TIME_INPUT_FORMATS</a></h4>
 <p>A list of format strings that should be used by default for parsing inputs to <code>TimeField</code> serializer fields.</p>
 <p>May be a list including the string <code>'iso-8601'</code> or Python <a href="http://docs.python.org/2/library/time.html#time.strftime">strftime format</a> strings.</p>
 <p>Default: <code>['iso-8601']</code></p>
 <hr />
-<h2 id="encodings">Encodings</h2>
-<h4 id="unicode_json">UNICODE_JSON</h4>
+<h2 id="encodings"><a class="toclink" href="#encodings">Encodings</a></h2>
+<h4 id="unicode_json"><a class="toclink" href="#unicode_json">UNICODE_JSON</a></h4>
 <p>When set to <code>True</code>, JSON responses will allow unicode characters in responses. For example:</p>
 <pre><code>{"unicode black star":"★"}
 </code></pre>
@@ -615,7 +615,7 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 </code></pre>
 <p>Both styles conform to <a href="http://www.ietf.org/rfc/rfc4627.txt">RFC 4627</a>, and are syntactically valid JSON. The unicode style is preferred as being more user-friendly when inspecting API responses.</p>
 <p>Default: <code>True</code></p>
-<h4 id="compact_json">COMPACT_JSON</h4>
+<h4 id="compact_json"><a class="toclink" href="#compact_json">COMPACT_JSON</a></h4>
 <p>When set to <code>True</code>, JSON responses will return compact representations, with no spacing after <code>':'</code> and <code>','</code> characters. For example:</p>
 <pre><code>{"is_admin":false,"email":"jane@example"}
 </code></pre>
@@ -624,14 +624,14 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 </code></pre>
 <p>The default style is to return minified responses, in line with <a href="https://github.com/interagent/http-api-design#keep-json-minified-in-all-responses">Heroku's API design guidelines</a>.</p>
 <p>Default: <code>True</code></p>
-<h4 id="coerce_decimal_to_string">COERCE_DECIMAL_TO_STRING</h4>
+<h4 id="coerce_decimal_to_string"><a class="toclink" href="#coerce_decimal_to_string">COERCE_DECIMAL_TO_STRING</a></h4>
 <p>When returning decimal objects in API representations that do not support a native decimal type, it is normally best to return the value as a string. This avoids the loss of precision that occurs with binary floating point implementations.</p>
 <p>When set to <code>True</code>, the serializer <code>DecimalField</code> class will return strings instead of <code>Decimal</code> objects. When set to <code>False</code>, serializers will return <code>Decimal</code> objects, which the default JSON encoder will return as floats.</p>
 <p>Default: <code>True</code></p>
 <hr />
-<h2 id="view-names-and-descriptions">View names and descriptions</h2>
+<h2 id="view-names-and-descriptions"><a class="toclink" href="#view-names-and-descriptions">View names and descriptions</a></h2>
 <p><strong>The following settings are used to generate the view names and descriptions, as used in responses to <code>OPTIONS</code> requests, and as used in the browsable API.</strong></p>
-<h4 id="view_name_function">VIEW_NAME_FUNCTION</h4>
+<h4 id="view_name_function"><a class="toclink" href="#view_name_function">VIEW_NAME_FUNCTION</a></h4>
 <p>A string representing the function that should be used when generating view names.</p>
 <p>This should be a function with the following signature:</p>
 <pre><code>view_name(cls, suffix=None)
@@ -641,7 +641,7 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 <li><code>suffix</code>: The optional suffix used when differentiating individual views in a viewset.</li>
 </ul>
 <p>Default: <code>'rest_framework.views.get_view_name'</code></p>
-<h4 id="view_description_function">VIEW_DESCRIPTION_FUNCTION</h4>
+<h4 id="view_description_function"><a class="toclink" href="#view_description_function">VIEW_DESCRIPTION_FUNCTION</a></h4>
 <p>A string representing the function that should be used when generating view descriptions.</p>
 <p>This setting can be changed to support markup styles other than the default markdown.  For example, you can use it to support <code>rst</code> markup in your view docstrings being output in the browsable API.</p>
 <p>This should be a function with the following signature:</p>
@@ -653,8 +653,8 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 </ul>
 <p>Default: <code>'rest_framework.views.get_view_description'</code></p>
 <hr />
-<h2 id="miscellaneous-settings">Miscellaneous settings</h2>
-<h4 id="exception_handler">EXCEPTION_HANDLER</h4>
+<h2 id="miscellaneous-settings"><a class="toclink" href="#miscellaneous-settings">Miscellaneous settings</a></h2>
+<h4 id="exception_handler"><a class="toclink" href="#exception_handler">EXCEPTION_HANDLER</a></h4>
 <p>A string representing the function that should be used when returning a response for any given exception.  If the function returns <code>None</code>, a 500 error will be raised.</p>
 <p>This setting can be changed to support error responses other than the default <code>{"detail": "Failure..."}</code> responses.  For example, you can use it to provide API responses like <code>{"errors": [{"message": "Failure...", "code": ""} ...]}</code>.</p>
 <p>This should be a function with the following signature:</p>
@@ -664,13 +664,13 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 <li><code>exc</code>: The exception.</li>
 </ul>
 <p>Default: <code>'rest_framework.views.exception_handler'</code></p>
-<h4 id="non_field_errors_key">NON_FIELD_ERRORS_KEY</h4>
+<h4 id="non_field_errors_key"><a class="toclink" href="#non_field_errors_key">NON_FIELD_ERRORS_KEY</a></h4>
 <p>A string representing the key that should be used for serializer errors that do not refer to a specific field, but are instead general errors.</p>
 <p>Default: <code>'non_field_errors'</code></p>
-<h4 id="url_field_name">URL_FIELD_NAME</h4>
+<h4 id="url_field_name"><a class="toclink" href="#url_field_name">URL_FIELD_NAME</a></h4>
 <p>A string representing the key that should be used for the URL fields generated by <code>HyperlinkedModelSerializer</code>.</p>
 <p>Default: <code>'url'</code></p>
-<h4 id="num_proxies">NUM_PROXIES</h4>
+<h4 id="num_proxies"><a class="toclink" href="#num_proxies">NUM_PROXIES</a></h4>
 <p>An integer of 0 or more, that may be used to specify the number of application proxies that the API runs behind.  This allows throttling to more accurately identify client IP addresses.  If set to <code>None</code> then less strict IP matching will be used by the throttle classes.</p>
 <p>Default: <code>None</code></p>
             

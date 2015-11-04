@@ -417,14 +417,14 @@
                 
               
 
-              <h1 id="routers">Routers</h1>
+              <h1 id="routers"><a class="toclink" href="#routers">Routers</a></h1>
 <blockquote>
 <p>Resource routing allows you to quickly declare all of the common routes for a given resourceful controller.  Instead of declaring separate routes for your index... a resourceful route declares them in a single line of code.</p>
 <p>&mdash; <a href="http://guides.rubyonrails.org/routing.html">Ruby on Rails Documentation</a></p>
 </blockquote>
 <p>Some Web frameworks such as Rails provide functionality for automatically determining how the URLs for an application should be mapped to the logic that deals with handling incoming requests.</p>
 <p>REST framework adds support for automatic URL routing to Django, and provides you with a simple, quick and consistent way of wiring your view logic to a set of URLs.</p>
-<h2 id="usage">Usage</h2>
+<h2 id="usage"><a class="toclink" href="#usage">Usage</a></h2>
 <p>Here's an example of a simple URL conf, that uses <code>SimpleRouter</code>.</p>
 <pre><code>from rest_framework import routers
 
@@ -456,7 +456,7 @@ urlpatterns = router.urls
 </code></pre>
 <p>This means you'll need to explicitly set the <code>base_name</code> argument when registering the viewset, as it could not be automatically determined from the model name.</p>
 <hr />
-<h3 id="using-include-with-routers">Using <code>include</code> with routers</h3>
+<h3 id="using-include-with-routers"><a class="toclink" href="#using-include-with-routers">Using <code>include</code> with routers</a></h3>
 <p>The <code>.urls</code> attribute on a router instance is simply a standard list of URL patterns. There are a number of different styles for how you can include these URLs.</p>
 <p>For example, you can append <code>router.urls</code> to a list of existing views…</p>
 <pre><code>router = routers.SimpleRouter()
@@ -482,7 +482,7 @@ urlpatterns += router.urls
 ]
 </code></pre>
 <p>If using namespacing with hyperlinked serializers you'll also need to ensure that any <code>view_name</code> parameters on the serializers correctly reflect the namespace. In the example above you'd need to include a parameter such as <code>view_name='api:user-detail'</code> for serializer fields hyperlinked to the user detail view.</p>
-<h3 id="extra-link-and-actions">Extra link and actions</h3>
+<h3 id="extra-link-and-actions"><a class="toclink" href="#extra-link-and-actions">Extra link and actions</a></h3>
 <p>Any methods on the viewset decorated with <code>@detail_route</code> or <code>@list_route</code> will also be routed.
 For example, given a method like this on the <code>UserViewSet</code> class:</p>
 <pre><code>from myapp.permissions import IsAdminOrIsSelf
@@ -516,8 +516,8 @@ class UserViewSet(ModelViewSet):
 <li>URL pattern: <code>^users/{pk}/change-password/$</code>  Name: <code>'user-change-password'</code></li>
 </ul>
 <p>For more information see the viewset documentation on <a href="../viewsets/#marking-extra-actions-for-routing">marking extra actions for routing</a>.</p>
-<h1 id="api-guide">API Guide</h1>
-<h2 id="simplerouter">SimpleRouter</h2>
+<h1 id="api-guide"><a class="toclink" href="#api-guide">API Guide</a></h1>
+<h2 id="simplerouter"><a class="toclink" href="#simplerouter">SimpleRouter</a></h2>
 <p>This router includes routes for the standard set of <code>list</code>, <code>create</code>, <code>retrieve</code>, <code>update</code>, <code>partial_update</code> and <code>destroy</code> actions.  The viewset can also mark additional methods to be routed, using the <code>@detail_route</code> or <code>@list_route</code> decorators.</p>
 <table border=1>
     <tr><th>URL Style</th><th>HTTP Method</th><th>Action</th><th>URL Name</th></tr>
@@ -541,7 +541,7 @@ This behavior can be modified by setting the <code>trailing_slash</code> argumen
     lookup_field = 'my_model_id'
     lookup_value_regex = '[0-9a-f]{32}'
 </code></pre>
-<h2 id="defaultrouter">DefaultRouter</h2>
+<h2 id="defaultrouter"><a class="toclink" href="#defaultrouter">DefaultRouter</a></h2>
 <p>This router is similar to <code>SimpleRouter</code> as above, but additionally includes a default API root view, that returns a response containing hyperlinks to all the list views.  It also generates routes for optional <code>.json</code> style format suffixes.</p>
 <table border=1>
     <tr><th>URL Style</th><th>HTTP Method</th><th>Action</th><th>URL Name</th></tr>
@@ -559,7 +559,7 @@ This behavior can be modified by setting the <code>trailing_slash</code> argumen
 <p>As with <code>SimpleRouter</code> the trailing slashes on the URL routes can be removed by setting the <code>trailing_slash</code> argument to <code>False</code> when instantiating the router.</p>
 <pre><code>router = DefaultRouter(trailing_slash=False)
 </code></pre>
-<h1 id="custom-routers">Custom Routers</h1>
+<h1 id="custom-routers"><a class="toclink" href="#custom-routers">Custom Routers</a></h1>
 <p>Implementing a custom router isn't something you'd need to do very often, but it can be useful if you have specific requirements about how the your URLs for your API are structured.  Doing so allows you to encapsulate the URL structure in a reusable way that ensures you don't have to write your URL patterns explicitly for each new view.</p>
 <p>The simplest way to implement a custom router is to subclass one of the existing router classes.  The <code>.routes</code> attribute is used to template the URL patterns that will be mapped to each viewset. The <code>.routes</code> attribute is a list of <code>Route</code> named tuples.</p>
 <p>The arguments to the <code>Route</code> named tuple are:</p>
@@ -575,14 +575,14 @@ This behavior can be modified by setting the <code>trailing_slash</code> argumen
 <li><code>{basename}</code> - The base to use for the URL names that are created.</li>
 </ul>
 <p><strong>initkwargs</strong>: A dictionary of any additional arguments that should be passed when instantiating the view.  Note that the <code>suffix</code> argument is reserved for identifying the viewset type, used when generating the view name and breadcrumb links.</p>
-<h2 id="customizing-dynamic-routes">Customizing dynamic routes</h2>
+<h2 id="customizing-dynamic-routes"><a class="toclink" href="#customizing-dynamic-routes">Customizing dynamic routes</a></h2>
 <p>You can also customize how the <code>@list_route</code> and <code>@detail_route</code> decorators are routed.
 To route either or both of these decorators, include a <code>DynamicListRoute</code> and/or <code>DynamicDetailRoute</code> named tuple in the <code>.routes</code> list.</p>
 <p>The arguments to <code>DynamicListRoute</code> and <code>DynamicDetailRoute</code> are:</p>
 <p><strong>url</strong>: A string representing the URL to be routed. May include the same format strings as <code>Route</code>, and additionally accepts the <code>{methodname}</code> and <code>{methodnamehyphen}</code> format strings.</p>
 <p><strong>name</strong>: The name of the URL as used in <code>reverse</code> calls. May include the following format strings: <code>{basename}</code>, <code>{methodname}</code> and <code>{methodnamehyphen}</code>.</p>
 <p><strong>initkwargs</strong>: A dictionary of any additional arguments that should be passed when instantiating the view.</p>
-<h2 id="example">Example</h2>
+<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>The following example will only route to the <code>list</code> and <code>retrieve</code> actions, and does not use the trailing slash convention.</p>
 <pre><code>from rest_framework.routers import Route, DynamicDetailRoute, SimpleRouter
 
@@ -644,21 +644,21 @@ urlpatterns = router.urls
 </table>
 
 <p>For another example of setting the <code>.routes</code> attribute, see the source code for the <code>SimpleRouter</code> class.</p>
-<h2 id="advanced-custom-routers">Advanced custom routers</h2>
+<h2 id="advanced-custom-routers"><a class="toclink" href="#advanced-custom-routers">Advanced custom routers</a></h2>
 <p>If you want to provide totally custom behavior, you can override <code>BaseRouter</code> and override the <code>get_urls(self)</code> method.  The method should inspect the registered viewsets and return a list of URL patterns.  The registered prefix, viewset and basename tuples may be inspected by accessing the <code>self.registry</code> attribute.</p>
 <p>You may also want to override the <code>get_default_base_name(self, viewset)</code> method, or else always explicitly set the <code>base_name</code> argument when registering your viewsets with the router.</p>
-<h1 id="third-party-packages">Third Party Packages</h1>
+<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third Party Packages</a></h1>
 <p>The following third party packages are also available.</p>
-<h2 id="drf-nested-routers">DRF Nested Routers</h2>
+<h2 id="drf-nested-routers"><a class="toclink" href="#drf-nested-routers">DRF Nested Routers</a></h2>
 <p>The <a href="https://github.com/alanjds/drf-nested-routers">drf-nested-routers package</a> provides routers and relationship fields for working with nested resources.</p>
-<h2 id="modelrouter-wqdbrest">ModelRouter (wq.db.rest)</h2>
+<h2 id="modelrouter-wqdbrest"><a class="toclink" href="#modelrouter-wqdbrest">ModelRouter (wq.db.rest)</a></h2>
 <p>The <a href="http://wq.io/wq.db">wq.db package</a> provides an advanced <a href="http://wq.io/docs/router">ModelRouter</a> class (and singleton instance) that extends <code>DefaultRouter</code> with a <code>register_model()</code> API. Much like Django's <code>admin.site.register</code>, the only required argument to <code>rest.router.register_model</code> is a model class.  Reasonable defaults for a url prefix, serializer, and viewset will be inferred from the model and global configuration.</p>
 <pre><code>from wq.db import rest
 from myapp.models import MyModel
 
 rest.router.register_model(MyModel)
 </code></pre>
-<h2 id="drf-extensions">DRF-extensions</h2>
+<h2 id="drf-extensions"><a class="toclink" href="#drf-extensions">DRF-extensions</a></h2>
 <p>The <a href="http://chibisov.github.io/drf-extensions/docs/"><code>DRF-extensions</code> package</a> provides <a href="http://chibisov.github.io/drf-extensions/docs/#routers">routers</a> for creating <a href="http://chibisov.github.io/drf-extensions/docs/#nested-routes">nested viewsets</a>, <a href="http://chibisov.github.io/drf-extensions/docs/#collection-level-controllers">collection level controllers</a> with <a href="http://chibisov.github.io/drf-extensions/docs/#controller-endpoint-name">customizable endpoint names</a>.</p>
             
 

@@ -373,21 +373,21 @@
             
               
 
-              <h1 id="third-party-resources">Third Party Resources</h1>
+              <h1 id="third-party-resources"><a class="toclink" href="#third-party-resources">Third Party Resources</a></h1>
 <blockquote>
 <p>Software ecosystems […] establish a community that further accelerates the sharing of knowledge, content, issues, expertise and skills.</p>
 <p>&mdash; <a href="http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html">Jan Bosch</a>.</p>
 </blockquote>
-<h2 id="about-third-party-packages">About Third Party Packages</h2>
+<h2 id="about-third-party-packages"><a class="toclink" href="#about-third-party-packages">About Third Party Packages</a></h2>
 <p>Third Party Packages allow developers to share code that extends the functionality of Django REST framework, in order to support additional use-cases.</p>
 <p>We <strong>support</strong>, <strong>encourage</strong> and <strong>strongly favor</strong> the creation of Third Party Packages to encapsulate new behavior rather than adding additional functionality directly to Django REST Framework.</p>
 <p>We aim to make creating third party packages as easy as possible, whilst keeping a <strong>simple</strong> and <strong>well maintained</strong> core API. By promoting third party packages we ensure that the responsibility for a package remains with its author. If a package proves suitably popular it can always be considered for inclusion into the core REST framework.</p>
 <p>If you have an idea for a new feature please consider how it may be packaged as a Third Party Package. We're always happy to discuss ideas on the <a href="https://groups.google.com/forum/#!forum/django-rest-framework">Mailing List</a>.</p>
-<h2 id="how-to-create-a-third-party-package">How to create a Third Party Package</h2>
-<h3 id="creating-your-package">Creating your package</h3>
+<h2 id="how-to-create-a-third-party-package"><a class="toclink" href="#how-to-create-a-third-party-package">How to create a Third Party Package</a></h2>
+<h3 id="creating-your-package"><a class="toclink" href="#creating-your-package">Creating your package</a></h3>
 <p>You can use <a href="https://github.com/jpadilla/cookiecutter-django-rest-framework">this cookiecutter template</a> for creating reusable Django REST Framework packages quickly. Cookiecutter creates projects from project templates. While optional, this cookiecutter template includes best practices from Django REST framework and other packages, as well as a Travis CI configuration, Tox configuration, and a sane setup.py for easy PyPI registration/distribution.</p>
 <p>Note: Let us know if you have an alternate cookiecuter package so we can also link to it.</p>
-<h4 id="running-the-initial-cookiecutter-command">Running the initial cookiecutter command</h4>
+<h4 id="running-the-initial-cookiecutter-command"><a class="toclink" href="#running-the-initial-cookiecutter-command">Running the initial cookiecutter command</a></h4>
 <p>To run the initial cookiecutter command, you'll first need to install the Python <code>cookiecutter</code> package.</p>
 <pre><code>$ pip install cookiecutter
 </code></pre>
@@ -405,13 +405,13 @@ project_short_description (default is "Your project description goes here")?
 year (default is "2014")?
 version (default is "0.1.0")?
 </code></pre>
-<h4 id="getting-it-onto-github">Getting it onto GitHub</h4>
+<h4 id="getting-it-onto-github"><a class="toclink" href="#getting-it-onto-github">Getting it onto GitHub</a></h4>
 <p>To put your project up on GitHub, you'll need a repository for it to live in. You can create a new repository <a href="https://github.com/new">here</a>. If you need help, check out the <a href="https://help.github.com/articles/create-a-repo/">Create A Repo</a> article on GitHub.</p>
-<h4 id="adding-to-travis-ci">Adding to Travis CI</h4>
+<h4 id="adding-to-travis-ci"><a class="toclink" href="#adding-to-travis-ci">Adding to Travis CI</a></h4>
 <p>We recommend using <a href="https://travis-ci.org">Travis CI</a>, a hosted continuous integration service which integrates well with GitHub and is free for public repositories.</p>
 <p>To get started with Travis CI, <a href="https://travis-ci.org">sign in</a> with your GitHub account. Once you're signed in, go to your <a href="https://travis-ci.org/profile">profile page</a> and enable the service hook for the repository you want.</p>
 <p>If you use the cookiecutter template, your project will already contain a <code>.travis.yml</code> file which Travis CI will use to build your project and run tests.  By default, builds are triggered everytime you push to your repository or create Pull Request.</p>
-<h4 id="uploading-to-pypi">Uploading to PyPI</h4>
+<h4 id="uploading-to-pypi"><a class="toclink" href="#uploading-to-pypi">Uploading to PyPI</a></h4>
 <p>Once you've got at least a prototype working and tests running, you should publish it on PyPI to allow others to install it via <code>pip</code>.</p>
 <p>You must <a href="https://pypi.python.org/pypi?%3Aaction=register_form">register</a> an account before publishing to PyPI.</p>
 <p>To register your package on PyPI run the following command.</p>
@@ -430,10 +430,10 @@ You probably want to also tag the version now:
 </code></pre>
 <p>After releasing a new version to PyPI, it's always a good idea to tag the version and make available as a GitHub Release.</p>
 <p>We recommend to follow <a href="http://semver.org/">Semantic Versioning</a> for your package's versions.</p>
-<h3 id="development">Development</h3>
-<h4 id="version-requirements">Version requirements</h4>
+<h3 id="development"><a class="toclink" href="#development">Development</a></h3>
+<h4 id="version-requirements"><a class="toclink" href="#version-requirements">Version requirements</a></h4>
 <p>The cookiecutter template assumes a set of supported versions will be provided for Python and Django. Make sure you correctly update your requirements, docs, <code>tox.ini</code>, <code>.travis.yml</code>, and <code>setup.py</code> to match the set of versions you wish to support.</p>
-<h4 id="tests">Tests</h4>
+<h4 id="tests"><a class="toclink" href="#tests">Tests</a></h4>
 <p>The cookiecutter template includes a <code>runtests.py</code> which uses the <code>pytest</code> package as a test runner.</p>
 <p>Before running, you'll need to install a couple test requirements.</p>
 <pre><code>$ pip install -r requirements.txt
@@ -475,22 +475,22 @@ You probably want to also tag the version now:
 <p><code>envlist</code> is a comma-separated value to that specifies the environments to run tests against. To view a list of all possible test environments, run:</p>
 <pre><code>$ tox -l
 </code></pre>
-<h4 id="version-compatibility">Version compatibility</h4>
+<h4 id="version-compatibility"><a class="toclink" href="#version-compatibility">Version compatibility</a></h4>
 <p>Sometimes, in order to ensure your code works on various different versions of Django, Python or third party libraries, you'll need to run slightly different code depending on the environment. Any code that branches in this way should be isolated into a <code>compat.py</code> module, and should provide a single common interface that the rest of the codebase can use.</p>
 <p>Check out Django REST framework's <a href="https://github.com/tomchristie/django-rest-framework/blob/master/rest_framework/compat.py">compat.py</a> for an example.</p>
-<h3 id="once-your-package-is-available">Once your package is available</h3>
+<h3 id="once-your-package-is-available"><a class="toclink" href="#once-your-package-is-available">Once your package is available</a></h3>
 <p>Once your package is decently documented and available on PyPI, you might want share it with others that might find it useful.</p>
-<h4 id="adding-to-the-django-rest-framework-grid">Adding to the Django REST framework grid</h4>
+<h4 id="adding-to-the-django-rest-framework-grid"><a class="toclink" href="#adding-to-the-django-rest-framework-grid">Adding to the Django REST framework grid</a></h4>
 <p>We suggest adding your package to the <a href="https://www.djangopackages.com/grids/g/django-rest-framework/">REST Framework</a> grid on Django Packages.</p>
-<h4 id="adding-to-the-django-rest-framework-docs">Adding to the Django REST framework docs</h4>
+<h4 id="adding-to-the-django-rest-framework-docs"><a class="toclink" href="#adding-to-the-django-rest-framework-docs">Adding to the Django REST framework docs</a></h4>
 <p>Create a <a href="https://github.com/tomchristie/django-rest-framework/compare">Pull Request</a> or <a href="https://github.com/tomchristie/django-rest-framework/issues/new">Issue</a> on GitHub, and we'll add a link to it from the main REST framework documentation. You can add your package under <strong>Third party packages</strong> of the API Guide section that best applies, like <a href="../../api-guide/authentication/">Authentication</a> or <a href="../../api-guide/permissions/">Permissions</a>. You can also link your package under the <a href="../../topics/third-party-resources/#existing-third-party-packages">Third Party Resources</a> section.</p>
-<h4 id="announce-on-the-discussion-group">Announce on the discussion group.</h4>
+<h4 id="announce-on-the-discussion-group"><a class="toclink" href="#announce-on-the-discussion-group">Announce on the discussion group.</a></h4>
 <p>You can also let others know about your package through the <a href="https://groups.google.com/forum/#!forum/django-rest-framework">discussion group</a>.</p>
-<h2 id="existing-third-party-packages">Existing Third Party Packages</h2>
+<h2 id="existing-third-party-packages"><a class="toclink" href="#existing-third-party-packages">Existing Third Party Packages</a></h2>
 <p>Django REST Framework has a growing community of developers, packages, and resources.</p>
 <p>Check out a grid detailing all the packages and ecosystem around Django REST Framework at <a href="https://www.djangopackages.com/grids/g/django-rest-framework/">Django Packages</a>.</p>
 <p>To submit new content, <a href="https://github.com/tomchristie/django-rest-framework/issues/new">open an issue</a> or <a href="https://github.com/tomchristie/django-rest-framework/compare">create a pull request</a>.</p>
-<h3 id="authentication">Authentication</h3>
+<h3 id="authentication"><a class="toclink" href="#authentication">Authentication</a></h3>
 <ul>
 <li><a href="https://github.com/juanriaza/django-rest-framework-digestauth">djangorestframework-digestauth</a> - Provides Digest Access Authentication support.</li>
 <li><a href="https://github.com/evonove/django-oauth-toolkit">django-oauth-toolkit</a> - Provides OAuth 2.0 support.</li>
@@ -501,52 +501,52 @@ You probably want to also tag the version now:
 <li><a href="https://github.com/sunscrapers/djoser">djoser</a> - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.</li>
 <li><a href="https://github.com/Tivix/django-rest-auth/">django-rest-auth</a> - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.</li>
 </ul>
-<h3 id="permissions">Permissions</h3>
+<h3 id="permissions"><a class="toclink" href="#permissions">Permissions</a></h3>
 <ul>
 <li><a href="https://github.com/kevin-brown/drf-any-permissions">drf-any-permissions</a> - Provides alternative permission handling.</li>
 <li><a href="https://github.com/niwibe/djangorestframework-composed-permissions">djangorestframework-composed-permissions</a> - Provides a simple way to define complex permissions.</li>
 <li><a href="https://github.com/caxap/rest_condition">rest_condition</a> - Another extension for building complex permissions in a simple and convenient way.</li>
 <li><a href="https://github.com/Helioscene/dry-rest-permissions">dry-rest-permissions</a> - Provides a simple way to define permissions for individual api actions.</li>
 </ul>
-<h3 id="serializers">Serializers</h3>
+<h3 id="serializers"><a class="toclink" href="#serializers">Serializers</a></h3>
 <ul>
 <li><a href="https://github.com/umutbozkurt/django-rest-framework-mongoengine">django-rest-framework-mongoengine</a> - Serializer class that supports using MongoDB as the storage layer for Django REST framework.</li>
 <li><a href="https://github.com/djangonauts/django-rest-framework-gis">djangorestframework-gis</a> - Geographic add-ons</li>
 <li><a href="https://github.com/djangonauts/django-rest-framework-hstore">djangorestframework-hstore</a> - Serializer class to support django-hstore DictionaryField model field and its schema-mode feature.</li>
 </ul>
-<h3 id="serializer-fields">Serializer fields</h3>
+<h3 id="serializer-fields"><a class="toclink" href="#serializer-fields">Serializer fields</a></h3>
 <ul>
 <li><a href="https://github.com/estebistec/drf-compound-fields">drf-compound-fields</a> - Provides "compound" serializer fields, such as lists of simple values.</li>
 <li><a href="https://github.com/Hipo/drf-extra-fields">django-extra-fields</a> - Provides extra serializer fields.</li>
 <li><a href="https://github.com/WGBH/django-versatileimagefield">django-versatileimagefield</a> - Provides a drop-in replacement for Django's stock <code>ImageField</code> that makes it easy to serve images in multiple sizes/renditions from a single field. For DRF-specific implementation docs, <a href="http://django-versatileimagefield.readthedocs.org/en/latest/drf_integration.html">click here</a>.</li>
 </ul>
-<h3 id="views">Views</h3>
+<h3 id="views"><a class="toclink" href="#views">Views</a></h3>
 <ul>
 <li><a href="https://github.com/miki725/django-rest-framework-bulk">djangorestframework-bulk</a> - Implements generic view mixins as well as some common concrete generic views to allow to apply bulk operations via API requests.</li>
 <li><a href="https://github.com/Axiologue/DjangoRestMultipleModels">django-rest-multiple-models</a> - Provides a generic view (and mixin) for sending multiple serialized models and/or querysets via a single API request.</li>
 </ul>
-<h3 id="routers">Routers</h3>
+<h3 id="routers"><a class="toclink" href="#routers">Routers</a></h3>
 <ul>
 <li><a href="https://github.com/alanjds/drf-nested-routers">drf-nested-routers</a> - Provides routers and relationship fields for working with nested resources.</li>
 <li><a href="http://wq.io/docs/about-rest">wq.db.rest</a> - Provides an admin-style model registration API with reasonable default URLs and viewsets.</li>
 </ul>
-<h3 id="parsers">Parsers</h3>
+<h3 id="parsers"><a class="toclink" href="#parsers">Parsers</a></h3>
 <ul>
 <li><a href="https://github.com/juanriaza/django-rest-framework-msgpack">djangorestframework-msgpack</a> - Provides MessagePack renderer and parser support.</li>
 <li><a href="https://github.com/vbabiy/djangorestframework-camel-case">djangorestframework-camel-case</a> - Provides camel case JSON renderers and parsers.</li>
 </ul>
-<h3 id="renderers">Renderers</h3>
+<h3 id="renderers"><a class="toclink" href="#renderers">Renderers</a></h3>
 <ul>
 <li><a href="https://github.com/mjumbewu/django-rest-framework-csv">djangorestframework-csv</a> - Provides CSV renderer support.</li>
 <li><a href="https://github.com/gizmag/drf-ujson-renderer">drf_ujson</a> - Implements JSON rendering using the UJSON package.</li>
 <li><a href="https://github.com/wq/django-rest-pandas">rest-pandas</a> - Pandas DataFrame-powered renderers including Excel, CSV, and SVG formats.</li>
 </ul>
-<h3 id="filtering">Filtering</h3>
+<h3 id="filtering"><a class="toclink" href="#filtering">Filtering</a></h3>
 <ul>
 <li><a href="https://github.com/philipn/django-rest-framework-chain">djangorestframework-chain</a> - Allows arbitrary chaining of both relations and lookup filters.</li>
 <li><a href="https://github.com/miki725/django-url-filter">django-url-filter</a> - Allows a safe way to filter data via human-friendly URLs. It is a generic library which is not tied to DRF but it provides easy integration with DRF.</li>
 </ul>
-<h3 id="misc">Misc</h3>
+<h3 id="misc"><a class="toclink" href="#misc">Misc</a></h3>
 <ul>
 <li><a href="https://github.com/agconti/cookiecutter-django-rest">cookiecutter-django-rest</a> - A cookiecutter template that takes care of the setup and configuration so you can focus on making your REST apis awesome.</li>
 <li><a href="https://github.com/fredkingham/django_rest_model_hyperlink_serializers_project">djangorestrelationalhyperlink</a> - A hyperlinked serialiser that can can be used to alter relationships via hyperlinks, but otherwise like a hyperlink model serializer.</li>
@@ -559,9 +559,10 @@ You probably want to also tag the version now:
 <li><a href="https://github.com/aschn/drf-tracking">drf-tracking</a> - Utilities to track requests to DRF API views.</li>
 <li><a href="https://github.com/dealertrack/django-rest-framework-braces">django-rest-framework-braces</a> - Collection of utilities for working with Django Rest Framework. The most notable ones are <a href="https://django-rest-framework-braces.readthedocs.org/en/latest/overview.html#formserializer">FormSerializer</a> and <a href="https://django-rest-framework-braces.readthedocs.org/en/latest/overview.html#serializerform">SerializerForm</a>, which are adapters between DRF serializers and Django forms.</li>
 <li><a href="http://drf-haystack.readthedocs.org/en/latest/">drf-haystack</a> - Haystack search for Django Rest Framework</li>
+<li><a href="https://github.com/mrhwick/django-rest-framework-version-transforms">django-rest-framework-version-transforms</a> - Enables the use of delta transformations for versioning of DRF resource representations.</li>
 </ul>
-<h2 id="other-resources">Other Resources</h2>
-<h3 id="tutorials">Tutorials</h3>
+<h2 id="other-resources"><a class="toclink" href="#other-resources">Other Resources</a></h2>
+<h3 id="tutorials"><a class="toclink" href="#tutorials">Tutorials</a></h3>
 <ul>
 <li><a href="http://code.tutsplus.com/tutorials/beginners-guide-to-the-django-rest-framework--cms-19786">Beginner's Guide to the Django Rest Framework</a></li>
 <li><a href="http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html">Getting Started with Django Rest Framework and AngularJS</a></li>
@@ -572,19 +573,19 @@ You probably want to also tag the version now:
 <li><a href="http://richardtier.com/2014/02/25/django-rest-framework-user-endpoint/">Django Rest Framework User Endpoint</a></li>
 <li><a href="http://richardtier.com/2014/03/06/110/">Check credentials using Django Rest Framework</a></li>
 </ul>
-<h3 id="videos">Videos</h3>
+<h3 id="videos"><a class="toclink" href="#videos">Videos</a></h3>
 <ul>
 <li><a href="http://www.neckbeardrepublic.com/screencasts/ember-and-django-part-1">Ember and Django Part 1 (Video)</a></li>
 <li><a href="http://www.neckbeardrepublic.com/screencasts/django-rest-framework-part-1">Django Rest Framework Part 1 (Video)</a></li>
 <li><a href="http://www.youtube.com/watch?v=e1zrehvxpbo">Pyowa July 2013 - Django Rest Framework (Video)</a></li>
 <li><a href="http://www.youtube.com/watch?v=q8frbgtj020">django-rest-framework and angularjs (Video)</a></li>
 </ul>
-<h3 id="articles">Articles</h3>
+<h3 id="articles"><a class="toclink" href="#articles">Articles</a></h3>
 <ul>
 <li><a href="http://dabapps.com/blog/api-performance-profiling-django-rest-framework/">Web API performance: profiling Django REST framework</a></li>
 <li><a href="https://bnotions.com/api-development-with-django-and-django-rest-framework/">API Development with Django and Django REST Framework</a></li>
 </ul>
-<h3 id="documentations">Documentations</h3>
+<h3 id="documentations"><a class="toclink" href="#documentations">Documentations</a></h3>
 <ul>
 <li><a href="http://www.cdrf.co">Classy Django REST Framework</a></li>
 </ul>

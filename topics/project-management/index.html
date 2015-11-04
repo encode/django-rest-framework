@@ -377,7 +377,7 @@
             
               
 
-              <h1 id="project-management">Project management</h1>
+              <h1 id="project-management"><a class="toclink" href="#project-management">Project management</a></h1>
 <blockquote>
 <p>"No one can whistle a symphony; it takes a whole orchestra to play it"</p>
 <p>&mdash; Halford E. Luccock</p>
@@ -386,9 +386,9 @@
 <p>The aim is to ensure that the project has a high 
 <a href="http://en.wikipedia.org/wiki/Bus_factor">"bus factor"</a>, and can continue to remain well supported for the foreseeable future. Suggestions for improvements to our process are welcome.</p>
 <hr />
-<h2 id="maintenance-team">Maintenance team</h2>
+<h2 id="maintenance-team"><a class="toclink" href="#maintenance-team">Maintenance team</a></h2>
 <p>We have a quarterly maintenance cycle where new members may join the maintenance team. We currently cap the size of the team at 5 members, and may encourage folks to step out of the team for a cycle to allow new members to participate.</p>
-<h4 id="current-team">Current team</h4>
+<h4 id="current-team"><a class="toclink" href="#current-team">Current team</a></h4>
 <p>The <a href="https://github.com/tomchristie/django-rest-framework/issues/2190">maintenance team for Q1 2015</a>:</p>
 <ul>
 <li><a href="https://github.com/tomchristie/">@tomchristie</a></li>
@@ -397,7 +397,7 @@
 <li><a href="https://github.com/kevin-brown/">@kevin-brown</a></li>
 <li><a href="https://github.com/jpadilla/">@jpadilla</a></li>
 </ul>
-<h4 id="maintenance-cycles">Maintenance cycles</h4>
+<h4 id="maintenance-cycles"><a class="toclink" href="#maintenance-cycles">Maintenance cycles</a></h4>
 <p>Each maintenance cycle is initiated by an issue being opened with the <code>Process</code> label.</p>
 <ul>
 <li>To be considered for a maintainer role simply comment against the issue.</li>
@@ -430,7 +430,7 @@ If you wish to be considered for this or a future date, please comment against t
 
 To modify this process for future maintenance cycles make a pull request to the [project management](http://www.django-rest-framework.org/topics/project-management/) documentation.
 </code></pre>
-<h4 id="responsibilities-of-team-members">Responsibilities of team members</h4>
+<h4 id="responsibilities-of-team-members"><a class="toclink" href="#responsibilities-of-team-members">Responsibilities of team members</a></h4>
 <p>Team members have the following responsibilities.</p>
 <ul>
 <li>Close invalid or resolved tickets.</li>
@@ -448,7 +448,7 @@ To modify this process for future maintenance cycles make a pull request to the 
 </ul>
 <p>It should be noted that participating actively in the REST framework project clearly <strong>does not require being part of the maintenance team</strong>. Almost every import part of issue triage and project improvement can be actively worked on regardless of your collaborator status on the repository.</p>
 <hr />
-<h2 id="release-process">Release process</h2>
+<h2 id="release-process"><a class="toclink" href="#release-process">Release process</a></h2>
 <p>The release manager is selected on every quarterly maintenance cycle.</p>
 <ul>
 <li>The manager should be selected by <code>@tomchristie</code>.</li>
@@ -484,9 +484,9 @@ To modify this process for future releases make a pull request to the [project m
 </code></pre>
 <p>When pushing the release to PyPI ensure that your environment has been installed from our development <code>requirement.txt</code>, so that documentation and PyPI installs are consistently being built against a pinned set of packages.</p>
 <hr />
-<h2 id="translations">Translations</h2>
+<h2 id="translations"><a class="toclink" href="#translations">Translations</a></h2>
 <p>The maintenance team are responsible for managing the translation packs include in REST framework. Translating the source strings into multiple languages is managed through the <a href="https://www.transifex.com/projects/p/django-rest-framework/">transifex service</a>.</p>
-<h3 id="managing-transifex">Managing Transifex</h3>
+<h3 id="managing-transifex"><a class="toclink" href="#managing-transifex">Managing Transifex</a></h3>
 <p>The <a href="https://pypi.python.org/pypi/transifex-client">official Transifex client</a> is used to upload and download translations to Transifex. The client is installed using pip:</p>
 <pre><code>pip install transifex-client
 </code></pre>
@@ -497,7 +497,7 @@ token = ***
 password = ***
 hostname = https://www.transifex.com
 </code></pre>
-<h3 id="upload-new-source-files">Upload new source files</h3>
+<h3 id="upload-new-source-files"><a class="toclink" href="#upload-new-source-files">Upload new source files</a></h3>
 <p>When any user visible strings are changed, they should be uploaded to Transifex so that the translators can start to translate them. To do this, just run:</p>
 <pre><code># 1. Update the source django.po file, which is the US English version.
 cd rest_framework
@@ -513,7 +513,7 @@ tx push -s
 <li>Modified strings will be added as well.</li>
 <li>Strings which do not exist in the new source file will be removed from the database, along with their translations. If that source strings gets re-added later then <a href="http://docs.transifex.com/guides/tm#let-tm-automatically-populate-translations">Transifex Translation Memory</a> will automatically include the translation string.</li>
 </ul>
-<h3 id="download-translations">Download translations</h3>
+<h3 id="download-translations"><a class="toclink" href="#download-translations">Download translations</a></h3>
 <p>When a translator has finished translating their work needs to be downloaded from Transifex into the REST framework repository. To do this, run:</p>
 <pre><code># 3. Pull the translated django.po files from Transifex.
 tx pull -a
@@ -522,14 +522,14 @@ cd rest_framework
 django-admin.py compilemessages
 </code></pre>
 <hr />
-<h2 id="project-requirements">Project requirements</h2>
+<h2 id="project-requirements"><a class="toclink" href="#project-requirements">Project requirements</a></h2>
 <p>All our test requirements are pinned to exact versions, in order to ensure that our test runs are reproducible. We maintain the requirements in the <code>requirements</code> directory. The requirements files are referenced from the <code>tox.ini</code> configuration file, ensuring we have a single source of truth for package versions used in testing.</p>
 <p>Package upgrades should generally be treated as isolated pull requests. You can check if there are any packages available at a newer version, by using the <code>pip list --outdated</code>.</p>
 <hr />
-<h2 id="project-ownership">Project ownership</h2>
+<h2 id="project-ownership"><a class="toclink" href="#project-ownership">Project ownership</a></h2>
 <p>The PyPI package is owned by <code>@tomchristie</code>. As a backup <code>@j4mie</code> also has ownership of the package.</p>
 <p>If <code>@tomchristie</code> ceases to participate in the project then <code>@j4mie</code> has responsibility for handing over ownership duties.</p>
-<h4 id="outstanding-management-ownership-issues">Outstanding management &amp; ownership issues</h4>
+<h4 id="outstanding-management-ownership-issues"><a class="toclink" href="#outstanding-management-ownership-issues">Outstanding management &amp; ownership issues</a></h4>
 <p>The following issues still need to be addressed:</p>
 <ul>
 <li><a href="https://github.com/tomchristie/django-rest-framework/issues/2162">Consider moving the repo into a proper GitHub organization</a>.</li>

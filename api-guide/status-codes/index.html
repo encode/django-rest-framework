@@ -387,7 +387,7 @@
                 
               
 
-              <h1 id="status-codes">Status Codes</h1>
+              <h1 id="status-codes"><a class="toclink" href="#status-codes">Status Codes</a></h1>
 <blockquote>
 <p>418 I'm a teapot - Any attempt to brew coffee with a teapot should result in the error code "418 I'm a teapot".  The resulting entity body MAY be short and stout.</p>
 <p>&mdash; <a href="http://www.ietf.org/rfc/rfc2324.txt">RFC 2324</a>, Hyper Text Coffee Pot Control Protocol</p>
@@ -413,12 +413,12 @@ class ExampleTestCase(APITestCase):
 </code></pre>
 <p>For more information on proper usage of HTTP status codes see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">RFC 2616</a>
 and <a href="http://tools.ietf.org/html/rfc6585">RFC 6585</a>.</p>
-<h2 id="informational-1xx">Informational - 1xx</h2>
+<h2 id="informational-1xx"><a class="toclink" href="#informational-1xx">Informational - 1xx</a></h2>
 <p>This class of status code indicates a provisional response.  There are no 1xx status codes used in REST framework by default.</p>
 <pre><code>HTTP_100_CONTINUE
 HTTP_101_SWITCHING_PROTOCOLS
 </code></pre>
-<h2 id="successful-2xx">Successful - 2xx</h2>
+<h2 id="successful-2xx"><a class="toclink" href="#successful-2xx">Successful - 2xx</a></h2>
 <p>This class of status code indicates that the client's request was successfully received, understood, and accepted.</p>
 <pre><code>HTTP_200_OK
 HTTP_201_CREATED
@@ -428,7 +428,7 @@ HTTP_204_NO_CONTENT
 HTTP_205_RESET_CONTENT
 HTTP_206_PARTIAL_CONTENT
 </code></pre>
-<h2 id="redirection-3xx">Redirection - 3xx</h2>
+<h2 id="redirection-3xx"><a class="toclink" href="#redirection-3xx">Redirection - 3xx</a></h2>
 <p>This class of status code indicates that further action needs to be taken by the user agent in order to fulfill the request.</p>
 <pre><code>HTTP_300_MULTIPLE_CHOICES
 HTTP_301_MOVED_PERMANENTLY
@@ -439,7 +439,7 @@ HTTP_305_USE_PROXY
 HTTP_306_RESERVED
 HTTP_307_TEMPORARY_REDIRECT
 </code></pre>
-<h2 id="client-error-4xx">Client Error - 4xx</h2>
+<h2 id="client-error-4xx"><a class="toclink" href="#client-error-4xx">Client Error - 4xx</a></h2>
 <p>The 4xx class of status code is intended for cases in which the client seems to have erred.  Except when responding to a HEAD request, the server SHOULD include an entity containing an explanation of the error situation, and whether it is a temporary or permanent condition.</p>
 <pre><code>HTTP_400_BAD_REQUEST
 HTTP_401_UNAUTHORIZED
@@ -463,7 +463,7 @@ HTTP_428_PRECONDITION_REQUIRED
 HTTP_429_TOO_MANY_REQUESTS
 HTTP_431_REQUEST_HEADER_FIELDS_TOO_LARGE
 </code></pre>
-<h2 id="server-error-5xx">Server Error - 5xx</h2>
+<h2 id="server-error-5xx"><a class="toclink" href="#server-error-5xx">Server Error - 5xx</a></h2>
 <p>Response status codes beginning with the digit "5" indicate cases in which the server is aware that it has erred or is incapable of performing the request.  Except when responding to a HEAD request, the server SHOULD include an entity containing an explanation of the error situation, and whether it is a temporary or permanent condition.</p>
 <pre><code>HTTP_500_INTERNAL_SERVER_ERROR
 HTTP_501_NOT_IMPLEMENTED
@@ -473,7 +473,7 @@ HTTP_504_GATEWAY_TIMEOUT
 HTTP_505_HTTP_VERSION_NOT_SUPPORTED
 HTTP_511_NETWORK_AUTHENTICATION_REQUIRED
 </code></pre>
-<h2 id="helper-functions">Helper functions</h2>
+<h2 id="helper-functions"><a class="toclink" href="#helper-functions">Helper functions</a></h2>
 <p>The following helper functions are available for identifying the category of the response code.</p>
 <pre><code>is_informational()  # 1xx
 is_success()        # 2xx

@@ -369,13 +369,13 @@
             
               
 
-              <h1 id="django-rest-framework-33">Django REST framework 3.3</h1>
+              <h1 id="django-rest-framework-33"><a class="toclink" href="#django-rest-framework-33">Django REST framework 3.3</a></h1>
 <p>The 3.3 release marks the final work in the Kickstarter funded series. We'd like to offer a final resounding <strong>thank you</strong> to all our wonderful sponsors and supporters.</p>
 <p>The amount of work that has been achieved as a direct result of the funding is immense. We've added a huge amounts of new functionality, resolved nearly 2,000 tickets, and redesigned &amp; refined large parts of the project.</p>
 <p>In order to continue driving REST framework forward, we'll shortly be announcing a new set of funding plans. Follow <a href="https://twitter.com/_tomchristie">@_tomchristie</a> to keep up to date with these announcements, and be among the first set of sign ups.</p>
 <p>We strongly believe that collaboratively funded software development yields outstanding results for a relatively low investment-per-head. If you or your company use REST framework commercially, then we would strongly urge you to participate in this latest funding drive, and help us continue to build an increasingly polished &amp; professional product.</p>
 <hr />
-<h2 id="release-notes">Release notes</h2>
+<h2 id="release-notes"><a class="toclink" href="#release-notes">Release notes</a></h2>
 <p>Significant new functionality in the 3.3 release includes:</p>
 <ul>
 <li>Filters presented as HTML controls in the browsable API.</li>
@@ -387,13 +387,13 @@
 <p><img alt="Filter Controls" src="../../img/filter-controls.png" /></p>
 <p><em>Example of the new filter controls</em></p>
 <hr />
-<h2 id="supported-versions">Supported versions</h2>
+<h2 id="supported-versions"><a class="toclink" href="#supported-versions">Supported versions</a></h2>
 <p>This release drops support for Django 1.5 and 1.6. Django 1.7, 1.8 or 1.9 are now required.</p>
 <p>This brings our supported versions into line with Django's <a href="https://www.djangoproject.com/download/#supported-versions">currently supported versions</a></p>
-<h2 id="deprecations">Deprecations</h2>
+<h2 id="deprecations"><a class="toclink" href="#deprecations">Deprecations</a></h2>
 <p>The AJAX based support for the browsable API means that there are a number of internal cleanups in the <code>request</code> class. For the vast majority of developers this should largely remain transparent:</p>
 <ul>
-<li>To support form based <code>PUT</code> and <code>DELETE</code>, or to support form content types such as JSON, you should now use the [AJAX forms][ajax-forms] javascript library. This replaces the previous 'method and content type overloading' that required significant internal complexity to the request class.</li>
+<li>To support form based <code>PUT</code> and <code>DELETE</code>, or to support form content types such as JSON, you should now use the <a href="https://github.com/tomchristie/ajax-form">AJAX forms</a> javascript library. This replaces the previous 'method and content type overloading' that required significant internal complexity to the request class.</li>
 <li>The <code>accept</code> query parameter is no longer supported by the default content negotiation class. If you require it then you'll need to <a href="../browser-enhancements/#url-based-accept-headers">use a custom content negotiation class</a>.</li>
 <li>The custom <code>HTTP_X_HTTP_METHOD_OVERRIDE</code> header is no longer supported by default. If you require it then you'll need to <a href="../browser-enhancements/#http-header-based-method-overriding">use custom middleware</a>.</li>
 </ul>

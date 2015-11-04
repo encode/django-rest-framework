@@ -377,14 +377,14 @@
             
               
 
-              <h1 id="django-rest-framework-32">Django REST framework 3.2</h1>
+              <h1 id="django-rest-framework-32"><a class="toclink" href="#django-rest-framework-32">Django REST framework 3.2</a></h1>
 <p>The 3.2 release is the first version to include an admin interface for the browsable API.</p>
 <p><img alt="The AdminRenderer" src="../../img/admin.png" /></p>
 <p>This interface is intended to act as a more user-friendly interface to the API. It can be used either as a replacement to the existing <code>BrowsableAPIRenderer</code>, or used together with it, allowing you to switch between the two styles as required.</p>
 <p>We've also fixed a huge number of issues, and made numerous cleanups and improvements.</p>
 <p>Over the course of the 3.1.x series we've <a href="https://github.com/tomchristie/django-rest-framework/issues?utf8=%E2%9C%93&amp;q=closed%3A%3E2015-03-05">resolved nearly 600 tickets</a> on our GitHub issue tracker. This means we're currently running at a rate of <strong>closing around 100 issues or pull requests per month</strong>.</p>
 <p>None of this would have been possible without the support of our wonderful Kickstarter backers. If you're looking for a job in Django development we'd strongly recommend taking <a href="http://www.django-rest-framework.org/topics/kickstarter-announcement/#sponsors">a look through our sponsors</a> and finding out who's hiring.</p>
-<h2 id="adminrenderer">AdminRenderer</h2>
+<h2 id="adminrenderer"><a class="toclink" href="#adminrenderer">AdminRenderer</a></h2>
 <p>To include <code>AdminRenderer</code> simply add it to your settings:</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
@@ -399,10 +399,10 @@
 <p>There are some limitations to the <code>AdminRenderer</code>, in particular it is not yet able to handle list or dictionary inputs, as we do not have any HTML form fields that support those.</p>
 <p>Also note that this is an initial release and we do not yet have a public API for modifying the behavior or documentation on overriding the templates.</p>
 <p>The idea is to get this released to users early, so we can start getting feedback and release a more fully featured version in 3.3.</p>
-<h2 id="supported-versions">Supported versions</h2>
+<h2 id="supported-versions"><a class="toclink" href="#supported-versions">Supported versions</a></h2>
 <p>This release drops support for Django 1.4.</p>
 <p>Our supported Django versions are now 1.5.6+, 1.6.3+, 1.7 and 1.8.</p>
-<h2 id="deprecations">Deprecations</h2>
+<h2 id="deprecations"><a class="toclink" href="#deprecations">Deprecations</a></h2>
 <p>There are no new deprecations in 3.2, although a number of existing deprecations have now escalated in line with our deprecation policy.</p>
 <ul>
 <li><code>request.DATA</code> was put on the deprecation path in 3.0. It has now been removed and its usage will result in an error. Use the more pythonic style of <code>request.data</code> instead.</li>
@@ -419,10 +419,10 @@
 <li><code>settings.PAGINATE_BY_PARAM</code> - Use <code>paginator.page_size_query_param</code> instead.</li>
 <li><code>settings.MAX_PAGINATE_BY</code> - Use <code>max_page_size</code> instead.</li>
 </ul>
-<h2 id="modifications-to-list-behaviors">Modifications to list behaviors</h2>
+<h2 id="modifications-to-list-behaviors"><a class="toclink" href="#modifications-to-list-behaviors">Modifications to list behaviors</a></h2>
 <p>There are a couple of bug fixes that are worth calling out as they introduce differing behavior.</p>
 <p>These are a little subtle and probably won't affect most users, but are worth understanding before upgrading your project.</p>
-<h3 id="manytomany-fields-and-blanktrue">ManyToMany fields and blank=True</h3>
+<h3 id="manytomany-fields-and-blanktrue"><a class="toclink" href="#manytomany-fields-and-blanktrue">ManyToMany fields and blank=True</a></h3>
 <p>We've now added an <code>allow_empty</code> argument, which can be used with <code>ListSerializer</code>, or with  <code>many=True</code> relationships. This is <code>True</code> by default, but can be set to <code>False</code> if you want to disallow empty lists as valid input.</p>
 <p>As a follow-up to this we are now able to properly mirror the behavior of Django's <code>ModelForm</code> with respect to how many-to-many fields are validated.</p>
 <p>Previously a many-to-many field on a model would map to a serializer field that would allow either empty or non-empty list inputs. Now, a many-to-many field will map to a serializer field that requires at least one input, unless the model field has <code>blank=True</code> set.</p>
@@ -432,7 +432,7 @@
 <li><code>models.ManyToManyField(blank=True)</code> → <code>serializers.PrimaryKeyRelatedField(many=True)</code></li>
 </ul>
 <p>The upshot is this: If you have many to many fields in your models, then make sure you've included the argument <code>blank=True</code> if you want to allow empty inputs in the equivalent <code>ModelSerializer</code> fields.</p>
-<h3 id="list-fields-and-allow_null">List fields and allow_null</h3>
+<h3 id="list-fields-and-allow_null"><a class="toclink" href="#list-fields-and-allow_null">List fields and allow_null</a></h3>
 <p>When using <code>allow_null</code> with <code>ListField</code> or a nested <code>many=True</code> serializer the previous behavior was to allow <code>null</code> values as items in the list. The behavior is now to allow <code>null</code> values instead of the list.</p>
 <p>For example, take the following field:</p>
 <pre><code>NestedSerializer(many=True, allow_null=True)
@@ -450,7 +450,7 @@
 <p>If you want to allow <code>null</code> child items, you'll need to instead specify <code>allow_null</code> on the child class, using an explicit <code>ListField</code> instead of <code>many=True</code>. For example:</p>
 <pre><code>ListField(child=NestedSerializer(allow_null=True))
 </code></pre>
-<h2 id="whats-next">What's next?</h2>
+<h2 id="whats-next"><a class="toclink" href="#whats-next">What's next?</a></h2>
 <p>The 3.3 release is currently planned for the start of October, and will be the last Kickstarter-funded release.</p>
 <p>This release is planned to include:</p>
 <ul>

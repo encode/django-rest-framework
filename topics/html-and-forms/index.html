@@ -369,9 +369,9 @@
             
               
 
-              <h1 id="html-forms">HTML &amp; Forms</h1>
+              <h1 id="html-forms"><a class="toclink" href="#html-forms">HTML &amp; Forms</a></h1>
 <p>REST framework is suitable for returning both API style responses, and regular HTML pages. Additionally, serializers can used as HTML forms and rendered in templates.</p>
-<h2 id="rendering-html">Rendering HTML</h2>
+<h2 id="rendering-html"><a class="toclink" href="#rendering-html">Rendering HTML</a></h2>
 <p>In order to return HTML responses you'll need to either <code>TemplateHTMLRenderer</code>, or <code>StaticHTMLRenderer</code>.</p>
 <p>The <code>TemplateHTMLRenderer</code> class expects the response to contain a dictionary of context data, and renders an HTML page based on a template that must be specified either in the view or on the response.</p>
 <p>The <code>StaticHTMLRender</code> class expects the response to contain a string of the pre-rendered HTML content.</p>
@@ -380,6 +380,7 @@
 <p><strong>views.py</strong>:</p>
 <pre><code>from my_project.example.models import Profile
 from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
@@ -401,7 +402,7 @@ class ProfileList(APIView):
 &lt;/ul&gt;
 &lt;/body&gt;&lt;/html&gt;
 </code></pre>
-<h2 id="rendering-forms">Rendering Forms</h2>
+<h2 id="rendering-forms"><a class="toclink" href="#rendering-forms">Rendering Forms</a></h2>
 <p>Serializers may be rendered as forms by using the <code>render_form</code> template tag, and including the serializer instance as context to the template.</p>
 <p>The following view demonstrates an example of using a serializer in a template for viewing and updating a model instance:</p>
 <p><strong>views.py</strong>:</p>
@@ -442,7 +443,7 @@ class ProfileDetail(APIView):
 
 &lt;/body&gt;&lt;/html&gt;
 </code></pre>
-<h3 id="using-template-packs">Using template packs</h3>
+<h3 id="using-template-packs"><a class="toclink" href="#using-template-packs">Using template packs</a></h3>
 <p>The <code>render_form</code> tag takes an optional <code>template_pack</code> argument, that specifies which template directory should be used for rendering the form and form fields.</p>
 <p>REST framework includes three built-in template packs, all based on Bootstrap 3. The built-in styles are <code>horizontal</code>, <code>vertical</code>, and <code>inline</code>. The default style is <code>horizontal</code>. To use any of these template packs you'll want to also include the Bootstrap 3 CSS.</p>
 <p>The following HTML will link to a CDN hosted version of the Bootstrap 3 CSS:</p>
@@ -465,7 +466,7 @@ class ProfileDetail(APIView):
     remember_me = serializers.BooleanField()
 </code></pre>
 <hr />
-<h4 id="rest_frameworkvertical"><code>rest_framework/vertical</code></h4>
+<h4 id="rest_frameworkvertical"><a class="toclink" href="#rest_frameworkvertical"><code>rest_framework/vertical</code></a></h4>
 <p>Presents form labels above their corresponding control inputs, using the standard Bootstrap layout.</p>
 <p><em>This is the default template pack.</em></p>
 <pre><code>{% load rest_framework %}
@@ -480,7 +481,7 @@ class ProfileDetail(APIView):
 </code></pre>
 <p><img alt="Vertical form example" src="../../img/vertical.png" /></p>
 <hr />
-<h4 id="rest_frameworkhorizontal"><code>rest_framework/horizontal</code></h4>
+<h4 id="rest_frameworkhorizontal"><a class="toclink" href="#rest_frameworkhorizontal"><code>rest_framework/horizontal</code></a></h4>
 <p>Presents labels and controls alongside each other, using a 2/10 column split.</p>
 <p><em>This is the form style used in the browsable API and admin renderers.</em></p>
 <pre><code>{% load rest_framework %}
@@ -499,7 +500,7 @@ class ProfileDetail(APIView):
 </code></pre>
 <p><img alt="Horizontal form example" src="../../img/horizontal.png" /></p>
 <hr />
-<h4 id="rest_frameworkinline"><code>rest_framework/inline</code></h4>
+<h4 id="rest_frameworkinline"><a class="toclink" href="#rest_frameworkinline"><code>rest_framework/inline</code></a></h4>
 <p>A compact form style that presents all the controls inline.</p>
 <pre><code>{% load rest_framework %}
 
@@ -512,7 +513,7 @@ class ProfileDetail(APIView):
 &lt;/form&gt;
 </code></pre>
 <p><img alt="Inline form example" src="../../img/inline.png" /></p>
-<h2 id="field-styles">Field styles</h2>
+<h2 id="field-styles"><a class="toclink" href="#field-styles">Field styles</a></h2>
 <p>Serializer fields can have their rendering style customized by using the <code>style</code> keyword argument. This argument is a dictionary of options that control the template and layout used.</p>
 <p>The most common way to customize the field style is to use the <code>base_template</code> style keyword argument to select which template in the template pack should be use.</p>
 <p>For example, to render a <code>CharField</code> as an HTML textarea rather than the default HTML input, you would use something like this:</p>

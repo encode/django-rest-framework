@@ -543,7 +543,7 @@
                 
               
 
-              <h1 id="serializers">Serializers</h1>
+              <h1 id="serializers"><a class="toclink" href="#serializers">Serializers</a></h1>
 <blockquote>
 <p>Expanding the usefulness of the serializers is something that we would
 like to address.  However, it's not a trivial problem, and it
@@ -552,7 +552,7 @@ will take some serious design work.</p>
 </blockquote>
 <p>Serializers allow complex data such as querysets and model instances to be converted to native Python datatypes that can then be easily rendered into <code>JSON</code>, <code>XML</code> or other content types.  Serializers also provide deserialization, allowing parsed data to be converted back into complex types, after first validating the incoming data.</p>
 <p>The serializers in REST framework work very similarly to Django's <code>Form</code> and <code>ModelForm</code> classes. We provide a <code>Serializer</code> class which gives you a powerful, generic way to control the output of your responses, as well as a <code>ModelSerializer</code> class which provides a useful shortcut for creating serializers that deal with model instances and querysets.</p>
-<h2 id="declaring-serializers">Declaring Serializers</h2>
+<h2 id="declaring-serializers"><a class="toclink" href="#declaring-serializers">Declaring Serializers</a></h2>
 <p>Let's start by creating a simple object we can use for example purposes:</p>
 <pre><code>from datetime import datetime
 
@@ -573,7 +573,7 @@ class CommentSerializer(serializers.Serializer):
     content = serializers.CharField(max_length=200)
     created = serializers.DateTimeField()
 </code></pre>
-<h2 id="serializing-objects">Serializing objects</h2>
+<h2 id="serializing-objects"><a class="toclink" href="#serializing-objects">Serializing objects</a></h2>
 <p>We can now use <code>CommentSerializer</code> to serialize a comment, or list of comments. Again, using the <code>Serializer</code> class looks a lot like using a <code>Form</code> class.</p>
 <pre><code>serializer = CommentSerializer(comment)
 serializer.data
@@ -586,7 +586,7 @@ json = JSONRenderer().render(serializer.data)
 json
 # '{"email": "leila@example.com", "content": "foo bar", "created": "2012-08-22T16:20:09.822"}'
 </code></pre>
-<h2 id="deserializing-objects">Deserializing objects</h2>
+<h2 id="deserializing-objects"><a class="toclink" href="#deserializing-objects">Deserializing objects</a></h2>
 <p>Deserialization is similar. First we parse a stream into Python native datatypes...</p>
 <pre><code>from django.utils.six import BytesIO
 from rest_framework.parsers import JSONParser
@@ -601,7 +601,7 @@ serializer.is_valid()
 serializer.validated_data
 # {'content': 'foo bar', 'email': 'leila@example.com', 'created': datetime.datetime(2012, 08, 22, 16, 20, 09, 822243)}
 </code></pre>
-<h2 id="saving-instances">Saving instances</h2>
+<h2 id="saving-instances"><a class="toclink" href="#saving-instances">Saving instances</a></h2>
 <p>If we want to be able to return complete object instances based on the validated data we need to implement one or both of the <code>.create()</code> and <code>update()</code> methods. For example:</p>
 <pre><code>class CommentSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -639,13 +639,13 @@ serializer = CommentSerializer(data=data)
 serializer = CommentSerializer(comment, data=data)
 </code></pre>
 <p>Both the <code>.create()</code> and <code>.update()</code> methods are optional. You can implement either neither, one, or both of them, depending on the use-case for your serializer class.</p>
-<h4 id="passing-additional-attributes-to-save">Passing additional attributes to <code>.save()</code></h4>
+<h4 id="passing-additional-attributes-to-save"><a class="toclink" href="#passing-additional-attributes-to-save">Passing additional attributes to <code>.save()</code></a></h4>
 <p>Sometimes you'll want your view code to be able to inject additional data at the point of saving the instance. This additional data might include information like the current user, the current time, or anything else that is not part of the request data.</p>
 <p>You can do so by including additional keyword arguments when calling <code>.save()</code>. For example:</p>
 <pre><code>serializer.save(owner=request.user)
 </code></pre>
 <p>Any additional keyword arguments will be included in the <code>validated_data</code> argument when <code>.create()</code> or <code>.update()</code> are called.</p>
-<h4 id="overriding-save-directly">Overriding <code>.save()</code> directly.</h4>
+<h4 id="overriding-save-directly"><a class="toclink" href="#overriding-save-directly">Overriding <code>.save()</code> directly.</a></h4>
 <p>In some cases the <code>.create()</code> and <code>.update()</code> method names may not be meaningful. For example, in a contact form we may not be creating new instances, but instead sending an email or other message.</p>
 <p>In these cases you might instead choose to override <code>.save()</code> directly, as being more readable and meaningful.</p>
 <p>For example:</p>
@@ -659,7 +659,7 @@ serializer = CommentSerializer(comment, data=data)
         send_email(from=email, message=message)
 </code></pre>
 <p>Note that in the case above we're now having to access the serializer <code>.validated_data</code> property directly.</p>
-<h2 id="validation">Validation</h2>
+<h2 id="validation"><a class="toclink" href="#validation">Validation</a></h2>
 <p>When deserializing data, you always need to call <code>is_valid()</code> before attempting to access the validated data, or save an object instance. If any validation errors occur, the <code>.errors</code> property will contain a dictionary representing the resulting error messages.  For example:</p>
 <pre><code>serializer = CommentSerializer(data={'email': 'foobar', 'content': 'baz'})
 serializer.is_valid()
@@ -669,13 +669,13 @@ serializer.errors
 </code></pre>
 <p>Each key in the dictionary will be the field name, and the values will be lists of strings of any error messages corresponding to that field.  The <code>non_field_errors</code> key may also be present, and will list any general validation errors. The name of the <code>non_field_errors</code> key may be customized using the <code>NON_FIELD_ERRORS_KEY</code> REST framework setting.</p>
 <p>When deserializing a list of items, errors will be returned as a list of dictionaries representing each of the deserialized items.</p>
-<h4 id="raising-an-exception-on-invalid-data">Raising an exception on invalid data</h4>
+<h4 id="raising-an-exception-on-invalid-data"><a class="toclink" href="#raising-an-exception-on-invalid-data">Raising an exception on invalid data</a></h4>
 <p>The <code>.is_valid()</code> method takes an optional <code>raise_exception</code> flag that will cause it to raise a <code>serializers.ValidationError</code> exception if there are validation errors.</p>
 <p>These exceptions are automatically dealt with by the default exception handler that REST framework provides, and will return <code>HTTP 400 Bad Request</code> responses by default.</p>
 <pre><code># Return a 400 response if the data was invalid.
 serializer.is_valid(raise_exception=True)
 </code></pre>
-<h4 id="field-level-validation">Field-level validation</h4>
+<h4 id="field-level-validation"><a class="toclink" href="#field-level-validation">Field-level validation</a></h4>
 <p>You can specify custom field-level validation by adding <code>.validate_&lt;field_name&gt;</code> methods to your <code>Serializer</code> subclass.  These are similar to the <code>.clean_&lt;field_name&gt;</code> methods on Django forms.</p>
 <p>These methods take a single argument, which is the field value that requires validation.</p>
 <p>Your <code>validate_&lt;field_name&gt;</code> methods should return the validated value or raise a <code>serializers.ValidationError</code>.  For example:</p>
@@ -696,7 +696,7 @@ class BlogPostSerializer(serializers.Serializer):
 <hr />
 <p><strong>Note:</strong> If your <code>&lt;field_name&gt;</code> is declared on your serializer with the parameter <code>required=False</code> then this validation step will not take place if the field is not included.</p>
 <hr />
-<h4 id="object-level-validation">Object-level validation</h4>
+<h4 id="object-level-validation"><a class="toclink" href="#object-level-validation">Object-level validation</a></h4>
 <p>To do any other validation that requires access to multiple fields, add a method called <code>.validate()</code> to your <code>Serializer</code> subclass.  This method takes a single argument, which is a dictionary of field values.  It should raise a <code>ValidationError</code> if necessary, or just return the validated values.  For example:</p>
 <pre><code>from rest_framework import serializers
 
@@ -713,7 +713,7 @@ class EventSerializer(serializers.Serializer):
             raise serializers.ValidationError("finish must occur after start")
         return data
 </code></pre>
-<h4 id="validators">Validators</h4>
+<h4 id="validators"><a class="toclink" href="#validators">Validators</a></h4>
 <p>Individual fields on a serializer can include validators, by declaring them on the field instance, for example:</p>
 <pre><code>def multiple_of_ten(value):
     if value % 10 != 0:
@@ -737,15 +737,15 @@ class GameRecord(serializers.Serializer):
         )
 </code></pre>
 <p>For more information see the <a href="../validators/">validators documentation</a>.</p>
-<h2 id="accessing-the-initial-data-and-instance">Accessing the initial data and instance</h2>
+<h2 id="accessing-the-initial-data-and-instance"><a class="toclink" href="#accessing-the-initial-data-and-instance">Accessing the initial data and instance</a></h2>
 <p>When passing an initial object or queryset to a serializer instance, the object will be made available as <code>.instance</code>. If no initial object is passed then the <code>.instance</code> attribute will be <code>None</code>.</p>
 <p>When passing data to a serializer instance, the unmodified data will be made available as <code>.initial_data</code>. If the data keyword argument is not passed then the <code>.initial_data</code> attribute will not exist.</p>
-<h2 id="partial-updates">Partial updates</h2>
+<h2 id="partial-updates"><a class="toclink" href="#partial-updates">Partial updates</a></h2>
 <p>By default, serializers must be passed values for all required fields or they will raise validation errors. You can use the <code>partial</code> argument in order to allow partial updates.</p>
 <pre><code># Update `comment` with partial data
 serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)
 </code></pre>
-<h2 id="dealing-with-nested-objects">Dealing with nested objects</h2>
+<h2 id="dealing-with-nested-objects"><a class="toclink" href="#dealing-with-nested-objects">Dealing with nested objects</a></h2>
 <p>The previous examples are fine for dealing with objects that only have simple datatypes, but sometimes we also need to be able to represent more complex objects, where some of the attributes of an object might not be simple datatypes such as strings, dates or integers.</p>
 <p>The <code>Serializer</code> class is itself a type of <code>Field</code>, and can be used to represent relationships where one object type is nested inside another.</p>
 <pre><code>class UserSerializer(serializers.Serializer):
@@ -770,7 +770,7 @@ class CommentSerializer(serializers.Serializer):
     content = serializers.CharField(max_length=200)
     created = serializers.DateTimeField()
 </code></pre>
-<h2 id="writable-nested-representations">Writable nested representations</h2>
+<h2 id="writable-nested-representations"><a class="toclink" href="#writable-nested-representations">Writable nested representations</a></h2>
 <p>When dealing with nested representations that support deserializing the data, any errors with nested objects will be nested under the field name of the nested object.</p>
 <pre><code>serializer = CommentSerializer(data={'user': {'email': 'foobar', 'username': 'doe'}, 'content': 'baz'})
 serializer.is_valid()
@@ -779,7 +779,7 @@ serializer.errors
 # {'user': {'email': [u'Enter a valid e-mail address.']}, 'created': [u'This field is required.']}
 </code></pre>
 <p>Similarly, the <code>.validated_data</code> property will include nested data structures.</p>
-<h4 id="writing-create-methods-for-nested-representations">Writing <code>.create()</code> methods for nested representations</h4>
+<h4 id="writing-create-methods-for-nested-representations"><a class="toclink" href="#writing-create-methods-for-nested-representations">Writing <code>.create()</code> methods for nested representations</a></h4>
 <p>If you're supporting writable nested representations you'll need to write <code>.create()</code> or <code>.update()</code> methods that handle saving multiple objects.</p>
 <p>The following example demonstrates how you might handle creating a user with a nested profile object.</p>
 <pre><code>class UserSerializer(serializers.ModelSerializer):
@@ -795,7 +795,7 @@ serializer.errors
         Profile.objects.create(user=user, **profile_data)
         return user
 </code></pre>
-<h4 id="writing-update-methods-for-nested-representations">Writing <code>.update()</code> methods for nested representations</h4>
+<h4 id="writing-update-methods-for-nested-representations"><a class="toclink" href="#writing-update-methods-for-nested-representations">Writing <code>.update()</code> methods for nested representations</a></h4>
 <p>For updates you'll want to think carefully about how to handle updates to relationships. For example if the data for the relationship is <code>None</code>, or not provided, which of the following should occur?</p>
 <ul>
 <li>Set the relationship to <code>NULL</code> in the database.</li>
@@ -829,7 +829,7 @@ serializer.errors
 </code></pre>
 <p>Because the behavior of nested creates and updates can be ambiguous, and may require complex dependencies between related models, REST framework 3 requires you to always write these methods explicitly. The default <code>ModelSerializer</code> <code>.create()</code> and <code>.update()</code> methods do not include support for writable nested representations.</p>
 <p>It is possible that a third party package, providing automatic support some kinds of automatic writable nested representations may be released alongside the 3.1 release.</p>
-<h4 id="handling-saving-related-instances-in-model-manager-classes">Handling saving related instances in model manager classes</h4>
+<h4 id="handling-saving-related-instances-in-model-manager-classes"><a class="toclink" href="#handling-saving-related-instances-in-model-manager-classes">Handling saving related instances in model manager classes</a></h4>
 <p>An alternative to saving multiple related instances in the serializer is to write custom model manager classes that handle creating the correct instances.</p>
 <p>For example, suppose we wanted to ensure that <code>User</code> instances and <code>Profile</code> instances are always created together as a pair. We might write a custom manager class that looks something like this:</p>
 <pre><code>class UserManager(models.Manager):
@@ -856,9 +856,9 @@ serializer.errors
     )
 </code></pre>
 <p>For more details on this approach see the Django documentation on <a href="../model-managers">model managers</a>, and <a href="../encapsulation-blogpost">this blogpost on using model and manager classes</a>.</p>
-<h2 id="dealing-with-multiple-objects">Dealing with multiple objects</h2>
+<h2 id="dealing-with-multiple-objects"><a class="toclink" href="#dealing-with-multiple-objects">Dealing with multiple objects</a></h2>
 <p>The <code>Serializer</code> class can also handle serializing or deserializing lists of objects.</p>
-<h4 id="serializing-multiple-objects">Serializing multiple objects</h4>
+<h4 id="serializing-multiple-objects"><a class="toclink" href="#serializing-multiple-objects">Serializing multiple objects</a></h4>
 <p>To serialize a queryset or list of objects instead of a single object instance, you should pass the <code>many=True</code> flag when instantiating the serializer.  You can then pass a queryset or list of objects to be serialized.</p>
 <pre><code>queryset = Book.objects.all()
 serializer = BookSerializer(queryset, many=True)
@@ -869,9 +869,9 @@ serializer.data
 #     {'id': 2, 'title': 'The wind-up bird chronicle', 'author': 'Haruki Murakami'}
 # ]
 </code></pre>
-<h4 id="deserializing-multiple-objects">Deserializing multiple objects</h4>
+<h4 id="deserializing-multiple-objects"><a class="toclink" href="#deserializing-multiple-objects">Deserializing multiple objects</a></h4>
 <p>The default behavior for deserializing multiple objects is to support multiple object creation, but not support multiple object updates. For more information on how to support or customize either of these cases, see the <a href="#listserializer">ListSerializer</a> documentation below.</p>
-<h2 id="including-extra-context">Including extra context</h2>
+<h2 id="including-extra-context"><a class="toclink" href="#including-extra-context">Including extra context</a></h2>
 <p>There are some cases where you need to provide extra context to the serializer in addition to the object being serialized.  One common case is if you're using a serializer that includes hyperlinked relations, which requires the serializer to have access to the current request so that it can properly generate fully qualified URLs.</p>
 <p>You can provide arbitrary additional context by passing a <code>context</code> argument when instantiating the serializer.  For example:</p>
 <pre><code>serializer = AccountSerializer(account, context={'request': request})
@@ -880,7 +880,7 @@ serializer.data
 </code></pre>
 <p>The context dictionary can be used within any serializer field logic, such as a custom <code>.to_representation()</code> method, by accessing the <code>self.context</code> attribute.</p>
 <hr />
-<h1 id="modelserializer">ModelSerializer</h1>
+<h1 id="modelserializer"><a class="toclink" href="#modelserializer">ModelSerializer</a></h1>
 <p>Often you'll want serializer classes that map closely to Django model definitions.</p>
 <p>The <code>ModelSerializer</code> class provides a shortcut that lets you automatically create a <code>Serializer</code> class with fields that correspond to the Model fields.</p>
 <p><strong>The <code>ModelSerializer</code> class is the same as a regular <code>Serializer</code> class, except that</strong>:</p>
@@ -897,7 +897,7 @@ serializer.data
 </code></pre>
 <p>By default, all the model fields on the class will be mapped to a corresponding serializer fields.</p>
 <p>Any relationships such as foreign keys on the model will be mapped to <code>PrimaryKeyRelatedField</code>. Reverse relationships are not included by default unless explicitly included as described below.</p>
-<h4 id="inspecting-a-modelserializer">Inspecting a <code>ModelSerializer</code></h4>
+<h4 id="inspecting-a-modelserializer"><a class="toclink" href="#inspecting-a-modelserializer">Inspecting a <code>ModelSerializer</code></a></h4>
 <p>Serializer classes generate helpful verbose representation strings, that allow you to fully inspect the state of their fields. This is particularly useful when working with <code>ModelSerializers</code> where you want to determine what set of fields and validators are being automatically created for you.</p>
 <p>To do so, open the Django shell, using <code>python manage.py shell</code>, then import the serializer class, instantiate it, and print the object representation…</p>
 <pre><code>&gt;&gt;&gt; from myapp.serializers import AccountSerializer
@@ -908,7 +908,7 @@ AccountSerializer():
     name = CharField(allow_blank=True, max_length=100, required=False)
     owner = PrimaryKeyRelatedField(queryset=User.objects.all())
 </code></pre>
-<h2 id="specifying-which-fields-to-include">Specifying which fields to include</h2>
+<h2 id="specifying-which-fields-to-include"><a class="toclink" href="#specifying-which-fields-to-include">Specifying which fields to include</a></h2>
 <p>If you only want a subset of the default fields to be used in a model serializer, you can do so using <code>fields</code> or <code>exclude</code> options, just as you would with a <code>ModelForm</code>. It is strongly recommended that you explicitly set all fields that should be serialized using the <code>fields</code> attribute. This will make it less likely to result in unintentionally exposing data when your models change.</p>
 <p>For example:</p>
 <pre><code>class AccountSerializer(serializers.ModelSerializer):
@@ -933,7 +933,7 @@ AccountSerializer():
 <p>In the example above, if the <code>Account</code> model had 3 fields <code>account_name</code>, <code>users</code>, and <code>created</code>, this will result in the fields <code>account_name</code> and <code>created</code> to be serialized.</p>
 <p>The names in the <code>fields</code> and <code>exclude</code> attributes will normally map to model fields on the model class.</p>
 <p>Alternatively names in the <code>fields</code> options can map to properties or methods which take no arguments that exist on the model class.</p>
-<h2 id="specifying-nested-serialization">Specifying nested serialization</h2>
+<h2 id="specifying-nested-serialization"><a class="toclink" href="#specifying-nested-serialization">Specifying nested serialization</a></h2>
 <p>The default <code>ModelSerializer</code> uses primary keys for relationships, but you can also easily generate nested representations using the <code>depth</code> option:</p>
 <pre><code>class AccountSerializer(serializers.ModelSerializer):
     class Meta:
@@ -943,7 +943,7 @@ AccountSerializer():
 </code></pre>
 <p>The <code>depth</code> option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.</p>
 <p>If you want to customize the way the serialization is done you'll need to define the field yourself.</p>
-<h2 id="specifying-fields-explicitly">Specifying fields explicitly</h2>
+<h2 id="specifying-fields-explicitly"><a class="toclink" href="#specifying-fields-explicitly">Specifying fields explicitly</a></h2>
 <p>You can add extra fields to a <code>ModelSerializer</code> or override the default fields by declaring fields on the class, just as you would for a <code>Serializer</code> class.</p>
 <pre><code>class AccountSerializer(serializers.ModelSerializer):
     url = serializers.CharField(source='get_absolute_url', read_only=True)
@@ -953,7 +953,7 @@ AccountSerializer():
         model = Account
 </code></pre>
 <p>Extra fields can correspond to any property or callable on the model.</p>
-<h2 id="specifying-read-only-fields">Specifying read only fields</h2>
+<h2 id="specifying-read-only-fields"><a class="toclink" href="#specifying-read-only-fields">Specifying read only fields</a></h2>
 <p>You may wish to specify multiple fields as read-only. Instead of adding each field explicitly with the <code>read_only=True</code> attribute, you may use the shortcut Meta option, <code>read_only_fields</code>.</p>
 <p>This option should be a list or tuple of field names, and is declared as follows:</p>
 <pre><code>class AccountSerializer(serializers.ModelSerializer):
@@ -971,7 +971,7 @@ AccountSerializer():
 </code></pre>
 <p>Please review the <a href="../../api-guide/validators/">Validators Documentation</a> for details on the <a href="../../api-guide/validators/#uniquetogethervalidator">UniqueTogetherValidator</a> and <a href="../../api-guide/validators/#currentuserdefault">CurrentUserDefault</a> classes.</p>
 <hr />
-<h2 id="additional-keyword-arguments">Additional keyword arguments</h2>
+<h2 id="additional-keyword-arguments"><a class="toclink" href="#additional-keyword-arguments">Additional keyword arguments</a></h2>
 <p>There is also a shortcut allowing you to specify arbitrary additional keyword arguments on fields, using the <code>extra_kwargs</code> option. As in the case of <code>read_only_fields</code>, this means you do not need to explicitly declare the field on the serializer.</p>
 <p>This option is a dictionary, mapping field names to a dictionary of keyword arguments. For example:</p>
 <pre><code>class CreateUserSerializer(serializers.ModelSerializer):
@@ -989,56 +989,56 @@ AccountSerializer():
         user.save()
         return user
 </code></pre>
-<h2 id="relational-fields">Relational fields</h2>
+<h2 id="relational-fields"><a class="toclink" href="#relational-fields">Relational fields</a></h2>
 <p>When serializing model instances, there are a number of different ways you might choose to represent relationships.  The default representation for <code>ModelSerializer</code> is to use the primary keys of the related instances.</p>
 <p>Alternative representations include serializing using hyperlinks, serializing complete nested representations, or serializing with a custom representation.</p>
 <p>For full details see the <a href="../relations/">serializer relations</a> documentation.</p>
-<h2 id="inheritance-of-the-meta-class">Inheritance of the 'Meta' class</h2>
+<h2 id="inheritance-of-the-meta-class"><a class="toclink" href="#inheritance-of-the-meta-class">Inheritance of the 'Meta' class</a></h2>
 <p>The inner <code>Meta</code> class on serializers is not inherited from parent classes by default. This is the same behavior as with Django's <code>Model</code> and <code>ModelForm</code> classes. If you want the <code>Meta</code> class to inherit from a parent class you must do so explicitly. For example:</p>
 <pre><code>class AccountSerializer(MyBaseSerializer):
     class Meta(MyBaseSerializer.Meta):
         model = Account
 </code></pre>
 <p>Typically we would recommend <em>not</em> using inheritance on inner Meta classes, but instead declaring all options explicitly.</p>
-<h2 id="customizing-field-mappings">Customizing field mappings</h2>
+<h2 id="customizing-field-mappings"><a class="toclink" href="#customizing-field-mappings">Customizing field mappings</a></h2>
 <p>The ModelSerializer class also exposes an API that you can override in order to alter how serializer fields are automatically determined when instantiating the serializer.</p>
 <p>Normally if a <code>ModelSerializer</code> does not generate the fields you need by default then you should either add them to the class explicitly, or simply use a regular <code>Serializer</code> class instead. However in some cases you may want to create a new base class that defines how the serializer fields are created for any given model.</p>
-<h3 id="serializer_field_mapping"><code>.serializer_field_mapping</code></h3>
+<h3 id="serializer_field_mapping"><a class="toclink" href="#serializer_field_mapping"><code>.serializer_field_mapping</code></a></h3>
 <p>A mapping of Django model classes to REST framework serializer classes. You can override this mapping to alter the default serializer classes that should be used for each model class.</p>
-<h3 id="serializer_related_field"><code>.serializer_related_field</code></h3>
+<h3 id="serializer_related_field"><a class="toclink" href="#serializer_related_field"><code>.serializer_related_field</code></a></h3>
 <p>This property should be the serializer field class, that is used for relational fields by default.</p>
 <p>For <code>ModelSerializer</code> this defaults to <code>PrimaryKeyRelatedField</code>.</p>
 <p>For <code>HyperlinkedModelSerializer</code> this defaults to <code>serializers.HyperlinkedRelatedField</code>.</p>
-<h3 id="serializer_url_field"><code>serializer_url_field</code></h3>
+<h3 id="serializer_url_field"><a class="toclink" href="#serializer_url_field"><code>serializer_url_field</code></a></h3>
 <p>The serializer field class that should be used for any <code>url</code> field on the serializer.</p>
 <p>Defaults to <code>serializers.HyperlinkedIdentityField</code></p>
-<h3 id="serializer_choice_field"><code>serializer_choice_field</code></h3>
+<h3 id="serializer_choice_field"><a class="toclink" href="#serializer_choice_field"><code>serializer_choice_field</code></a></h3>
 <p>The serializer field class that should be used for any choice fields on the serializer.</p>
 <p>Defaults to <code>serializers.ChoiceField</code></p>
-<h3 id="the-field_class-and-field_kwargs-api">The field_class and field_kwargs API</h3>
+<h3 id="the-field_class-and-field_kwargs-api"><a class="toclink" href="#the-field_class-and-field_kwargs-api">The field_class and field_kwargs API</a></h3>
 <p>The following methods are called to determine the class and keyword arguments for each field that should be automatically included on the serializer. Each of these methods should return a two tuple of <code>(field_class, field_kwargs)</code>.</p>
-<h3 id="build_standard_fieldself-field_name-model_field"><code>.build_standard_field(self, field_name, model_field)</code></h3>
+<h3 id="build_standard_fieldself-field_name-model_field"><a class="toclink" href="#build_standard_fieldself-field_name-model_field"><code>.build_standard_field(self, field_name, model_field)</code></a></h3>
 <p>Called to generate a serializer field that maps to a standard model field.</p>
 <p>The default implementation returns a serializer class based on the <code>serializer_field_mapping</code> attribute.</p>
-<h3 id="build_relational_fieldself-field_name-relation_info"><code>.build_relational_field(self, field_name, relation_info)</code></h3>
+<h3 id="build_relational_fieldself-field_name-relation_info"><a class="toclink" href="#build_relational_fieldself-field_name-relation_info"><code>.build_relational_field(self, field_name, relation_info)</code></a></h3>
 <p>Called to generate a serializer field that maps to a relational model field.</p>
 <p>The default implementation returns a serializer class based on the <code>serializer_relational_field</code> attribute.</p>
 <p>The <code>relation_info</code> argument is a named tuple, that contains <code>model_field</code>, <code>related_model</code>, <code>to_many</code> and <code>has_through_model</code> properties.</p>
-<h3 id="build_nested_fieldself-field_name-relation_info-nested_depth"><code>.build_nested_field(self, field_name, relation_info, nested_depth)</code></h3>
+<h3 id="build_nested_fieldself-field_name-relation_info-nested_depth"><a class="toclink" href="#build_nested_fieldself-field_name-relation_info-nested_depth"><code>.build_nested_field(self, field_name, relation_info, nested_depth)</code></a></h3>
 <p>Called to generate a serializer field that maps to a relational model field, when the <code>depth</code> option has been set.</p>
 <p>The default implementation dynamically creates a nested serializer class based on either <code>ModelSerializer</code> or <code>HyperlinkedModelSerializer</code>.</p>
 <p>The <code>nested_depth</code> will be the value of the <code>depth</code> option, minus one.</p>
 <p>The <code>relation_info</code> argument is a named tuple, that contains <code>model_field</code>, <code>related_model</code>, <code>to_many</code> and <code>has_through_model</code> properties.</p>
-<h3 id="build_property_fieldself-field_name-model_class"><code>.build_property_field(self, field_name, model_class)</code></h3>
+<h3 id="build_property_fieldself-field_name-model_class"><a class="toclink" href="#build_property_fieldself-field_name-model_class"><code>.build_property_field(self, field_name, model_class)</code></a></h3>
 <p>Called to generate a serializer field that maps to a property or zero-argument method on the model class.</p>
 <p>The default implementation returns a <code>ReadOnlyField</code> class.</p>
-<h3 id="build_url_fieldself-field_name-model_class"><code>.build_url_field(self, field_name, model_class)</code></h3>
+<h3 id="build_url_fieldself-field_name-model_class"><a class="toclink" href="#build_url_fieldself-field_name-model_class"><code>.build_url_field(self, field_name, model_class)</code></a></h3>
 <p>Called to generate a serializer field for the serializer's own <code>url</code> field. The default implementation returns a <code>HyperlinkedIdentityField</code> class.</p>
-<h3 id="build_unknown_fieldself-field_name-model_class"><code>.build_unknown_field(self, field_name, model_class)</code></h3>
+<h3 id="build_unknown_fieldself-field_name-model_class"><a class="toclink" href="#build_unknown_fieldself-field_name-model_class"><code>.build_unknown_field(self, field_name, model_class)</code></a></h3>
 <p>Called when the field name did not map to any model field or model property.
 The default implementation raises an error, although subclasses may customize this behavior.</p>
 <hr />
-<h1 id="hyperlinkedmodelserializer">HyperlinkedModelSerializer</h1>
+<h1 id="hyperlinkedmodelserializer"><a class="toclink" href="#hyperlinkedmodelserializer">HyperlinkedModelSerializer</a></h1>
 <p>The <code>HyperlinkedModelSerializer</code> class is similar to the <code>ModelSerializer</code> class except that it uses hyperlinks to represent relationships, rather than primary keys.</p>
 <p>By default the serializer will include a <code>url</code> field instead of a primary key field.</p>
 <p>The url field will be represented using a <code>HyperlinkedIdentityField</code> serializer field, and any relationships on the model will be represented using a <code>HyperlinkedRelatedField</code> serializer field.</p>
@@ -1048,7 +1048,7 @@ The default implementation raises an error, although subclasses may customize th
         model = Account
         fields = ('url', 'id', 'account_name', 'users', 'created')
 </code></pre>
-<h2 id="how-hyperlinked-views-are-determined">How hyperlinked views are determined</h2>
+<h2 id="how-hyperlinked-views-are-determined"><a class="toclink" href="#how-hyperlinked-views-are-determined">How hyperlinked views are determined</a></h2>
 <p>There needs to be a way of determining which views should be used for hyperlinking to model instances.</p>
 <p>By default hyperlinks are expected to correspond to a view name that matches the style <code>'{model_name}-detail'</code>, and looks up the instance by a <code>pk</code> keyword argument.</p>
 <p>You can override a URL field view name and lookup field by using either, or both of, the <code>view_name</code> and <code>lookup_field</code> options in the <code>extra_kwargs</code> setting, like so:</p>
@@ -1081,10 +1081,10 @@ The default implementation raises an error, although subclasses may customize th
 <hr />
 <p><strong>Tip</strong>: Properly matching together hyperlinked representations and your URL conf can sometimes be a bit fiddly. Printing the <code>repr</code> of a <code>HyperlinkedModelSerializer</code> instance is a particularly useful way to inspect exactly which view names and lookup fields the relationships are expected to map too.</p>
 <hr />
-<h2 id="changing-the-url-field-name">Changing the URL field name</h2>
+<h2 id="changing-the-url-field-name"><a class="toclink" href="#changing-the-url-field-name">Changing the URL field name</a></h2>
 <p>The name of the URL field defaults to 'url'.  You can override this globally, by using the <code>URL_FIELD_NAME</code> setting.</p>
 <hr />
-<h1 id="listserializer">ListSerializer</h1>
+<h1 id="listserializer"><a class="toclink" href="#listserializer">ListSerializer</a></h1>
 <p>The <code>ListSerializer</code> class provides the behavior for serializing and validating multiple objects at once. You won't <em>typically</em> need to use <code>ListSerializer</code> directly, but should instead simply pass <code>many=True</code> when instantiating a serializer.</p>
 <p>When a serializer is instantiated and <code>many=True</code> is passed, a <code>ListSerializer</code> instance will be created. The serializer class then becomes a child of the parent <code>ListSerializer</code></p>
 <p>There <em>are</em> a few use cases when you might want to customize the <code>ListSerializer</code> behavior. For example:</p>
@@ -1102,7 +1102,7 @@ class CustomSerializer(serializers.Serializer):
     class Meta:
         list_serializer_class = CustomListSerializer
 </code></pre>
-<h4 id="customizing-multiple-create">Customizing multiple create</h4>
+<h4 id="customizing-multiple-create"><a class="toclink" href="#customizing-multiple-create">Customizing multiple create</a></h4>
 <p>The default implementation for multiple object creation is to simply call <code>.create()</code> for each item in the list. If you want to customize this behavior, you'll need to customize the <code>.create()</code> method on <code>ListSerializer</code> class that is used when <code>many=True</code> is passed.</p>
 <p>For example:</p>
 <pre><code>class BookListSerializer(serializers.ListSerializer):
@@ -1115,7 +1115,7 @@ class BookSerializer(serializers.Serializer):
     class Meta:
         list_serializer_class = BookListSerializer
 </code></pre>
-<h4 id="customizing-multiple-update">Customizing multiple update</h4>
+<h4 id="customizing-multiple-update"><a class="toclink" href="#customizing-multiple-update">Customizing multiple update</a></h4>
 <p>By default the <code>ListSerializer</code> class does not support multiple updates. This is because the behavior that should be expected for insertions and deletions is ambiguous.</p>
 <p>To support multiple updates you'll need to do so explicitly. When writing your multiple update code make sure to keep the following in mind:</p>
 <ul>
@@ -1153,7 +1153,7 @@ class BookSerializer(serializers.Serializer):
         list_serializer_class = BookListSerializer
 </code></pre>
 <p>It is possible that a third party package may be included alongside the 3.1 release that provides some automatic support for multiple update operations, similar to the <code>allow_add_remove</code> behavior that was present in REST framework 2.</p>
-<h4 id="customizing-listserializer-initialization">Customizing ListSerializer initialization</h4>
+<h4 id="customizing-listserializer-initialization"><a class="toclink" href="#customizing-listserializer-initialization">Customizing ListSerializer initialization</a></h4>
 <p>When a serializer with <code>many=True</code> is instantiated, we need to determine which arguments and keyword arguments should be passed to the <code>.__init__()</code> method for both the child <code>Serializer</code> class, and for the parent <code>ListSerializer</code> class.</p>
 <p>The default implementation is to pass all arguments to both classes, except for <code>validators</code>, and any custom keyword arguments, both of which are assumed to be intended for the child serializer class.</p>
 <p>Occasionally you might need to explicitly specify how the child and parent classes should be instantiated when <code>many=True</code> is passed. You can do so by using the <code>many_init</code> class method.</p>
@@ -1165,7 +1165,7 @@ class BookSerializer(serializers.Serializer):
         return CustomListSerializer(*args, **kwargs)
 </code></pre>
 <hr />
-<h1 id="baseserializer">BaseSerializer</h1>
+<h1 id="baseserializer"><a class="toclink" href="#baseserializer">BaseSerializer</a></h1>
 <p><code>BaseSerializer</code> class that can be used to easily support alternative serialization and deserialization styles.</p>
 <p>This class implements the same basic API as the <code>Serializer</code> class:</p>
 <ul>
@@ -1183,7 +1183,7 @@ class BookSerializer(serializers.Serializer):
 </ul>
 <p>Because this class provides the same interface as the <code>Serializer</code> class, you can use it with the existing generic class based views exactly as you would for a regular <code>Serializer</code> or <code>ModelSerializer</code>.</p>
 <p>The only difference you'll notice when doing so is the <code>BaseSerializer</code> classes will not generate HTML forms in the browsable API. This is because the data they return does not include all the field information that would allow each field to be rendered into a suitable HTML input.</p>
-<h5 id="read-only-baseserializer-classes">Read-only <code>BaseSerializer</code> classes</h5>
+<h5 id="read-only-baseserializer-classes"><a class="toclink" href="#read-only-baseserializer-classes">Read-only <code>BaseSerializer</code> classes</a></h5>
 <p>To implement a read-only serializer using the <code>BaseSerializer</code> class, we just need to override the <code>.to_representation()</code> method. Let's take a look at an example using a simple Django model:</p>
 <pre><code>class HighScore(models.Model):
     created = models.DateTimeField(auto_now_add=True)
@@ -1212,7 +1212,7 @@ def all_high_scores(request):
     serializer = HighScoreSerializer(queryset, many=True)
     return Response(serializer.data)
 </code></pre>
-<h5 id="read-write-baseserializer-classes">Read-write <code>BaseSerializer</code> classes</h5>
+<h5 id="read-write-baseserializer-classes"><a class="toclink" href="#read-write-baseserializer-classes">Read-write <code>BaseSerializer</code> classes</a></h5>
 <p>To create a read-write serializer we first need to implement a <code>.to_internal_value()</code> method. This method returns the validated values that will be used to construct the object instance, and may raise a <code>ValidationError</code> if the supplied data is in an incorrect format.</p>
 <p>Once you've implemented <code>.to_internal_value()</code>, the basic validation API will be available on the serializer, and you will be able to use <code>.is_valid()</code>, <code>.validated_data</code> and <code>.errors</code>.</p>
 <p>If you want to also support <code>.save()</code> you'll need to also implement either or both of the <code>.create()</code> and <code>.update()</code> methods.</p>
@@ -1252,7 +1252,7 @@ def all_high_scores(request):
     def create(self, validated_data):
         return HighScore.objects.create(**validated_data)
 </code></pre>
-<h4 id="creating-new-base-classes">Creating new base classes</h4>
+<h4 id="creating-new-base-classes"><a class="toclink" href="#creating-new-base-classes">Creating new base classes</a></h4>
 <p>The <code>BaseSerializer</code> class is also useful if you want to implement new generic serializer classes for dealing with particular serialization styles, or for integrating with alternative storage backends.</p>
 <p>The following class is an example of a generic serializer that can handle coercing arbitrary objects into primitive representations.</p>
 <pre><code>class ObjectSerializer(serializers.BaseSerializer):
@@ -1288,8 +1288,8 @@ def all_high_scores(request):
                 output[attribute_name] = str(attribute)
 </code></pre>
 <hr />
-<h1 id="advanced-serializer-usage">Advanced serializer usage</h1>
-<h2 id="overriding-serialization-and-deserialization-behavior">Overriding serialization and deserialization behavior</h2>
+<h1 id="advanced-serializer-usage"><a class="toclink" href="#advanced-serializer-usage">Advanced serializer usage</a></h1>
+<h2 id="overriding-serialization-and-deserialization-behavior"><a class="toclink" href="#overriding-serialization-and-deserialization-behavior">Overriding serialization and deserialization behavior</a></h2>
 <p>If you need to alter the serialization, deserialization or validation of a serializer class you can do so by overriding the <code>.to_representation()</code> or <code>.to_internal_value()</code> methods.</p>
 <p>Some reasons this might be useful include...</p>
 <ul>
@@ -1298,16 +1298,16 @@ def all_high_scores(request):
 <li>Improving serialization performance for a frequently accessed API endpoint that returns lots of data.</li>
 </ul>
 <p>The signatures for these methods are as follows:</p>
-<h4 id="to_representationself-obj"><code>.to_representation(self, obj)</code></h4>
+<h4 id="to_representationself-obj"><a class="toclink" href="#to_representationself-obj"><code>.to_representation(self, obj)</code></a></h4>
 <p>Takes the object instance that requires serialization, and should return a primitive representation. Typically this means returning a structure of built-in Python datatypes. The exact types that can be handled will depend on the render classes you have configured for your API.</p>
-<h4 id="to_internal_valueself-data"><code>.to_internal_value(self, data)</code></h4>
+<h4 id="to_internal_valueself-data"><a class="toclink" href="#to_internal_valueself-data"><code>.to_internal_value(self, data)</code></a></h4>
 <p>Takes the unvalidated incoming data as input and should return the validated data that will be made available as <code>serializer.validated_data</code>. The return value will also be passed to the <code>.create()</code> or <code>.update()</code> methods if <code>.save()</code> is called on the serializer class.</p>
 <p>If any of the validation fails, then the method should raise a <code>serializers.ValidationError(errors)</code>. Typically the <code>errors</code> argument here will be a dictionary mapping field names to error messages.</p>
 <p>The <code>data</code> argument passed to this method will normally be the value of <code>request.data</code>, so the datatype it provides will depend on the parser classes you have configured for your API.</p>
-<h2 id="dynamically-modifying-fields">Dynamically modifying fields</h2>
+<h2 id="dynamically-modifying-fields"><a class="toclink" href="#dynamically-modifying-fields">Dynamically modifying fields</a></h2>
 <p>Once a serializer has been initialized, the dictionary of fields that are set on the serializer may be accessed using the <code>.fields</code> attribute.  Accessing and modifying this attribute allows you to dynamically modify the serializer.</p>
 <p>Modifying the <code>fields</code> argument directly allows you to do interesting things such as changing the arguments on serializer fields at runtime, rather than at the point of declaring the serializer.</p>
-<h3 id="example">Example</h3>
+<h3 id="example"><a class="toclink" href="#example">Example</a></h3>
 <p>For example, if you wanted to be able to set which fields should be used by a serializer at the point of initializing it, you could create a serializer class like so:</p>
 <pre><code>class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """
@@ -1341,23 +1341,23 @@ def all_high_scores(request):
 &gt;&gt;&gt; print UserSerializer(user, fields=('id', 'email'))
 {'id': 2, 'email': 'jon@example.com'}
 </code></pre>
-<h2 id="customizing-the-default-fields">Customizing the default fields</h2>
+<h2 id="customizing-the-default-fields"><a class="toclink" href="#customizing-the-default-fields">Customizing the default fields</a></h2>
 <p>REST framework 2 provided an API to allow developers to override how a <code>ModelSerializer</code> class would automatically generate the default set of fields.</p>
 <p>This API included the <code>.get_field()</code>, <code>.get_pk_field()</code> and other methods.</p>
 <p>Because the serializers have been fundamentally redesigned with 3.0 this API no longer exists. You can still modify the fields that get created but you'll need to refer to the source code, and be aware that if the changes you make are against private bits of API then they may be subject to change.</p>
 <p>A new interface for controlling this behavior is currently planned for REST framework 3.1.</p>
 <hr />
-<h1 id="third-party-packages">Third party packages</h1>
+<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages are also available.</p>
-<h2 id="django-rest-marshmallow">Django REST marshmallow</h2>
+<h2 id="django-rest-marshmallow"><a class="toclink" href="#django-rest-marshmallow">Django REST marshmallow</a></h2>
 <p>The <a href="http://tomchristie.github.io/django-rest-marshmallow/">django-rest-marshmallow</a> package provides an alternative implementation for serializers, using the python <a href="https://marshmallow.readthedocs.org/en/latest/">marshmallow</a> library. It exposes the same API as the REST framework serializers, and can be used as a drop-in replacement in some use-cases.</p>
-<h2 id="serpy">Serpy</h2>
+<h2 id="serpy"><a class="toclink" href="#serpy">Serpy</a></h2>
 <p>The <a href="https://github.com/clarkduvall/serpy">serpy</a> package is an alternative implementation for serializers that is built for speed. <a href="https://github.com/clarkduvall/serpy">Serpy</a> serializes complex datatypes to simple native types. The native types can be easily converted to JSON or any other format needed.</p>
-<h2 id="mongoenginemodelserializer">MongoengineModelSerializer</h2>
+<h2 id="mongoenginemodelserializer"><a class="toclink" href="#mongoenginemodelserializer">MongoengineModelSerializer</a></h2>
 <p>The <a href="https://github.com/umutbozkurt/django-rest-framework-mongoengine">django-rest-framework-mongoengine</a> package provides a <code>MongoEngineModelSerializer</code> serializer class that supports using MongoDB as the storage layer for Django REST framework.</p>
-<h2 id="geofeaturemodelserializer">GeoFeatureModelSerializer</h2>
+<h2 id="geofeaturemodelserializer"><a class="toclink" href="#geofeaturemodelserializer">GeoFeatureModelSerializer</a></h2>
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-gis">django-rest-framework-gis</a> package provides a <code>GeoFeatureModelSerializer</code> serializer class that supports GeoJSON both for read and write operations.</p>
-<h2 id="hstoreserializer">HStoreSerializer</h2>
+<h2 id="hstoreserializer"><a class="toclink" href="#hstoreserializer">HStoreSerializer</a></h2>
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-hstore">django-rest-framework-hstore</a> package provides an <code>HStoreSerializer</code> to support <a href="https://github.com/djangonauts/django-hstore">django-hstore</a> <code>DictionaryField</code> model field and its <code>schema-mode</code> feature.</p>
             
 

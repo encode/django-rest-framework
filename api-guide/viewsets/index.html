@@ -403,7 +403,7 @@
                 
               
 
-              <h1 id="viewsets">ViewSets</h1>
+              <h1 id="viewsets"><a class="toclink" href="#viewsets">ViewSets</a></h1>
 <blockquote>
 <p>After routing has determined which controller to use for a request, your controller is responsible for making sense of the request and producing the appropriate output.</p>
 <p>&mdash; <a href="http://guides.rubyonrails.org/routing.html">Ruby on Rails Documentation</a></p>
@@ -412,7 +412,7 @@
 <p>A <code>ViewSet</code> class is simply <strong>a type of class-based View, that does not provide any method handlers</strong> such as <code>.get()</code> or <code>.post()</code>, and instead provides actions such as <code>.list()</code> and <code>.create()</code>.</p>
 <p>The method handlers for a <code>ViewSet</code> are only bound to the corresponding actions at the point of finalizing the view, using the <code>.as_view()</code> method.</p>
 <p>Typically, rather than explicitly registering the views in a viewset in the urlconf, you'll register the viewset with a router class, that automatically determines the urlconf for you.</p>
-<h2 id="example">Example</h2>
+<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>Let's define a simple viewset that can be used to list or retrieve all the users in the system.</p>
 <pre><code>from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
@@ -461,7 +461,7 @@ urlpatterns = router.urls
 <li>By using routers, we no longer need to deal with wiring up the URL conf ourselves.</li>
 </ul>
 <p>Both of these come with a trade-off.  Using regular views and URL confs is more explicit and gives you more control.  ViewSets are helpful if you want to get up and running quickly, or when you have a large API and you want to enforce a consistent URL configuration throughout.</p>
-<h2 id="marking-extra-actions-for-routing">Marking extra actions for routing</h2>
+<h2 id="marking-extra-actions-for-routing"><a class="toclink" href="#marking-extra-actions-for-routing">Marking extra actions for routing</a></h2>
 <p>The default routers included with REST framework will provide routes for a standard set of create/retrieve/update/destroy style operations, as shown below:</p>
 <pre><code>class UserViewSet(viewsets.ViewSet):
     """
@@ -543,17 +543,17 @@ class UserViewSet(viewsets.ModelViewSet):
 </code></pre>
 <p>The two new actions will then be available at the urls <code>^users/{pk}/set_password/$</code> and <code>^users/{pk}/unset_password/$</code></p>
 <hr />
-<h1 id="api-reference">API Reference</h1>
-<h2 id="viewset">ViewSet</h2>
+<h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
+<h2 id="viewset"><a class="toclink" href="#viewset">ViewSet</a></h2>
 <p>The <code>ViewSet</code> class inherits from <code>APIView</code>.  You can use any of the standard attributes such as <code>permission_classes</code>, <code>authentication_classes</code> in order to control the API policy on the viewset.</p>
 <p>The <code>ViewSet</code> class does not provide any implementations of actions.  In order to use a <code>ViewSet</code> class you'll override the class and define the action implementations explicitly.</p>
-<h2 id="genericviewset">GenericViewSet</h2>
+<h2 id="genericviewset"><a class="toclink" href="#genericviewset">GenericViewSet</a></h2>
 <p>The <code>GenericViewSet</code> class inherits from <code>GenericAPIView</code>, and provides the default set of <code>get_object</code>, <code>get_queryset</code> methods and other generic view base behavior, but does not include any actions by default.</p>
 <p>In order to use a <code>GenericViewSet</code> class you'll override the class and either mixin the required mixin classes, or define the action implementations explicitly.</p>
-<h2 id="modelviewset">ModelViewSet</h2>
+<h2 id="modelviewset"><a class="toclink" href="#modelviewset">ModelViewSet</a></h2>
 <p>The <code>ModelViewSet</code> class inherits from <code>GenericAPIView</code> and includes implementations for various actions, by mixing in the behavior of the various mixin classes.</p>
 <p>The actions provided by the <code>ModelViewSet</code> class are <code>.list()</code>, <code>.retrieve()</code>,  <code>.create()</code>, <code>.update()</code>, and <code>.destroy()</code>.</p>
-<h4 id="example_1">Example</h4>
+<h4 id="example_1"><a class="toclink" href="#example_1">Example</a></h4>
 <p>Because <code>ModelViewSet</code> extends <code>GenericAPIView</code>, you'll normally need to provide at least the <code>queryset</code> and <code>serializer_class</code> attributes.  For example:</p>
 <pre><code>class AccountViewSet(viewsets.ModelViewSet):
     """
@@ -577,9 +577,9 @@ class UserViewSet(viewsets.ModelViewSet):
 </code></pre>
 <p>Note however that upon removal of the <code>queryset</code> property from your <code>ViewSet</code>, any associated <a href="../routers/">router</a> will be unable to derive the base_name of your Model automatically, and so you will have to specify the <code>base_name</code> kwarg as part of your <a href="../routers/">router registration</a>.</p>
 <p>Also note that although this class provides the complete set of create/list/retrieve/update/destroy actions by default, you can restrict the available operations by using the standard permission classes.</p>
-<h2 id="readonlymodelviewset">ReadOnlyModelViewSet</h2>
+<h2 id="readonlymodelviewset"><a class="toclink" href="#readonlymodelviewset">ReadOnlyModelViewSet</a></h2>
 <p>The <code>ReadOnlyModelViewSet</code> class also inherits from <code>GenericAPIView</code>.  As with <code>ModelViewSet</code> it also includes implementations for various actions, but unlike <code>ModelViewSet</code> only provides the 'read-only' actions, <code>.list()</code> and <code>.retrieve()</code>.</p>
-<h4 id="example_2">Example</h4>
+<h4 id="example_2"><a class="toclink" href="#example_2">Example</a></h4>
 <p>As with <code>ModelViewSet</code>, you'll normally need to provide at least the <code>queryset</code> and <code>serializer_class</code> attributes.  For example:</p>
 <pre><code>class AccountViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -589,9 +589,9 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = AccountSerializer
 </code></pre>
 <p>Again, as with <code>ModelViewSet</code>, you can use any of the standard attributes and method overrides available to <code>GenericAPIView</code>.</p>
-<h1 id="custom-viewset-base-classes">Custom ViewSet base classes</h1>
+<h1 id="custom-viewset-base-classes"><a class="toclink" href="#custom-viewset-base-classes">Custom ViewSet base classes</a></h1>
 <p>You may need to provide custom <code>ViewSet</code> classes that do not have the full set of <code>ModelViewSet</code> actions, or that customize the behavior in some other way.</p>
-<h2 id="example_3">Example</h2>
+<h2 id="example_3"><a class="toclink" href="#example_3">Example</a></h2>
 <p>To create a base viewset class that provides <code>create</code>, <code>list</code> and <code>retrieve</code> operations, inherit from <code>GenericViewSet</code>, and mixin the required actions:</p>
 <pre><code>class CreateListRetrieveViewSet(mixins.CreateModelMixin,
                                 mixins.ListModelMixin,

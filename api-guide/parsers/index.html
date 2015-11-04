@@ -437,7 +437,7 @@
                 
               
 
-              <h1 id="parsers">Parsers</h1>
+              <h1 id="parsers"><a class="toclink" href="#parsers">Parsers</a></h1>
 <blockquote>
 <p>Machine interacting web services tend to use more
 structured formats for sending data than form-encoded, since they're
@@ -445,14 +445,14 @@ sending more complex data than simple forms</p>
 <p>&mdash; Malcom Tredinnick, <a href="https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion">Django developers group</a></p>
 </blockquote>
 <p>REST framework includes a number of built in Parser classes, that allow you to accept requests with various media types.  There is also support for defining your own custom parsers, which gives you the flexibility to design the media types that your API accepts.</p>
-<h2 id="how-the-parser-is-determined">How the parser is determined</h2>
+<h2 id="how-the-parser-is-determined"><a class="toclink" href="#how-the-parser-is-determined">How the parser is determined</a></h2>
 <p>The set of valid parsers for a view is always defined as a list of classes.  When  <code>request.data</code> is accessed, REST framework will examine the <code>Content-Type</code> header on the incoming request, and determine which parser to use to parse the request content.</p>
 <hr />
 <p><strong>Note</strong>: When developing client applications always remember to make sure you're setting the <code>Content-Type</code> header when sending data in an HTTP request.</p>
 <p>If you don't set the content type, most clients will default to using <code>'application/x-www-form-urlencoded'</code>, which may not be what you wanted.</p>
 <p>As an example, if you are sending <code>json</code> encoded data using jQuery with the <a href="http://api.jquery.com/jQuery.ajax/">.ajax() method</a>, you should make sure to include the <code>contentType: 'application/json'</code> setting.</p>
 <hr />
-<h2 id="setting-the-parsers">Setting the parsers</h2>
+<h2 id="setting-the-parsers"><a class="toclink" href="#setting-the-parsers">Setting the parsers</a></h2>
 <p>The default set of parsers may be set globally, using the <code>DEFAULT_PARSER_CLASSES</code> setting. For example, the following settings would allow only requests with <code>JSON</code> content, instead of the default of JSON or form data.</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': (
@@ -485,29 +485,29 @@ def example_view(request, format=None):
     return Response({'received data': request.data})
 </code></pre>
 <hr />
-<h1 id="api-reference">API Reference</h1>
-<h2 id="jsonparser">JSONParser</h2>
+<h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
+<h2 id="jsonparser"><a class="toclink" href="#jsonparser">JSONParser</a></h2>
 <p>Parses <code>JSON</code> request content.</p>
 <p><strong>.media_type</strong>: <code>application/json</code></p>
-<h2 id="formparser">FormParser</h2>
+<h2 id="formparser"><a class="toclink" href="#formparser">FormParser</a></h2>
 <p>Parses HTML form content.  <code>request.data</code> will be populated with a <code>QueryDict</code> of data.</p>
 <p>You will typically want to use both <code>FormParser</code> and <code>MultiPartParser</code> together in order to fully support HTML form data.</p>
 <p><strong>.media_type</strong>: <code>application/x-www-form-urlencoded</code></p>
-<h2 id="multipartparser">MultiPartParser</h2>
+<h2 id="multipartparser"><a class="toclink" href="#multipartparser">MultiPartParser</a></h2>
 <p>Parses multipart HTML form content, which supports file uploads.  Both <code>request.data</code> will be populated with a <code>QueryDict</code>.</p>
 <p>You will typically want to use both <code>FormParser</code> and <code>MultiPartParser</code> together in order to fully support HTML form data.</p>
 <p><strong>.media_type</strong>: <code>multipart/form-data</code></p>
-<h2 id="fileuploadparser">FileUploadParser</h2>
+<h2 id="fileuploadparser"><a class="toclink" href="#fileuploadparser">FileUploadParser</a></h2>
 <p>Parses raw file upload content.  The <code>request.data</code> property will be a dictionary with a single key <code>'file'</code> containing the uploaded file.</p>
 <p>If the view used with <code>FileUploadParser</code> is called with a <code>filename</code> URL keyword argument, then that argument will be used as the filename.  If it is called without a <code>filename</code> URL keyword argument, then the client must set the filename in the <code>Content-Disposition</code> HTTP header.  For example <code>Content-Disposition: attachment; filename=upload.jpg</code>.</p>
 <p><strong>.media_type</strong>: <code>*/*</code></p>
-<h5 id="notes">Notes:</h5>
+<h5 id="notes"><a class="toclink" href="#notes">Notes:</a></h5>
 <ul>
 <li>The <code>FileUploadParser</code> is for usage with native clients that can upload the file as a raw data request.  For web-based uploads, or for native clients with multipart upload support, you should use the <code>MultiPartParser</code> parser instead.</li>
 <li>Since this parser's <code>media_type</code> matches any content type, <code>FileUploadParser</code> should generally be the only parser set on an API view.</li>
 <li><code>FileUploadParser</code> respects Django's standard <code>FILE_UPLOAD_HANDLERS</code> setting, and the <code>request.upload_handlers</code> attribute.  See the <a href="https://docs.djangoproject.com/en/dev/topics/http/file-uploads/#upload-handlers">Django documentation</a> for more details.</li>
 </ul>
-<h5 id="basic-usage-example">Basic usage example:</h5>
+<h5 id="basic-usage-example"><a class="toclink" href="#basic-usage-example">Basic usage example:</a></h5>
 <pre><code>class FileUploadView(views.APIView):
     parser_classes = (FileUploadParser,)
 
@@ -519,19 +519,19 @@ def example_view(request, format=None):
         return Response(status=204)
 </code></pre>
 <hr />
-<h1 id="custom-parsers">Custom parsers</h1>
+<h1 id="custom-parsers"><a class="toclink" href="#custom-parsers">Custom parsers</a></h1>
 <p>To implement a custom parser, you should override <code>BaseParser</code>, set the <code>.media_type</code> property, and implement the <code>.parse(self, stream, media_type, parser_context)</code> method.</p>
 <p>The method should return the data that will be used to populate the <code>request.data</code> property.</p>
 <p>The arguments passed to <code>.parse()</code> are:</p>
-<h3 id="stream">stream</h3>
+<h3 id="stream"><a class="toclink" href="#stream">stream</a></h3>
 <p>A stream-like object representing the body of the request.</p>
-<h3 id="media_type">media_type</h3>
+<h3 id="media_type"><a class="toclink" href="#media_type">media_type</a></h3>
 <p>Optional.  If provided, this is the media type of the incoming request content.</p>
 <p>Depending on the request's <code>Content-Type:</code> header, this may be more specific than the renderer's <code>media_type</code> attribute, and may include media type parameters.  For example <code>"text/plain; charset=utf-8"</code>.</p>
-<h3 id="parser_context">parser_context</h3>
+<h3 id="parser_context"><a class="toclink" href="#parser_context">parser_context</a></h3>
 <p>Optional.  If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.</p>
 <p>By default this will include the following keys: <code>view</code>, <code>request</code>, <code>args</code>, <code>kwargs</code>.</p>
-<h2 id="example">Example</h2>
+<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>The following is an example plaintext parser that will populate the <code>request.data</code> property with a string representing the body of the request.</p>
 <pre><code>class PlainTextParser(BaseParser):
     """
@@ -546,11 +546,11 @@ def example_view(request, format=None):
         return stream.read()
 </code></pre>
 <hr />
-<h1 id="third-party-packages">Third party packages</h1>
+<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages are also available.</p>
-<h2 id="yaml">YAML</h2>
+<h2 id="yaml"><a class="toclink" href="#yaml">YAML</a></h2>
 <p><a href="http://jpadilla.github.io/django-rest-framework-yaml/">REST framework YAML</a> provides <a href="http://www.yaml.org/">YAML</a> parsing and rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.</p>
-<h4 id="installation-configuration">Installation &amp; configuration</h4>
+<h4 id="installation-configuration"><a class="toclink" href="#installation-configuration">Installation &amp; configuration</a></h4>
 <p>Install using pip.</p>
 <pre><code>$ pip install djangorestframework-yaml
 </code></pre>
@@ -564,9 +564,9 @@ def example_view(request, format=None):
     ),
 }
 </code></pre>
-<h2 id="xml">XML</h2>
+<h2 id="xml"><a class="toclink" href="#xml">XML</a></h2>
 <p><a href="http://jpadilla.github.io/django-rest-framework-xml/">REST Framework XML</a> provides a simple informal XML format. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.</p>
-<h4 id="installation-configuration_1">Installation &amp; configuration</h4>
+<h4 id="installation-configuration_1"><a class="toclink" href="#installation-configuration_1">Installation &amp; configuration</a></h4>
 <p>Install using pip.</p>
 <pre><code>$ pip install djangorestframework-xml
 </code></pre>
@@ -580,9 +580,9 @@ def example_view(request, format=None):
     ),
 }
 </code></pre>
-<h2 id="messagepack">MessagePack</h2>
+<h2 id="messagepack"><a class="toclink" href="#messagepack">MessagePack</a></h2>
 <p><a href="https://github.com/juanriaza/django-rest-framework-msgpack">MessagePack</a> is a fast, efficient binary serialization format.  <a href="https://github.com/juanriaza">Juan Riaza</a> maintains the <a href="https://github.com/juanriaza/django-rest-framework-msgpack">djangorestframework-msgpack</a> package which provides MessagePack renderer and parser support for REST framework.</p>
-<h2 id="camelcase-json">CamelCase JSON</h2>
+<h2 id="camelcase-json"><a class="toclink" href="#camelcase-json">CamelCase JSON</a></h2>
 <p><a href="https://github.com/vbabiy/djangorestframework-camel-case">djangorestframework-camel-case</a> provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by <a href="https://github.com/vbabiy">Vitaly Babiy</a>.</p>
             
 

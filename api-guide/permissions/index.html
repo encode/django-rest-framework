@@ -437,7 +437,7 @@
                 
               
 
-              <h1 id="permissions">Permissions</h1>
+              <h1 id="permissions"><a class="toclink" href="#permissions">Permissions</a></h1>
 <blockquote>
 <p>Authentication or identification by itself is not usually sufficient to gain access to information or code.  For that, the entity requesting access must have authorization.</p>
 <p>&mdash; <a href="https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html">Apple Developer Documentation</a></p>
@@ -447,7 +447,7 @@
 <p>Permissions are used to grant or deny access different classes of users to different parts of the API.</p>
 <p>The simplest style of permission would be to allow access to any authenticated user, and deny access to any unauthenticated user. This corresponds the <code>IsAuthenticated</code> class in REST framework.</p>
 <p>A slightly less strict style of permission would be to allow full access to authenticated users, but allow read-only access to unauthenticated users. This corresponds to the <code>IsAuthenticatedOrReadOnly</code> class in REST framework.</p>
-<h2 id="how-permissions-are-determined">How permissions are determined</h2>
+<h2 id="how-permissions-are-determined"><a class="toclink" href="#how-permissions-are-determined">How permissions are determined</a></h2>
 <p>Permissions in REST framework are always defined as a list of permission classes.</p>
 <p>Before running the main body of the view each permission in the list is checked.
 If any permission check fails an <code>exceptions.PermissionDenied</code> or <code>exceptions.NotAuthenticated</code> exception will be raised, and the main body of the view will not run.</p>
@@ -457,7 +457,7 @@ If any permission check fails an <code>exceptions.PermissionDenied</code> or <co
 <li>The request was not successfully authenticated, and the highest priority authentication class <em>does not</em> use <code>WWW-Authenticate</code> headers. <em>&mdash; An HTTP 403 Forbidden response will be returned.</em></li>
 <li>The request was not successfully authenticated, and the highest priority authentication class <em>does</em> use <code>WWW-Authenticate</code> headers. <em>&mdash; An HTTP 401 Unauthorized response, with an appropriate <code>WWW-Authenticate</code> header will be returned.</em></li>
 </ul>
-<h2 id="object-level-permissions">Object level permissions</h2>
+<h2 id="object-level-permissions"><a class="toclink" href="#object-level-permissions">Object level permissions</a></h2>
 <p>REST framework permissions also support object-level permissioning.  Object level permissions are used to determine if a user should be allowed to act on a particular object, which will typically be a model instance.</p>
 <p>Object level permissions are run by REST framework's generic views when <code>.get_object()</code> is called.
 As with view level permissions, an <code>exceptions.PermissionDenied</code> exception will be raised if the user is not allowed to act on the given object.</p>
@@ -470,10 +470,10 @@ or if you override the <code>get_object</code> method on a generic view, then yo
     self.check_object_permissions(self.request, obj)
     return obj
 </code></pre>
-<h4 id="limitations-of-object-level-permissions">Limitations of object level permissions</h4>
+<h4 id="limitations-of-object-level-permissions"><a class="toclink" href="#limitations-of-object-level-permissions">Limitations of object level permissions</a></h4>
 <p>For performance reasons the generic views will not automatically apply object level permissions to each instance in a queryset when returning a list of objects.</p>
 <p>Often when you're using object level permissions you'll also want to <a href="../filtering/">filter the queryset</a> appropriately, to ensure that users only have visibility onto instances that they are permitted to view.</p>
-<h2 id="setting-the-permission-policy">Setting the permission policy</h2>
+<h2 id="setting-the-permission-policy"><a class="toclink" href="#setting-the-permission-policy">Setting the permission policy</a></h2>
 <p>The default permission policy may be set globally, using the <code>DEFAULT_PERMISSION_CLASSES</code> setting.  For example.</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -515,20 +515,20 @@ def example_view(request, format=None):
     return Response(content)
 </code></pre>
 <hr />
-<h1 id="api-reference">API Reference</h1>
-<h2 id="allowany">AllowAny</h2>
+<h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
+<h2 id="allowany"><a class="toclink" href="#allowany">AllowAny</a></h2>
 <p>The <code>AllowAny</code> permission class will allow unrestricted access, <strong>regardless of if the request was authenticated or unauthenticated</strong>.</p>
 <p>This permission is not strictly required, since you can achieve the same result by using an empty list or tuple for the permissions setting, but you may find it useful to specify this class because it makes the intention explicit.</p>
-<h2 id="isauthenticated">IsAuthenticated</h2>
+<h2 id="isauthenticated"><a class="toclink" href="#isauthenticated">IsAuthenticated</a></h2>
 <p>The <code>IsAuthenticated</code> permission class will deny permission to any unauthenticated user, and allow permission otherwise.</p>
 <p>This permission is suitable if you want your API to only be accessible to registered users.</p>
-<h2 id="isadminuser">IsAdminUser</h2>
+<h2 id="isadminuser"><a class="toclink" href="#isadminuser">IsAdminUser</a></h2>
 <p>The <code>IsAdminUser</code> permission class will deny permission to any user, unless <code>user.is_staff</code> is <code>True</code> in which case permission will be allowed.</p>
 <p>This permission is suitable if you want your API to only be accessible to a subset of trusted administrators.</p>
-<h2 id="isauthenticatedorreadonly">IsAuthenticatedOrReadOnly</h2>
+<h2 id="isauthenticatedorreadonly"><a class="toclink" href="#isauthenticatedorreadonly">IsAuthenticatedOrReadOnly</a></h2>
 <p>The <code>IsAuthenticatedOrReadOnly</code> will allow authenticated users to perform any request.  Requests for unauthorised users will only be permitted if the request method is one of the "safe" methods; <code>GET</code>, <code>HEAD</code> or <code>OPTIONS</code>.</p>
 <p>This permission is suitable if you want to your API to allow read permissions to anonymous users, and only allow write permissions to authenticated users.</p>
-<h2 id="djangomodelpermissions">DjangoModelPermissions</h2>
+<h2 id="djangomodelpermissions"><a class="toclink" href="#djangomodelpermissions">DjangoModelPermissions</a></h2>
 <p>This permission class ties into Django's standard <code>django.contrib.auth</code> <a href="https://docs.djangoproject.com/en/dev/topics/auth/customizing/#custom-permissions">model permissions</a>.  This permission must only be applied to views that has a <code>.queryset</code> property set. Authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant model permissions</em> assigned.</p>
 <ul>
 <li><code>POST</code> requests require the user to have the <code>add</code> permission on the model.</li>
@@ -537,13 +537,13 @@ def example_view(request, format=None):
 </ul>
 <p>The default behaviour can also be overridden to support custom model permissions.  For example, you might want to include a <code>view</code> model permission for <code>GET</code> requests.</p>
 <p>To use custom model permissions, override <code>DjangoModelPermissions</code> and set the <code>.perms_map</code> property.  Refer to the source code for details.</p>
-<h4 id="using-with-views-that-do-not-include-a-queryset-attribute">Using with views that do not include a <code>queryset</code> attribute.</h4>
+<h4 id="using-with-views-that-do-not-include-a-queryset-attribute"><a class="toclink" href="#using-with-views-that-do-not-include-a-queryset-attribute">Using with views that do not include a <code>queryset</code> attribute.</a></h4>
 <p>If you're using this permission with a view that uses an overridden <code>get_queryset()</code> method there may not be a <code>queryset</code> attribute on the view. In this case we suggest also marking the view with a sential queryset, so that this class can determine the required permissions. For example:</p>
 <pre><code>queryset = User.objects.none()  # Required for DjangoModelPermissions
 </code></pre>
-<h2 id="djangomodelpermissionsoranonreadonly">DjangoModelPermissionsOrAnonReadOnly</h2>
+<h2 id="djangomodelpermissionsoranonreadonly"><a class="toclink" href="#djangomodelpermissionsoranonreadonly">DjangoModelPermissionsOrAnonReadOnly</a></h2>
 <p>Similar to <code>DjangoModelPermissions</code>, but also allows unauthenticated users to have read-only access to the API.</p>
-<h2 id="djangoobjectpermissions">DjangoObjectPermissions</h2>
+<h2 id="djangoobjectpermissions"><a class="toclink" href="#djangoobjectpermissions">DjangoObjectPermissions</a></h2>
 <p>This permission class ties into Django's standard <a href="https://docs.djangoproject.com/en/dev/topics/auth/customizing/#handling-object-permissions">object permissions framework</a> that allows per-object permissions on models.  In order to use this permission class, you'll also need to add a permission backend that supports object-level permissions, such as <a href="https://github.com/lukaszb/django-guardian">django-guardian</a>.</p>
 <p>As with <code>DjangoModelPermissions</code>, this permission must only be applied to views that have a <code>.queryset</code> property or <code>.get_queryset()</code> method. Authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant per-object permissions</em> and <em>relevant model permissions</em> assigned.</p>
 <ul>
@@ -557,7 +557,7 @@ def example_view(request, format=None):
 <p><strong>Note</strong>: If you need object level <code>view</code> permissions for <code>GET</code>, <code>HEAD</code> and <code>OPTIONS</code> requests, you'll want to consider also adding the <code>DjangoObjectPermissionsFilter</code> class to ensure that list endpoints only return results including objects for which the user has appropriate view permissions.</p>
 <hr />
 <hr />
-<h1 id="custom-permissions">Custom permissions</h1>
+<h1 id="custom-permissions"><a class="toclink" href="#custom-permissions">Custom permissions</a></h1>
 <p>To implement a custom permission, override <code>BasePermission</code> and implement either, or both, of the following methods:</p>
 <ul>
 <li><code>.has_permission(self, request, view)</code></li>
@@ -582,7 +582,7 @@ class CustomerAccessPermission(permissions.BasePermission):
     def has_permission(self, request, view):
          ...
 </code></pre>
-<h2 id="examples">Examples</h2>
+<h2 id="examples"><a class="toclink" href="#examples">Examples</a></h2>
 <p>The following is an example of a permission class that checks the incoming request's IP address against a blacklist, and denies the request if the IP has been blacklisted.</p>
 <pre><code>from rest_framework import permissions
 
@@ -615,13 +615,13 @@ class BlacklistPermission(permissions.BasePermission):
 <p>Note that the generic views will check the appropriate object level permissions, but if you're writing your own custom views, you'll need to make sure you check the object level permission checks yourself.  You can do so by calling <code>self.check_object_permissions(request, obj)</code> from the view once you have the object instance.  This call will raise an appropriate <code>APIException</code> if any object-level permission checks fail, and will otherwise simply return.</p>
 <p>Also note that the generic views will only check the object-level permissions for views that retrieve a single model instance.  If you require object-level filtering of list views, you'll need to filter the queryset separately.  See the <a href="../filtering/">filtering documentation</a> for more details.</p>
 <hr />
-<h1 id="third-party-packages">Third party packages</h1>
+<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages are also available.</p>
-<h2 id="composed-permissions">Composed Permissions</h2>
+<h2 id="composed-permissions"><a class="toclink" href="#composed-permissions">Composed Permissions</a></h2>
 <p>The <a href="https://github.com/niwibe/djangorestframework-composed-permissions">Composed Permissions</a> package provides a simple way to define complex and multi-depth (with logic operators) permission objects, using small and reusable components.</p>
-<h2 id="rest-condition">REST Condition</h2>
+<h2 id="rest-condition"><a class="toclink" href="#rest-condition">REST Condition</a></h2>
 <p>The <a href="https://github.com/caxap/rest_condition">REST Condition</a> package is another extension for building complex permissions in a simple and convenient way.  The extension allows you to combine permissions with logical operators.</p>
-<h2 id="dry-rest-permissions">DRY Rest Permissions</h2>
+<h2 id="dry-rest-permissions"><a class="toclink" href="#dry-rest-permissions">DRY Rest Permissions</a></h2>
 <p>The <a href="https://github.com/Helioscene/dry-rest-permissions">DRY Rest Permissions</a> package provides the ability to define different permissions for individual default and custom actions. This package is made for apps with permissions that are derived from relationships defined in the app's data model. It also supports permission checks being returned to a client app through the API's serializer. Additionally it supports adding permissions to the default and custom list actions to restrict the data they retrive per user.</p>
             
 

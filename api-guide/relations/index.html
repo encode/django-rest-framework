@@ -469,7 +469,7 @@
                 
               
 
-              <h1 id="serializer-relations">Serializer relations</h1>
+              <h1 id="serializer-relations"><a class="toclink" href="#serializer-relations">Serializer relations</a></h1>
 <blockquote>
 <p>Bad programmers worry about the code.
 Good programmers worry about data structures and their relationships.</p>
@@ -479,7 +479,7 @@ Good programmers worry about data structures and their relationships.</p>
 <hr />
 <p><strong>Note:</strong> The relational fields are declared in <code>relations.py</code>, but by convention you should import them from the <code>serializers</code> module, using <code>from rest_framework import serializers</code> and refer to fields as <code>serializers.&lt;FieldName&gt;</code>.</p>
 <hr />
-<h4 id="inspecting-relationships">Inspecting relationships.</h4>
+<h4 id="inspecting-relationships"><a class="toclink" href="#inspecting-relationships">Inspecting relationships.</a></h4>
 <p>When using the <code>ModelSerializer</code> class, serializer fields and relationships will be automatically generated for you. Inspecting these automatically generated fields can be a useful tool for determining how to customize the relationship style.</p>
 <p>To do so, open the Django shell, using <code>python manage.py shell</code>, then import the serializer class, instantiate it, and print the object representation…</p>
 <pre><code>&gt;&gt;&gt; from myapp.serializers import AccountSerializer
@@ -490,7 +490,7 @@ AccountSerializer():
     name = CharField(allow_blank=True, max_length=100, required=False)
     owner = PrimaryKeyRelatedField(queryset=User.objects.all())
 </code></pre>
-<h1 id="api-reference">API Reference</h1>
+<h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
 <p>In order to explain the various types of relational fields, we'll use a couple of simple models for our examples.  Our models will be for music albums, and the tracks listed on each album.</p>
 <pre><code>class Album(models.Model):
     album_name = models.CharField(max_length=100)
@@ -509,7 +509,7 @@ class Track(models.Model):
     def __unicode__(self):
         return '%d: %s' % (self.order, self.title)
 </code></pre>
-<h2 id="stringrelatedfield">StringRelatedField</h2>
+<h2 id="stringrelatedfield"><a class="toclink" href="#stringrelatedfield">StringRelatedField</a></h2>
 <p><code>StringRelatedField</code> may be used to represent the target of the relationship using its <code>__unicode__</code> method.</p>
 <p>For example, the following serializer.</p>
 <pre><code>class AlbumSerializer(serializers.ModelSerializer):
@@ -536,7 +536,7 @@ class Track(models.Model):
 <ul>
 <li><code>many</code> - If applied to a to-many relationship, you should set this argument to <code>True</code>.</li>
 </ul>
-<h2 id="primarykeyrelatedfield">PrimaryKeyRelatedField</h2>
+<h2 id="primarykeyrelatedfield"><a class="toclink" href="#primarykeyrelatedfield">PrimaryKeyRelatedField</a></h2>
 <p><code>PrimaryKeyRelatedField</code> may be used to represent the target of the relationship using its primary key.</p>
 <p>For example, the following serializer:</p>
 <pre><code>class AlbumSerializer(serializers.ModelSerializer):
@@ -566,7 +566,7 @@ class Track(models.Model):
 <li><code>allow_null</code> - If set to <code>True</code>, the field will accept values of <code>None</code> or the empty string for nullable relationships. Defaults to <code>False</code>.</li>
 <li><code>pk_field</code> - Set to a field to control serialization/deserialization of the primary key's value. For example, <code>pk_field=UUIDField(format='hex')</code> would serialize a UUID primary key into its compact hex representation.</li>
 </ul>
-<h2 id="hyperlinkedrelatedfield">HyperlinkedRelatedField</h2>
+<h2 id="hyperlinkedrelatedfield"><a class="toclink" href="#hyperlinkedrelatedfield">HyperlinkedRelatedField</a></h2>
 <p><code>HyperlinkedRelatedField</code> may be used to represent the target of the relationship using a hyperlink.</p>
 <p>For example, the following serializer:</p>
 <pre><code>class AlbumSerializer(serializers.ModelSerializer):
@@ -608,7 +608,7 @@ class Track(models.Model):
 <li><code>lookup_url_kwarg</code> - The name of the keyword argument defined in the URL conf that corresponds to the lookup field. Defaults to using the same value as <code>lookup_field</code>.</li>
 <li><code>format</code> - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the <code>format</code> argument.</li>
 </ul>
-<h2 id="slugrelatedfield">SlugRelatedField</h2>
+<h2 id="slugrelatedfield"><a class="toclink" href="#slugrelatedfield">SlugRelatedField</a></h2>
 <p><code>SlugRelatedField</code> may be used to represent the target of the relationship using a field on the target.</p>
 <p>For example, the following serializer:</p>
 <pre><code>class AlbumSerializer(serializers.ModelSerializer):
@@ -643,7 +643,7 @@ class Track(models.Model):
 <li><code>many</code> - If applied to a to-many relationship, you should set this argument to <code>True</code>.</li>
 <li><code>allow_null</code> - If set to <code>True</code>, the field will accept values of <code>None</code> or the empty string for nullable relationships. Defaults to <code>False</code>.</li>
 </ul>
-<h2 id="hyperlinkedidentityfield">HyperlinkedIdentityField</h2>
+<h2 id="hyperlinkedidentityfield"><a class="toclink" href="#hyperlinkedidentityfield">HyperlinkedIdentityField</a></h2>
 <p>This field can be applied as an identity relationship, such as the <code>'url'</code> field on  a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:</p>
 <pre><code>class AlbumSerializer(serializers.HyperlinkedModelSerializer):
     track_listing = serializers.HyperlinkedIdentityField(view_name='track-list')
@@ -668,10 +668,10 @@ class Track(models.Model):
 <li><code>format</code> - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the <code>format</code> argument.</li>
 </ul>
 <hr />
-<h1 id="nested-relationships">Nested relationships</h1>
+<h1 id="nested-relationships"><a class="toclink" href="#nested-relationships">Nested relationships</a></h1>
 <p>Nested relationships can be expressed by using serializers as fields.</p>
 <p>If the field is used to represent a to-many relationship, you should add the <code>many=True</code> flag to the serializer field.</p>
-<h2 id="example">Example</h2>
+<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>For example, the following serializer:</p>
 <pre><code>class TrackSerializer(serializers.ModelSerializer):
     class Meta:
@@ -706,7 +706,7 @@ class AlbumSerializer(serializers.ModelSerializer):
     ],
 }
 </code></pre>
-<h1 id="writable-nested-serializers">Writable nested serializers</h1>
+<h1 id="writable-nested-serializers"><a class="toclink" href="#writable-nested-serializers">Writable nested serializers</a></h1>
 <p>By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create <code>create()</code> and/or <code>update()</code> methods in order to explicitly specify how the child relationships should be saved.</p>
 <pre><code>class TrackSerializer(serializers.ModelSerializer):
     class Meta:
@@ -742,10 +742,10 @@ True
 &gt;&gt;&gt; serializer.save()
 &lt;Album: Album object&gt;
 </code></pre>
-<h1 id="custom-relational-fields">Custom relational fields</h1>
+<h1 id="custom-relational-fields"><a class="toclink" href="#custom-relational-fields">Custom relational fields</a></h1>
 <p>To implement a custom relational field, you should override <code>RelatedField</code>, and implement the <code>.to_representation(self, value)</code> method. This method takes the target of the field as the <code>value</code> argument, and should return the representation that should be used to serialize the target. The <code>value</code> argument will typically be a model instance.</p>
 <p>If you want to implement a read-write relational field, you must also implement the <code>.to_internal_value(self, data)</code> method.</p>
-<h2 id="example_1">Example</h2>
+<h2 id="example_1"><a class="toclink" href="#example_1">Example</a></h2>
 <p>For example, we could define a relational field to serialize a track to a custom string representation, using its ordering, title, and duration.</p>
 <pre><code>import time
 
@@ -774,7 +774,7 @@ class AlbumSerializer(serializers.ModelSerializer):
 }
 </code></pre>
 <hr />
-<h1 id="custom-hyperlinked-fields">Custom hyperlinked fields</h1>
+<h1 id="custom-hyperlinked-fields"><a class="toclink" href="#custom-hyperlinked-fields">Custom hyperlinked fields</a></h1>
 <p>In some cases you may need to customize the behavior of a hyperlinked field, in order to represent URLs that require more than a single lookup field.</p>
 <p>You can achieve this by overriding <code>HyperlinkedRelatedField</code>. There are two methods that may be overridden:</p>
 <p><strong>get_url(self, obj, view_name, request, format)</strong></p>
@@ -785,7 +785,7 @@ attributes are not configured to correctly match the URL conf.</p>
 <p>If you want to support a writable hyperlinked field then you'll also want to override <code>get_object</code>, in order to map incoming URLs back to the object they represent. For read-only hyperlinked fields there is no need to override this method.</p>
 <p>The return value of this method should the object that corresponds to the matched URL conf arguments.</p>
 <p>May raise an <code>ObjectDoesNotExist</code> exception.</p>
-<h2 id="example_2">Example</h2>
+<h2 id="example_2"><a class="toclink" href="#example_2">Example</a></h2>
 <p>Say we have a URL for a customer object that takes two keyword arguments, like so:</p>
 <pre><code>/api/&lt;organization_slug&gt;/customers/&lt;customer_pk&gt;/
 </code></pre>
@@ -804,7 +804,7 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
             'organization_slug': obj.organization.slug,
             'customer_pk': obj.pk
         }
-        return reverse(view_name, url_kwargs, request=request, format=format)
+        return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
 
     def get_object(self, view_name, view_args, view_kwargs):
         lookup_kwargs = {
@@ -816,20 +816,20 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
 <p>Note that if you wanted to use this style together with the generic views then you'd also need to override <code>.get_object</code> on the view in order to get the correct lookup behavior.</p>
 <p>Generally we recommend a flat style for API representations where possible, but the nested URL style can also be reasonable when used in moderation.</p>
 <hr />
-<h1 id="further-notes">Further notes</h1>
-<h2 id="the-queryset-argument">The <code>queryset</code> argument</h2>
+<h1 id="further-notes"><a class="toclink" href="#further-notes">Further notes</a></h1>
+<h2 id="the-queryset-argument"><a class="toclink" href="#the-queryset-argument">The <code>queryset</code> argument</a></h2>
 <p>The <code>queryset</code> argument is only ever required for <em>writable</em> relationship field, in which case it is used for performing the model instance lookup, that maps from the primitive user input, into a model instance.</p>
 <p>In version 2.x a serializer class could <em>sometimes</em> automatically determine the <code>queryset</code> argument <em>if</em> a <code>ModelSerializer</code> class was being used.</p>
 <p>This behavior is now replaced with <em>always</em> using an explicit <code>queryset</code> argument for writable relational fields.</p>
 <p>Doing so reduces the amount of hidden 'magic' that <code>ModelSerializer</code> provides, makes the behavior of the field more clear, and ensures that it is trivial to move between using the <code>ModelSerializer</code> shortcut, or using fully explicit <code>Serializer</code> classes.</p>
-<h2 id="customizing-the-html-display">Customizing the HTML display</h2>
+<h2 id="customizing-the-html-display"><a class="toclink" href="#customizing-the-html-display">Customizing the HTML display</a></h2>
 <p>The built-in <code>__str__</code> method of the model will be used to generate string representations of the objects used to populate the <code>choices</code> property. These choices are used to populate select HTML inputs in the browsable API.</p>
 <p>To provide customized representations for such inputs, override <code>display_value()</code> of a <code>RelatedField</code> subclass. This method will receive a model object, and should return a string suitable for representing it. For example:</p>
 <pre><code>class TrackPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
     def display_value(self, instance):
         return 'Track: %s' % (instance.title)
 </code></pre>
-<h2 id="select-field-cutoffs">Select field cutoffs</h2>
+<h2 id="select-field-cutoffs"><a class="toclink" href="#select-field-cutoffs">Select field cutoffs</a></h2>
 <p>When rendered in the browsable API relational fields will default to only displaying a maximum of 1000 selectable items. If more items are present then a disabled option with "More than 1000 items…" will be displayed.</p>
 <p>This behavior is intended to prevent a template from being unable to render in an acceptable timespan due to a very large number of relationships being displayed.</p>
 <p>There are two keyword arguments you can use to control this behavior:</p>
@@ -844,7 +844,7 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
    style={'base_template': 'input.html'}
 )
 </code></pre>
-<h2 id="reverse-relations">Reverse relations</h2>
+<h2 id="reverse-relations"><a class="toclink" href="#reverse-relations">Reverse relations</a></h2>
 <p>Note that reverse relationships are not automatically included by the <code>ModelSerializer</code> and <code>HyperlinkedModelSerializer</code> classes.  To include a reverse relationship, you must explicitly add it to the fields list.  For example:</p>
 <pre><code>class AlbumSerializer(serializers.ModelSerializer):
     class Meta:
@@ -861,7 +861,7 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
         fields = ('track_set', ...)
 </code></pre>
 <p>See the Django documentation on <a href="https://docs.djangoproject.com/en/dev/topics/db/queries/#following-relationships-backward">reverse relationships</a> for more details.</p>
-<h2 id="generic-relationships">Generic relationships</h2>
+<h2 id="generic-relationships"><a class="toclink" href="#generic-relationships">Generic relationships</a></h2>
 <p>If you want to serialize a generic foreign key, you need to define a custom field, to determine explicitly how you want serialize the targets of the relationship.</p>
 <p>For example, given the following model for a tag, which has a generic relationship with other arbitrary models:</p>
 <pre><code>class TaggedItem(models.Model):
@@ -927,16 +927,16 @@ class Note(models.Model):
 </code></pre>
 <p>Note that reverse generic keys, expressed using the <code>GenericRelation</code> field, can be serialized using the regular relational field types, since the type of the target in the relationship is always known.</p>
 <p>For more information see <a href="https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#id1">the Django documentation on generic relations</a>.</p>
-<h2 id="manytomanyfields-with-a-through-model">ManyToManyFields with a Through Model</h2>
+<h2 id="manytomanyfields-with-a-through-model"><a class="toclink" href="#manytomanyfields-with-a-through-model">ManyToManyFields with a Through Model</a></h2>
 <p>By default, relational fields that target a <code>ManyToManyField</code> with a
 <code>through</code> model specified are set to read-only.</p>
 <p>If you explicitly specify a relational field pointing to a
 <code>ManyToManyField</code> with a through model, be sure to set <code>read_only</code>
 to <code>True</code>.</p>
 <hr />
-<h1 id="third-party-packages">Third Party Packages</h1>
+<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third Party Packages</a></h1>
 <p>The following third party packages are also available.</p>
-<h2 id="drf-nested-routers">DRF Nested Routers</h2>
+<h2 id="drf-nested-routers"><a class="toclink" href="#drf-nested-routers">DRF Nested Routers</a></h2>
 <p>The <a href="https://github.com/alanjds/drf-nested-routers">drf-nested-routers package</a> provides routers and relationship fields for working with nested resources.</p>
             
 

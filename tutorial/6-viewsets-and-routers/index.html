@@ -381,11 +381,11 @@
             
               
 
-              <h1 id="tutorial-6-viewsets-routers">Tutorial 6: ViewSets &amp; Routers</h1>
+              <h1 id="tutorial-6-viewsets-routers"><a class="toclink" href="#tutorial-6-viewsets-routers">Tutorial 6: ViewSets &amp; Routers</a></h1>
 <p>REST framework includes an abstraction for dealing with <code>ViewSets</code>, that allows the developer to concentrate on modeling the state and interactions of the API, and leave the URL construction to be handled automatically, based on common conventions.</p>
 <p><code>ViewSet</code> classes are almost the same thing as <code>View</code> classes, except that they provide operations such as <code>read</code>, or <code>update</code>, and not method handlers such as <code>get</code> or <code>put</code>.</p>
 <p>A <code>ViewSet</code> class is only bound to a set of method handlers at the last moment, when it is instantiated into a set of views, typically by using a <code>Router</code> class which handles the complexities of defining the URL conf for you.</p>
-<h2 id="refactoring-to-use-viewsets">Refactoring to use ViewSets</h2>
+<h2 id="refactoring-to-use-viewsets"><a class="toclink" href="#refactoring-to-use-viewsets">Refactoring to use ViewSets</a></h2>
 <p>Let's take our current set of views, and refactor them into view sets.</p>
 <p>First of all let's refactor our <code>UserList</code> and <code>UserDetail</code> views into a single <code>UserViewSet</code>.  We can remove the two views, and replace them with a single class:</p>
 <pre><code>from rest_framework import viewsets
@@ -425,7 +425,7 @@ class SnippetViewSet(viewsets.ModelViewSet):
 <p>Notice that we've also used the <code>@detail_route</code> decorator to create a custom action, named <code>highlight</code>.  This decorator can be used to add any custom endpoints that don't fit into the standard <code>create</code>/<code>update</code>/<code>delete</code> style.</p>
 <p>Custom actions which use the <code>@detail_route</code> decorator will respond to <code>GET</code> requests.  We can use the <code>methods</code> argument if we wanted an action that responded to <code>POST</code> requests.</p>
 <p>The URLs for custom actions by default depend on the method name itself. If you want to change the way url should be constructed, you can include url_path as a decorator keyword argument.</p>
-<h2 id="binding-viewsets-to-urls-explicitly">Binding ViewSets to URLs explicitly</h2>
+<h2 id="binding-viewsets-to-urls-explicitly"><a class="toclink" href="#binding-viewsets-to-urls-explicitly">Binding ViewSets to URLs explicitly</a></h2>
 <p>The handler methods only get bound to the actions when we define the URLConf.
 To see what's going on under the hood let's first explicitly create a set of views from our ViewSets.</p>
 <p>In the <code>urls.py</code> file we bind our <code>ViewSet</code> classes into a set of concrete views.</p>
@@ -463,7 +463,7 @@ user_detail = UserViewSet.as_view({
     url(r'^users/(?P&lt;pk&gt;[0-9]+)/$', user_detail, name='user-detail')
 ])
 </code></pre>
-<h2 id="using-routers">Using Routers</h2>
+<h2 id="using-routers"><a class="toclink" href="#using-routers">Using Routers</a></h2>
 <p>Because we're using <code>ViewSet</code> classes rather than <code>View</code> classes, we actually don't need to design the URL conf ourselves.  The conventions for wiring up resources into views and urls can be handled automatically, using a <code>Router</code> class.  All we need to do is register the appropriate view sets with a router, and let it do the rest.</p>
 <p>Here's our re-wired <code>urls.py</code> file.</p>
 <pre><code>from django.conf.urls import url, include
@@ -484,14 +484,14 @@ urlpatterns = [
 </code></pre>
 <p>Registering the viewsets with the router is similar to providing a urlpattern.  We include two arguments - the URL prefix for the views, and the viewset itself.</p>
 <p>The <code>DefaultRouter</code> class we're using also automatically creates the API root view for us, so we can now delete the <code>api_root</code> method from our <code>views</code> module.</p>
-<h2 id="trade-offs-between-views-vs-viewsets">Trade-offs between views vs viewsets</h2>
+<h2 id="trade-offs-between-views-vs-viewsets"><a class="toclink" href="#trade-offs-between-views-vs-viewsets">Trade-offs between views vs viewsets</a></h2>
 <p>Using viewsets can be a really useful abstraction.  It helps ensure that URL conventions will be consistent across your API, minimizes the amount of code you need to write, and allows you to concentrate on the interactions and representations your API provides rather than the specifics of the URL conf.</p>
 <p>That doesn't mean it's always the right approach to take.  There's a similar set of trade-offs to consider as when using class-based views instead of function based views.  Using viewsets is less explicit than building your views individually.</p>
-<h2 id="reviewing-our-work">Reviewing our work</h2>
+<h2 id="reviewing-our-work"><a class="toclink" href="#reviewing-our-work">Reviewing our work</a></h2>
 <p>With an incredibly small amount of code, we've now got a complete pastebin Web API, which is fully web browsable, and comes complete with authentication, per-object permissions, and multiple renderer formats.</p>
 <p>We've walked through each step of the design process, and seen how if we need to customize anything we can gradually work our way down to simply using regular Django views.</p>
 <p>You can review the final <a href="https://github.com/tomchristie/rest-framework-tutorial">tutorial code</a> on GitHub, or try out a live example in <a href="http://restframework.herokuapp.com/">the sandbox</a>.</p>
-<h2 id="onwards-and-upwards">Onwards and upwards</h2>
+<h2 id="onwards-and-upwards"><a class="toclink" href="#onwards-and-upwards">Onwards and upwards</a></h2>
 <p>We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here are a few places you can start:</p>
 <ul>
 <li>Contribute on <a href="https://github.com/tomchristie/django-rest-framework">GitHub</a> by reviewing and submitting issues, and making pull requests.</li>

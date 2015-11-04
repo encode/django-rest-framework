@@ -381,14 +381,14 @@
             
               
 
-              <h1 id="browser-enhancements">Browser enhancements</h1>
+              <h1 id="browser-enhancements"><a class="toclink" href="#browser-enhancements">Browser enhancements</a></h1>
 <blockquote>
 <p>"There are two noncontroversial uses for overloaded POST.  The first is to <em>simulate</em> HTTP's uniform interface for clients like web browsers that don't support PUT or DELETE"</p>
 <p>&mdash; <a href="http://www.amazon.com/Restful-Web-Services-Leonard-Richardson/dp/0596529260">RESTful Web Services</a>, Leonard Richardson &amp; Sam Ruby.</p>
 </blockquote>
 <p>In order to allow the browsable API to function, there are a couple of browser enhancements that REST framework needs to provide.</p>
 <p>As of version 3.3.0 onwards these are enabled with javascript, using the <a href="https://github.com/tomchristie/ajax-form">ajax-form</a> library.</p>
-<h2 id="browser-based-put-delete-etc">Browser based PUT, DELETE, etc...</h2>
+<h2 id="browser-based-put-delete-etc"><a class="toclink" href="#browser-based-put-delete-etc">Browser based PUT, DELETE, etc...</a></h2>
 <p>The <a href="https://github.com/tomchristie/ajax-form">AJAX form library</a> supports browser-based <code>PUT</code>, <code>DELETE</code> and other methods on HTML forms.</p>
 <p>After including the library, use the <code>data-method</code> attribute on the form, like so:</p>
 <pre><code>&lt;form action="/" data-method="PUT"&gt;
@@ -397,7 +397,7 @@
 &lt;/form&gt;
 </code></pre>
 <p>Note that prior to 3.3.0, this support was server-side rather than javascript based. The method overloading style (as used in <a href="http://guides.rubyonrails.org/form_helpers.html#how-do-forms-with-put-or-delete-methods-work">Ruby on Rails</a>) is no longer supported due to subtle issues that it introduces in request parsing.</p>
-<h2 id="browser-based-submission-of-non-form-content">Browser based submission of non-form content</h2>
+<h2 id="browser-based-submission-of-non-form-content"><a class="toclink" href="#browser-based-submission-of-non-form-content">Browser based submission of non-form content</a></h2>
 <p>Browser-based submission of content types such as JSON are supported by the <a href="https://github.com/tomchristie/ajax-form">AJAX form library</a>, using form fields with <code>data-override='content-type'</code> and <code>data-override='content'</code> attributes.</p>
 <p>For example:</p>
 <pre><code>    &lt;form action="/"&gt;
@@ -407,12 +407,12 @@
     &lt;/form&gt;
 </code></pre>
 <p>Note that prior to 3.3.0, this support was server-side rather than javascript based.</p>
-<h2 id="url-based-format-suffixes">URL based format suffixes</h2>
+<h2 id="url-based-format-suffixes"><a class="toclink" href="#url-based-format-suffixes">URL based format suffixes</a></h2>
 <p>REST framework can take <code>?format=json</code> style URL parameters, which can be a
 useful shortcut for determining which content type should be returned from
 the view.</p>
 <p>This behavior is controlled using the <code>URL_FORMAT_OVERRIDE</code> setting.</p>
-<h2 id="http-header-based-method-overriding">HTTP header based method overriding</h2>
+<h2 id="http-header-based-method-overriding"><a class="toclink" href="#http-header-based-method-overriding">HTTP header based method overriding</a></h2>
 <p>Prior to version 3.3.0 the semi extension header <code>X-HTTP-Method-Override</code> was supported for overriding the request method. This behavior is no longer in core, but can be adding if needed using middleware.</p>
 <p>For example:</p>
 <pre><code>METHOD_OVERRIDE_HEADER = 'HTTP_X_HTTP_METHOD_OVERRIDE'
@@ -425,7 +425,7 @@ class MethodOverrideMiddleware(object):
             return
         request.method = request.META[METHOD_OVERRIDE_HEADER]
 </code></pre>
-<h2 id="url-based-accept-headers">URL based accept headers</h2>
+<h2 id="url-based-accept-headers"><a class="toclink" href="#url-based-accept-headers">URL based accept headers</a></h2>
 <p>Until version 3.3.0 REST framework included built-in support for <code>?accept=application/json</code> style URL parameters, which would allow the <code>Accept</code> header to be overridden.</p>
 <p>Since the introduction of the content negotiation API this behavior is no longer included in core, but may be added using a custom content negotiation class, if needed.</p>
 <p>For example:</p>
@@ -435,7 +435,7 @@ class MethodOverrideMiddleware(object):
        header = request.query_params.get('_accept', header)
        return [token.strip() for token in header.split(',')]
 </code></pre>
-<h2 id="doesnt-html5-support-put-and-delete-forms">Doesn't HTML5 support PUT and DELETE forms?</h2>
+<h2 id="doesnt-html5-support-put-and-delete-forms"><a class="toclink" href="#doesnt-html5-support-put-and-delete-forms">Doesn't HTML5 support PUT and DELETE forms?</a></h2>
 <p>Nope.  It was at one point intended to support <code>PUT</code> and <code>DELETE</code> forms, but
 was later <a href="http://www.w3.org/TR/html5-diff/#changes-2010-06-24">dropped from the spec</a>.  There remains
 <a href="http://amundsen.com/examples/put-delete-forms/">ongoing discussion</a> about adding support for <code>PUT</code> and <code>DELETE</code>,

@@ -381,9 +381,9 @@
             
               
 
-              <h1 id="tutorial-5-relationships-hyperlinked-apis">Tutorial 5: Relationships &amp; Hyperlinked APIs</h1>
+              <h1 id="tutorial-5-relationships-hyperlinked-apis"><a class="toclink" href="#tutorial-5-relationships-hyperlinked-apis">Tutorial 5: Relationships &amp; Hyperlinked APIs</a></h1>
 <p>At the moment relationships within our API are represented by using primary keys.  In this part of the tutorial we'll improve the cohesion and discoverability of our API, by instead using hyperlinking for relationships.</p>
-<h2 id="creating-an-endpoint-for-the-root-of-our-api">Creating an endpoint for the root of our API</h2>
+<h2 id="creating-an-endpoint-for-the-root-of-our-api"><a class="toclink" href="#creating-an-endpoint-for-the-root-of-our-api">Creating an endpoint for the root of our API</a></h2>
 <p>Right now we have endpoints for 'snippets' and 'users', but we don't have a single entry point to our API.  To create one, we'll use a regular function-based view and the <code>@api_view</code> decorator we introduced earlier. In your <code>snippets/views.py</code> add:</p>
 <pre><code>from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -398,7 +398,7 @@ def api_root(request, format=None):
     })
 </code></pre>
 <p>Two things should be noticed here. First, we're using REST framework's <code>reverse</code> function in order to return fully-qualified URLs; second, URL patterns are identified by convenience names that we will declare later on in our <code>snippets/urls.py</code>. </p>
-<h2 id="creating-an-endpoint-for-the-highlighted-snippets">Creating an endpoint for the highlighted snippets</h2>
+<h2 id="creating-an-endpoint-for-the-highlighted-snippets"><a class="toclink" href="#creating-an-endpoint-for-the-highlighted-snippets">Creating an endpoint for the highlighted snippets</a></h2>
 <p>The other obvious thing that's still missing from our pastebin API is the code highlighting endpoints.</p>
 <p>Unlike all our other API endpoints, we don't want to use JSON, but instead just present an HTML representation.  There are two styles of HTML renderer provided by REST framework, one for dealing with HTML rendered using templates, the other for dealing with pre-rendered HTML.  The second renderer is the one we'd like to use for this endpoint.</p>
 <p>The other thing we need to consider when creating the code highlight view is that there's no existing concrete generic view that we can use.  We're not returning an object instance, but instead a property of an object instance.</p>
@@ -421,7 +421,7 @@ We'll add a url pattern for our new API root in <code>snippets/urls.py</code>:</
 <p>And then add a url pattern for the snippet highlights:</p>
 <pre><code>url(r'^snippets/(?P&lt;pk&gt;[0-9]+)/highlight/$', views.SnippetHighlight.as_view()),
 </code></pre>
-<h2 id="hyperlinking-our-api">Hyperlinking our API</h2>
+<h2 id="hyperlinking-our-api"><a class="toclink" href="#hyperlinking-our-api">Hyperlinking our API</a></h2>
 <p>Dealing with relationships between entities is one of the more challenging aspects of Web API design.  There are a number of different ways that we might choose to represent a relationship:</p>
 <ul>
 <li>Using primary keys.</li>
@@ -460,7 +460,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 </code></pre>
 <p>Notice that we've also added a new <code>'highlight'</code> field.  This field is of the same type as the <code>url</code> field, except that it points to the <code>'snippet-highlight'</code> url pattern, instead of the <code>'snippet-detail'</code> url pattern.</p>
 <p>Because we've included format suffixed URLs such as <code>'.json'</code>, we also need to indicate on the <code>highlight</code> field that any format suffixed hyperlinks it returns should use the <code>'.html'</code> suffix.</p>
-<h2 id="making-sure-our-url-patterns-are-named">Making sure our URL patterns are named</h2>
+<h2 id="making-sure-our-url-patterns-are-named"><a class="toclink" href="#making-sure-our-url-patterns-are-named">Making sure our URL patterns are named</a></h2>
 <p>If we're going to have a hyperlinked API, we need to make sure we name our URL patterns.  Let's take a look at which URL patterns we need to name.</p>
 <ul>
 <li>The root of our API refers to <code>'user-list'</code> and <code>'snippet-list'</code>.</li>
@@ -499,7 +499,7 @@ urlpatterns += [
                                namespace='rest_framework')),
 ]
 </code></pre>
-<h2 id="adding-pagination">Adding pagination</h2>
+<h2 id="adding-pagination"><a class="toclink" href="#adding-pagination">Adding pagination</a></h2>
 <p>The list views for users and code snippets could end up returning quite a lot of instances, so really we'd like to make sure we paginate the results, and allow the API client to step through each of the individual pages.</p>
 <p>We can change the default list style to use pagination, by modifying our <code>tutorial/settings.py</code> file slightly.  Add the following setting:</p>
 <pre><code>REST_FRAMEWORK = {
@@ -508,7 +508,7 @@ urlpatterns += [
 </code></pre>
 <p>Note that settings in REST framework are all namespaced into a single dictionary setting, named 'REST_FRAMEWORK', which helps keep them well separated from your other project settings.</p>
 <p>We could also customize the pagination style if we needed too, but in this case we'll just stick with the default.</p>
-<h2 id="browsing-the-api">Browsing the API</h2>
+<h2 id="browsing-the-api"><a class="toclink" href="#browsing-the-api">Browsing the API</a></h2>
 <p>If we open a browser and navigate to the browsable API, you'll find that you can now work your way around the API simply by following links.</p>
 <p>You'll also be able to see the 'highlight' links on the snippet instances, that will take you to the highlighted code HTML representations.</p>
 <p>In <a href="../6-viewsets-and-routers/">part 6</a> of the tutorial we'll look at how we can use ViewSets and Routers to reduce the amount of code we need to build our API.</p>

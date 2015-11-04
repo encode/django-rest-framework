@@ -381,9 +381,9 @@
             
               
 
-              <h1 id="quickstart">Quickstart</h1>
+              <h1 id="quickstart"><a class="toclink" href="#quickstart">Quickstart</a></h1>
 <p>We're going to create a simple API to allow admin users to view and edit the users and groups in the system.</p>
-<h2 id="project-setup">Project setup</h2>
+<h2 id="project-setup"><a class="toclink" href="#project-setup">Project setup</a></h2>
 <p>Create a new Django project named <code>tutorial</code>, then start a new app called <code>quickstart</code>.</p>
 <pre><code># Create the project directory
 mkdir tutorial
@@ -410,7 +410,7 @@ cd ..
 <pre><code>python manage.py createsuperuser
 </code></pre>
 <p>Once you've set up a database and initial user created and ready to go, open up the app's directory and we'll get coding...</p>
-<h2 id="serializers">Serializers</h2>
+<h2 id="serializers"><a class="toclink" href="#serializers">Serializers</a></h2>
 <p>First up we're going to define some serializers. Let's create a new module named <code>tutorial/quickstart/serializers.py</code> that we'll use for our data representations.</p>
 <pre><code>from django.contrib.auth.models import User, Group
 from rest_framework import serializers
@@ -428,7 +428,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'name')
 </code></pre>
 <p>Notice that we're using hyperlinked relations in this case, with <code>HyperlinkedModelSerializer</code>.  You can also use primary key and various other relationships, but hyperlinking is good RESTful design.</p>
-<h2 id="views">Views</h2>
+<h2 id="views"><a class="toclink" href="#views">Views</a></h2>
 <p>Right, we'd better write some views then.  Open <code>tutorial/quickstart/views.py</code> and get typing.</p>
 <pre><code>from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
@@ -452,7 +452,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 </code></pre>
 <p>Rather than write multiple views we're grouping together all the common behavior into classes called <code>ViewSets</code>.</p>
 <p>We can easily break these down into individual views if we need to, but using viewsets keeps the view logic nicely organized as well as being very concise.</p>
-<h2 id="urls">URLs</h2>
+<h2 id="urls"><a class="toclink" href="#urls">URLs</a></h2>
 <p>Okay, now let's wire up the API URLs.  On to <code>tutorial/urls.py</code>...</p>
 <pre><code>from django.conf.urls import url, include
 from rest_framework import routers
@@ -472,7 +472,7 @@ urlpatterns = [
 <p>Because we're using viewsets instead of views, we can automatically generate the URL conf for our API, by simply registering the viewsets with a router class.</p>
 <p>Again, if we need more control over the API URLs we can simply drop down to using regular class based views, and writing the URL conf explicitly.</p>
 <p>Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browsable API.</p>
-<h2 id="settings">Settings</h2>
+<h2 id="settings"><a class="toclink" href="#settings">Settings</a></h2>
 <p>We'd also like to set a few global settings.  We'd like to turn on pagination, and we want our API to only be accessible to admin users.  The settings module will be in <code>tutorial/settings.py</code></p>
 <pre><code>INSTALLED_APPS = (
     ...
@@ -486,7 +486,7 @@ REST_FRAMEWORK = {
 </code></pre>
 <p>Okay, we're done.</p>
 <hr />
-<h2 id="testing-our-api">Testing our API</h2>
+<h2 id="testing-our-api"><a class="toclink" href="#testing-our-api">Testing our API</a></h2>
 <p>We're now ready to test the API we've built.  Let's fire up the server from the command line.</p>
 <pre><code>python ./manage.py runserver
 </code></pre>

@@ -567,7 +567,7 @@
                 
               
 
-              <h1 id="serializer-fields">Serializer fields</h1>
+              <h1 id="serializer-fields"><a class="toclink" href="#serializer-fields">Serializer fields</a></h1>
 <blockquote>
 <p>Each field in a Form class is responsible not only for validating data, but also for "cleaning" it &mdash; normalizing it to a consistent format.</p>
 <p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data">Django documentation</a></p>
@@ -576,42 +576,42 @@
 <hr />
 <p><strong>Note:</strong> The serializer fields are declared in <code>fields.py</code>, but by convention you should import them using <code>from rest_framework import serializers</code> and refer to fields as <code>serializers.&lt;FieldName&gt;</code>.</p>
 <hr />
-<h2 id="core-arguments">Core arguments</h2>
+<h2 id="core-arguments"><a class="toclink" href="#core-arguments">Core arguments</a></h2>
 <p>Each serializer field class constructor takes at least these arguments.  Some Field classes take additional, field-specific arguments, but the following should always be accepted:</p>
-<h3 id="read_only"><code>read_only</code></h3>
+<h3 id="read_only"><a class="toclink" href="#read_only"><code>read_only</code></a></h3>
 <p>Read-only fields are included in the API output, but should not be included in the input during create or update operations. Any 'read_only' fields that are incorrectly included in the serializer input will be ignored.</p>
 <p>Set this to <code>True</code> to ensure that the field is used when serializing a representation, but is not used when creating or updating an instance during deserialization.</p>
 <p>Defaults to <code>False</code></p>
-<h3 id="write_only"><code>write_only</code></h3>
+<h3 id="write_only"><a class="toclink" href="#write_only"><code>write_only</code></a></h3>
 <p>Set this to <code>True</code> to ensure that the field may be used when updating or creating an instance, but is not included when serializing the representation.</p>
 <p>Defaults to <code>False</code></p>
-<h3 id="required"><code>required</code></h3>
+<h3 id="required"><a class="toclink" href="#required"><code>required</code></a></h3>
 <p>Normally an error will be raised if a field is not supplied during deserialization.
 Set to false if this field is not required to be present during deserialization.</p>
 <p>Setting this to <code>False</code> also allows the object attribute or dictionary key to be omitted from output when serializing the instance. If the key is not present it will simply not be included in the output representation.</p>
 <p>Defaults to <code>True</code>.</p>
-<h3 id="allow_null"><code>allow_null</code></h3>
+<h3 id="allow_null"><a class="toclink" href="#allow_null"><code>allow_null</code></a></h3>
 <p>Normally an error will be raised if <code>None</code> is passed to a serializer field. Set this keyword argument to <code>True</code> if <code>None</code> should be considered a valid value.</p>
 <p>Defaults to <code>False</code></p>
-<h3 id="default"><code>default</code></h3>
+<h3 id="default"><a class="toclink" href="#default"><code>default</code></a></h3>
 <p>If set, this gives the default value that will be used for the field if no input value is supplied.  If not set the default behavior is to not populate the attribute at all.</p>
 <p>May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a <code>set_context</code> method, that will be called each time before getting the value with the field instance as only argument. This works the same way as for <a href="../validators/#using-set_context">validators</a>.</p>
 <p>Note that setting a <code>default</code> value implies that the field is not required. Including both the <code>default</code> and <code>required</code> keyword arguments is invalid and will raise an error.</p>
-<h3 id="source"><code>source</code></h3>
+<h3 id="source"><a class="toclink" href="#source"><code>source</code></a></h3>
 <p>The name of the attribute that will be used to populate the field.  May be a method that only takes a <code>self</code> argument, such as <code>URLField(source='get_absolute_url')</code>, or may use dotted notation to traverse attributes, such as <code>EmailField(source='user.email')</code>.</p>
 <p>The value <code>source='*'</code> has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.</p>
 <p>Defaults to the name of the field.</p>
-<h3 id="validators"><code>validators</code></h3>
+<h3 id="validators"><a class="toclink" href="#validators"><code>validators</code></a></h3>
 <p>A list of validator functions which should be applied to the incoming field input, and which either raise a validation error or simply return. Validator functions should typically raise <code>serializers.ValidationError</code>, but Django's built-in <code>ValidationError</code> is also supported for compatibility with validators defined in the Django codebase or third party Django packages.</p>
-<h3 id="error_messages"><code>error_messages</code></h3>
+<h3 id="error_messages"><a class="toclink" href="#error_messages"><code>error_messages</code></a></h3>
 <p>A dictionary of error codes to error messages.</p>
-<h3 id="label"><code>label</code></h3>
+<h3 id="label"><a class="toclink" href="#label"><code>label</code></a></h3>
 <p>A short text string that may be used as the name of the field in HTML form fields or other descriptive elements.</p>
-<h3 id="help_text"><code>help_text</code></h3>
+<h3 id="help_text"><a class="toclink" href="#help_text"><code>help_text</code></a></h3>
 <p>A text string that may be used as a description of the field in HTML form fields or other descriptive elements.</p>
-<h3 id="initial"><code>initial</code></h3>
+<h3 id="initial"><a class="toclink" href="#initial"><code>initial</code></a></h3>
 <p>A value that should be used for pre-populating the value of HTML form fields.</p>
-<h3 id="style"><code>style</code></h3>
+<h3 id="style"><a class="toclink" href="#style"><code>style</code></a></h3>
 <p>A dictionary of key-value pairs that can be used to control how renderers should render the field.</p>
 <p>Two examples here are <code>'input_type'</code> and <code>'base_template'</code>:</p>
 <pre><code># Use &lt;input type="password"&gt; for the input.
@@ -627,19 +627,19 @@ color_channel = serializers.ChoiceField(
 </code></pre>
 <p>For more details see the <a href="../../topics/html-and-forms/">HTML &amp; Forms</a> documentation.</p>
 <hr />
-<h1 id="boolean-fields">Boolean fields</h1>
-<h2 id="booleanfield">BooleanField</h2>
+<h1 id="boolean-fields"><a class="toclink" href="#boolean-fields">Boolean fields</a></h1>
+<h2 id="booleanfield"><a class="toclink" href="#booleanfield">BooleanField</a></h2>
 <p>A boolean representation.</p>
 <p>When using HTML encoded form input be aware that omitting a value will always be treated as setting a field to <code>False</code>, even if it has a <code>default=True</code> option specified. This is because HTML checkbox inputs represent the unchecked state by omitting the value, so REST framework treats omission as if it is an empty checkbox input.</p>
 <p>Corresponds to <code>django.db.models.fields.BooleanField</code>.</p>
 <p><strong>Signature:</strong> <code>BooleanField()</code></p>
-<h2 id="nullbooleanfield">NullBooleanField</h2>
+<h2 id="nullbooleanfield"><a class="toclink" href="#nullbooleanfield">NullBooleanField</a></h2>
 <p>A boolean representation that also accepts <code>None</code> as a valid value.</p>
 <p>Corresponds to <code>django.db.models.fields.NullBooleanField</code>.</p>
 <p><strong>Signature:</strong> <code>NullBooleanField()</code></p>
 <hr />
-<h1 id="string-fields">String fields</h1>
-<h2 id="charfield">CharField</h2>
+<h1 id="string-fields"><a class="toclink" href="#string-fields">String fields</a></h1>
+<h2 id="charfield"><a class="toclink" href="#charfield">CharField</a></h2>
 <p>A text representation. Optionally validates the text to be shorter than <code>max_length</code> and longer than <code>min_length</code>.</p>
 <p>Corresponds to <code>django.db.models.fields.CharField</code> or <code>django.db.models.fields.TextField</code>.</p>
 <p><strong>Signature:</strong> <code>CharField(max_length=None, min_length=None, allow_blank=False, trim_whitespace=True)</code></p>
@@ -650,25 +650,25 @@ color_channel = serializers.ChoiceField(
 <li><code>trim_whitespace</code> - If set to <code>True</code> then leading and trailing whitespace is trimmed. Defaults to <code>True</code>.</li>
 </ul>
 <p>The <code>allow_null</code> option is also available for string fields, although its usage is discouraged in favor of <code>allow_blank</code>. It is valid to set both <code>allow_blank=True</code> and <code>allow_null=True</code>, but doing so means that there will be two differing types of empty value permissible for string representations, which can lead to data inconsistencies and subtle application bugs.</p>
-<h2 id="emailfield">EmailField</h2>
+<h2 id="emailfield"><a class="toclink" href="#emailfield">EmailField</a></h2>
 <p>A text representation, validates the text to be a valid e-mail address.</p>
 <p>Corresponds to <code>django.db.models.fields.EmailField</code></p>
 <p><strong>Signature:</strong> <code>EmailField(max_length=None, min_length=None, allow_blank=False)</code></p>
-<h2 id="regexfield">RegexField</h2>
+<h2 id="regexfield"><a class="toclink" href="#regexfield">RegexField</a></h2>
 <p>A text representation, that validates the given value matches against a certain regular expression.</p>
 <p>Corresponds to <code>django.forms.fields.RegexField</code>.</p>
 <p><strong>Signature:</strong> <code>RegexField(regex, max_length=None, min_length=None, allow_blank=False)</code></p>
 <p>The mandatory <code>regex</code> argument may either be a string, or a compiled python regular expression object.</p>
 <p>Uses Django's <code>django.core.validators.RegexValidator</code> for validation.</p>
-<h2 id="slugfield">SlugField</h2>
+<h2 id="slugfield"><a class="toclink" href="#slugfield">SlugField</a></h2>
 <p>A <code>RegexField</code> that validates the input against the pattern <code>[a-zA-Z0-9_-]+</code>.</p>
 <p>Corresponds to <code>django.db.models.fields.SlugField</code>.</p>
 <p><strong>Signature:</strong> <code>SlugField(max_length=50, min_length=None, allow_blank=False)</code></p>
-<h2 id="urlfield">URLField</h2>
+<h2 id="urlfield"><a class="toclink" href="#urlfield">URLField</a></h2>
 <p>A <code>RegexField</code> that validates the input against a URL matching pattern. Expects fully qualified URLs of the form <code>http://&lt;host&gt;/&lt;path&gt;</code>.</p>
 <p>Corresponds to <code>django.db.models.fields.URLField</code>.  Uses Django's <code>django.core.validators.URLValidator</code> for validation.</p>
 <p><strong>Signature:</strong> <code>URLField(max_length=200, min_length=None, allow_blank=False)</code></p>
-<h2 id="uuidfield">UUIDField</h2>
+<h2 id="uuidfield"><a class="toclink" href="#uuidfield">UUIDField</a></h2>
 <p>A field that ensures the input is a valid UUID string. The <code>to_internal_value</code> method will return a <code>uuid.UUID</code> instance. On output the field will return a string in the canonical hyphenated format, for example:</p>
 <pre><code>"de305d54-75b4-431b-adb2-eb6b9e546013"
 </code></pre>
@@ -683,7 +683,7 @@ color_channel = serializers.ChoiceField(
 </ul>
 </li>
 </ul>
-<h2 id="filepathfield">FilePathField</h2>
+<h2 id="filepathfield"><a class="toclink" href="#filepathfield">FilePathField</a></h2>
 <p>A field whose choices are limited to the filenames in a certain directory on the filesystem</p>
 <p>Corresponds to <code>django.forms.fields.FilePathField</code>.</p>
 <p><strong>Signature:</strong> <code>FilePathField(path, match=None, recursive=False, allow_files=True, allow_folders=False, required=None, **kwargs)</code></p>
@@ -694,7 +694,7 @@ color_channel = serializers.ChoiceField(
 <li><code>allow_files</code> - Specifies whether files in the specified location should be included. Default is <code>True</code>. Either this or <code>allow_folders</code> must be <code>True</code>.</li>
 <li><code>allow_folders</code> - Specifies whether folders in the specified location should be included. Default is <code>False</code>. Either this or <code>allow_files</code> must be <code>True</code>.</li>
 </ul>
-<h2 id="ipaddressfield">IPAddressField</h2>
+<h2 id="ipaddressfield"><a class="toclink" href="#ipaddressfield">IPAddressField</a></h2>
 <p>A field that ensures the input is a valid IPv4 or IPv6 string.</p>
 <p>Corresponds to <code>django.forms.fields.IPAddressField</code> and <code>django.forms.fields.GenericIPAddressField</code>.</p>
 <p><strong>Signature</strong>: <code>IPAddressField(protocol='both', unpack_ipv4=False, **options)</code></p>
@@ -703,8 +703,8 @@ color_channel = serializers.ChoiceField(
 <li><code>unpack_ipv4</code> Unpacks IPv4 mapped addresses like ::ffff:192.0.2.1. If this option is enabled that address would be unpacked to 192.0.2.1. Default is disabled. Can only be used when protocol is set to 'both'.</li>
 </ul>
 <hr />
-<h1 id="numeric-fields">Numeric fields</h1>
-<h2 id="integerfield">IntegerField</h2>
+<h1 id="numeric-fields"><a class="toclink" href="#numeric-fields">Numeric fields</a></h1>
+<h2 id="integerfield"><a class="toclink" href="#integerfield">IntegerField</a></h2>
 <p>An integer representation.</p>
 <p>Corresponds to <code>django.db.models.fields.IntegerField</code>, <code>django.db.models.fields.SmallIntegerField</code>, <code>django.db.models.fields.PositiveIntegerField</code> and <code>django.db.models.fields.PositiveSmallIntegerField</code>.</p>
 <p><strong>Signature</strong>: <code>IntegerField(max_value=None, min_value=None)</code></p>
@@ -712,7 +712,7 @@ color_channel = serializers.ChoiceField(
 <li><code>max_value</code> Validate that the number provided is no greater than this value.</li>
 <li><code>min_value</code> Validate that the number provided is no less than this value.</li>
 </ul>
-<h2 id="floatfield">FloatField</h2>
+<h2 id="floatfield"><a class="toclink" href="#floatfield">FloatField</a></h2>
 <p>A floating point representation.</p>
 <p>Corresponds to <code>django.db.models.fields.FloatField</code>.</p>
 <p><strong>Signature</strong>: <code>FloatField(max_value=None, min_value=None)</code></p>
@@ -720,7 +720,7 @@ color_channel = serializers.ChoiceField(
 <li><code>max_value</code> Validate that the number provided is no greater than this value.</li>
 <li><code>min_value</code> Validate that the number provided is no less than this value.</li>
 </ul>
-<h2 id="decimalfield">DecimalField</h2>
+<h2 id="decimalfield"><a class="toclink" href="#decimalfield">DecimalField</a></h2>
 <p>A decimal representation, represented in Python by a <code>Decimal</code> instance.</p>
 <p>Corresponds to <code>django.db.models.fields.DecimalField</code>.</p>
 <p><strong>Signature</strong>: <code>DecimalField(max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None)</code></p>
@@ -731,7 +731,7 @@ color_channel = serializers.ChoiceField(
 <li><code>max_value</code> Validate that the number provided is no greater than this value.</li>
 <li><code>min_value</code> Validate that the number provided is no less than this value.</li>
 </ul>
-<h4 id="example-usage">Example usage</h4>
+<h4 id="example-usage"><a class="toclink" href="#example-usage">Example usage</a></h4>
 <p>To validate numbers up to 999 with a resolution of 2 decimal places, you would use:</p>
 <pre><code>serializers.DecimalField(max_digits=5, decimal_places=2)
 </code></pre>
@@ -741,8 +741,8 @@ color_channel = serializers.ChoiceField(
 <p>This field also takes an optional argument, <code>coerce_to_string</code>. If set to <code>True</code> the representation will be output as a string. If set to <code>False</code> the representation will be left as a <code>Decimal</code> instance and the final representation will be determined by the renderer.</p>
 <p>If unset, this will default to the same value as the <code>COERCE_DECIMAL_TO_STRING</code> setting, which is <code>True</code> unless set otherwise.</p>
 <hr />
-<h1 id="date-and-time-fields">Date and time fields</h1>
-<h2 id="datetimefield">DateTimeField</h2>
+<h1 id="date-and-time-fields"><a class="toclink" href="#date-and-time-fields">Date and time fields</a></h1>
+<h2 id="datetimefield"><a class="toclink" href="#datetimefield">DateTimeField</a></h2>
 <p>A date and time representation.</p>
 <p>Corresponds to <code>django.db.models.fields.DateTimeField</code>.</p>
 <p><strong>Signature:</strong> <code>DateTimeField(format=None, input_formats=None)</code></p>
@@ -750,11 +750,11 @@ color_channel = serializers.ChoiceField(
 <li><code>format</code> - A string representing the output format.  If not specified, this defaults to the same value as the <code>DATETIME_FORMAT</code> settings key, which will be <code>'iso-8601'</code> unless set. Setting to a format string indicates that <code>to_representation</code> return values should be coerced to string output. Format strings are described below. Setting this value to <code>None</code> indicates that Python <code>datetime</code> objects should be returned by <code>to_representation</code>. In this case the datetime encoding will be determined by the renderer.</li>
 <li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>DATETIME_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
 </ul>
-<h4 id="datetimefield-format-strings"><code>DateTimeField</code> format strings.</h4>
+<h4 id="datetimefield-format-strings"><a class="toclink" href="#datetimefield-format-strings"><code>DateTimeField</code> format strings.</a></h4>
 <p>Format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style datetimes should be used. (eg <code>'2013-01-29T12:34:56.000000Z'</code>)</p>
 <p>When a value of <code>None</code> is used for the format <code>datetime</code> objects will be returned by <code>to_representation</code> and the final output representation will determined by the renderer class.</p>
 <p>In the case of JSON this means the default datetime representation uses the <a href="http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15">ECMA 262 date time string specification</a>.  This is a subset of ISO 8601 which uses millisecond precision, and includes the 'Z' suffix for the UTC timezone, for example: <code>2013-01-29T12:34:56.123Z</code>.</p>
-<h4 id="auto_now-and-auto_now_add-model-fields"><code>auto_now</code> and <code>auto_now_add</code> model fields.</h4>
+<h4 id="auto_now-and-auto_now_add-model-fields"><a class="toclink" href="#auto_now-and-auto_now_add-model-fields"><code>auto_now</code> and <code>auto_now_add</code> model fields.</a></h4>
 <p>When using <code>ModelSerializer</code> or <code>HyperlinkedModelSerializer</code>, note that any model fields with <code>auto_now=True</code> or <code>auto_now_add=True</code> will use serializer fields that are <code>read_only=True</code> by default.</p>
 <p>If you want to override this behavior, you'll need to declare the <code>DateTimeField</code> explicitly on the serializer.  For example:</p>
 <pre><code>class CommentSerializer(serializers.ModelSerializer):
@@ -763,7 +763,7 @@ color_channel = serializers.ChoiceField(
     class Meta:
         model = Comment
 </code></pre>
-<h2 id="datefield">DateField</h2>
+<h2 id="datefield"><a class="toclink" href="#datefield">DateField</a></h2>
 <p>A date representation.</p>
 <p>Corresponds to <code>django.db.models.fields.DateField</code></p>
 <p><strong>Signature:</strong> <code>DateField(format=None, input_formats=None)</code></p>
@@ -771,9 +771,9 @@ color_channel = serializers.ChoiceField(
 <li><code>format</code> - A string representing the output format.  If not specified, this defaults to the same value as the <code>DATE_FORMAT</code> settings key, which will be <code>'iso-8601'</code> unless set. Setting to a format string indicates that <code>to_representation</code> return values should be coerced to string output. Format strings are described below. Setting this value to <code>None</code> indicates that Python <code>date</code> objects should be returned by <code>to_representation</code>. In this case the date encoding will be determined by the renderer.</li>
 <li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>DATE_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
 </ul>
-<h4 id="datefield-format-strings"><code>DateField</code> format strings</h4>
+<h4 id="datefield-format-strings"><a class="toclink" href="#datefield-format-strings"><code>DateField</code> format strings</a></h4>
 <p>Format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style dates should be used. (eg <code>'2013-01-29'</code>)</p>
-<h2 id="timefield">TimeField</h2>
+<h2 id="timefield"><a class="toclink" href="#timefield">TimeField</a></h2>
 <p>A time representation.</p>
 <p>Corresponds to <code>django.db.models.fields.TimeField</code></p>
 <p><strong>Signature:</strong> <code>TimeField(format=None, input_formats=None)</code></p>
@@ -781,9 +781,9 @@ color_channel = serializers.ChoiceField(
 <li><code>format</code> - A string representing the output format.  If not specified, this defaults to the same value as the <code>TIME_FORMAT</code> settings key, which will be <code>'iso-8601'</code> unless set. Setting to a format string indicates that <code>to_representation</code> return values should be coerced to string output. Format strings are described below. Setting this value to <code>None</code> indicates that Python <code>time</code> objects should be returned by <code>to_representation</code>. In this case the time encoding will be determined by the renderer.</li>
 <li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>TIME_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
 </ul>
-<h4 id="timefield-format-strings"><code>TimeField</code> format strings</h4>
+<h4 id="timefield-format-strings"><a class="toclink" href="#timefield-format-strings"><code>TimeField</code> format strings</a></h4>
 <p>Format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style times should be used. (eg <code>'12:34:56.000000'</code>)</p>
-<h2 id="durationfield">DurationField</h2>
+<h2 id="durationfield"><a class="toclink" href="#durationfield">DurationField</a></h2>
 <p>A Duration representation.
 Corresponds to <code>django.db.models.fields.DurationField</code></p>
 <p>The <code>validated_data</code> for these fields will contain a <code>datetime.timedelta</code> instance.
@@ -791,8 +791,8 @@ The representation is a string following this format <code>'[DD] [HH:[MM:]]ss[.u
 <p><strong>Note:</strong> This field is only available with Django versions &gt;= 1.8.</p>
 <p><strong>Signature:</strong> <code>DurationField()</code></p>
 <hr />
-<h1 id="choice-selection-fields">Choice selection fields</h1>
-<h2 id="choicefield">ChoiceField</h2>
+<h1 id="choice-selection-fields"><a class="toclink" href="#choice-selection-fields">Choice selection fields</a></h1>
+<h2 id="choicefield"><a class="toclink" href="#choicefield">ChoiceField</a></h2>
 <p>A field that can accept a value out of a limited set of choices.</p>
 <p>Used by <code>ModelSerializer</code> to automatically generate fields if the corresponding model field includes a <code>choices=…</code> argument.</p>
 <p><strong>Signature:</strong> <code>ChoiceField(choices)</code></p>
@@ -803,7 +803,7 @@ The representation is a string following this format <code>'[DD] [HH:[MM:]]ss[.u
 <li><code>html_cutoff_text</code> - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to <code>"More than {count} items…"</code></li>
 </ul>
 <p>Both the <code>allow_blank</code> and <code>allow_null</code> are valid options on <code>ChoiceField</code>, although it is highly recommended that you only use one and not both. <code>allow_blank</code> should be preferred for textual choices, and <code>allow_null</code> should be preferred for numeric or other non-textual choices.</p>
-<h2 id="multiplechoicefield">MultipleChoiceField</h2>
+<h2 id="multiplechoicefield"><a class="toclink" href="#multiplechoicefield">MultipleChoiceField</a></h2>
 <p>A field that can accept a set of zero, one or many values, chosen from a limited set of choices. Takes a single mandatory argument. <code>to_internal_value</code> returns a <code>set</code> containing the selected values.</p>
 <p><strong>Signature:</strong> <code>MultipleChoiceField(choices)</code></p>
 <ul>
@@ -814,11 +814,11 @@ The representation is a string following this format <code>'[DD] [HH:[MM:]]ss[.u
 </ul>
 <p>As with <code>ChoiceField</code>, both the <code>allow_blank</code> and <code>allow_null</code> options are valid, although it is highly recommended that you only use one and not both. <code>allow_blank</code> should be preferred for textual choices, and <code>allow_null</code> should be preferred for numeric or other non-textual choices.</p>
 <hr />
-<h1 id="file-upload-fields">File upload fields</h1>
-<h4 id="parsers-and-file-uploads">Parsers and file uploads.</h4>
+<h1 id="file-upload-fields"><a class="toclink" href="#file-upload-fields">File upload fields</a></h1>
+<h4 id="parsers-and-file-uploads"><a class="toclink" href="#parsers-and-file-uploads">Parsers and file uploads.</a></h4>
 <p>The <code>FileField</code> and <code>ImageField</code> classes are only suitable for use with <code>MultiPartParser</code> or <code>FileUploadParser</code>. Most parsers, such as e.g. JSON don't support file uploads.
 Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS">FILE_UPLOAD_HANDLERS</a> are used for handling uploaded files.</p>
-<h2 id="filefield">FileField</h2>
+<h2 id="filefield"><a class="toclink" href="#filefield">FileField</a></h2>
 <p>A file representation.  Performs Django's standard FileField validation.</p>
 <p>Corresponds to <code>django.forms.fields.FileField</code>.</p>
 <p><strong>Signature:</strong> <code>FileField(max_length=None, allow_empty_file=False, use_url=UPLOADED_FILES_USE_URL)</code></p>
@@ -827,7 +827,7 @@ Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#st
 <li><code>allow_empty_file</code> - Designates if empty files are allowed.</li>
 <li><code>use_url</code> - If set to <code>True</code> then URL string values will be used for the output representation. If set to <code>False</code> then filename string values will be used for the output representation. Defaults to the value of the <code>UPLOADED_FILES_USE_URL</code> settings key, which is <code>True</code> unless set otherwise.</li>
 </ul>
-<h2 id="imagefield">ImageField</h2>
+<h2 id="imagefield"><a class="toclink" href="#imagefield">ImageField</a></h2>
 <p>An image representation. Validates the uploaded file content as matching a known image format.</p>
 <p>Corresponds to <code>django.forms.fields.ImageField</code>.</p>
 <p><strong>Signature:</strong> <code>ImageField(max_length=None, allow_empty_file=False, use_url=UPLOADED_FILES_USE_URL)</code></p>
@@ -838,8 +838,8 @@ Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#st
 </ul>
 <p>Requires either the <code>Pillow</code> package or <code>PIL</code> package.  The <code>Pillow</code> package is recommended, as <code>PIL</code> is no longer actively maintained.</p>
 <hr />
-<h1 id="composite-fields">Composite fields</h1>
-<h2 id="listfield">ListField</h2>
+<h1 id="composite-fields"><a class="toclink" href="#composite-fields">Composite fields</a></h1>
+<h2 id="listfield"><a class="toclink" href="#listfield">ListField</a></h2>
 <p>A field class that validates a list of objects.</p>
 <p><strong>Signature</strong>: <code>ListField(child)</code></p>
 <ul>
@@ -855,7 +855,7 @@ Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#st
     child = serializers.CharField()
 </code></pre>
 <p>We can now reuse our custom <code>StringListField</code> class throughout our application, without having to provide a <code>child</code> argument to it.</p>
-<h2 id="dictfield">DictField</h2>
+<h2 id="dictfield"><a class="toclink" href="#dictfield">DictField</a></h2>
 <p>A field class that validates a dictionary of objects. The keys in <code>DictField</code> are always assumed to be string values.</p>
 <p><strong>Signature</strong>: <code>DictField(child)</code></p>
 <ul>
@@ -868,15 +868,15 @@ Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#st
 <pre><code>class DocumentField(DictField):
     child = CharField()
 </code></pre>
-<h2 id="jsonfield">JSONField</h2>
+<h2 id="jsonfield"><a class="toclink" href="#jsonfield">JSONField</a></h2>
 <p>A field class that validates that the incoming data structure consists of valid JSON primitives. In its alternate binary mode, it will represent and validate JSON-encoded binary strings.</p>
 <p><strong>Signature</strong>: <code>JSONField(binary)</code></p>
 <ul>
-<li><code>binary</code> - If set to <code>True</code> then the field will output and validate a JSON encoded string, rather that a primitive data structure. Defaults to <code>False</code>.</li>
+<li><code>binary</code> - If set to <code>True</code> then the field will output and validate a JSON encoded string, rather than a primitive data structure. Defaults to <code>False</code>.</li>
 </ul>
 <hr />
-<h1 id="miscellaneous-fields">Miscellaneous fields</h1>
-<h2 id="readonlyfield">ReadOnlyField</h2>
+<h1 id="miscellaneous-fields"><a class="toclink" href="#miscellaneous-fields">Miscellaneous fields</a></h1>
+<h2 id="readonlyfield"><a class="toclink" href="#readonlyfield">ReadOnlyField</a></h2>
 <p>A field class that simply returns the value of the field without modification.</p>
 <p>This field is used by default with <code>ModelSerializer</code> when including field names that relate to an attribute rather than a model field.</p>
 <p><strong>Signature</strong>: <code>ReadOnlyField()</code></p>
@@ -886,7 +886,7 @@ Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#st
         model = Account
         fields = ('id', 'account_name', 'has_expired')
 </code></pre>
-<h2 id="hiddenfield">HiddenField</h2>
+<h2 id="hiddenfield"><a class="toclink" href="#hiddenfield">HiddenField</a></h2>
 <p>A field class that does not take a value based on user input, but instead takes its value from a default value or callable.</p>
 <p><strong>Signature</strong>: <code>HiddenField()</code></p>
 <p>For example, to include a field that always provides the current time as part of the serializer validated data, you would use the following:</p>
@@ -894,12 +894,12 @@ Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#st
 </code></pre>
 <p>The <code>HiddenField</code> class is usually only needed if you have some validation that needs to run based on some pre-provided field values, but you do not want to expose all of those fields to the end user.</p>
 <p>For further examples on <code>HiddenField</code> see the <a href="../validators/">validators</a> documentation.</p>
-<h2 id="modelfield">ModelField</h2>
+<h2 id="modelfield"><a class="toclink" href="#modelfield">ModelField</a></h2>
 <p>A generic field that can be tied to any arbitrary model field. The <code>ModelField</code> class delegates the task of serialization/deserialization to its associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.</p>
 <p>This field is used by <code>ModelSerializer</code> to correspond to custom model field classes.</p>
 <p><strong>Signature:</strong> <code>ModelField(model_field=&lt;Django ModelField instance&gt;)</code></p>
 <p>The <code>ModelField</code> class is generally intended for internal use, but can be used by your API if needed.  In order to properly instantiate a <code>ModelField</code>, it must be passed a field that is attached to an instantiated model.  For example: <code>ModelField(model_field=MyModel()._meta.get_field('custom_field'))</code></p>
-<h2 id="serializermethodfield">SerializerMethodField</h2>
+<h2 id="serializermethodfield"><a class="toclink" href="#serializermethodfield">SerializerMethodField</a></h2>
 <p>This is a read-only field. It gets its value by calling a method on the serializer class it is attached to. It can be used to add any sort of data to the serialized representation of your object.</p>
 <p><strong>Signature</strong>: <code>SerializerMethodField(method_name=None)</code></p>
 <ul>
@@ -920,12 +920,12 @@ class UserSerializer(serializers.ModelSerializer):
         return (now() - obj.date_joined).days
 </code></pre>
 <hr />
-<h1 id="custom-fields">Custom fields</h1>
+<h1 id="custom-fields"><a class="toclink" href="#custom-fields">Custom fields</a></h1>
 <p>If you want to create a custom field, you'll need to subclass <code>Field</code> and then override either one or both of the <code>.to_representation()</code> and <code>.to_internal_value()</code> methods.  These two methods are used to convert between the initial datatype, and a primitive, serializable datatype. Primitive datatypes will typically be any of a number, string, boolean, <code>date</code>/<code>time</code>/<code>datetime</code> or <code>None</code>. They may also be any list or dictionary like object that only contains other primitive objects. Other types might be supported, depending on the renderer that you are using.</p>
 <p>The <code>.to_representation()</code> method is called to convert the initial datatype into a primitive, serializable datatype.</p>
 <p>The <code>to_internal_value()</code> method is called to restore a primitive datatype into its internal python representation. This method should raise a <code>serializers.ValidationError</code> if the data is invalid.</p>
 <p>Note that the <code>WritableField</code> class that was present in version 2.x no longer exists. You should subclass <code>Field</code> and override <code>to_internal_value()</code> if the field supports data input.</p>
-<h2 id="examples">Examples</h2>
+<h2 id="examples"><a class="toclink" href="#examples">Examples</a></h2>
 <p>Let's look at an example of serializing a class that represents an RGB color value:</p>
 <pre><code>class Color(object):
     """
@@ -962,7 +962,7 @@ class ColorField(serializers.Field):
         """
         return obj.__class__.__name__
 </code></pre>
-<h4 id="raising-validation-errors">Raising validation errors</h4>
+<h4 id="raising-validation-errors"><a class="toclink" href="#raising-validation-errors">Raising validation errors</a></h4>
 <p>Our <code>ColorField</code> class above currently does not perform any data validation.
 To indicate invalid data, we should raise a <code>serializers.ValidationError</code>, like so:</p>
 <pre><code>def to_internal_value(self, data):
@@ -1005,17 +1005,17 @@ def to_internal_value(self, data):
     return Color(red, green, blue)
 </code></pre>
 <p>This style keeps you error messages more cleanly separated from your code, and should be preferred.</p>
-<h1 id="third-party-packages">Third party packages</h1>
+<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages are also available.</p>
-<h2 id="drf-compound-fields">DRF Compound Fields</h2>
+<h2 id="drf-compound-fields"><a class="toclink" href="#drf-compound-fields">DRF Compound Fields</a></h2>
 <p>The <a href="http://drf-compound-fields.readthedocs.org">drf-compound-fields</a> package provides "compound" serializer fields, such as lists of simple values, which can be described by other fields rather than serializers with the <code>many=True</code> option. Also provided are fields for typed dictionaries and values that can be either a specific type or a list of items of that type.</p>
-<h2 id="drf-extra-fields">DRF Extra Fields</h2>
+<h2 id="drf-extra-fields"><a class="toclink" href="#drf-extra-fields">DRF Extra Fields</a></h2>
 <p>The <a href="https://github.com/Hipo/drf-extra-fields">drf-extra-fields</a> package provides extra serializer fields for REST framework, including <code>Base64ImageField</code> and <code>PointField</code> classes.</p>
-<h2 id="djangrestframework-recursive">djangrestframework-recursive</h2>
+<h2 id="djangrestframework-recursive"><a class="toclink" href="#djangrestframework-recursive">djangrestframework-recursive</a></h2>
 <p>the <a href="https://github.com/heywbj/django-rest-framework-recursive">djangorestframework-recursive</a> package provides a <code>RecursiveField</code> for serializing and deserializing recursive structures</p>
-<h2 id="django-rest-framework-gis">django-rest-framework-gis</h2>
+<h2 id="django-rest-framework-gis"><a class="toclink" href="#django-rest-framework-gis">django-rest-framework-gis</a></h2>
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-gis">django-rest-framework-gis</a> package provides geographic addons for django rest framework like a  <code>GeometryField</code> field and a GeoJSON serializer.</p>
-<h2 id="django-rest-framework-hstore">django-rest-framework-hstore</h2>
+<h2 id="django-rest-framework-hstore"><a class="toclink" href="#django-rest-framework-hstore">django-rest-framework-hstore</a></h2>
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-hstore">django-rest-framework-hstore</a> package provides an <code>HStoreField</code> to support <a href="https://github.com/djangonauts/django-hstore">django-hstore</a> <code>DictionaryField</code> model field.</p>
             
 

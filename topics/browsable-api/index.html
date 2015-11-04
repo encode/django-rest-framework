@@ -369,17 +369,17 @@
             
               
 
-              <h1 id="the-browsable-api">The Browsable API</h1>
+              <h1 id="the-browsable-api"><a class="toclink" href="#the-browsable-api">The Browsable API</a></h1>
 <blockquote>
 <p>It is a profoundly erroneous truism... that we should cultivate the habit of thinking of what we are doing.  The precise opposite is the case.  Civilization advances by extending the number of important operations which we can perform without thinking about them.</p>
 <p>&mdash; <a href="http://en.wikiquote.org/wiki/Alfred_North_Whitehead">Alfred North Whitehead</a>, An Introduction to Mathematics (1911)</p>
 </blockquote>
 <p>API may stand for Application <em>Programming</em> Interface, but humans have to be able to read the APIs, too; someone has to do the programming.  Django REST Framework supports generating human-friendly HTML output for each resource when the <code>HTML</code> format is requested.  These pages allow for easy browsing of resources, as well as forms for submitting data to the resources using <code>POST</code>, <code>PUT</code>, and <code>DELETE</code>.</p>
-<h2 id="urls">URLs</h2>
+<h2 id="urls"><a class="toclink" href="#urls">URLs</a></h2>
 <p>If you include fully-qualified URLs in your resource output, they will be 'urlized' and made clickable for easy browsing by humans.  The <code>rest_framework</code> package includes a <a href="../../api-guide/reverse/"><code>reverse</code></a> helper for this purpose.</p>
-<h2 id="formats">Formats</h2>
+<h2 id="formats"><a class="toclink" href="#formats">Formats</a></h2>
 <p>By default, the API will return the format specified by the headers, which in the case of the browser is HTML.  The format can be specified using <code>?format=</code> in the request, so you can look at the raw JSON response in a browser by adding <code>?format=json</code> to the URL.  There are helpful extensions for viewing JSON in <a href="https://addons.mozilla.org/en-US/firefox/addon/jsonview/">Firefox</a> and <a href="https://chrome.google.com/webstore/detail/chklaanhfefbnpoihckbnefhakgolnmc">Chrome</a>.</p>
-<h2 id="customizing">Customizing</h2>
+<h2 id="customizing"><a class="toclink" href="#customizing">Customizing</a></h2>
 <p>The browsable API is built with <a href="http://getbootstrap.com">Twitter's Bootstrap</a> (v 2.1.1), making it easy to customize the look-and-feel.</p>
 <p>To customize the default style, create a template called <code>rest_framework/api.html</code> that extends from <code>rest_framework/base.html</code>.  For example:</p>
 <p><strong>templates/rest_framework/api.html</strong></p>
@@ -387,7 +387,7 @@
 
 ...  # Override blocks with required customizations
 </code></pre>
-<h3 id="overriding-the-default-theme">Overriding the default theme</h3>
+<h3 id="overriding-the-default-theme"><a class="toclink" href="#overriding-the-default-theme">Overriding the default theme</a></h3>
 <p>To replace the default theme, add a <code>bootstrap_theme</code> block to your <code>api.html</code> and insert a <code>link</code> to the desired Bootstrap theme css file.  This will completely replace the included theme.</p>
 <pre><code>{% block bootstrap_theme %}
     &lt;link rel="stylesheet" href="/path/to/my/bootstrap.css" type="text/css"&gt;
@@ -412,7 +412,7 @@
 <p><img alt="Slate theme" src="../../img/slate.png" /></p>
 <p><em>Screenshot of the bootswatch 'Slate' theme</em></p>
 <hr />
-<h3 id="blocks">Blocks</h3>
+<h3 id="blocks"><a class="toclink" href="#blocks">Blocks</a></h3>
 <p>All of the blocks available in the browsable API base template that can be used in your <code>api.html</code>.</p>
 <ul>
 <li><code>body</code>                       - The entire html <code>&lt;body&gt;</code>.</li>
@@ -426,11 +426,11 @@
 <li><code>title</code>                      - Title of the page.</li>
 <li><code>userlinks</code>                  - This is a list of links on the right of the header, by default containing login/logout links.  To add links instead of replace, use <code>{{ block.super }}</code> to preserve the authentication links.</li>
 </ul>
-<h4 id="components">Components</h4>
+<h4 id="components"><a class="toclink" href="#components">Components</a></h4>
 <p>All of the standard <a href="http://getbootstrap.com/2.3.2/components.html">Bootstrap components</a> are available.</p>
-<h4 id="tooltips">Tooltips</h4>
+<h4 id="tooltips"><a class="toclink" href="#tooltips">Tooltips</a></h4>
 <p>The browsable API makes use of the Bootstrap tooltips component.  Any element with the <code>js-tooltip</code> class and a <code>title</code> attribute has that title content will display a tooltip on hover events.</p>
-<h3 id="login-template">Login Template</h3>
+<h3 id="login-template"><a class="toclink" href="#login-template">Login Template</a></h3>
 <p>To add branding and customize the look-and-feel of the login template, create a template called <code>login.html</code> and add it to your project, eg: <code>templates/rest_framework/login.html</code>.  The template should extend from <code>rest_framework/login_base.html</code>.</p>
 <p>You can add your site name or branding by including the branding block:</p>
 <pre><code>{% block branding %}
@@ -438,8 +438,8 @@
 {% endblock %}
 </code></pre>
 <p>You can also customize the style by adding the <code>bootstrap_theme</code> or <code>style</code> block similar to <code>api.html</code>.</p>
-<h3 id="advanced-customization">Advanced Customization</h3>
-<h4 id="context">Context</h4>
+<h3 id="advanced-customization"><a class="toclink" href="#advanced-customization">Advanced Customization</a></h3>
+<h4 id="context"><a class="toclink" href="#context">Context</a></h4>
 <p>The context that's available to the template:</p>
 <ul>
 <li><code>allowed_methods</code>     : A list of methods allowed by the resource</li>
@@ -460,9 +460,9 @@
 <li><code>METHOD_PARAM</code>        : The view can accept a method override</li>
 </ul>
 <p>You can override the <code>BrowsableAPIRenderer.get_context()</code> method to customise the context that gets passed to the template.</p>
-<h4 id="not-using-basehtml">Not using base.html</h4>
+<h4 id="not-using-basehtml"><a class="toclink" href="#not-using-basehtml">Not using base.html</a></h4>
 <p>For more advanced customization, such as not having a Bootstrap basis or tighter integration with the rest of your site, you can simply choose not to have <code>api.html</code> extend <code>base.html</code>.  Then the page content and capabilities are entirely up to you.</p>
-<h4 id="handling-choicefield-with-large-numbers-of-items">Handling <code>ChoiceField</code> with large numbers of items.</h4>
+<h4 id="handling-choicefield-with-large-numbers-of-items"><a class="toclink" href="#handling-choicefield-with-large-numbers-of-items">Handling <code>ChoiceField</code> with large numbers of items.</a></h4>
 <p>When a relationship or <code>ChoiceField</code> has too many items, rendering the widget containing all the options can become very slow, and cause the browsable API rendering to perform poorly.</p>
 <p>The simplest option in this case is to replace the select input with a standard text input. For example:</p>
 <pre><code> author = serializers.HyperlinkedRelatedField(
@@ -470,7 +470,7 @@
     style={'base_template': 'input.html'}
 )
 </code></pre>
-<h4 id="autocomplete">Autocomplete</h4>
+<h4 id="autocomplete"><a class="toclink" href="#autocomplete">Autocomplete</a></h4>
 <p>An alternative, but more complex option would be to replace the input with an autocomplete widget, that only loads and renders a subset of the available options as needed. If you need to do this you'll need to do some work to build a custom autocomplete HTML template yourself.</p>
 <p>There are <a href="https://www.djangopackages.com/grids/g/auto-complete/">a variety of packages for autocomplete widgets</a>, such as <a href="https://github.com/yourlabs/django-autocomplete-light">django-autocomplete-light</a>, that you may want to refer to. Note that you will not be able to simply include these components as standard widgets, but will need to write the HTML template explicitly. This is because REST framework 3.0 no longer supports the <code>widget</code> keyword argument since it now uses templated HTML generation.</p>
 <p>Better support for autocomplete inputs is planned in future versions.</p>

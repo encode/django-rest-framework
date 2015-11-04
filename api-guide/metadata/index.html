@@ -381,7 +381,7 @@
                 
               
 
-              <h1 id="metadata">Metadata</h1>
+              <h1 id="metadata"><a class="toclink" href="#metadata">Metadata</a></h1>
 <blockquote>
 <p>[The <code>OPTIONS</code>] method allows a client to determine the options and/or requirements associated with a resource, or the capabilities of a server, without implying a resource action or initiating a resource retrieval.</p>
 <p>&mdash; <a href="http://tools.ietf.org/html/rfc7231#section-4.3.7">RFC7231, Section 4.3.7.</a></p>
@@ -418,7 +418,7 @@ Content-Type: application/json
     }
 }
 </code></pre>
-<h2 id="setting-the-metadata-scheme">Setting the metadata scheme</h2>
+<h2 id="setting-the-metadata-scheme"><a class="toclink" href="#setting-the-metadata-scheme">Setting the metadata scheme</a></h2>
 <p>You can set the metadata class globally using the <code>'DEFAULT_METADATA_CLASS'</code> settings key:</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata'
@@ -434,7 +434,7 @@ Content-Type: application/json
         })
 </code></pre>
 <p>The REST framework package only includes a single metadata class implementation, named <code>SimpleMetadata</code>. If you want to use an alternative style you'll need to implement a custom metadata class.</p>
-<h2 id="creating-schema-endpoints">Creating schema endpoints</h2>
+<h2 id="creating-schema-endpoints"><a class="toclink" href="#creating-schema-endpoints">Creating schema endpoints</a></h2>
 <p>If you have specific requirements for creating schema endpoints that are accessed with regular <code>GET</code> requests, you might consider re-using the metadata API for doing so.</p>
 <p>For example, the following additional route could be used on a viewset to provide a linkable schema endpoint.</p>
 <pre><code>@list_route(methods=['GET'])
@@ -445,10 +445,10 @@ def schema(self, request):
 </code></pre>
 <p>There are a couple of reasons that you might choose to take this approach, including that <code>OPTIONS</code> responses <a href="https://www.mnot.net/blog/2012/10/29/NO_OPTIONS">are not cacheable</a>.</p>
 <hr />
-<h1 id="custom-metadata-classes">Custom metadata classes</h1>
+<h1 id="custom-metadata-classes"><a class="toclink" href="#custom-metadata-classes">Custom metadata classes</a></h1>
 <p>If you want to provide a custom metadata class you should override <code>BaseMetadata</code> and implement the <code>determine_metadata(self, request, view)</code> method.</p>
 <p>Useful things that you might want to do could include returning schema information, using a format such as <a href="http://json-schema.org/">JSON schema</a>, or returning debug information to admin users.</p>
-<h2 id="example">Example</h2>
+<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>The following class could be used to limit the information that is returned to <code>OPTIONS</code> requests.</p>
 <pre><code>class MinimalMetadata(BaseMetadata):
     """

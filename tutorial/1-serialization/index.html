@@ -397,14 +397,14 @@
             
               
 
-              <h1 id="tutorial-1-serialization">Tutorial 1: Serialization</h1>
-<h2 id="introduction">Introduction</h2>
+              <h1 id="tutorial-1-serialization"><a class="toclink" href="#tutorial-1-serialization">Tutorial 1: Serialization</a></h1>
+<h2 id="introduction"><a class="toclink" href="#introduction">Introduction</a></h2>
 <p>This tutorial will cover creating a simple pastebin code highlighting Web API.  Along the way it will introduce the various components that make up REST framework, and give you a comprehensive understanding of how everything fits together.</p>
 <p>The tutorial is fairly in-depth, so you should probably get a cookie and a cup of your favorite brew before getting started.  If you just want a quick overview, you should head over to the <a href="../quickstart/">quickstart</a> documentation instead.</p>
 <hr />
 <p><strong>Note</strong>: The code for this tutorial is available in the <a href="https://github.com/tomchristie/rest-framework-tutorial">tomchristie/rest-framework-tutorial</a> repository on GitHub.  The completed implementation is also online as a sandbox version for testing, <a href="http://restframework.herokuapp.com/">available here</a>.</p>
 <hr />
-<h2 id="setting-up-a-new-environment">Setting up a new environment</h2>
+<h2 id="setting-up-a-new-environment"><a class="toclink" href="#setting-up-a-new-environment">Setting up a new environment</a></h2>
 <p>Before we do anything else we'll create a new virtual environment, using <a href="http://www.virtualenv.org/en/latest/index.html">virtualenv</a>.  This will make sure our package configuration is kept nicely isolated from any other projects we're working on.</p>
 <pre><code>virtualenv env
 source env/bin/activate
@@ -415,7 +415,7 @@ pip install djangorestframework
 pip install pygments  # We'll be using this for the code highlighting
 </code></pre>
 <p><strong>Note:</strong> To exit the virtualenv environment at any time, just type <code>deactivate</code>.  For more information see the <a href="http://www.virtualenv.org/en/latest/index.html">virtualenv documentation</a>.</p>
-<h2 id="getting-started">Getting started</h2>
+<h2 id="getting-started"><a class="toclink" href="#getting-started">Getting started</a></h2>
 <p>Okay, we're ready to get coding.
 To get started, let's create a new project to work with.</p>
 <pre><code>cd ~
@@ -438,7 +438,7 @@ cd tutorial
 ]
 </code></pre>
 <p>Okay, we're ready to roll.</p>
-<h2 id="creating-a-model-to-work-with">Creating a model to work with</h2>
+<h2 id="creating-a-model-to-work-with"><a class="toclink" href="#creating-a-model-to-work-with">Creating a model to work with</a></h2>
 <p>For the purposes of this tutorial we're going to start by creating a simple <code>Snippet</code> model that is used to store code snippets.  Go ahead and edit the <code>snippets/models.py</code> file.  Note: Good programming practices include comments.  Although you will find them in our repository version of this tutorial code, we have omitted them here to focus on the code itself.</p>
 <pre><code>from django.db import models
 from pygments.lexers import get_all_lexers
@@ -464,7 +464,7 @@ class Snippet(models.Model):
 <pre><code>python manage.py makemigrations snippets
 python manage.py migrate
 </code></pre>
-<h2 id="creating-a-serializer-class">Creating a Serializer class</h2>
+<h2 id="creating-a-serializer-class"><a class="toclink" href="#creating-a-serializer-class">Creating a Serializer class</a></h2>
 <p>The first thing we need to get started on our Web API is to provide a way of serializing and deserializing the snippet instances into representations such as <code>json</code>.  We can do this by declaring serializers that work very similar to Django's forms.  Create a file in the <code>snippets</code> directory named <code>serializers.py</code> and add the following.</p>
 <pre><code>from rest_framework import serializers
 from snippets.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES
@@ -500,7 +500,7 @@ class SnippetSerializer(serializers.Serializer):
 <p>A serializer class is very similar to a Django <code>Form</code> class, and includes similar validation flags on the various fields, such as <code>required</code>, <code>max_length</code> and <code>default</code>.</p>
 <p>The field flags can also control how the serializer should be displayed in certain circumstances, such as when rendering to HTML. The <code>{'base_template': 'textarea.html'}</code> flag above is equivalent to using <code>widget=widgets.Textarea</code> on a Django <code>Form</code> class. This is particularly useful for controlling how the browsable API should be displayed, as we'll see later in the tutorial.</p>
 <p>We can actually also save ourselves some time by using the <code>ModelSerializer</code> class, as we'll see later, but for now we'll keep our serializer definition explicit.</p>
-<h2 id="working-with-serializers">Working with Serializers</h2>
+<h2 id="working-with-serializers"><a class="toclink" href="#working-with-serializers">Working with Serializers</a></h2>
 <p>Before we go any further we'll familiarize ourselves with using our new Serializer class.  Let's drop into the Django shell.</p>
 <pre><code>python manage.py shell
 </code></pre>
@@ -547,7 +547,7 @@ serializer.save()
 serializer.data
 # [OrderedDict([('pk', 1), ('title', u''), ('code', u'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('pk', 2), ('title', u''), ('code', u'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('pk', 3), ('title', u''), ('code', u'print "hello, world"'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
 </code></pre>
-<h2 id="using-modelserializers">Using ModelSerializers</h2>
+<h2 id="using-modelserializers"><a class="toclink" href="#using-modelserializers">Using ModelSerializers</a></h2>
 <p>Our <code>SnippetSerializer</code> class is replicating a lot of information that's also contained in the <code>Snippet</code> model.  It would be nice if we could keep our code a bit  more concise.</p>
 <p>In the same way that Django provides both <code>Form</code> classes and <code>ModelForm</code> classes, REST framework includes both <code>Serializer</code> classes, and <code>ModelSerializer</code> classes.</p>
 <p>Let's look at refactoring our serializer using the <code>ModelSerializer</code> class.
@@ -574,7 +574,7 @@ SnippetSerializer():
 <li>An automatically determined set of fields.</li>
 <li>Simple default implementations for the <code>create()</code> and <code>update()</code> methods.</li>
 </ul>
-<h2 id="writing-regular-django-views-using-our-serializer">Writing regular Django views using our Serializer</h2>
+<h2 id="writing-regular-django-views-using-our-serializer"><a class="toclink" href="#writing-regular-django-views-using-our-serializer">Writing regular Django views using our Serializer</a></h2>
 <p>Let's see how we can write some API views using our new Serializer class.
 For the moment we won't use any of REST framework's other features, we'll just write the views as regular Django views.</p>
 <p>We'll start off by creating a subclass of HttpResponse that we can use to render any data we return into <code>json</code>.</p>
@@ -652,7 +652,7 @@ urlpatterns = [
 ]
 </code></pre>
 <p>It's worth noting that there are a couple of edge cases we're not dealing with properly at the moment.  If we send malformed <code>json</code>, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.</p>
-<h2 id="testing-our-first-attempt-at-a-web-api">Testing our first attempt at a Web API</h2>
+<h2 id="testing-our-first-attempt-at-a-web-api"><a class="toclink" href="#testing-our-first-attempt-at-a-web-api">Testing our first attempt at a Web API</a></h2>
 <p>Now we can start up a sample server that serves our snippets.</p>
 <p>Quit out of the shell...</p>
 <pre><code>quit()
@@ -711,7 +711,7 @@ HTTP/1.1 200 OK
 }
 </code></pre>
 <p>Similarly, you can have the same json displayed by visiting these URLs in a web browser.</p>
-<h2 id="where-are-we-now">Where are we now</h2>
+<h2 id="where-are-we-now"><a class="toclink" href="#where-are-we-now">Where are we now</a></h2>
 <p>We're doing okay so far, we've got a serialization API that feels pretty similar to Django's Forms API, and some regular Django views.</p>
 <p>Our API views don't do anything particularly special at the moment, beyond serving <code>json</code> responses, and there are some error handling edge cases we'd still like to clean up, but it's a functioning Web API.</p>
 <p>We'll see how we can start to improve things in <a href="../2-requests-and-responses/">part 2 of the tutorial</a>.</p>

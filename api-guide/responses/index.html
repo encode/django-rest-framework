@@ -417,7 +417,7 @@
                 
               
 
-              <h1 id="responses">Responses</h1>
+              <h1 id="responses"><a class="toclink" href="#responses">Responses</a></h1>
 <blockquote>
 <p>Unlike basic HttpResponse objects, TemplateResponse objects retain the details of the context that was provided by the view to compute the response.  The final output of the response is not computed until it is needed, later in the response process.</p>
 <p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/template-response/">Django documentation</a></p>
@@ -427,8 +427,8 @@
 <p>There's no requirement for you to use the <code>Response</code> class, you can also return regular <code>HttpResponse</code> or <code>StreamingHttpResponse</code> objects from your views if required.  Using the <code>Response</code> class simply provides a nicer interface for returning content-negotiated Web API responses, that can be rendered to multiple formats.</p>
 <p>Unless you want to heavily customize REST framework for some reason, you should always use an <code>APIView</code> class or <code>@api_view</code> function for views that return <code>Response</code> objects.  Doing so ensures that the view can perform content negotiation and select the appropriate renderer for the response, before it is returned from the view.</p>
 <hr />
-<h1 id="creating-responses">Creating responses</h1>
-<h2 id="response">Response()</h2>
+<h1 id="creating-responses"><a class="toclink" href="#creating-responses">Creating responses</a></h1>
+<h2 id="response"><a class="toclink" href="#response">Response()</a></h2>
 <p><strong>Signature:</strong> <code>Response(data, status=None, template_name=None, headers=None, content_type=None)</code></p>
 <p>Unlike regular <code>HttpResponse</code> objects, you do not instantiate <code>Response</code> objects with rendered content.  Instead you pass in unrendered data, which may consist of any Python primitives.</p>
 <p>The renderers used by the <code>Response</code> class cannot natively handle complex datatypes such as Django model instances, so you need to serialize the data into primitive datatypes before creating the <code>Response</code> object.</p>
@@ -442,31 +442,31 @@
 <li><code>content_type</code>: The content type of the response.  Typically, this will be set automatically by the renderer as determined by content negotiation, but there may be some cases where you need to specify the content type explicitly.</li>
 </ul>
 <hr />
-<h1 id="attributes">Attributes</h1>
-<h2 id="data">.data</h2>
+<h1 id="attributes"><a class="toclink" href="#attributes">Attributes</a></h1>
+<h2 id="data"><a class="toclink" href="#data">.data</a></h2>
 <p>The unrendered content of a <code>Request</code> object.</p>
-<h2 id="status_code">.status_code</h2>
+<h2 id="status_code"><a class="toclink" href="#status_code">.status_code</a></h2>
 <p>The numeric status code of the HTTP response.</p>
-<h2 id="content">.content</h2>
+<h2 id="content"><a class="toclink" href="#content">.content</a></h2>
 <p>The rendered content of the response.  The <code>.render()</code> method must have been called before <code>.content</code> can be accessed.</p>
-<h2 id="template_name">.template_name</h2>
+<h2 id="template_name"><a class="toclink" href="#template_name">.template_name</a></h2>
 <p>The <code>template_name</code>, if supplied.  Only required if <code>HTMLRenderer</code> or some other custom template renderer is the accepted renderer for the response.</p>
-<h2 id="accepted_renderer">.accepted_renderer</h2>
+<h2 id="accepted_renderer"><a class="toclink" href="#accepted_renderer">.accepted_renderer</a></h2>
 <p>The renderer instance that will be used to render the response.</p>
 <p>Set automatically by the <code>APIView</code> or <code>@api_view</code> immediately before the response is returned from the view.</p>
-<h2 id="accepted_media_type">.accepted_media_type</h2>
+<h2 id="accepted_media_type"><a class="toclink" href="#accepted_media_type">.accepted_media_type</a></h2>
 <p>The media type that was selected by the content negotiation stage.</p>
 <p>Set automatically by the <code>APIView</code> or <code>@api_view</code> immediately before the response is returned from the view.</p>
-<h2 id="renderer_context">.renderer_context</h2>
+<h2 id="renderer_context"><a class="toclink" href="#renderer_context">.renderer_context</a></h2>
 <p>A dictionary of additional context information that will be passed to the renderer's <code>.render()</code> method.</p>
 <p>Set automatically by the <code>APIView</code> or <code>@api_view</code> immediately before the response is returned from the view.</p>
 <hr />
-<h1 id="standard-httpresponse-attributes">Standard HttpResponse attributes</h1>
+<h1 id="standard-httpresponse-attributes"><a class="toclink" href="#standard-httpresponse-attributes">Standard HttpResponse attributes</a></h1>
 <p>The <code>Response</code> class extends <code>SimpleTemplateResponse</code>, and all the usual attributes and methods are also available on the response.  For example you can set headers on the response in the standard way:</p>
 <pre><code>response = Response()
 response['Cache-Control'] = 'no-cache'
 </code></pre>
-<h2 id="render">.render()</h2>
+<h2 id="render"><a class="toclink" href="#render">.render()</a></h2>
 <p><strong>Signature:</strong> <code>.render()</code></p>
 <p>As with any other <code>TemplateResponse</code>, this method is called to render the serialized data of the response into the final response content.  When <code>.render()</code> is called, the response content will be set to the result of calling the <code>.render(data, accepted_media_type, renderer_context)</code> method on the <code>accepted_renderer</code> instance.</p>
 <p>You won't typically need to call <code>.render()</code> yourself, as it's handled by Django's standard response cycle.</p>

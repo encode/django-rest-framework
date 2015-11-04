@@ -437,16 +437,16 @@
                 
               
 
-              <h1 id="requests">Requests</h1>
+              <h1 id="requests"><a class="toclink" href="#requests">Requests</a></h1>
 <blockquote>
 <p>If you're doing REST-based web service stuff ... you should ignore request.POST.</p>
 <p>&mdash; Malcom Tredinnick, <a href="https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion">Django developers group</a></p>
 </blockquote>
 <p>REST framework's <code>Request</code> class extends the standard <code>HttpRequest</code>, adding support for REST framework's flexible request parsing and request authentication.</p>
 <hr />
-<h1 id="request-parsing">Request parsing</h1>
+<h1 id="request-parsing"><a class="toclink" href="#request-parsing">Request parsing</a></h1>
 <p>REST framework's Request objects provide flexible request parsing that allows you to treat requests with JSON data or other media types in the same way that you would normally deal with form data.</p>
-<h2 id="data">.data</h2>
+<h2 id="data"><a class="toclink" href="#data">.data</a></h2>
 <p><code>request.data</code> returns the parsed content of the request body.  This is similar to the standard <code>request.POST</code> and <code>request.FILES</code> attributes except that:</p>
 <ul>
 <li>It includes all parsed content, including <em>file and non-file</em> inputs.</li>
@@ -454,60 +454,60 @@
 <li>It supports REST framework's flexible request parsing, rather than just supporting form data.  For example you can handle incoming JSON data in the same way that you handle incoming form data.</li>
 </ul>
 <p>For more details see the <a href="../parsers/">parsers documentation</a>.</p>
-<h2 id="query_params">.query_params</h2>
+<h2 id="query_params"><a class="toclink" href="#query_params">.query_params</a></h2>
 <p><code>request.query_params</code> is a more correctly named synonym for <code>request.GET</code>.</p>
 <p>For clarity inside your code, we recommend using <code>request.query_params</code> instead of the Django's standard <code>request.GET</code>. Doing so will help keep your codebase more correct and obvious - any HTTP method type may include query parameters, not just <code>GET</code> requests.</p>
-<h2 id="parsers">.parsers</h2>
+<h2 id="parsers"><a class="toclink" href="#parsers">.parsers</a></h2>
 <p>The <code>APIView</code> class or <code>@api_view</code> decorator will ensure that this property is automatically set to a list of <code>Parser</code> instances, based on the <code>parser_classes</code> set on the view or based on the <code>DEFAULT_PARSER_CLASSES</code> setting.</p>
 <p>You won't typically need to access this property.</p>
 <hr />
 <p><strong>Note:</strong> If a client sends malformed content, then accessing <code>request.data</code> may raise a <code>ParseError</code>.  By default REST framework's <code>APIView</code> class or <code>@api_view</code> decorator will catch the error and return a <code>400 Bad Request</code> response.</p>
 <p>If a client sends a request with a content-type that cannot be parsed then a <code>UnsupportedMediaType</code> exception will be raised, which by default will be caught and return a <code>415 Unsupported Media Type</code> response.</p>
 <hr />
-<h1 id="content-negotiation">Content negotiation</h1>
+<h1 id="content-negotiation"><a class="toclink" href="#content-negotiation">Content negotiation</a></h1>
 <p>The request exposes some properties that allow you to determine the result of the content negotiation stage. This allows you to implement behaviour such as selecting a different serialisation schemes for different media types.</p>
-<h2 id="accepted_renderer">.accepted_renderer</h2>
+<h2 id="accepted_renderer"><a class="toclink" href="#accepted_renderer">.accepted_renderer</a></h2>
 <p>The renderer instance what was selected by the content negotiation stage.</p>
-<h2 id="accepted_media_type">.accepted_media_type</h2>
+<h2 id="accepted_media_type"><a class="toclink" href="#accepted_media_type">.accepted_media_type</a></h2>
 <p>A string representing the media type that was accepted by the content negotiation stage.</p>
 <hr />
-<h1 id="authentication">Authentication</h1>
+<h1 id="authentication"><a class="toclink" href="#authentication">Authentication</a></h1>
 <p>REST framework provides flexible, per-request authentication, that gives you the ability to:</p>
 <ul>
 <li>Use different authentication policies for different parts of your API.</li>
 <li>Support the use of multiple authentication policies.</li>
 <li>Provide both user and token information associated with the incoming request.</li>
 </ul>
-<h2 id="user">.user</h2>
+<h2 id="user"><a class="toclink" href="#user">.user</a></h2>
 <p><code>request.user</code> typically returns an instance of <code>django.contrib.auth.models.User</code>, although the behavior depends on the authentication policy being used.</p>
 <p>If the request is unauthenticated the default value of <code>request.user</code> is an instance of <code>django.contrib.auth.models.AnonymousUser</code>.</p>
 <p>For more details see the <a href="../authentication/">authentication documentation</a>.</p>
-<h2 id="auth">.auth</h2>
+<h2 id="auth"><a class="toclink" href="#auth">.auth</a></h2>
 <p><code>request.auth</code> returns any additional authentication context.  The exact behavior of <code>request.auth</code> depends on the authentication policy being used, but it may typically be an instance of the token that the request was authenticated against.</p>
 <p>If the request is unauthenticated, or if no additional context is present, the default value of <code>request.auth</code> is <code>None</code>.</p>
 <p>For more details see the <a href="../authentication/">authentication documentation</a>.</p>
-<h2 id="authenticators">.authenticators</h2>
+<h2 id="authenticators"><a class="toclink" href="#authenticators">.authenticators</a></h2>
 <p>The <code>APIView</code> class or <code>@api_view</code> decorator will ensure that this property is automatically set to a list of <code>Authentication</code> instances, based on the <code>authentication_classes</code> set on the view or based on the <code>DEFAULT_AUTHENTICATORS</code> setting.</p>
 <p>You won't typically need to access this property.</p>
 <hr />
-<h1 id="browser-enhancements">Browser enhancements</h1>
+<h1 id="browser-enhancements"><a class="toclink" href="#browser-enhancements">Browser enhancements</a></h1>
 <p>REST framework supports a few browser enhancements such as browser-based <code>PUT</code>, <code>PATCH</code> and <code>DELETE</code> forms.</p>
-<h2 id="method">.method</h2>
+<h2 id="method"><a class="toclink" href="#method">.method</a></h2>
 <p><code>request.method</code> returns the <strong>uppercased</strong> string representation of the request's HTTP method.</p>
 <p>Browser-based <code>PUT</code>, <code>PATCH</code> and <code>DELETE</code> forms are transparently supported.</p>
 <p>For more information see the <a href="../../topics/browser-enhancements/">browser enhancements documentation</a>.</p>
-<h2 id="content_type">.content_type</h2>
+<h2 id="content_type"><a class="toclink" href="#content_type">.content_type</a></h2>
 <p><code>request.content_type</code>, returns a string object representing the media type of the HTTP request's body, or an empty string if no media type was provided.</p>
 <p>You won't typically need to directly access the request's content type, as you'll normally rely on REST framework's default request parsing behavior.</p>
 <p>If you do need to access the content type of the request you should use the <code>.content_type</code> property in preference to using <code>request.META.get('HTTP_CONTENT_TYPE')</code>, as it provides transparent support for browser-based non-form content.</p>
 <p>For more information see the <a href="../../topics/browser-enhancements/">browser enhancements documentation</a>.</p>
-<h2 id="stream">.stream</h2>
+<h2 id="stream"><a class="toclink" href="#stream">.stream</a></h2>
 <p><code>request.stream</code> returns a stream representing the content of the request body.</p>
 <p>You won't typically need to directly access the request's content, as you'll normally rely on REST framework's default request parsing behavior.</p>
 <p>If you do need to access the raw content directly, you should use the <code>.stream</code> property in preference to using <code>request.content</code>, as it provides transparent support for browser-based non-form content.</p>
 <p>For more information see the <a href="../../topics/browser-enhancements/">browser enhancements documentation</a>.</p>
 <hr />
-<h1 id="standard-httprequest-attributes">Standard HttpRequest attributes</h1>
+<h1 id="standard-httprequest-attributes"><a class="toclink" href="#standard-httprequest-attributes">Standard HttpRequest attributes</a></h1>
 <p>As REST framework's <code>Request</code> extends Django's <code>HttpRequest</code>, all the other standard attributes and methods are also available.  For example the <code>request.META</code> and <code>request.session</code> dictionaries are available as normal.</p>
 <p>Note that due to implementation reasons the <code>Request</code> class does not inherit from <code>HttpRequest</code> class, but instead extends the class using composition.</p>
             

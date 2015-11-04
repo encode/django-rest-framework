@@ -415,14 +415,14 @@
                 
               
 
-              <h1 id="validators">Validators</h1>
+              <h1 id="validators"><a class="toclink" href="#validators">Validators</a></h1>
 <blockquote>
 <p>Validators can be useful for re-using validation logic between different types of fields.</p>
 <p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/validators/">Django documentation</a></p>
 </blockquote>
 <p>Most of the time you're dealing with validation in REST framework you'll simply be relying on the default field validation, or writing explicit validation methods on serializer or field classes.</p>
 <p>However, sometimes you'll want to place your validation logic into reusable components, so that it can easily be reused throughout your codebase. This can be achieved by using validator functions and validator classes.</p>
-<h2 id="validation-in-rest-framework">Validation in REST framework</h2>
+<h2 id="validation-in-rest-framework"><a class="toclink" href="#validation-in-rest-framework">Validation in REST framework</a></h2>
 <p>Validation in Django REST framework serializers is handled a little differently to how validation works in Django's <code>ModelForm</code> class.</p>
 <p>With <code>ModelForm</code> the validation is performed partially on the form, and partially on the model instance. With REST framework the validation is performed entirely on the serializer class. This is advantageous for the following reasons:</p>
 <ul>
@@ -431,7 +431,7 @@
 <li>Printing the <code>repr</code> of a serializer instance will show you exactly what validation rules it applies. There's no extra hidden validation behavior being called on the model instance.</li>
 </ul>
 <p>When you're using <code>ModelSerializer</code> all of this is handled automatically for you. If you want to drop down to using a <code>Serializer</code> classes instead, then you need to define the validation rules explicitly.</p>
-<h4 id="example">Example</h4>
+<h4 id="example"><a class="toclink" href="#example">Example</a></h4>
 <p>As an example of how REST framework uses explicit validation, we'll take a simple model class that has a field with a uniqueness constraint.</p>
 <pre><code>class CustomerReportRecord(models.Model):
     time_raised = models.DateTimeField(default=timezone.now, editable=False)
@@ -456,7 +456,7 @@ CustomerReportSerializer():
 <p>The interesting bit here is the <code>reference</code> field. We can see that the uniqueness constraint is being explicitly enforced by a validator on the serializer field.</p>
 <p>Because of this more explicit style REST framework includes a few validator classes that are not available in core Django. These classes are detailed below.</p>
 <hr />
-<h2 id="uniquevalidator">UniqueValidator</h2>
+<h2 id="uniquevalidator"><a class="toclink" href="#uniquevalidator">UniqueValidator</a></h2>
 <p>This validator can be used to enforce the <code>unique=True</code> constraint on model fields.
 It takes a single required argument, and an optional <code>messages</code> argument:</p>
 <ul>
@@ -469,7 +469,7 @@ It takes a single required argument, and an optional <code>messages</code> argum
     validators=[UniqueValidator(queryset=BlogPost.objects.all())]
 )
 </code></pre>
-<h2 id="uniquetogethervalidator">UniqueTogetherValidator</h2>
+<h2 id="uniquetogethervalidator"><a class="toclink" href="#uniquetogethervalidator">UniqueTogetherValidator</a></h2>
 <p>This validator can be used to enforce <code>unique_together</code> constraints on model instances.
 It has two required arguments, and a single optional <code>messages</code> argument:</p>
 <ul>
@@ -494,9 +494,9 @@ It has two required arguments, and a single optional <code>messages</code> argum
 <hr />
 <p><strong>Note</strong>: The <code>UniqueTogetherValidation</code> class always imposes an implicit constraint that all the fields it applies to are always treated as required. Fields with <code>default</code> values are an exception to this as they always supply a value even when omitted from user input.</p>
 <hr />
-<h2 id="uniquefordatevalidator">UniqueForDateValidator</h2>
-<h2 id="uniqueformonthvalidator">UniqueForMonthValidator</h2>
-<h2 id="uniqueforyearvalidator">UniqueForYearValidator</h2>
+<h2 id="uniquefordatevalidator"><a class="toclink" href="#uniquefordatevalidator">UniqueForDateValidator</a></h2>
+<h2 id="uniqueformonthvalidator"><a class="toclink" href="#uniqueformonthvalidator">UniqueForMonthValidator</a></h2>
+<h2 id="uniqueforyearvalidator"><a class="toclink" href="#uniqueforyearvalidator">UniqueForYearValidator</a></h2>
 <p>These validators can be used to enforce the <code>unique_for_date</code>, <code>unique_for_month</code> and <code>unique_for_year</code> constraints on model instances. They take the following arguments:</p>
 <ul>
 <li><code>queryset</code> <em>required</em> - This is the queryset against which uniqueness should be enforced.</li>
@@ -519,23 +519,23 @@ It has two required arguments, and a single optional <code>messages</code> argum
 </code></pre>
 <p>The date field that is used for the validation is always required to be present on the serializer class. You can't simply rely on a model class <code>default=...</code>, because the value being used for the default wouldn't be generated until after the validation has run.</p>
 <p>There are a couple of styles you may want to use for this depending on how you want your API to behave. If you're using <code>ModelSerializer</code> you'll probably simply rely on the defaults that REST framework generates for you, but if you are using <code>Serializer</code> or simply want more explicit control, use on of the styles demonstrated below.</p>
-<h4 id="using-with-a-writable-date-field">Using with a writable date field.</h4>
+<h4 id="using-with-a-writable-date-field"><a class="toclink" href="#using-with-a-writable-date-field">Using with a writable date field.</a></h4>
 <p>If you want the date field to be writable the only thing worth noting is that you should ensure that it is always available in the input data, either by setting a <code>default</code> argument, or by setting <code>required=True</code>.</p>
 <pre><code>published = serializers.DateTimeField(required=True)
 </code></pre>
-<h4 id="using-with-a-read-only-date-field">Using with a read-only date field.</h4>
+<h4 id="using-with-a-read-only-date-field"><a class="toclink" href="#using-with-a-read-only-date-field">Using with a read-only date field.</a></h4>
 <p>If you want the date field to be visible, but not editable by the user, then set <code>read_only=True</code> and additionally set a <code>default=...</code> argument.</p>
 <pre><code>published = serializers.DateTimeField(read_only=True, default=timezone.now)
 </code></pre>
 <p>The field will not be writable to the user, but the default value will still be passed through to the <code>validated_data</code>.</p>
-<h4 id="using-with-a-hidden-date-field">Using with a hidden date field.</h4>
+<h4 id="using-with-a-hidden-date-field"><a class="toclink" href="#using-with-a-hidden-date-field">Using with a hidden date field.</a></h4>
 <p>If you want the date field to be entirely hidden from the user, then use <code>HiddenField</code>. This field type does not accept user input, but instead always returns it's default value to the <code>validated_data</code> in the serializer.</p>
 <pre><code>published = serializers.HiddenField(default=timezone.now)
 </code></pre>
 <hr />
 <p><strong>Note</strong>: The <code>UniqueFor&lt;Range&gt;Validation</code> classes always imposes an implicit constraint that the fields they are applied to are always treated as required. Fields with <code>default</code> values are an exception to this as they always supply a value even when omitted from user input.</p>
 <hr />
-<h1 id="advanced-default-argument-usage">Advanced 'default' argument usage</h1>
+<h1 id="advanced-default-argument-usage"><a class="toclink" href="#advanced-default-argument-usage">Advanced 'default' argument usage</a></h1>
 <p>Validators that are applied across multiple fields in the serializer can sometimes require a field input that should not be provided by the API client, but that <em>is</em> available as input to the validator.</p>
 <p>Two patterns that you may want to use for this sort of validation include:</p>
 <ul>
@@ -543,13 +543,13 @@ It has two required arguments, and a single optional <code>messages</code> argum
 <li>Using a standard field with <code>read_only=True</code>, but that also includes a <code>default=…</code> argument. This field <em>will</em> be used in the serializer output representation, but cannot be set directly by the user.</li>
 </ul>
 <p>REST framework includes a couple of defaults that may be useful in this context.</p>
-<h4 id="currentuserdefault">CurrentUserDefault</h4>
+<h4 id="currentuserdefault"><a class="toclink" href="#currentuserdefault">CurrentUserDefault</a></h4>
 <p>A default class that can be used to represent the current user. In order to use this, the 'request' must have been provided as part of the context dictionary when instantiating the serializer.</p>
 <pre><code>owner = serializers.HiddenField(
     default=serializers.CurrentUserDefault()
 )
 </code></pre>
-<h4 id="createonlydefault">CreateOnlyDefault</h4>
+<h4 id="createonlydefault"><a class="toclink" href="#createonlydefault">CreateOnlyDefault</a></h4>
 <p>A default class that can be used to <em>only set a default argument during create operations</em>. During updates the field is omitted.</p>
 <p>It takes a single argument, which is the default value or callable that should be used during create operations.</p>
 <pre><code>created_at = serializers.DateTimeField(
@@ -558,15 +558,15 @@ It has two required arguments, and a single optional <code>messages</code> argum
 )
 </code></pre>
 <hr />
-<h1 id="writing-custom-validators">Writing custom validators</h1>
+<h1 id="writing-custom-validators"><a class="toclink" href="#writing-custom-validators">Writing custom validators</a></h1>
 <p>You can use any of Django's existing validators, or write your own custom validators.</p>
-<h2 id="function-based">Function based</h2>
+<h2 id="function-based"><a class="toclink" href="#function-based">Function based</a></h2>
 <p>A validator may be any callable that raises a <code>serializers.ValidationError</code> on failure.</p>
 <pre><code>def even_number(value):
     if value % 2 != 0:
         raise serializers.ValidationError('This field must be an even number.')
 </code></pre>
-<h2 id="class-based">Class based</h2>
+<h2 id="class-based"><a class="toclink" href="#class-based">Class based</a></h2>
 <p>To write a class based validator, use the <code>__call__</code> method. Class based validators are useful as they allow you to parameterize and reuse behavior.</p>
 <pre><code>class MultipleOf(object):
     def __init__(self, base):
@@ -577,7 +577,7 @@ It has two required arguments, and a single optional <code>messages</code> argum
             message = 'This field must be a multiple of %d.' % self.base
             raise serializers.ValidationError(message)
 </code></pre>
-<h4 id="using-set_context">Using <code>set_context()</code></h4>
+<h4 id="using-set_context"><a class="toclink" href="#using-set_context">Using <code>set_context()</code></a></h4>
 <p>In some advanced cases you might want a validator to be passed the serializer field it is being used with as additional context. You can do so by declaring a <code>set_context</code> method on a class based validator.</p>
 <pre><code>def set_context(self, serializer_field):
     # Determine if this is an update or a create operation.

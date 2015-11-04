@@ -447,7 +447,7 @@
                 
               
 
-              <h1 id="filtering">Filtering</h1>
+              <h1 id="filtering"><a class="toclink" href="#filtering">Filtering</a></h1>
 <blockquote>
 <p>The root QuerySet provided by the Manager describes all objects in the database table.  Usually, though, you'll need to select only a subset of the complete set of objects.</p>
 <p>&mdash; <a href="https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters">Django documentation</a></p>
@@ -455,7 +455,7 @@
 <p>The default behavior of REST framework's generic list views is to return the entire queryset for a model manager.  Often you will want your API to restrict the items that are returned by the queryset.</p>
 <p>The simplest way to filter the queryset of any view that subclasses <code>GenericAPIView</code> is to override the <code>.get_queryset()</code> method.</p>
 <p>Overriding this method allows you to customize the queryset returned by the view in a number of different ways.</p>
-<h2 id="filtering-against-the-current-user">Filtering against the current user</h2>
+<h2 id="filtering-against-the-current-user"><a class="toclink" href="#filtering-against-the-current-user">Filtering against the current user</a></h2>
 <p>You might want to filter the queryset to ensure that only results relevant to the currently authenticated user making the request are returned.</p>
 <p>You can do so by filtering based on the value of <code>request.user</code>.</p>
 <p>For example:</p>
@@ -474,7 +474,7 @@ class PurchaseList(generics.ListAPIView):
         user = self.request.user
         return Purchase.objects.filter(purchaser=user)
 </code></pre>
-<h2 id="filtering-against-the-url">Filtering against the URL</h2>
+<h2 id="filtering-against-the-url"><a class="toclink" href="#filtering-against-the-url">Filtering against the URL</a></h2>
 <p>Another style of filtering might involve restricting the queryset based on some part of the URL.</p>
 <p>For example if your URL config contained an entry like this:</p>
 <pre><code>url('^purchases/(?P&lt;username&gt;.+)/$', PurchaseList.as_view()),
@@ -491,7 +491,7 @@ class PurchaseList(generics.ListAPIView):
         username = self.kwargs['username']
         return Purchase.objects.filter(purchaser__username=username)
 </code></pre>
-<h2 id="filtering-against-query-parameters">Filtering against query parameters</h2>
+<h2 id="filtering-against-query-parameters"><a class="toclink" href="#filtering-against-query-parameters">Filtering against query parameters</a></h2>
 <p>A final example of filtering the initial queryset would be to determine the initial queryset based on query parameters in the url.</p>
 <p>We can override <code>.get_queryset()</code> to deal with URLs such as <code>http://example.com/api/purchases?username=denvercoder9</code>, and filter the queryset only if the <code>username</code> parameter is included in the URL:</p>
 <pre><code>class PurchaseList(generics.ListAPIView):
@@ -509,11 +509,11 @@ class PurchaseList(generics.ListAPIView):
         return queryset
 </code></pre>
 <hr />
-<h1 id="generic-filtering">Generic Filtering</h1>
+<h1 id="generic-filtering"><a class="toclink" href="#generic-filtering">Generic Filtering</a></h1>
 <p>As well as being able to override the default queryset, REST framework also includes support for generic filtering backends that allow you to easily construct complex searches and filters.</p>
 <p>Generic filters can also present themselves as HTML controls in the browsable API and admin API.</p>
 <p><img alt="Filter Example" src="../../img/filter-controls.png" /></p>
-<h2 id="setting-filter-backends">Setting filter backends</h2>
+<h2 id="setting-filter-backends"><a class="toclink" href="#setting-filter-backends">Setting filter backends</a></h2>
 <p>The default filter backends may be set globally, using the <code>DEFAULT_FILTER_BACKENDS</code> setting.  For example.</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
@@ -531,12 +531,12 @@ class UserListView(generics.ListAPIView):
     serializer = UserSerializer
     filter_backends = (filters.DjangoFilterBackend,)
 </code></pre>
-<h2 id="filtering-and-object-lookups">Filtering and object lookups</h2>
+<h2 id="filtering-and-object-lookups"><a class="toclink" href="#filtering-and-object-lookups">Filtering and object lookups</a></h2>
 <p>Note that if a filter backend is configured for a view, then as well as being used to filter list views, it will also be used to filter the querysets used for returning a single object.</p>
 <p>For instance, given the previous example, and a product with an id of <code>4675</code>, the following URL would either return the corresponding object, or return a 404 response, depending on if the filtering conditions were met by the given product instance:</p>
 <pre><code>http://example.com/api/products/4675/?category=clothing&amp;max_price=10.00
 </code></pre>
-<h2 id="overriding-the-initial-queryset">Overriding the initial queryset</h2>
+<h2 id="overriding-the-initial-queryset"><a class="toclink" href="#overriding-the-initial-queryset">Overriding the initial queryset</a></h2>
 <p>Note that you can use both an overridden <code>.get_queryset()</code> and generic filtering together, and everything will work as expected.  For example, if <code>Product</code> had a many-to-many relationship with <code>User</code>, named <code>purchase</code>, you might want to write a view like this:</p>
 <pre><code>class PurchasedProductsList(generics.ListAPIView):
     """
@@ -552,8 +552,8 @@ class UserListView(generics.ListAPIView):
         return user.purchase_set.all()
 </code></pre>
 <hr />
-<h1 id="api-guide">API Guide</h1>
-<h2 id="djangofilterbackend">DjangoFilterBackend</h2>
+<h1 id="api-guide"><a class="toclink" href="#api-guide">API Guide</a></h1>
+<h2 id="djangofilterbackend"><a class="toclink" href="#djangofilterbackend">DjangoFilterBackend</a></h2>
 <p>The <code>DjangoFilterBackend</code> class supports highly customizable field filtering, using the <a href="https://github.com/alex/django-filter">django-filter package</a>.</p>
 <p>To use REST framework's <code>DjangoFilterBackend</code>, first install <code>django-filter</code>.</p>
 <pre><code>pip install django-filter
@@ -562,8 +562,8 @@ class UserListView(generics.ListAPIView):
 <pre><code>pip install django-crispy-forms
 </code></pre>
 <p>With crispy forms installed, the browsable API will present a filtering control for <code>DjangoFilterBackend</code>, like so:</p>
-<p><img alt="Django Filter" src="../../../docs/img/django-filter.png" /></p>
-<h4 id="specifying-filter-fields">Specifying filter fields</h4>
+<p><img alt="Django Filter" src="../../img/django-filter.png" /></p>
+<h4 id="specifying-filter-fields"><a class="toclink" href="#specifying-filter-fields">Specifying filter fields</a></h4>
 <p>If all you need is simple equality-based filtering, you can set a <code>filter_fields</code> attribute on the view, or viewset, listing the set of fields you wish to filter against.</p>
 <pre><code>class ProductList(generics.ListAPIView):
     queryset = Product.objects.all()
@@ -574,7 +574,7 @@ class UserListView(generics.ListAPIView):
 <p>This will automatically create a <code>FilterSet</code> class for the given fields, and will allow you to make requests such as:</p>
 <pre><code>http://example.com/api/products?category=clothing&amp;in_stock=True
 </code></pre>
-<h4 id="specifying-a-filterset">Specifying a FilterSet</h4>
+<h4 id="specifying-a-filterset"><a class="toclink" href="#specifying-a-filterset">Specifying a FilterSet</a></h4>
 <p>For more advanced filtering requirements you can specify a <code>FilterSet</code> class that should be used by the view.  For example:</p>
 <pre><code>import django_filters
 from myapp.models import Product
@@ -640,10 +640,10 @@ class ProductFilter(django_filters.FilterSet):
 <li>For Django 1.3 support, make sure to install <code>django-filter</code> version 0.5.4, as later versions drop support for 1.3.</li>
 </ul>
 <hr />
-<h2 id="searchfilter">SearchFilter</h2>
+<h2 id="searchfilter"><a class="toclink" href="#searchfilter">SearchFilter</a></h2>
 <p>The <code>SearchFilter</code> class supports simple single query parameter based searching, and is based on the <a href="https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields">Django admin's search functionality</a>.</p>
 <p>When in use, the browsable API will include a <code>SearchFilter</code> control:</p>
-<p><img alt="Search Filter" src="../../../docs/img/search-filter.png" /></p>
+<p><img alt="Search Filter" src="../../img/search-filter.png" /></p>
 <p>The <code>SearchFilter</code> class will only be applied if the view has a <code>search_fields</code> attribute set.  The <code>search_fields</code> attribute should be a list of names of text type fields on the model, such as <code>CharField</code> or <code>TextField</code>.</p>
 <pre><code>class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
@@ -671,9 +671,9 @@ class ProductFilter(django_filters.FilterSet):
 <p>By default, the search parameter is named <code>'search</code>', but this may be overridden with the <code>SEARCH_PARAM</code> setting.</p>
 <p>For more details, see the <a href="https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields">Django documentation</a>.</p>
 <hr />
-<h2 id="orderingfilter">OrderingFilter</h2>
+<h2 id="orderingfilter"><a class="toclink" href="#orderingfilter">OrderingFilter</a></h2>
 <p>The <code>OrderingFilter</code> class supports simple query parameter controlled ordering of results.</p>
-<p><img alt="Ordering Filter" src="../../../docs/img/ordering-filter.png" /></p>
+<p><img alt="Ordering Filter" src="../../img/ordering-filter.png" /></p>
 <p>By default, the query parameter is named <code>'ordering'</code>, but this may by overridden with the <code>ORDERING_PARAM</code> setting.</p>
 <p>For example, to order users by username:</p>
 <pre><code>http://example.com/api/users?ordering=username
@@ -684,7 +684,7 @@ class ProductFilter(django_filters.FilterSet):
 <p>Multiple orderings may also be specified:</p>
 <pre><code>http://example.com/api/users?ordering=account,username
 </code></pre>
-<h3 id="specifying-which-fields-may-be-ordered-against">Specifying which fields may be ordered against</h3>
+<h3 id="specifying-which-fields-may-be-ordered-against"><a class="toclink" href="#specifying-which-fields-may-be-ordered-against">Specifying which fields may be ordered against</a></h3>
 <p>It's recommended that you explicitly specify which fields the API should allowing in the ordering filter.  You can do this by setting an <code>ordering_fields</code> attribute on the view, like so:</p>
 <pre><code>class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
@@ -701,7 +701,7 @@ class ProductFilter(django_filters.FilterSet):
     filter_backends = (filters.OrderingFilter,)
     ordering_fields = '__all__'
 </code></pre>
-<h3 id="specifying-a-default-ordering">Specifying a default ordering</h3>
+<h3 id="specifying-a-default-ordering"><a class="toclink" href="#specifying-a-default-ordering">Specifying a default ordering</a></h3>
 <p>If an <code>ordering</code> attribute is set on the view, this will be used as the default ordering.</p>
 <p>Typically you'd instead control this by setting <code>order_by</code> on the initial queryset, but using the <code>ordering</code> parameter on the view allows you to specify the ordering in a way that it can then be passed automatically as context to a rendered template.  This makes it possible to automatically render column headers differently if they are being used to order the results.</p>
 <pre><code>class UserListView(generics.ListAPIView):
@@ -713,7 +713,7 @@ class ProductFilter(django_filters.FilterSet):
 </code></pre>
 <p>The <code>ordering</code> attribute may be either a string or a list/tuple of strings.</p>
 <hr />
-<h2 id="djangoobjectpermissionsfilter">DjangoObjectPermissionsFilter</h2>
+<h2 id="djangoobjectpermissionsfilter"><a class="toclink" href="#djangoobjectpermissionsfilter">DjangoObjectPermissionsFilter</a></h2>
 <p>The <code>DjangoObjectPermissionsFilter</code> is intended to be used together with the <a href="https://django-guardian.readthedocs.org/"><code>django-guardian</code></a> package, with custom <code>'view'</code> permissions added.  The filter will ensure that querysets only returns objects for which the user has the appropriate view permission.</p>
 <p>If you're using <code>DjangoObjectPermissionsFilter</code>, you'll probably also want to add an appropriate object permissions class, to ensure that users can only operate on instances if they have the appropriate object permissions.  The easiest way to do this is to subclass <code>DjangoObjectPermissions</code> and add <code>'view'</code> permissions to the <code>perms_map</code> attribute.</p>
 <p>A complete example using both <code>DjangoObjectPermissionsFilter</code> and <code>DjangoObjectPermissions</code> might look something like this.</p>
@@ -746,11 +746,11 @@ class ProductFilter(django_filters.FilterSet):
 </code></pre>
 <p>For more information on adding <code>'view'</code> permissions for models, see the <a href="https://django-guardian.readthedocs.org/en/latest/userguide/assign.html">relevant section</a> of the <code>django-guardian</code> documentation, and <a href="http://blog.nyaruka.com/adding-a-view-permission-to-django-models">this blogpost</a>.</p>
 <hr />
-<h1 id="custom-generic-filtering">Custom generic filtering</h1>
+<h1 id="custom-generic-filtering"><a class="toclink" href="#custom-generic-filtering">Custom generic filtering</a></h1>
 <p>You can also provide your own generic filtering backend, or write an installable app for other developers to use.</p>
 <p>To do so override <code>BaseFilterBackend</code>, and override the <code>.filter_queryset(self, request, queryset, view)</code> method.  The method should return a new, filtered queryset.</p>
 <p>As well as allowing clients to perform searches and filtering, generic filter backends can be useful for restricting which objects should be visible to any given request or user.</p>
-<h2 id="example">Example</h2>
+<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>For example, you might need to restrict users to only being able to see objects they created.</p>
 <pre><code>class IsOwnerFilterBackend(filters.BaseFilterBackend):
     """
@@ -760,17 +760,17 @@ class ProductFilter(django_filters.FilterSet):
         return queryset.filter(owner=request.user)
 </code></pre>
 <p>We could achieve the same behavior by overriding <code>get_queryset()</code> on the views, but using a filter backend allows you to more easily add this restriction to multiple views, or to apply it across the entire API.</p>
-<h2 id="customizing-the-interface">Customizing the interface</h2>
+<h2 id="customizing-the-interface"><a class="toclink" href="#customizing-the-interface">Customizing the interface</a></h2>
 <p>Generic filters may also present an interface in the browsable API. To do so you should implement a <code>to_html()</code> method which returns a rendered HTML representation of the filter. This method should have the following signature:</p>
 <p><code>to_html(self, request, queryset, view)</code></p>
 <p>The method should return a rendered HTML string.</p>
-<h1 id="third-party-packages">Third party packages</h1>
+<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages provide additional filter implementations.</p>
-<h2 id="django-rest-framework-filters-package">Django REST framework filters package</h2>
+<h2 id="django-rest-framework-filters-package"><a class="toclink" href="#django-rest-framework-filters-package">Django REST framework filters package</a></h2>
 <p>The <a href="https://github.com/philipn/django-rest-framework-filters">django-rest-framework-filters package</a> works together with the <code>DjangoFilterBackend</code> class, and allows you to easily create filters across relationships, or create multiple filter lookup types for a given field.</p>
-<h2 id="django-rest-framework-full-word-search-filter">Django REST framework full word search filter</h2>
+<h2 id="django-rest-framework-full-word-search-filter"><a class="toclink" href="#django-rest-framework-full-word-search-filter">Django REST framework full word search filter</a></h2>
 <p>The <a href="https://github.com/trollknurr/django-rest-framework-word-search-filter">djangorestframework-word-filter</a> developed as alternative to <code>filters.SearchFilter</code> which will search full word in text, or exact match.</p>
-<h2 id="django-url-filter">Django URL Filter</h2>
+<h2 id="django-url-filter"><a class="toclink" href="#django-url-filter">Django URL Filter</a></h2>
 <p><a href="https://github.com/miki725/django-url-filter">django-url-filter</a> provides a safe way to filter data via human-friendly URLs. It works very similar to DRF serializers and fields in a sense that they can be nested except they are called filtersets and filters. That provides easy way to filter related data. Also this library is generic-purpose so it can be used to filter other sources of data and not only Django <code>QuerySet</code>s.</p>
             
 

@@ -389,21 +389,21 @@
             
               
 
-              <h1 id="tutorial-2-requests-and-responses">Tutorial 2: Requests and Responses</h1>
+              <h1 id="tutorial-2-requests-and-responses"><a class="toclink" href="#tutorial-2-requests-and-responses">Tutorial 2: Requests and Responses</a></h1>
 <p>From this point we're going to really start covering the core of REST framework.
 Let's introduce a couple of essential building blocks.</p>
-<h2 id="request-objects">Request objects</h2>
+<h2 id="request-objects"><a class="toclink" href="#request-objects">Request objects</a></h2>
 <p>REST framework introduces a <code>Request</code> object that extends the regular <code>HttpRequest</code>, and provides more flexible request parsing.  The core functionality of the <code>Request</code> object is the <code>request.data</code> attribute, which is similar to <code>request.POST</code>, but more useful for working with Web APIs.</p>
 <pre><code>request.POST  # Only handles form data.  Only works for 'POST' method.
 request.data  # Handles arbitrary data.  Works for 'POST', 'PUT' and 'PATCH' methods.
 </code></pre>
-<h2 id="response-objects">Response objects</h2>
+<h2 id="response-objects"><a class="toclink" href="#response-objects">Response objects</a></h2>
 <p>REST framework also introduces a <code>Response</code> object, which is a type of <code>TemplateResponse</code> that takes unrendered content and uses content negotiation to determine the correct content type to return to the client.</p>
 <pre><code>return Response(data)  # Renders to content type as requested by the client.
 </code></pre>
-<h2 id="status-codes">Status codes</h2>
+<h2 id="status-codes"><a class="toclink" href="#status-codes">Status codes</a></h2>
 <p>Using numeric HTTP status codes in your views doesn't always make for obvious reading, and it's easy to not notice if you get an error code wrong.  REST framework provides more explicit identifiers for each status code, such as <code>HTTP_400_BAD_REQUEST</code> in the <code>status</code> module.  It's a good idea to use these throughout rather than using numeric identifiers.</p>
-<h2 id="wrapping-api-views">Wrapping API views</h2>
+<h2 id="wrapping-api-views"><a class="toclink" href="#wrapping-api-views">Wrapping API views</a></h2>
 <p>REST framework provides two wrappers you can use to write API views.</p>
 <ol>
 <li>The <code>@api_view</code> decorator for working with function based views.</li>
@@ -411,7 +411,7 @@ request.data  # Handles arbitrary data.  Works for 'POST', 'PUT' and 'PATCH' met
 </ol>
 <p>These wrappers provide a few bits of functionality such as making sure you receive <code>Request</code> instances in your view, and adding context to <code>Response</code> objects so that content negotiation can be performed.</p>
 <p>The wrappers also provide behaviour such as returning <code>405 Method Not Allowed</code> responses when appropriate, and handling any <code>ParseError</code> exception that occurs when accessing <code>request.data</code> with malformed input.</p>
-<h2 id="pulling-it-all-together">Pulling it all together</h2>
+<h2 id="pulling-it-all-together"><a class="toclink" href="#pulling-it-all-together">Pulling it all together</a></h2>
 <p>Okay, let's go ahead and start using these new components to write a few views.</p>
 <p>We don't need our <code>JSONResponse</code> class in <code>views.py</code> anymore, so go ahead and delete that.  Once that's done we can start refactoring our views slightly.</p>
 <pre><code>from rest_framework import status
@@ -467,7 +467,7 @@ def snippet_detail(request, pk):
 </code></pre>
 <p>This should all feel very familiar - it is not a lot different from working with regular Django views.</p>
 <p>Notice that we're no longer explicitly tying our requests or responses to a given content type.  <code>request.data</code> can handle incoming <code>json</code> requests, but it can also handle other formats.  Similarly we're returning response objects with data, but allowing REST framework to render the response into the correct content type for us.</p>
-<h2 id="adding-optional-format-suffixes-to-our-urls">Adding optional format suffixes to our URLs</h2>
+<h2 id="adding-optional-format-suffixes-to-our-urls"><a class="toclink" href="#adding-optional-format-suffixes-to-our-urls">Adding optional format suffixes to our URLs</a></h2>
 <p>To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints.  Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as <a href="http://example.com/api/items/4/.json">http://example.com/api/items/4/.json</a>.</p>
 <p>Start by adding a <code>format</code> keyword argument to both of the views, like so.</p>
 <pre><code>def snippet_list(request, format=None):
@@ -488,7 +488,7 @@ urlpatterns = [
 urlpatterns = format_suffix_patterns(urlpatterns)
 </code></pre>
 <p>We don't necessarily need to add these extra url patterns in, but it gives us a simple, clean way of referring to a specific format.</p>
-<h2 id="hows-it-looking">How's it looking?</h2>
+<h2 id="hows-it-looking"><a class="toclink" href="#hows-it-looking">How's it looking?</a></h2>
 <p>Go ahead and test the API from the command line, as we did in <a href="../1-serialization/">tutorial part 1</a>.  Everything is working pretty similarly, although we've got some nicer error handling if we send invalid requests.</p>
 <p>We can get a list of all of the snippets, as before.</p>
 <pre><code>http http://127.0.0.1:8000/snippets/
@@ -548,11 +548,11 @@ http --json POST http://127.0.0.1:8000/snippets/ code="print 456"
 }
 </code></pre>
 <p>Now go and open the API in a web browser, by visiting <a href="http://127.0.0.1:8000/snippets/">http://127.0.0.1:8000/snippets/</a>.</p>
-<h3 id="browsability">Browsability</h3>
+<h3 id="browsability"><a class="toclink" href="#browsability">Browsability</a></h3>
 <p>Because the API chooses the content type of the response based on the client request, it will, by default, return an HTML-formatted representation of the resource when that resource is requested by a web browser.  This allows for the API to return a fully web-browsable HTML representation.</p>
 <p>Having a web-browsable API is a huge usability win, and makes developing and using your API much easier.  It also dramatically lowers the barrier-to-entry for other developers wanting to inspect and work with your API.</p>
 <p>See the <a href="../../topics/browsable-api/">browsable api</a> topic for more information about the browsable API feature and how to customize it.</p>
-<h2 id="whats-next">What's next?</h2>
+<h2 id="whats-next"><a class="toclink" href="#whats-next">What's next?</a></h2>
 <p>In <a href="../3-class-based-views/">tutorial part 3</a>, we'll start using class based views, and see how generic views reduce the amount of code we need to write.</p>
             
 

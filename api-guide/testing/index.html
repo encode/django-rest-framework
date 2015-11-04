@@ -437,15 +437,15 @@
                 
               
 
-              <h1 id="testing">Testing</h1>
+              <h1 id="testing"><a class="toclink" href="#testing">Testing</a></h1>
 <blockquote>
 <p>Code without tests is broken as designed.</p>
 <p>&mdash; <a href="http://jacobian.org/writing/django-apps-with-buildout/#s-create-a-test-wrapper">Jacob Kaplan-Moss</a></p>
 </blockquote>
 <p>REST framework includes a few helper classes that extend Django's existing test framework, and improve support for making API requests.</p>
-<h1 id="apirequestfactory">APIRequestFactory</h1>
+<h1 id="apirequestfactory"><a class="toclink" href="#apirequestfactory">APIRequestFactory</a></h1>
 <p>Extends <a href="https://docs.djangoproject.com/en/dev/topics/testing/advanced/#django.test.client.RequestFactory">Django's existing <code>RequestFactory</code> class</a>.</p>
-<h2 id="creating-test-requests">Creating test requests</h2>
+<h2 id="creating-test-requests"><a class="toclink" href="#creating-test-requests">Creating test requests</a></h2>
 <p>The <code>APIRequestFactory</code> class supports an almost identical API to Django's standard <code>RequestFactory</code> class.  This means that the standard <code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.patch()</code>, <code>.delete()</code>, <code>.head()</code> and <code>.options()</code> methods are all available.</p>
 <pre><code>from rest_framework.test import APIRequestFactory
 
@@ -453,7 +453,7 @@
 factory = APIRequestFactory()
 request = factory.post('/notes/', {'title': 'new idea'})
 </code></pre>
-<h4 id="using-the-format-argument">Using the <code>format</code> argument</h4>
+<h4 id="using-the-format-argument"><a class="toclink" href="#using-the-format-argument">Using the <code>format</code> argument</a></h4>
 <p>Methods which create a request body, such as <code>post</code>, <code>put</code> and <code>patch</code>, include a <code>format</code> argument, which make it easy to generate requests using a content type other than multipart form data.  For example:</p>
 <pre><code># Create a JSON POST request
 factory = APIRequestFactory()
@@ -461,11 +461,11 @@ request = factory.post('/notes/', {'title': 'new idea'}, format='json')
 </code></pre>
 <p>By default the available formats are <code>'multipart'</code> and <code>'json'</code>.  For compatibility with Django's existing <code>RequestFactory</code> the default format is <code>'multipart'</code>.</p>
 <p>To support a wider set of request formats, or change the default format, <a href="#configuration">see the configuration section</a>.</p>
-<h4 id="explicitly-encoding-the-request-body">Explicitly encoding the request body</h4>
+<h4 id="explicitly-encoding-the-request-body"><a class="toclink" href="#explicitly-encoding-the-request-body">Explicitly encoding the request body</a></h4>
 <p>If you need to explicitly encode the request body, you can do so by setting the <code>content_type</code> flag.  For example:</p>
 <pre><code>request = factory.post('/notes/', json.dumps({'title': 'new idea'}), content_type='application/json')
 </code></pre>
-<h4 id="put-and-patch-with-form-data">PUT and PATCH with form data</h4>
+<h4 id="put-and-patch-with-form-data"><a class="toclink" href="#put-and-patch-with-form-data">PUT and PATCH with form data</a></h4>
 <p>One difference worth noting between Django's <code>RequestFactory</code> and REST framework's <code>APIRequestFactory</code> is that multipart form data will be encoded for methods other than just <code>.post()</code>.</p>
 <p>For example, using <code>APIRequestFactory</code>, you can make a form PUT request like so:</p>
 <pre><code>factory = APIRequestFactory()
@@ -480,7 +480,7 @@ content = encode_multipart('BoUnDaRyStRiNg', data)
 content_type = 'multipart/form-data; boundary=BoUnDaRyStRiNg'
 request = factory.put('/notes/547/', content, content_type=content_type)
 </code></pre>
-<h2 id="forcing-authentication">Forcing authentication</h2>
+<h2 id="forcing-authentication"><a class="toclink" href="#forcing-authentication">Forcing authentication</a></h2>
 <p>When testing views directly using a request factory, it's often convenient to be able to directly authenticate the request, rather than having to construct the correct authentication credentials.</p>
 <p>To forcibly authenticate a request, use the <code>force_authenticate()</code> method.</p>
 <pre><code>from rest_framework.test import force_authenticate
@@ -509,16 +509,16 @@ request.user = user
 response = view(request)
 </code></pre>
 <hr />
-<h2 id="forcing-csrf-validation">Forcing CSRF validation</h2>
+<h2 id="forcing-csrf-validation"><a class="toclink" href="#forcing-csrf-validation">Forcing CSRF validation</a></h2>
 <p>By default, requests created with <code>APIRequestFactory</code> will not have CSRF validation applied when passed to a REST framework view.  If you need to explicitly turn CSRF validation on, you can do so by setting the <code>enforce_csrf_checks</code> flag when instantiating the factory.</p>
 <pre><code>factory = APIRequestFactory(enforce_csrf_checks=True)
 </code></pre>
 <hr />
 <p><strong>Note</strong>: It's worth noting that Django's standard <code>RequestFactory</code> doesn't need to include this option, because when using regular Django the CSRF validation takes place in middleware, which is not run when testing views directly.  When using REST framework, CSRF validation takes place inside the view, so the request factory needs to disable view-level CSRF checks.</p>
 <hr />
-<h1 id="apiclient">APIClient</h1>
+<h1 id="apiclient"><a class="toclink" href="#apiclient">APIClient</a></h1>
 <p>Extends <a href="https://docs.djangoproject.com/en/dev/topics/testing/tools/#the-test-client">Django's existing <code>Client</code> class</a>.</p>
-<h2 id="making-requests">Making requests</h2>
+<h2 id="making-requests"><a class="toclink" href="#making-requests">Making requests</a></h2>
 <p>The <code>APIClient</code> class supports the same request interface as Django's standard <code>Client</code> class.  This means the that standard <code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.patch()</code>, <code>.delete()</code>, <code>.head()</code> and <code>.options()</code> methods are all available.  For example:</p>
 <pre><code>from rest_framework.test import APIClient
 
@@ -526,8 +526,8 @@ client = APIClient()
 client.post('/notes/', {'title': 'new idea'}, format='json')
 </code></pre>
 <p>To support a wider set of request formats, or change the default format, <a href="#configuration">see the configuration section</a>.</p>
-<h2 id="authenticating">Authenticating</h2>
-<h4 id="loginkwargs">.login(**kwargs)</h4>
+<h2 id="authenticating"><a class="toclink" href="#authenticating">Authenticating</a></h2>
+<h4 id="loginkwargs"><a class="toclink" href="#loginkwargs">.login(**kwargs)</a></h4>
 <p>The <code>login</code> method functions exactly as it does with Django's regular <code>Client</code> class.  This allows you to authenticate requests against any views which include <code>SessionAuthentication</code>.</p>
 <pre><code># Make all requests in the context of a logged in session.
 client = APIClient()
@@ -538,7 +538,7 @@ client.login(username='lauren', password='secret')
 client.logout()
 </code></pre>
 <p>The <code>login</code> method is appropriate for testing APIs that use session authentication, for example web sites which include AJAX interaction with the API.</p>
-<h4 id="credentialskwargs">.credentials(**kwargs)</h4>
+<h4 id="credentialskwargs"><a class="toclink" href="#credentialskwargs">.credentials(**kwargs)</a></h4>
 <p>The <code>credentials</code> method can be used to set headers that will then be included on all subsequent requests by the test client.</p>
 <pre><code>from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
@@ -553,7 +553,7 @@ client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
 client.credentials()
 </code></pre>
 <p>The <code>credentials</code> method is appropriate for testing APIs that require authentication headers, such as basic authentication, OAuth1a and OAuth2 authentication, and simple token authentication schemes.</p>
-<h4 id="force_authenticateusernone-tokennone">.force_authenticate(user=None, token=None)</h4>
+<h4 id="force_authenticateusernone-tokennone"><a class="toclink" href="#force_authenticateusernone-tokennone">.force_authenticate(user=None, token=None)</a></h4>
 <p>Sometimes you may want to bypass authentication, and simple force all requests by the test client to be automatically treated as authenticated.</p>
 <p>This can be a useful shortcut if you're testing the API but don't want to have to construct valid authentication credentials in order to make test requests.</p>
 <pre><code>user = User.objects.get(username='lauren')
@@ -563,13 +563,13 @@ client.force_authenticate(user=user)
 <p>To unauthenticate subsequent requests, call <code>force_authenticate</code> setting the user and/or token to <code>None</code>.</p>
 <pre><code>client.force_authenticate(user=None)
 </code></pre>
-<h2 id="csrf-validation">CSRF validation</h2>
+<h2 id="csrf-validation"><a class="toclink" href="#csrf-validation">CSRF validation</a></h2>
 <p>By default CSRF validation is not applied when using <code>APIClient</code>.  If you need to explicitly enable CSRF validation, you can do so by setting the <code>enforce_csrf_checks</code> flag when instantiating the client.</p>
 <pre><code>client = APIClient(enforce_csrf_checks=True)
 </code></pre>
 <p>As usual CSRF validation will only apply to any session authenticated views.  This means CSRF validation will only occur if the client has been logged in by calling <code>login()</code>.</p>
 <hr />
-<h1 id="test-cases">Test cases</h1>
+<h1 id="test-cases"><a class="toclink" href="#test-cases">Test cases</a></h1>
 <p>REST framework includes the following test case classes, that mirror the existing Django test case classes, but use <code>APIClient</code> instead of Django's default <code>Client</code>.</p>
 <ul>
 <li><code>APISimpleTestCase</code></li>
@@ -577,7 +577,7 @@ client.force_authenticate(user=user)
 <li><code>APITestCase</code></li>
 <li><code>APILiveServerTestCase</code></li>
 </ul>
-<h2 id="example">Example</h2>
+<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>You can use any of REST framework's test case classes as you would for the regular Django test case classes.  The <code>self.client</code> attribute will be an <code>APIClient</code> instance.</p>
 <pre><code>from django.core.urlresolvers import reverse
 from rest_framework import status
@@ -597,8 +597,8 @@ class AccountTests(APITestCase):
         self.assertEqual(Account.objects.get().name, 'DabApps')
 </code></pre>
 <hr />
-<h1 id="testing-responses">Testing responses</h1>
-<h2 id="checking-the-response-data">Checking the response data</h2>
+<h1 id="testing-responses"><a class="toclink" href="#testing-responses">Testing responses</a></h1>
+<h2 id="checking-the-response-data"><a class="toclink" href="#checking-the-response-data">Checking the response data</a></h2>
 <p>When checking the validity of test responses it's often more convenient to inspect the data that the response was created with, rather than inspecting the fully rendered response.</p>
 <p>For example, it's easier to inspect <code>response.data</code>:</p>
 <pre><code>response = self.client.get('/users/4/')
@@ -608,7 +608,7 @@ self.assertEqual(response.data, {'id': 4, 'username': 'lauren'})
 <pre><code>response = self.client.get('/users/4/')
 self.assertEqual(json.loads(response.content), {'id': 4, 'username': 'lauren'})
 </code></pre>
-<h2 id="rendering-responses">Rendering responses</h2>
+<h2 id="rendering-responses"><a class="toclink" href="#rendering-responses">Rendering responses</a></h2>
 <p>If you're testing views directly using <code>APIRequestFactory</code>, the responses that are returned will not yet be rendered, as rendering of template responses is performed by Django's internal request-response cycle.  In order to access <code>response.content</code>, you'll first need to render the response.</p>
 <pre><code>view = UserDetail.as_view()
 request = factory.get('/users/4')
@@ -617,15 +617,15 @@ response.render()  # Cannot access `response.content` without this.
 self.assertEqual(response.content, '{"username": "lauren", "id": 4}')
 </code></pre>
 <hr />
-<h1 id="configuration">Configuration</h1>
-<h2 id="setting-the-default-format">Setting the default format</h2>
+<h1 id="configuration"><a class="toclink" href="#configuration">Configuration</a></h1>
+<h2 id="setting-the-default-format"><a class="toclink" href="#setting-the-default-format">Setting the default format</a></h2>
 <p>The default format used to make test requests may be set using the <code>TEST_REQUEST_DEFAULT_FORMAT</code> setting key.  For example, to always use JSON for test requests by default instead of standard multipart form requests, set the following in your <code>settings.py</code> file:</p>
 <pre><code>REST_FRAMEWORK = {
     ...
     'TEST_REQUEST_DEFAULT_FORMAT': 'json'
 }
 </code></pre>
-<h2 id="setting-the-available-formats">Setting the available formats</h2>
+<h2 id="setting-the-available-formats"><a class="toclink" href="#setting-the-available-formats">Setting the available formats</a></h2>
 <p>If you need to test requests using something other than multipart or json requests, you can do so by setting the <code>TEST_REQUEST_RENDERER_CLASSES</code> setting.</p>
 <p>For example, to add support for using <code>format='html'</code> in test requests, you might have something like this in your <code>settings.py</code> file.</p>
 <pre><code>REST_FRAMEWORK = {

@@ -483,7 +483,7 @@
                 
               
 
-              <h1 id="generic-views">Generic views</h1>
+              <h1 id="generic-views"><a class="toclink" href="#generic-views">Generic views</a></h1>
 <blockquote>
 <p>Django’s generic views... were developed as a shortcut for common usage patterns... They take certain common idioms and patterns found in view development and abstract them so that you can quickly write common views of data without having to repeat yourself.</p>
 <p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/class-based-views/#base-vs-generic-views">Django Documentation</a></p>
@@ -491,7 +491,7 @@
 <p>One of the key benefits of class based views is the way they allow you to compose bits of reusable behavior.  REST framework takes advantage of this by providing a number of pre-built views that provide for commonly used patterns.</p>
 <p>The generic views provided by REST framework allow you to quickly build API views that map closely to your database models.</p>
 <p>If the generic views don't suit the needs of your API, you can drop down to using the regular <code>APIView</code> class, or reuse the mixins and base classes used by the generic views to compose your own set of reusable generic views.</p>
-<h2 id="examples">Examples</h2>
+<h2 id="examples"><a class="toclink" href="#examples">Examples</a></h2>
 <p>Typically when using the generic views, you'll override the view, and set several class attributes.</p>
 <pre><code>from django.contrib.auth.models import User
 from myapp.serializers import UserSerializer
@@ -528,11 +528,11 @@ class UserList(generics.ListCreateAPIView):
 <pre><code>url(r'^/users/', ListCreateAPIView.as_view(queryset=User.objects.all(), serializer_class=UserSerializer), name='user-list')
 </code></pre>
 <hr />
-<h1 id="api-reference">API Reference</h1>
-<h2 id="genericapiview">GenericAPIView</h2>
+<h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
+<h2 id="genericapiview"><a class="toclink" href="#genericapiview">GenericAPIView</a></h2>
 <p>This class extends REST framework's <code>APIView</code> class, adding commonly required behavior for standard list and detail views.</p>
 <p>Each of the concrete generic views provided is built by combining <code>GenericAPIView</code>, with one or more mixin classes.</p>
-<h3 id="attributes">Attributes</h3>
+<h3 id="attributes"><a class="toclink" href="#attributes">Attributes</a></h3>
 <p><strong>Basic settings</strong>:</p>
 <p>The following attributes control the basic view behavior.</p>
 <ul>
@@ -551,9 +551,9 @@ class UserList(generics.ListCreateAPIView):
 <ul>
 <li><code>filter_backends</code> - A list of filter backend classes that should be used for filtering the queryset.  Defaults to the same value as the <code>DEFAULT_FILTER_BACKENDS</code> setting.</li>
 </ul>
-<h3 id="methods">Methods</h3>
+<h3 id="methods"><a class="toclink" href="#methods">Methods</a></h3>
 <p><strong>Base methods</strong>:</p>
-<h4 id="get_querysetself"><code>get_queryset(self)</code></h4>
+<h4 id="get_querysetself"><a class="toclink" href="#get_querysetself"><code>get_queryset(self)</code></a></h4>
 <p>Returns the queryset that should be used for list views, and that should be used as the base for lookups in detail views.  Defaults to returning the queryset specified by the <code>queryset</code> attribute.</p>
 <p>This method should always be used rather than accessing <code>self.queryset</code> directly, as <code>self.queryset</code> gets evaluated only once, and those results are cached for all subsequent requests.</p>
 <p>May be overridden to provide dynamic behavior, such as returning a queryset, that is specific to the user making the request.</p>
@@ -562,7 +562,7 @@ class UserList(generics.ListCreateAPIView):
     user = self.request.user
     return user.accounts.all()
 </code></pre>
-<h4 id="get_objectself"><code>get_object(self)</code></h4>
+<h4 id="get_objectself"><a class="toclink" href="#get_objectself"><code>get_object(self)</code></a></h4>
 <p>Returns an object instance that should be used for detail views.  Defaults to using the <code>lookup_field</code> parameter to filter the base queryset.</p>
 <p>May be overridden to provide more complex behavior, such as object lookups based on more than one URL kwarg.</p>
 <p>For example:</p>
@@ -577,7 +577,7 @@ class UserList(generics.ListCreateAPIView):
     return obj
 </code></pre>
 <p>Note that if your API doesn't include any object level permissions, you may optionally exclude the <code>self.check_object_permissions</code>, and simply return the object from the <code>get_object_or_404</code> lookup.</p>
-<h4 id="filter_querysetself-queryset"><code>filter_queryset(self, queryset)</code></h4>
+<h4 id="filter_querysetself-queryset"><a class="toclink" href="#filter_querysetself-queryset"><code>filter_queryset(self, queryset)</code></a></h4>
 <p>Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.   </p>
 <p>For example:       </p>
 <pre><code>def filter_queryset(self, queryset):
@@ -593,7 +593,7 @@ class UserList(generics.ListCreateAPIView):
 
     return queryset
 </code></pre>
-<h4 id="get_serializer_classself"><code>get_serializer_class(self)</code></h4>
+<h4 id="get_serializer_classself"><a class="toclink" href="#get_serializer_classself"><code>get_serializer_class(self)</code></a></h4>
 <p>Returns the class that should be used for the serializer.  Defaults to returning the <code>serializer_class</code> attribute.</p>
 <p>May be overridden to provide dynamic behavior, such as using different serializers for read and write operations, or providing different serializers to different types of users.</p>
 <p>For example:</p>
@@ -602,7 +602,7 @@ class UserList(generics.ListCreateAPIView):
         return FullAccountSerializer
     return BasicAccountSerializer
 </code></pre>
-<h4 id="get_paginate_byself"><code>get_paginate_by(self)</code></h4>
+<h4 id="get_paginate_byself"><a class="toclink" href="#get_paginate_byself"><code>get_paginate_by(self)</code></a></h4>
 <p>Returns the page size to use with pagination.  By default this uses the <code>paginate_by</code> attribute, and may be overridden by the client if the <code>paginate_by_param</code> attribute is set.</p>
 <p>You may want to override this method to provide more complex behavior, such as modifying page sizes based on the media type of the response.</p>
 <p>For example:</p>
@@ -645,72 +645,72 @@ class UserList(generics.ListCreateAPIView):
 <li><code>filter_queryset(self, queryset)</code> - Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.</li>
 </ul>
 <hr />
-<h1 id="mixins">Mixins</h1>
+<h1 id="mixins"><a class="toclink" href="#mixins">Mixins</a></h1>
 <p>The mixin classes provide the actions that are used to provide the basic view behavior.  Note that the mixin classes provide action methods rather than defining the handler methods, such as <code>.get()</code> and <code>.post()</code>, directly.  This allows for more flexible composition of behavior.</p>
 <p>The mixin classes can be imported from <code>rest_framework.mixins</code>.</p>
-<h2 id="listmodelmixin">ListModelMixin</h2>
+<h2 id="listmodelmixin"><a class="toclink" href="#listmodelmixin">ListModelMixin</a></h2>
 <p>Provides a <code>.list(request, *args, **kwargs)</code> method, that implements listing a queryset.</p>
 <p>If the queryset is populated, this returns a <code>200 OK</code> response, with a serialized representation of the queryset as the body of the response.  The response data may optionally be paginated.</p>
-<h2 id="createmodelmixin">CreateModelMixin</h2>
+<h2 id="createmodelmixin"><a class="toclink" href="#createmodelmixin">CreateModelMixin</a></h2>
 <p>Provides a <code>.create(request, *args, **kwargs)</code> method, that implements creating and saving a new model instance.</p>
 <p>If an object is created this returns a <code>201 Created</code> response, with a serialized representation of the object as the body of the response.  If the representation contains a key named <code>url</code>, then the <code>Location</code> header of the response will be populated with that value.</p>
 <p>If the request data provided for creating the object was invalid, a <code>400 Bad Request</code> response will be returned, with the error details as the body of the response.</p>
-<h2 id="retrievemodelmixin">RetrieveModelMixin</h2>
+<h2 id="retrievemodelmixin"><a class="toclink" href="#retrievemodelmixin">RetrieveModelMixin</a></h2>
 <p>Provides a <code>.retrieve(request, *args, **kwargs)</code> method, that implements returning an existing model instance in a response.</p>
 <p>If an object can be retrieved this returns a <code>200 OK</code> response, with a serialized representation of the object as the body of the response.  Otherwise it will return a <code>404 Not Found</code>.</p>
-<h2 id="updatemodelmixin">UpdateModelMixin</h2>
+<h2 id="updatemodelmixin"><a class="toclink" href="#updatemodelmixin">UpdateModelMixin</a></h2>
 <p>Provides a <code>.update(request, *args, **kwargs)</code> method, that implements updating and saving an existing model instance.</p>
 <p>Also provides a <code>.partial_update(request, *args, **kwargs)</code> method, which is similar to the <code>update</code> method, except that all fields for the update will be optional.  This allows support for HTTP <code>PATCH</code> requests.</p>
 <p>If an object is updated this returns a <code>200 OK</code> response, with a serialized representation of the object as the body of the response.</p>
 <p>If an object is created, for example when making a <code>DELETE</code> request followed by a <code>PUT</code> request to the same URL, this returns a <code>201 Created</code> response, with a serialized representation of the object as the body of the response.</p>
 <p>If the request data provided for updating the object was invalid, a <code>400 Bad Request</code> response will be returned, with the error details as the body of the response.</p>
-<h2 id="destroymodelmixin">DestroyModelMixin</h2>
+<h2 id="destroymodelmixin"><a class="toclink" href="#destroymodelmixin">DestroyModelMixin</a></h2>
 <p>Provides a <code>.destroy(request, *args, **kwargs)</code> method, that implements deletion of an existing model instance.</p>
 <p>If an object is deleted this returns a <code>204 No Content</code> response, otherwise it will return a <code>404 Not Found</code>.</p>
 <hr />
-<h1 id="concrete-view-classes">Concrete View Classes</h1>
+<h1 id="concrete-view-classes"><a class="toclink" href="#concrete-view-classes">Concrete View Classes</a></h1>
 <p>The following classes are the concrete generic views.  If you're using generic views this is normally the level you'll be working at unless you need heavily customized behavior.</p>
 <p>The view classes can be imported from <code>rest_framework.generics</code>.</p>
-<h2 id="createapiview">CreateAPIView</h2>
+<h2 id="createapiview"><a class="toclink" href="#createapiview">CreateAPIView</a></h2>
 <p>Used for <strong>create-only</strong> endpoints.</p>
 <p>Provides a <code>post</code> method handler.</p>
 <p>Extends: <a href="#genericapiview">GenericAPIView</a>, <a href="#createmodelmixin">CreateModelMixin</a></p>
-<h2 id="listapiview">ListAPIView</h2>
+<h2 id="listapiview"><a class="toclink" href="#listapiview">ListAPIView</a></h2>
 <p>Used for <strong>read-only</strong> endpoints to represent a <strong>collection of model instances</strong>.</p>
 <p>Provides a <code>get</code> method handler.</p>
 <p>Extends: <a href="#genericapiview">GenericAPIView</a>, <a href="#listmodelmixin">ListModelMixin</a></p>
-<h2 id="retrieveapiview">RetrieveAPIView</h2>
+<h2 id="retrieveapiview"><a class="toclink" href="#retrieveapiview">RetrieveAPIView</a></h2>
 <p>Used for <strong>read-only</strong> endpoints to represent a <strong>single model instance</strong>.</p>
 <p>Provides a <code>get</code> method handler.</p>
 <p>Extends: <a href="#genericapiview">GenericAPIView</a>, <a href="#retrievemodelmixin">RetrieveModelMixin</a></p>
-<h2 id="destroyapiview">DestroyAPIView</h2>
+<h2 id="destroyapiview"><a class="toclink" href="#destroyapiview">DestroyAPIView</a></h2>
 <p>Used for <strong>delete-only</strong> endpoints for a <strong>single model instance</strong>.</p>
 <p>Provides a <code>delete</code> method handler.</p>
 <p>Extends: <a href="#genericapiview">GenericAPIView</a>, <a href="#destroymodelmixin">DestroyModelMixin</a></p>
-<h2 id="updateapiview">UpdateAPIView</h2>
+<h2 id="updateapiview"><a class="toclink" href="#updateapiview">UpdateAPIView</a></h2>
 <p>Used for <strong>update-only</strong> endpoints for a <strong>single model instance</strong>.</p>
 <p>Provides <code>put</code> and <code>patch</code> method handlers.</p>
 <p>Extends: <a href="#genericapiview">GenericAPIView</a>, <a href="#updatemodelmixin">UpdateModelMixin</a></p>
-<h2 id="listcreateapiview">ListCreateAPIView</h2>
+<h2 id="listcreateapiview"><a class="toclink" href="#listcreateapiview">ListCreateAPIView</a></h2>
 <p>Used for <strong>read-write</strong> endpoints to represent a <strong>collection of model instances</strong>.</p>
 <p>Provides <code>get</code> and <code>post</code> method handlers.</p>
 <p>Extends: <a href="#genericapiview">GenericAPIView</a>, <a href="#listmodelmixin">ListModelMixin</a>, <a href="#createmodelmixin">CreateModelMixin</a></p>
-<h2 id="retrieveupdateapiview">RetrieveUpdateAPIView</h2>
+<h2 id="retrieveupdateapiview"><a class="toclink" href="#retrieveupdateapiview">RetrieveUpdateAPIView</a></h2>
 <p>Used for <strong>read or update</strong> endpoints to represent a <strong>single model instance</strong>.</p>
 <p>Provides <code>get</code>, <code>put</code> and <code>patch</code> method handlers.</p>
 <p>Extends: <a href="#genericapiview">GenericAPIView</a>, <a href="#retrievemodelmixin">RetrieveModelMixin</a>, <a href="#updatemodelmixin">UpdateModelMixin</a></p>
-<h2 id="retrievedestroyapiview">RetrieveDestroyAPIView</h2>
+<h2 id="retrievedestroyapiview"><a class="toclink" href="#retrievedestroyapiview">RetrieveDestroyAPIView</a></h2>
 <p>Used for <strong>read or delete</strong> endpoints to represent a <strong>single model instance</strong>.</p>
 <p>Provides <code>get</code> and <code>delete</code> method handlers.</p>
 <p>Extends: <a href="#genericapiview">GenericAPIView</a>, <a href="#retrievemodelmixin">RetrieveModelMixin</a>, <a href="#destroymodelmixin">DestroyModelMixin</a></p>
-<h2 id="retrieveupdatedestroyapiview">RetrieveUpdateDestroyAPIView</h2>
+<h2 id="retrieveupdatedestroyapiview"><a class="toclink" href="#retrieveupdatedestroyapiview">RetrieveUpdateDestroyAPIView</a></h2>
 <p>Used for <strong>read-write-delete</strong> endpoints to represent a <strong>single model instance</strong>.</p>
 <p>Provides <code>get</code>, <code>put</code>, <code>patch</code> and <code>delete</code> method handlers.</p>
 <p>Extends: <a href="#genericapiview">GenericAPIView</a>, <a href="#retrievemodelmixin">RetrieveModelMixin</a>, <a href="#updatemodelmixin">UpdateModelMixin</a>, <a href="#destroymodelmixin">DestroyModelMixin</a></p>
 <hr />
-<h1 id="customizing-the-generic-views">Customizing the generic views</h1>
+<h1 id="customizing-the-generic-views"><a class="toclink" href="#customizing-the-generic-views">Customizing the generic views</a></h1>
 <p>Often you'll want to use the existing generic views, but use some slightly customized behavior.  If you find yourself reusing some bit of customized behavior in multiple places, you might want to refactor the behavior into a common class that you can then just apply to any view or viewset as needed.</p>
-<h2 id="creating-custom-mixins">Creating custom mixins</h2>
+<h2 id="creating-custom-mixins"><a class="toclink" href="#creating-custom-mixins">Creating custom mixins</a></h2>
 <p>For example, if you need to lookup objects based on multiple fields in the URL conf, you could create a mixin class like the following:</p>
 <pre><code>class MultipleFieldLookupMixin(object):
     """
@@ -732,7 +732,7 @@ class UserList(generics.ListCreateAPIView):
     lookup_fields = ('account', 'username')
 </code></pre>
 <p>Using custom mixins is a good option if you have custom behavior that needs to be used.</p>
-<h2 id="creating-custom-base-classes">Creating custom base classes</h2>
+<h2 id="creating-custom-base-classes"><a class="toclink" href="#creating-custom-base-classes">Creating custom base classes</a></h2>
 <p>If you are using a mixin across multiple views, you can take this a step further and create your own set of base views that can then be used throughout your project.  For example:</p>
 <pre><code>class BaseRetrieveView(MultipleFieldLookupMixin,
                        generics.RetrieveAPIView):
@@ -744,17 +744,17 @@ class BaseRetrieveUpdateDestroyView(MultipleFieldLookupMixin,
 </code></pre>
 <p>Using custom base classes is a good option if you have custom behavior that consistently needs to be repeated across a large number of views throughout your project.</p>
 <hr />
-<h1 id="put-as-create">PUT as create</h1>
+<h1 id="put-as-create"><a class="toclink" href="#put-as-create">PUT as create</a></h1>
 <p>Prior to version 3.0 the REST framework mixins treated <code>PUT</code> as either an update or a create operation, depending on if the object already existed or not.</p>
 <p>Allowing <code>PUT</code> as create operations is problematic, as it necessarily exposes information about the existence or non-existence of objects. It's also not obvious that transparently allowing re-creating of previously deleted instances is necessarily a better default behavior than simply returning <code>404</code> responses.</p>
 <p>Both styles "<code>PUT</code> as 404" and "<code>PUT</code> as create" can be valid in different circumstances, but from version 3.0 onwards we now use 404 behavior as the default, due to it being simpler and more obvious.</p>
 <p>If you need to generic PUT-as-create behavior you may want to include something like <a href="https://gist.github.com/tomchristie/a2ace4577eff2c603b1b">this <code>AllowPUTAsCreateMixin</code> class</a> as a mixin to your views.</p>
 <hr />
-<h1 id="third-party-packages">Third party packages</h1>
+<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages provide additional generic view implementations.</p>
-<h2 id="django-rest-framework-bulk">Django REST Framework bulk</h2>
+<h2 id="django-rest-framework-bulk"><a class="toclink" href="#django-rest-framework-bulk">Django REST Framework bulk</a></h2>
 <p>The <a href="https://github.com/miki725/django-rest-framework-bulk">django-rest-framework-bulk package</a> implements generic view mixins as well as some common concrete generic views to allow to apply bulk operations via API requests.</p>
-<h2 id="django-rest-multiple-models">Django Rest Multiple Models</h2>
+<h2 id="django-rest-multiple-models"><a class="toclink" href="#django-rest-multiple-models">Django Rest Multiple Models</a></h2>
 <p><a href="https://github.com/Axiologue/DjangoRestMultipleModels">Django Rest Multiple Models</a> provides a generic view (and mixin) for sending multiple serialized models and/or querysets via a single API request.</p>
             
 

@@ -397,14 +397,14 @@
             
               
 
-              <h1 id="django-rest-framework-30">Django REST framework 3.0</h1>
+              <h1 id="django-rest-framework-30"><a class="toclink" href="#django-rest-framework-30">Django REST framework 3.0</a></h1>
 <p>The 3.0 release of Django REST framework is the result of almost four years of iteration and refinement. It comprehensively addresses some of the previous remaining design issues in serializers, fields and the generic views.</p>
 <p><strong>This release is incremental in nature. There <em>are</em> some breaking API changes, and upgrading <em>will</em> require you to read the release notes carefully, but the migration path should otherwise be relatively straightforward.</strong></p>
 <p>The difference in quality of the REST framework API and implementation should make writing, maintaining and debugging your application far easier.</p>
 <p>3.0 is the first of three releases that have been funded by our recent <a href="http://kickstarter.com/projects/tomchristie/django-rest-framework-3">Kickstarter campaign</a>.</p>
 <p>As ever, a huge thank you to our many <a href="http://www.django-rest-framework.org/topics/kickstarter-announcement/#sponsors">wonderful sponsors</a>. If you're looking for a Django gig, and want to work with smart community-minded folks, you should probably check out that list and see who's hiring.</p>
 <hr />
-<h2 id="new-features">New features</h2>
+<h2 id="new-features"><a class="toclink" href="#new-features">New features</a></h2>
 <p>Notable features of this new release include:</p>
 <ul>
 <li>Printable representations on serializers that allow you to inspect exactly what fields are present on the instance.</li>
@@ -419,14 +419,14 @@
 </ul>
 <p>Significant new functionality continues to be planned for the 3.1 and 3.2 releases. These releases will correspond to the two <a href="https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3">Kickstarter stretch goals</a> - "Feature improvements" and "Admin interface". Further 3.x releases will present simple upgrades, without the same level of fundamental API changes necessary for the 3.0 release.</p>
 <hr />
-<h4 id="rest-framework-under-the-hood">REST framework: Under the hood.</h4>
+<h4 id="rest-framework-under-the-hood"><a class="toclink" href="#rest-framework-under-the-hood">REST framework: Under the hood.</a></h4>
 <p>This talk from the <a href="http://www.djangounderthehood.com/">Django: Under the Hood</a> event in Amsterdam, Nov 2014, gives some good background context on the design decisions behind 3.0.</p>
 <iframe style="display: block; margin: 0 auto 0 auto" width="560" height="315" src="//www.youtube.com/embed/3cSsbe-tA0E" frameborder="0" allowfullscreen></iframe>
 
 <hr />
 <p><em>Below is an in-depth guide to the API changes and migration notes for 3.0.</em></p>
-<h2 id="request-objects">Request objects</h2>
-<h4 id="the-data-and-query_params-properties">The <code>.data</code> and <code>.query_params</code> properties.</h4>
+<h2 id="request-objects"><a class="toclink" href="#request-objects">Request objects</a></h2>
+<h4 id="the-data-and-query_params-properties"><a class="toclink" href="#the-data-and-query_params-properties">The <code>.data</code> and <code>.query_params</code> properties.</a></h4>
 <p>The usage of <code>request.DATA</code> and <code>request.FILES</code> is now pending deprecation in favor of a single <code>request.data</code> attribute that contains <em>all</em> the parsed data.</p>
 <p>Having separate attributes is reasonable for web applications that only ever parse url-encoded or multipart requests, but makes less sense for the general-purpose request parsing that REST framework supports.</p>
 <p>You may now pass all the request data to a serializer class in a single argument:</p>
@@ -439,8 +439,8 @@ ExampleSerializer(data=request.DATA, files=request.FILES)
 </code></pre>
 <p>The usage of <code>request.QUERY_PARAMS</code> is now pending deprecation in favor of the lowercased <code>request.query_params</code>.</p>
 <hr />
-<h2 id="serializers">Serializers</h2>
-<h4 id="single-step-object-creation">Single-step object creation.</h4>
+<h2 id="serializers"><a class="toclink" href="#serializers">Serializers</a></h2>
+<h4 id="single-step-object-creation"><a class="toclink" href="#single-step-object-creation">Single-step object creation.</a></h4>
 <p>Previously the serializers used a two-step object creation, as follows:</p>
 <ol>
 <li>Validating the data would create an object instance. This instance would be available as <code>serializer.object</code>.</li>
@@ -458,7 +458,7 @@ ExampleSerializer(data=request.DATA, files=request.FILES)
 <li>Calling <code>serializer.save()</code> then saves and returns the new object instance.</li>
 </ol>
 <p>The resulting API changes are further detailed below.</p>
-<h4 id="the-create-and-update-methods">The <code>.create()</code> and <code>.update()</code> methods.</h4>
+<h4 id="the-create-and-update-methods"><a class="toclink" href="#the-create-and-update-methods">The <code>.create()</code> and <code>.update()</code> methods.</a></h4>
 <p>The <code>.restore_object()</code> method is now removed, and we instead have two separate methods, <code>.create()</code> and <code>.update()</code>. These methods work slightly different to the previous <code>.restore_object()</code>.</p>
 <p>When using the <code>.create()</code> and <code>.update()</code> methods you should both create <em>and save</em> the object instance. This is in contrast to the previous <code>.restore_object()</code> behavior that would instantiate the object but not save it.</p>
 <p>These methods also replace the optional <code>.save_object()</code> method, which no longer exists.</p>
@@ -490,7 +490,7 @@ def create(self, validated_data):
     return Snippet.objects.create(**validated_data)
 </code></pre>
 <p>Note that these methods should return the newly created object instance.</p>
-<h4 id="use-validated_data-instead-of-object">Use <code>.validated_data</code> instead of <code>.object</code>.</h4>
+<h4 id="use-validated_data-instead-of-object"><a class="toclink" href="#use-validated_data-instead-of-object">Use <code>.validated_data</code> instead of <code>.object</code>.</a></h4>
 <p>You must now use the <code>.validated_data</code> attribute if you need to inspect the data before saving, rather than using the <code>.object</code> attribute, which no longer exists.</p>
 <p>For example the following code <em>is no longer valid</em>:</p>
 <pre><code>if serializer.is_valid():
@@ -506,17 +506,17 @@ def create(self, validated_data):
     logging.info('Creating ticket "%s"' % name)
     serializer.save(user=request.user)  # Include the user when saving.
 </code></pre>
-<h4 id="using-is_validraise_exceptiontrue">Using <code>.is_valid(raise_exception=True)</code></h4>
+<h4 id="using-is_validraise_exceptiontrue"><a class="toclink" href="#using-is_validraise_exceptiontrue">Using <code>.is_valid(raise_exception=True)</code></a></h4>
 <p>The <code>.is_valid()</code> method now takes an optional boolean flag, <code>raise_exception</code>.</p>
 <p>Calling <code>.is_valid(raise_exception=True)</code> will cause a <code>ValidationError</code> to be raised if the serializer data contains validation errors. This error will be handled by REST framework's default exception handler, allowing you to remove error response handling from your view code.</p>
 <p>The handling and formatting of error responses may be altered globally by using the <code>EXCEPTION_HANDLER</code> settings key.</p>
 <p>This change also means it's now possible to alter the style of error responses used by the built-in generic views, without having to include mixin classes or other overrides.</p>
-<h4 id="using-serializersvalidationerror">Using <code>serializers.ValidationError</code>.</h4>
+<h4 id="using-serializersvalidationerror"><a class="toclink" href="#using-serializersvalidationerror">Using <code>serializers.ValidationError</code>.</a></h4>
 <p>Previously <code>serializers.ValidationError</code> error was simply a synonym for <code>django.core.exceptions.ValidationError</code>. This has now been altered so that it inherits from the standard <code>APIException</code> base class.</p>
 <p>The reason behind this is that Django's <code>ValidationError</code> class is intended for use with HTML forms and its API makes using it slightly awkward with nested validation errors that can occur in serializers.</p>
 <p>For most users this change shouldn't require any updates to your codebase, but it is worth ensuring that whenever raising validation errors you should prefer using the <code>serializers.ValidationError</code> exception class, and not Django's built-in exception.</p>
 <p>We strongly recommend that you use the namespaced import style of <code>import serializers</code> and not <code>from serializers import ValidationError</code> in order to avoid any potential confusion.</p>
-<h4 id="change-to-validate_field_name">Change to <code>validate_&lt;field_name&gt;</code>.</h4>
+<h4 id="change-to-validate_field_name"><a class="toclink" href="#change-to-validate_field_name">Change to <code>validate_&lt;field_name&gt;</code>.</a></h4>
 <p>The <code>validate_&lt;field_name&gt;</code> method hooks that can be attached to serializer classes change their signature slightly and return type. Previously these would take a dictionary of all incoming data, and a key representing the field name, and would return a dictionary including the validated data for that field:</p>
 <pre><code>def validate_score(self, attrs, source):
     if attrs['score'] % 10 != 0:
@@ -542,7 +542,7 @@ def create(self, validated_data):
     raise serializers.ValidationError({'my_field': 'A field error'})
 </code></pre>
 <p>This ensures you can still write validation that compares all the input fields, but that marks the error against a particular field.</p>
-<h4 id="removal-of-transform_field_name">Removal of <code>transform_&lt;field_name&gt;</code>.</h4>
+<h4 id="removal-of-transform_field_name"><a class="toclink" href="#removal-of-transform_field_name">Removal of <code>transform_&lt;field_name&gt;</code>.</a></h4>
 <p>The under-used <code>transform_&lt;field_name&gt;</code> on serializer classes is no longer provided. Instead you should just override <code>to_representation()</code> if you need to apply any modifications to the representation style.</p>
 <p>For example:</p>
 <pre><code>def to_representation(self, instance):
@@ -564,7 +564,7 @@ def create(self, validated_data):
                 ret[key] = method(value)
         return ret
 </code></pre>
-<h4 id="differences-between-modelserializer-validation-and-modelform">Differences between ModelSerializer validation and ModelForm.</h4>
+<h4 id="differences-between-modelserializer-validation-and-modelform"><a class="toclink" href="#differences-between-modelserializer-validation-and-modelform">Differences between ModelSerializer validation and ModelForm.</a></h4>
 <p>This change also means that we no longer use the <code>.full_clean()</code> method on model instances, but instead perform all validation explicitly on the serializer. This gives a cleaner separation, and ensures that there's no automatic validation behavior on <code>ModelSerializer</code> classes that can't also be easily replicated on regular <code>Serializer</code> classes.</p>
 <p>For the most part this change should be transparent. Field validation and uniqueness checks will still be run as normal, but the implementation is a little different.</p>
 <p>The one difference that you do need to note is that the <code>.clean()</code> method will not be called as part of serializer validation, as it would be if using a <code>ModelForm</code>. Use the serializer <code>.validate()</code> method to perform a final validation step on incoming data where required.</p>
@@ -575,7 +575,7 @@ def create(self, validated_data):
     return attrs
 </code></pre>
 <p>Again, you really should look at properly separating the validation logic out of the model method if possible, but the above might be useful in some backwards compatibility cases, or for an easy migration path.</p>
-<h4 id="writable-nested-serialization">Writable nested serialization.</h4>
+<h4 id="writable-nested-serialization"><a class="toclink" href="#writable-nested-serialization">Writable nested serialization.</a></h4>
 <p>REST framework 2.x attempted to automatically support writable nested serialization, but the behavior was complex and non-obvious. Attempting to automatically handle these case is problematic:</p>
 <ul>
 <li>There can be complex dependencies involved in order of saving multiple related model instances.</li>
@@ -620,7 +620,7 @@ AssertionError: The `.create()` method does not support nested writable fields b
         return user
 </code></pre>
 <p>The single-step object creation makes this far simpler and more obvious than the previous <code>.restore_object()</code> behavior.</p>
-<h4 id="printable-serializer-representations">Printable serializer representations.</h4>
+<h4 id="printable-serializer-representations"><a class="toclink" href="#printable-serializer-representations">Printable serializer representations.</a></h4>
 <p>Serializer instances now support a printable representation that allows you to inspect the fields present on the instance.</p>
 <p>For instance, given the following example model:</p>
 <pre><code>class LocationRating(models.Model):
@@ -642,7 +642,7 @@ LocationRatingSerializer():
     rating = IntegerField()
     created_by = PrimaryKeyRelatedField(queryset=User.objects.all())
 </code></pre>
-<h4 id="the-extra_kwargs-option">The <code>extra_kwargs</code> option.</h4>
+<h4 id="the-extra_kwargs-option"><a class="toclink" href="#the-extra_kwargs-option">The <code>extra_kwargs</code> option.</a></h4>
 <p>The <code>write_only_fields</code> option on <code>ModelSerializer</code> has been moved to <code>PendingDeprecation</code> and replaced with a more generic <code>extra_kwargs</code>.</p>
 <pre><code>class MySerializer(serializer.ModelSerializer):
     class Meta:
@@ -661,7 +661,7 @@ LocationRatingSerializer():
         fields = ('id', 'email', 'notes', 'is_admin')
 </code></pre>
 <p>The <code>read_only_fields</code> option remains as a convenient shortcut for the more common case.</p>
-<h4 id="changes-to-hyperlinkedmodelserializer">Changes to <code>HyperlinkedModelSerializer</code>.</h4>
+<h4 id="changes-to-hyperlinkedmodelserializer"><a class="toclink" href="#changes-to-hyperlinkedmodelserializer">Changes to <code>HyperlinkedModelSerializer</code>.</a></h4>
 <p>The <code>view_name</code> and <code>lookup_field</code> options have been moved to <code>PendingDeprecation</code>. They are no longer required, as you can use the <code>extra_kwargs</code> argument instead:</p>
 <pre><code>class MySerializer(serializer.HyperlinkedModelSerializer):
     class Meta:
@@ -682,7 +682,7 @@ LocationRatingSerializer():
         model = MyModel
         fields = ('url', 'email', 'notes', 'is_admin')
 </code></pre>
-<h4 id="fields-for-model-methods-and-properties">Fields for model methods and properties.</h4>
+<h4 id="fields-for-model-methods-and-properties"><a class="toclink" href="#fields-for-model-methods-and-properties">Fields for model methods and properties.</a></h4>
 <p>With <code>ModelSerializer</code> you can now specify field names in the <code>fields</code> option that refer to model methods or properties. For example, suppose you have the following model:</p>
 <pre><code>class Invitation(models.Model):
     created = models.DateTimeField()
@@ -706,7 +706,7 @@ InvitationSerializer():
     message = CharField(max_length=1000)
     expiry_date = ReadOnlyField()
 </code></pre>
-<h4 id="the-listserializer-class">The <code>ListSerializer</code> class.</h4>
+<h4 id="the-listserializer-class"><a class="toclink" href="#the-listserializer-class">The <code>ListSerializer</code> class.</a></h4>
 <p>The <code>ListSerializer</code> class has now been added, and allows you to create base serializer classes for only accepting multiple inputs.</p>
 <pre><code>class MultipleUserSerializer(ListSerializer):
     child = UserSerializer()
@@ -714,7 +714,7 @@ InvitationSerializer():
 <p>You can also still use the <code>many=True</code> argument to serializer classes. It's worth noting that <code>many=True</code> argument transparently creates a <code>ListSerializer</code> instance, allowing the validation logic for list and non-list data to be cleanly separated in the REST framework codebase.</p>
 <p>You will typically want to <em>continue to use the existing <code>many=True</code> flag</em> rather than declaring <code>ListSerializer</code> classes explicitly, but declaring the classes explicitly can be useful if you need to write custom <code>create</code> or <code>update</code> methods for bulk updates, or provide for other custom behavior.</p>
 <p>See also the new <code>ListField</code> class, which validates input in the same way, but does not include the serializer interfaces of <code>.is_valid()</code>, <code>.data</code>, <code>.save()</code> and so on.</p>
-<h4 id="the-baseserializer-class">The <code>BaseSerializer</code> class.</h4>
+<h4 id="the-baseserializer-class"><a class="toclink" href="#the-baseserializer-class">The <code>BaseSerializer</code> class.</a></h4>
 <p>REST framework now includes a simple <code>BaseSerializer</code> class that can be used to easily support alternative serialization and deserialization styles.</p>
 <p>This class implements the same basic API as the <code>Serializer</code> class:</p>
 <ul>
@@ -732,7 +732,7 @@ InvitationSerializer():
 </ul>
 <p>Because this class provides the same interface as the <code>Serializer</code> class, you can use it with the existing generic class based views exactly as you would for a regular <code>Serializer</code> or <code>ModelSerializer</code>.</p>
 <p>The only difference you'll notice when doing so is the <code>BaseSerializer</code> classes will not generate HTML forms in the browsable API. This is because the data they return does not include all the field information that would allow each field to be rendered into a suitable HTML input.</p>
-<h5 id="read-only-baseserializer-classes">Read-only <code>BaseSerializer</code> classes.</h5>
+<h5 id="read-only-baseserializer-classes"><a class="toclink" href="#read-only-baseserializer-classes">Read-only <code>BaseSerializer</code> classes.</a></h5>
 <p>To implement a read-only serializer using the <code>BaseSerializer</code> class, we just need to override the <code>.to_representation()</code> method. Let's take a look at an example using a simple Django model:</p>
 <pre><code>class HighScore(models.Model):
     created = models.DateTimeField(auto_now_add=True)
@@ -761,7 +761,7 @@ def all_high_scores(request):
     serializer = HighScoreSerializer(queryset, many=True)
     return Response(serializer.data)
 </code></pre>
-<h5 id="read-write-baseserializer-classes">Read-write <code>BaseSerializer</code> classes.</h5>
+<h5 id="read-write-baseserializer-classes"><a class="toclink" href="#read-write-baseserializer-classes">Read-write <code>BaseSerializer</code> classes.</a></h5>
 <p>To create a read-write serializer we first need to implement a <code>.to_internal_value()</code> method. This method returns the validated values that will be used to construct the object instance, and may raise a <code>ValidationError</code> if the supplied data is in an incorrect format.</p>
 <p>Once you've implemented <code>.to_internal_value()</code>, the basic validation API will be available on the serializer, and you will be able to use <code>.is_valid()</code>, <code>.validated_data</code> and <code>.errors</code>.</p>
 <p>If you want to also support <code>.save()</code> you'll need to also implement either or both of the <code>.create()</code> and <code>.update()</code> methods.</p>
@@ -801,7 +801,7 @@ def all_high_scores(request):
     def create(self, validated_data):
         return HighScore.objects.create(**validated_data)
 </code></pre>
-<h4 id="creating-new-generic-serializers-with-baseserializer">Creating new generic serializers with <code>BaseSerializer</code>.</h4>
+<h4 id="creating-new-generic-serializers-with-baseserializer"><a class="toclink" href="#creating-new-generic-serializers-with-baseserializer">Creating new generic serializers with <code>BaseSerializer</code>.</a></h4>
 <p>The <code>BaseSerializer</code> class is also useful if you want to implement new generic serializer classes for dealing with particular serialization styles, or for integrating with alternative storage backends.</p>
 <p>The following class is an example of a generic serializer that can handle coercing arbitrary objects into primitive representations.</p>
 <pre><code>class ObjectSerializer(serializers.BaseSerializer):
@@ -837,8 +837,8 @@ def all_high_scores(request):
                 output[attribute_name] = str(attribute)
 </code></pre>
 <hr />
-<h2 id="serializer-fields">Serializer fields</h2>
-<h4 id="the-field-and-readonly-field-classes">The <code>Field</code> and <code>ReadOnly</code> field classes.</h4>
+<h2 id="serializer-fields"><a class="toclink" href="#serializer-fields">Serializer fields</a></h2>
+<h4 id="the-field-and-readonly-field-classes"><a class="toclink" href="#the-field-and-readonly-field-classes">The <code>Field</code> and <code>ReadOnly</code> field classes.</a></h4>
 <p>There are some minor tweaks to the field base classes.</p>
 <p>Previously we had these two base classes:</p>
 <ul>
@@ -850,7 +850,7 @@ def all_high_scores(request):
 <li><code>Field</code> is the base class for all fields. It does not include any default implementation for either serializing or deserializing data.</li>
 <li><code>ReadOnlyField</code> is a concrete implementation for read-only fields that simply returns the attribute value without modification.</li>
 </ul>
-<h4 id="the-required-allow_null-allow_blank-and-default-arguments">The <code>required</code>, <code>allow_null</code>, <code>allow_blank</code> and <code>default</code> arguments.</h4>
+<h4 id="the-required-allow_null-allow_blank-and-default-arguments"><a class="toclink" href="#the-required-allow_null-allow_blank-and-default-arguments">The <code>required</code>, <code>allow_null</code>, <code>allow_blank</code> and <code>default</code> arguments.</a></h4>
 <p>REST framework now has more explicit and clear control over validating empty values for fields.</p>
 <p>Previously the meaning of the <code>required=False</code> keyword argument was underspecified. In practice its use meant that a field could either be not included in the input, or it could be included, but be <code>None</code> or the empty string.</p>
 <p>We now have a better separation, with separate <code>required</code>, <code>allow_null</code> and <code>allow_blank</code> arguments.</p>
@@ -863,9 +863,9 @@ def all_high_scores(request):
 </ul>
 <p>Typically you'll want to use <code>required=False</code> if the corresponding model field has a default value, and additionally set either <code>allow_null=True</code> or <code>allow_blank=True</code> if required.</p>
 <p>The <code>default</code> argument is also available and always implies that the field is not required to be in the input. It is unnecessary to use the <code>required</code> argument when a default is specified, and doing so will result in an error.</p>
-<h4 id="coercing-output-types">Coercing output types.</h4>
+<h4 id="coercing-output-types"><a class="toclink" href="#coercing-output-types">Coercing output types.</a></h4>
 <p>The previous field implementations did not forcibly coerce returned values into the correct type in many cases. For example, an <code>IntegerField</code> would return a string output if the attribute value was a string. We now more strictly coerce to the correct return type, leading to more constrained and expected behavior.</p>
-<h4 id="removal-of-validate">Removal of <code>.validate()</code>.</h4>
+<h4 id="removal-of-validate"><a class="toclink" href="#removal-of-validate">Removal of <code>.validate()</code>.</a></h4>
 <p>The <code>.validate()</code> method is now removed from field classes. This method was in any case undocumented and not public API. You should instead simply override <code>to_internal_value()</code>.</p>
 <pre><code>class UppercaseCharField(serializers.CharField):
     def to_internal_value(self, data):
@@ -875,7 +875,7 @@ def all_high_scores(request):
         return value
 </code></pre>
 <p>Previously validation errors could be raised in either <code>.to_native()</code> or <code>.validate()</code>, making it non-obvious which should be used. Providing only a single point of API ensures more repetition and reinforcement of the core API.</p>
-<h4 id="the-listfield-class">The <code>ListField</code> class.</h4>
+<h4 id="the-listfield-class"><a class="toclink" href="#the-listfield-class">The <code>ListField</code> class.</a></h4>
 <p>The <code>ListField</code> class has now been added. This field validates list input. It takes a <code>child</code> keyword argument which is used to specify the field used to validate each item in the list. For example:</p>
 <pre><code>scores = ListField(child=IntegerField(min_value=0, max_value=100))
 </code></pre>
@@ -887,13 +887,13 @@ def all_high_scores(request):
 <pre><code>scores = ScoresField()
 </code></pre>
 <p>See also the new <code>ListSerializer</code> class, which validates input in the same way, but also includes the serializer interfaces of <code>.is_valid()</code>, <code>.data</code>, <code>.save()</code> and so on.</p>
-<h4 id="the-choicefield-class-may-now-accept-a-flat-list">The <code>ChoiceField</code> class may now accept a flat list.</h4>
+<h4 id="the-choicefield-class-may-now-accept-a-flat-list"><a class="toclink" href="#the-choicefield-class-may-now-accept-a-flat-list">The <code>ChoiceField</code> class may now accept a flat list.</a></h4>
 <p>The <code>ChoiceField</code> class may now accept a list of choices in addition to the existing style of using a list of pairs of <code>(name, display_value)</code>. The following is now valid:</p>
 <pre><code>color = ChoiceField(choices=['red', 'green', 'blue'])
 </code></pre>
-<h4 id="the-multiplechoicefield-class">The <code>MultipleChoiceField</code> class.</h4>
+<h4 id="the-multiplechoicefield-class"><a class="toclink" href="#the-multiplechoicefield-class">The <code>MultipleChoiceField</code> class.</a></h4>
 <p>The <code>MultipleChoiceField</code> class has been added. This field acts like <code>ChoiceField</code>, but returns a set, which may include none, one or many of the valid choices.</p>
-<h4 id="changes-to-the-custom-field-api">Changes to the custom field API.</h4>
+<h4 id="changes-to-the-custom-field-api"><a class="toclink" href="#changes-to-the-custom-field-api">Changes to the custom field API.</a></h4>
 <p>The <code>from_native(self, value)</code> and <code>to_native(self, data)</code> method names have been replaced with the more obviously named <code>to_internal_value(self, data)</code> and <code>to_representation(self, value)</code>.</p>
 <p>The <code>field_from_native()</code> and <code>field_to_native()</code> methods are removed. Previously you could use these methods if you wanted to customise the behaviour in a way that did not simply lookup the field value from the object. For example...</p>
 <pre><code>def field_to_native(self, obj, field_name):
@@ -914,7 +914,7 @@ def all_high_scores(request):
 def to_representation(self, value):
     return value.__class__.__name__
 </code></pre>
-<h4 id="explicit-queryset-required-on-relational-fields">Explicit <code>queryset</code> required on relational fields.</h4>
+<h4 id="explicit-queryset-required-on-relational-fields"><a class="toclink" href="#explicit-queryset-required-on-relational-fields">Explicit <code>queryset</code> required on relational fields.</a></h4>
 <p>Previously relational fields that were explicitly declared on a serializer class could omit the queryset argument if (and only if) they were declared on a <code>ModelSerializer</code>.</p>
 <p>This code <em>would be valid</em> in <code>2.4.3</code>:</p>
 <pre><code>class AccountSerializer(serializers.ModelSerializer):
@@ -943,7 +943,7 @@ This removes some magic and makes it easier and more obvious to move between imp
         model = Account
 </code></pre>
 <p>The <code>queryset</code> argument is only ever required for writable fields, and is not required or valid for fields with <code>read_only=True</code>.</p>
-<h4 id="optional-argument-to-serializermethodfield">Optional argument to <code>SerializerMethodField</code>.</h4>
+<h4 id="optional-argument-to-serializermethodfield"><a class="toclink" href="#optional-argument-to-serializermethodfield">Optional argument to <code>SerializerMethodField</code>.</a></h4>
 <p>The argument to <code>SerializerMethodField</code> is now optional, and defaults to <code>get_&lt;field_name&gt;</code>. For example the following is valid:</p>
 <pre><code>class AccountSerializer(serializers.Serializer):
     # `method_name='get_billing_details'` by default.
@@ -955,12 +955,12 @@ This removes some magic and makes it easier and more obvious to move between imp
 <p>In order to ensure a consistent code style an assertion error will be raised if you include a redundant method name argument that matches the default method name. For example, the following code <em>will raise an error</em>:</p>
 <pre><code>billing_details = serializers.SerializerMethodField('get_billing_details')
 </code></pre>
-<h4 id="enforcing-consistent-source-usage">Enforcing consistent <code>source</code> usage.</h4>
+<h4 id="enforcing-consistent-source-usage"><a class="toclink" href="#enforcing-consistent-source-usage">Enforcing consistent <code>source</code> usage.</a></h4>
 <p>I've see several codebases that unnecessarily include the <code>source</code> argument, setting it to the same value as the field name. This usage is redundant and confusing, making it less obvious that <code>source</code> is usually not required.</p>
 <p>The following usage will <em>now raise an error</em>:</p>
 <pre><code>email = serializers.EmailField(source='email')
 </code></pre>
-<h4 id="the-uniquevalidator-and-uniquetogethervalidator-classes">The <code>UniqueValidator</code> and <code>UniqueTogetherValidator</code> classes.</h4>
+<h4 id="the-uniquevalidator-and-uniquetogethervalidator-classes"><a class="toclink" href="#the-uniquevalidator-and-uniquetogethervalidator-classes">The <code>UniqueValidator</code> and <code>UniqueTogetherValidator</code> classes.</a></h4>
 <p>REST framework now provides new validators that allow you to ensure field uniqueness, while still using a completely explicit <code>Serializer</code> class instead of using <code>ModelSerializer</code>.</p>
 <p>The <code>UniqueValidator</code> should be applied to a serializer field, and takes a single <code>queryset</code> argument.</p>
 <pre><code>from rest_framework import serializers
@@ -986,14 +986,14 @@ class OrganizationSerializer(serializers.Serializer):
             fields=('category', 'position')
         )]
 </code></pre>
-<h4 id="the-uniquefordatevalidator-classes">The <code>UniqueForDateValidator</code> classes.</h4>
+<h4 id="the-uniquefordatevalidator-classes"><a class="toclink" href="#the-uniquefordatevalidator-classes">The <code>UniqueForDateValidator</code> classes.</a></h4>
 <p>REST framework also now includes explicit validator classes for validating the <code>unique_for_date</code>, <code>unique_for_month</code>, and <code>unique_for_year</code> model field constraints. These are used internally instead of calling into <code>Model.full_clean()</code>.</p>
 <p>These classes are documented in the <a href="../../api-guide/validators/">Validators</a> section of the documentation.</p>
 <hr />
-<h2 id="generic-views">Generic views</h2>
-<h4 id="simplification-of-view-logic">Simplification of view logic.</h4>
+<h2 id="generic-views"><a class="toclink" href="#generic-views">Generic views</a></h2>
+<h4 id="simplification-of-view-logic"><a class="toclink" href="#simplification-of-view-logic">Simplification of view logic.</a></h4>
 <p>The view logic for the default method handlers has been significantly simplified, due to the new serializers API.</p>
-<h4 id="changes-to-prepost-save-hooks">Changes to pre/post save hooks.</h4>
+<h4 id="changes-to-prepost-save-hooks"><a class="toclink" href="#changes-to-prepost-save-hooks">Changes to pre/post save hooks.</a></h4>
 <p>The <code>pre_save</code> and <code>post_save</code> hooks no longer exist, but are replaced with <code>perform_create(self, serializer)</code> and <code>perform_update(self, serializer)</code>.</p>
 <p>These methods should save the object instance by calling <code>serializer.save()</code>, adding in any additional arguments as required. They may also perform any custom pre-save or post-save behavior.</p>
 <p>For example:</p>
@@ -1010,22 +1010,22 @@ class OrganizationSerializer(serializers.Serializer):
     # Delete the object instance.
     instance.delete()
 </code></pre>
-<h4 id="removal-of-view-attributes">Removal of view attributes.</h4>
+<h4 id="removal-of-view-attributes"><a class="toclink" href="#removal-of-view-attributes">Removal of view attributes.</a></h4>
 <p>The <code>.object</code> and <code>.object_list</code> attributes are no longer set on the view instance. Treating views as mutable object instances that store state during the processing of the view tends to be poor design, and can lead to obscure flow logic.</p>
 <p>I would personally recommend that developers treat view instances as immutable objects in their application code.</p>
-<h4 id="put-as-create">PUT as create.</h4>
+<h4 id="put-as-create"><a class="toclink" href="#put-as-create">PUT as create.</a></h4>
 <p>Allowing <code>PUT</code> as create operations is problematic, as it necessarily exposes information about the existence or non-existence of objects. It's also not obvious that transparently allowing re-creating of previously deleted instances is necessarily a better default behavior than simply returning <code>404</code> responses.</p>
 <p>Both styles "<code>PUT</code> as 404" and "<code>PUT</code> as create" can be valid in different circumstances, but we've now opted for the 404 behavior as the default, due to it being simpler and more obvious.</p>
 <p>If you need to restore the previous behavior you may want to include <a href="https://gist.github.com/tomchristie/a2ace4577eff2c603b1b">this <code>AllowPUTAsCreateMixin</code> class</a> as a mixin to your views.</p>
-<h4 id="customizing-error-responses">Customizing error responses.</h4>
+<h4 id="customizing-error-responses"><a class="toclink" href="#customizing-error-responses">Customizing error responses.</a></h4>
 <p>The generic views now raise <code>ValidationFailed</code> exception for invalid data. This exception is then dealt with by the exception handler, rather than the view returning a <code>400 Bad Request</code> response directly.</p>
 <p>This change means that you can now easily customize the style of error responses across your entire API, without having to modify any of the generic views.</p>
 <hr />
-<h2 id="the-metadata-api">The metadata API</h2>
+<h2 id="the-metadata-api"><a class="toclink" href="#the-metadata-api">The metadata API</a></h2>
 <p>Behavior for dealing with <code>OPTIONS</code> requests was previously built directly into the class based views. This has now been properly separated out into a Metadata API that allows the same pluggable style as other API policies in REST framework.</p>
 <p>This makes it far easier to use a different style for <code>OPTIONS</code> responses throughout your API, and makes it possible to create third-party metadata policies.</p>
 <hr />
-<h2 id="serializers-as-html-forms">Serializers as HTML forms</h2>
+<h2 id="serializers-as-html-forms"><a class="toclink" href="#serializers-as-html-forms">Serializers as HTML forms</a></h2>
 <p>REST framework 3.0 includes templated HTML form rendering for serializers.</p>
 <p>This API should not yet be considered finalized, and will only be promoted to public API for the 3.1 release.</p>
 <p>Significant changes that you do need to be aware of include:</p>
@@ -1034,7 +1034,7 @@ class OrganizationSerializer(serializers.Serializer):
 <li>Nested lists of HTML forms are not yet supported, but are planned for 3.1.</li>
 <li>Because we now use templated HTML form generation, <strong>the <code>widget</code> option is no longer available for serializer fields</strong>. You can instead control the template that is used for a given field, by using the <code>style</code> dictionary.</li>
 </ul>
-<h4 id="the-style-keyword-argument-for-serializer-fields">The <code>style</code> keyword argument for serializer fields.</h4>
+<h4 id="the-style-keyword-argument-for-serializer-fields"><a class="toclink" href="#the-style-keyword-argument-for-serializer-fields">The <code>style</code> keyword argument for serializer fields.</a></h4>
 <p>The <code>style</code> keyword argument can be used to pass through additional information from a serializer field, to the renderer class. In particular, the <code>HTMLFormRenderer</code> uses the <code>base_template</code> key to determine which template to render the field with.</p>
 <p>For example, to use a <code>textarea</code> control instead of the default <code>input</code> control, you would use the following…</p>
 <pre><code>additional_notes = serializers.CharField(
@@ -1049,15 +1049,15 @@ class OrganizationSerializer(serializers.Serializer):
 </code></pre>
 <p>This API should be considered provisional, and there may be minor alterations with the incoming 3.1 release.</p>
 <hr />
-<h2 id="api-style">API style</h2>
+<h2 id="api-style"><a class="toclink" href="#api-style">API style</a></h2>
 <p>There are some improvements in the default style we use in our API responses.</p>
-<h4 id="unicode-json-by-default">Unicode JSON by default.</h4>
+<h4 id="unicode-json-by-default"><a class="toclink" href="#unicode-json-by-default">Unicode JSON by default.</a></h4>
 <p>Unicode JSON is now the default. The <code>UnicodeJSONRenderer</code> class no longer exists, and the <code>UNICODE_JSON</code> setting has been added. To revert this behavior use the new setting:</p>
 <pre><code>REST_FRAMEWORK = {
     'UNICODE_JSON': False
 }
 </code></pre>
-<h4 id="compact-json-by-default">Compact JSON by default.</h4>
+<h4 id="compact-json-by-default"><a class="toclink" href="#compact-json-by-default">Compact JSON by default.</a></h4>
 <p>We now output compact JSON in responses by default. For example, we return:</p>
 <pre><code>{"email":"amy@example.com","is_admin":true}
 </code></pre>
@@ -1069,7 +1069,7 @@ class OrganizationSerializer(serializers.Serializer):
     'COMPACT_JSON': False
 }
 </code></pre>
-<h4 id="file-fields-as-urls">File fields as URLs</h4>
+<h4 id="file-fields-as-urls"><a class="toclink" href="#file-fields-as-urls">File fields as URLs</a></h4>
 <p>The <code>FileField</code> and <code>ImageField</code> classes are now represented as URLs by default. You should ensure you set Django's <a href="https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-MEDIA_URL">standard <code>MEDIA_URL</code> setting</a> appropriately, and ensure your application <a href="https://docs.djangoproject.com/en/dev/howto/static-files/#serving-uploaded-files-in-development">serves the uploaded files</a>.</p>
 <p>You can revert this behavior, and display filenames in the representation by using the <code>UPLOADED_FILES_USE_URL</code> settings key:</p>
 <pre><code>REST_FRAMEWORK = {
@@ -1085,9 +1085,9 @@ serializer = ExampleSerializer(instance, context=context)
 return Response(serializer.data)
 </code></pre>
 <p>If the request is omitted from the context, the returned URLs will be of the form <code>/url_path/filename.txt</code>.</p>
-<h4 id="throttle-headers-using-retry-after">Throttle headers using <code>Retry-After</code>.</h4>
+<h4 id="throttle-headers-using-retry-after"><a class="toclink" href="#throttle-headers-using-retry-after">Throttle headers using <code>Retry-After</code>.</a></h4>
 <p>The custom <code>X-Throttle-Wait-Second</code> header has now been dropped in favor of the standard <code>Retry-After</code> header. You can revert this behavior if needed by writing a custom exception handler for your application.</p>
-<h4 id="date-and-time-objects-as-iso-8859-1-strings-in-serializer-data">Date and time objects as ISO-8859-1 strings in serializer data.</h4>
+<h4 id="date-and-time-objects-as-iso-8859-1-strings-in-serializer-data"><a class="toclink" href="#date-and-time-objects-as-iso-8859-1-strings-in-serializer-data">Date and time objects as ISO-8859-1 strings in serializer data.</a></h4>
 <p>Date and Time objects are now coerced to strings by default in the serializer output. Previously they were returned as <code>Date</code>, <code>Time</code> and <code>DateTime</code> objects, and later coerced to strings by the renderer.</p>
 <p>You can modify this behavior globally by settings the existing <code>DATE_FORMAT</code>, <code>DATETIME_FORMAT</code> and <code>TIME_FORMAT</code> settings keys. Setting these values to <code>None</code> instead of their default value of <code>'iso-8859-1'</code> will result in native objects being returned in serializer data.</p>
 <pre><code>REST_FRAMEWORK = {
@@ -1101,7 +1101,7 @@ return Response(serializer.data)
 <pre><code># Return `DateTime` instances in `serializer.data`, not strings.
 created = serializers.DateTimeField(format=None)
 </code></pre>
-<h4 id="decimals-as-strings-in-serializer-data">Decimals as strings in serializer data.</h4>
+<h4 id="decimals-as-strings-in-serializer-data"><a class="toclink" href="#decimals-as-strings-in-serializer-data">Decimals as strings in serializer data.</a></h4>
 <p>Decimals are now coerced to strings by default in the serializer output. Previously they were returned as <code>Decimal</code> objects, and later coerced to strings by the renderer.</p>
 <p>You can modify this behavior globally by using the <code>COERCE_DECIMAL_TO_STRING</code> settings key.</p>
 <pre><code>REST_FRAMEWORK = {
@@ -1118,7 +1118,7 @@ amount = serializers.DecimalField(
 </code></pre>
 <p>The default JSON renderer will return float objects for un-coerced <code>Decimal</code> instances. This allows you to easily switch between string or float representations for decimals depending on your API design needs.</p>
 <hr />
-<h2 id="miscellaneous-notes">Miscellaneous notes</h2>
+<h2 id="miscellaneous-notes"><a class="toclink" href="#miscellaneous-notes">Miscellaneous notes</a></h2>
 <ul>
 <li>The serializer <code>ChoiceField</code> does not currently display nested choices, as was the case in 2.4. This will be address as part of 3.1.</li>
 <li>Due to the new templated form rendering, the 'widget' option is no longer valid. This means there's no easy way of using third party "autocomplete" widgets for rendering select inputs that contain a large number of choices. You'll either need to use a regular select or a plain text input. We may consider addressing this in 3.1 or 3.2 if there's sufficient demand.</li>
@@ -1126,7 +1126,7 @@ amount = serializers.DecimalField(
 <li><code>APIException</code> subclasses could previously take any arbitrary type in the <code>detail</code> argument. These exceptions now use translatable text strings, and as a result call <code>force_text</code> on the <code>detail</code> argument, which <em>must be a string</em>. If you need complex arguments to an <code>APIException</code> class, you should subclass it and override the <code>__init__()</code> method. Typically you'll instead want to use a custom exception handler to provide for non-standard error responses.</li>
 </ul>
 <hr />
-<h2 id="whats-coming-next">What's coming next</h2>
+<h2 id="whats-coming-next"><a class="toclink" href="#whats-coming-next">What's coming next</a></h2>
 <p>3.0 is an incremental release, and there are several upcoming features that will build on the baseline improvements that it makes.</p>
 <p>The 3.1 release is planned to address improvements in the following components:</p>
 <ul>

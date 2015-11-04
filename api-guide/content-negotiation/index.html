@@ -381,13 +381,13 @@
                 
               
 
-              <h1 id="content-negotiation">Content negotiation</h1>
+              <h1 id="content-negotiation"><a class="toclink" href="#content-negotiation">Content negotiation</a></h1>
 <blockquote>
 <p>HTTP has provisions for several mechanisms for "content negotiation" - the process of selecting the best representation for a given response when there are multiple representations available.</p>
 <p>&mdash; <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html">RFC 2616</a>, Fielding et al.</p>
 </blockquote>
 <p>Content negotiation is the process of selecting one of multiple possible representations to return to a client, based on client or server preferences.</p>
-<h2 id="determining-the-accepted-renderer">Determining the accepted renderer</h2>
+<h2 id="determining-the-accepted-renderer"><a class="toclink" href="#determining-the-accepted-renderer">Determining the accepted renderer</a></h2>
 <p>REST framework uses a simple style of content negotiation to determine which media type should be returned to a client, based on the available renderers, the priorities of each of those renderers, and the client's <code>Accept:</code> header.  The style used is partly client-driven, and partly server-driven.</p>
 <ol>
 <li>More specific media types are given preference to less specific media types.</li>
@@ -408,12 +408,12 @@
 <p><strong>Note</strong>: "q" values are not taken into account by REST framework when determining preference.  The use of "q" values negatively impacts caching, and in the author's opinion they are an unnecessary and overcomplicated approach to content negotiation.</p>
 <p>This is a valid approach as the HTTP spec deliberately underspecifies how a server should weight server-based preferences against client-based preferences.</p>
 <hr />
-<h1 id="custom-content-negotiation">Custom content negotiation</h1>
+<h1 id="custom-content-negotiation"><a class="toclink" href="#custom-content-negotiation">Custom content negotiation</a></h1>
 <p>It's unlikely that you'll want to provide a custom content negotiation scheme for REST framework, but you can do so if needed.  To implement a custom content negotiation scheme override <code>BaseContentNegotiation</code>.</p>
 <p>REST framework's content negotiation classes handle selection of both the appropriate parser for the request, and the appropriate renderer for the response, so you should implement both the <code>.select_parser(request, parsers)</code> and <code>.select_renderer(request, renderers, format_suffix)</code> methods.</p>
 <p>The <code>select_parser()</code> method should return one of the parser instances from the list of available parsers, or <code>None</code> if none of the parsers can handle the incoming request.</p>
 <p>The <code>select_renderer()</code> method should return a two-tuple of (renderer instance, media type), or raise a <code>NotAcceptable</code> exception.</p>
-<h2 id="example">Example</h2>
+<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>The following is a custom content negotiation class which ignores the client
 request when selecting the appropriate parser or renderer.</p>
 <pre><code>from rest_framework.negotiation import BaseContentNegotiation
@@ -431,7 +431,7 @@ class IgnoreClientContentNegotiation(BaseContentNegotiation):
         """
         return (renderers[0], renderers[0].media_type)
 </code></pre>
-<h2 id="setting-the-content-negotiation">Setting the content negotiation</h2>
+<h2 id="setting-the-content-negotiation"><a class="toclink" href="#setting-the-content-negotiation">Setting the content negotiation</a></h2>
 <p>The default content negotiation class may be set globally, using the <code>DEFAULT_CONTENT_NEGOTIATION_CLASS</code> setting.  For example, the following settings would use our example <code>IgnoreClientContentNegotiation</code> class.</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'myapp.negotiation.IgnoreClientContentNegotiation',

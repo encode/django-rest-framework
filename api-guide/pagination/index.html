@@ -427,7 +427,7 @@
                 
               
 
-              <h1 id="pagination">Pagination</h1>
+              <h1 id="pagination"><a class="toclink" href="#pagination">Pagination</a></h1>
 <blockquote>
 <p>Django provides a few classes that help you manage paginated data – that is, data that’s split across several pages, with “Previous/Next” links.</p>
 <p>&mdash; <a href="https://docs.djangoproject.com/en/dev/topics/pagination/">Django documentation</a></p>
@@ -440,14 +440,14 @@
 </ul>
 <p>The built-in styles currently all use links included as part of the content of the response. This style is more accessible when using the browsable API.</p>
 <p>Pagination is only performed automatically if you're using the generic views or viewsets. If you're using a regular <code>APIView</code>, you'll need to call into the pagination API yourself to ensure you return a paginated response. See the source code for the <code>mixins.ListModelMixin</code> and <code>generics.GenericAPIView</code> classes for an example.</p>
-<h2 id="setting-the-pagination-style">Setting the pagination style</h2>
+<h2 id="setting-the-pagination-style"><a class="toclink" href="#setting-the-pagination-style">Setting the pagination style</a></h2>
 <p>The default pagination style may be set globally, using the <code>DEFAULT_PAGINATION_CLASS</code> settings key. For example, to use the built-in limit/offset pagination, you would do:</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
 }
 </code></pre>
 <p>You can also set the pagination class on an individual view by using the <code>pagination_class</code> attribute. Typically you'll want to use the same pagination style throughout your API, although you might want to vary individual aspects of the pagination, such as default or maximum page size, on a per-view basis.</p>
-<h2 id="modifying-the-pagination-style">Modifying the pagination style</h2>
+<h2 id="modifying-the-pagination-style"><a class="toclink" href="#modifying-the-pagination-style">Modifying the pagination style</a></h2>
 <p>If you want to modify particular aspects of the pagination style, you'll want to override one of the pagination classes, and set the attributes that you want to change.</p>
 <pre><code>class LargeResultsSetPagination(PageNumberPagination):
     page_size = 1000
@@ -471,8 +471,8 @@ class StandardResultsSetPagination(PageNumberPagination):
     }
 </code></pre>
 <hr />
-<h1 id="api-reference">API Reference</h1>
-<h2 id="pagenumberpagination">PageNumberPagination</h2>
+<h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
+<h2 id="pagenumberpagination"><a class="toclink" href="#pagenumberpagination">PageNumberPagination</a></h2>
 <p>This pagination style accepts a single number page number in the request query parameters.</p>
 <p><strong>Request</strong>:</p>
 <pre><code>GET https://api.example.org/accounts/?page=4
@@ -488,7 +488,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     ]
 }
 </code></pre>
-<h4 id="setup">Setup</h4>
+<h4 id="setup"><a class="toclink" href="#setup">Setup</a></h4>
 <p>To enable the <code>PageNumberPagination</code> style globally, use the following configuration, modifying the <code>PAGE_SIZE</code> as desired:</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -496,7 +496,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 }
 </code></pre>
 <p>On <code>GenericAPIView</code> subclasses you may also set the <code>pagination_class</code> attribute to select <code>PageNumberPagination</code> on a per-view basis.</p>
-<h4 id="configuration">Configuration</h4>
+<h4 id="configuration"><a class="toclink" href="#configuration">Configuration</a></h4>
 <p>The <code>PageNumberPagination</code> class includes a number of attributes that may be overridden to modify the pagination style.</p>
 <p>To set these attributes you should override the <code>PageNumberPagination</code> class, and then enable your custom pagination class as above.</p>
 <ul>
@@ -508,7 +508,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 <li><code>template</code> - The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to <code>None</code> to disable HTML pagination controls completely. Defaults to <code>"rest_framework/pagination/numbers.html"</code>.</li>
 </ul>
 <hr />
-<h2 id="limitoffsetpagination">LimitOffsetPagination</h2>
+<h2 id="limitoffsetpagination"><a class="toclink" href="#limitoffsetpagination">LimitOffsetPagination</a></h2>
 <p>This pagination style mirrors the syntax used when looking up multiple database records. The client includes both a "limit" and an 
 "offset" query parameter. The limit indicates the maximum number of items to return, and is equivalent to the <code>page_size</code> in other styles. The offset indicates the starting position of the query in relation to the complete set of unpaginated items.</p>
 <p><strong>Request</strong>:</p>
@@ -525,7 +525,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     ]
 }
 </code></pre>
-<h4 id="setup_1">Setup</h4>
+<h4 id="setup_1"><a class="toclink" href="#setup_1">Setup</a></h4>
 <p>To enable the <code>LimitOffsetPagination</code> style globally, use the following configuration:</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
@@ -533,7 +533,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 </code></pre>
 <p>Optionally, you may also set a <code>PAGE_SIZE</code> key. If the <code>PAGE_SIZE</code> parameter is also used then the <code>limit</code> query parameter will be optional, and may be omitted by the client.</p>
 <p>On <code>GenericAPIView</code> subclasses you may also set the <code>pagination_class</code> attribute to select <code>LimitOffsetPagination</code> on a per-view basis.</p>
-<h4 id="configuration_1">Configuration</h4>
+<h4 id="configuration_1"><a class="toclink" href="#configuration_1">Configuration</a></h4>
 <p>The <code>LimitOffsetPagination</code> class includes a number of attributes that may be overridden to modify the pagination style.</p>
 <p>To set these attributes you should override the <code>LimitOffsetPagination</code> class, and then enable your custom pagination class as above.</p>
 <ul>
@@ -544,7 +544,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 <li><code>template</code> - The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to <code>None</code> to disable HTML pagination controls completely. Defaults to <code>"rest_framework/pagination/numbers.html"</code>.</li>
 </ul>
 <hr />
-<h2 id="cursorpagination">CursorPagination</h2>
+<h2 id="cursorpagination"><a class="toclink" href="#cursorpagination">CursorPagination</a></h2>
 <p>The cursor-based pagination presents an opaque "cursor" indicator that the client may use to page through the result set. This pagination style only presents forward and reverse controls, and does not allow the client to navigate to arbitrary positions.</p>
 <p>Cursor based pagination requires that there is a unique, unchanging ordering of items in the result set. This ordering might typically be a creation timestamp on the records, as this presents a consistent ordering to paginate against.</p>
 <p>Cursor based pagination is more complex than other schemes. It also requires that the result set presents a fixed ordering, and does not allow the client to arbitrarily index into the result set. However it does provide the following benefits:</p>
@@ -552,7 +552,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 <li>Provides a consistent pagination view. When used properly <code>CursorPagination</code> ensures that the client will never see the same item twice when paging through records, even when new items are being inserted by other clients during the pagination process.</li>
 <li>Supports usage with very large datasets. With extremely large datasets pagination using offset-based pagination styles may become inefficient or unusable. Cursor based pagination schemes instead have fixed-time properties, and do not slow down as the dataset size increases.</li>
 </ul>
-<h4 id="details-and-limitations">Details and limitations</h4>
+<h4 id="details-and-limitations"><a class="toclink" href="#details-and-limitations">Details and limitations</a></h4>
 <p>Proper use of cursor based pagination requires a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against. The default is to order by <code>"-created"</code>. This assumes that <strong>there must be a 'created' timestamp field</strong> on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.</p>
 <p>You can modify the ordering by overriding the <code>'ordering'</code> attribute on the pagination class, or by using the <code>OrderingFilter</code> filter class together with <code>CursorPagination</code>. When used with <code>OrderingFilter</code> you should strongly consider restricting the fields that the user may order by.</p>
 <p>Proper usage of cursor pagination should have an ordering field that satisfies the following:</p>
@@ -564,7 +564,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 </ul>
 <p>Using an ordering field that does not satisfy these constraints will generally still work, but you'll be loosing some of the benefits of cursor pagination.</p>
 <p>For more technical details on the implementation we use for cursor pagination, the <a href="http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api/">"Building cursors for the Disqus API"</a> blog post gives a good overview of the basic approach.</p>
-<h4 id="setup_2">Setup</h4>
+<h4 id="setup_2"><a class="toclink" href="#setup_2">Setup</a></h4>
 <p>To enable the <code>CursorPagination</code> style globally, use the following configuration, modifying the <code>PAGE_SIZE</code> as desired:</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
@@ -572,7 +572,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 }
 </code></pre>
 <p>On <code>GenericAPIView</code> subclasses you may also set the <code>pagination_class</code> attribute to select <code>CursorPagination</code> on a per-view basis.</p>
-<h4 id="configuration_2">Configuration</h4>
+<h4 id="configuration_2"><a class="toclink" href="#configuration_2">Configuration</a></h4>
 <p>The <code>CursorPagination</code> class includes a number of attributes that may be overridden to modify the pagination style.</p>
 <p>To set these attributes you should override the <code>CursorPagination</code> class, and then enable your custom pagination class as above.</p>
 <ul>
@@ -582,14 +582,14 @@ class StandardResultsSetPagination(PageNumberPagination):
 <li><code>template</code> = The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to <code>None</code> to disable HTML pagination controls completely. Defaults to <code>"rest_framework/pagination/previous_and_next.html"</code>.</li>
 </ul>
 <hr />
-<h1 id="custom-pagination-styles">Custom pagination styles</h1>
+<h1 id="custom-pagination-styles"><a class="toclink" href="#custom-pagination-styles">Custom pagination styles</a></h1>
 <p>To create a custom pagination serializer class you should subclass <code>pagination.BasePagination</code> and override the <code>paginate_queryset(self, queryset, request, view=None)</code> and <code>get_paginated_response(self, data)</code> methods:</p>
 <ul>
 <li>The <code>paginate_queryset</code> method is passed the initial queryset and should return an iterable object that contains only the data in the requested page.</li>
 <li>The <code>get_paginated_response</code> method is passed the serialized page data and should return a <code>Response</code> instance.</li>
 </ul>
 <p>Note that the <code>paginate_queryset</code> method may set state on the pagination instance, that may later be used by the <code>get_paginated_response</code> method.</p>
-<h2 id="example">Example</h2>
+<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>Suppose we want to replace the default pagination output style with a modified format that  includes the next and previous links under in a nested 'links' key. We could specify a custom pagination class like so:</p>
 <pre><code>class CustomPagination(pagination.PageNumberPagination):
     def get_paginated_response(self, data):
@@ -609,7 +609,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 }
 </code></pre>
 <p>Note that if you care about how the ordering of keys is displayed in responses in the browsable API you might choose to use an <code>OrderedDict</code> when constructing the body of paginated responses, but this is optional.</p>
-<h2 id="header-based-pagination">Header based pagination</h2>
+<h2 id="header-based-pagination"><a class="toclink" href="#header-based-pagination">Header based pagination</a></h2>
 <p>Let's modify the built-in <code>PageNumberPagination</code> style, so that instead of include the pagination links in the body of the response, we'll instead include a <code>Link</code> header, in a <a href="https://developer.github.com/guides/traversing-with-pagination/">similar style to the GitHub API</a>.</p>
 <pre><code>class LinkHeaderPagination(pagination.PageNumberPagination):
     def get_paginated_response(self, data):
@@ -630,7 +630,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 
         return Response(data, headers=headers)
 </code></pre>
-<h2 id="using-your-custom-pagination-class">Using your custom pagination class</h2>
+<h2 id="using-your-custom-pagination-class"><a class="toclink" href="#using-your-custom-pagination-class">Using your custom pagination class</a></h2>
 <p>To have your custom pagination class be used by default, use the <code>DEFAULT_PAGINATION_CLASS</code> setting:</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.LinkHeaderPagination',
@@ -642,9 +642,9 @@ class StandardResultsSetPagination(PageNumberPagination):
 <p><img alt="Link Header" src="../../img/link-header-pagination.png" /></p>
 <p><em>A custom pagination style, using the 'Link' header'</em></p>
 <hr />
-<h1 id="html-pagination-controls">HTML pagination controls</h1>
+<h1 id="html-pagination-controls"><a class="toclink" href="#html-pagination-controls">HTML pagination controls</a></h1>
 <p>By default using the pagination classes will cause HTML pagination controls to be displayed in the browsable API. There are two built-in display styles. The <code>PageNumberPagination</code> and <code>LimitOffsetPagination</code> classes display a list of page numbers with previous and next controls. The <code>CursorPagination</code> class displays a simpler style that only displays a previous and next control.</p>
-<h2 id="customizing-the-controls">Customizing the controls</h2>
+<h2 id="customizing-the-controls"><a class="toclink" href="#customizing-the-controls">Customizing the controls</a></h2>
 <p>You can override the templates that render the HTML pagination controls. The two built-in styles are:</p>
 <ul>
 <li><code>rest_framework/pagination/numbers.html</code></li>
@@ -652,13 +652,13 @@ class StandardResultsSetPagination(PageNumberPagination):
 </ul>
 <p>Providing a template with either of these paths in a global template directory will override the default rendering for the relevant pagination classes.</p>
 <p>Alternatively you can disable HTML pagination controls completely by subclassing on of the existing classes, setting <code>template = None</code> as an attribute on the class. You'll then need to configure your <code>DEFAULT_PAGINATION_CLASS</code> settings key to use your custom class as the default pagination style.</p>
-<h4 id="low-level-api">Low-level API</h4>
+<h4 id="low-level-api"><a class="toclink" href="#low-level-api">Low-level API</a></h4>
 <p>The low-level API for determining if a pagination class should display the controls or not is exposed as a <code>display_page_controls</code> attribute on the pagination instance. Custom pagination classes should be set to <code>True</code> in the <code>paginate_queryset</code> method if they require the HTML pagination controls to be displayed.</p>
 <p>The <code>.to_html()</code> and <code>.get_html_context()</code> methods may also be overridden in a custom pagination class in order to further customize how the controls are rendered.</p>
 <hr />
-<h1 id="third-party-packages">Third party packages</h1>
+<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages are also available.</p>
-<h2 id="drf-extensions">DRF-extensions</h2>
+<h2 id="drf-extensions"><a class="toclink" href="#drf-extensions">DRF-extensions</a></h2>
 <p>The <a href="http://chibisov.github.io/drf-extensions/docs/"><code>DRF-extensions</code> package</a> includes a <a href="http://chibisov.github.io/drf-extensions/docs/#paginatebymaxmixin"><code>PaginateByMaxMixin</code> mixin class</a> that allows your API clients to specify <code>?page_size=max</code> to obtain the maximum allowed page size.</p>
             
 

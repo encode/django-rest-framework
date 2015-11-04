@@ -467,7 +467,7 @@
 <hr />
 <p><img alt="Screenshot" src="./img/quickstart.png" /></p>
 <p><strong>Above</strong>: <em>Screenshot from the browsable API</em></p>
-<h2 id="requirements">Requirements</h2>
+<h2 id="requirements"><a class="toclink" href="#requirements">Requirements</a></h2>
 <p>REST framework requires the following:</p>
 <ul>
 <li>Python (2.7, 3.2, 3.3, 3.4, 3.5)</li>
@@ -480,7 +480,7 @@
 <li>[django-crispy-forms][django-crispy-forms] - Improved HTML display for filtering.</li>
 <li><a href="https://github.com/lukaszb/django-guardian">django-guardian</a> (1.1.1+) - Object level permissions support.</li>
 </ul>
-<h2 id="installation">Installation</h2>
+<h2 id="installation"><a class="toclink" href="#installation">Installation</a></h2>
 <p>Install using <code>pip</code>, including any optional packages you want...</p>
 <pre><code>pip install djangorestframework
 pip install markdown       # Markdown support for the browsable API.
@@ -502,7 +502,7 @@ pip install django-filter  # Filtering support
 ]
 </code></pre>
 <p>Note that the URL path can be whatever you want, but you must include <code>'rest_framework.urls'</code> with the <code>'rest_framework'</code> namespace.</p>
-<h2 id="example">Example</h2>
+<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>Let's take a look at a quick example of using REST framework to build a simple model-backed API.</p>
 <p>We'll create a read-write API for accessing information on the users of our project.</p>
 <p>Any global settings for a REST framework API are kept in a single configuration dictionary named <code>REST_FRAMEWORK</code>.  Start off by adding the following to your <code>settings.py</code> module:</p>
@@ -544,9 +544,9 @@ urlpatterns = [
 ]
 </code></pre>
 <p>You can now open the API in your browser at <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a>, and view your new 'users' API. If you use the login control in the top right corner you'll also be able to add, create and delete users from the system.</p>
-<h2 id="quickstart">Quickstart</h2>
+<h2 id="quickstart"><a class="toclink" href="#quickstart">Quickstart</a></h2>
 <p>Can't wait to get started? The <a href="tutorial/quickstart/">quickstart guide</a> is the fastest way to get up and running, and building APIs with REST framework.</p>
-<h2 id="tutorial">Tutorial</h2>
+<h2 id="tutorial"><a class="toclink" href="#tutorial">Tutorial</a></h2>
 <p>The tutorial will walk you through the building blocks that make up REST framework.   It'll take a little while to get through, but it'll give you a comprehensive understanding of how everything fits together, and is highly recommended reading.</p>
 <ul>
 <li><a href="tutorial/1-serialization/">1 - Serialization</a></li>
@@ -557,7 +557,7 @@ urlpatterns = [
 <li><a href="tutorial/6-viewsets-and-routers/">6 - Viewsets &amp; routers</a></li>
 </ul>
 <p>There is a live example API of the finished tutorial API for testing purposes, <a href="http://restframework.herokuapp.com/">available here</a>.</p>
-<h2 id="api-guide">API Guide</h2>
+<h2 id="api-guide"><a class="toclink" href="#api-guide">API Guide</a></h2>
 <p>The API guide is your complete reference manual to all the functionality provided by REST framework.</p>
 <ul>
 <li><a href="api-guide/requests/">Requests</a></li>
@@ -587,7 +587,7 @@ urlpatterns = [
 <li><a href="api-guide/testing/">Testing</a></li>
 <li><a href="api-guide/settings/">Settings</a></li>
 </ul>
-<h2 id="topics">Topics</h2>
+<h2 id="topics"><a class="toclink" href="#topics">Topics</a></h2>
 <p>General guides to using REST framework.</p>
 <ul>
 <li><a href="topics/documenting-your-api/">Documenting your API</a></li>
@@ -607,20 +607,20 @@ urlpatterns = [
 <li><a href="topics/kickstarter-announcement/">Kickstarter Announcement</a></li>
 <li><a href="topics/release-notes/">Release Notes</a></li>
 </ul>
-<h2 id="development">Development</h2>
+<h2 id="development"><a class="toclink" href="#development">Development</a></h2>
 <p>See the <a href="topics/contributing/">Contribution guidelines</a> for information on how to clone
 the repository, run the test suite and contribute changes back to REST
 Framework.</p>
-<h2 id="support">Support</h2>
+<h2 id="support"><a class="toclink" href="#support">Support</a></h2>
 <p>For support please see the <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">REST framework discussion group</a>, try the  <code>#restframework</code> channel on <code>irc.freenode.net</code>, search <a href="https://botbot.me/freenode/restframework/">the IRC archives</a>, or raise a  question on <a href="http://stackoverflow.com/">Stack Overflow</a>, making sure to include the <a href="http://stackoverflow.com/questions/tagged/django-rest-framework">'django-rest-framework'</a> tag.</p>
 <p><a href="http://dabapps.com/services/build/api-development/">Paid support is available</a> from <a href="http://dabapps.com">DabApps</a>, and can include work on REST framework core, or support with building your REST framework API.  Please <a href="http://dabapps.com/contact/">contact DabApps</a> if you'd like to discuss commercial support options.</p>
 <p>For updates on REST framework development, you may also want to follow <a href="https://twitter.com/_tomchristie">the author</a> on Twitter.</p>
 <p><a style="padding-top: 10px" href="https://twitter.com/_tomchristie" class="twitter-follow-button" data-show-count="false">Follow @_tomchristie</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
-<h2 id="security">Security</h2>
+<h2 id="security"><a class="toclink" href="#security">Security</a></h2>
 <p>If you believe you’ve found something in Django REST framework which has security implications, please <strong>do not raise the issue in a public forum</strong>.</p>
 <p>Send a description of the issue via email to <a href="mailto:rest-framework-security@googlegroups.com">rest-framework-security@googlegroups.com</a>.  The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.</p>
-<h2 id="license">License</h2>
+<h2 id="license"><a class="toclink" href="#license">License</a></h2>
 <p>Copyright (c) 2011-2015, Tom Christie
 All rights reserved.</p>
 <p>Redistribution and use in source and binary forms, with or without

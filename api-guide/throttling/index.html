@@ -407,7 +407,7 @@
                 
               
 
-              <h1 id="throttling">Throttling</h1>
+              <h1 id="throttling"><a class="toclink" href="#throttling">Throttling</a></h1>
 <blockquote>
 <p>HTTP/1.1 420 Enhance Your Calm</p>
 <p><a href="https://dev.twitter.com/docs/error-codes-responses">Twitter API rate limiting response</a></p>
@@ -417,11 +417,11 @@
 <p>Another scenario where you might want to use multiple throttles would be if you need to impose different constraints on different parts of the API, due to some services being particularly resource-intensive.</p>
 <p>Multiple throttles can also be used if you want to impose both burst throttling rates, and sustained throttling rates.  For example, you might want to limit a user to a maximum of 60 requests per minute, and 1000 requests per day.</p>
 <p>Throttles do not necessarily only refer to rate-limiting requests.  For example a storage service might also need to throttle against bandwidth, and a paid data service might want to throttle against a certain number of a records being accessed.</p>
-<h2 id="how-throttling-is-determined">How throttling is determined</h2>
+<h2 id="how-throttling-is-determined"><a class="toclink" href="#how-throttling-is-determined">How throttling is determined</a></h2>
 <p>As with permissions and authentication, throttling in REST framework is always defined as a list of classes.</p>
 <p>Before running the main body of the view each throttle in the list is checked.
 If any throttle check fails an <code>exceptions.Throttled</code> exception will be raised, and the main body of the view will not run.</p>
-<h2 id="setting-the-throttling-policy">Setting the throttling policy</h2>
+<h2 id="setting-the-throttling-policy"><a class="toclink" href="#setting-the-throttling-policy">Setting the throttling policy</a></h2>
 <p>The default throttling policy may be set globally, using the <code>DEFAULT_THROTTLE_CLASSES</code> and <code>DEFAULT_THROTTLE_RATES</code> settings.  For example.</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_CLASSES': (
@@ -459,12 +459,12 @@ def example_view(request, format=None):
     }
     return Response(content)
 </code></pre>
-<h2 id="how-clients-are-identified">How clients are identified</h2>
+<h2 id="how-clients-are-identified"><a class="toclink" href="#how-clients-are-identified">How clients are identified</a></h2>
 <p>The <code>X-Forwarded-For</code> and <code>Remote-Addr</code> HTTP headers are used to uniquely identify client IP addresses for throttling.  If the <code>X-Forwarded-For</code> header is present then it will be used, otherwise the value of the <code>Remote-Addr</code> header will be used.</p>
 <p>If you need to strictly identify unique client IP addresses, you'll need to first configure the number of application proxies that the API runs behind by setting the <code>NUM_PROXIES</code> setting.  This setting should be an integer of zero or more.  If set to non-zero then the client IP will be identified as being the last IP address in the <code>X-Forwarded-For</code> header, once any application proxy IP addresses have first been excluded.  If set to zero, then the <code>Remote-Addr</code> header will always be used as the identifying IP address.</p>
 <p>It is important to understand that if you configure the <code>NUM_PROXIES</code> setting, then all clients behind a unique <a href="http://en.wikipedia.org/wiki/Network_address_translation">NAT'd</a> gateway will be treated as a single client.</p>
 <p>Further context on how the <code>X-Forwarded-For</code> header works, and identifying a remote client IP can be <a href="http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster">found here</a>.</p>
-<h2 id="setting-up-the-cache">Setting up the cache</h2>
+<h2 id="setting-up-the-cache"><a class="toclink" href="#setting-up-the-cache">Setting up the cache</a></h2>
 <p>The throttle classes provided by REST framework use Django's cache backend.  You should make sure that you've set appropriate <a href="https://docs.djangoproject.com/en/dev/ref/settings/#caches">cache settings</a>.  The default value of <code>LocMemCache</code> backend should be okay for simple setups.  See Django's <a href="https://docs.djangoproject.com/en/dev/topics/cache/#setting-up-the-cache">cache documentation</a> for more details.</p>
 <p>If you need to use a cache other than <code>'default'</code>, you can do so by creating a custom throttle class and setting the <code>cache</code> attribute.  For example:</p>
 <pre><code>class CustomAnonRateThrottle(AnonRateThrottle):
@@ -472,8 +472,8 @@ def example_view(request, format=None):
 </code></pre>
 <p>You'll need to remember to also set your custom throttle class in the <code>'DEFAULT_THROTTLE_CLASSES'</code> settings key, or using the <code>throttle_classes</code> view attribute.</p>
 <hr />
-<h1 id="api-reference">API Reference</h1>
-<h2 id="anonratethrottle">AnonRateThrottle</h2>
+<h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
+<h2 id="anonratethrottle"><a class="toclink" href="#anonratethrottle">AnonRateThrottle</a></h2>
 <p>The <code>AnonRateThrottle</code> will only ever throttle unauthenticated users.  The IP address of the incoming request is used to generate a unique key to throttle against.</p>
 <p>The allowed request rate is determined from one of the following (in order of preference).</p>
 <ul>
@@ -481,7 +481,7 @@ def example_view(request, format=None):
 <li>The <code>DEFAULT_THROTTLE_RATES['anon']</code> setting.</li>
 </ul>
 <p><code>AnonRateThrottle</code> is suitable if you want to restrict the rate of requests from unknown sources.</p>
-<h2 id="userratethrottle">UserRateThrottle</h2>
+<h2 id="userratethrottle"><a class="toclink" href="#userratethrottle">UserRateThrottle</a></h2>
 <p>The <code>UserRateThrottle</code> will throttle users to a given rate of requests across the API.  The user id is used to generate a unique key to throttle against.  Unauthenticated requests will fall back to using the IP address of the incoming request to generate a unique key to throttle against.</p>
 <p>The allowed request rate is determined from one of the following (in order of preference).</p>
 <ul>
@@ -509,7 +509,7 @@ class SustainedRateThrottle(UserRateThrottle):
 }
 </code></pre>
 <p><code>UserRateThrottle</code> is suitable if you want simple global rate restrictions per-user.</p>
-<h2 id="scopedratethrottle">ScopedRateThrottle</h2>
+<h2 id="scopedratethrottle"><a class="toclink" href="#scopedratethrottle">ScopedRateThrottle</a></h2>
 <p>The <code>ScopedRateThrottle</code> class can be used to restrict access to specific parts of the API.  This throttle will only be applied if the view that is being accessed includes a <code>.throttle_scope</code> property.  The unique throttle key will then be formed by concatenating the "scope" of the request with the unique user id or IP address.</p>
 <p>The allowed request rate is determined by the <code>DEFAULT_THROTTLE_RATES</code> setting using a key from the request "scope".</p>
 <p>For example, given the following views...</p>
@@ -538,11 +538,11 @@ class UploadView(APIView):
 </code></pre>
 <p>User requests to either <code>ContactListView</code> or <code>ContactDetailView</code> would be restricted to a total of 1000 requests per-day.  User requests to <code>UploadView</code> would be restricted to 20 requests per day.</p>
 <hr />
-<h1 id="custom-throttles">Custom throttles</h1>
+<h1 id="custom-throttles"><a class="toclink" href="#custom-throttles">Custom throttles</a></h1>
 <p>To create a custom throttle, override <code>BaseThrottle</code> and implement <code>.allow_request(self, request, view)</code>.  The method should return <code>True</code> if the request should be allowed, and <code>False</code> otherwise.</p>
 <p>Optionally you may also override the <code>.wait()</code> method.  If implemented, <code>.wait()</code> should return a recommended number of seconds to wait before attempting the next request, or <code>None</code>.  The <code>.wait()</code> method will only be called if <code>.allow_request()</code> has previously returned <code>False</code>.</p>
 <p>If the <code>.wait()</code> method is implemented and the request is throttled, then a <code>Retry-After</code> header will be included in the response.</p>
-<h2 id="example">Example</h2>
+<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>The following is an example of a rate throttle, that will randomly throttle 1 in every 10 requests.</p>
 <pre><code>class RandomRateThrottle(throttling.BaseThrottle):
     def allow_request(self, request, view):

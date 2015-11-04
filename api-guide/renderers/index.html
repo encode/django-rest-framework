@@ -495,17 +495,17 @@
                 
               
 
-              <h1 id="renderers">Renderers</h1>
+              <h1 id="renderers"><a class="toclink" href="#renderers">Renderers</a></h1>
 <blockquote>
 <p>Before a TemplateResponse instance can be returned to the client, it must be rendered. The rendering process takes the intermediate representation of template and context, and turns it into the final byte stream that can be served to the client.</p>
 <p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process">Django documentation</a></p>
 </blockquote>
 <p>REST framework includes a number of built in Renderer classes, that allow you to return responses with various media types.  There is also support for defining your own custom renderers, which gives you the flexibility to design your own media types.</p>
-<h2 id="how-the-renderer-is-determined">How the renderer is determined</h2>
+<h2 id="how-the-renderer-is-determined"><a class="toclink" href="#how-the-renderer-is-determined">How the renderer is determined</a></h2>
 <p>The set of valid renderers for a view is always defined as a list of classes.  When a view is entered REST framework will perform content negotiation on the incoming request, and determine the most appropriate renderer to satisfy the request.</p>
 <p>The basic process of content negotiation involves examining the request's <code>Accept</code> header, to determine which media types it expects in the response.  Optionally, format suffixes on the URL may be used to explicitly request a particular representation.  For example the URL <code>http://example.com/api/users_count.json</code> might be an endpoint that always returns JSON data.</p>
 <p>For more information see the documentation on <a href="../content-negotiation/">content negotiation</a>.</p>
-<h2 id="setting-the-renderers">Setting the renderers</h2>
+<h2 id="setting-the-renderers"><a class="toclink" href="#setting-the-renderers">Setting the renderers</a></h2>
 <p>The default set of renderers may be set globally, using the <code>DEFAULT_RENDERER_CLASSES</code> setting.  For example, the following settings would use <code>JSON</code> as the main media type and also include the self describing API.</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
@@ -543,13 +543,13 @@ def user_count_view(request, format=None):
     content = {'user_count': user_count}
     return Response(content)
 </code></pre>
-<h2 id="ordering-of-renderer-classes">Ordering of renderer classes</h2>
+<h2 id="ordering-of-renderer-classes"><a class="toclink" href="#ordering-of-renderer-classes">Ordering of renderer classes</a></h2>
 <p>It's important when specifying the renderer classes for your API to think about what priority you want to assign to each media type.  If a client underspecifies the representations it can accept, such as sending an <code>Accept: */*</code> header, or not including an <code>Accept</code> header at all, then REST framework will select the first renderer in the list to use for the response.</p>
 <p>For example if your API serves JSON responses and the HTML browsable API, you might want to make <code>JSONRenderer</code> your default renderer, in order to send <code>JSON</code> responses to clients that do not specify an <code>Accept</code> header.</p>
 <p>If your API includes views that can serve both regular webpages and API responses depending on the request, then you might consider making <code>TemplateHTMLRenderer</code> your default renderer, in order to play nicely with older browsers that send <a href="http://www.gethifi.com/blog/browser-rest-http-accept-headers">broken accept headers</a>.</p>
 <hr />
-<h1 id="api-reference">API Reference</h1>
-<h2 id="jsonrenderer">JSONRenderer</h2>
+<h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
+<h2 id="jsonrenderer"><a class="toclink" href="#jsonrenderer">JSONRenderer</a></h2>
 <p>Renders the request data into <code>JSON</code>, using utf-8 encoding.</p>
 <p>Note that the default style is to include unicode characters, and render the response using a compact style with no unnecessary whitespace:</p>
 <pre><code>{"unicode black star":"★","value":999}
@@ -564,7 +564,7 @@ def user_count_view(request, format=None):
 <p><strong>.media_type</strong>: <code>application/json</code></p>
 <p><strong>.format</strong>: <code>'.json'</code></p>
 <p><strong>.charset</strong>: <code>None</code></p>
-<h2 id="templatehtmlrenderer">TemplateHTMLRenderer</h2>
+<h2 id="templatehtmlrenderer"><a class="toclink" href="#templatehtmlrenderer">TemplateHTMLRenderer</a></h2>
 <p>Renders data to HTML, using Django's standard template rendering.
 Unlike other renderers, the data passed to the <code>Response</code> does not need to be serialized.  Also, unlike other renderers, you may want to include a <code>template_name</code> argument when creating the <code>Response</code>.</p>
 <p>The TemplateHTMLRenderer will create a <code>RequestContext</code>, using the <code>response.data</code> as the context dict, and determine a template name to use to render the context.</p>
@@ -592,7 +592,7 @@ Unlike other renderers, the data passed to the <code>Response</code> does not ne
 <p><strong>.format</strong>: <code>'.html'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
 <p>See also: <code>StaticHTMLRenderer</code></p>
-<h2 id="statichtmlrenderer">StaticHTMLRenderer</h2>
+<h2 id="statichtmlrenderer"><a class="toclink" href="#statichtmlrenderer">StaticHTMLRenderer</a></h2>
 <p>A simple renderer that simply returns pre-rendered HTML.  Unlike other renderers, the data passed to the response object should be a string representing the content to be returned.</p>
 <p>An example of a view that uses <code>StaticHTMLRenderer</code>:</p>
 <pre><code>@api_view(('GET',))
@@ -606,7 +606,7 @@ def simple_html_view(request):
 <p><strong>.format</strong>: <code>'.html'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
 <p>See also: <code>TemplateHTMLRenderer</code></p>
-<h2 id="browsableapirenderer">BrowsableAPIRenderer</h2>
+<h2 id="browsableapirenderer"><a class="toclink" href="#browsableapirenderer">BrowsableAPIRenderer</a></h2>
 <p>Renders data into HTML for the Browsable API:</p>
 <p><img alt="The BrowsableAPIRenderer" src="../../img/quickstart.png" /></p>
 <p>This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.</p>
@@ -614,13 +614,13 @@ def simple_html_view(request):
 <p><strong>.format</strong>: <code>'.api'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
 <p><strong>.template</strong>: <code>'rest_framework/api.html'</code></p>
-<h4 id="customizing-browsableapirenderer">Customizing BrowsableAPIRenderer</h4>
+<h4 id="customizing-browsableapirenderer"><a class="toclink" href="#customizing-browsableapirenderer">Customizing BrowsableAPIRenderer</a></h4>
 <p>By default the response content will be rendered with the highest priority renderer apart from <code>BrowsableAPIRenderer</code>.  If you need to customize this behavior, for example to use HTML as the default return format, but use JSON in the browsable API, you can do so by overriding the <code>get_default_renderer()</code> method.  For example:</p>
 <pre><code>class CustomBrowsableAPIRenderer(BrowsableAPIRenderer):
     def get_default_renderer(self, view):
         return JSONRenderer()
 </code></pre>
-<h2 id="adminrenderer">AdminRenderer</h2>
+<h2 id="adminrenderer"><a class="toclink" href="#adminrenderer">AdminRenderer</a></h2>
 <p>Renders data into HTML for an admin-like display:</p>
 <p><img alt="The AdminRender view" src="../../img/admin.png" /></p>
 <p>This renderer is suitable for CRUD-style web APIs that should also present a user-friendly interface for managing the data.</p>
@@ -629,7 +629,7 @@ def simple_html_view(request):
 <p><strong>.format</strong>: <code>'.admin'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
 <p><strong>.template</strong>: <code>'rest_framework/admin.html'</code></p>
-<h2 id="htmlformrenderer">HTMLFormRenderer</h2>
+<h2 id="htmlformrenderer"><a class="toclink" href="#htmlformrenderer">HTMLFormRenderer</a></h2>
 <p>Renders data returned by a serializer into an HTML form. The output of this renderer does not include the enclosing <code>&lt;form&gt;</code> tags, a hidden CSRF input or any submit buttons.</p>
 <p>This renderer is not intended to be used directly, but can instead be used in templates by passing a serializer instance to the <code>render_form</code> template tag.</p>
 <pre><code>{% load rest_framework %}
@@ -645,25 +645,25 @@ def simple_html_view(request):
 <p><strong>.format</strong>: <code>'.form'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
 <p><strong>.template</strong>: <code>'rest_framework/horizontal/form.html'</code></p>
-<h2 id="multipartrenderer">MultiPartRenderer</h2>
+<h2 id="multipartrenderer"><a class="toclink" href="#multipartrenderer">MultiPartRenderer</a></h2>
 <p>This renderer is used for rendering HTML multipart form data.  <strong>It is not suitable as a response renderer</strong>, but is instead used for creating test requests, using REST framework's <a href="../testing/">test client and test request factory</a>.</p>
 <p><strong>.media_type</strong>: <code>multipart/form-data; boundary=BoUnDaRyStRiNg</code></p>
 <p><strong>.format</strong>: <code>'.multipart'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
 <hr />
-<h1 id="custom-renderers">Custom renderers</h1>
+<h1 id="custom-renderers"><a class="toclink" href="#custom-renderers">Custom renderers</a></h1>
 <p>To implement a custom renderer, you should override <code>BaseRenderer</code>, set the <code>.media_type</code> and <code>.format</code> properties, and implement the <code>.render(self, data, media_type=None, renderer_context=None)</code> method.</p>
 <p>The method should return a bytestring, which will be used as the body of the HTTP response.</p>
 <p>The arguments passed to the <code>.render()</code> method are:</p>
-<h3 id="data"><code>data</code></h3>
+<h3 id="data"><a class="toclink" href="#data"><code>data</code></a></h3>
 <p>The request data, as set by the <code>Response()</code> instantiation.</p>
-<h3 id="media_typenone"><code>media_type=None</code></h3>
+<h3 id="media_typenone"><a class="toclink" href="#media_typenone"><code>media_type=None</code></a></h3>
 <p>Optional.  If provided, this is the accepted media type, as determined by the content negotiation stage.</p>
 <p>Depending on the client's <code>Accept:</code> header, this may be more specific than the renderer's <code>media_type</code> attribute, and may include media type parameters.  For example <code>"application/json; nested=true"</code>.</p>
-<h3 id="renderer_contextnone"><code>renderer_context=None</code></h3>
+<h3 id="renderer_contextnone"><a class="toclink" href="#renderer_contextnone"><code>renderer_context=None</code></a></h3>
 <p>Optional.  If provided, this is a dictionary of contextual information provided by the view.</p>
 <p>By default this will include the following keys: <code>view</code>, <code>request</code>, <code>response</code>, <code>args</code>, <code>kwargs</code>.</p>
-<h2 id="example">Example</h2>
+<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>The following is an example plaintext renderer that will return a response with the <code>data</code> parameter as the content of the response.</p>
 <pre><code>from django.utils.encoding import smart_unicode
 from rest_framework import renderers
@@ -676,7 +676,7 @@ class PlainTextRenderer(renderers.BaseRenderer):
     def render(self, data, media_type=None, renderer_context=None):
         return data.encode(self.charset)
 </code></pre>
-<h2 id="setting-the-character-set">Setting the character set</h2>
+<h2 id="setting-the-character-set"><a class="toclink" href="#setting-the-character-set">Setting the character set</a></h2>
 <p>By default renderer classes are assumed to be using the <code>UTF-8</code> encoding.  To use a different encoding, set the <code>charset</code> attribute on the renderer.</p>
 <pre><code>class PlainTextRenderer(renderers.BaseRenderer):
     media_type = 'text/plain'
@@ -699,7 +699,7 @@ class PlainTextRenderer(renderers.BaseRenderer):
         return data
 </code></pre>
 <hr />
-<h1 id="advanced-renderer-usage">Advanced renderer usage</h1>
+<h1 id="advanced-renderer-usage"><a class="toclink" href="#advanced-renderer-usage">Advanced renderer usage</a></h1>
 <p>You can do some pretty flexible things using REST framework's renderers.  Some examples...</p>
 <ul>
 <li>Provide either flat or nested representations from the same endpoint, depending on the requested media type.</li>
@@ -707,7 +707,7 @@ class PlainTextRenderer(renderers.BaseRenderer):
 <li>Specify multiple types of HTML representation for API clients to use.</li>
 <li>Underspecify a renderer's media type, such as using <code>media_type = 'image/*'</code>, and use the <code>Accept</code> header to vary the encoding of the response.</li>
 </ul>
-<h2 id="varying-behaviour-by-media-type">Varying behaviour by media type</h2>
+<h2 id="varying-behaviour-by-media-type"><a class="toclink" href="#varying-behaviour-by-media-type">Varying behaviour by media type</a></h2>
 <p>In some cases you might want your view to use different serialization styles depending on the accepted media type.  If you need to do this you can access <code>request.accepted_renderer</code> to determine the negotiated renderer that will be used for the response.</p>
 <p>For example:</p>
 <pre><code>@api_view(('GET',))
@@ -731,17 +731,17 @@ def list_users(request):
     data = serializer.data
     return Response(data)
 </code></pre>
-<h2 id="underspecifying-the-media-type">Underspecifying the media type</h2>
+<h2 id="underspecifying-the-media-type"><a class="toclink" href="#underspecifying-the-media-type">Underspecifying the media type</a></h2>
 <p>In some cases you might want a renderer to serve a range of media types.
 In this case you can underspecify the media types it should respond to, by using a <code>media_type</code> value such as <code>image/*</code>, or <code>*/*</code>.</p>
 <p>If you underspecify the renderer's media type, you should make sure to specify the media type explicitly when you return the response, using the <code>content_type</code> attribute.  For example:</p>
 <pre><code>return Response(data, content_type='image/png')
 </code></pre>
-<h2 id="designing-your-media-types">Designing your media types</h2>
+<h2 id="designing-your-media-types"><a class="toclink" href="#designing-your-media-types">Designing your media types</a></h2>
 <p>For the purposes of many Web APIs, simple <code>JSON</code> responses with hyperlinked relations may be sufficient.  If you want to fully embrace RESTful design and <a href="http://timelessrepo.com/haters-gonna-hateoas">HATEOAS</a> you'll need to consider the design and usage of your media types in more detail.</p>
 <p>In <a href="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">the words of Roy Fielding</a>, "A REST API should spend almost all of its descriptive effort in defining the media type(s) used for representing resources and driving application state, or in defining extended relation names and/or hypertext-enabled mark-up for existing standard media types.".</p>
 <p>For good examples of custom media types, see GitHub's use of a custom <a href="http://developer.github.com/v3/media/">application/vnd.github+json</a> media type, and Mike Amundsen's IANA approved <a href="http://www.amundsen.com/media-types/collection/">application/vnd.collection+json</a> JSON-based hypermedia.</p>
-<h2 id="html-error-views">HTML error views</h2>
+<h2 id="html-error-views"><a class="toclink" href="#html-error-views">HTML error views</a></h2>
 <p>Typically a renderer will behave the same regardless of if it's dealing with a regular response, or with a response caused by an exception being raised, such as an <code>Http404</code> or <code>PermissionDenied</code> exception, or a subclass of <code>APIException</code>.</p>
 <p>If you're using either the <code>TemplateHTMLRenderer</code> or the <code>StaticHTMLRenderer</code> and an exception is raised, the behavior is slightly different, and mirrors <a href="https://docs.djangoproject.com/en/dev/topics/http/views/#customizing-error-views">Django's default handling of error views</a>.</p>
 <p>Exceptions raised and handled by an HTML renderer will attempt to render using one of the following methods, by order of precedence.</p>
@@ -753,11 +753,11 @@ In this case you can underspecify the media types it should respond to, by using
 <p>Templates will render with a <code>RequestContext</code> which includes the <code>status_code</code> and <code>details</code> keys.</p>
 <p><strong>Note</strong>: If <code>DEBUG=True</code>, Django's standard traceback error page will be displayed instead of rendering the HTTP status code and text.</p>
 <hr />
-<h1 id="third-party-packages">Third party packages</h1>
+<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages are also available.</p>
-<h2 id="yaml">YAML</h2>
+<h2 id="yaml"><a class="toclink" href="#yaml">YAML</a></h2>
 <p><a href="http://jpadilla.github.io/django-rest-framework-yaml/">REST framework YAML</a> provides <a href="http://www.yaml.org/">YAML</a> parsing and rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.</p>
-<h4 id="installation-configuration">Installation &amp; configuration</h4>
+<h4 id="installation-configuration"><a class="toclink" href="#installation-configuration">Installation &amp; configuration</a></h4>
 <p>Install using pip.</p>
 <pre><code>$ pip install djangorestframework-yaml
 </code></pre>
@@ -771,9 +771,9 @@ In this case you can underspecify the media types it should respond to, by using
     ),
 }
 </code></pre>
-<h2 id="xml">XML</h2>
+<h2 id="xml"><a class="toclink" href="#xml">XML</a></h2>
 <p><a href="http://jpadilla.github.io/django-rest-framework-xml/">REST Framework XML</a> provides a simple informal XML format. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.</p>
-<h4 id="installation-configuration_1">Installation &amp; configuration</h4>
+<h4 id="installation-configuration_1"><a class="toclink" href="#installation-configuration_1">Installation &amp; configuration</a></h4>
 <p>Install using pip.</p>
 <pre><code>$ pip install djangorestframework-xml
 </code></pre>
@@ -787,13 +787,13 @@ In this case you can underspecify the media types it should respond to, by using
     ),
 }
 </code></pre>
-<h2 id="jsonp">JSONP</h2>
+<h2 id="jsonp"><a class="toclink" href="#jsonp">JSONP</a></h2>
 <p><a href="http://jpadilla.github.io/django-rest-framework-jsonp/">REST framework JSONP</a> provides JSONP rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.</p>
 <hr />
 <p><strong>Warning</strong>: If you require cross-domain AJAX requests, you should generally be using the more modern approach of <a href="http://www.w3.org/TR/cors/">CORS</a> as an alternative to <code>JSONP</code>. See the <a href="http://www.django-rest-framework.org/topics/ajax-csrf-cors/">CORS documentation</a> for more details.</p>
 <p>The <code>jsonp</code> approach is essentially a browser hack, and is <a href="http://stackoverflow.com/questions/613962/is-jsonp-safe-to-use">only appropriate for globally readable API endpoints</a>, where <code>GET</code> requests are unauthenticated and do not require any user permissions.</p>
 <hr />
-<h4 id="installation-configuration_2">Installation &amp; configuration</h4>
+<h4 id="installation-configuration_2"><a class="toclink" href="#installation-configuration_2">Installation &amp; configuration</a></h4>
 <p>Install using pip.</p>
 <pre><code>$ pip install djangorestframework-jsonp
 </code></pre>
@@ -804,15 +804,15 @@ In this case you can underspecify the media types it should respond to, by using
     ),
 }
 </code></pre>
-<h2 id="messagepack">MessagePack</h2>
+<h2 id="messagepack"><a class="toclink" href="#messagepack">MessagePack</a></h2>
 <p><a href="http://msgpack.org/">MessagePack</a> is a fast, efficient binary serialization format.  <a href="https://github.com/juanriaza">Juan Riaza</a> maintains the <a href="https://github.com/juanriaza/django-rest-framework-msgpack">djangorestframework-msgpack</a> package which provides MessagePack renderer and parser support for REST framework.</p>
-<h2 id="csv">CSV</h2>
+<h2 id="csv"><a class="toclink" href="#csv">CSV</a></h2>
 <p>Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications. <a href="https://github.com/mjumbewu">Mjumbe Poe</a> maintains the <a href="https://github.com/mjumbewu/django-rest-framework-csv">djangorestframework-csv</a> package which provides CSV renderer support for REST framework.</p>
-<h2 id="ultrajson">UltraJSON</h2>
+<h2 id="ultrajson"><a class="toclink" href="#ultrajson">UltraJSON</a></h2>
 <p><a href="https://github.com/esnme/ultrajson">UltraJSON</a> is an optimized C JSON encoder which can give significantly faster JSON rendering. <a href="https://github.com/hzy">Jacob Haslehurst</a> maintains the <a href="https://github.com/gizmag/drf-ujson-renderer">drf-ujson-renderer</a> package which implements JSON rendering using the UJSON package.</p>
-<h2 id="camelcase-json">CamelCase JSON</h2>
+<h2 id="camelcase-json"><a class="toclink" href="#camelcase-json">CamelCase JSON</a></h2>
 <p><a href="https://github.com/vbabiy/djangorestframework-camel-case">djangorestframework-camel-case</a> provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by <a href="https://github.com/vbabiy">Vitaly Babiy</a>.</p>
-<h2 id="pandas-csv-excel-png">Pandas (CSV, Excel, PNG)</h2>
+<h2 id="pandas-csv-excel-png"><a class="toclink" href="#pandas-csv-excel-png">Pandas (CSV, Excel, PNG)</a></h2>
 <p><a href="https://github.com/wq/django-rest-pandas">Django REST Pandas</a> provides a serializer and renderers that support additional data processing and output via the <a href="http://pandas.pydata.org/">Pandas</a> DataFrame API.  Django REST Pandas includes renderers for Pandas-style CSV files, Excel workbooks (both <code>.xls</code> and <code>.xlsx</code>), and a number of <a href="https://github.com/wq/django-rest-pandas#supported-formats">other formats</a>. It is maintained by <a href="https://github.com/sheppard">S. Andrew Sheppard</a> as part of the <a href="https://github.com/wq">wq Project</a>.</p>
             
 

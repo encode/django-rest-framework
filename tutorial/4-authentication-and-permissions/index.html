@@ -393,7 +393,7 @@
             
               
 
-              <h1 id="tutorial-4-authentication-permissions">Tutorial 4: Authentication &amp; Permissions</h1>
+              <h1 id="tutorial-4-authentication-permissions"><a class="toclink" href="#tutorial-4-authentication-permissions">Tutorial 4: Authentication &amp; Permissions</a></h1>
 <p>Currently our API doesn't have any restrictions on who can edit or delete code snippets.  We'd like to have some more advanced behavior in order to make sure that:</p>
 <ul>
 <li>Code snippets are always associated with a creator.</li>
@@ -401,7 +401,7 @@
 <li>Only the creator of a snippet may update or delete it.</li>
 <li>Unauthenticated requests should have full read-only access.</li>
 </ul>
-<h2 id="adding-information-to-our-model">Adding information to our model</h2>
+<h2 id="adding-information-to-our-model"><a class="toclink" href="#adding-information-to-our-model">Adding information to our model</a></h2>
 <p>We're going to make a couple of changes to our <code>Snippet</code> model class.
 First, let's add a couple of fields.  One of those fields will be used to represent the user who created the code snippet.  The other field will be used to store the highlighted HTML representation of the code.</p>
 <p>Add the following two fields to the <code>Snippet</code> model in <code>models.py</code>.</p>
@@ -438,7 +438,7 @@ python manage.py migrate
 <p>You might also want to create a few different users, to use for testing the API.  The quickest way to do this will be with the <code>createsuperuser</code> command.</p>
 <pre><code>python manage.py createsuperuser
 </code></pre>
-<h2 id="adding-endpoints-for-our-user-models">Adding endpoints for our User models</h2>
+<h2 id="adding-endpoints-for-our-user-models"><a class="toclink" href="#adding-endpoints-for-our-user-models">Adding endpoints for our User models</a></h2>
 <p>Now that we've got some users to work with, we'd better add representations of those users to our API.  Creating a new serializer is easy. In <code>serializers.py</code> add:</p>
 <pre><code>from django.contrib.auth.models import User
 
@@ -470,7 +470,7 @@ class UserDetail(generics.RetrieveAPIView):
 <pre><code>url(r'^users/$', views.UserList.as_view()),
 url(r'^users/(?P&lt;pk&gt;[0-9]+)/$', views.UserDetail.as_view()),
 </code></pre>
-<h2 id="associating-snippets-with-users">Associating Snippets with Users</h2>
+<h2 id="associating-snippets-with-users"><a class="toclink" href="#associating-snippets-with-users">Associating Snippets with Users</a></h2>
 <p>Right now, if we created a code snippet, there'd be no way of associating the user that created the snippet, with the snippet instance.  The user isn't sent as part of the serialized representation, but is instead a property of the incoming request.</p>
 <p>The way we deal with that is by overriding a <code>.perform_create()</code> method on our snippet views, that allows us to modify how the instance save is managed, and handle any information that is implicit in the incoming request or requested URL.</p>
 <p>On the <code>SnippetList</code> view class, add the following method:</p>
@@ -478,14 +478,14 @@ url(r'^users/(?P&lt;pk&gt;[0-9]+)/$', views.UserDetail.as_view()),
     serializer.save(owner=self.request.user)
 </code></pre>
 <p>The <code>create()</code> method of our serializer will now be passed an additional <code>'owner'</code> field, along with the validated data from the request.</p>
-<h2 id="updating-our-serializer">Updating our serializer</h2>
+<h2 id="updating-our-serializer"><a class="toclink" href="#updating-our-serializer">Updating our serializer</a></h2>
 <p>Now that snippets are associated with the user that created them, let's update our <code>SnippetSerializer</code> to reflect that.  Add the following field to the serializer definition in <code>serializers.py</code>:</p>
 <pre><code>owner = serializers.ReadOnlyField(source='owner.username')
 </code></pre>
 <p><strong>Note</strong>: Make sure you also add <code>'owner',</code> to the list of fields in the inner <code>Meta</code> class.</p>
 <p>This field is doing something quite interesting.  The <code>source</code> argument controls which attribute is used to populate a field, and can point at any attribute on the serialized instance.  It can also take the dotted notation shown above, in which case it will traverse the given attributes, in a similar way as it is used with Django's template language.</p>
 <p>The field we've added is the untyped <code>ReadOnlyField</code> class, in contrast to the other typed fields, such as <code>CharField</code>, <code>BooleanField</code> etc...  The untyped <code>ReadOnlyField</code> is always read-only, and will be used for serialized representations, but will not be used for updating model instances when they are deserialized. We could have also used <code>CharField(read_only=True)</code> here.</p>
-<h2 id="adding-required-permissions-to-views">Adding required permissions to views</h2>
+<h2 id="adding-required-permissions-to-views"><a class="toclink" href="#adding-required-permissions-to-views">Adding required permissions to views</a></h2>
 <p>Now that code snippets are associated with users, we want to make sure that only authenticated users are able to create, update and delete code snippets.</p>
 <p>REST framework includes a number of permission classes that we can use to restrict who can access a given view.  In this case the one we're looking for is <code>IsAuthenticatedOrReadOnly</code>, which will ensure that authenticated requests get read-write access, and unauthenticated requests get read-only access.</p>
 <p>First add the following import in the views module</p>
@@ -494,7 +494,7 @@ url(r'^users/(?P&lt;pk&gt;[0-9]+)/$', views.UserDetail.as_view()),
 <p>Then, add the following property to <strong>both</strong> the <code>SnippetList</code> and <code>SnippetDetail</code> view classes.</p>
 <pre><code>permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 </code></pre>
-<h2 id="adding-login-to-the-browsable-api">Adding login to the Browsable API</h2>
+<h2 id="adding-login-to-the-browsable-api"><a class="toclink" href="#adding-login-to-the-browsable-api">Adding login to the Browsable API</a></h2>
 <p>If you open a browser and navigate to the browsable API at the moment, you'll find that you're no longer able to create new code snippets.  In order to do so we'd need to be able to login as a user.</p>
 <p>We can add a login view for use with the browsable API, by editing the URLconf in our project-level <code>urls.py</code> file.</p>
 <p>Add the following import at the top of the file:</p>
@@ -509,7 +509,7 @@ url(r'^users/(?P&lt;pk&gt;[0-9]+)/$', views.UserDetail.as_view()),
 <p>The <code>r'^api-auth/'</code> part of pattern can actually be whatever URL you want to use.  The only restriction is that the included urls must use the <code>'rest_framework'</code> namespace.</p>
 <p>Now if you open up the browser again and refresh the page you'll see a 'Login' link in the top right of the page.  If you log in as one of the users you created earlier, you'll be able to create code snippets again.</p>
 <p>Once you've created a few code snippets, navigate to the '/users/' endpoint, and notice that the representation includes a list of the snippet pks that are associated with each user, in each user's 'snippets' field.</p>
-<h2 id="object-level-permissions">Object level permissions</h2>
+<h2 id="object-level-permissions"><a class="toclink" href="#object-level-permissions">Object level permissions</a></h2>
 <p>Really we'd like all code snippets to be visible to anyone, but also make sure that only the user that created a code snippet is able to update or delete it.</p>
 <p>To do that we're going to need to create a custom permission.</p>
 <p>In the snippets app, create a new file, <code>permissions.py</code></p>
@@ -538,7 +538,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 <pre><code>from snippets.permissions import IsOwnerOrReadOnly
 </code></pre>
 <p>Now, if you open a browser again, you find that the 'DELETE' and 'PUT' actions only appear on a snippet instance endpoint if you're logged in as the same user that created the code snippet.</p>
-<h2 id="authenticating-with-the-api">Authenticating with the API</h2>
+<h2 id="authenticating-with-the-api"><a class="toclink" href="#authenticating-with-the-api">Authenticating with the API</a></h2>
 <p>Because we now have a set of permissions on the API, we need to authenticate our requests to it if we want to edit any snippets.  We haven't set up any <a href="../../api-guide/authentication/">authentication classes</a>, so the defaults are currently applied, which are <code>SessionAuthentication</code> and <code>BasicAuthentication</code>.</p>
 <p>When we interact with the API through the web browser, we can login, and the browser session will then provide the required authentication for the requests.</p>
 <p>If we're interacting with the API programmatically we need to explicitly provide the authentication credentials on each request.</p>
@@ -562,7 +562,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     "style": "friendly"
 }
 </code></pre>
-<h2 id="summary">Summary</h2>
+<h2 id="summary"><a class="toclink" href="#summary">Summary</a></h2>
 <p>We've now got a fairly fine-grained set of permissions on our Web API, and end points for users of the system and for the code snippets that they have created.</p>
 <p>In <a href="../5-relationships-and-hyperlinked-apis/">part 5</a> of the tutorial we'll look at how we can tie everything together by creating an HTML endpoint for our highlighted snippets, and improve the cohesion of our API by using hyperlinking for the relationships within the system.</p>
             

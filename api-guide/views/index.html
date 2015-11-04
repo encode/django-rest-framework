@@ -397,7 +397,7 @@
                 
               
 
-              <h1 id="class-based-views">Class Based Views</h1>
+              <h1 id="class-based-views"><a class="toclink" href="#class-based-views">Class Based Views</a></h1>
 <blockquote>
 <p>Django's class based views are a welcome departure from the old-style views.</p>
 <p>&mdash; <a href="http://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html">Reinout van Rees</a></p>
@@ -433,52 +433,52 @@ class ListUsers(APIView):
         usernames = [user.username for user in User.objects.all()]
         return Response(usernames)
 </code></pre>
-<h2 id="api-policy-attributes">API policy attributes</h2>
+<h2 id="api-policy-attributes"><a class="toclink" href="#api-policy-attributes">API policy attributes</a></h2>
 <p>The following attributes control the pluggable aspects of API views.</p>
-<h3 id="renderer_classes">.renderer_classes</h3>
-<h3 id="parser_classes">.parser_classes</h3>
-<h3 id="authentication_classes">.authentication_classes</h3>
-<h3 id="throttle_classes">.throttle_classes</h3>
-<h3 id="permission_classes">.permission_classes</h3>
-<h3 id="content_negotiation_class">.content_negotiation_class</h3>
-<h2 id="api-policy-instantiation-methods">API policy instantiation methods</h2>
+<h3 id="renderer_classes"><a class="toclink" href="#renderer_classes">.renderer_classes</a></h3>
+<h3 id="parser_classes"><a class="toclink" href="#parser_classes">.parser_classes</a></h3>
+<h3 id="authentication_classes"><a class="toclink" href="#authentication_classes">.authentication_classes</a></h3>
+<h3 id="throttle_classes"><a class="toclink" href="#throttle_classes">.throttle_classes</a></h3>
+<h3 id="permission_classes"><a class="toclink" href="#permission_classes">.permission_classes</a></h3>
+<h3 id="content_negotiation_class"><a class="toclink" href="#content_negotiation_class">.content_negotiation_class</a></h3>
+<h2 id="api-policy-instantiation-methods"><a class="toclink" href="#api-policy-instantiation-methods">API policy instantiation methods</a></h2>
 <p>The following methods are used by REST framework to instantiate the various pluggable API policies.  You won't typically need to override these methods.</p>
-<h3 id="get_renderersself">.get_renderers(self)</h3>
-<h3 id="get_parsersself">.get_parsers(self)</h3>
-<h3 id="get_authenticatorsself">.get_authenticators(self)</h3>
-<h3 id="get_throttlesself">.get_throttles(self)</h3>
-<h3 id="get_permissionsself">.get_permissions(self)</h3>
-<h3 id="get_content_negotiatorself">.get_content_negotiator(self)</h3>
-<h2 id="api-policy-implementation-methods">API policy implementation methods</h2>
+<h3 id="get_renderersself"><a class="toclink" href="#get_renderersself">.get_renderers(self)</a></h3>
+<h3 id="get_parsersself"><a class="toclink" href="#get_parsersself">.get_parsers(self)</a></h3>
+<h3 id="get_authenticatorsself"><a class="toclink" href="#get_authenticatorsself">.get_authenticators(self)</a></h3>
+<h3 id="get_throttlesself"><a class="toclink" href="#get_throttlesself">.get_throttles(self)</a></h3>
+<h3 id="get_permissionsself"><a class="toclink" href="#get_permissionsself">.get_permissions(self)</a></h3>
+<h3 id="get_content_negotiatorself"><a class="toclink" href="#get_content_negotiatorself">.get_content_negotiator(self)</a></h3>
+<h2 id="api-policy-implementation-methods"><a class="toclink" href="#api-policy-implementation-methods">API policy implementation methods</a></h2>
 <p>The following methods are called before dispatching to the handler method.</p>
-<h3 id="check_permissionsself-request">.check_permissions(self, request)</h3>
-<h3 id="check_throttlesself-request">.check_throttles(self, request)</h3>
-<h3 id="perform_content_negotiationself-request-forcefalse">.perform_content_negotiation(self, request, force=False)</h3>
-<h2 id="dispatch-methods">Dispatch methods</h2>
+<h3 id="check_permissionsself-request"><a class="toclink" href="#check_permissionsself-request">.check_permissions(self, request)</a></h3>
+<h3 id="check_throttlesself-request"><a class="toclink" href="#check_throttlesself-request">.check_throttles(self, request)</a></h3>
+<h3 id="perform_content_negotiationself-request-forcefalse"><a class="toclink" href="#perform_content_negotiationself-request-forcefalse">.perform_content_negotiation(self, request, force=False)</a></h3>
+<h2 id="dispatch-methods"><a class="toclink" href="#dispatch-methods">Dispatch methods</a></h2>
 <p>The following methods are called directly by the view's <code>.dispatch()</code> method.
 These perform any actions that need to occur before or after calling the handler methods such as <code>.get()</code>, <code>.post()</code>, <code>put()</code>, <code>patch()</code> and <code>.delete()</code>.</p>
-<h3 id="initialself-request-42args-kwargs">.initial(self, request, *args, **kwargs)</h3>
+<h3 id="initialself-request-42args-kwargs"><a class="toclink" href="#initialself-request-42args-kwargs">.initial(self, request, *args, **kwargs)</a></h3>
 <p>Performs any actions that need to occur before the handler method gets called.
 This method is used to enforce permissions and throttling, and perform content negotiation.</p>
 <p>You won't typically need to override this method.</p>
-<h3 id="handle_exceptionself-exc">.handle_exception(self, exc)</h3>
+<h3 id="handle_exceptionself-exc"><a class="toclink" href="#handle_exceptionself-exc">.handle_exception(self, exc)</a></h3>
 <p>Any exception thrown by the handler method will be passed to this method, which either returns a <code>Response</code> instance, or re-raises the exception.</p>
 <p>The default implementation handles any subclass of <code>rest_framework.exceptions.APIException</code>, as well as Django's <code>Http404</code> and <code>PermissionDenied</code> exceptions, and returns an appropriate error response.</p>
 <p>If you need to customize the error responses your API returns you should subclass this method.</p>
-<h3 id="initialize_requestself-request-42args-kwargs">.initialize_request(self, request, *args, **kwargs)</h3>
+<h3 id="initialize_requestself-request-42args-kwargs"><a class="toclink" href="#initialize_requestself-request-42args-kwargs">.initialize_request(self, request, *args, **kwargs)</a></h3>
 <p>Ensures that the request object that is passed to the handler method is an instance of <code>Request</code>, rather than the usual Django <code>HttpRequest</code>.</p>
 <p>You won't typically need to override this method.</p>
-<h3 id="finalize_responseself-request-response-42args-kwargs">.finalize_response(self, request, response, *args, **kwargs)</h3>
+<h3 id="finalize_responseself-request-response-42args-kwargs"><a class="toclink" href="#finalize_responseself-request-response-42args-kwargs">.finalize_response(self, request, response, *args, **kwargs)</a></h3>
 <p>Ensures that any <code>Response</code> object returned from the handler method will be rendered into the correct content type, as determined by the content negotiation.</p>
 <p>You won't typically need to override this method.</p>
 <hr />
-<h1 id="function-based-views">Function Based Views</h1>
+<h1 id="function-based-views"><a class="toclink" href="#function-based-views">Function Based Views</a></h1>
 <blockquote>
 <p>Saying [that Class based views] is always the superior solution is a mistake.</p>
 <p>&mdash; <a href="http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html">Nick Coghlan</a></p>
 </blockquote>
 <p>REST framework also allows you to work with regular function based views.  It provides a set of simple decorators that wrap your function based views to ensure they receive an instance of <code>Request</code> (rather than the usual Django <code>HttpRequest</code>) and allows them to return a <code>Response</code> (instead of a Django <code>HttpResponse</code>), and allow you to configure how the request is processed.</p>
-<h2 id="api_view">@api_view()</h2>
+<h2 id="api_view"><a class="toclink" href="#api_view">@api_view()</a></h2>
 <p><strong>Signature:</strong> <code>@api_view(http_method_names=['GET'])</code></p>
 <p>The core of this functionality is the <code>api_view</code> decorator, which takes a list of HTTP methods that your view should respond to. For example, this is how you would write a very simple view that just manually returns some data:</p>
 <pre><code>from rest_framework.decorators import api_view
@@ -495,7 +495,7 @@ def hello_world(request):
         return Response({"message": "Got some data!", "data": request.data})
     return Response({"message": "Hello, world!"})
 </code></pre>
-<h2 id="api-policy-decorators">API policy decorators</h2>
+<h2 id="api-policy-decorators"><a class="toclink" href="#api-policy-decorators">API policy decorators</a></h2>
 <p>To override the default settings, REST framework provides a set of additional decorators which can be added to your views.  These must come <em>after</em> (below) the <code>@api_view</code> decorator.  For example, to create a view that uses a <a href="../throttling/">throttle</a> to ensure it can only be called once per day by a particular user, use the <code>@throttle_classes</code> decorator, passing a list of throttle classes:</p>
 <pre><code>from rest_framework.decorators import api_view, throttle_classes
 from rest_framework.throttling import UserRateThrottle

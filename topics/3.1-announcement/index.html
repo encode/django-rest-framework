@@ -389,7 +389,7 @@
             
               
 
-              <h1 id="django-rest-framework-31">Django REST framework 3.1</h1>
+              <h1 id="django-rest-framework-31"><a class="toclink" href="#django-rest-framework-31">Django REST framework 3.1</a></h1>
 <p>The 3.1 release is an intermediate step in the Kickstarter project releases, and includes a range of new functionality.</p>
 <p>Some highlights include:</p>
 <ul>
@@ -401,7 +401,7 @@
 <li>Support for Django 1.8's <code>HStoreField</code> and <code>ArrayField</code>.</li>
 </ul>
 <hr />
-<h2 id="pagination">Pagination</h2>
+<h2 id="pagination"><a class="toclink" href="#pagination">Pagination</a></h2>
 <p>The pagination API has been improved, making it both easier to use, and more powerful.</p>
 <p>A guide to the headline features follows. For full details, see <a href="../../api-guide/pagination/">the pagination documentation</a>.</p>
 <p>Note that as a result of this work a number of settings keys and generic view attributes are now moved to pending deprecation. Controlling pagination styles is now largely handled by overriding a pagination class and modifying its configuration attributes.</p>
@@ -411,19 +411,19 @@
 <li>The <code>paginate_by</code>, <code>page_query_param</code>, <code>paginate_by_param</code> and <code>max_paginate_by</code> generic view attributes will continue to work but are now pending deprecation, in favor of setting configuration attributes on the configured pagination class.</li>
 <li>The <code>pagination_serializer_class</code> view attribute and <code>DEFAULT_PAGINATION_SERIALIZER_CLASS</code> settings key <strong>are no longer valid</strong>. The pagination API does not use serializers to determine the output format, and you'll need to instead override the <code>get_paginated_response</code> method on a pagination class in order to specify how the output format is controlled.</li>
 </ul>
-<h4 id="new-pagination-schemes">New pagination schemes.</h4>
+<h4 id="new-pagination-schemes"><a class="toclink" href="#new-pagination-schemes">New pagination schemes.</a></h4>
 <p>Until now, there has only been a single built-in pagination style in REST framework. We now have page, limit/offset and cursor based schemes included by default.</p>
 <p>The cursor based pagination scheme is particularly smart, and is a better approach for clients iterating through large or frequently changing result sets. The scheme supports paging against non-unique indexes, by using both cursor and limit/offset information. It also allows for both forward and reverse cursor pagination. Much credit goes to David Cramer for <a href="http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api/">this blog post</a> on the subject.</p>
-<h4 id="pagination-controls-in-the-browsable-api">Pagination controls in the browsable API.</h4>
+<h4 id="pagination-controls-in-the-browsable-api"><a class="toclink" href="#pagination-controls-in-the-browsable-api">Pagination controls in the browsable API.</a></h4>
 <p>Paginated results now include controls that render directly in the browsable API. If you're using the page or limit/offset style, then you'll see a page based control displayed in the browsable API:</p>
 <p><img alt="page number based pagination" src="../../img/pages-pagination.png" /></p>
 <p>The cursor based pagination renders a more simple style of control:</p>
 <p><img alt="cursor based pagination" src="../../img/cursor-pagination.png" /></p>
-<h4 id="support-for-header-based-pagination">Support for header-based pagination.</h4>
+<h4 id="support-for-header-based-pagination"><a class="toclink" href="#support-for-header-based-pagination">Support for header-based pagination.</a></h4>
 <p>The pagination API was previously only able to alter the pagination style in the body of the response. The API now supports being able to write pagination information in response headers, making it possible to use pagination schemes that use the <code>Link</code> or <code>Content-Range</code> headers.</p>
 <p>For more information, see the <a href="../../api-guide/pagination/#custom-pagination-styles">custom pagination styles</a> documentation.</p>
 <hr />
-<h2 id="versioning">Versioning</h2>
+<h2 id="versioning"><a class="toclink" href="#versioning">Versioning</a></h2>
 <p>We've made it <a href="../../api-guide/versioning/">easier to build versioned APIs</a>. Built-in schemes for versioning include both URL based and Accept header based variations.</p>
 <p>When using a URL based scheme, hyperlinked serializers will resolve relationships to the same API version as used on the incoming request.</p>
 <p>For example, when using <code>NamespaceVersioning</code>, and the following hyperlinked serializer:</p>
@@ -445,7 +445,7 @@
 }
 </code></pre>
 <hr />
-<h2 id="internationalization">Internationalization</h2>
+<h2 id="internationalization"><a class="toclink" href="#internationalization">Internationalization</a></h2>
 <p>REST framework now includes a built-in set of translations, and <a href="../internationalization/">supports internationalized error responses</a>. This allows you to either change the default language, or to allow clients to specify the language via the <code>Accept-Language</code> header.</p>
 <p>You can change the default language by using the standard Django <code>LANGUAGE_CODE</code> setting:</p>
 <pre><code>LANGUAGE_CODE = "es-es"
@@ -482,18 +482,18 @@ Host: example.org
 <p>For more details, see the <a href="../internationalization/">internationalization documentation</a>.</p>
 <p>Many thanks to <a href="https://github.com/jakul">Craig Blaszczyk</a> for helping push this through.</p>
 <hr />
-<h2 id="new-field-types">New field types</h2>
+<h2 id="new-field-types"><a class="toclink" href="#new-field-types">New field types</a></h2>
 <p>Django 1.8's new <code>ArrayField</code>, <code>HStoreField</code> and <code>UUIDField</code> are now all fully supported.</p>
 <p>This work also means that we now have both <code>serializers.DictField()</code>, and <code>serializers.ListField()</code> types, allowing you to express and validate a wider set of representations.</p>
 <p>If you're building a new 1.8 project, then you should probably consider using <code>UUIDField</code> as the primary keys for all your models. This style will work automatically with hyperlinked serializers, returning URLs in the following style:</p>
 <pre><code>http://example.org/api/purchases/9b1a433f-e90d-4948-848b-300fdc26365d
 </code></pre>
 <hr />
-<h2 id="modelserializer-api">ModelSerializer API</h2>
+<h2 id="modelserializer-api"><a class="toclink" href="#modelserializer-api">ModelSerializer API</a></h2>
 <p>The serializer redesign in 3.0 did not include any public API for modifying how ModelSerializer classes automatically generate a set of fields from a given mode class. We've now re-introduced an API for this, allowing you to create new ModelSerializer base classes that behave differently, such as using a different default style for relationships.</p>
 <p>For more information, see the documentation on <a href="../../api-guide/serializers/#customizing-field-mappings">customizing field mappings</a> for ModelSerializer classes.</p>
 <hr />
-<h2 id="moving-packages-out-of-core">Moving packages out of core</h2>
+<h2 id="moving-packages-out-of-core"><a class="toclink" href="#moving-packages-out-of-core">Moving packages out of core</a></h2>
 <p>We've now moved a number of packages out of the core of REST framework, and into separately installable packages. If you're currently using these you don't need to worry, you simply need to <code>pip install</code> the new packages, and change any import paths.</p>
 <p>We're making this change in order to help distribute the maintainance workload, and keep better focus of the core essentials of the framework.</p>
 <p>The change also means we can be more flexible with which external packages we recommend. For example, the excellently maintained <a href="https://github.com/evonove/django-oauth-toolkit">Django OAuth toolkit</a> has now been promoted as our recommended option for integrating OAuth support.</p>
@@ -518,12 +518,12 @@ Host: example.org
 </code></pre>
 <p>Thanks go to the latest member of our maintenance team, <a href="https://github.com/jpadilla/">José Padilla</a>, for handling this work and taking on ownership of these packages.</p>
 <hr />
-<h2 id="deprecations">Deprecations</h2>
+<h2 id="deprecations"><a class="toclink" href="#deprecations">Deprecations</a></h2>
 <p>The <code>request.DATA</code>, <code>request.FILES</code> and <code>request.QUERY_PARAMS</code> attributes move from pending deprecation, to deprecated. Use <code>request.data</code> and <code>request.query_params</code> instead, as discussed in the 3.0 release notes.</p>
 <p>The ModelSerializer Meta options for <code>write_only_fields</code>, <code>view_name</code> and <code>lookup_field</code> are also moved from pending deprecation, to deprecated. Use <code>extra_kwargs</code> instead, as discussed in the 3.0 release notes.</p>
 <p>All these attributes and options will still work in 3.1, but their usage will raise a warning. They will be fully removed in 3.2.</p>
 <hr />
-<h2 id="whats-next">What's next?</h2>
+<h2 id="whats-next"><a class="toclink" href="#whats-next">What's next?</a></h2>
 <p>The next focus will be on HTML renderings of API output and will include:</p>
 <ul>
 <li>HTML form rendering of serializers.</li>

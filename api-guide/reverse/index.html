@@ -371,7 +371,7 @@
                 
               
 
-              <h1 id="returning-urls">Returning URLs</h1>
+              <h1 id="returning-urls"><a class="toclink" href="#returning-urls">Returning URLs</a></h1>
 <blockquote>
 <p>The central feature that distinguishes the REST architectural style from other network-based styles is its emphasis on a uniform interface between components.</p>
 <p>&mdash; Roy Fielding, <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Architectural Styles and the Design of Network-based Software Architectures</a></p>
@@ -386,7 +386,7 @@
 </ul>
 <p>REST framework provides two utility functions to make it more simple to return absolute URIs from your Web API.</p>
 <p>There's no requirement for you to use them, but if you do then the self-describing API will be able to automatically hyperlink its output for you, which makes browsing the API much easier.</p>
-<h2 id="reverse">reverse</h2>
+<h2 id="reverse"><a class="toclink" href="#reverse">reverse</a></h2>
 <p><strong>Signature:</strong> <code>reverse(viewname, *args, **kwargs)</code></p>
 <p>Has the same behavior as <a href="https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse"><code>django.core.urlresolvers.reverse</code></a>, except that it returns a fully qualified URL, using the request to determine the host and port.</p>
 <p>You should <strong>include the request as a keyword argument</strong> to the function, for example:</p>
@@ -403,7 +403,7 @@ class APIRootView(APIView):
         }
         return Response(data)
 </code></pre>
-<h2 id="reverse_lazy">reverse_lazy</h2>
+<h2 id="reverse_lazy"><a class="toclink" href="#reverse_lazy">reverse_lazy</a></h2>
 <p><strong>Signature:</strong> <code>reverse_lazy(viewname, *args, **kwargs)</code></p>
 <p>Has the same behavior as <a href="https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse-lazy"><code>django.core.urlresolvers.reverse_lazy</code></a>, except that it returns a fully qualified URL, using the request to determine the host and port.</p>
 <p>As with the <code>reverse</code> function, you should <strong>include the request as a keyword argument</strong> to the function, for example:</p>
