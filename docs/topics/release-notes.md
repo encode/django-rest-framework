@@ -40,6 +40,16 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.3.x series
 
+### 3.3.1
+
+**Date**: [4th November 2015][3.3.1-milestone].
+
+* Resolve parsing bug when accessing `request.POST` ([#3592][gh3592])
+* Correctly deal with `to_field` referring to primary key. ([#3593][gh3593])
+* Allow filter HTML to render when no `filter_class` is defined. ([#3560][gh3560])
+* Fix admin rendering issues. ([#3564][gh3564], [#3556][gh3556])
+* Fix issue with DecimalValidator. ([#3568][gh3568])
+
 ### 3.3.0
 
 **Date**: [28th October 2015][3.3.0-milestone].
@@ -336,6 +346,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.2.4-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.4+Release%22
 [3.2.5-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.5+Release%22
 [3.3.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.0+Release%22
+[3.3.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.1+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -578,3 +589,10 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh3429]: https://github.com/tomchristie/django-rest-framework/issues/3429
 [gh3536]: https://github.com/tomchristie/django-rest-framework/issues/3536
 
+<!-- 3.3.1 -->
+[gh3556]: https://github.com/tomchristie/django-rest-framework/issues/3556
+[gh3560]: https://github.com/tomchristie/django-rest-framework/issues/3560
+[gh3564]: https://github.com/tomchristie/django-rest-framework/issues/3564
+[gh3568]: https://github.com/tomchristie/django-rest-framework/issues/3568
+[gh3592]: https://github.com/tomchristie/django-rest-framework/issues/3592
+[gh3593]: https://github.com/tomchristie/django-rest-framework/issues/3593
