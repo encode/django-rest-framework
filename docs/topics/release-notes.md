@@ -42,7 +42,7 @@ You can determine your currently installed version using `pip freeze`:
 
 ### 3.3.0
 
-**Date**: [27th October 2015][3.3.0-milestone]
+**Date**: [28th October 2015][3.3.0-milestone].
 
 * HTML controls for filters. ([#3315][gh3315])
 * Forms API. ([#3475][gh3475])
@@ -58,11 +58,17 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.2.x series
 
+### 3.2.5
+
+**Date**: [27th October 2015][3.2.5-milestone].
+
+* Escape `username` in optional logout tag. ([#3550][gh3550])
+
 ### 3.2.4
 
 **Date**: [21th September 2015][3.2.4-milestone].
 
-* Don't error on missing `ViewSet.search_fields` attribute.([#3324][gh3324], [#3323][gh3323])
+* Don't error on missing `ViewSet.search_fields` attribute. ([#3324][gh3324], [#3323][gh3323])
 * Fix `allow_empty` not working on serializers with `many=True`. ([#3361][gh3361], [#3364][gh3364])
 * Let `DurationField` accepts integers. ([#3359][gh3359])
 * Multi-level dictionaries not supported in multipart requests. ([#3314][gh3314])
@@ -328,6 +334,8 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.2.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.2+Release%22
 [3.2.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.3+Release%22
 [3.2.4-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.4+Release%22
+[3.2.5-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.5+Release%22
+[3.3.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.0+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -551,6 +559,9 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh3361]: https://github.com/tomchristie/django-rest-framework/issues/3361
 [gh3364]: https://github.com/tomchristie/django-rest-framework/issues/3364
 [gh3415]: https://github.com/tomchristie/django-rest-framework/issues/3415
+
+<!-- 3.2.5 -->
+[gh3550]:https://github.com/tomchristie/django-rest-framework/issues/3550
 
 <!-- 3.3.0 -->
 [gh3315]: https://github.com/tomchristie/django-rest-framework/issues/3315
