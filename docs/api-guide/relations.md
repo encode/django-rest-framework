@@ -407,7 +407,7 @@ In this case we'd need to override `HyperlinkedRelatedField` to get the behavior
                 'organization_slug': obj.organization.slug,
                 'customer_pk': obj.pk
             }
-            return reverse(view_name, url_kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
 
         def get_object(self, view_name, view_args, view_kwargs):
             lookup_kwargs = {
