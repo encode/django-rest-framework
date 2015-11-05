@@ -159,8 +159,15 @@ try:
         of '#' style headers to <h2>.
         """
 
-        extensions = ['markdown.extensions.headerid(level=2)']
-        md = markdown.Markdown(extensions=extensions)
+        extensions = ['markdown.extensions.headerid']
+        extension_configs = {
+            'markdown.extensions.headerid': {
+                'level': '2'
+            }
+        }
+        md = markdown.Markdown(
+            extensions=extensions, extension_configs=extension_configs
+        )
         return md.convert(text)
 except ImportError:
     apply_markdown = None
