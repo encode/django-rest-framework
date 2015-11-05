@@ -62,10 +62,6 @@ class RelatedField(Field):
         self.queryset = kwargs.pop('queryset', self.queryset)
         self.html_cutoff = kwargs.pop('html_cutoff', self.html_cutoff)
         self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
-        assert self.queryset is not None or kwargs.get('read_only', None), (
-            'Relational field must provide a `queryset` argument, '
-            'or set read_only=`True`.'
-        )
         assert not (self.queryset is not None and kwargs.get('read_only', None)), (
             'Relational fields should not provide a `queryset` argument, '
             'when setting read_only=`True`.'
@@ -112,6 +108,10 @@ class RelatedField(Field):
 
     def get_queryset(self):
         queryset = self.queryset
+        assert queryset is not None, (
+            'Relational field must provide a `queryset` argument, '
+            'or set read_only=`True`.'
+        )
         if isinstance(queryset, (QuerySet, Manager)):
             # Ensure queryset is re-evaluated whenever used.
             # Note that actually a `Manager` class may also be used as the
