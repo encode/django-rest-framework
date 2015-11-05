@@ -572,7 +572,7 @@ Let's look at an example of serializing a class that represents an RGB color val
 
 By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override `.get_attribute()` and/or `.get_value()`.
 
-As an example, let's create a field that can be used represent the class name of the object being serialized:
+As an example, let's create a field that can be used to represent the class name of the object being serialized:
 
     class ClassNameField(serializers.Field):
         def get_attribute(self, obj):
