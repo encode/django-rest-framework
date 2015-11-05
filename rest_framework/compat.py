@@ -160,8 +160,7 @@ try:
         """
 
         extensions = ['headerid(level=2)']
-        safe_mode = False
-        md = markdown.Markdown(extensions=extensions, safe_mode=safe_mode)
+        md = markdown.Markdown(extensions=extensions)
         return md.convert(text)
 except ImportError:
     apply_markdown = None
