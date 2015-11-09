@@ -93,5 +93,12 @@ class DefaultContentNegotiation(BaseContentNegotiation):
         Given the incoming request, return a tokenised list of media
         type strings.
         """
-        header = request.META.get('HTTP_ACCEPT', '*/*')
+        header = request.META.get('HTTP_ACCEPT')
+        if not header:
+            if 'headers' in request.META.keys():
+                header = request.META['headers'].get('Accept', '*/*')
+            else:
+                header = '*/*'
+
+        header = request.query_params.get(self.settings.URL_ACCEPT_OVERRIDE, header)
         return [token.strip() for token in header.split(',')]
