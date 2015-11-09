@@ -100,5 +100,4 @@ class DefaultContentNegotiation(BaseContentNegotiation):
             else:
                 header = '*/*'
 
-        header = request.query_params.get(self.settings.URL_ACCEPT_OVERRIDE, header)
         return [token.strip() for token in header.split(',')]
