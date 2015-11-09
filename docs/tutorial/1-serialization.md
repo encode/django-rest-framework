@@ -283,7 +283,7 @@ We'll also need a view which corresponds to an individual snippet, and can be us
             serializer = SnippetSerializer(snippet, data=data)
             if serializer.is_valid():
                 serializer.save()
-                return JSONResponse(serializer.data)
+                return JSONResponse(serializer.data, status=201)
             return JSONResponse(serializer.errors, status=400)
 
         elif request.method == 'DELETE':
