@@ -28,7 +28,7 @@ Deprecations are marked using `rest_framework.compat.deprecated`, which accepts 
 
     from rest_framework.compat import deprecated
     ...
-    deprecated((3,1,0), "Using X for Y is deprecated. Prefer Z")
+    deprecated((3, 1), "Using X for Y is deprecated. Prefer Z")
 
 Note that in line with Django's policy, any parts of the framework not mentioned in the documentation should generally be considered private API, and may be subject to change.
 
