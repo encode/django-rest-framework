@@ -1,5 +1,6 @@
 {% load staticfiles %}
 {% load rest_framework %}
+{% load i18n %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -105,6 +106,13 @@
           </form>
         {% endif %}
 
+        {% if filter_form %}
+            <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
+                <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+                {% trans "Filters" %}
+            </button>
+        {% endif %}
+
           <div class="content-main">
             <div class="page-header">
                 <h1>{{ name }}</h1>
@@ -154,6 +162,7 @@
                       {% with form=post_form %}
                         <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
                           <fieldset>
+                            {% csrf_token %}
                             {{ post_form }}
                             <div class="form-actions">
                               <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
@@ -245,6 +254,11 @@
         });
     </script>
   {% endblock %}
+
+  {% if filter_form %}
+  {{ filter_form }}
+  {% endif %}
+
 </body>
 {% endblock %}
 </html>

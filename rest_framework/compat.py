@@ -107,6 +107,26 @@ try:
 except ImportError:
     django_filters = None
 
+
+# django-crispy-forms is optional
+try:
+    import crispy_forms
+except ImportError:
+    crispy_forms = None
+
+
+if django.VERSION >= (1, 6):
+    def clean_manytomany_helptext(text):
+        return text
+else:
+    # Up to version 1.5 many to many fields automatically suffix
+    # the `help_text` attribute with hardcoded text.
+    def clean_manytomany_helptext(text):
+        if text.endswith(' Hold down "Control", or "Command" on a Mac, to select more than one.'):
+            text = text[:-69]
+        return text
+
+
 # Django-guardian is optional. Import only if guardian is in INSTALLED_APPS
 # Fixes (#1712). We keep the try/except for the test suite.
 guardian = None
@@ -195,6 +215,11 @@ if django.VERSION >= (1, 8):
 else:
     DurationField = duration_string = parse_duration = None
 
+try:
+    # DecimalValidator is unavailable in Django < 1.9
+    from django.core.validators import DecimalValidator
+except ImportError:
+    DecimalValidator = None
 
 def set_rollback():
     if hasattr(transaction, 'set_rollback'):

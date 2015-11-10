@@ -46,19 +46,45 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.3.x series
 
+### 3.3.1
+
+**Date**: [4th November 2015][3.3.1-milestone].
+
+* Resolve parsing bug when accessing `request.POST` ([#3592][gh3592])
+* Correctly deal with `to_field` referring to primary key. ([#3593][gh3593])
+* Allow filter HTML to render when no `filter_class` is defined. ([#3560][gh3560])
+* Fix admin rendering issues. ([#3564][gh3564], [#3556][gh3556])
+* Fix issue with DecimalValidator. ([#3568][gh3568])
+
 ### 3.3.0
 
-**Date**: NOT YET RELEASED
+**Date**: [28th October 2015][3.3.0-milestone].
 
-* Removed support for Django Versions 1.5 & 1.6 ([#3421][gh3421], [#3429][gh3429])
+* HTML controls for filters. ([#3315][gh3315])
+* Forms API. ([#3475][gh3475])
+* AJAX browsable API. ([#3410][gh3410])
+* Added JSONField. ([#3454][gh3454])
+* Correctly map `to_field` when creating `ModelSerializer` relational fields. ([#3526][gh3526])
+* Include keyword arguments when mapping `FilePathField` to a serializer field. ([#3536][gh3536])
+* Map appropriate model `error_messages` on `ModelSerializer` uniqueness constraints. ([#3435][gh3435])
+* Include `max_length` constraint for `ModelSerializer` fields mapped from TextField. ([#3509][gh3509])
+* Added support for Django 1.9. ([#3450][gh3450], [#3525][gh3525])
+* Removed support for Django 1.5 & 1.6. ([#3421][gh3421], [#3429][gh3429])
+* Removed 'south' migrations. ([#3495][gh3495])
 
 ## 3.2.x series
+
+### 3.2.5
+
+**Date**: [27th October 2015][3.2.5-milestone].
+
+* Escape `username` in optional logout tag. ([#3550][gh3550])
 
 ### 3.2.4
 
 **Date**: [21th September 2015][3.2.4-milestone].
 
-* Don't error on missing `ViewSet.search_fields` attribute.([#3324][gh3324], [#3323][gh3323])
+* Don't error on missing `ViewSet.search_fields` attribute. ([#3324][gh3324], [#3323][gh3323])
 * Fix `allow_empty` not working on serializers with `many=True`. ([#3361][gh3361], [#3364][gh3364])
 * Let `DurationField` accepts integers. ([#3359][gh3359])
 * Multi-level dictionaries not supported in multipart requests. ([#3314][gh3314])
@@ -324,6 +350,9 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.2.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.2+Release%22
 [3.2.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.3+Release%22
 [3.2.4-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.4+Release%22
+[3.2.5-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.5+Release%22
+[3.3.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.0+Release%22
+[3.3.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.1+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -548,6 +577,28 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh3364]: https://github.com/tomchristie/django-rest-framework/issues/3364
 [gh3415]: https://github.com/tomchristie/django-rest-framework/issues/3415
 
+<!-- 3.2.5 -->
+[gh3550]:https://github.com/tomchristie/django-rest-framework/issues/3550
+
 <!-- 3.3.0 -->
-[gh3421]: https://github.com/tomchristie/django-rest-framework/pulls/3421
-[gh3429]: https://github.com/tomchristie/django-rest-framework/pull/3429
+[gh3315]: https://github.com/tomchristie/django-rest-framework/issues/3315
+[gh3410]: https://github.com/tomchristie/django-rest-framework/issues/3410
+[gh3435]: https://github.com/tomchristie/django-rest-framework/issues/3435
+[gh3450]: https://github.com/tomchristie/django-rest-framework/issues/3450
+[gh3454]: https://github.com/tomchristie/django-rest-framework/issues/3454
+[gh3475]: https://github.com/tomchristie/django-rest-framework/issues/3475
+[gh3495]: https://github.com/tomchristie/django-rest-framework/issues/3495
+[gh3509]: https://github.com/tomchristie/django-rest-framework/issues/3509
+[gh3421]: https://github.com/tomchristie/django-rest-framework/issues/3421
+[gh3525]: https://github.com/tomchristie/django-rest-framework/issues/3525
+[gh3526]: https://github.com/tomchristie/django-rest-framework/issues/3526
+[gh3429]: https://github.com/tomchristie/django-rest-framework/issues/3429
+[gh3536]: https://github.com/tomchristie/django-rest-framework/issues/3536
+
+<!-- 3.3.1 -->
+[gh3556]: https://github.com/tomchristie/django-rest-framework/issues/3556
+[gh3560]: https://github.com/tomchristie/django-rest-framework/issues/3560
+[gh3564]: https://github.com/tomchristie/django-rest-framework/issues/3564
+[gh3568]: https://github.com/tomchristie/django-rest-framework/issues/3568
+[gh3592]: https://github.com/tomchristie/django-rest-framework/issues/3592
+[gh3593]: https://github.com/tomchristie/django-rest-framework/issues/3593
