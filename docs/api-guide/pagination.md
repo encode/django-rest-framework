@@ -17,6 +17,8 @@ The built-in styles currently all use links included as part of the content of t
 
 Pagination is only performed automatically if you're using the generic views or viewsets. If you're using a regular `APIView`, you'll need to call into the pagination API yourself to ensure you return a paginated response. See the source code for the `mixins.ListModelMixin` and `generics.GenericAPIView` classes for an example.
 
+Pagination can be turned off by setting the pagination class to `None`.
+
 ## Setting the pagination style
 
 The default pagination style may be set globally, using the `DEFAULT_PAGINATION_CLASS` settings key. For example, to use the built-in limit/offset pagination, you would do:
