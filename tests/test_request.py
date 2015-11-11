@@ -186,7 +186,10 @@ class TestUserSetter(TestCase):
         try:
             self.request.user
         except AttributeError as error:
-            self.assertEqual(str(error), "'module' object has no attribute 'MISSPELLED_NAME_THAT_DOESNT_EXIST'")
+            assert str(error) in (
+                "'module' object has no attribute 'MISSPELLED_NAME_THAT_DOESNT_EXIST'",  # Python < 3.5
+                "module 'rest_framework' has no attribute 'MISSPELLED_NAME_THAT_DOESNT_EXIST'",  # Python >= 3.5
+            )
         else:
             assert False, 'AttributeError not raised'
 
