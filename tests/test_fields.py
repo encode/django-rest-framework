@@ -1437,7 +1437,8 @@ class TestListField(FieldValues):
     ]
     invalid_inputs = [
         ('not a list', ['Expected a list of items but got type "str".']),
-        ([1, 2, 'error'], ['A valid integer is required.'])
+        ([1, 2, 'error'], ['A valid integer is required.']),
+        ({'one': 'two'}, ['Expected a list of items but got type "dict".'])
     ]
     outputs = [
         ([1, 2, 3], [1, 2, 3]),
@@ -1453,6 +1454,14 @@ class TestListField(FieldValues):
             "The `source` argument is not meaningful when applied to a `child=` field. "
             "Remove `source=` from the field declaration."
         )
+
+    def test_collection_types_are_invalid_input(self):
+        field = serializers.ListField(child=serializers.CharField())
+        input_value = ({'one': 'two'})
+
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.to_internal_value(input_value)
+        assert exc_info.value.detail == [u'Expected a list of items but got type "dict".']
 
 
 class TestEmptyListField(FieldValues):
