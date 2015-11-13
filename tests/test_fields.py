@@ -1461,7 +1461,7 @@ class TestListField(FieldValues):
 
         with pytest.raises(serializers.ValidationError) as exc_info:
             field.to_internal_value(input_value)
-        assert exc_info.value.detail == [u'Expected a list of items but got type "dict".']
+        assert exc_info.value.detail == ['Expected a list of items but got type "dict".']
 
 
 class TestEmptyListField(FieldValues):
