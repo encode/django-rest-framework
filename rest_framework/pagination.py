@@ -168,6 +168,8 @@ class PageNumberPagination(BasePagination):
     # Defaults to `None`, meaning pagination is disabled.
     page_size = api_settings.PAGE_SIZE
 
+    django_paginator_class = DjangoPaginator
+
     # Client can control the page using this query parameter.
     page_query_param = 'page'
 
@@ -194,7 +196,7 @@ class PageNumberPagination(BasePagination):
         if not page_size:
             return None
 
-        paginator = DjangoPaginator(queryset, page_size)
+        paginator = self.django_paginator_class(queryset, page_size)
         page_number = request.query_params.get(self.page_query_param, 1)
         if page_number in self.last_page_strings:
             page_number = paginator.num_pages

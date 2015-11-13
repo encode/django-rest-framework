@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import pytest
+from django.core.paginator import Paginator as DjangoPaginator
 
 from rest_framework import (
     exceptions, filters, generics, pagination, serializers, status
@@ -242,6 +243,64 @@ class TestPageNumberPagination:
                 PageLink('http://testserver/?page=20', 20, True, False),
             ]
         }
+
+    def test_invalid_page(self):
+        request = Request(factory.get('/', {'page': 'invalid'}))
+        with pytest.raises(exceptions.NotFound):
+            self.paginate_queryset(request)
+
+
+class TestPageNumberPaginationOverride:
+    """
+    Unit tests for `pagination.PageNumberPagination`.
+
+    the Django Paginator Class is overridden.
+    """
+
+    def setup(self):
+        class OverriddenDjangoPaginator(DjangoPaginator):
+            # override the count in our overriden Django Paginator
+            # we will only return one page, with one item
+            count = 1
+
+        class ExamplePagination(pagination.PageNumberPagination):
+            django_paginator_class = OverriddenDjangoPaginator
+            page_size = 5
+
+        self.pagination = ExamplePagination()
+        self.queryset = range(1, 101)
+
+    def paginate_queryset(self, request):
+        return list(self.pagination.paginate_queryset(self.queryset, request))
+
+    def get_paginated_content(self, queryset):
+        response = self.pagination.get_paginated_response(queryset)
+        return response.data
+
+    def get_html_context(self):
+        return self.pagination.get_html_context()
+
+    def test_no_page_number(self):
+        request = Request(factory.get('/'))
+        queryset = self.paginate_queryset(request)
+        content = self.get_paginated_content(queryset)
+        context = self.get_html_context()
+        assert queryset == [1]
+        assert content == {
+            'results': [1, ],
+            'previous': None,
+            'next': None,
+            'count': 1
+        }
+        assert context == {
+            'previous_url': None,
+            'next_url': None,
+            'page_links': [
+                PageLink('http://testserver/', 1, True, False),
+            ]
+        }
+        assert not self.pagination.display_page_controls
+        assert isinstance(self.pagination.to_html(), type(''))
 
     def test_invalid_page(self):
         request = Request(factory.get('/', {'page': 'invalid'}))
