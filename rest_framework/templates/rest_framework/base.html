@@ -173,7 +173,7 @@
                     </div>
                   {% endif %}
 
-                  <div {% if raw_data_post_form %}class="tab-pane"{% endif %} id="post-generic-content-form">
+                  <div {% if post_form %}class="tab-pane"{% endif %} id="post-generic-content-form">
                     {% with form=raw_data_post_form %}
                       <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
                         <fieldset>
