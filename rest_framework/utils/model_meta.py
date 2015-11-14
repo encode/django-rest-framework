@@ -92,7 +92,7 @@ def _get_fields(opts):
 
 
 def _get_to_field(field):
-    return field.to_fields[0] if field.to_fields else None
+    return field.to_fields[0] if hasattr(field, 'to_fields') else None
 
 
 def _get_forward_relationships(opts):
