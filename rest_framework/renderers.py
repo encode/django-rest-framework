@@ -592,9 +592,12 @@ class BrowsableAPIRenderer(BaseRenderer):
         elements = []
         for backend in view.filter_backends:
             if hasattr(backend, 'to_html'):
-                html = backend().to_html(request, queryset, view)
-                if html:
-                    elements.append(html)
+                if not hasattr(view, 'filter_class'):
+                    return
+                else:
+                    html = backend().to_html(request, queryset, view)
+                    if html:
+                        elements.append(html)
 
         if not elements:
             return
