@@ -18,7 +18,7 @@ from rest_framework.fields import (
     Field, empty, get_attribute, is_simple_callable, iter_options
 )
 from rest_framework.reverse import reverse
-from rest_framework.utils import html
+from rest_framework.utils import html, overridden
 
 
 class Hyperlink(six.text_type):
@@ -63,9 +63,7 @@ class RelatedField(Field):
         self.html_cutoff = kwargs.pop('html_cutoff', self.html_cutoff)
         self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
 
-        default_get_queryset = getattr(RelatedField.get_queryset, '__func__',
-                                       RelatedField.get_queryset)  # Python 2/3
-        if self.get_queryset.__func__ == default_get_queryset:
+        if not overridden.method_overridden('get_queryset', RelatedField, self):
             assert self.queryset is not None or kwargs.get('read_only', None), (
                 'Relational field must provide a `queryset` argument, '
                 'or set read_only=`True`.'
