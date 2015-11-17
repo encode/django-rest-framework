@@ -35,14 +35,6 @@ For more complex cases you might also want to override various methods on the vi
         serializer_class = UserSerializer
         permission_classes = (IsAdminUser,)
 
-        def get_paginate_by(self):
-            """
-            Use smaller pagination for HTML representations.
-            """
-            if self.request.accepted_renderer.format == 'html':
-                return 20
-            return 100
-
         def list(self, request):
             # Note the use of `get_queryset()` instead of `self.queryset`
             queryset = self.get_queryset()
@@ -125,22 +117,22 @@ For example:
 Note that if your API doesn't include any object level permissions, you may optionally exclude the `self.check_object_permissions`, and simply return the object from the `get_object_or_404` lookup.
 
 #### `filter_queryset(self, queryset)`       
-       
+
 Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.   
-        
+
 For example:       
-       
+
     def filter_queryset(self, queryset):
         filter_backends = (CategoryFilter,)
-        
+
         if 'geo_route' in self.request.query_params:
             filter_backends = (GeoRouteFilter, CategoryFilter)
         elif 'geo_point' in self.request.query_params:
             filter_backends = (GeoPointFilter, CategoryFilter)
-        
+
         for backend in list(filter_backends):
             queryset = backend().filter_queryset(self.request, queryset, view=self)
-        
+
         return queryset
 
 #### `get_serializer_class(self)`
@@ -155,19 +147,6 @@ For example:
         if self.request.user.is_staff:
             return FullAccountSerializer
         return BasicAccountSerializer
-
-#### `get_paginate_by(self)`
-
-Returns the page size to use with pagination.  By default this uses the `paginate_by` attribute, and may be overridden by the client if the `paginate_by_param` attribute is set.
-
-You may want to override this method to provide more complex behavior, such as modifying page sizes based on the media type of the response.
-
-For example:
-
-    def get_paginate_by(self):
-        if self.request.accepted_renderer.format == 'html':
-            return 20
-        return 100
 
 **Save and deletion hooks**:
 
@@ -416,5 +395,3 @@ The [django-rest-framework-bulk package][django-rest-framework-bulk] implements 
 [DestroyModelMixin]: #destroymodelmixin
 [django-rest-framework-bulk]: https://github.com/miki725/django-rest-framework-bulk
 [django-rest-multiple-models]: https://github.com/Axiologue/DjangoRestMultipleModels
-
-
