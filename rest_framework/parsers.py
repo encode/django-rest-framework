@@ -62,6 +62,9 @@ class JSONParser(BaseParser):
         parser_context = parser_context or {}
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
 
+        if not stream:
+            return {}
+
         try:
             data = stream.read().decode(encoding)
             return json.loads(data)

@@ -14,7 +14,7 @@ from django.utils import six
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.parsers import BaseParser, FormParser, MultiPartParser
+from rest_framework.parsers import BaseParser, FormParser, JSONParser, MultiPartParser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
@@ -50,6 +50,16 @@ class TestContentParsing(TestCase):
         """
         request = Request(factory.head('/'))
         self.assertEqual(request.data, {})
+
+    def test_empty_body_yields_empty_dict_for_json_POST(self):
+        """
+        Ensure request.data returns empty dict for POST request with JSON
+        content type.
+        """
+        request = Request(factory.post('/', CONTENT_TYPE='application/json'))
+        request.parsers = (JSONParser(),)
+        self.assertEquals(type(request.data), dict)
+        self.assertEquals(request.data, {})
 
     def test_request_DATA_with_form_content(self):
         """
