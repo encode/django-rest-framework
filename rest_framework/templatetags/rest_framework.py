@@ -4,12 +4,13 @@ import re
 
 from django import template
 from django.core.urlresolvers import NoReverseMatch, reverse
-from django.template import Context, loader
+from django.template import loader
 from django.utils import six
 from django.utils.encoding import force_text, iri_to_uri
 from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
 
+from rest_framework.compat import template_render
 from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
 
@@ -128,12 +129,12 @@ def format_value(value):
             template = loader.get_template('rest_framework/admin/list_value.html')
         else:
             template = loader.get_template('rest_framework/admin/simple_list_value.html')
-        context = Context({'value': value})
-        return template.render(context)
+        context = {'value': value}
+        return template_render(template, context)
     elif isinstance(value, dict):
         template = loader.get_template('rest_framework/admin/dict_value.html')
-        context = Context({'value': value})
-        return template.render(context)
+        context = {'value': value}
+        return template_render(template, context)
     elif isinstance(value, six.string_types):
         if (
             (value.startswith('http:') or value.startswith('https:')) and not

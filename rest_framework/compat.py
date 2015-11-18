@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 import django
 from django.conf import settings
 from django.db import connection, transaction
+from django.template import Context, RequestContext, Template
 from django.utils import six
 from django.views.generic import View
 
@@ -191,6 +192,7 @@ try:
 except ImportError:
     DecimalValidator = None
 
+
 def set_rollback():
     if hasattr(transaction, 'set_rollback'):
         if connection.settings_dict.get('ATOMIC_REQUESTS', False):
@@ -206,3 +208,25 @@ def set_rollback():
     else:
         # transaction not managed
         pass
+
+
+def template_render(template, context=None, request=None):
+    """
+    Passing Context or RequestContext to Template.render is deprecated in 1.9+,
+    see https://github.com/django/django/pull/3883 and
+    https://github.com/django/django/blob/1.9rc1/django/template/backends/django.py#L82-L84
+
+    :param template: Template instance
+    :param context: dict
+    :param request: Request instance
+    :return: rendered template as SafeText instance
+    """
+    if django.VERSION < (1, 9) or isinstance(template, Template):
+        if request:
+            context = RequestContext(request, context)
+        else:
+            context = Context(context)
+        return template.render(context)
+    # backends template, e.g. django.template.backends.django.Template
+    else:
+        return template.render(context, request=request)
