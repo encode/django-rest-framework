@@ -9,6 +9,7 @@ REST framework also provides an HTML renderer that renders the browsable API.
 from __future__ import unicode_literals
 
 import json
+from collections import OrderedDict
 
 import django
 from django import forms
@@ -618,7 +619,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         raw_data_patch_form = self.get_raw_data_form(data, view, 'PATCH', request)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
-        response_headers = dict(response.items())
+        response_headers = OrderedDict(sorted(response.items()))
         renderer_content_type = ''
         if renderer:
             renderer_content_type = '%s' % renderer.media_type
