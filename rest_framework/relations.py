@@ -75,7 +75,7 @@ class RelatedField(Field):
         if not method_overridden('get_queryset', RelatedField, self):
             assert self.queryset is not None or kwargs.get('read_only', None), (
                 'Relational field must provide a `queryset` argument, '
-                'or set read_only=`True`.'
+                'override `get_queryset`, or set read_only=`True`.'
             )
         assert not (self.queryset is not None and kwargs.get('read_only', None)), (
             'Relational fields should not provide a `queryset` argument, '
