@@ -18,7 +18,16 @@ from rest_framework.fields import (
     Field, empty, get_attribute, is_simple_callable, iter_options
 )
 from rest_framework.reverse import reverse
-from rest_framework.utils import html, overridden
+from rest_framework.utils import html
+
+
+def method_overridden(method_name, klass, instance):
+    """
+    Determine if a method has been overridden.
+    """
+    method = getattr(klass, method_name)
+    default_method = getattr(method, '__func__', method)  # Python 3 compat
+    return default_method is not getattr(instance, method_name).__func__
 
 
 class Hyperlink(six.text_type):
@@ -63,7 +72,7 @@ class RelatedField(Field):
         self.html_cutoff = kwargs.pop('html_cutoff', self.html_cutoff)
         self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
 
-        if not overridden.method_overridden('get_queryset', RelatedField, self):
+        if not method_overridden('get_queryset', RelatedField, self):
             assert self.queryset is not None or kwargs.get('read_only', None), (
                 'Relational field must provide a `queryset` argument, '
                 'or set read_only=`True`.'
