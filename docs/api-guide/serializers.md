@@ -800,7 +800,8 @@ Here's an example of how you might choose to implement multiple updates:
             return ret
 
     class BookSerializer(serializers.Serializer):
-        # You must explicitly mark the primary key as editable.
+        # We need to identify elements in the list using their primary key,
+        # so use a writable field here, rather than the default which would be read-only.
         id = serializers.IntegerField()
 
         ...
