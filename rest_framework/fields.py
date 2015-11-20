@@ -1565,7 +1565,7 @@ class ReadOnlyField(Field):
 
     For example, the following would call `get_expiry_date()` on the object:
 
-    class ExampleSerializer(self):
+    class ExampleSerializer(Serializer):
         expiry_date = ReadOnlyField(source='get_expiry_date')
     """
 
