@@ -145,11 +145,11 @@ To use REST framework's `DjangoFilterBackend`, first install `django-filter`.
 
     pip install django-filter
 
-If you are using the browsable API or admin API you may also want to install `crispy-forms`, which will enhance the presentation of the filter forms in HTML views, by allowing them to render Bootstrap 3 HTML.
+If you are using the browsable API or admin API you may also want to install `django-crispy-forms`, which will enhance the presentation of the filter forms in HTML views, by allowing them to render Bootstrap 3 HTML.
 
     pip install django-crispy-forms
 
-With crispy forms installed, the browsable API will present a filtering control for `DjangoFilterBackend`, like so:
+With crispy forms installed and added to Django's `INSTALLED_APPS`, the browsable API will present a filtering control for `DjangoFilterBackend`, like so:
 
 ![Django Filter](../img/django-filter.png)
 
