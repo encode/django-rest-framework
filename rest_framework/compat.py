@@ -221,7 +221,7 @@ def template_render(template, context=None, request=None):
     :param request: Request instance
     :return: rendered template as SafeText instance
     """
-    if django.VERSION < (1, 9) or isinstance(template, Template):
+    if django.VERSION < (1, 8) or isinstance(template, Template):
         if request:
             context = RequestContext(request, context)
         else:
