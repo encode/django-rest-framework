@@ -10,9 +10,9 @@ Full documentation for the project is available at [http://www.django-rest-frame
 
 ---
 
-**Note**: We have now released Django REST framework 3.2. For older codebases you may want to refer to the version 2.4.4 [source code][2.4-code], and [documentation][2.4-docs].
+**Note**: We have now released Django REST framework 3.3. For older codebases you may want to refer to the version 2.4.4 [source code][2.4-code], and [documentation][2.4-docs].
 
-For more details see the 3.2 [announcement][3.2-announcement] and [release notes][3.2-release-notes].
+For more details see the 3.3 [announcement][3.3-announcement] and [release notes][3.3-release-notes].
 
 ---
 
@@ -183,5 +183,5 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [security-mail]: mailto:rest-framework-security@googlegroups.com
 [2.4-code]: https://github.com/tomchristie/django-rest-framework/tree/version-2.4.x
 [2.4-docs]: http://tomchristie.github.io/rest-framework-2-docs/
-[3.2-announcement]: http://www.django-rest-framework.org/topics/3.2-announcement/
-[3.2-release-notes]: http://www.django-rest-framework.org/topics/release-notes/#32x-series
+[3.3-announcement]: http://www.django-rest-framework.org/topics/3.3-announcement/
+[3.3-release-notes]: http://www.django-rest-framework.org/topics/release-notes/#33x-series

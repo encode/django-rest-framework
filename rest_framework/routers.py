@@ -174,7 +174,7 @@ class SimpleRouter(BaseRouter):
                 url_path = initkwargs.pop("url_path", None) or methodname
                 ret.append(Route(
                     url=replace_methodname(route.url, url_path),
-                    mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
+                    mapping={httpmethod: methodname for httpmethod in httpmethods},
                     name=replace_methodname(route.name, url_path),
                     initkwargs=initkwargs,
                 ))

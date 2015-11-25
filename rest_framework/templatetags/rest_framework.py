@@ -4,12 +4,13 @@ import re
 
 from django import template
 from django.core.urlresolvers import NoReverseMatch, reverse
-from django.template import Context, loader
+from django.template import loader
 from django.utils import six
 from django.utils.encoding import force_text, iri_to_uri
-from django.utils.html import escape, smart_urlquote
+from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
 
+from rest_framework.compat import template_render
 from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
 
@@ -25,8 +26,14 @@ def get_pagination_html(pager):
 
 
 @register.simple_tag
-def render_field(field, style=None):
-    style = style or {}
+def render_form(serializer, template_pack=None):
+    style = {'template_pack': template_pack} if template_pack else {}
+    renderer = HTMLFormRenderer()
+    return renderer.render(serializer.data, None, {'style': style})
+
+
+@register.simple_tag
+def render_field(field, style):
     renderer = style.get('renderer', HTMLFormRenderer())
     return renderer.render_field(field, style)
 
@@ -42,7 +49,8 @@ def optional_login(request):
         return ''
 
     snippet = "<li><a href='{href}?next={next}'>Log in</a></li>"
-    snippet = snippet.format(href=login_url, next=escape(request.path))
+    snippet = format_html(snippet, href=login_url, next=escape(request.path))
+
     return mark_safe(snippet)
 
 
@@ -54,7 +62,8 @@ def optional_logout(request, user):
     try:
         logout_url = reverse('rest_framework:logout')
     except NoReverseMatch:
-        return '<li class="navbar-text">{user}</li>'.format(user=user)
+        snippet = format_html('<li class="navbar-text">{user}</li>', user=escape(user))
+        return mark_safe(snippet)
 
     snippet = """<li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -65,7 +74,8 @@ def optional_logout(request, user):
             <li><a href='{href}?next={next}'>Log out</a></li>
         </ul>
     </li>"""
-    snippet = snippet.format(user=escape(user), href=logout_url, next=escape(request.path))
+    snippet = format_html(snippet, user=escape(user), href=logout_url, next=escape(request.path))
+
     return mark_safe(snippet)
 
 
@@ -119,12 +129,12 @@ def format_value(value):
             template = loader.get_template('rest_framework/admin/list_value.html')
         else:
             template = loader.get_template('rest_framework/admin/simple_list_value.html')
-        context = Context({'value': value})
-        return template.render(context)
+        context = {'value': value}
+        return template_render(template, context)
     elif isinstance(value, dict):
         template = loader.get_template('rest_framework/admin/dict_value.html')
-        context = Context({'value': value})
-        return template.render(context)
+        context = {'value': value}
+        return template_render(template, context)
     elif isinstance(value, six.string_types):
         if (
             (value.startswith('http:') or value.startswith('https:')) and not

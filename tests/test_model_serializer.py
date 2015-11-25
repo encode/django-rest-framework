@@ -22,7 +22,7 @@ from django.utils import six
 
 from rest_framework import serializers
 from rest_framework.compat import DurationField as ModelDurationField
-from rest_framework.compat import unicode_repr
+from rest_framework.compat import DecimalValidator, unicode_repr
 
 
 def dedent(blocktext):
@@ -63,10 +63,11 @@ class RegularFieldsModel(models.Model):
     positive_small_integer_field = models.PositiveSmallIntegerField()
     slug_field = models.SlugField(max_length=100)
     small_integer_field = models.SmallIntegerField()
-    text_field = models.TextField()
+    text_field = models.TextField(max_length=100)
     time_field = models.TimeField()
     url_field = models.URLField(max_length=100)
     custom_field = CustomField()
+    file_path_field = models.FilePathField(path='/tmp/')
 
     def method(self):
         return 'method'
@@ -161,11 +162,13 @@ class TestRegularFieldMappings(TestCase):
                 positive_small_integer_field = IntegerField()
                 slug_field = SlugField(max_length=100)
                 small_integer_field = IntegerField()
-                text_field = CharField(style={'base_template': 'textarea.html'})
+                text_field = CharField(max_length=100, style={'base_template': 'textarea.html'})
                 time_field = TimeField()
                 url_field = URLField(max_length=100)
                 custom_field = ModelField(model_field=<tests.test_model_serializer.CustomField: custom_field>)
+                file_path_field = FilePathField(path='/tmp/')
         """)
+
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
     def test_field_options(self):
@@ -858,3 +861,41 @@ class Issue2704TestCase(TestCase):
         }]
 
         assert serializer.data == expected
+
+
+class DecimalFieldModel(models.Model):
+    decimal_field = models.DecimalField(
+        max_digits=3,
+        decimal_places=1,
+        validators=[MinValueValidator(1), MaxValueValidator(3)]
+    )
+
+
+class TestDecimalFieldMappings(TestCase):
+    @pytest.mark.skipif(DecimalValidator is not None,
+                        reason='DecimalValidator is available in Django 1.9+')
+    def test_decimal_field_has_no_decimal_validator(self):
+        """
+        Test that a DecimalField has no validators before Django 1.9.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DecimalFieldModel
+
+        serializer = TestSerializer()
+
+        assert len(serializer.fields['decimal_field'].validators) == 0
+
+    @pytest.mark.skipif(DecimalValidator is None,
+                        reason='DecimalValidator is available in Django 1.9+')
+    def test_decimal_field_has_decimal_validator(self):
+        """
+        Test that a DecimalField has DecimalValidator in Django 1.9+.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DecimalFieldModel
+
+        serializer = TestSerializer()
+
+        assert len(serializer.fields['decimal_field'].validators) == 2
