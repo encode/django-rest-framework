@@ -187,6 +187,15 @@ This renderer is suitable for CRUD-style web APIs that should also present a use
 
 Note that views that have nested or list serializers for their input won't work well with the `AdminRenderer`, as the HTML forms are unable to properly support them.
 
+**Note**: The `AdminRenderer` is only able to include links to detail pages when a properly configured `URL_FIELD_NAME` (`url` by default) attribute is present in the data. For `HyperlinkedModelSerializer` this will be the case, but for `ModelSerializer` or plain `Serializer` classes you'll need to make sure to include the field explicitly. For example here we use models `get_absolute_url` method:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        url = serializers.CharField(source='get_absolute_url', read_only=True)
+
+        class Meta:
+            model = Account
+
+
 **.media_type**: `text/html`
 
 **.format**: `'.admin'`
@@ -197,9 +206,19 @@ Note that views that have nested or list serializers for their input won't work 
 
 ## HTMLFormRenderer
 
-Renders data returned by a serializer into an HTML form.  The output of this renderer does not include the enclosing `<form>` tags or an submit actions, as you'll probably need those to include the desired method and URL.  Also note that the `HTMLFormRenderer` does not yet support including field error messages.
+Renders data returned by a serializer into an HTML form. The output of this renderer does not include the enclosing `<form>` tags, a hidden CSRF input or any submit buttons.
 
-**Note**: The `HTMLFormRenderer` class is intended for internal use with the browsable API and admin interface. It should not be considered a fully documented or stable API. The template used by the `HTMLFormRenderer` class, and the context submitted to it **may be subject to change**.  If you need to use this renderer class it is advised that you either make a local copy of the class and templates, or follow the release note on REST framework upgrades closely.
+This renderer is not intended to be used directly, but can instead be used in templates by passing a serializer instance to the `render_form` template tag.
+
+    {% load rest_framework %}
+
+    <form action="/submit-report/" method="post">
+        {% csrf_token %}
+        {% render_form serializer %}
+        <input type="submit" value="Save" />
+    </form>
+
+For more information see the [HTML & Forms][html-and-forms] documentation.
 
 **.media_type**: `text/html`
 
@@ -207,7 +226,7 @@ Renders data returned by a serializer into an HTML form.  The output of this ren
 
 **.charset**: `utf-8`
 
-**.template**: `'rest_framework/form.html'`
+**.template**: `'rest_framework/horizontal/form.html'`
 
 ## MultiPartRenderer
 
@@ -455,6 +474,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
+[html-and-forms]: ../topics/html-and-forms.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
 [testing]: testing.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas

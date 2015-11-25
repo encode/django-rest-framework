@@ -73,3 +73,11 @@ pre {
   border-bottom: none;
   padding-bottom: 0px;
 }
+
+#filtersModal form input[type=submit] {
+    width: auto;
+}
+
+#filtersModal .modal-body h2 {
+    margin-top: 0
+}

@@ -7,14 +7,15 @@
         {% for row in results %}
         <tr>
             {% for key, value in row.items %}
-            {% if key in columns %}
-            <td {{ value|add_nested_class }} >
-                {{ value|format_value }}
-            </td>
-            {% endif %}
+                {% if key in columns %}
+                <td {{ value|add_nested_class }} >
+                    {{ value|format_value }}
+                </td>
+                {% endif %}
             {% endfor %}
-            <td><a href="{{ row.url }}"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-</a></td>
+            <td>
+                <a href="{{ row.url }}"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+            </td>
         </tr>
         {% endfor %}
     </tbody>

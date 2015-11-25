@@ -8,6 +8,7 @@ from django.core import validators
 from django.db import models
 from django.utils.text import capfirst
 
+from rest_framework.compat import DecimalValidator
 from rest_framework.validators import UniqueValidator
 
 NUMERIC_FIELD_TYPES = (
@@ -106,6 +107,21 @@ def get_field_kwargs(field_name, model_field):
                               isinstance(model_field, models.TextField)):
         kwargs['allow_blank'] = True
 
+    if isinstance(model_field, models.FilePathField):
+        kwargs['path'] = model_field.path
+
+        if model_field.match is not None:
+            kwargs['match'] = model_field.match
+
+        if model_field.recursive is not False:
+            kwargs['recursive'] = model_field.recursive
+
+        if model_field.allow_files is not True:
+            kwargs['allow_files'] = model_field.allow_files
+
+        if model_field.allow_folders is not False:
+            kwargs['allow_folders'] = model_field.allow_folders
+
     if model_field.choices:
         # If this model field contains choices, then return early.
         # Further keyword arguments are not valid.
@@ -117,7 +133,7 @@ def get_field_kwargs(field_name, model_field):
     if isinstance(model_field, models.DecimalField):
         validator_kwarg = [
             validator for validator in validator_kwarg
-            if not isinstance(validator, validators.DecimalValidator)
+            if DecimalValidator and not isinstance(validator, DecimalValidator)
         ]
 
     # Ensure that max_length is passed explicitly as a keyword arg,
@@ -222,7 +238,7 @@ def get_relation_kwargs(field_name, relation_info):
     """
     Creates a default instance of a flat relational field.
     """
-    model_field, related_model, to_many, has_through_model = relation_info
+    model_field, related_model, to_many, to_field, has_through_model = relation_info
     kwargs = {
         'queryset': related_model._default_manager,
         'view_name': get_detail_view_name(related_model)
@@ -230,6 +246,9 @@ def get_relation_kwargs(field_name, relation_info):
 
     if to_many:
         kwargs['many'] = True
+
+    if to_field:
+        kwargs['to_field'] = to_field
 
     if has_through_model:
         kwargs['read_only'] = True

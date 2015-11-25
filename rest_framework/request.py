@@ -366,6 +366,15 @@ class Request(object):
         )
 
     @property
+    def POST(self):
+        # Ensure that request.POST uses our request parsing.
+        if not _hasattr(self, '_data'):
+            self._load_data_and_files()
+        if is_form_media_type(self.content_type):
+            return self.data
+        return QueryDict('', encoding=self._request._encoding)
+
+    @property
     def FILES(self):
         # Leave this one alone for backwards compat with Django's request.FILES
         # Different from the other two cases, which are not valid property

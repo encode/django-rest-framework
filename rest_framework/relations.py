@@ -380,7 +380,7 @@ class HyperlinkedIdentityField(HyperlinkedRelatedField):
 
 class SlugRelatedField(RelatedField):
     """
-    A read-write field the represents the target of the relationship
+    A read-write field that represents the target of the relationship
     by a unique 'slug' attribute.
     """
 
