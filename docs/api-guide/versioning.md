@@ -130,7 +130,7 @@ Your URL conf must include a pattern that matches the version with a `'version'`
 
     urlpatterns = [
         url(
-            r'^(?P<version>[v1|v2]+)/bookings/$',
+            r'^(?P<version>(v1|v2))/bookings/$',
             bookings_list,
             name='bookings-list'
         ),
