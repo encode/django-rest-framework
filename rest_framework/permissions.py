@@ -112,15 +112,15 @@ class DjangoModelPermissions(BasePermission):
         if getattr(view, '_ignore_model_permissions', False):
             return True
 
-        try:
+        if hasattr(view, 'get_queryset'):
             queryset = view.get_queryset()
-        except AttributeError:
+        else:
             queryset = getattr(view, 'queryset', None)
 
         assert queryset is not None, (
             'Cannot apply DjangoModelPermissions on a view that '
-            'does not have `.queryset` property or overrides the '
-            '`.get_queryset()` method.')
+            'does not set `.queryset` or have a `.get_queryset()` method.'
+        )
 
         perms = self.get_required_permissions(request.method, queryset.model)
 
@@ -169,15 +169,15 @@ class DjangoObjectPermissions(DjangoModelPermissions):
         return [perm % kwargs for perm in self.perms_map[method]]
 
     def has_object_permission(self, request, view, obj):
-        try:
+        if hasattr(view, 'get_queryset'):
             queryset = view.get_queryset()
-        except AttributeError:
+        else:
             queryset = getattr(view, 'queryset', None)
 
         assert queryset is not None, (
             'Cannot apply DjangoObjectPermissions on a view that '
-            'does not have `.queryset` property or overrides the '
-            '`.get_queryset()` method.')
+            'does not set `.queryset` or have a `.get_queryset()` method.'
+        )
 
         model_cls = queryset.model
         user = request.user
