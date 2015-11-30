@@ -68,7 +68,8 @@ The following view demonstrates an example of using a serializer in a template f
             profile = get_object_or_404(Profile, pk=pk)
             serializer = ProfileSerializer(profile)
             if not serializer.is_valid():
-                return Response({'serializer': serializer, 'profile': profile})            return redirect('profile-list')
+                return Response({'serializer': serializer, 'profile': profile})
+            return redirect('profile-list')
 
 **profile_detail.html**:
 
@@ -78,7 +79,7 @@ The following view demonstrates an example of using a serializer in a template f
     
     <h1>Profile - {{ profile.name }}</h1>
 
-    <form action="{% url 'profile-detail' pk=profile.pk '%}" method="POST">
+    <form action="{% url 'profile-detail' pk=profile.pk %}" method="POST">
         {% csrf_token %}
         {% render_form serializer %}
         <input type="submit" value="Save">
@@ -112,7 +113,9 @@ Let's take a look at how to render each of the three available template packs. F
             max_length=100,
             style={'input_type': 'password', 'placeholder': 'Password'}
         )
-        remember_me = serializers.BooleanField()---
+        remember_me = serializers.BooleanField()
+
+---
 
 #### `rest_framework/vertical`
 
@@ -133,7 +136,8 @@ Presents form labels above their corresponding control inputs, using the standar
 ![Vertical form example](../img/vertical.png)
 
 ---
-#### `rest_framework/horizontal`
+
+#### `rest_framework/horizontal`
 
 Presents labels and controls alongside each other, using a 2/10 column split.
 
