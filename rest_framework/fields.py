@@ -27,9 +27,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, duration_string, parse_duration, unicode_repr,
-    unicode_to_repr
+    DateRange, DateTimeTZRange, MaxLengthValidator, MaxValueValidator,
+    MinLengthValidator, MinValueValidator, NumericRange, duration_string,
+    parse_duration, unicode_repr, unicode_to_repr
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
@@ -1521,6 +1521,73 @@ class DictField(Field):
             six.text_type(key): self.child.to_representation(val)
             for key, val in value.items()
         }
+
+
+class RangeField(DictField):
+
+    range_type = None
+
+    default_error_messages = {
+        'not_a_dict': _('Expected a dictionary of items but got type "{input_type}".'),
+        'too_much_content': _('Extra content not allowed "{extra}".'),
+    }
+
+    def to_internal_value(self, data):
+        """
+        Range instances <- Dicts of primitive datatypes.
+        """
+        if html.is_html_input(data):
+            data = html.parse_html_dict(data)
+        if not isinstance(data, dict):
+            self.fail('not_a_dict', input_type=type(data).__name__)
+        validated_dict = {}
+        for key in ('lower', 'upper'):
+            try:
+                value = data.pop(key)
+            except KeyError:
+                continue
+            validated_dict[six.text_type(key)] = self.child.run_validation(value)
+        for key in ('bounds', 'empty'):
+            try:
+                value = data.pop(key)
+            except KeyError:
+                continue
+            validated_dict[six.text_type(key)] = value
+        if data:
+            self.fail('too_much_content', extra=', '.join(map(str, data.keys())))
+        return self.range_type(**validated_dict)
+
+    def to_representation(self, value):
+        """
+        Range instances -> dicts of primitive datatypes.
+        """
+        if value.isempty:
+            return {'empty': True}
+        lower = self.child.to_representation(value.lower) if value.lower is not None else None
+        upper = self.child.to_representation(value.upper) if value.upper is not None else None
+        return {'lower': lower,
+                'upper': upper,
+                'bounds': value._bounds}
+
+
+class IntegerRangeField(RangeField):
+    child = IntegerField()
+    range_type = NumericRange
+
+
+class FloatRangeField(RangeField):
+    child = FloatField()
+    range_type = NumericRange
+
+
+class DateTimeRangeField(RangeField):
+    child = DateTimeField()
+    range_type = DateTimeTZRange
+
+
+class DateRangeField(RangeField):
+    child = DateField()
+    range_type = DateRange
 
 
 class JSONField(Field):

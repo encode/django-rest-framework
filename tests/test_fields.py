@@ -6,10 +6,11 @@ from decimal import Decimal
 import django
 import pytest
 from django.http import QueryDict
+from django.test import TestCase, override_settings
 from django.utils import timezone
 
 import rest_framework
-from rest_framework import serializers
+from rest_framework import compat, serializers
 
 
 # Tests for field keyword arguments and core functionality.
@@ -1532,6 +1533,213 @@ class TestUnvalidatedDictField(FieldValues):
         ({'a': 1, 'b': [4, 5, 6]}, {'a': 1, 'b': [4, 5, 6]}),
     ]
     field = serializers.DictField()
+
+
+@pytest.mark.skipif(django.VERSION < (1, 8) or compat.postgres_fields is None,
+                    reason='RangeField is only available for django1.8+'
+                    ' and with psycopg2.')
+class TestIntegerRangeField(FieldValues):
+    """
+    Values for `ListField` with CharField as child.
+    """
+    if compat.NumericRange is not None:
+        valid_inputs = [
+            ({'lower': '1', 'upper': 2, 'bounds': '[)'},
+             compat.NumericRange(**{'lower': 1, 'upper': 2, 'bounds': '[)'})),
+            ({'lower': 1, 'upper': 2},
+             compat.NumericRange(**{'lower': 1, 'upper': 2})),
+            ({'lower': 1},
+             compat.NumericRange(**{'lower': 1})),
+            ({'upper': 1},
+             compat.NumericRange(**{'upper': 1})),
+            ({'empty': True},
+             compat.NumericRange(**{'empty': True})),
+            ({}, compat.NumericRange()),
+        ]
+        invalid_inputs = [
+            ({'lower': 'a'}, ['A valid integer is required.']),
+            ('not a dict', ['Expected a dictionary of items but got type "str".']),
+            ({'foo': 'bar'}, ['Extra content not allowed "foo".']),
+        ]
+        outputs = [
+            (compat.NumericRange(**{'lower': '1', 'upper': '2'}),
+             {'lower': 1, 'upper': 2, 'bounds': '[)'}),
+            (compat.NumericRange(**{'empty': True}), {'empty': True}),
+            (compat.NumericRange(), {'bounds': '[)', 'lower': None, 'upper': None}),
+        ]
+    field = serializers.IntegerRangeField()
+
+    def test_no_source_on_child(self):
+        with pytest.raises(AssertionError) as exc_info:
+            serializers.IntegerRangeField(child=serializers.IntegerField(source='other'))
+
+        assert str(exc_info.value) == (
+            "The `source` argument is not meaningful when applied to a `child=` field. "
+            "Remove `source=` from the field declaration."
+        )
+
+
+@pytest.mark.skipif(django.VERSION < (1, 8) or compat.postgres_fields is None,
+                    reason='RangeField is only available for django1.8+'
+                    ' and with psycopg2.')
+class TestFloatRangeField(FieldValues):
+    """
+    Values for `ListField` with CharField as child.
+    """
+    if compat.NumericRange is not None:
+        valid_inputs = [
+            ({'lower': '1', 'upper': 2., 'bounds': '[)'},
+             compat.NumericRange(**{'lower': 1., 'upper': 2., 'bounds': '[)'})),
+            ({'lower': 1., 'upper': 2.},
+             compat.NumericRange(**{'lower': 1, 'upper': 2})),
+            ({'lower': 1},
+             compat.NumericRange(**{'lower': 1})),
+            ({'upper': 1},
+             compat.NumericRange(**{'upper': 1})),
+            ({'empty': True},
+             compat.NumericRange(**{'empty': True})),
+            ({}, compat.NumericRange()),
+        ]
+        invalid_inputs = [
+            ({'lower': 'a'}, ['A valid number is required.']),
+            ('not a dict', ['Expected a dictionary of items but got type "str".']),
+        ]
+        outputs = [
+            (compat.NumericRange(**{'lower': '1.1', 'upper': '2'}),
+             {'lower': 1.1, 'upper': 2, 'bounds': '[)'}),
+            (compat.NumericRange(**{'empty': True}), {'empty': True}),
+            (compat.NumericRange(), {'bounds': '[)', 'lower': None, 'upper': None}),
+        ]
+    field = serializers.FloatRangeField()
+
+    def test_no_source_on_child(self):
+        with pytest.raises(AssertionError) as exc_info:
+            serializers.FloatRangeField(child=serializers.IntegerField(source='other'))
+
+        assert str(exc_info.value) == (
+            "The `source` argument is not meaningful when applied to a `child=` field. "
+            "Remove `source=` from the field declaration."
+        )
+
+
+@pytest.mark.skipif(django.VERSION < (1, 8) or compat.postgres_fields is None,
+                    reason='RangeField is only available for django1.8+'
+                    ' and with psycopg2.')
+@override_settings(USE_TZ=True)
+class TestDateTimeRangeField(TestCase, FieldValues):
+    """
+    Values for `ListField` with CharField as child.
+    """
+    if compat.DateTimeTZRange is not None:
+        valid_inputs = [
+            ({'lower': '2001-01-01T13:00:00Z',
+              'upper': '2001-02-02T13:00:00Z',
+              'bounds': '[)'},
+             compat.DateTimeTZRange(
+                 **{'lower': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+                    'upper': datetime.datetime(2001, 2, 2, 13, 00, tzinfo=timezone.UTC()),
+                    'bounds': '[)'})),
+            ({'upper': '2001-02-02T13:00:00Z',
+              'bounds': '[)'},
+             compat.DateTimeTZRange(
+                 **{'upper': datetime.datetime(2001, 2, 2, 13, 00, tzinfo=timezone.UTC()),
+                    'bounds': '[)'})),
+            ({'lower': '2001-01-01T13:00:00Z',
+              'bounds': '[)'},
+             compat.DateTimeTZRange(
+                 **{'lower': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+                    'bounds': '[)'})),
+            ({'empty': True},
+             compat.DateTimeTZRange(**{'empty': True})),
+            ({}, compat.DateTimeTZRange()),
+        ]
+        invalid_inputs = [
+            ({'lower': 'a'}, ['Datetime has wrong format. Use one of these'
+                              ' formats instead: '
+                              'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].']),
+            ('not a dict', ['Expected a dictionary of items but got type "str".']),
+        ]
+        outputs = [
+            (compat.DateTimeTZRange(
+                **{'lower': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+                   'upper': datetime.datetime(2001, 2, 2, 13, 00, tzinfo=timezone.UTC())}),
+                {'lower': '2001-01-01T13:00:00Z',
+                 'upper': '2001-02-02T13:00:00Z',
+                 'bounds': '[)'}),
+            (compat.DateTimeTZRange(**{'empty': True}),
+             {'empty': True}),
+            (compat.DateTimeTZRange(),
+             {'bounds': '[)', 'lower': None, 'upper': None}),
+        ]
+    field = serializers.DateTimeRangeField()
+
+    def test_no_source_on_child(self):
+        with pytest.raises(AssertionError) as exc_info:
+            serializers.DateTimeRangeField(child=serializers.IntegerField(source='other'))
+
+        assert str(exc_info.value) == (
+            "The `source` argument is not meaningful when applied to a `child=` field. "
+            "Remove `source=` from the field declaration."
+        )
+
+
+@pytest.mark.skipif(django.VERSION < (1, 8) or compat.postgres_fields is None,
+                    reason='RangeField is only available for django1.8+'
+                    ' and with psycopg2.')
+class TestDateRangeField(FieldValues):
+    """
+    Values for `ListField` with CharField as child.
+    """
+    if compat.DateRange is not None:
+        valid_inputs = [
+            ({'lower': '2001-01-01',
+              'upper': '2001-02-02',
+              'bounds': '[)'},
+             compat.DateRange(
+                 **{'lower': datetime.date(2001, 1, 1),
+                    'upper': datetime.date(2001, 2, 2),
+                    'bounds': '[)'})),
+            ({'upper': '2001-02-02',
+              'bounds': '[)'},
+             compat.DateRange(
+                 **{'upper': datetime.date(2001, 2, 2),
+                    'bounds': '[)'})),
+            ({'lower': '2001-01-01',
+              'bounds': '[)'},
+             compat.DateRange(
+                 **{'lower': datetime.date(2001, 1, 1),
+                    'bounds': '[)'})),
+            ({'empty': True},
+             compat.DateRange(**{'empty': True})),
+            ({}, compat.DateRange()),
+        ]
+        invalid_inputs = [
+            ({'lower': 'a'}, ['Date has wrong format. Use one of these'
+                              ' formats instead: '
+                              'YYYY[-MM[-DD]].']),
+            ('not a dict', ['Expected a dictionary of items but got type "str".']),
+        ]
+        outputs = [
+            (compat.DateRange(
+                **{'lower': datetime.date(2001, 1, 1),
+                   'upper': datetime.date(2001, 2, 2)}),
+                {'lower': '2001-01-01',
+                 'upper': '2001-02-02',
+                 'bounds': '[)'}),
+            (compat.DateRange(**{'empty': True}),
+             {'empty': True}),
+            (compat.DateRange(), {'bounds': '[)', 'lower': None, 'upper': None}),
+        ]
+    field = serializers.DateRangeField()
+
+    def test_no_source_on_child(self):
+        with pytest.raises(AssertionError) as exc_info:
+            serializers.DateRangeField(child=serializers.IntegerField(source='other'))
+
+        assert str(exc_info.value) == (
+            "The `source` argument is not meaningful when applied to a `child=` field. "
+            "Remove `source=` from the field declaration."
+        )
 
 
 class TestJSONField(FieldValues):
