@@ -227,3 +227,8 @@ body a:hover {
   width: 20px;
   margin-top: 3px;
 }
+
+.modal-footer form {
+  margin-left: 5px;
+  margin-right: 5px;
+}
