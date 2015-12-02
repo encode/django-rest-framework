@@ -132,6 +132,7 @@ class DjangoFilterBackend(BaseFilterBackend):
 class SearchFilter(BaseFilterBackend):
     # The URL query parameter used for the search.
     search_param = api_settings.SEARCH_PARAM
+    search_fields_property = "search_fields"
     template = 'rest_framework/filters/search.html'
 
     def get_search_terms(self, request):
@@ -155,7 +156,7 @@ class SearchFilter(BaseFilterBackend):
             return "%s__icontains" % field_name
 
     def filter_queryset(self, request, queryset, view):
-        search_fields = getattr(view, 'search_fields', None)
+        search_fields = getattr(view, self.search_fields_property, None)
         search_terms = self.get_search_terms(request)
 
         if not search_fields or not search_terms:
@@ -180,7 +181,7 @@ class SearchFilter(BaseFilterBackend):
         return distinct(queryset, base)
 
     def to_html(self, request, queryset, view):
-        if not getattr(view, 'search_fields', None):
+        if not getattr(view, self.search_fields_property, None):
             return ''
 
         term = self.get_search_terms(request)

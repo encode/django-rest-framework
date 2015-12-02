@@ -447,6 +447,28 @@ class SearchFilterTests(TestCase):
 
         reload_module(filters)
 
+    def test_override_search_fields(self):
+        class CustomSearchFilter(filters.SearchFilter):
+            search_fields_property = 'nonstandard_search_fields'
+
+
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (CustomSearchFilter,)
+            nonstandard_search_fields = ('title', 'text')
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'b'})
+        response = view(request)
+        self.assertEqual(
+            response.data,
+            [
+                {'id': 1, 'title': 'z', 'text': 'abc'},
+                {'id': 2, 'title': 'zz', 'text': 'bcd'}
+            ]
+        )
+
 
 class AttributeModel(models.Model):
     label = models.CharField(max_length=32)
