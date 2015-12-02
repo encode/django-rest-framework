@@ -145,7 +145,7 @@ def _get_reverse_relationships(opts):
             model_field=None,
             related_model=related,
             to_many=relation.field.rel.multiple,
-            to_field=_get_to_field(relation.field),
+            to_field=_get_to_field(relation.field.model._meta.pk),
             has_through_model=False
         )
 
