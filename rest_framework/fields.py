@@ -769,9 +769,11 @@ class UUIDField(Field):
             try:
                 if isinstance(data, six.integer_types):
                     return uuid.UUID(int=data)
-                else:
+                elif isinstance(data, six.string_types):
                     return uuid.UUID(hex=data)
-            except (ValueError, TypeError):
+                else:
+                    self.fail('invalid', value=data)
+            except (ValueError):
                 self.fail('invalid', value=data)
         return data
 
