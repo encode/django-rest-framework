@@ -29,9 +29,11 @@ FieldInfo = namedtuple('FieldResult', [
 RelationInfo = namedtuple('RelationInfo', [
     'model_field',
     'related_model',
+    'related_model_field',
     'to_many',
     'to_field',
-    'has_through_model'
+    'has_through_model',
+    'reverse'
 ])
 
 
@@ -108,9 +110,11 @@ def _get_forward_relationships(opts):
         forward_relations[field.name] = RelationInfo(
             model_field=field,
             related_model=_resolve_model(field.rel.to),
+            related_model_field=None,
             to_many=False,
             to_field=_get_to_field(field),
-            has_through_model=False
+            has_through_model=False,
+            reverse=False
         )
 
     # Deal with forward many-to-many relationships.
@@ -118,12 +122,14 @@ def _get_forward_relationships(opts):
         forward_relations[field.name] = RelationInfo(
             model_field=field,
             related_model=_resolve_model(field.rel.to),
+            related_model_field=None,
             to_many=True,
             # manytomany do not have to_fields
             to_field=None,
             has_through_model=(
                 not field.rel.through._meta.auto_created
-            )
+            ),
+            reverse=False
         )
 
     return forward_relations
@@ -144,9 +150,11 @@ def _get_reverse_relationships(opts):
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
             related_model=related,
+            related_model_field=relation.field,
             to_many=relation.field.rel.multiple,
-            to_field=_get_to_field(relation.field.model._meta.pk),
-            has_through_model=False
+            to_field=_get_to_field(relation.field),
+            has_through_model=False,
+            reverse=True
         )
 
     # Deal with reverse many-to-many relationships.
@@ -156,13 +164,15 @@ def _get_reverse_relationships(opts):
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
             related_model=related,
+            related_model_field=relation.field,
             to_many=True,
             # manytomany do not have to_fields
             to_field=None,
             has_through_model=(
                 (getattr(relation.field.rel, 'through', None) is not None) and
                 not relation.field.rel.through._meta.auto_created
-            )
+            ),
+            reverse=True
         )
 
     return reverse_relations
