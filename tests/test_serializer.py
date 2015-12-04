@@ -309,3 +309,85 @@ class TestCacheSerializerData:
         pickled = pickle.dumps(serializer.data)
         data = pickle.loads(pickled)
         assert data == {'field1': 'a', 'field2': 'b'}
+
+
+class TestSerializerSupportsOverriddenFields:
+    def setup(self):
+        class Base1(serializers.Serializer):
+            a_field = serializers.CharField()
+        self.Base1 = Base1
+
+        class Base2(serializers.Serializer):
+            a_field = serializers.IntegerField()
+        self.Base2 = Base2
+
+    def test_base_fields_unchanged(self):
+        """
+        Overriding a field in a subclassed serializer shouldn't change the
+        field on the superclass
+        """
+        class OverriddenFields(self.Base1):
+            a_field = serializers.FloatField()
+
+        assert isinstance(
+            self.Base1._declared_fields['a_field'],
+            serializers.CharField,
+        )
+        s = self.Base1()
+        assert isinstance(s.fields['a_field'], serializers.CharField)
+
+    def test_overridden_fields_single_base(self):
+        """
+        Subclassing a serializer and overriding a field should mean the field
+        on the subclass wins.
+        """
+        class OverriddenFieldsWithSingleBase(self.Base1):
+            a_field = serializers.FloatField()
+
+        assert isinstance(
+            OverriddenFieldsWithSingleBase._declared_fields['a_field'],
+            serializers.FloatField,
+        )
+        s = OverriddenFieldsWithSingleBase()
+        assert isinstance(s.fields['a_field'], serializers.FloatField)
+
+    def test_overridden_fields_multiple_bases(self):
+        """
+        For serializers with multiple bases, the field on the first base wins
+        (as per normal python method resolution order)
+        """
+        class OverriddenFieldsMultipleBases1(self.Base1, self.Base2):
+            # first base takes precedence; a_field should be a CharField.
+            pass
+
+        assert isinstance(
+            OverriddenFieldsMultipleBases1._declared_fields['a_field'],
+            serializers.CharField,
+        )
+        s = OverriddenFieldsMultipleBases1()
+        assert isinstance(s.fields['a_field'], serializers.CharField)
+
+        class OverriddenFieldsMultipleBases2(self.Base2, self.Base1):
+            # first base takes precedence; a_field should be a IntegerField.
+            pass
+
+        assert isinstance(
+            OverriddenFieldsMultipleBases2._declared_fields['a_field'],
+            serializers.IntegerField,
+        )
+        s = OverriddenFieldsMultipleBases2()
+        assert isinstance(s.fields['a_field'], serializers.IntegerField)
+
+    def test_overridden_fields_multiple_bases_overridden(self):
+        """
+        For serializers with multiple bases, locally defined fields still win.
+        """
+        class OverriddenFieldsMultipleBasesOverridden(self.Base1, self.Base2):
+            a_field = serializers.FloatField()
+
+        assert isinstance(
+            OverriddenFieldsMultipleBasesOverridden._declared_fields['a_field'],
+            serializers.FloatField,
+        )
+        s = OverriddenFieldsMultipleBasesOverridden()
+        assert isinstance(s.fields['a_field'], serializers.FloatField)
