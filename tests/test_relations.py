@@ -206,3 +206,13 @@ class TestManyRelatedField(APISimpleTestCase):
 
         mvd = MultiValueDict({'baz': ['bar1', 'bar2']})
         assert empty == self.field.get_value(mvd)
+
+class TestHyperlink:
+    def setup(self):
+        self.default_hyperlink = Hyperlink('http://example.com', 'test')
+
+    def test_can_be_pickled(self):
+        import pickle
+        upkled = pickle.loads(pickle.dump(self.default_hyperlink))
+        assert upickled == self.default_hyperlink
+        assert upickled.name == self.default_hyperlink.name
