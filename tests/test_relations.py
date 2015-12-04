@@ -207,6 +207,7 @@ class TestManyRelatedField(APISimpleTestCase):
         mvd = MultiValueDict({'baz': ['bar1', 'bar2']})
         assert empty == self.field.get_value(mvd)
 
+
 class TestHyperlink:
     def setup(self):
         self.default_hyperlink = serializers.Hyperlink('http://example.com', 'test')
