@@ -209,10 +209,10 @@ class TestManyRelatedField(APISimpleTestCase):
 
 class TestHyperlink:
     def setup(self):
-        self.default_hyperlink = Hyperlink('http://example.com', 'test')
+        self.default_hyperlink = serializers.Hyperlink('http://example.com', 'test')
 
     def test_can_be_pickled(self):
         import pickle
-        upkled = pickle.loads(pickle.dump(self.default_hyperlink))
-        assert upickled == self.default_hyperlink
-        assert upickled.name == self.default_hyperlink.name
+        upkled = pickle.loads(pickle.dumps(self.default_hyperlink))
+        assert upkled == self.default_hyperlink
+        assert upkled.name == self.default_hyperlink.name
