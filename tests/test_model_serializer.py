@@ -899,3 +899,38 @@ class TestDecimalFieldMappings(TestCase):
         serializer = TestSerializer()
 
         assert len(serializer.fields['decimal_field'].validators) == 2
+
+
+class Issue3674Test(TestCase):
+    def test_nonPK_foreignkey_model_serializer(self):
+        class TestParentModel(models.Model):
+            title = models.CharField(max_length=64)
+
+        class TestChildModel(models.Model):
+            parent = models.ForeignKey(TestParentModel, related_name='children')
+            value = models.CharField(primary_key=True, max_length=64)
+
+        class TestChildModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = TestChildModel
+                fields = ('value', 'parent')
+
+        class TestParentModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = TestParentModel
+                fields = ('id', 'title', 'children')
+
+        parent_expected = dedent("""
+            TestParentModelSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                title = CharField(max_length=64)
+                children = PrimaryKeyRelatedField(many=True, queryset=TestChildModel.objects.all())
+        """)
+        self.assertEqual(unicode_repr(TestParentModelSerializer()), parent_expected)
+
+        child_expected = dedent("""
+            TestChildModelSerializer():
+                value = CharField(max_length=64, validators=[<UniqueValidator(queryset=TestChildModel.objects.all())>])
+                parent = PrimaryKeyRelatedField(queryset=TestParentModel.objects.all())
+        """)
+        self.assertEqual(unicode_repr(TestChildModelSerializer()), child_expected)

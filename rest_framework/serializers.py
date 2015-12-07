@@ -1132,7 +1132,7 @@ class ModelSerializer(Serializer):
 
         to_field = field_kwargs.pop('to_field', None)
         if relation_info.reverse:
-            if to_field and not relation_info.related_model_field.related_field.primary_key:
+            if to_field and not relation_info.related_model_field.related_fields[0][1].primary_key:
                 field_kwargs['slug_field'] = to_field
                 field_class = self.serializer_related_to_field
         else:
