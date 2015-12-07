@@ -118,10 +118,9 @@ class DjangoFilterBackend(BaseFilterBackend):
 
     def to_html(self, request, queryset, view):
         filter_class = self.get_filter_class(view, queryset)
-        if filter_class:
-            filter_instance = filter_class(request.query_params, queryset=queryset)
-        else:
-            filter_instance = None
+        if not filter_class:
+            return None
+        filter_instance = filter_class(request.query_params, queryset=queryset)
         context = {
             'filter': filter_instance
         }
