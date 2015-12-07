@@ -17,9 +17,9 @@ from django.core.validators import (
     MaxValueValidator, MinLengthValidator, MinValueValidator
 )
 from django.db import models
+from django.http import QueryDict
 from django.test import TestCase
 from django.utils import six
-from django.http import QueryDict
 
 from rest_framework import serializers
 from rest_framework.compat import DurationField as ModelDurationField
@@ -928,7 +928,7 @@ class Issue3598TestCase(TestCase):
 
         expected_data = {
             'name': 'test',
-            'reverse_foreign_key': {'many_to_many':  [item.pk for item in new_many_to_many]}
+            'reverse_foreign_key': {'many_to_many': [item.pk for item in new_many_to_many]}
         }
 
         self.assertEqual(serializer.data, expected_data)
