@@ -10,6 +10,7 @@ from django.utils import timezone
 
 import rest_framework
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 
 # Tests for field keyword arguments and core functionality.
@@ -426,7 +427,13 @@ class FieldValues:
         for input_value, expected_failure in get_items(self.invalid_inputs):
             with pytest.raises(serializers.ValidationError) as exc_info:
                 self.field.run_validation(input_value)
-            assert exc_info.value.detail == expected_failure
+
+            if isinstance(exc_info.value.detail[0], ValidationError):
+                failure = exc_info.value.detail[0].detail
+            else:
+                failure = exc_info.value.detail
+
+            assert failure == expected_failure
 
     def test_outputs(self):
         for output_value, expected_output in get_items(self.outputs):
@@ -1393,7 +1400,10 @@ class TestFieldFieldWithName(FieldValues):
 # call into it's regular validation, or require PIL for testing.
 class FailImageValidation(object):
     def to_python(self, value):
-        raise serializers.ValidationError(self.error_messages['invalid_image'])
+        raise serializers.ValidationError(
+            self.error_messages['invalid_image'],
+            code='invalid_image'
+        )
 
 
 class PassImageValidation(object):

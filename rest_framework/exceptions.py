@@ -58,6 +58,14 @@ class APIException(Exception):
         return self.detail
 
 
+def build_error_from_django_validation_error(exc_info):
+    code = getattr(exc_info, 'code', None) or 'invalid'
+    return [
+        ValidationError(msg, code=code)
+        for msg in exc_info.messages
+    ]
+
+
 # The recommended style for using `ValidationError` is to keep it namespaced
 # under `serializers`, in order to minimize potential confusion with Django's
 # built in `ValidationError`. For example:
@@ -68,12 +76,17 @@ class APIException(Exception):
 class ValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
 
-    def __init__(self, detail):
+    def __init__(self, detail, code=None):
         # For validation errors the 'detail' key is always required.
         # The details should always be coerced to a list if not already.
         if not isinstance(detail, dict) and not isinstance(detail, list):
             detail = [detail]
-        self.detail = _force_text_recursive(detail)
+        elif isinstance(detail, dict) or (detail and isinstance(detail[0], ValidationError)):
+            assert code is None, (
+                'The `code` argument must not be set for compound errors.')
+
+        self.detail = detail
+        self.code = code
 
     def __str__(self):
         return six.text_type(self.detail)

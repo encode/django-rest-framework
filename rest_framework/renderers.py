@@ -493,6 +493,21 @@ class BrowsableAPIRenderer(BaseRenderer):
             if hasattr(serializer, 'initial_data'):
                 serializer.is_valid()
 
+                # Convert ValidationError to unicode string
+                # This is mainly a hack to monkey patch the errors and make the form renderer happy...
+                errors = OrderedDict()
+                for field_name, values in serializer.errors.items():
+                    if isinstance(values, list):
+                        errors[field_name] = values
+                        continue
+
+                    errors[field_name] = []
+                    for value in values.detail:
+                        for message in value.detail:
+                            errors[field_name].append(message)
+
+                serializer._errors = errors
+
             form_renderer = self.form_renderer_class()
             return form_renderer.render(
                 serializer.data,

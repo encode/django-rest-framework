@@ -47,8 +47,11 @@ class TestUniquenessValidation(TestCase):
     def test_is_not_unique(self):
         data = {'username': 'existing'}
         serializer = UniquenessSerializer(data=data)
+
         assert not serializer.is_valid()
-        assert serializer.errors == {'username': ['UniquenessModel with this username already exists.']}
+        assert serializer.errors['username'].code is None
+        assert serializer.errors['username'].detail[0].code == 'unique'
+        assert serializer.errors['username'].detail[0].detail == ['UniquenessModel with this username already exists.']
 
     def test_is_unique(self):
         data = {'username': 'other'}
@@ -150,11 +153,9 @@ class TestUniquenessTogetherValidation(TestCase):
         data = {'race_name': 'example', 'position': 2}
         serializer = UniquenessTogetherSerializer(data=data)
         assert not serializer.is_valid()
-        assert serializer.errors == {
-            'non_field_errors': [
-                'The fields race_name, position must make a unique set.'
-            ]
-        }
+        assert serializer.errors['non_field_errors'][0].code == 'unique'
+        assert serializer.errors['non_field_errors'][0].detail == [
+            'The fields race_name, position must make a unique set.']
 
     def test_is_unique_together(self):
         """
@@ -189,9 +190,8 @@ class TestUniquenessTogetherValidation(TestCase):
         data = {'position': 2}
         serializer = UniquenessTogetherSerializer(data=data, partial=True)
         assert not serializer.is_valid()
-        assert serializer.errors == {
-            'race_name': ['This field is required.']
-        }
+        assert serializer.errors['race_name'][0].code == 'required'
+        assert serializer.errors['race_name'][0].detail == ['This field is required.']
 
     def test_ignore_excluded_fields(self):
         """
@@ -278,9 +278,8 @@ class TestUniquenessForDateValidation(TestCase):
         data = {'slug': 'existing', 'published': '2000-01-01'}
         serializer = UniqueForDateSerializer(data=data)
         assert not serializer.is_valid()
-        assert serializer.errors == {
-            'slug': ['This field must be unique for the "published" date.']
-        }
+        assert serializer.errors['slug'][0].code == 'unique'
+        assert serializer.errors['slug'][0].detail == ['This field must be unique for the "published" date.']
 
     def test_is_unique_for_date(self):
         """

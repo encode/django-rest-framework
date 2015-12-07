@@ -38,7 +38,6 @@ class Response(SimpleTemplateResponse):
                 '`.error`. representation.'
             )
             raise AssertionError(msg)
-
         self.data = data
         self.template_name = template_name
         self.exception = exception
