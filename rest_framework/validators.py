@@ -79,7 +79,7 @@ class UniqueValidator(object):
         queryset = self.filter_queryset(value, queryset)
         queryset = self.exclude_current_instance(queryset)
         if qs_exists(queryset):
-            raise ValidationError(self.message)
+            raise ValidationError(self.message, code='unique')
 
     def __repr__(self):
         return unicode_to_repr('<%s(queryset=%s)>' % (
@@ -120,7 +120,9 @@ class UniqueTogetherValidator(object):
             return
 
         missing = {
-            field_name: self.missing_message
+            field_name: ValidationError(
+                self.missing_message,
+                code='required')
             for field_name in self.fields
             if field_name not in attrs
         }
@@ -166,7 +168,8 @@ class UniqueTogetherValidator(object):
         ]
         if None not in checked_values and qs_exists(queryset):
             field_names = ', '.join(self.fields)
-            raise ValidationError(self.message.format(field_names=field_names))
+            raise ValidationError(self.message.format(field_names=field_names),
+                                  code='unique')
 
     def __repr__(self):
         return unicode_to_repr('<%s(queryset=%s, fields=%s)>' % (
@@ -204,7 +207,9 @@ class BaseUniqueForValidator(object):
         'required' state on the fields they are applied to.
         """
         missing = {
-            field_name: self.missing_message
+            field_name: ValidationError(
+                self.missing_message,
+                code='required')
             for field_name in [self.field, self.date_field]
             if field_name not in attrs
         }
@@ -230,7 +235,8 @@ class BaseUniqueForValidator(object):
         queryset = self.exclude_current_instance(attrs, queryset)
         if qs_exists(queryset):
             message = self.message.format(date_field=self.date_field)
-            raise ValidationError({self.field: message})
+            error = ValidationError(message, code='unique')
+            raise ValidationError({self.field: error})
 
     def __repr__(self):
         return unicode_to_repr('<%s(queryset=%s, field=%s, date_field=%s)>' % (
