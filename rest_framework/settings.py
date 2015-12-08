@@ -135,6 +135,19 @@ IMPORT_STRINGS = (
 )
 
 
+SETTINGS_DOC = "http://www.django-rest-framework.org/api-guide/settings/"
+
+
+# List of settings that have been depreceated
+DEPRECEATED_SETTINGS = ()
+
+
+# List of settings that have been removed
+REMOVED_SETTINGS = (
+    "PAGINATE_BY", "PAGINATE_BY_PARAM", "MAX_PAGINATE_BY",
+)
+
+
 def perform_import(val, setting_name):
     """
     If the given setting is a string import notation,
@@ -207,10 +220,7 @@ class APISettings(object):
         return val
 
     def __check_user_settings(self, user_settings):
-        DEPRECEATED_SETTINGS = (
-            "PAGINATE_BY", "PAGINATE_BY_PARAM", "MAX_PAGINATE_BY",)
-        SETTINGS_DOC = "http://www.django-rest-framework.org/api-guide/settings/"
-        for setting in DEPRECEATED_SETTINGS:
+        for setting in REMOVED_SETTINGS:
             if setting in user_settings:
                 raise AttributeError("The '%s' setting has been removed. Please refer to '%s' for available settings." % (setting, SETTINGS_DOC))
         return user_settings
