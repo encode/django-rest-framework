@@ -138,10 +138,6 @@ IMPORT_STRINGS = (
 SETTINGS_DOC = "http://www.django-rest-framework.org/api-guide/settings/"
 
 
-# List of settings that have been depreceated
-DEPRECEATED_SETTINGS = ()
-
-
 # List of settings that have been removed
 REMOVED_SETTINGS = (
     "PAGINATE_BY", "PAGINATE_BY_PARAM", "MAX_PAGINATE_BY",
