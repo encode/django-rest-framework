@@ -208,7 +208,7 @@ class APISettings(object):
 
     def __check_user_settings(self, user_settings):
         DEPRECEATED_SETTINGS = (
-            "PAGINATE_BY", "PAGINATE_BY_PARAM", "MAX_PAGINATE_BY_SET",)
+            "PAGINATE_BY", "PAGINATE_BY_PARAM", "MAX_PAGINATE_BY",)
         SETTINGS_DOC = "http://www.django-rest-framework.org/api-guide/settings/"
         for setting in DEPRECEATED_SETTINGS:
             if setting in user_settings:
