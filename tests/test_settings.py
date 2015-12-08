@@ -23,7 +23,7 @@ class TestSettings(TestCase):
         Make sure user is alerted with an error when a removed setting
         is set.
         """
-        with self.assertRaise(AttributeError):
+        with self.assertRaises(AttributeError):
             APISettings({
                 'MAX_PAGINATE_BY': 100
             })
