@@ -213,6 +213,7 @@ class APISettings(object):
         for setting in DEPRECEATED_SETTINGS:
             if setting in user_settings:
                 raise AttributeError("The '%s' setting has been removed. Please refer to '%s' for available settings." % setting, SETTINGS_DOC)
+        return user_settings
 
 
 api_settings = APISettings(None, DEFAULTS, IMPORT_STRINGS)
