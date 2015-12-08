@@ -212,7 +212,7 @@ class APISettings(object):
         SETTINGS_DOC = "http://www.django-rest-framework.org/api-guide/settings/"
         for setting in DEPRECEATED_SETTINGS:
             if setting in user_settings:
-                raise AttributeError("The '%s' setting has been removed. Please refer to '%s' for available settings." % setting, SETTINGS_DOC)
+                raise AttributeError("The '%s' setting has been removed. Please refer to '%s' for available settings." % (setting, SETTINGS_DOC))
         return user_settings
 
 
