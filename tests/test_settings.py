@@ -18,6 +18,16 @@ class TestSettings(TestCase):
         with self.assertRaises(ImportError):
             settings.DEFAULT_RENDERER_CLASSES
 
+    def test_loud_error_raised_on_removed_setting(self):
+        """
+        Make sure user is alerted with an error when a removed setting
+        is set.
+        """
+        with self.asserRaise(AttributeError):
+            APISettings({
+                'MAX_PAGINATE_BY': 100
+            })
+
 
 class TestSettingTypes(TestCase):
     def test_settings_consistently_coerced_to_list(self):
