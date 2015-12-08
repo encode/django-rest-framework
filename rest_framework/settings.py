@@ -177,7 +177,7 @@ class APISettings(object):
     """
     def __init__(self, user_settings=None, defaults=None, import_strings=None):
         if user_settings:
-            self._user_settings = user_settings
+            self._user_settings = self.__check_user_settings(user_settings)
         self.defaults = defaults or DEFAULTS
         self.import_strings = import_strings or IMPORT_STRINGS
 
@@ -205,6 +205,14 @@ class APISettings(object):
         # Cache the result
         setattr(self, attr, val)
         return val
+
+    def __check_user_settings(self, user_settings):
+        DEPRECEATED_SETTINGS = (
+            "PAGINATE_BY", "PAGINATE_BY_PARAM", "MAX_PAGINATE_BY_SET",)
+        SETTINGS_DOC = "http://www.django-rest-framework.org/api-guide/settings/"
+        for setting in DEPRECEATED_SETTINGS:
+            if setting in user_settings:
+                raise AttributeError("The '%s' setting has been removed. Please refer to '%s' for available settings." % setting, SETTINGS_DOC)
 
 
 api_settings = APISettings(None, DEFAULTS, IMPORT_STRINGS)
