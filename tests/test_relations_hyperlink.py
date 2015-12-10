@@ -244,8 +244,9 @@ class HyperlinkedForeignKeyTests(TestCase):
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data, context={'request': request})
         self.assertFalse(serializer.is_valid())
-        self.assertEqual(serializer.errors['target'].detail, ['Incorrect type. Expected URL string, received int.'])
-        self.assertEqual(serializer.errors['target'].code, 'incorrect_type')
+        self.assertEqual(serializer.errors, {'target': ['Incorrect type. Expected URL string, received int.']})
+        self.assertEqual(serializer._errors['target'].detail, ['Incorrect type. Expected URL string, received int.'])
+        self.assertEqual(serializer._errors['target'].code, 'incorrect_type')
 
     def test_reverse_foreign_key_update(self):
         data = {'url': 'http://testserver/foreignkeytarget/2/', 'name': 'target-2', 'sources': ['http://testserver/foreignkeysource/1/', 'http://testserver/foreignkeysource/3/']}
@@ -316,8 +317,9 @@ class HyperlinkedForeignKeyTests(TestCase):
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data, context={'request': request})
         self.assertFalse(serializer.is_valid())
-        self.assertEqual(serializer.errors['target'].detail, ['This field may not be null.'])
-        self.assertEqual(serializer.errors['target'].code, 'null')
+        self.assertEqual(serializer.errors, {'target': ['This field may not be null.']})
+        self.assertEqual(serializer._errors['target'].detail, ['This field may not be null.'])
+        self.assertEqual(serializer._errors['target'].code, 'null')
 
 
 class HyperlinkedNullableForeignKeyTests(TestCase):

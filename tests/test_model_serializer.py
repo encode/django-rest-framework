@@ -374,7 +374,7 @@ class TestGenericIPAddressFieldValidation(TestCase):
 
         s = TestSerializer(data={'address': 'not an ip address'})
         self.assertFalse(s.is_valid())
-        self.assertEquals(1, len(s.errors['address'].detail),
+        self.assertEquals(1, len(s.errors['address']),
                           'Unexpected number of validation errors: '
                           '{0}'.format(s.errors))
 

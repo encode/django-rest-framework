@@ -49,9 +49,12 @@ class TestUniquenessValidation(TestCase):
         serializer = UniquenessSerializer(data=data)
 
         assert not serializer.is_valid()
-        assert serializer.errors['username'].code is None
-        assert serializer.errors['username'].detail[0].code == 'unique'
-        assert serializer.errors['username'].detail[0].detail == ['UniquenessModel with this username already exists.']
+
+        assert serializer.errors == {'username': ['UniquenessModel with this username already exists.']}
+
+        assert serializer._errors['username'].code is None
+        assert serializer._errors['username'].detail[0].code == 'unique'
+        assert serializer._errors['username'].detail[0].detail == ['UniquenessModel with this username already exists.']
 
     def test_is_unique(self):
         data = {'username': 'other'}

@@ -15,7 +15,6 @@ from django.views.generic import View
 
 from rest_framework import exceptions, status
 from rest_framework.compat import set_rollback
-from rest_framework.exceptions import ValidationError, _force_text_recursive
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -70,18 +69,8 @@ def exception_handler(exc, context):
         if getattr(exc, 'wait', None):
             headers['Retry-After'] = '%d' % exc.wait
 
-        if isinstance(exc.detail, list):
-            data = _force_text_recursive([item.detail if isinstance(item, ValidationError) else item
-                                          for item in exc.detai])
-        elif isinstance(exc.detail, dict):
-            for field_name, e in exc.detail.items():
-                if hasattr(e, 'detail') and isinstance(e.detail[0], ValidationError):
-                    exc.detail[field_name] = e.detail[0].detail
-                elif isinstance(e, ValidationError):
-                    exc.detail[field_name] = e.detail
-                else:
-                    exc.detail[field_name] = e
-            data = exc.detail
+        if isinstance(exc.detail, (list, dict)):
+            data = exc.detail.serializer.errors
         else:
             data = {'detail': exc.detail}
 

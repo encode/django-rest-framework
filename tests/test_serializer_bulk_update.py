@@ -71,7 +71,15 @@ class BulkCreateSerializerTests(TestCase):
         serializer = self.BookSerializer(data=data, many=True)
         self.assertEqual(serializer.is_valid(), False)
 
-        for idx, error in enumerate(serializer.errors):
+        expected_errors = [
+            {},
+            {},
+            {'id': ['A valid integer is required.']}
+        ]
+
+        self.assertEqual(serializer.errors, expected_errors)
+
+        for idx, error in enumerate(serializer._errors):
             if idx < 2:
                 self.assertEqual(error, {})
             else:

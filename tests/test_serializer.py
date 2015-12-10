@@ -32,8 +32,9 @@ class TestSerializer:
         serializer = self.Serializer(data={'char': 'abc'})
         assert not serializer.is_valid()
         assert serializer.validated_data == {}
-        assert serializer.errors['integer'].detail == ['This field is required.']
-        assert serializer.errors['integer'].code == 'required'
+        assert serializer.errors == {'integer': ['This field is required.']}
+        assert serializer._errors['integer'].detail == ['This field is required.']
+        assert serializer._errors['integer'].code == 'required'
 
     def test_partial_validation(self):
         serializer = self.Serializer(data={'char': 'abc'}, partial=True)

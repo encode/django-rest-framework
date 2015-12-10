@@ -122,9 +122,13 @@ class TestMaxValueValidatorValidation(TestCase):
     def test_max_value_validation_serializer_fails(self):
         serializer = ValidationMaxValueValidatorModelSerializer(data={'number_value': 101})
         self.assertFalse(serializer.is_valid())
-        self.assertEqual(['Ensure this value is less than or equal to 100.'], serializer.errors['number_value'].detail[0].detail)
-        self.assertEqual(None, serializer.errors['number_value'].code)
-        self.assertEqual('max_value', serializer.errors['number_value'].detail[0].code)
+
+        self.assertDictEqual({'number_value': ['Ensure this value is less than or equal to 100.']}, serializer.errors)
+
+        self.assertEqual(['Ensure this value is less than or equal to 100.'],
+                         serializer._errors['number_value'].detail[0].detail)
+        self.assertEqual(None, serializer._errors['number_value'].code)
+        self.assertEqual('max_value', serializer._errors['number_value'].detail[0].code)
 
     def test_max_value_validation_success(self):
         obj = ValidationMaxValueValidatorModel.objects.create(number_value=100)

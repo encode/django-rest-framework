@@ -104,8 +104,9 @@ class SlugForeignKeyTests(TestCase):
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEqual(serializer.errors['target'].detail, ['Object with name=123 does not exist.'])
-        self.assertEqual(serializer.errors['target'].code, 'does_not_exist')
+        self.assertEqual(serializer.errors, {'target': ['Object with name=123 does not exist.']})
+        self.assertEqual(serializer._errors['target'].detail, ['Object with name=123 does not exist.'])
+        self.assertEqual(serializer._errors['target'].code, 'does_not_exist')
 
     def test_reverse_foreign_key_update(self):
         data = {'id': 2, 'name': 'target-2', 'sources': ['source-1', 'source-3']}
@@ -177,8 +178,9 @@ class SlugForeignKeyTests(TestCase):
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEqual(serializer.errors['target'].detail, ['This field may not be null.'])
-        self.assertEqual(serializer.errors['target'].code, 'null')
+        self.assertEqual(serializer.errors, {'target': ['This field may not be null.']})
+        self.assertEqual(serializer._errors['target'].detail, ['This field may not be null.'])
+        self.assertEqual(serializer._errors['target'].code, 'null')
 
 
 class SlugNullableForeignKeyTests(TestCase):
