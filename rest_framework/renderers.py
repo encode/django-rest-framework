@@ -780,7 +780,7 @@ class MultiPartRenderer(BaseRenderer):
                 assert not isinstance(value, dict), (
                     "Test data contained a dictionary value for key '%s', "
                     "but multipart uploads do not support nested data. "
-                    "You may want to consider using format='JSON' in this "
+                    "You may want to consider using format='json' in this "
                     "test case." % key
                 )
         return encode_multipart(self.BOUNDARY, data)
