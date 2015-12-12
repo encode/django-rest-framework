@@ -51,6 +51,9 @@ using the `APIView` class based views.
             return Response({'received data': request.data})
 
 Or, if you're using the `@api_view` decorator with function based views.
+    
+    from rest_framework.decorators import api_view
+    from rest_framework.decorators import parser_classes
 
     @api_view(['POST'])
     @parser_classes((JSONParser,))
