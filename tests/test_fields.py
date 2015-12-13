@@ -960,6 +960,8 @@ class TestDateTimeField(FieldValues):
     outputs = {
         datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00',
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): '2001-01-01T13:00:00Z'
+        None: None,
+        '': None,
     }
     field = serializers.DateTimeField(default_timezone=timezone.UTC())
 
