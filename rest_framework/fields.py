@@ -1186,6 +1186,9 @@ class TimeField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
+        if not value:
+            return None
+
         output_format = getattr(self, 'format', api_settings.TIME_FORMAT)
 
         if output_format is None:

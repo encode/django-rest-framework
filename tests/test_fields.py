@@ -1030,7 +1030,9 @@ class TestTimeField(FieldValues):
         '99:99': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss[.uuuuuu]].'],
     }
     outputs = {
-        datetime.time(13, 00): '13:00:00'
+        datetime.time(13, 00): '13:00:00',
+        None: None,
+        '': None,
     }
     field = serializers.TimeField()
 
