@@ -510,14 +510,6 @@ class UserList(generics.ListCreateAPIView):
     serializer_class = UserSerializer
     permission_classes = (IsAdminUser,)
 
-    def get_paginate_by(self):
-        """
-        Use smaller pagination for HTML representations.
-        """
-        if self.request.accepted_renderer.format == 'html':
-            return 20
-        return 100
-
     def list(self, request):
         # Note the use of `get_queryset()` instead of `self.queryset`
         queryset = self.get_queryset()
@@ -601,15 +593,6 @@ class UserList(generics.ListCreateAPIView):
     if self.request.user.is_staff:
         return FullAccountSerializer
     return BasicAccountSerializer
-</code></pre>
-<h4 id="get_paginate_byself"><a class="toclink" href="#get_paginate_byself"><code>get_paginate_by(self)</code></a></h4>
-<p>Returns the page size to use with pagination.  By default this uses the <code>paginate_by</code> attribute, and may be overridden by the client if the <code>paginate_by_param</code> attribute is set.</p>
-<p>You may want to override this method to provide more complex behavior, such as modifying page sizes based on the media type of the response.</p>
-<p>For example:</p>
-<pre><code>def get_paginate_by(self):
-    if self.request.accepted_renderer.format == 'html':
-        return 20
-    return 100
 </code></pre>
 <p><strong>Save and deletion hooks</strong>:</p>
 <p>The following methods are provided by the mixin classes, and provide easy overriding of the object save or deletion behavior.</p>

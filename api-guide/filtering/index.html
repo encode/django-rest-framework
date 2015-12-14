@@ -558,10 +558,10 @@ class UserListView(generics.ListAPIView):
 <p>To use REST framework's <code>DjangoFilterBackend</code>, first install <code>django-filter</code>.</p>
 <pre><code>pip install django-filter
 </code></pre>
-<p>If you are using the browsable API or admin API you may also want to install <code>crispy-forms</code>, which will enhance the presentation of the filter forms in HTML views, by allowing them to render Bootstrap 3 HTML.</p>
+<p>If you are using the browsable API or admin API you may also want to install <code>django-crispy-forms</code>, which will enhance the presentation of the filter forms in HTML views, by allowing them to render Bootstrap 3 HTML.</p>
 <pre><code>pip install django-crispy-forms
 </code></pre>
-<p>With crispy forms installed, the browsable API will present a filtering control for <code>DjangoFilterBackend</code>, like so:</p>
+<p>With crispy forms installed and added to Django's <code>INSTALLED_APPS</code>, the browsable API will present a filtering control for <code>DjangoFilterBackend</code>, like so:</p>
 <p><img alt="Django Filter" src="../../img/django-filter.png" /></p>
 <h4 id="specifying-filter-fields"><a class="toclink" href="#specifying-filter-fields">Specifying filter fields</a></h4>
 <p>If all you need is simple equality-based filtering, you can set a <code>filter_fields</code> attribute on the view, or viewset, listing the set of fields you wish to filter against.</p>

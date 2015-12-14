@@ -435,7 +435,7 @@ class ProfileDetail(APIView):
 
 &lt;h1&gt;Profile - {{ profile.name }}&lt;/h1&gt;
 
-&lt;form action="{% url 'profile-detail' pk=profile.pk '%}" method="POST"&gt;
+&lt;form action="{% url 'profile-detail' pk=profile.pk %}" method="POST"&gt;
     {% csrf_token %}
     {% render_form serializer %}
     &lt;input type="submit" value="Save"&gt;

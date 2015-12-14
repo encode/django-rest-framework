@@ -477,7 +477,7 @@
 <ul>
 <li><a href="http://pypi.python.org/pypi/Markdown/">Markdown</a> (2.1.0+) - Markdown support for the browsable API.</li>
 <li><a href="http://pypi.python.org/pypi/django-filter">django-filter</a> (0.9.2+) - Filtering support.</li>
-<li>[django-crispy-forms][django-crispy-forms] - Improved HTML display for filtering.</li>
+<li><a href="https://github.com/maraujop/django-crispy-forms">django-crispy-forms</a> - Improved HTML display for filtering.</li>
 <li><a href="https://github.com/lukaszb/django-guardian">django-guardian</a> (1.1.1+) - Object level permissions support.</li>
 </ul>
 <h2 id="installation"><a class="toclink" href="#installation">Installation</a></h2>
@@ -501,7 +501,7 @@ pip install django-filter  # Filtering support
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
 </code></pre>
-<p>Note that the URL path can be whatever you want, but you must include <code>'rest_framework.urls'</code> with the <code>'rest_framework'</code> namespace.</p>
+<p>Note that the URL path can be whatever you want, but you must include <code>'rest_framework.urls'</code> with the <code>'rest_framework'</code> namespace. You may leave out the namespace in Django 1.9+, and REST framework will set it for you.</p>
 <h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>Let's take a look at a quick example of using REST framework to build a simple model-backed API.</p>
 <p>We'll create a read-write API for accessing information on the users of our project.</p>

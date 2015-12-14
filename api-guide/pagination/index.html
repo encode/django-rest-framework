@@ -440,6 +440,7 @@
 </ul>
 <p>The built-in styles currently all use links included as part of the content of the response. This style is more accessible when using the browsable API.</p>
 <p>Pagination is only performed automatically if you're using the generic views or viewsets. If you're using a regular <code>APIView</code>, you'll need to call into the pagination API yourself to ensure you return a paginated response. See the source code for the <code>mixins.ListModelMixin</code> and <code>generics.GenericAPIView</code> classes for an example.</p>
+<p>Pagination can be turned off by setting the pagination class to <code>None</code>.</p>
 <h2 id="setting-the-pagination-style"><a class="toclink" href="#setting-the-pagination-style">Setting the pagination style</a></h2>
 <p>The default pagination style may be set globally, using the <code>DEFAULT_PAGINATION_CLASS</code> settings key. For example, to use the built-in limit/offset pagination, you would do:</p>
 <pre><code>REST_FRAMEWORK = {
@@ -500,6 +501,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 <p>The <code>PageNumberPagination</code> class includes a number of attributes that may be overridden to modify the pagination style.</p>
 <p>To set these attributes you should override the <code>PageNumberPagination</code> class, and then enable your custom pagination class as above.</p>
 <ul>
+<li><code>django_paginator_class</code> - The Django Paginator class to use. Default is <code>django.core.paginator.Paginator</code>, which should be fine for most usecases.</li>
 <li><code>page_size</code> - A numeric value indicating the page size. If set, this overrides the <code>PAGE_SIZE</code> setting. Defaults to the same value as the <code>PAGE_SIZE</code> settings key.</li>
 <li><code>page_query_param</code> - A string value indicating the name of the query parameter to use for the pagination control.</li>
 <li><code>page_size_query_param</code> - If set, this is a string value indicating the name of a query parameter that allows the client to set the page size on a per-request basis. Defaults to <code>None</code>, indicating that the client may not control the requested page size.</li>

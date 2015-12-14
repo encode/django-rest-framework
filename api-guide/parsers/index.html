@@ -476,7 +476,10 @@ class ExampleView(APIView):
         return Response({'received data': request.data})
 </code></pre>
 <p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
-<pre><code>@api_view(['POST'])
+<pre><code>from rest_framework.decorators import api_view
+from rest_framework.decorators import parser_classes
+
+@api_view(['POST'])
 @parser_classes((JSONParser,))
 def example_view(request, format=None):
     """

@@ -625,6 +625,13 @@ def simple_html_view(request):
 <p><img alt="The AdminRender view" src="../../img/admin.png" /></p>
 <p>This renderer is suitable for CRUD-style web APIs that should also present a user-friendly interface for managing the data.</p>
 <p>Note that views that have nested or list serializers for their input won't work well with the <code>AdminRenderer</code>, as the HTML forms are unable to properly support them.</p>
+<p><strong>Note</strong>: The <code>AdminRenderer</code> is only able to include links to detail pages when a properly configured <code>URL_FIELD_NAME</code> (<code>url</code> by default) attribute is present in the data. For <code>HyperlinkedModelSerializer</code> this will be the case, but for <code>ModelSerializer</code> or plain <code>Serializer</code> classes you'll need to make sure to include the field explicitly. For example here we use models <code>get_absolute_url</code> method:</p>
+<pre><code>class AccountSerializer(serializers.ModelSerializer):
+    url = serializers.CharField(source='get_absolute_url', read_only=True)
+
+    class Meta:
+        model = Account
+</code></pre>
 <p><strong>.media_type</strong>: <code>text/html</code></p>
 <p><strong>.format</strong>: <code>'.admin'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
