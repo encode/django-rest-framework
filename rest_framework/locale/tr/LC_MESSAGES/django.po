@@ -3,6 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Dogukan Tufekci <dogukan@creco.co>, 2015
 # Emrah BİLBAY <emrahbilbay@gmail.com>, 2015
 # Ertaç Paprat <epaprat@gmail.com>, 2015
 # Mesut Can Gürle <mesutcang@gmail.com>, 2015
@@ -13,9 +14,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-21 10:55+0200\n"
-"PO-Revision-Date: 2015-09-21 08:56+0000\n"
-"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
+"POT-Creation-Date: 2015-12-07 18:53+0100\n"
+"PO-Revision-Date: 2015-12-08 16:12+0000\n"
+"Last-Translator: Recep KIRMIZI <rkirmizi@gmail.com>\n"
 "Language-Team: Turkish (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -39,24 +40,24 @@ msgstr "Geçersiz yetkilendirme başlığı. Uygunluk kriterleri base64 formatı
 msgid "Invalid username/password."
 msgstr "Geçersiz kullanıcı adı/parola"
 
-#: authentication.py:101 authentication.py:189
+#: authentication.py:101 authentication.py:188
 msgid "User inactive or deleted."
 msgstr "Kullanıcı aktif değil ya da silinmiş."
 
-#: authentication.py:168
+#: authentication.py:167
 msgid "Invalid token header. No credentials provided."
 msgstr "Geçersiz token başlığı. Kimlik bilgileri eksik."
 
-#: authentication.py:171
+#: authentication.py:170
 msgid "Invalid token header. Token string should not contain spaces."
 msgstr "Geçersiz token başlığı. Token'da boşluk olmamalı."
 
-#: authentication.py:177
+#: authentication.py:176
 msgid ""
 "Invalid token header. Token string should not contain invalid characters."
-msgstr ""
+msgstr "Geçersiz token başlığı. Token geçersiz karakter içermemeli."
 
-#: authentication.py:186
+#: authentication.py:185
 msgid "Invalid token."
 msgstr "Geçersiz token."
 
@@ -114,240 +115,266 @@ msgstr "İstekte desteklenmeyen medya tipi: \"{media_type}\"."
 msgid "Request was throttled."
 msgstr "Üst üste çok fazla istek yapıldı."
 
-#: fields.py:262 relations.py:191 relations.py:224 validators.py:79
+#: fields.py:266 relations.py:195 relations.py:228 validators.py:79
 #: validators.py:162
 msgid "This field is required."
 msgstr "Bu alan zorunlu."
 
-#: fields.py:263
+#: fields.py:267
 msgid "This field may not be null."
 msgstr "Bu alan boş bırakılmamalı."
 
-#: fields.py:599 fields.py:627
+#: fields.py:603 fields.py:634
 #, python-brace-format
 msgid "\"{input}\" is not a valid boolean."
 msgstr "\"{input}\" geçerli bir boolean değil."
 
-#: fields.py:662
+#: fields.py:669
 msgid "This field may not be blank."
 msgstr "Bu alan boş bırakılmamalı."
 
-#: fields.py:663 fields.py:1594
+#: fields.py:670 fields.py:1656
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr "Bu alanın {max_length} karakterden fazla karakter barındırmadığından emin olun."
 
-#: fields.py:664
+#: fields.py:671
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
 msgstr "Bu alanın en az {min_length} karakter barındırdığından emin olun."
 
-#: fields.py:701
+#: fields.py:708
 msgid "Enter a valid email address."
 msgstr "Geçerli bir e-posta adresi girin."
 
-#: fields.py:712
+#: fields.py:719
 msgid "This value does not match the required pattern."
 msgstr "Bu değer gereken düzenli ifade deseni ile uyuşmuyor."
 
-#: fields.py:723
+#: fields.py:730
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
 msgstr "Harf, rakam, altçizgi veya tireden oluşan geçerli bir \"slug\" giriniz."
 
-#: fields.py:735
+#: fields.py:742
 msgid "Enter a valid URL."
 msgstr "Geçerli bir URL girin."
 
-#: fields.py:748
+#: fields.py:755
 #, python-brace-format
 msgid "\"{value}\" is not a valid UUID."
 msgstr "\"{value}\" geçerli bir UUID değil."
 
-#: fields.py:782
+#: fields.py:791
 msgid "Enter a valid IPv4 or IPv6 address."
-msgstr ""
+msgstr "Geçerli bir IPv4 ya da IPv6 adresi girin."
 
-#: fields.py:807
+#: fields.py:816
 msgid "A valid integer is required."
 msgstr "Geçerli bir tam sayı girin."
 
-#: fields.py:808 fields.py:843 fields.py:876
+#: fields.py:817 fields.py:852 fields.py:885
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
 msgstr "Değerin {max_value} değerinden küçük ya da eşit olduğundan emin olun."
 
-#: fields.py:809 fields.py:844 fields.py:877
+#: fields.py:818 fields.py:853 fields.py:886
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
 msgstr "Değerin {min_value} değerinden büyük ya da eşit olduğundan emin olun."
 
-#: fields.py:810 fields.py:845 fields.py:881
+#: fields.py:819 fields.py:854 fields.py:890
 msgid "String value too large."
 msgstr "String değeri çok uzun."
 
-#: fields.py:842 fields.py:875
+#: fields.py:851 fields.py:884
 msgid "A valid number is required."
 msgstr "Geçerli bir numara gerekiyor."
 
-#: fields.py:878
+#: fields.py:887
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
 msgstr "Toplamda {max_digits} haneden fazla hane olmadığından emin olun."
 
-#: fields.py:879
+#: fields.py:888
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr "Ondalık basamak değerinin {max_decimal_places} haneden fazla olmadığından emin olun."
 
-#: fields.py:880
+#: fields.py:889
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
 msgstr "Ondalık ayracından önce {max_whole_digits} basamaktan fazla olmadığından emin olun."
 
-#: fields.py:994
+#: fields.py:1004
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
 msgstr "Datetime alanı yanlış biçimde. {format} biçimlerinden birini kullanın."
 
-#: fields.py:995
+#: fields.py:1005
 msgid "Expected a datetime but got a date."
 msgstr "Datetime değeri bekleniyor, ama date değeri geldi."
 
-#: fields.py:1060
+#: fields.py:1079
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr "Tarih biçimi yanlış. {format} biçimlerinden birini kullanın."
 
-#: fields.py:1061
+#: fields.py:1080
 msgid "Expected a date but got a datetime."
 msgstr "Date tipi beklenmekteydi, fakat datetime tipi geldi."
 
-#: fields.py:1125
+#: fields.py:1148
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr "Time biçimi yanlış. {format} biçimlerinden birini kullanın."
 
-#: fields.py:1180
+#: fields.py:1207
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Duration biçimi yanlış. {format} biçimlerinden birini kullanın."
 
-#: fields.py:1205 fields.py:1254
+#: fields.py:1232 fields.py:1281
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
 msgstr "\"{input}\" geçerli bir seçim değil."
 
-#: fields.py:1208 relations.py:58 relations.py:427
+#: fields.py:1235 relations.py:62 relations.py:431
 #, python-brace-format
 msgid "More than {count} items..."
-msgstr ""
+msgstr "{count} elemandan daha fazla..."
 
-#: fields.py:1255 fields.py:1401 relations.py:423 serializers.py:504
+#: fields.py:1282 fields.py:1429 relations.py:427 serializers.py:520
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Elemanların listesi beklenirken \"{input_type}\" alındı."
 
-#: fields.py:1256
+#: fields.py:1283
 msgid "This selection may not be empty."
-msgstr ""
+msgstr "Bu seçim boş bırakılmamalı."
 
-#: fields.py:1294
+#: fields.py:1320
 #, python-brace-format
 msgid "\"{input}\" is not a valid path choice."
-msgstr ""
+msgstr "\"{input}\" geçerli bir yol seçimi değil."
 
-#: fields.py:1313
+#: fields.py:1339
 msgid "No file was submitted."
 msgstr "Hiçbir dosya verilmedi."
 
-#: fields.py:1314
+#: fields.py:1340
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
 msgstr "Gönderilen veri dosya değil. Formdaki kodlama tipini kontrol edin."
 
-#: fields.py:1315
+#: fields.py:1341
 msgid "No filename could be determined."
 msgstr "Hiçbir dosya adı belirlenemedi."
 
-#: fields.py:1316
+#: fields.py:1342
 msgid "The submitted file is empty."
 msgstr "Gönderilen dosya boş."
 
-#: fields.py:1317
+#: fields.py:1343
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr "Bu dosya adının en fazla {max_length} karakter uzunluğunda olduğundan emin olun. (şu anda {length} karakter)."
 
-#: fields.py:1363
+#: fields.py:1391
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr "Geçerli bir resim yükleyin. Yüklediğiniz dosya resim değil ya da bozuk."
 
-#: fields.py:1402 relations.py:424 serializers.py:505
+#: fields.py:1430 relations.py:428 serializers.py:521
 msgid "This list may not be empty."
-msgstr ""
+msgstr "Bu liste boş olmamalı."
 
-#: fields.py:1452
+#: fields.py:1483
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
 msgstr "Sözlük tipi bir değişken beklenirken \"{input_type}\" tipi bir değişken alındı."
 
-#: pagination.py:192
+#: fields.py:1530
+msgid "Value must be valid JSON."
+msgstr "Değer geçerli bir JSON olmalı"
+
+#: filters.py:35 templates/rest_framework/filters/django_filter.html:5
+msgid "Submit"
+msgstr "Gönder"
+
+#: pagination.py:189
 #, python-brace-format
 msgid "Invalid page \"{page_number}\": {message}."
 msgstr "Geçersiz sayfa \"{page_number}\":{message}."
 
-#: pagination.py:462
+#: pagination.py:407
 msgid "Invalid cursor"
 msgstr "Sayfalandırma imleci geçersiz"
 
-#: relations.py:192
+#: relations.py:196
 #, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
 msgstr "Geçersiz pk \"{pk_value}\" - obje bulunamadı."
 
-#: relations.py:193
+#: relations.py:197
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
 msgstr "Hatalı tip. Pk değeri beklenirken, alınan {data_type}."
 
-#: relations.py:225
+#: relations.py:229
 msgid "Invalid hyperlink - No URL match."
 msgstr "Geçersiz bağlantı - Hiçbir URL eşleşmedi."
 
-#: relations.py:226
+#: relations.py:230
 msgid "Invalid hyperlink - Incorrect URL match."
 msgstr "Geçersiz bağlantı - Yanlış URL eşleşmesi."
 
-#: relations.py:227
+#: relations.py:231
 msgid "Invalid hyperlink - Object does not exist."
 msgstr "Geçersiz bağlantı - Obje bulunamadı."
 
-#: relations.py:228
+#: relations.py:232
 #, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
 msgstr "Hatalı tip. URL metni bekleniyor, {data_type} alındı."
 
-#: relations.py:387
+#: relations.py:391
 #, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
 msgstr "{slug_name}={value} değerini taşıyan obje bulunamadı."
 
-#: relations.py:388
+#: relations.py:392
 msgid "Invalid value."
 msgstr "Geçersiz değer."
 
-#: serializers.py:310
+#: serializers.py:326
 #, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
 msgstr "Geçersiz veri. Sözlük bekleniyordu fakat {datatype} geldi. "
+
+#: templates/rest_framework/admin.html:118
+#: templates/rest_framework/base.html:128
+msgid "Filters"
+msgstr "Filtreler"
+
+#: templates/rest_framework/filters/django_filter.html:2
+#: templates/rest_framework/filters/django_filter_crispyforms.html:4
+msgid "Field filters"
+msgstr "Alan filtreleri"
+
+#: templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "Sıralama"
+
+#: templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr "Arama"
 
 #: templates/rest_framework/horizontal/radio.html:2
 #: templates/rest_framework/inline/radio.html:2
