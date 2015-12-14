@@ -40,6 +40,28 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.3.x series
 
+### 3.3.2
+
+**Date**: [16th December 2015][3.3.2-milestone].
+
+* `ListField` enforces input is a list. ([#3513][gh3513])
+* Fix regression hiding raw data form. ([#3600][gh3600], [#3578][gh3578])
+* Fix Python 3.5 compatibility. ([#3534][gh3534], [#3626][gh3626])
+* Allow setting a custom Django Paginator in `pagination.PageNumberPagination`. ([#3631][gh3631], [#3684][gh3684])
+* Fix relational fields without `to_fields` attribute. ([#3635][gh3635], [#3634][gh3634])
+* Fix `template.render` deprecation warnings for Django 1.9. ([#3654][gh3654])
+* Sort response headers in browsable API renderer. ([#3655][gh3655])
+* Use related_objects api for Django 1.9+. ([#3656][gh3656], [#3252][gh3252])
+* Add confirm modal when deleting. ([#3228][gh3228], [#3662][gh3662])
+* Reveal previously hidden AttributeErrors and TypeErrors while calling has_[object_]permissions. ([#3668][gh3668])
+* Make DRF compatible with multi template engine in Django 1.8. ([#3672][gh3672])
+* Update `NestedBoundField` to also handle empty string when rendering its form. ([#3677][gh3677])
+* Fix UUID validation to properly catch invalid input types. ([#3687][gh3687], [#3679][gh3679])
+* Fix caching issues. ([#3628][gh3628], [#3701][gh3701])
+* Fix Admin and API browser for views without a filter_class. ([#3705][gh3705], [#3596][gh3596], [#3597][gh3597])
+* Add app_name to rest_framework.urls. ([#3714][gh3714])
+* Improve authtoken's views to support url versioning. ([#3718][gh3718], [#3723][gh3723])
+
 ### 3.3.1
 
 **Date**: [4th November 2015][3.3.1-milestone].
@@ -347,6 +369,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.2.5-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.5+Release%22
 [3.3.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.0+Release%22
 [3.3.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.1+Release%22
+[3.3.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.2+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -596,3 +619,33 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh3568]: https://github.com/tomchristie/django-rest-framework/issues/3568
 [gh3592]: https://github.com/tomchristie/django-rest-framework/issues/3592
 [gh3593]: https://github.com/tomchristie/django-rest-framework/issues/3593
+
+<!-- 3.3.2 -->
+[gh3228]: https://github.com/tomchristie/django-rest-framework/issues/3228
+[gh3252]: https://github.com/tomchristie/django-rest-framework/issues/3252
+[gh3513]: https://github.com/tomchristie/django-rest-framework/issues/3513
+[gh3534]: https://github.com/tomchristie/django-rest-framework/issues/3534
+[gh3578]: https://github.com/tomchristie/django-rest-framework/issues/3578
+[gh3596]: https://github.com/tomchristie/django-rest-framework/issues/3596
+[gh3597]: https://github.com/tomchristie/django-rest-framework/issues/3597
+[gh3600]: https://github.com/tomchristie/django-rest-framework/issues/3600
+[gh3626]: https://github.com/tomchristie/django-rest-framework/issues/3626
+[gh3628]: https://github.com/tomchristie/django-rest-framework/issues/3628
+[gh3631]: https://github.com/tomchristie/django-rest-framework/issues/3631
+[gh3634]: https://github.com/tomchristie/django-rest-framework/issues/3634
+[gh3635]: https://github.com/tomchristie/django-rest-framework/issues/3635
+[gh3654]: https://github.com/tomchristie/django-rest-framework/issues/3654
+[gh3655]: https://github.com/tomchristie/django-rest-framework/issues/3655
+[gh3656]: https://github.com/tomchristie/django-rest-framework/issues/3656
+[gh3662]: https://github.com/tomchristie/django-rest-framework/issues/3662
+[gh3668]: https://github.com/tomchristie/django-rest-framework/issues/3668
+[gh3672]: https://github.com/tomchristie/django-rest-framework/issues/3672
+[gh3677]: https://github.com/tomchristie/django-rest-framework/issues/3677
+[gh3679]: https://github.com/tomchristie/django-rest-framework/issues/3679
+[gh3684]: https://github.com/tomchristie/django-rest-framework/issues/3684
+[gh3687]: https://github.com/tomchristie/django-rest-framework/issues/3687
+[gh3701]: https://github.com/tomchristie/django-rest-framework/issues/3701
+[gh3705]: https://github.com/tomchristie/django-rest-framework/issues/3705
+[gh3714]: https://github.com/tomchristie/django-rest-framework/issues/3714
+[gh3718]: https://github.com/tomchristie/django-rest-framework/issues/3718
+[gh3723]: https://github.com/tomchristie/django-rest-framework/issues/3723
