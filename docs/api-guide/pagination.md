@@ -97,7 +97,7 @@ The `PageNumberPagination` class includes a number of attributes that may be ove
 
 To set these attributes you should override the `PageNumberPagination` class, and then enable your custom pagination class as above.
 
-* `django_paginator_class` - The Django Paginator class to use. Default is `django.core.paginator.Paginator`, which should be fine for most usecases.
+* `django_paginator_class` - The Django Paginator class to use. Default is `django.core.paginator.Paginator`, which should be fine for most use cases.
 * `page_size` - A numeric value indicating the page size. If set, this overrides the `PAGE_SIZE` setting. Defaults to the same value as the `PAGE_SIZE` settings key.
 * `page_query_param` - A string value indicating the name of the query parameter to use for the pagination control.
 * `page_size_query_param` - If set, this is a string value indicating the name of a query parameter that allows the client to set the page size on a per-request basis. Defaults to `None`, indicating that the client may not control the requested page size.
