@@ -178,7 +178,7 @@ Proper usage of cursor pagination should have an ordering field that satisfies t
 * Should be a non-nullable value that can be coerced to a string.
 * The field should have a database index.
 
-Using an ordering field that does not satisfy these constraints will generally still work, but you'll be loosing some of the benefits of cursor pagination.
+Using an ordering field that does not satisfy these constraints will generally still work, but you'll be losing some of the benefits of cursor pagination.
 
 For more technical details on the implementation we use for cursor pagination, the ["Building cursors for the Disqus API"][disqus-cursor-api] blog post gives a good overview of the basic approach.
 
