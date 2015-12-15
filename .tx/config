@@ -7,3 +7,4 @@ file_filter = rest_framework/locale/<lang>/LC_MESSAGES/django.po
 source_file = rest_framework/locale/en_US/LC_MESSAGES/django.po
 source_lang = en_US
 type = PO
+
