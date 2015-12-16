@@ -99,7 +99,7 @@ class DjangoFilterBackend(BaseFilterBackend):
             return filter_class
 
         if filter_fields:
-            class AutoFilterSet(FilterSet):
+            class AutoFilterSet(self.default_filter_set):
                 class Meta:
                     model = queryset.model
                     fields = filter_fields
