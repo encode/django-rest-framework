@@ -7,7 +7,6 @@ import pytest
 
 from rest_framework import serializers
 from rest_framework.compat import unicode_repr
-from rest_framework.fields import DjangoValidationError
 
 from .utils import MockObject
 
@@ -33,8 +32,6 @@ class TestSerializer:
         assert not serializer.is_valid()
         assert serializer.validated_data == {}
         assert serializer.errors == {'integer': ['This field is required.']}
-        assert serializer._errors['integer'].detail == ['This field is required.']
-        assert serializer._errors['integer'].code == 'required'
 
     def test_partial_validation(self):
         serializer = self.Serializer(data={'char': 'abc'}, partial=True)
@@ -72,10 +69,7 @@ class TestValidateMethod:
             integer = serializers.IntegerField()
 
             def validate(self, attrs):
-                raise serializers.ValidationError(
-                    'Non field error',
-                    code='test'
-                )
+                raise serializers.ValidationError('Non field error')
 
         serializer = ExampleSerializer(data={'char': 'abc', 'integer': 123})
         assert not serializer.is_valid()
@@ -315,27 +309,3 @@ class TestCacheSerializerData:
         pickled = pickle.dumps(serializer.data)
         data = pickle.loads(pickled)
         assert data == {'field1': 'a', 'field2': 'b'}
-
-
-class TestGetValidationErrorDetail:
-    def test_get_validation_error_detail_converts_django_errors(self):
-        exc = DjangoValidationError("Missing field.", code='required')
-        detail = serializers.get_validation_error_detail(exc)
-        assert detail['non_field_errors'][0].detail == ['Missing field.']
-        assert detail['non_field_errors'][0].code == 'required'
-
-
-class TestCapturingDjangoValidationError:
-    def test_django_validation_error_on_a_field_is_converted(self):
-        class ExampleSerializer(serializers.Serializer):
-            field = serializers.CharField()
-
-            def validate_field(self, value):
-                raise DjangoValidationError(
-                    'validation failed'
-                )
-
-        serializer = ExampleSerializer(data={'field': 'a'})
-        assert not serializer.is_valid()
-        assert serializer.errors['field'][0].detail == ['validation failed']
-        assert serializer.errors['field'][0].code == 'invalid'

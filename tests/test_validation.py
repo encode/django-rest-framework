@@ -41,8 +41,7 @@ class ShouldValidateModelSerializer(serializers.ModelSerializer):
 
     def validate_renamed(self, value):
         if len(value) < 3:
-            raise serializers.ValidationError('Minimum 3 characters.',
-                                              code='min_length')
+            raise serializers.ValidationError('Minimum 3 characters.')
         return value
 
     class Meta:
@@ -92,9 +91,11 @@ class TestAvoidValidation(TestCase):
     def test_serializer_errors_has_only_invalid_data_error(self):
         serializer = ValidationSerializer(data='invalid data')
         self.assertFalse(serializer.is_valid())
-        self.assertEqual(serializer.errors['non_field_errors'][0].detail,
-                         ['Invalid data. Expected a dictionary, but got %s.' % type('').__name__])
-        self.assertEqual(serializer.errors['non_field_errors'][0].code, 'invalid')
+        self.assertDictEqual(serializer.errors, {
+            'non_field_errors': [
+                'Invalid data. Expected a dictionary, but got %s.' % type('').__name__
+            ]
+        })
 
 
 # regression tests for issue: 1493
@@ -122,13 +123,7 @@ class TestMaxValueValidatorValidation(TestCase):
     def test_max_value_validation_serializer_fails(self):
         serializer = ValidationMaxValueValidatorModelSerializer(data={'number_value': 101})
         self.assertFalse(serializer.is_valid())
-
         self.assertDictEqual({'number_value': ['Ensure this value is less than or equal to 100.']}, serializer.errors)
-
-        self.assertEqual(['Ensure this value is less than or equal to 100.'],
-                         serializer._errors['number_value'].detail[0].detail)
-        self.assertEqual(None, serializer._errors['number_value'].code)
-        self.assertEqual('max_value', serializer._errors['number_value'].detail[0].code)
 
     def test_max_value_validation_success(self):
         obj = ValidationMaxValueValidatorModel.objects.create(number_value=100)

@@ -38,10 +38,6 @@ class TestSimpleBoundField:
         serializer = ExampleSerializer(data={'text': 'x' * 1000, 'amount': 123})
         serializer.is_valid()
 
-        # TODO Should we add the _errors with ValidationError to the bound_field.errors to get acces to the error code?
-        assert serializer._errors['text'].detail[0].detail == ['Ensure this field has no more than 100 characters.']
-        assert serializer._errors['text'].detail[0].code == 'max_length'
-
         assert serializer['text'].value == 'x' * 1000
         assert serializer['text'].errors == ['Ensure this field has no more than 100 characters.']
         assert serializer['text'].name == 'text'

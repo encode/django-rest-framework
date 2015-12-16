@@ -280,10 +280,7 @@ class TestListSerializerClass:
     def test_list_serializer_class_validate(self):
         class CustomListSerializer(serializers.ListSerializer):
             def validate(self, attrs):
-                raise serializers.ValidationError(
-                    'Non field error',
-                    code='test'
-                )
+                raise serializers.ValidationError('Non field error')
 
         class TestSerializer(serializers.Serializer):
             class Meta:
