@@ -70,7 +70,7 @@ def exception_handler(exc, context):
             headers['Retry-After'] = '%d' % exc.wait
 
         if isinstance(exc.detail, (list, dict)):
-            data = exc.detail.serializer.errors
+            data = exc.detail
         else:
             data = {'detail': exc.detail}
 

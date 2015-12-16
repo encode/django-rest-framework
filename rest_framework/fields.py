@@ -32,7 +32,8 @@ from rest_framework.compat import (
     unicode_to_repr
 )
 from rest_framework.exceptions import (
-    ValidationError, build_error_from_django_validation_error
+    ValidationError, ValidationErrorMessage,
+    build_error_from_django_validation_error
 )
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, representation
@@ -503,7 +504,7 @@ class Field(object):
                 # attempting to accumulate a list of errors.
                 if isinstance(exc.detail, dict):
                     raise
-                errors.append(ValidationError(exc.detail, code=exc.code))
+                errors.extend(exc.detail)
             except DjangoValidationError as exc:
                 errors.extend(
                     build_error_from_django_validation_error(exc)
@@ -545,7 +546,7 @@ class Field(object):
             msg = MISSING_ERROR_MESSAGE.format(class_name=class_name, key=key)
             raise AssertionError(msg)
         message_string = msg.format(**kwargs)
-        raise ValidationError(message_string, code=key)
+        raise ValidationError(ValidationErrorMessage(message_string, code=key))
 
     @cached_property
     def root(self):
