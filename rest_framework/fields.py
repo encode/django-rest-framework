@@ -509,7 +509,7 @@ class Field(object):
                 # attempting to accumulate a list of errors.
                 if isinstance(exc.detail, dict):
                     raise
-                errors.append(ValidationError(exc.detail, code=exc.code))
+                errors.extend(exc.detail)
             except DjangoValidationError as exc:
                 errors.extend(
                     build_error_from_django_validation_error(exc)
