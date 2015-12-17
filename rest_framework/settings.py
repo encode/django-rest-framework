@@ -18,6 +18,7 @@ REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
 from __future__ import unicode_literals
+
 import warnings
 
 from django.conf import settings
