@@ -17,6 +17,7 @@ This module provides the `api_setting` object, that is used to access
 REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
+import warnings
 from __future__ import unicode_literals
 
 from django.conf import settings
@@ -216,7 +217,7 @@ class APISettings(object):
         SETTINGS_DOC = "http://www.django-rest-framework.org/api-guide/settings/"
         for setting in REMOVED_SETTINGS:
             if setting in user_settings:
-                raise AttributeError("The '%s' setting has been removed. Please refer to '%s' for available settings." % (setting, SETTINGS_DOC))
+                warnings.warn("The '%s' setting has been removed. Please refer to '%s' for available settings." % (setting, SETTINGS_DOC), DeprecationWarning)
         return user_settings
 
 
