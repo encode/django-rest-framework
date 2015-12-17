@@ -130,7 +130,7 @@ class SimpleMetadata(BaseMetadata):
 
         for attr in attrs:
             value = getattr(field, attr, None)
-            if value is not None and value != '':
+            if value is not None and value != '' and value != []:
                 field_info[attr] = force_text(value, strings_only=True)
 
         if getattr(field, 'child', None):
