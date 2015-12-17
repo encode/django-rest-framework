@@ -60,8 +60,7 @@ class UniqueValidator(object):
         queryset = self.filter_queryset(value, queryset)
         queryset = self.exclude_current_instance(queryset)
         if queryset.exists():
-            raise ValidationError(ValidationErrorMessage(self.message,
-                                                         code='unique'))
+            raise ValidationError(self.message, code='unique')
 
     def __repr__(self):
         return unicode_to_repr('<%s(queryset=%s)>' % (
@@ -152,10 +151,8 @@ class UniqueTogetherValidator(object):
         if None not in checked_values and queryset.exists():
             field_names = ', '.join(self.fields)
             raise ValidationError(
-                ValidationErrorMessage(
-                    self.message.format(field_names=field_names),
-                    code='unique')
-            )
+                self.message.format(field_names=field_names),
+                code='unique')
 
     def __repr__(self):
         return unicode_to_repr('<%s(queryset=%s, fields=%s)>' % (

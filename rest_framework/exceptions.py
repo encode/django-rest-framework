@@ -87,7 +87,11 @@ class ValidationErrorMessage(six.text_type):
 class ValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
 
-    def __init__(self, detail):
+    def __init__(self, detail, code=None):
+        # If code is there, this means we are dealing with a message.
+        if code and not isinstance(detail, ValidationErrorMessage):
+            detail = ValidationErrorMessage(detail, code=code)
+
         # For validation errors the 'detail' key is always required.
         # The details should always be coerced to a list if not already.
         if not isinstance(detail, dict) and not isinstance(detail, list):

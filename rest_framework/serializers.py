@@ -24,6 +24,7 @@ from rest_framework import exceptions
 from rest_framework.compat import DurationField as ModelDurationField
 from rest_framework.compat import JSONField as ModelJSONField
 from rest_framework.compat import postgres_fields, unicode_to_repr
+from rest_framework.exceptions import ValidationErrorMessage
 from rest_framework.utils import model_meta
 from rest_framework.utils.field_mapping import (
     ClassLookupDict, get_field_kwargs, get_nested_relation_kwargs,
