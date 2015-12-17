@@ -126,7 +126,7 @@ class FileUploadParser(BaseParser):
     def parse(self, stream, media_type=None, parser_context=None):
         """
         Treats the incoming bytestream as a raw file upload and returns
-        a `DateAndFiles` object.
+        a `DataAndFiles` object.
 
         `.data` will be None (we expect request body to be a file content).
         `.files` will be a `QueryDict` containing one 'file' element.

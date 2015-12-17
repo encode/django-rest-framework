@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-21 10:55+0200\n"
-"PO-Revision-Date: 2015-09-21 08:56+0000\n"
+"POT-Creation-Date: 2015-12-07 18:53+0100\n"
+"PO-Revision-Date: 2015-12-07 17:55+0000\n"
 "Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
 "Language-Team: Estonian (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/et/)\n"
 "MIME-Version: 1.0\n"
@@ -34,24 +34,24 @@ msgstr "Sobimatu lihtpäis. Kasutajatunnus pole korrektselt base64-kodeeritud."
 msgid "Invalid username/password."
 msgstr "Sobimatu kasutajatunnus/salasõna."
 
-#: authentication.py:101 authentication.py:189
+#: authentication.py:101 authentication.py:188
 msgid "User inactive or deleted."
 msgstr "Kasutaja on inaktiivne või kustutatud."
 
-#: authentication.py:168
+#: authentication.py:167
 msgid "Invalid token header. No credentials provided."
 msgstr "Sobimatu lubakaardi päis. Kasutajatunnus on esitamata."
 
-#: authentication.py:171
+#: authentication.py:170
 msgid "Invalid token header. Token string should not contain spaces."
 msgstr "Sobimatu lubakaardi päis. Loa sõne ei tohi sisaldada tühikuid."
 
-#: authentication.py:177
+#: authentication.py:176
 msgid ""
 "Invalid token header. Token string should not contain invalid characters."
 msgstr ""
 
-#: authentication.py:186
+#: authentication.py:185
 msgid "Invalid token."
 msgstr "Sobimatu lubakaart."
 
@@ -109,240 +109,266 @@ msgstr "Meedia tüüpi {media_type} päringus ei toetata."
 msgid "Request was throttled."
 msgstr "Liiga palju päringuid."
 
-#: fields.py:262 relations.py:191 relations.py:224 validators.py:79
+#: fields.py:266 relations.py:195 relations.py:228 validators.py:79
 #: validators.py:162
 msgid "This field is required."
 msgstr "Väli on kohustuslik."
 
-#: fields.py:263
+#: fields.py:267
 msgid "This field may not be null."
 msgstr "Väli ei tohi olla tühi."
 
-#: fields.py:599 fields.py:627
+#: fields.py:603 fields.py:634
 #, python-brace-format
 msgid "\"{input}\" is not a valid boolean."
 msgstr "\"{input}\" pole kehtiv kahendarv."
 
-#: fields.py:662
+#: fields.py:669
 msgid "This field may not be blank."
 msgstr "See väli ei tohi olla tühi."
 
-#: fields.py:663 fields.py:1594
+#: fields.py:670 fields.py:1656
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr "Veendu, et see väli poleks pikem kui {max_length} tähemärki."
 
-#: fields.py:664
+#: fields.py:671
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
 msgstr "Veendu, et see väli oleks vähemalt {min_length} tähemärki pikk."
 
-#: fields.py:701
+#: fields.py:708
 msgid "Enter a valid email address."
 msgstr "Sisestage kehtiv e-posti aadress."
 
-#: fields.py:712
+#: fields.py:719
 msgid "This value does not match the required pattern."
 msgstr "Väärtus ei ühti etteantud mustriga."
 
-#: fields.py:723
+#: fields.py:730
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
 msgstr "Sisestage kehtiv \"slug\", mis koosneks tähtedest, numbritest, ala- või sidekriipsudest."
 
-#: fields.py:735
+#: fields.py:742
 msgid "Enter a valid URL."
 msgstr "Sisestage korrektne URL."
 
-#: fields.py:748
+#: fields.py:755
 #, python-brace-format
 msgid "\"{value}\" is not a valid UUID."
 msgstr "\"{value}\" pole kehtiv UUID."
 
-#: fields.py:782
+#: fields.py:791
 msgid "Enter a valid IPv4 or IPv6 address."
 msgstr ""
 
-#: fields.py:807
+#: fields.py:816
 msgid "A valid integer is required."
 msgstr "Sisendiks peab olema täisarv."
 
-#: fields.py:808 fields.py:843 fields.py:876
+#: fields.py:817 fields.py:852 fields.py:885
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
 msgstr "Veenduge, et väärtus on väiksem kui või võrdne väärtusega {max_value}. "
 
-#: fields.py:809 fields.py:844 fields.py:877
+#: fields.py:818 fields.py:853 fields.py:886
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
 msgstr "Veenduge, et väärtus on suurem kui või võrdne väärtusega {min_value}."
 
-#: fields.py:810 fields.py:845 fields.py:881
+#: fields.py:819 fields.py:854 fields.py:890
 msgid "String value too large."
 msgstr "Sõne on liiga pikk."
 
-#: fields.py:842 fields.py:875
+#: fields.py:851 fields.py:884
 msgid "A valid number is required."
 msgstr "Sisendiks peab olema arv."
 
-#: fields.py:878
+#: fields.py:887
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
 msgstr "Veenduge, et kokku pole rohkem kui {max_digits} numbit."
 
-#: fields.py:879
+#: fields.py:888
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr "Veenduge, et komakohti pole rohkem kui {max_decimal_places}. "
 
-#: fields.py:880
+#: fields.py:889
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
 msgstr "Veenduge, et täiskohti poleks rohkem kui {max_whole_digits}."
 
-#: fields.py:994
+#: fields.py:1004
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
 msgstr "Valesti formaaditud kuupäev-kellaaeg. Kasutage mõnda neist: {format}."
 
-#: fields.py:995
+#: fields.py:1005
 msgid "Expected a datetime but got a date."
 msgstr "Ootasin kuupäev-kellaaeg andmetüüpi, kuid sain hoopis kuupäeva."
 
-#: fields.py:1060
+#: fields.py:1079
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr "Valesti formaaditud kuupäev. Kasutage mõnda neist: {format}."
 
-#: fields.py:1061
+#: fields.py:1080
 msgid "Expected a date but got a datetime."
 msgstr "Ootasin kuupäeva andmetüüpi, kuid sain hoopis kuupäev-kellaaja."
 
-#: fields.py:1125
+#: fields.py:1148
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr "Valesti formaaditud kellaaeg. Kasutage mõnda neist: {format}."
 
-#: fields.py:1180
+#: fields.py:1207
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
-#: fields.py:1205 fields.py:1254
+#: fields.py:1232 fields.py:1281
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
 msgstr "\"{input}\" on sobimatu valik."
 
-#: fields.py:1208 relations.py:58 relations.py:427
+#: fields.py:1235 relations.py:62 relations.py:431
 #, python-brace-format
 msgid "More than {count} items..."
 msgstr ""
 
-#: fields.py:1255 fields.py:1401 relations.py:423 serializers.py:504
+#: fields.py:1282 fields.py:1429 relations.py:427 serializers.py:520
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Ootasin kirjete järjendit, kuid sain \"{input_type}\" - tüübi."
 
-#: fields.py:1256
+#: fields.py:1283
 msgid "This selection may not be empty."
 msgstr ""
 
-#: fields.py:1294
+#: fields.py:1320
 #, python-brace-format
 msgid "\"{input}\" is not a valid path choice."
 msgstr ""
 
-#: fields.py:1313
+#: fields.py:1339
 msgid "No file was submitted."
 msgstr "Ühtegi faili ei esitatud."
 
-#: fields.py:1314
+#: fields.py:1340
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
 msgstr "Esitatud andmetes ei olnud faili. Kontrollige vormi kodeeringut."
 
-#: fields.py:1315
+#: fields.py:1341
 msgid "No filename could be determined."
 msgstr "Ei suutnud tuvastada failinime."
 
-#: fields.py:1316
+#: fields.py:1342
 msgid "The submitted file is empty."
 msgstr "Esitatud fail oli tühi."
 
-#: fields.py:1317
+#: fields.py:1343
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr "Veenduge, et failinimi oleks maksimaalselt {max_length} tähemärki pikk (praegu on {length})."
 
-#: fields.py:1363
+#: fields.py:1391
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr "Laadige üles kehtiv pildifail. Üles laetud fail ei olnud pilt või oli see katki."
 
-#: fields.py:1402 relations.py:424 serializers.py:505
+#: fields.py:1430 relations.py:428 serializers.py:521
 msgid "This list may not be empty."
 msgstr ""
 
-#: fields.py:1452
+#: fields.py:1483
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
 msgstr "Ootasin kirjete sõnastikku, kuid sain \"{input_type}\"."
 
-#: pagination.py:192
+#: fields.py:1530
+msgid "Value must be valid JSON."
+msgstr ""
+
+#: filters.py:35 templates/rest_framework/filters/django_filter.html:5
+msgid "Submit"
+msgstr ""
+
+#: pagination.py:189
 #, python-brace-format
 msgid "Invalid page \"{page_number}\": {message}."
 msgstr "Sobimatu lehekülg \"{page_number}\": {message}."
 
-#: pagination.py:462
+#: pagination.py:407
 msgid "Invalid cursor"
 msgstr "Sobimatu kursor."
 
-#: relations.py:192
+#: relations.py:196
 #, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
 msgstr "Sobimatu primaarvõti \"{pk_value}\" - objekti pole olemas."
 
-#: relations.py:193
+#: relations.py:197
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
 msgstr "Sobimatu andmetüüp. Ootasin primaarvõtit, sain {data_type}."
 
-#: relations.py:225
+#: relations.py:229
 msgid "Invalid hyperlink - No URL match."
 msgstr "Sobimatu hüperlink - ei leidnud URLi vastet."
 
-#: relations.py:226
+#: relations.py:230
 msgid "Invalid hyperlink - Incorrect URL match."
 msgstr "Sobimatu hüperlink - vale URLi vaste."
 
-#: relations.py:227
+#: relations.py:231
 msgid "Invalid hyperlink - Object does not exist."
 msgstr "Sobimatu hüperlink - objekti ei eksisteeri."
 
-#: relations.py:228
+#: relations.py:232
 #, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
 msgstr "Sobimatu andmetüüp. Ootasin URLi sõne, sain {data_type}."
 
-#: relations.py:387
+#: relations.py:391
 #, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
 msgstr "Objekti {slug_name}={value} ei eksisteeri."
 
-#: relations.py:388
+#: relations.py:392
 msgid "Invalid value."
 msgstr "Sobimatu väärtus."
 
-#: serializers.py:310
+#: serializers.py:326
 #, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
 msgstr "Sobimatud andmed. Ootasin sõnastikku, kuid sain {datatype}."
+
+#: templates/rest_framework/admin.html:118
+#: templates/rest_framework/base.html:128
+msgid "Filters"
+msgstr ""
+
+#: templates/rest_framework/filters/django_filter.html:2
+#: templates/rest_framework/filters/django_filter_crispyforms.html:4
+msgid "Field filters"
+msgstr ""
+
+#: templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr ""
+
+#: templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr ""
 
 #: templates/rest_framework/horizontal/radio.html:2
 #: templates/rest_framework/inline/radio.html:2
