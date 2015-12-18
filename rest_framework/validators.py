@@ -11,7 +11,7 @@ from __future__ import unicode_literals
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import unicode_to_repr
-from rest_framework.exceptions import ValidationError, ValidationErrorMessage
+from rest_framework.exceptions import ValidationError
 from rest_framework.utils.representation import smart_repr
 
 
@@ -101,10 +101,7 @@ class UniqueTogetherValidator(object):
             return
 
         missing = {
-            field_name: ValidationErrorMessage(
-                self.missing_message,
-                code='required')
-
+            field_name: self.missing_message
             for field_name in self.fields
             if field_name not in attrs
         }
@@ -190,9 +187,7 @@ class BaseUniqueForValidator(object):
         'required' state on the fields they are applied to.
         """
         missing = {
-            field_name: ValidationErrorMessage(
-                self.missing_message,
-                code='required')
+            field_name: self.missing_message
             for field_name in [self.field, self.date_field]
             if field_name not in attrs
         }
@@ -219,7 +214,7 @@ class BaseUniqueForValidator(object):
         if queryset.exists():
             message = self.message.format(date_field=self.date_field)
             raise ValidationError({
-                self.field: ValidationErrorMessage(message, code='unique'),
+                self.field: message,
             })
 
     def __repr__(self):

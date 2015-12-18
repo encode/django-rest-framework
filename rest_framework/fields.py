@@ -32,7 +32,7 @@ from rest_framework.compat import (
     unicode_to_repr
 )
 from rest_framework.exceptions import (
-    ValidationError, build_error_from_django_validation_error
+    ValidationError
 )
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, representation
@@ -505,9 +505,7 @@ class Field(object):
                     raise
                 errors.extend(exc.detail)
             except DjangoValidationError as exc:
-                errors.extend(
-                    build_error_from_django_validation_error(exc)
-                )
+                errors.extend(exc.messages)
         if errors:
             raise ValidationError(errors)
 

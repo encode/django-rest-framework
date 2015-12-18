@@ -20,11 +20,9 @@ from django.db.models.fields import FieldDoesNotExist
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework import exceptions
 from rest_framework.compat import DurationField as ModelDurationField
 from rest_framework.compat import JSONField as ModelJSONField
 from rest_framework.compat import postgres_fields, unicode_to_repr
-from rest_framework.exceptions import ValidationErrorMessage
 from rest_framework.utils import model_meta
 from rest_framework.utils.field_mapping import (
     ClassLookupDict, get_field_kwargs, get_nested_relation_kwargs,
@@ -221,6 +219,7 @@ class BaseSerializer(Field):
 
         if self._errors and raise_exception:
             raise ValidationError(self.errors)
+
         return not bool(self._errors)
 
     @property
@@ -301,8 +300,7 @@ def get_validation_error_detail(exc):
         # exception class as well for simpler compat.
         # Eg. Calling Model.clean() explicitly inside Serializer.validate()
         return {
-            api_settings.NON_FIELD_ERRORS_KEY:
-                exceptions.build_error_from_django_validation_error(exc)
+            api_settings.NON_FIELD_ERRORS_KEY: list(exc.messages)
         }
     elif isinstance(exc.detail, dict):
         # If errors may be a dict we use the standard {key: list of values}.
@@ -424,9 +422,8 @@ class Serializer(BaseSerializer):
             message = self.error_messages['invalid'].format(
                 datatype=type(data).__name__
             )
-            error = ValidationErrorMessage(message, code='invalid')
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [error]
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
             })
 
         ret = OrderedDict()
@@ -443,9 +440,7 @@ class Serializer(BaseSerializer):
             except ValidationError as exc:
                 errors[field.field_name] = exc.detail
             except DjangoValidationError as exc:
-                errors[field.field_name] = (
-                    exceptions.build_error_from_django_validation_error(exc)
-                )
+                errors[field.field_name] = list(exc.messages)
             except SkipField:
                 pass
             else:
@@ -580,18 +575,12 @@ class ListSerializer(BaseSerializer):
             message = self.error_messages['not_a_list'].format(
                 input_type=type(data).__name__
             )
-            error = ValidationErrorMessage(
-                message,
-                code='not_a_list'
-            )
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [error]
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
             })
 
         if not self.allow_empty and len(data) == 0:
-            message = ValidationErrorMessage(
-                self.error_messages['empty'],
-                code='empty_not_allowed')
+            message = self.error_messages['empty']
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
             })
