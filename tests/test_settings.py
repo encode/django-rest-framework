@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import warnings
+
 from django.test import TestCase
 
 from rest_framework.settings import APISettings
@@ -17,6 +19,19 @@ class TestSettings(TestCase):
         })
         with self.assertRaises(ImportError):
             settings.DEFAULT_RENDERER_CLASSES
+
+    def test_warning_raised_on_removed_setting(self):
+        """
+        Make sure user is alerted with an error when a removed setting
+        is set.
+        """
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            APISettings({
+                'MAX_PAGINATE_BY': 100
+            })
+            self.assertEqual(len(w), 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
 
 
 class TestSettingTypes(TestCase):
