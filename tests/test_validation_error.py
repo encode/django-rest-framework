@@ -31,12 +31,12 @@ class TestValidationErrorWithCode(TestCase):
 
         def exception_handler(exc, request):
             return_errors = {}
-            for field_name, errors in exc.detail.items():
+            for field_name, errors in exc.full_details.items():
                 return_errors[field_name] = []
-                for error in errors:
+                for message, code in errors:
                     return_errors[field_name].append({
-                        'code': error.code,
-                        'message': error
+                        'code': code,
+                        'message': message
                     })
 
             return Response(return_errors, status=status.HTTP_400_BAD_REQUEST)

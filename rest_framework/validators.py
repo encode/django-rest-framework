@@ -100,8 +100,9 @@ class UniqueTogetherValidator(object):
         if self.instance is not None:
             return
 
+        code = 'required'
         missing = {
-            field_name: self.missing_message
+            field_name: [(self.missing_message, code)]
             for field_name in self.fields
             if field_name not in attrs
         }
@@ -186,8 +187,9 @@ class BaseUniqueForValidator(object):
         The `UniqueFor<Range>Validator` classes always force an implied
         'required' state on the fields they are applied to.
         """
+        code = 'required'
         missing = {
-            field_name: self.missing_message
+            field_name: [(self.missing_message, code)]
             for field_name in [self.field, self.date_field]
             if field_name not in attrs
         }
@@ -213,9 +215,8 @@ class BaseUniqueForValidator(object):
         queryset = self.exclude_current_instance(attrs, queryset)
         if queryset.exists():
             message = self.message.format(date_field=self.date_field)
-            raise ValidationError({
-                self.field: message,
-            })
+            code = 'unique'
+            raise ValidationError({self.field: [(message, code)]})
 
     def __repr__(self):
         return unicode_to_repr('<%s(queryset=%s, field=%s, date_field=%s)>' % (

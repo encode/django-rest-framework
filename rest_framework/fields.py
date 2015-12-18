@@ -31,7 +31,9 @@ from rest_framework.compat import (
     MinValueValidator, duration_string, parse_duration, unicode_repr,
     unicode_to_repr
 )
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import (
+    ValidationError, build_error_from_django_validation_error
+)
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, representation
 
@@ -501,9 +503,9 @@ class Field(object):
                 # attempting to accumulate a list of errors.
                 if isinstance(exc.detail, dict):
                     raise
-                errors.extend(exc.detail)
+                errors.append((exc.detail, exc.code))
             except DjangoValidationError as exc:
-                errors.extend(exc.messages)
+                errors.extend(build_error_from_django_validation_error(exc))
         if errors:
             raise ValidationError(errors)
 

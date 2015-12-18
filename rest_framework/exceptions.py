@@ -58,22 +58,74 @@ class APIException(Exception):
         return self.detail
 
 
+def build_error_from_django_validation_error(exc_info):
+    code = getattr(exc_info, 'code', None) or 'invalid'
+    return [
+        (msg, code)
+        for msg in exc_info.messages
+    ]
+
 # The recommended style for using `ValidationError` is to keep it namespaced
 # under `serializers`, in order to minimize potential confusion with Django's
 # built in `ValidationError`. For example:
 #
 # from rest_framework import serializers
 # raise serializers.ValidationError('Value was invalid')
+
+
 class ValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
+    code = None
 
     def __init__(self, detail, code=None):
         # For validation errors the 'detail' key is always required.
         # The details should always be coerced to a list if not already.
-        if not isinstance(detail, dict) and not isinstance(detail, list):
-            detail = [detail]
-        self.detail = _force_text_recursive(detail)
-        self.code = code
+
+        if code:
+            self.full_details = [(detail, code)]
+        else:
+            self.full_details = detail
+
+        if isinstance(self.full_details, tuple):
+            self.detail, self.code = self.full_details
+            self.detail = [self.detail]
+
+        elif isinstance(self.full_details, list):
+            if isinstance(self.full_details, ReturnList):
+                self.detail = ReturnList(serializer=self.full_details.serializer)
+            else:
+                self.detail = []
+            for error in self.full_details:
+                if isinstance(error, tuple):
+                    message, code = error
+                    self.detail.append(message)
+                elif isinstance(error, dict):
+                    self.detail = self.full_details
+                    break
+
+        elif isinstance(self.full_details, dict):
+            if isinstance(self.full_details, ReturnDict):
+                self.detail = ReturnDict(serializer=self.full_details.serializer)
+            else:
+                self.detail = {}
+
+            for field_name, errors in self.full_details.items():
+                self.detail[field_name] = []
+                if isinstance(errors, tuple):
+                    message, code = errors
+                    self.detail[field_name].append(message)
+                elif isinstance(errors, list):
+                    for error in errors:
+                        if isinstance(error, tuple):
+                            message, code = error
+                        else:
+                            message = error
+                        if message:
+                            self.detail[field_name].append(message)
+        else:
+            self.detail = [self.full_details]
+
+        self.detail = _force_text_recursive(self.detail)
 
     def __str__(self):
         return six.text_type(self.detail)
