@@ -1061,6 +1061,9 @@ class DateTimeField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
+        if not value:
+            return None
+
         output_format = getattr(self, 'format', api_settings.DATETIME_FORMAT)
 
         if output_format is None:
@@ -1118,10 +1121,10 @@ class DateField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
-        output_format = getattr(self, 'format', api_settings.DATE_FORMAT)
-
         if not value:
             return None
+
+        output_format = getattr(self, 'format', api_settings.DATE_FORMAT)
 
         if output_format is None:
             return value
@@ -1183,6 +1186,9 @@ class TimeField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
+        if not value:
+            return None
+
         output_format = getattr(self, 'format', api_settings.TIME_FORMAT)
 
         if output_format is None:

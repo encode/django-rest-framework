@@ -959,7 +959,9 @@ class TestDateTimeField(FieldValues):
     }
     outputs = {
         datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00',
-        datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): '2001-01-01T13:00:00Z'
+        datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): '2001-01-01T13:00:00Z',
+        None: None,
+        '': None,
     }
     field = serializers.DateTimeField(default_timezone=timezone.UTC())
 
@@ -1028,7 +1030,9 @@ class TestTimeField(FieldValues):
         '99:99': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss[.uuuuuu]].'],
     }
     outputs = {
-        datetime.time(13, 00): '13:00:00'
+        datetime.time(13, 00): '13:00:00',
+        None: None,
+        '': None,
     }
     field = serializers.TimeField()
 
