@@ -31,9 +31,7 @@ from rest_framework.compat import (
     MinValueValidator, duration_string, parse_duration, unicode_repr,
     unicode_to_repr
 )
-from rest_framework.exceptions import (
-    ValidationError
-)
+from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, representation
 

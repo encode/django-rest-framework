@@ -147,9 +147,9 @@ class UniqueTogetherValidator(object):
         ]
         if None not in checked_values and queryset.exists():
             field_names = ', '.join(self.fields)
-            raise ValidationError(
-                self.message.format(field_names=field_names),
-                code='unique')
+            message = self.message.format(field_names=field_names)
+            code = 'unique'
+            raise ValidationError(message, code=code)
 
     def __repr__(self):
         return unicode_to_repr('<%s(queryset=%s, fields=%s)>' % (
