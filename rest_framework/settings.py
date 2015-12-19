@@ -201,7 +201,7 @@ class APISettings(object):
 
         try:
             # Check if present in user settings
-            val = self.user_settings[attr]
+            val = self.user_settings[0][attr]
         except KeyError:
             # Fall back to defaults
             val = self.defaults[attr]
