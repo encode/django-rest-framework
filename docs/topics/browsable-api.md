@@ -17,7 +17,7 @@ By default, the API will return the format specified by the headers, which in th
 
 ## Customizing
 
-The browsable API is built with [Twitter's Bootstrap][bootstrap] (v 2.1.1), making it easy to customize the look-and-feel.
+The browsable API is built with [Twitter's Bootstrap][bootstrap] (v 3.3.5), making it easy to customize the look-and-feel.
 
 To customize the default style, create a template called `rest_framework/api.html` that extends from `rest_framework/base.html`.  For example:
 
