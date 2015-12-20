@@ -1245,12 +1245,23 @@ class ChoiceField(Field):
         self.choices = flatten_choices_dict(self.grouped_choices)
         self.html_cutoff = kwargs.pop('html_cutoff', self.html_cutoff)
         self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
+        self.use_value = kwargs.pop("use_value", False)
 
         # Map the string representation of choices to the underlying value.
         # Allows us to deal with eg. integer choices while supporting either
         # integer or string input, but still get the correct datatype out.
-        self.choice_strings_to_values = {
-            six.text_type(key): key for key in self.choices.keys()
+
+        if self.use_value:
+            self.choice_strings_to_values = {
+                six.text_type(value): key for key, value in self.choices.items()
+            }
+        else:
+            self.choice_strings_to_values = {
+                six.text_type(key): key for key in self.choices.keys()
+            }
+
+        self.choice_values_to_strings = {
+            six.text_type(key): value for key, value in self.choices.items()
         }
 
         self.allow_blank = kwargs.pop('allow_blank', False)
@@ -1269,6 +1280,8 @@ class ChoiceField(Field):
     def to_representation(self, value):
         if value in ('', None):
             return value
+        if self.use_value:
+            return self.choice_values_to_strings.get(six.text_type(value), value)
         return self.choice_strings_to_values.get(six.text_type(value), value)
 
     def iter_options(self):

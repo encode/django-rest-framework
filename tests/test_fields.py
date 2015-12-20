@@ -1212,6 +1212,31 @@ class TestChoiceFieldWithType(FieldValues):
     )
 
 
+class TestChoiceFieldWithUseDone(FieldValues):
+    """
+    Valid and invalid values for a `Choice` field that uses an integer type,
+    instead of a char type.
+    """
+    valid_inputs = {
+        'seller': 1,
+        'client': 2,
+    }
+    invalid_inputs = {
+        "2": ['"2" is not a valid choice.']
+    }
+    outputs = {
+        '1': 'seller',
+        2: 'client'
+    }
+    field = serializers.ChoiceField(
+        choices=[
+            (1, 'seller'),
+            (2, 'client')
+        ],
+        use_value=True
+    )
+
+
 class TestChoiceFieldWithListChoices(FieldValues):
     """
     Valid and invalid values for a `Choice` field that uses a flat list for the
