@@ -1,4 +1,4 @@
 # Optional packages which may be used with REST framework.
 markdown==2.5.2
-django-guardian==1.3.0
+django-guardian==1.3.2
 django-filter==0.10.0
