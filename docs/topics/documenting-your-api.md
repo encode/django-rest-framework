@@ -35,11 +35,6 @@ Mark is also the author of the [REST Framework Docs][rest-framework-docs] packag
 
 ---
 
-#### REST Framework Docs
-
-
----
-
 #### Apiary
 
 There are various other online tools and services for providing API documentation.  One notable service is [Apiary][apiary].  With Apiary, you describe your API using a simple markdown-like syntax.  The generated documentation includes API interaction, a mock server for testing & prototyping, and various other tools.
