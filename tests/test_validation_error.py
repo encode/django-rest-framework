@@ -31,7 +31,7 @@ class TestValidationErrorWithCode(TestCase):
 
         def exception_handler(exc, request):
             return_errors = {}
-            for field_name, errors in exc.full_details.items():
+            for field_name, errors in exc.detail.items():
                 return_errors[field_name] = []
                 for message, code in errors:
                     return_errors[field_name].append({
