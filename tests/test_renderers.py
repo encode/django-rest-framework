@@ -8,8 +8,8 @@ from collections import MutableMapping, OrderedDict
 from django.conf.urls import include, url
 from django.core.cache import cache
 from django.db import models
-from django.test import TestCase
-from django.utils import six
+from django.test import TestCase, override_settings
+from django.utils import six, timezone
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import permissions, serializers, status
@@ -360,6 +360,13 @@ class JSONRendererTests(TestCase):
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json; indent=2')
         self.assertEqual(strip_trailing_whitespace(content.decode('utf-8')), _indented_repr)
+
+    @override_settings(TIME_ZONE='America/Los_Angeles')
+    def test_render_tzinfo_object(self):
+        tzinfo = timezone.get_current_timezone()
+        renderer = JSONRenderer()
+        content = renderer.render(tzinfo)
+        self.assertEqual(content, b'"America/Los_Angeles"')
 
 
 class UnicodeJSONRendererTests(TestCase):
