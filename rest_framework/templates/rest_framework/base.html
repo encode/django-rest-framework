@@ -12,7 +12,7 @@
       <meta name="robots" content="NONE,NOARCHIVE" />
     {% endblock %}
 
-    <title>{% block title %}Django REST framework{% endblock %}</title>
+    <title>{% block title %}{% if name %}{{ name }} – {% endif %}Django REST framework{% endblock %}</title>
 
     {% block style %}
       {% block bootstrap_theme %}
