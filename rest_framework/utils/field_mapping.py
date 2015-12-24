@@ -130,7 +130,7 @@ def get_field_kwargs(field_name, model_field):
 
     # Our decimal validation is handled in the field code, not validator code.
     # (In Django 1.9+ this differs from previous style)
-    if isinstance(model_field, models.DecimalField):
+    if isinstance(model_field, models.DecimalField) and DecimalValidator:
         validator_kwarg = [
             validator for validator in validator_kwarg
             if DecimalValidator and not isinstance(validator, DecimalValidator)
