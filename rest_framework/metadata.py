@@ -15,6 +15,7 @@ from django.http import Http404
 from django.utils.encoding import force_text
 
 from rest_framework import exceptions, serializers
+from rest_framework.fields import empty
 from rest_framework.request import clone_request
 from rest_framework.utils.field_mapping import ClassLookupDict
 
@@ -123,13 +124,13 @@ class SimpleMetadata(BaseMetadata):
 
         attrs = [
             'read_only', 'label', 'help_text',
-            'min_length', 'max_length',
+            'min_length', 'max_length', 'default',
             'min_value', 'max_value'
         ]
 
         for attr in attrs:
             value = getattr(field, attr, None)
-            if value is not None and value != '':
+            if value is not None and value != '' and value != empty:
                 field_info[attr] = force_text(value, strings_only=True)
 
         if getattr(field, 'child', None):
