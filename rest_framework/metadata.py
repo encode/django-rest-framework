@@ -131,7 +131,7 @@ class SimpleMetadata(BaseMetadata):
         for attr in attrs:
             value = getattr(field, attr, None)
             if value is not None and value != '' and value != empty:
-                if hasattr(value, '__call__'):
+                if callable(value):
                     value.set_context(field)
                     value = value()
                 field_info[attr] = force_text(value, strings_only=True)
