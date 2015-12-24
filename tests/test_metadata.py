@@ -77,6 +77,7 @@ class TestMetadata:
                 )
             )
             nested_field = NestedField()
+            defaultuser_field = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
         class ExampleView(views.APIView):
             """Example view."""
@@ -84,7 +85,10 @@ class TestMetadata:
                 pass
 
             def get_serializer(self):
-                return ExampleSerializer()
+                if self.request:
+                    return ExampleSerializer(context={'request': self.request})
+                else:
+                    return ExampleSerializer()
 
         view = ExampleView.as_view()
         response = view(request=request)
@@ -166,6 +170,13 @@ class TestMetadata:
                                 'label': 'B'
                             }
                         }
+                    },
+                    'defaultuser_field': {
+                        'type': 'field',
+                        'required': False,
+                        'read_only': False,
+                        'label': 'Defaultuser field',
+                        'default': 'AnonymousUser'
                     }
                 }
             }
