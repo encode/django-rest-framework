@@ -17,6 +17,7 @@ from django.core.validators import (
     MaxValueValidator, MinLengthValidator, MinValueValidator
 )
 from django.db import models
+from django.http import QueryDict
 from django.test import TestCase
 from django.utils import six
 
@@ -899,3 +900,35 @@ class TestDecimalFieldMappings(TestCase):
         serializer = TestSerializer()
 
         assert len(serializer.fields['decimal_field'].validators) == 2
+
+
+class Issue3598TestCase(TestCase):
+    def test_queryset_all(self):
+        class TestRelationSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RelationalModel
+                fields = ('many_to_many', )
+
+        class TestSerializer(serializers.ModelSerializer):
+            reverse_foreign_key = TestRelationSerializer(required=False)
+
+            class Meta:
+                model = ForeignKeyTargetModel
+
+        new_many_to_many = [
+            ManyToManyTargetModel.objects.create(
+                name='new many_to_many (%d)' % idx
+            ) for idx in range(3)
+        ]
+
+        data = QueryDict('name=test&' + '&'.join(['reverse_foreign_key.many_to_many=%s' % item.pk for item in new_many_to_many]))
+
+        serializer = TestSerializer(data=data)
+        assert serializer.is_valid()
+
+        expected_data = {
+            'name': 'test',
+            'reverse_foreign_key': {'many_to_many': [item.pk for item in new_many_to_many]}
+        }
+
+        self.assertEqual(serializer.data, expected_data)
