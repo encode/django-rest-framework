@@ -899,3 +899,29 @@ class TestDecimalFieldMappings(TestCase):
         serializer = TestSerializer()
 
         assert len(serializer.fields['decimal_field'].validators) == 2
+
+    def test_min_value_is_passed(self):
+        """
+        Test that the `MinValueValidator` is converted to the `min_value`
+        argument for the field.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DecimalFieldModel
+
+        serializer = TestSerializer()
+
+        assert serializer.fields['decimal_field'].min_value == 1
+
+    def test_max_value_is_passed(self):
+        """
+        Test that the `MaxValueValidator` is converted to the `max_value`
+        argument for the field.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DecimalFieldModel
+
+        serializer = TestSerializer()
+
+        assert serializer.fields['decimal_field'].max_value == 3
