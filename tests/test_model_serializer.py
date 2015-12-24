@@ -884,7 +884,7 @@ class TestDecimalFieldMappings(TestCase):
 
         serializer = TestSerializer()
 
-        assert len(serializer.fields['decimal_field'].validators) == 0
+        assert len(serializer.fields['decimal_field'].validators) == 2
 
     @pytest.mark.skipif(DecimalValidator is None,
                         reason='DecimalValidator is available in Django 1.9+')
