@@ -66,9 +66,10 @@ The following view demonstrates an example of using a serializer in a template f
 
         def post(self, request, pk):
             profile = get_object_or_404(Profile, pk=pk)
-            serializer = ProfileSerializer(profile)
+            serializer = ProfileSerializer(profile, data=request.POST)
             if not serializer.is_valid():
                 return Response({'serializer': serializer, 'profile': profile})
+            serializer.save()
             return redirect('profile-list')
 
 **profile_detail.html**:
