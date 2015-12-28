@@ -133,7 +133,7 @@ def get_field_kwargs(field_name, model_field):
     if isinstance(model_field, models.DecimalField) and DecimalValidator:
         validator_kwarg = [
             validator for validator in validator_kwarg
-            if DecimalValidator and not isinstance(validator, DecimalValidator)
+            if not isinstance(validator, DecimalValidator)
         ]
 
     # Ensure that max_length is passed explicitly as a keyword arg,
