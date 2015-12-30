@@ -1352,8 +1352,7 @@ class FileField(Field):
     def __init__(self, *args, **kwargs):
         self.max_length = kwargs.pop('max_length', None)
         self.allow_empty_file = kwargs.pop('allow_empty_file', False)
-        if 'use_url' in kwargs:
-            self.use_url = kwargs.pop('use_url')
+        self.use_url = kwargs.pop('use_url', api_settings.UPLOADED_FILES_USE_URL)
         super(FileField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, data):
@@ -1374,12 +1373,10 @@ class FileField(Field):
         return data
 
     def to_representation(self, value):
-        use_url = getattr(self, 'use_url', api_settings.UPLOADED_FILES_USE_URL)
-
         if not value:
             return None
 
-        if use_url:
+        if self.use_url:
             if not getattr(value, 'url', None):
                 # If the file has not been saved it may not have a URL.
                 return None
