@@ -10,7 +10,6 @@ from django.middleware.csrf import CsrfViewMiddleware
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import HTTP_HEADER_ENCODING, exceptions
-from rest_framework.authtoken.models import Token
 
 
 def get_authorization_header(request):
@@ -149,7 +148,14 @@ class TokenAuthentication(BaseAuthentication):
         Authorization: Token 401f7ac837da42b97f613d789819ff93537bee6a
     """
 
-    model = Token
+    model = None
+
+    def get_model(self):
+        if self.model is not None:
+            return self.model
+        from rest_framework.authtoken.models import Token
+        return Token
+
     """
     A custom token model may be used, but must have the following properties.
 
@@ -180,7 +186,7 @@ class TokenAuthentication(BaseAuthentication):
 
     def authenticate_credentials(self, key):
         try:
-            token = self.model.objects.select_related('user').get(key=key)
+            token = self.get_model().objects.select_related('user').get(key=key)
         except self.model.DoesNotExist:
             raise exceptions.AuthenticationFailed(_('Invalid token.'))
 
