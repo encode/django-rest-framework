@@ -221,7 +221,6 @@ This is nice, but it exposes the Django's double underscore convention as part o
     from rest_framework import filters
     from rest_framework import generics
 
-
     class ProductFilter(filters.FilterSet):
         manufacturer = django_filters.CharFilter(name="manufacturer__name")
 
