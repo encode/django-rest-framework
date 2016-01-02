@@ -26,7 +26,7 @@
                       autocapitalize="off"
                       autocorrect="off" class="form-control textinput textInput"
                       id="id_username" required
-                      {% if form.username.value %}value="{{ form.username.value }}"{% endif %}>
+                      {% if form.username.value %}value="{{ form.username.value }}"{% endif %} />
                   {% if form.username.errors %}
                     <p class="text-error">
                       {{ form.username.errors|striptags }}
@@ -38,7 +38,7 @@
               <div id="div_id_password" class="clearfix control-group {% if form.password.errors %}error{% endif %}">
                 <div class="form-group">
                   <label for="id_password">Password:</label>
-                  <input type="password" name="password" maxlength="100" autocapitalize="off" autocorrect="off" class="form-control textinput textInput" id="id_password" required>
+                  <input type="password" name="password" maxlength="100" autocapitalize="off" autocorrect="off" class="form-control textinput textInput" id="id_password" required />
                   {% if form.password.errors %}
                     <p class="text-error">
                       {{ form.password.errors|striptags }}
@@ -54,7 +54,7 @@
               {% endif %}
 
               <div class="form-actions-no-box">
-                <input type="submit" name="submit" value="Log in" class="btn btn-primary form-control" id="submit-id-submit">
+                <button type="submit" name="submit" class="btn btn-primary form-control" id="submit-id-submit">Log in</button>
               </div>
             </form>
           </div>
