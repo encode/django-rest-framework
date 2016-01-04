@@ -22,7 +22,7 @@ from django.utils import six
 
 from rest_framework import serializers
 from rest_framework.compat import DurationField as ModelDurationField
-from rest_framework.compat import DecimalValidator, unicode_repr
+from rest_framework.compat import unicode_repr
 
 
 def dedent(blocktext):
@@ -872,25 +872,9 @@ class DecimalFieldModel(models.Model):
 
 
 class TestDecimalFieldMappings(TestCase):
-    @pytest.mark.skipif(DecimalValidator is not None,
-                        reason='DecimalValidator is available in Django 1.9+')
-    def test_decimal_field_has_no_decimal_validator(self):
-        """
-        Test that a DecimalField has no validators before Django 1.9.
-        """
-        class TestSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = DecimalFieldModel
-
-        serializer = TestSerializer()
-
-        assert len(serializer.fields['decimal_field'].validators) == 0
-
-    @pytest.mark.skipif(DecimalValidator is None,
-                        reason='DecimalValidator is available in Django 1.9+')
     def test_decimal_field_has_decimal_validator(self):
         """
-        Test that a DecimalField has DecimalValidator in Django 1.9+.
+        Test that a `DecimalField` has no `DecimalValidator`.
         """
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
@@ -899,3 +883,29 @@ class TestDecimalFieldMappings(TestCase):
         serializer = TestSerializer()
 
         assert len(serializer.fields['decimal_field'].validators) == 2
+
+    def test_min_value_is_passed(self):
+        """
+        Test that the `MinValueValidator` is converted to the `min_value`
+        argument for the field.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DecimalFieldModel
+
+        serializer = TestSerializer()
+
+        assert serializer.fields['decimal_field'].min_value == 1
+
+    def test_max_value_is_passed(self):
+        """
+        Test that the `MaxValueValidator` is converted to the `max_value`
+        argument for the field.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DecimalFieldModel
+
+        serializer = TestSerializer()
+
+        assert serializer.fields['decimal_field'].max_value == 3
