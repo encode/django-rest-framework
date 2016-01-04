@@ -193,16 +193,16 @@ Open the file `snippets/serializers.py` again, and replace the `SnippetSerialize
 
 One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing its representation. Open the Django shell with `python manage.py shell`, then try the following:
 
-    >>> from snippets.serializers import SnippetSerializer
-    >>> serializer = SnippetSerializer()
-    >>> print(repr(serializer))
-    SnippetSerializer():
-        id = IntegerField(label='ID', read_only=True)
-        title = CharField(allow_blank=True, max_length=100, required=False)
-        code = CharField(style={'base_template': 'textarea.html'})
-        linenos = BooleanField(required=False)
-        language = ChoiceField(choices=[('Clipper', 'FoxPro'), ('Cucumber', 'Gherkin'), ('RobotFramework', 'RobotFramework'), ('abap', 'ABAP'), ('ada', 'Ada')...
-        style = ChoiceField(choices=[('autumn', 'autumn'), ('borland', 'borland'), ('bw', 'bw'), ('colorful', 'colorful')...
+    from snippets.serializers import SnippetSerializer
+    serializer = SnippetSerializer()
+    print(repr(serializer))
+    # SnippetSerializer():
+    #    id = IntegerField(label='ID', read_only=True)
+    #    title = CharField(allow_blank=True, max_length=100, required=False)
+    #    code = CharField(style={'base_template': 'textarea.html'})
+    #    linenos = BooleanField(required=False)
+    #    language = ChoiceField(choices=[('Clipper', 'FoxPro'), ('Cucumber', 'Gherkin'), ('RobotFramework', 'RobotFramework'), ('abap', 'ABAP'), ('ada', 'Ada')...
+    #    style = ChoiceField(choices=[('autumn', 'autumn'), ('borland', 'borland'), ('bw', 'bw'), ('colorful', 'colorful')...
 
 It's important to remember that `ModelSerializer` classes don't do anything particularly magical, they are simply a shortcut for creating serializer classes:
 
