@@ -185,9 +185,10 @@ class TokenAuthentication(BaseAuthentication):
         return self.authenticate_credentials(token)
 
     def authenticate_credentials(self, key):
+        model = self.get_model()
         try:
-            token = self.get_model().objects.select_related('user').get(key=key)
-        except self.model.DoesNotExist:
+            token = model.objects.select_related('user').get(key=key)
+        except model.DoesNotExist:
             raise exceptions.AuthenticationFailed(_('Invalid token.'))
 
         if not token.user.is_active:

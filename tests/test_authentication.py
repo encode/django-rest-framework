@@ -162,6 +162,12 @@ class TokenAuthTests(TestCase):
         response = self.csrf_client.post('/token/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_fail_post_form_passing_nonexistent_token_auth(self):
+        # use a nonexistent token key
+        auth = 'Token wxyz6789'
+        response = self.csrf_client.post('/token/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     def test_fail_post_form_passing_invalid_token_auth(self):
         # add an 'invalid' unicode character
         auth = 'Token ' + self.key + "¸"
