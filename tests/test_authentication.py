@@ -6,10 +6,10 @@ import base64
 
 from django.conf.urls import include, url
 from django.contrib.auth.models import User
+from django.db import models
 from django.http import HttpResponse
 from django.test import TestCase
 from django.utils import six
-from django.db import models
 
 from rest_framework import (
     HTTP_HEADER_ENCODING, exceptions, permissions, renderers, status
