@@ -459,7 +459,7 @@ In cases where the cutoff is being enforced you may want to instead use a plain 
 
     assigned_to = serializers.SlugRelatedField(
        queryset=User.objects.all(),
-       slug field='username',
+       slug_field='username',
        style={'base_template': 'input.html'}
     )
 
