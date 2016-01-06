@@ -807,6 +807,9 @@ class ModelSerializer(Serializer):
     # "HTTP 201 Created" responses.
     url_field_name = None
 
+    def save_model_instance(self, instance):
+        instance.save()
+
     # Default `create` and `update` behavior...
     def create(self, validated_data):
         """
@@ -843,7 +846,8 @@ class ModelSerializer(Serializer):
                 many_to_many[field_name] = validated_data.pop(field_name)
 
         try:
-            instance = ModelClass.objects.create(**validated_data)
+            instance = ModelClass(**validated_data)
+            self.save_model_instance(instance)
         except TypeError as exc:
             msg = (
                 'Got a `TypeError` when calling `%s.objects.create()`. '
@@ -877,7 +881,7 @@ class ModelSerializer(Serializer):
         # have an instance pk for the relationships to be associated with.
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-        instance.save()
+        self.save_model_instance(instance)
 
         return instance
 
