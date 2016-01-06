@@ -1212,7 +1212,7 @@ class ModelSerializer(Serializer):
         Return a dictionary mapping field names to a dictionary of
         additional keyword arguments.
         """
-        extra_kwargs = getattr(self.Meta, 'extra_kwargs', {})
+        extra_kwargs = copy.deepcopy(getattr(self.Meta, 'extra_kwargs', {}))
 
         read_only_fields = getattr(self.Meta, 'read_only_fields', None)
         if read_only_fields is not None:

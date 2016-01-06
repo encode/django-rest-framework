@@ -909,3 +909,34 @@ class TestDecimalFieldMappings(TestCase):
         serializer = TestSerializer()
 
         assert serializer.fields['decimal_field'].max_value == 3
+
+
+class TestMetaInheritance(TestCase):
+    def test_extra_kwargs_not_altered(self):
+        class TestSerializer(serializers.ModelSerializer):
+            non_model_field = serializers.CharField()
+
+            class Meta:
+                model = OneFieldModel
+                read_only_fields = ('char_field', 'non_model_field')
+                fields = read_only_fields
+                extra_kwargs = {}
+
+        class ChildSerializer(TestSerializer):
+            class Meta(TestSerializer.Meta):
+                read_only_fields = ()
+
+        test_expected = dedent("""
+            TestSerializer():
+                char_field = CharField(read_only=True)
+                non_model_field = CharField()
+        """)
+
+        child_expected = dedent("""
+            ChildSerializer():
+                char_field = CharField(max_length=100)
+                non_model_field = CharField()
+        """)
+        self.assertEqual(unicode_repr(ChildSerializer()), child_expected)
+        self.assertEqual(unicode_repr(TestSerializer()), test_expected)
+        self.assertEqual(unicode_repr(ChildSerializer()), child_expected)
