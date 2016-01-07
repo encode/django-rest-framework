@@ -306,7 +306,7 @@ def get_validation_error_detail(exc):
         # If errors may be a dict we use the standard {key: list of values}.
         # Here we ensure that all the values are *lists* of errors.
         return {
-            key: value if isinstance(value, list) else [value]
+            key: value if isinstance(value, (list, dict)) else [value]
             for key, value in exc.detail.items()
         }
     elif isinstance(exc.detail, list):
