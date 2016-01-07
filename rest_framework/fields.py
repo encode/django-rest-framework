@@ -1204,6 +1204,8 @@ class TimeField(Field):
         )
 
         if output_format.lower() == ISO_8601:
+            if (isinstance(value, str)):
+                value = datetime.datetime.strptime(value, '%H:%M:%S').time()
             return value.isoformat()
         return value.strftime(output_format)
 
