@@ -202,6 +202,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-rest-framework-mongoengine][django-rest-framework-mongoengine] - Serializer class that supports using MongoDB as the storage layer for Django REST framework.
 * [djangorestframework-gis][djangorestframework-gis] - Geographic add-ons
 * [djangorestframework-hstore][djangorestframework-hstore] - Serializer class to support django-hstore DictionaryField model field and its schema-mode feature.
+* [djangorestframework-jsonapi][djangorestframework-jsonapi] - Provides a parser, renderer, serializers, and other tools to help build an API that is compliant with the jsonapi.org spec.
 
 ### Serializer fields
 
@@ -222,11 +223,13 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 ### Parsers
 
 * [djangorestframework-msgpack][djangorestframework-msgpack] - Provides MessagePack renderer and parser support.
+* [djangorestframework-jsonapi][djangorestframework-jsonapi] - Provides a parser, renderer, serializers, and other tools to help build an API that is compliant with the jsonapi.org spec.
 * [djangorestframework-camel-case][djangorestframework-camel-case] - Provides camel case JSON renderers and parsers.
 
 ### Renderers
 
 * [djangorestframework-csv][djangorestframework-csv] - Provides CSV renderer support.
+* [djangorestframework-jsonapi][djangorestframework-jsonapi] - Provides a parser, renderer, serializers, and other tools to help build an API that is compliant with the jsonapi.org spec.
 * [drf_ujson][drf_ujson] - Implements JSON rendering using the UJSON package.
 * [rest-pandas][rest-pandas] - Pandas DataFrame-powered renderers including Excel, CSV, and SVG formats.
 
@@ -351,3 +354,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [cookiecutter-django-rest]:  https://github.com/agconti/cookiecutter-django-rest
 [drf-haystack]: http://drf-haystack.readthedocs.org/en/latest/
 [django-rest-framework-version-transforms]: https://github.com/mrhwick/django-rest-framework-version-transforms
+[djangorestframework-jsonapi]: https://github.com/django-json-api/django-rest-framework-json-api
