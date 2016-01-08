@@ -92,6 +92,9 @@ DEFAULTS = {
         'rest_framework.renderers.JSONRenderer'
     ),
     'TEST_REQUEST_DEFAULT_FORMAT': 'multipart',
+    'FORM_METHOD_OVERRIDE': '_method',
+    'FORM_CONTENT_OVERRIDE': '_content',
+    'FORM_CONTENTTYPE_OVERRIDE': '_content_type',
 
     # Hyperlink settings
     'URL_FORMAT_OVERRIDE': 'format',
