@@ -1,11 +1,12 @@
-from django.conf.urls import url, include
+from django.conf.urls import include, url
 from django.db import models
+
 from rest_framework import serializers, status, viewsets
 from rest_framework.reverse import reverse
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory, APITestCase
-from .urls import urlpatterns
 
+from .urls import urlpatterns
 
 factory = APIRequestFactory()
 

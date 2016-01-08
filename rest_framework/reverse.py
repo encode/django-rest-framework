@@ -3,9 +3,9 @@ Provide urlresolver functions that return fully qualified URLs or view names
 """
 from __future__ import unicode_literals
 
-from django.conf import urls, settings
-from django.core.urlresolvers import reverse as django_reverse, resolve
-from django.core.urlresolvers import NoReverseMatch
+from django.conf import settings, urls
+from django.core.urlresolvers import reverse as django_reverse
+from django.core.urlresolvers import NoReverseMatch, resolve
 from django.http import Http404
 from django.utils import six
 from django.utils.functional import lazy
