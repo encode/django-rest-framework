@@ -1139,7 +1139,7 @@ class DateField(Field):
         )
 
         if output_format.lower() == ISO_8601:
-            if (isinstance(value, str)):
+            if isinstance(value, six.string_types):
                 value = datetime.datetime.strptime(value, '%Y-%m-%d').date()
             return value.isoformat()
 
