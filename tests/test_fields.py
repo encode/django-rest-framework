@@ -6,7 +6,7 @@ from decimal import Decimal
 import django
 import pytest
 from django.http import QueryDict
-from django.utils import timezone
+from django.utils import six, timezone
 
 import rest_framework
 from rest_framework import serializers
@@ -895,6 +895,7 @@ class TestDateField(FieldValues):
     outputs = {
         datetime.date(2001, 1, 1): '2001-01-01',
         '2001-01-01': '2001-01-01',
+        six.text_type('2016-01-10'): '2016-01-10',
         None: None,
         '': None,
     }
