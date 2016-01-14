@@ -166,7 +166,7 @@ class QueryParameterVersioning(BaseVersioning):
     invalid_version_message = _('Invalid version in query parameter.')
 
     def determine_version(self, request, *args, **kwargs):
-        version = request.query_params.get(self.version_param)
+        version = request.query_params.get(self.version_param, self.default_version)
         if not self.is_allowed_version(version):
             raise exceptions.NotFound(self.invalid_version_message)
         return version
