@@ -165,6 +165,8 @@ The `curl` command line tool may be useful for testing token authenticated APIs.
 
 #### Generating Tokens
 
+##### By using signals
+
 If you want every user to have an automatically generated Token, you can simply catch the User's `post_save` signal.
 
     from django.conf import settings
@@ -187,6 +189,8 @@ If you've already created some users, you can generate tokens for all existing u
     for user in User.objects.all():
         Token.objects.get_or_create(user=user)
 
+##### By exposing an api endpoint
+
 When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behavior.  To use it, add the `obtain_auth_token` view to your URLconf:
 
     from rest_framework.authtoken import views
@@ -201,6 +205,17 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
     { 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
 
 Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.  If you need a customized version of the `obtain_auth_token` view, you can do so by overriding the `ObtainAuthToken` view class, and using that in your url conf instead.
+
+##### With Django admin
+
+It is also possible to create Tokens manually through admin interface. In case you are using a large user base, we recommend that you monkey patch the `TokenAdmin` class to customize it to your needs, more specifically by declaring the `user` field as `raw_field`.
+
+`your_app/admin.py`:
+
+    from rest_framework.authtoken.admin import TokenAdmin
+
+    TokenAdmin.raw_id_fields = ('user',)
+
 
 #### Schema migrations
 
