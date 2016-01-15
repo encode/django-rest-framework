@@ -100,6 +100,8 @@ Or, if you're using the `@api_view` decorator with function based views.
         }
         return Response(content)
 
+__Note:__ when you set new permission classes through class attribute or decorators you're telling the view to ignore the default list set over the __settings.py__ file.
+
 ---
 
 # API Reference
