@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from django.http import QueryDict
 
 from rest_framework import serializers
@@ -43,6 +45,9 @@ class TestNestedSerializer:
 
 
 class TestNotRequiredNestedSerializer:
+
+    expected = {'nested': OrderedDict([('one', 1)])}
+
     def setup(self):
         class NestedSerializer(serializers.Serializer):
             one = serializers.IntegerField(max_value=10)
@@ -60,6 +65,7 @@ class TestNotRequiredNestedSerializer:
         input_data = {'nested': {'one': '1'}}
         serializer = self.Serializer(data=input_data)
         assert serializer.is_valid()
+        assert serializer.data == self.expected
 
     def test_multipart_validate(self):
         input_data = QueryDict('')
@@ -69,6 +75,7 @@ class TestNotRequiredNestedSerializer:
         input_data = QueryDict('nested[one]=1')
         serializer = self.Serializer(data=input_data)
         assert serializer.is_valid()
+        assert serializer.data == self.expected
 
 
 class TestNestedSerializerWithMany:
