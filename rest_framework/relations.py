@@ -65,10 +65,6 @@ class RelatedField(Field):
         self.queryset = kwargs.pop('queryset', self.queryset)
         self.html_cutoff = kwargs.pop('html_cutoff', self.html_cutoff)
         self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
-        assert self.queryset is not None or kwargs.get('read_only', None), (
-            'Relational field must provide a `queryset` argument, '
-            'or set read_only=`True`.'
-        )
         kwargs.pop('many', None)
         kwargs.pop('allow_empty', None)
         super(RelatedField, self).__init__(**kwargs)
