@@ -280,11 +280,19 @@ class SerializerMetaclass(type):
         # If this class is subclassing another Serializer, add that Serializer's
         # fields.  Note that we loop over the bases in *reverse*. This is necessary
         # in order to maintain the correct order of fields.
+        all_fields = OrderedDict()
         for base in reversed(bases):
             if hasattr(base, '_declared_fields'):
-                fields = list(base._declared_fields.items()) + fields
+                for name, field in base._declared_fields.items():
+                    if name in all_fields:
+                        # Throw away old ordering, then replace with new one
+                        all_fields.pop(name)
+                    all_fields[name] = field
 
-        return OrderedDict(fields)
+        # if there are fields in both base_fields and fields, OrderedDict
+        # uses the *last* one defined. So fields needs to go last.
+        all_fields.update(OrderedDict(fields))
+        return all_fields
 
     def __new__(cls, name, bases, attrs):
         attrs['_declared_fields'] = cls._get_declared_fields(bases, attrs)
