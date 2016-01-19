@@ -10,11 +10,12 @@ from collections import OrderedDict, namedtuple
 
 from django.core.paginator import Paginator as DjangoPaginator
 from django.core.paginator import InvalidPage
-from django.template import Context, loader
+from django.template import loader
 from django.utils import six
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
+from rest_framework.compat import template_render
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -168,6 +169,8 @@ class PageNumberPagination(BasePagination):
     # Defaults to `None`, meaning pagination is disabled.
     page_size = api_settings.PAGE_SIZE
 
+    django_paginator_class = DjangoPaginator
+
     # Client can control the page using this query parameter.
     page_query_param = 'page'
 
@@ -194,7 +197,7 @@ class PageNumberPagination(BasePagination):
         if not page_size:
             return None
 
-        paginator = DjangoPaginator(queryset, page_size)
+        paginator = self.django_paginator_class(queryset, page_size)
         page_number = request.query_params.get(self.page_query_param, 1)
         if page_number in self.last_page_strings:
             page_number = paginator.num_pages
@@ -273,8 +276,8 @@ class PageNumberPagination(BasePagination):
 
     def to_html(self):
         template = loader.get_template(self.template)
-        context = Context(self.get_html_context())
-        return template.render(context)
+        context = self.get_html_context()
+        return template_render(template, context)
 
 
 class LimitOffsetPagination(BasePagination):
@@ -389,8 +392,8 @@ class LimitOffsetPagination(BasePagination):
 
     def to_html(self):
         template = loader.get_template(self.template)
-        context = Context(self.get_html_context())
-        return template.render(context)
+        context = self.get_html_context()
+        return template_render(template, context)
 
 
 class CursorPagination(BasePagination):
@@ -692,5 +695,5 @@ class CursorPagination(BasePagination):
 
     def to_html(self):
         template = loader.get_template(self.template)
-        context = Context(self.get_html_context())
-        return template.render(context)
+        context = self.get_html_context()
+        return template_render(template, context)

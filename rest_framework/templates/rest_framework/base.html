@@ -1,6 +1,7 @@
 {% load staticfiles %}
 {% load rest_framework %}
 {% load i18n %}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,7 +12,7 @@
       <meta name="robots" content="NONE,NOARCHIVE" />
     {% endblock %}
 
-    <title>{% block title %}Django REST framework{% endblock %}</title>
+    <title>{% block title %}{% if name %}{{ name }} – {% endif %}Django REST framework{% endblock %}</title>
 
     {% block style %}
       {% block bootstrap_theme %}
@@ -101,9 +102,24 @@
         {% endif %}
 
         {% if delete_form %}
-          <form class="button-form" action="{{ request.get_full_path }}" data-method="DELETE">
-            <button class="btn btn-danger js-tooltip" title="Make a DELETE request on the {{ name }} resource">DELETE</button>
-          </form>
+          <button class="btn btn-danger button-form js-tooltip" title="Make a DELETE request on the {{ name }} resource" data-toggle="modal" data-target="#deleteModal">DELETE</button>
+
+          <!-- Delete Modal -->
+          <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-body">
+                  <h4 class="text-center">Are you sure you want to delete this {{ name }}?</h4>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                  <form class="button-form" action="{{ request.get_full_path }}" data-method="DELETE">
+                    <button class="btn btn-danger">Delete</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
         {% endif %}
 
         {% if filter_form %}
@@ -173,7 +189,7 @@
                     </div>
                   {% endif %}
 
-                  <div {% if raw_data_post_form %}class="tab-pane"{% endif %} id="post-generic-content-form">
+                  <div {% if post_form %}class="tab-pane"{% endif %} id="post-generic-content-form">
                     {% with form=raw_data_post_form %}
                       <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
                         <fieldset>

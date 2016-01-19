@@ -769,9 +769,11 @@ class UUIDField(Field):
             try:
                 if isinstance(data, six.integer_types):
                     return uuid.UUID(int=data)
-                else:
+                elif isinstance(data, six.string_types):
                     return uuid.UUID(hex=data)
-            except (ValueError, TypeError):
+                else:
+                    self.fail('invalid', value=data)
+            except (ValueError):
                 self.fail('invalid', value=data)
         return data
 
@@ -1059,6 +1061,9 @@ class DateTimeField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
+        if not value:
+            return None
+
         output_format = getattr(self, 'format', api_settings.DATETIME_FORMAT)
 
         if output_format is None:
@@ -1116,10 +1121,10 @@ class DateField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
-        output_format = getattr(self, 'format', api_settings.DATE_FORMAT)
-
         if not value:
             return None
+
+        output_format = getattr(self, 'format', api_settings.DATE_FORMAT)
 
         if output_format is None:
             return value
@@ -1134,7 +1139,7 @@ class DateField(Field):
         )
 
         if output_format.lower() == ISO_8601:
-            if (isinstance(value, str)):
+            if isinstance(value, six.string_types):
                 value = datetime.datetime.strptime(value, '%Y-%m-%d').date()
             return value.isoformat()
 
@@ -1181,6 +1186,9 @@ class TimeField(Field):
         self.fail('invalid', format=humanized_format)
 
     def to_representation(self, value):
+        if not value:
+            return None
+
         output_format = getattr(self, 'format', api_settings.TIME_FORMAT)
 
         if output_format is None:
@@ -1196,6 +1204,8 @@ class TimeField(Field):
         )
 
         if output_format.lower() == ISO_8601:
+            if isinstance(value, six.string_types):
+                value = datetime.datetime.strptime(value, '%H:%M:%S').time()
             return value.isoformat()
         return value.strftime(output_format)
 
@@ -1461,7 +1471,7 @@ class ListField(Field):
         """
         if html.is_html_input(data):
             data = html.parse_html_list(data)
-        if isinstance(data, type('')) or not hasattr(data, '__iter__'):
+        if isinstance(data, type('')) or isinstance(data, collections.Mapping) or not hasattr(data, '__iter__'):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
@@ -1565,7 +1575,7 @@ class ReadOnlyField(Field):
 
     For example, the following would call `get_expiry_date()` on the object:
 
-    class ExampleSerializer(self):
+    class ExampleSerializer(Serializer):
         expiry_date = ReadOnlyField(source='get_expiry_date')
     """
 

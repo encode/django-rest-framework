@@ -774,6 +774,8 @@ To support multiple updates you'll need to do so explicitly. When writing your m
 * How should insertions be handled? Are they invalid, or do they create new objects?
 * How should removals be handled? Do they imply object deletion, or removing a relationship? Should they be silently ignored, or are they invalid?
 * How should ordering be handled? Does changing the position of two items imply any state change or is it ignored?
+ 
+You will need to add an explicit `id` field to the instance serializer. The default implicitly-generated `id` field is marked as `read_only`. This causes it to be removed on updates. Once you declare it explicitly, it will be available in the list serializer's `update` method.
 
 Here's an example of how you might choose to implement multiple updates:
 
@@ -800,7 +802,13 @@ Here's an example of how you might choose to implement multiple updates:
             return ret
 
     class BookSerializer(serializers.Serializer):
+        # We need to identify elements in the list using their primary key,
+        # so use a writable field here, rather than the default which would be read-only.
+        id = serializers.IntegerField()
+
         ...
+        id = serializers.IntegerField(required=False)
+    
         class Meta:
             list_serializer_class = BookListSerializer
 

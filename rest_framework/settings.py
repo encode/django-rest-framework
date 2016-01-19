@@ -19,6 +19,8 @@ back to the defaults.
 """
 from __future__ import unicode_literals
 
+import warnings
+
 from django.conf import settings
 from django.test.signals import setting_changed
 from django.utils import six
@@ -135,6 +137,12 @@ IMPORT_STRINGS = (
 )
 
 
+# List of settings that have been removed
+REMOVED_SETTINGS = (
+    "PAGINATE_BY", "PAGINATE_BY_PARAM", "MAX_PAGINATE_BY",
+)
+
+
 def perform_import(val, setting_name):
     """
     If the given setting is a string import notation,
@@ -177,7 +185,7 @@ class APISettings(object):
     """
     def __init__(self, user_settings=None, defaults=None, import_strings=None):
         if user_settings:
-            self._user_settings = user_settings
+            self._user_settings = self.__check_user_settings(user_settings)
         self.defaults = defaults or DEFAULTS
         self.import_strings = import_strings or IMPORT_STRINGS
 
@@ -188,7 +196,7 @@ class APISettings(object):
         return self._user_settings
 
     def __getattr__(self, attr):
-        if attr not in self.defaults.keys():
+        if attr not in self.defaults:
             raise AttributeError("Invalid API setting: '%s'" % attr)
 
         try:
@@ -205,6 +213,13 @@ class APISettings(object):
         # Cache the result
         setattr(self, attr, val)
         return val
+
+    def __check_user_settings(self, user_settings):
+        SETTINGS_DOC = "http://www.django-rest-framework.org/api-guide/settings/"
+        for setting in REMOVED_SETTINGS:
+            if setting in user_settings:
+                warnings.warn("The '%s' setting has been removed. Please refer to '%s' for available settings." % (setting, SETTINGS_DOC), DeprecationWarning)
+        return user_settings
 
 
 api_settings = APISettings(None, DEFAULTS, IMPORT_STRINGS)

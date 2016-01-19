@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Petter Kjelkenes <kjelkenes@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-21 10:55+0200\n"
-"PO-Revision-Date: 2015-09-21 08:56+0000\n"
-"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
+"POT-Creation-Date: 2015-12-07 18:53+0100\n"
+"PO-Revision-Date: 2015-12-08 15:34+0000\n"
+"Last-Translator: Petter Kjelkenes <kjelkenes@gmail.com>\n"
 "Language-Team: Norwegian Bokmål (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/nb/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,382 +20,408 @@ msgstr ""
 
 #: authentication.py:72
 msgid "Invalid basic header. No credentials provided."
-msgstr ""
+msgstr "Ugyldig basic header. Ingen legitimasjon gitt."
 
 #: authentication.py:75
 msgid "Invalid basic header. Credentials string should not contain spaces."
-msgstr ""
+msgstr "Ugylid basic header. Legitimasjonsstreng bør ikke inneholde mellomrom."
 
 #: authentication.py:81
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
-msgstr ""
+msgstr "Ugyldig basic header. Legitimasjonen ikke riktig Base64 kodet."
 
 #: authentication.py:98
 msgid "Invalid username/password."
-msgstr ""
+msgstr "Ugyldig brukernavn eller passord."
 
-#: authentication.py:101 authentication.py:189
+#: authentication.py:101 authentication.py:188
 msgid "User inactive or deleted."
-msgstr ""
+msgstr "Bruker inaktiv eller slettet."
 
-#: authentication.py:168
+#: authentication.py:167
 msgid "Invalid token header. No credentials provided."
-msgstr ""
+msgstr "Ugyldig token header. Ingen legitimasjon gitt."
 
-#: authentication.py:171
+#: authentication.py:170
 msgid "Invalid token header. Token string should not contain spaces."
-msgstr ""
+msgstr "Ugyldig token header. Token streng skal ikke inneholde mellomrom."
 
-#: authentication.py:177
+#: authentication.py:176
 msgid ""
 "Invalid token header. Token string should not contain invalid characters."
-msgstr ""
+msgstr "Ugyldig token header. Tokenstrengen skal ikke inneholde ugyldige tegn."
 
-#: authentication.py:186
+#: authentication.py:185
 msgid "Invalid token."
-msgstr ""
+msgstr "Ugyldig token."
 
 #: authtoken/serializers.py:20
 msgid "User account is disabled."
-msgstr ""
+msgstr "Brukerkonto er deaktivert."
 
 #: authtoken/serializers.py:23
 msgid "Unable to log in with provided credentials."
-msgstr ""
+msgstr "Kan ikke logge inn med gitt legitimasjon."
 
 #: authtoken/serializers.py:26
 msgid "Must include \"username\" and \"password\"."
-msgstr ""
+msgstr "Må inkludere \"username\" og \"password\"."
 
 #: exceptions.py:49
 msgid "A server error occurred."
-msgstr ""
+msgstr "En serverfeil skjedde."
 
 #: exceptions.py:84
 msgid "Malformed request."
-msgstr ""
+msgstr "Misformet forespørsel."
 
 #: exceptions.py:89
 msgid "Incorrect authentication credentials."
-msgstr ""
+msgstr "Ugyldig autentiseringsinformasjon."
 
 #: exceptions.py:94
 msgid "Authentication credentials were not provided."
-msgstr ""
+msgstr "Manglende autentiseringsinformasjon."
 
 #: exceptions.py:99
 msgid "You do not have permission to perform this action."
-msgstr ""
+msgstr "Du har ikke tilgang til å utføre denne handlingen."
 
 #: exceptions.py:104 views.py:81
 msgid "Not found."
-msgstr ""
+msgstr "Ikke funnet."
 
 #: exceptions.py:109
 #, python-brace-format
 msgid "Method \"{method}\" not allowed."
-msgstr ""
+msgstr "Metoden \"{method}\" ikke gyldig."
 
 #: exceptions.py:120
 msgid "Could not satisfy the request Accept header."
-msgstr ""
+msgstr "Kunne ikke tilfredsstille request Accept header."
 
 #: exceptions.py:132
 #, python-brace-format
 msgid "Unsupported media type \"{media_type}\" in request."
-msgstr ""
+msgstr "Ugyldig media type \"{media_type}\" i request."
 
 #: exceptions.py:145
 msgid "Request was throttled."
-msgstr ""
+msgstr "Forespørselen ble strupet."
 
-#: fields.py:262 relations.py:191 relations.py:224 validators.py:79
+#: fields.py:266 relations.py:195 relations.py:228 validators.py:79
 #: validators.py:162
 msgid "This field is required."
-msgstr ""
+msgstr "Dette feltet er påkrevd."
 
-#: fields.py:263
+#: fields.py:267
 msgid "This field may not be null."
-msgstr ""
+msgstr "Dette feltet må ikke være tomt."
 
-#: fields.py:599 fields.py:627
+#: fields.py:603 fields.py:634
 #, python-brace-format
 msgid "\"{input}\" is not a valid boolean."
-msgstr ""
+msgstr "\"{input}\" er ikke en gyldig bolsk verdi."
 
-#: fields.py:662
+#: fields.py:669
 msgid "This field may not be blank."
-msgstr ""
+msgstr "Dette feltet må ikke være blankt."
 
-#: fields.py:663 fields.py:1594
+#: fields.py:670 fields.py:1656
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
-msgstr ""
+msgstr "Forsikre deg om at dette feltet ikke har mer enn {max_length} tegn."
 
-#: fields.py:664
+#: fields.py:671
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
-msgstr ""
+msgstr "Forsikre deg at dette feltet har minst {min_length} tegn."
 
-#: fields.py:701
+#: fields.py:708
 msgid "Enter a valid email address."
-msgstr ""
+msgstr "Oppgi en gyldig epost-adresse."
 
-#: fields.py:712
+#: fields.py:719
 msgid "This value does not match the required pattern."
-msgstr ""
+msgstr "Denne verdien samsvarer ikke med de påkrevde mønsteret."
 
-#: fields.py:723
+#: fields.py:730
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
-msgstr ""
+msgstr "Skriv inn en gyldig \"slug\" som består av bokstaver, tall, understrek eller bindestrek."
 
-#: fields.py:735
+#: fields.py:742
 msgid "Enter a valid URL."
-msgstr ""
+msgstr "Skriv inn en gyldig URL."
 
-#: fields.py:748
+#: fields.py:755
 #, python-brace-format
 msgid "\"{value}\" is not a valid UUID."
-msgstr ""
+msgstr "\"{value}\" er ikke en gyldig UUID."
 
-#: fields.py:782
+#: fields.py:791
 msgid "Enter a valid IPv4 or IPv6 address."
-msgstr ""
+msgstr "Skriv inn en gyldig IPv4 eller IPv6-adresse."
 
-#: fields.py:807
+#: fields.py:816
 msgid "A valid integer is required."
-msgstr ""
+msgstr "En gyldig heltall er nødvendig."
 
-#: fields.py:808 fields.py:843 fields.py:876
+#: fields.py:817 fields.py:852 fields.py:885
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
-msgstr ""
+msgstr "Sikre denne verdien er mindre enn eller lik {max_value}."
 
-#: fields.py:809 fields.py:844 fields.py:877
+#: fields.py:818 fields.py:853 fields.py:886
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr ""
+msgstr "Sikre denne verdien er større enn eller lik {min_value}."
 
-#: fields.py:810 fields.py:845 fields.py:881
+#: fields.py:819 fields.py:854 fields.py:890
 msgid "String value too large."
-msgstr ""
+msgstr "Strengverdien for stor."
 
-#: fields.py:842 fields.py:875
+#: fields.py:851 fields.py:884
 msgid "A valid number is required."
-msgstr ""
+msgstr "Et gyldig nummer er nødvendig."
 
-#: fields.py:878
+#: fields.py:887
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
-msgstr ""
+msgstr "Pass på at det ikke er flere enn {max_digits} siffer totalt."
 
-#: fields.py:879
+#: fields.py:888
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
-msgstr ""
+msgstr "Pass på at det ikke er flere enn {max_decimal_places} desimaler."
 
-#: fields.py:880
+#: fields.py:889
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
-msgstr ""
+msgstr "Pass på at det ikke er flere enn {max_whole_digits} siffer før komma."
 
-#: fields.py:994
+#: fields.py:1004
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Datetime har feil format. Bruk et av disse formatene i stedet: {format}."
 
-#: fields.py:995
+#: fields.py:1005
 msgid "Expected a datetime but got a date."
-msgstr ""
+msgstr "Forventet en datetime, men fikk en date."
 
-#: fields.py:1060
+#: fields.py:1079
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Dato har feil format. Bruk et av disse formatene i stedet: {format}."
 
-#: fields.py:1061
+#: fields.py:1080
 msgid "Expected a date but got a datetime."
-msgstr ""
+msgstr "Forventet en date, men fikk en datetime."
 
-#: fields.py:1125
+#: fields.py:1148
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Tid har feil format. Bruk et av disse formatene i stedet: {format}."
 
-#: fields.py:1180
+#: fields.py:1207
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Varighet har feil format. Bruk et av disse formatene i stedet: {format}."
 
-#: fields.py:1205 fields.py:1254
+#: fields.py:1232 fields.py:1281
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
-msgstr ""
+msgstr "\"{input}\" er ikke et gyldig valg."
 
-#: fields.py:1208 relations.py:58 relations.py:427
+#: fields.py:1235 relations.py:62 relations.py:431
 #, python-brace-format
 msgid "More than {count} items..."
-msgstr ""
+msgstr "Mer enn {count} elementer ..."
 
-#: fields.py:1255 fields.py:1401 relations.py:423 serializers.py:504
+#: fields.py:1282 fields.py:1429 relations.py:427 serializers.py:520
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Forventet en liste over elementer, men fikk type \"{input_type}\"."
 
-#: fields.py:1256
+#: fields.py:1283
 msgid "This selection may not be empty."
-msgstr ""
+msgstr "Dette valget kan ikke være tomt."
 
-#: fields.py:1294
+#: fields.py:1320
 #, python-brace-format
 msgid "\"{input}\" is not a valid path choice."
-msgstr ""
+msgstr "\"{input}\" er ikke en gyldig bane valg."
 
-#: fields.py:1313
+#: fields.py:1339
 msgid "No file was submitted."
-msgstr ""
+msgstr "Ingen fil ble sendt."
 
-#: fields.py:1314
+#: fields.py:1340
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
-msgstr ""
+msgstr "De innsendte data var ikke en fil. Kontroller kodingstypen på skjemaet."
 
-#: fields.py:1315
+#: fields.py:1341
 msgid "No filename could be determined."
-msgstr ""
+msgstr "Kunne ikke finne filnavn."
 
-#: fields.py:1316
+#: fields.py:1342
 msgid "The submitted file is empty."
-msgstr ""
+msgstr "Den innsendte filen er tom."
 
-#: fields.py:1317
+#: fields.py:1343
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
-msgstr ""
+msgstr "Sikre dette filnavnet har på det meste {max_length} tegn (det har {length})."
 
-#: fields.py:1363
+#: fields.py:1391
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
-msgstr ""
+msgstr "Last opp et gyldig bilde. Filen du lastet opp var enten ikke et bilde eller en ødelagt bilde."
 
-#: fields.py:1402 relations.py:424 serializers.py:505
+#: fields.py:1430 relations.py:428 serializers.py:521
 msgid "This list may not be empty."
-msgstr ""
+msgstr "Denne listen kan ikke være tom."
 
-#: fields.py:1452
+#: fields.py:1483
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Forventet en dictionary av flere ting, men fikk typen \"{input_type}\"."
 
-#: pagination.py:192
+#: fields.py:1530
+msgid "Value must be valid JSON."
+msgstr "Verdien må være gyldig JSON."
+
+#: filters.py:35 templates/rest_framework/filters/django_filter.html:5
+msgid "Submit"
+msgstr "Send inn"
+
+#: pagination.py:189
 #, python-brace-format
 msgid "Invalid page \"{page_number}\": {message}."
-msgstr ""
+msgstr "Ugyldig side \"{page_number}\": {message}."
 
-#: pagination.py:462
+#: pagination.py:407
 msgid "Invalid cursor"
-msgstr ""
+msgstr "Ugyldig markør"
 
-#: relations.py:192
+#: relations.py:196
 #, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
-msgstr ""
+msgstr "Ugyldig pk \"{pk_value}\" - objektet eksisterer ikke."
 
-#: relations.py:193
+#: relations.py:197
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
-msgstr ""
+msgstr "Feil type. Forventet pk verdi, fikk {data_type}."
 
-#: relations.py:225
+#: relations.py:229
 msgid "Invalid hyperlink - No URL match."
-msgstr ""
+msgstr "Ugyldig hyperkobling - No URL match."
 
-#: relations.py:226
+#: relations.py:230
 msgid "Invalid hyperlink - Incorrect URL match."
-msgstr ""
+msgstr "Ugyldig hyperkobling - Incorrect URL match."
 
-#: relations.py:227
+#: relations.py:231
 msgid "Invalid hyperlink - Object does not exist."
-msgstr ""
+msgstr "Ugyldig hyperkobling - Objektet eksisterer ikke."
 
-#: relations.py:228
+#: relations.py:232
 #, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
-msgstr ""
+msgstr "Feil type. Forventet URL streng, fikk {data_type}."
 
-#: relations.py:387
+#: relations.py:391
 #, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
-msgstr ""
+msgstr "Objekt med {slug_name}={value} finnes ikke."
 
-#: relations.py:388
+#: relations.py:392
 msgid "Invalid value."
-msgstr ""
+msgstr "Ugyldig verdi."
 
-#: serializers.py:310
+#: serializers.py:326
 #, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
-msgstr ""
+msgstr "Ugyldige data. Forventet en dicitonary, men fikk {datatype}."
+
+#: templates/rest_framework/admin.html:118
+#: templates/rest_framework/base.html:128
+msgid "Filters"
+msgstr "Filtre"
+
+#: templates/rest_framework/filters/django_filter.html:2
+#: templates/rest_framework/filters/django_filter_crispyforms.html:4
+msgid "Field filters"
+msgstr "Feltfiltre"
+
+#: templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "Sortering"
+
+#: templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr "Søk"
 
 #: templates/rest_framework/horizontal/radio.html:2
 #: templates/rest_framework/inline/radio.html:2
 #: templates/rest_framework/vertical/radio.html:2
 msgid "None"
-msgstr ""
+msgstr "Ingen"
 
 #: templates/rest_framework/horizontal/select_multiple.html:2
 #: templates/rest_framework/inline/select_multiple.html:2
 #: templates/rest_framework/vertical/select_multiple.html:2
 msgid "No items to select."
-msgstr ""
+msgstr "Ingenting å velge."
 
 #: validators.py:24
 msgid "This field must be unique."
-msgstr ""
+msgstr "Dette feltet må være unikt."
 
 #: validators.py:78
 #, python-brace-format
 msgid "The fields {field_names} must make a unique set."
-msgstr ""
+msgstr "Feltene {field_names} må gjøre et unikt sett."
 
 #: validators.py:226
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" date."
-msgstr ""
+msgstr "Dette feltet må være unikt for \"{date_field}\" dato."
 
 #: validators.py:241
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" month."
-msgstr ""
+msgstr "Dette feltet må være unikt for \"{date_field}\" måned."
 
 #: validators.py:254
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" year."
-msgstr ""
+msgstr "Dette feltet må være unikt for \"{date_field}\" år."
 
 #: versioning.py:42
 msgid "Invalid version in \"Accept\" header."
-msgstr ""
+msgstr "Ugyldig versjon på \"Accept\" header."
 
 #: versioning.py:73 versioning.py:115
 msgid "Invalid version in URL path."
-msgstr ""
+msgstr "Ugyldig versjon i URL-banen."
 
 #: versioning.py:144
 msgid "Invalid version in hostname."
-msgstr ""
+msgstr "Ugyldig versjon i vertsnavn."
 
 #: versioning.py:166
 msgid "Invalid version in query parameter."
-msgstr ""
+msgstr "Ugyldig versjon i søkeparameter."
 
 #: views.py:88
 msgid "Permission denied."
-msgstr ""
+msgstr "Tillatelse avslått."

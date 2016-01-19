@@ -32,6 +32,9 @@ class Hyperlink(six.text_type):
         ret.name = name
         return ret
 
+    def __getnewargs__(self):
+        return(str(self), self.name,)
+
     is_hyperlink = True
 
 

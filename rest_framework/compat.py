@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 import django
 from django.conf import settings
 from django.db import connection, transaction
+from django.template import Context, RequestContext, Template
 from django.utils import six
 from django.views.generic import View
 
@@ -200,6 +201,7 @@ try:
 except ImportError:
     DecimalValidator = None
 
+
 def set_rollback():
     if hasattr(transaction, 'set_rollback'):
         if connection.settings_dict.get('ATOMIC_REQUESTS', False):
@@ -215,3 +217,54 @@ def set_rollback():
     else:
         # transaction not managed
         pass
+
+
+def template_render(template, context=None, request=None):
+    """
+    Passing Context or RequestContext to Template.render is deprecated in 1.9+,
+    see https://github.com/django/django/pull/3883 and
+    https://github.com/django/django/blob/1.9rc1/django/template/backends/django.py#L82-L84
+
+    :param template: Template instance
+    :param context: dict
+    :param request: Request instance
+    :return: rendered template as SafeText instance
+    """
+    if django.VERSION < (1, 8) or isinstance(template, Template):
+        if request:
+            context = RequestContext(request, context)
+        else:
+            context = Context(context)
+        return template.render(context)
+    # backends template, e.g. django.template.backends.django.Template
+    else:
+        return template.render(context, request=request)
+
+
+def get_all_related_objects(opts):
+    """
+    Django 1.8 changed meta api, see
+    https://docs.djangoproject.com/en/1.8/ref/models/meta/#migrating-old-meta-api
+    https://code.djangoproject.com/ticket/12663
+    https://github.com/django/django/pull/3848
+
+    :param opts: Options instance
+    :return: list of relations except many-to-many ones
+    """
+    if django.VERSION < (1, 9):
+        return opts.get_all_related_objects()
+    else:
+        return [r for r in opts.related_objects if not r.field.many_to_many]
+
+
+def get_all_related_many_to_many_objects(opts):
+    """
+    Django 1.8 changed meta api, see docstr in compat.get_all_related_objects()
+
+    :param opts: Options instance
+    :return: list of many-to-many relations
+    """
+    if django.VERSION < (1, 9):
+        return opts.get_all_related_many_to_many_objects()
+    else:
+        return [r for r in opts.related_objects if r.field.many_to_many]

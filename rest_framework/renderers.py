@@ -9,19 +9,20 @@ REST framework also provides an HTML renderer that renders the browsable API.
 from __future__ import unicode_literals
 
 import json
+from collections import OrderedDict
 
 import django
 from django import forms
 from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Page
 from django.http.multipartparser import parse_header
-from django.template import Context, RequestContext, Template, loader
+from django.template import Template, loader
 from django.test.client import encode_multipart
 from django.utils import six
 
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
-    INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS
+    INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, template_render
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
@@ -168,7 +169,7 @@ class TemplateHTMLRenderer(BaseRenderer):
             template = self.resolve_template(template_names)
 
         context = self.resolve_context(data, request, response)
-        return template.render(context)
+        return template_render(template, context, request=request)
 
     def resolve_template(self, template_names):
         return loader.select_template(template_names)
@@ -176,7 +177,7 @@ class TemplateHTMLRenderer(BaseRenderer):
     def resolve_context(self, data, request, response):
         if response.exception:
             data['status_code'] = response.status_code
-        return RequestContext(request, data)
+        return data
 
     def get_template_names(self, response, view):
         if response.template_name:
@@ -230,7 +231,7 @@ class StaticHTMLRenderer(TemplateHTMLRenderer):
             request = renderer_context['request']
             template = self.get_exception_template(response)
             context = self.resolve_context(data, request, response)
-            return template.render(context)
+            return template_render(template, context, request=request)
 
         return data
 
@@ -333,8 +334,8 @@ class HTMLFormRenderer(BaseRenderer):
             template_name = style['template_pack'].strip('/') + '/' + style['base_template']
 
         template = loader.get_template(template_name)
-        context = Context({'field': field, 'style': style})
-        return template.render(context)
+        context = {'field': field, 'style': style}
+        return template_render(template, context)
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -350,11 +351,11 @@ class HTMLFormRenderer(BaseRenderer):
         template_pack = style['template_pack'].strip('/')
         template_name = template_pack + '/' + self.base_template
         template = loader.get_template(template_name)
-        context = Context({
+        context = {
             'form': form,
             'style': style
-        })
-        return template.render(context)
+        }
+        return template_render(template, context)
 
 
 class BrowsableAPIRenderer(BaseRenderer):
@@ -600,8 +601,8 @@ class BrowsableAPIRenderer(BaseRenderer):
             return
 
         template = loader.get_template(self.filter_template)
-        context = Context({'elements': elements})
-        return template.render(context)
+        context = {'elements': elements}
+        return template_render(template, context)
 
     def get_context(self, data, accepted_media_type, renderer_context):
         """
@@ -618,7 +619,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         raw_data_patch_form = self.get_raw_data_form(data, view, 'PATCH', request)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
-        response_headers = dict(response.items())
+        response_headers = OrderedDict(sorted(response.items()))
         renderer_content_type = ''
         if renderer:
             renderer_content_type = '%s' % renderer.media_type
@@ -672,8 +673,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         template = loader.get_template(self.template)
         context = self.get_context(data, accepted_media_type, renderer_context)
-        context = RequestContext(renderer_context['request'], context)
-        ret = template.render(context)
+        ret = template_render(template, context, request=renderer_context['request'])
 
         # Munge DELETE Response code to allow us to return content
         # (Do this *after* we've rendered the template so that we include
@@ -709,8 +709,7 @@ class AdminRenderer(BrowsableAPIRenderer):
 
         template = loader.get_template(self.template)
         context = self.get_context(data, accepted_media_type, renderer_context)
-        context = RequestContext(renderer_context['request'], context)
-        ret = template.render(context)
+        ret = template_render(template, context, request=renderer_context['request'])
 
         # Creation and deletion should use redirects in the admin style.
         if (response.status_code == status.HTTP_201_CREATED) and ('Location' in response):
@@ -781,7 +780,7 @@ class MultiPartRenderer(BaseRenderer):
                 assert not isinstance(value, dict), (
                     "Test data contained a dictionary value for key '%s', "
                     "but multipart uploads do not support nested data. "
-                    "You may want to consider using format='JSON' in this "
+                    "You may want to consider using format='json' in this "
                     "test case." % key
                 )
         return encode_multipart(self.BOUNDARY, data)

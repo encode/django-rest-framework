@@ -10,12 +10,12 @@ from functools import reduce
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
-from django.template import Context, loader
+from django.template import loader
 from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import (
-    crispy_forms, distinct, django_filters, guardian
+    crispy_forms, distinct, django_filters, guardian, template_render
 )
 from rest_framework.settings import api_settings
 
@@ -99,7 +99,7 @@ class DjangoFilterBackend(BaseFilterBackend):
             return filter_class
 
         if filter_fields:
-            class AutoFilterSet(FilterSet):
+            class AutoFilterSet(self.default_filter_set):
                 class Meta:
                     model = queryset.model
                     fields = filter_fields
@@ -118,15 +118,14 @@ class DjangoFilterBackend(BaseFilterBackend):
 
     def to_html(self, request, queryset, view):
         filter_class = self.get_filter_class(view, queryset)
-        if filter_class:
-            filter_instance = filter_class(request.query_params, queryset=queryset)
-        else:
-            filter_instance = None
-        context = Context({
+        if not filter_class:
+            return None
+        filter_instance = filter_class(request.query_params, queryset=queryset)
+        context = {
             'filter': filter_instance
-        })
+        }
         template = loader.get_template(self.template)
-        return template.render(context)
+        return template_render(template, context)
 
 
 class SearchFilter(BaseFilterBackend):
@@ -185,12 +184,12 @@ class SearchFilter(BaseFilterBackend):
 
         term = self.get_search_terms(request)
         term = term[0] if term else ''
-        context = Context({
+        context = {
             'param': self.search_param,
             'term': term
-        })
+        }
         template = loader.get_template(self.template)
-        return template.render(context)
+        return template_render(template, context)
 
 
 class OrderingFilter(BaseFilterBackend):
@@ -284,8 +283,8 @@ class OrderingFilter(BaseFilterBackend):
 
     def to_html(self, request, queryset, view):
         template = loader.get_template(self.template)
-        context = Context(self.get_template_context(request, queryset, view))
-        return template.render(context)
+        context = self.get_template_context(request, queryset, view)
+        return template_render(template, context)
 
 
 class DjangoObjectPermissionsFilter(BaseFilterBackend):

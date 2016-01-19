@@ -90,3 +90,40 @@ class TestNestedBoundField:
         assert serializer.is_valid()
         assert serializer['nested']['bool_field'].as_form_field().value == ''
         assert serializer['nested']['null_field'].as_form_field().value == ''
+
+    def test_rendering_nested_fields_with_none_value(self):
+        from rest_framework.renderers import HTMLFormRenderer
+
+        class Nested1(serializers.Serializer):
+            text_field = serializers.CharField()
+
+        class Nested2(serializers.Serializer):
+            nested1 = Nested1(allow_null=True)
+            text_field = serializers.CharField()
+
+        class ExampleSerializer(serializers.Serializer):
+            nested2 = Nested2()
+
+        serializer = ExampleSerializer(data={'nested2': {'nested1': None, 'text_field': 'test'}})
+        assert serializer.is_valid()
+        renderer = HTMLFormRenderer()
+        for field in serializer:
+            rendered = renderer.render_field(field, {})
+            expected_packed = (
+                '<fieldset>'
+                '<legend>Nested2</legend>'
+                '<fieldset>'
+                '<legend>Nested1</legend>'
+                '<divclass="form-group">'
+                '<label>Textfield</label>'
+                '<inputname="nested2.nested1.text_field"class="form-control"type="text">'
+                '</div>'
+                '</fieldset>'
+                '<divclass="form-group">'
+                '<label>Textfield</label>'
+                '<inputname="nested2.text_field"class="form-control"type="text"value="test">'
+                '</div>'
+                '</fieldset>'
+            )
+            rendered_packed = ''.join(rendered.split())
+            assert rendered_packed == expected_packed

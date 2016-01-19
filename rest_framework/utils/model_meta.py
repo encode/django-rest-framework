@@ -13,6 +13,10 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import six
 
+from rest_framework.compat import (
+    get_all_related_many_to_many_objects, get_all_related_objects
+)
+
 FieldInfo = namedtuple('FieldResult', [
     'pk',  # Model field instance
     'fields',  # Dict of field name -> model field instance
@@ -92,7 +96,7 @@ def _get_fields(opts):
 
 
 def _get_to_field(field):
-    return field.to_fields[0] if field.to_fields else None
+    return getattr(field, 'to_fields', None) and field.to_fields[0]
 
 
 def _get_forward_relationships(opts):
@@ -134,7 +138,7 @@ def _get_reverse_relationships(opts):
     # See: https://code.djangoproject.com/ticket/24208
 
     reverse_relations = OrderedDict()
-    for relation in opts.get_all_related_objects():
+    for relation in get_all_related_objects(opts):
         accessor_name = relation.get_accessor_name()
         related = getattr(relation, 'related_model', relation.model)
         reverse_relations[accessor_name] = RelationInfo(
@@ -146,7 +150,7 @@ def _get_reverse_relationships(opts):
         )
 
     # Deal with reverse many-to-many relationships.
-    for relation in opts.get_all_related_many_to_many_objects():
+    for relation in get_all_related_many_to_many_objects(opts):
         accessor_name = relation.get_accessor_name()
         related = getattr(relation, 'related_model', relation.model)
         reverse_relations[accessor_name] = RelationInfo(
