@@ -176,6 +176,14 @@ class TestSlugRelatedField(APISimpleTestCase):
         representation = self.field.to_representation(self.instance)
         assert representation == self.instance.name
 
+    def test_no_queryset_init(self):
+        class NoQuerySetSlugRelatedField(serializers.SlugRelatedField):
+            def get_queryset(this):
+                return self.queryset
+
+        field = NoQuerySetSlugRelatedField(slug_field='name')
+        field.to_internal_value(self.instance.name)
+
 
 class TestManyRelatedField(APISimpleTestCase):
     def setUp(self):
@@ -206,3 +214,14 @@ class TestManyRelatedField(APISimpleTestCase):
 
         mvd = MultiValueDict({'baz': ['bar1', 'bar2']})
         assert empty == self.field.get_value(mvd)
+
+
+class TestHyperlink:
+    def setup(self):
+        self.default_hyperlink = serializers.Hyperlink('http://example.com', 'test')
+
+    def test_can_be_pickled(self):
+        import pickle
+        upkled = pickle.loads(pickle.dumps(self.default_hyperlink))
+        assert upkled == self.default_hyperlink
+        assert upkled.name == self.default_hyperlink.name

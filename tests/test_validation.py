@@ -49,6 +49,24 @@ class ShouldValidateModelSerializer(serializers.ModelSerializer):
         fields = ('renamed',)
 
 
+class TestNestedValidationError(TestCase):
+    def test_nested_validation_error_detail(self):
+        """
+        Ensure nested validation error detail is rendered correctly.
+        """
+        e = serializers.ValidationError({
+            'nested': {
+                'field': ['error'],
+            }
+        })
+
+        self.assertEqual(serializers.get_validation_error_detail(e), {
+            'nested': {
+                'field': ['error'],
+            }
+        })
+
+
 class TestPreSaveValidationExclusionsSerializer(TestCase):
     def test_renamed_fields_are_model_validated(self):
         """

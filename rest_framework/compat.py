@@ -153,16 +153,25 @@ if 'patch' not in View.http_method_names:
 try:
     import markdown
 
+    if markdown.version <= '2.2':
+        HEADERID_EXT_PATH = 'headerid'
+    else:
+        HEADERID_EXT_PATH = 'markdown.extensions.headerid'
 
     def apply_markdown(text):
         """
         Simple wrapper around :func:`markdown.markdown` to set the base level
         of '#' style headers to <h2>.
         """
-
-        extensions = ['headerid(level=2)']
-        safe_mode = False
-        md = markdown.Markdown(extensions=extensions, safe_mode=safe_mode)
+        extensions = [HEADERID_EXT_PATH]
+        extension_configs = {
+            HEADERID_EXT_PATH: {
+                'level': '2'
+            }
+        }
+        md = markdown.Markdown(
+            extensions=extensions, extension_configs=extension_configs
+        )
         return md.convert(text)
 except ImportError:
     apply_markdown = None

@@ -48,12 +48,6 @@ We'll need to add our new `snippets` app and the `rest_framework` app to `INSTAL
         'snippets',
     )
 
-We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to include our snippet app's URLs.
-
-    urlpatterns = [
-        url(r'^', include('snippets.urls')),
-    ]
-
 Okay, we're ready to roll.
 
 ## Creating a model to work with
@@ -199,16 +193,16 @@ Open the file `snippets/serializers.py` again, and replace the `SnippetSerialize
 
 One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing its representation. Open the Django shell with `python manage.py shell`, then try the following:
 
-    >>> from snippets.serializers import SnippetSerializer
-    >>> serializer = SnippetSerializer()
-    >>> print(repr(serializer))
-    SnippetSerializer():
-        id = IntegerField(label='ID', read_only=True)
-        title = CharField(allow_blank=True, max_length=100, required=False)
-        code = CharField(style={'base_template': 'textarea.html'})
-        linenos = BooleanField(required=False)
-        language = ChoiceField(choices=[('Clipper', 'FoxPro'), ('Cucumber', 'Gherkin'), ('RobotFramework', 'RobotFramework'), ('abap', 'ABAP'), ('ada', 'Ada')...
-        style = ChoiceField(choices=[('autumn', 'autumn'), ('borland', 'borland'), ('bw', 'bw'), ('colorful', 'colorful')...
+    from snippets.serializers import SnippetSerializer
+    serializer = SnippetSerializer()
+    print(repr(serializer))
+    # SnippetSerializer():
+    #    id = IntegerField(label='ID', read_only=True)
+    #    title = CharField(allow_blank=True, max_length=100, required=False)
+    #    code = CharField(style={'base_template': 'textarea.html'})
+    #    linenos = BooleanField(required=False)
+    #    language = ChoiceField(choices=[('Clipper', 'FoxPro'), ('Cucumber', 'Gherkin'), ('RobotFramework', 'RobotFramework'), ('abap', 'ABAP'), ('ada', 'Ada')...
+    #    style = ChoiceField(choices=[('autumn', 'autumn'), ('borland', 'borland'), ('bw', 'bw'), ('colorful', 'colorful')...
 
 It's important to remember that `ModelSerializer` classes don't do anything particularly magical, they are simply a shortcut for creating serializer classes:
 
@@ -298,6 +292,14 @@ Finally we need to wire these views up.  Create the `snippets/urls.py` file:
     urlpatterns = [
         url(r'^snippets/$', views.snippet_list),
         url(r'^snippets/(?P<pk>[0-9]+)/$', views.snippet_detail),
+    ]
+    
+We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to include our snippet app's URLs.
+    
+    from django.conf.urls import url, include
+    
+    urlpatterns = [
+        url(r'^', include('snippets.urls')),
     ]
 
 It's worth noting that there are a couple of edge cases we're not dealing with properly at the moment.  If we send malformed `json`, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.

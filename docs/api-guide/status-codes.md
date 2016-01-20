@@ -89,6 +89,7 @@ The 4xx class of status code is intended for cases in which the client seems to 
     HTTP_428_PRECONDITION_REQUIRED
     HTTP_429_TOO_MANY_REQUESTS
     HTTP_431_REQUEST_HEADER_FIELDS_TOO_LARGE
+    HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS
 
 ## Server Error - 5xx
 

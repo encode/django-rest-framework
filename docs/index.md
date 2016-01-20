@@ -86,7 +86,7 @@ If you're intending to use the browsable API you'll probably also want to add RE
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     ]
 
-Note that the URL path can be whatever you want, but you must include `'rest_framework.urls'` with the `'rest_framework'` namespace.
+Note that the URL path can be whatever you want, but you must include `'rest_framework.urls'` with the `'rest_framework'` namespace. You may leave out the namespace in Django 1.9+, and REST framework will set it for you.
 
 ## Example
 
@@ -231,7 +231,7 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 
 ## License
 
-Copyright (c) 2011-2015, Tom Christie
+Copyright (c) 2011-2016, Tom Christie
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

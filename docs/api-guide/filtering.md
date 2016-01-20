@@ -177,7 +177,7 @@ For more advanced filtering requirements you can specify a `FilterSet` class tha
     from rest_framework import filters
     from rest_framework import generics
 
-    class ProductFilter(django_filters.FilterSet):
+    class ProductFilter(filters.FilterSet):
         min_price = django_filters.NumberFilter(name="price", lookup_type='gte')
         max_price = django_filters.NumberFilter(name="price", lookup_type='lte')
         class Meta:
@@ -199,12 +199,12 @@ You can also span relationships using `django-filter`, let's assume that each
 product has foreign key to `Manufacturer` model, so we create filter that
 filters using `Manufacturer` name. For example:
 
-    import django_filters
     from myapp.models import Product
     from myapp.serializers import ProductSerializer
+    from rest_framework import filters
     from rest_framework import generics
 
-    class ProductFilter(django_filters.FilterSet):
+    class ProductFilter(filters.FilterSet):
         class Meta:
             model = Product
             fields = ['category', 'in_stock', 'manufacturer__name']
@@ -218,9 +218,10 @@ This is nice, but it exposes the Django's double underscore convention as part o
     import django_filters
     from myapp.models import Product
     from myapp.serializers import ProductSerializer
+    from rest_framework import filters
     from rest_framework import generics
 
-    class ProductFilter(django_filters.FilterSet):
+    class ProductFilter(filters.FilterSet):
         manufacturer = django_filters.CharFilter(name="manufacturer__name")
 
         class Meta:

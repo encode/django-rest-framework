@@ -330,6 +330,8 @@ To implement a custom relational field, you should override `RelatedField`, and 
 
 If you want to implement a read-write relational field, you must also implement the `.to_internal_value(self, data)` method.
 
+To provide a dynamic queryset based on the `context`, you can also override `.get_queryset(self)` instead of specifying `.queryset` on the class or when initializing the field.
+
 ## Example
 
 For example, we could define a relational field to serialize a track to a custom string representation, using its ordering, title, and duration.
@@ -459,7 +461,7 @@ In cases where the cutoff is being enforced you may want to instead use a plain 
 
     assigned_to = serializers.SlugRelatedField(
        queryset=User.objects.all(),
-       slug field='username',
+       slug_field='username',
        style={'base_template': 'input.html'}
     )
 

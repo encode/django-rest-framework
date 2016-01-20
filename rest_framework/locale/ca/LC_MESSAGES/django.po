@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-21 10:55+0200\n"
-"PO-Revision-Date: 2015-09-21 08:56+0000\n"
+"POT-Creation-Date: 2015-12-07 18:53+0100\n"
+"PO-Revision-Date: 2015-12-07 17:55+0000\n"
 "Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
 "Language-Team: Catalan (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/ca/)\n"
 "MIME-Version: 1.0\n"
@@ -33,24 +33,24 @@ msgstr "Header Basic invàlid. Les credencials no estan codificades correctament
 msgid "Invalid username/password."
 msgstr "Usuari/Contrasenya incorrectes."
 
-#: authentication.py:101 authentication.py:189
+#: authentication.py:101 authentication.py:188
 msgid "User inactive or deleted."
 msgstr "Usuari inactiu o esborrat."
 
-#: authentication.py:168
+#: authentication.py:167
 msgid "Invalid token header. No credentials provided."
 msgstr "Token header invàlid. No s'han indicat les credencials."
 
-#: authentication.py:171
+#: authentication.py:170
 msgid "Invalid token header. Token string should not contain spaces."
 msgstr "Token header invàlid. El token no ha de contenir espais."
 
-#: authentication.py:177
+#: authentication.py:176
 msgid ""
 "Invalid token header. Token string should not contain invalid characters."
 msgstr "Token header invàlid. El token no pot contenir caràcters invàlids."
 
-#: authentication.py:186
+#: authentication.py:185
 msgid "Invalid token."
 msgstr "Token invàlid."
 
@@ -108,240 +108,266 @@ msgstr "Media type \"{media_type}\" no suportat."
 msgid "Request was throttled."
 msgstr "La petició ha estat limitada pel número màxim de peticions definit."
 
-#: fields.py:262 relations.py:191 relations.py:224 validators.py:79
+#: fields.py:266 relations.py:195 relations.py:228 validators.py:79
 #: validators.py:162
 msgid "This field is required."
 msgstr "Aquest camp és obligatori."
 
-#: fields.py:263
+#: fields.py:267
 msgid "This field may not be null."
 msgstr "Aquest camp no pot ser nul."
 
-#: fields.py:599 fields.py:627
+#: fields.py:603 fields.py:634
 #, python-brace-format
 msgid "\"{input}\" is not a valid boolean."
 msgstr "\"{input}\" no és un booleà."
 
-#: fields.py:662
+#: fields.py:669
 msgid "This field may not be blank."
 msgstr "Aquest camp no pot estar en blanc."
 
-#: fields.py:663 fields.py:1594
+#: fields.py:670 fields.py:1656
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr "Aquest camp no pot tenir més de {max_length} caràcters."
 
-#: fields.py:664
+#: fields.py:671
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
 msgstr "Aquest camp ha de tenir un mínim de {min_length} caràcters."
 
-#: fields.py:701
+#: fields.py:708
 msgid "Enter a valid email address."
 msgstr "Introdueixi una adreça de correu vàlida."
 
-#: fields.py:712
+#: fields.py:719
 msgid "This value does not match the required pattern."
 msgstr "Aquest valor no compleix el patró requerit."
 
-#: fields.py:723
+#: fields.py:730
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
 msgstr "Introdueix un \"slug\" vàlid consistent en lletres, números, guions o guions baixos."
 
-#: fields.py:735
+#: fields.py:742
 msgid "Enter a valid URL."
 msgstr "Introdueixi una URL vàlida."
 
-#: fields.py:748
+#: fields.py:755
 #, python-brace-format
 msgid "\"{value}\" is not a valid UUID."
 msgstr "\"{value}\" no és un UUID vàlid."
 
-#: fields.py:782
+#: fields.py:791
 msgid "Enter a valid IPv4 or IPv6 address."
 msgstr "Introdueixi una adreça IPv4 o IPv6 vàlida."
 
-#: fields.py:807
+#: fields.py:816
 msgid "A valid integer is required."
 msgstr "Es requereix un nombre enter vàlid."
 
-#: fields.py:808 fields.py:843 fields.py:876
+#: fields.py:817 fields.py:852 fields.py:885
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
 msgstr "Aquest valor ha de ser menor o igual a {max_value}."
 
-#: fields.py:809 fields.py:844 fields.py:877
+#: fields.py:818 fields.py:853 fields.py:886
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
 msgstr "Aquest valor ha de ser més gran o igual a {min_value}."
 
-#: fields.py:810 fields.py:845 fields.py:881
+#: fields.py:819 fields.py:854 fields.py:890
 msgid "String value too large."
 msgstr "Valor del text massa gran."
 
-#: fields.py:842 fields.py:875
+#: fields.py:851 fields.py:884
 msgid "A valid number is required."
 msgstr "Es requereix un nombre vàlid."
 
-#: fields.py:878
+#: fields.py:887
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
 msgstr "No pot haver-hi més de {max_digits} dígits en total."
 
-#: fields.py:879
+#: fields.py:888
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr "No pot haver-hi més de {max_decimal_places} decimals."
 
-#: fields.py:880
+#: fields.py:889
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
 msgstr "No pot haver-hi més de {max_whole_digits} dígits abans del punt decimal."
 
-#: fields.py:994
+#: fields.py:1004
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
 msgstr "El Datetime té un format incorrecte. Utilitzi un d'aquests formats: {format}."
 
-#: fields.py:995
+#: fields.py:1005
 msgid "Expected a datetime but got a date."
 msgstr "S'espera un Datetime però s'ha rebut un Date."
 
-#: fields.py:1060
+#: fields.py:1079
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr "El Date té un format incorrecte. Utilitzi un d'aquests formats: {format}."
 
-#: fields.py:1061
+#: fields.py:1080
 msgid "Expected a date but got a datetime."
 msgstr "S'espera un Date però s'ha rebut un Datetime."
 
-#: fields.py:1125
+#: fields.py:1148
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr "El Time té un format incorrecte. Utilitzi un d'aquests formats: {format}."
 
-#: fields.py:1180
+#: fields.py:1207
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
 msgstr "La durada té un format incorrecte. Utilitzi un d'aquests formats: {format}."
 
-#: fields.py:1205 fields.py:1254
+#: fields.py:1232 fields.py:1281
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
 msgstr "\"{input}\" no és una opció vàlida."
 
-#: fields.py:1208 relations.py:58 relations.py:427
+#: fields.py:1235 relations.py:62 relations.py:431
 #, python-brace-format
 msgid "More than {count} items..."
 msgstr ""
 
-#: fields.py:1255 fields.py:1401 relations.py:423 serializers.py:504
+#: fields.py:1282 fields.py:1429 relations.py:427 serializers.py:520
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "S'espera una llista d'ítems però s'ha rebut el tipus \"{input_type}\"."
 
-#: fields.py:1256
+#: fields.py:1283
 msgid "This selection may not be empty."
 msgstr "Aquesta selecció no pot estar buida."
 
-#: fields.py:1294
+#: fields.py:1320
 #, python-brace-format
 msgid "\"{input}\" is not a valid path choice."
 msgstr "\"{input}\" no és un path vàlid."
 
-#: fields.py:1313
+#: fields.py:1339
 msgid "No file was submitted."
 msgstr "No s'ha enviat cap fitxer."
 
-#: fields.py:1314
+#: fields.py:1340
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
 msgstr "Les dades enviades no són un fitxer. Comproveu l'encoding type del formulari."
 
-#: fields.py:1315
+#: fields.py:1341
 msgid "No filename could be determined."
 msgstr "No s'ha pogut determinar el nom del fitxer."
 
-#: fields.py:1316
+#: fields.py:1342
 msgid "The submitted file is empty."
 msgstr "El fitxer enviat està buit."
 
-#: fields.py:1317
+#: fields.py:1343
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr "El nom del fitxer ha de tenir com a màxim {max_length} caràcters (en té {length})."
 
-#: fields.py:1363
+#: fields.py:1391
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr "Envieu una imatge vàlida. El fitxer enviat no és una imatge o és una imatge corrompuda."
 
-#: fields.py:1402 relations.py:424 serializers.py:505
+#: fields.py:1430 relations.py:428 serializers.py:521
 msgid "This list may not be empty."
 msgstr "Aquesta llista no pot estar buida."
 
-#: fields.py:1452
+#: fields.py:1483
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
 msgstr "S'espera un diccionari però s'ha rebut el tipus \"{input_type}\"."
 
-#: pagination.py:192
+#: fields.py:1530
+msgid "Value must be valid JSON."
+msgstr ""
+
+#: filters.py:35 templates/rest_framework/filters/django_filter.html:5
+msgid "Submit"
+msgstr ""
+
+#: pagination.py:189
 #, python-brace-format
 msgid "Invalid page \"{page_number}\": {message}."
 msgstr "Pàgina invàlida \"{page_number}\": {message}."
 
-#: pagination.py:462
+#: pagination.py:407
 msgid "Invalid cursor"
 msgstr "Cursor invàlid."
 
-#: relations.py:192
+#: relations.py:196
 #, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
 msgstr "PK invàlida \"{pk_value}\" - l'objecte no existeix."
 
-#: relations.py:193
+#: relations.py:197
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
 msgstr "Tipus incorrecte. S'espera el valor d'una PK, s'ha rebut {data_type}."
 
-#: relations.py:225
+#: relations.py:229
 msgid "Invalid hyperlink - No URL match."
 msgstr "Hyperlink invàlid - Cap match d'URL."
 
-#: relations.py:226
+#: relations.py:230
 msgid "Invalid hyperlink - Incorrect URL match."
 msgstr "Hyperlink invàlid - Match d'URL incorrecta."
 
-#: relations.py:227
+#: relations.py:231
 msgid "Invalid hyperlink - Object does not exist."
 msgstr "Hyperlink invàlid - L'objecte no existeix."
 
-#: relations.py:228
+#: relations.py:232
 #, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
 msgstr "Tipus incorrecte. S'espera una URL, s'ha rebut {data_type}."
 
-#: relations.py:387
+#: relations.py:391
 #, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
 msgstr "L'objecte amb {slug_name}={value} no existeix."
 
-#: relations.py:388
+#: relations.py:392
 msgid "Invalid value."
 msgstr "Valor invàlid."
 
-#: serializers.py:310
+#: serializers.py:326
 #, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
 msgstr "Dades invàlides. S'espera un diccionari però s'ha rebut {datatype}."
+
+#: templates/rest_framework/admin.html:118
+#: templates/rest_framework/base.html:128
+msgid "Filters"
+msgstr ""
+
+#: templates/rest_framework/filters/django_filter.html:2
+#: templates/rest_framework/filters/django_filter_crispyforms.html:4
+msgid "Field filters"
+msgstr ""
+
+#: templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr ""
+
+#: templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr ""
 
 #: templates/rest_framework/horizontal/radio.html:2
 #: templates/rest_framework/inline/radio.html:2

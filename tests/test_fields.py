@@ -6,7 +6,7 @@ from decimal import Decimal
 import django
 import pytest
 from django.http import QueryDict
-from django.utils import timezone
+from django.utils import six, timezone
 
 import rest_framework
 from rest_framework import serializers
@@ -609,7 +609,8 @@ class TestUUIDField(FieldValues):
         284758210125106368185219588917561929842: uuid.UUID('d63a6fb6-88d5-40c7-a91c-9edf73283072')
     }
     invalid_inputs = {
-        '825d7aeb-05a9-45b5-a5b7': ['"825d7aeb-05a9-45b5-a5b7" is not a valid UUID.']
+        '825d7aeb-05a9-45b5-a5b7': ['"825d7aeb-05a9-45b5-a5b7" is not a valid UUID.'],
+        (1, 2, 3): ['"(1, 2, 3)" is not a valid UUID.']
     }
     outputs = {
         uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda'): '825d7aeb-05a9-45b5-a5b7-05df87923cda'
@@ -894,6 +895,7 @@ class TestDateField(FieldValues):
     outputs = {
         datetime.date(2001, 1, 1): '2001-01-01',
         '2001-01-01': '2001-01-01',
+        six.text_type('2016-01-10'): '2016-01-10',
         None: None,
         '': None,
     }
@@ -958,7 +960,9 @@ class TestDateTimeField(FieldValues):
     }
     outputs = {
         datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00',
-        datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): '2001-01-01T13:00:00Z'
+        datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): '2001-01-01T13:00:00Z',
+        None: None,
+        '': None,
     }
     field = serializers.DateTimeField(default_timezone=timezone.UTC())
 
@@ -1027,7 +1031,10 @@ class TestTimeField(FieldValues):
         '99:99': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss[.uuuuuu]].'],
     }
     outputs = {
-        datetime.time(13, 00): '13:00:00'
+        datetime.time(13, 00): '13:00:00',
+        '00:00:00': '00:00:00',
+        None: None,
+        '': None,
     }
     field = serializers.TimeField()
 
