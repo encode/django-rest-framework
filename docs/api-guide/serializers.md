@@ -384,7 +384,7 @@ This manager class now more nicely encapsulates that user instances and profile 
             has_support_contract=validated_data['profile']['has_support_contract']
         )
 
-For more details on this approach see the Django documentation on [model managers](model-managers), and [this blogpost on using model and manager classes](encapsulation-blogpost).
+For more details on this approach see the Django documentation on [model managers][model-managers], and [this blogpost on using model and manager classes][encapsulation-blogpost].
 
 ## Dealing with multiple objects
 
@@ -774,7 +774,7 @@ To support multiple updates you'll need to do so explicitly. When writing your m
 * How should insertions be handled? Are they invalid, or do they create new objects?
 * How should removals be handled? Do they imply object deletion, or removing a relationship? Should they be silently ignored, or are they invalid?
 * How should ordering be handled? Does changing the position of two items imply any state change or is it ignored?
- 
+
 You will need to add an explicit `id` field to the instance serializer. The default implicitly-generated `id` field is marked as `read_only`. This causes it to be removed on updates. Once you declare it explicitly, it will be available in the list serializer's `update` method.
 
 Here's an example of how you might choose to implement multiple updates:
@@ -808,7 +808,7 @@ Here's an example of how you might choose to implement multiple updates:
 
         ...
         id = serializers.IntegerField(required=False)
-    
+
         class Meta:
             list_serializer_class = BookListSerializer
 
