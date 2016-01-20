@@ -8,6 +8,7 @@ import inspect
 import json
 import re
 import uuid
+import warnings
 from collections import OrderedDict
 
 from django.conf import settings
@@ -325,12 +326,13 @@ class Field(object):
         # In order to enforce a consistent style, we error if a redundant
         # 'source' argument has been used. For example:
         # my_field = serializer.CharField(source='my_field')
-        assert self.source != field_name, (
-            "It is redundant to specify `source='%s'` on field '%s' in "
-            "serializer '%s', because it is the same as the field name. "
-            "Remove the `source` keyword argument." %
-            (field_name, self.__class__.__name__, parent.__class__.__name__)
-        )
+        if field_name == self.source:
+            warnings.warn(
+                "It is redundant to specify `source='%s'` on field '%s' in "
+                "serializer '%s', because it is the same as the field name. "
+                "Remove the `source` keyword argument." %
+                (field_name, self.__class__.__name__, parent.__class__.__name__),
+            )
 
         self.field_name = field_name
         self.parent = parent

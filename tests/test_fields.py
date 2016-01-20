@@ -90,9 +90,10 @@ class TestSource:
     def test_redundant_source(self):
         class ExampleSerializer(serializers.Serializer):
             example_field = serializers.CharField(source='example_field')
-        with pytest.raises(AssertionError) as exc_info:
+        with pytest.warns(UserWarning) as record:
             ExampleSerializer().fields
-        assert str(exc_info.value) == (
+        assert len(record) == 1
+        assert record[0].message.args[0] == (
             "It is redundant to specify `source='example_field'` on field "
             "'CharField' in serializer 'ExampleSerializer', because it is the "
             "same as the field name. Remove the `source` keyword argument."
