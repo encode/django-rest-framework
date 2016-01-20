@@ -193,6 +193,7 @@
                     {% with form=raw_data_post_form %}
                       <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
                         <fieldset>
+                          {% csrf_token %}
                           {% include "rest_framework/raw_data_form.html" %}
                           <div class="form-actions">
                             <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
@@ -223,6 +224,7 @@
                     <div class="tab-pane" id="put-object-form">
                       <form action="{{ request.get_full_path }}" data-method="PUT" enctype="multipart/form-data" class="form-horizontal" novalidate>
                         <fieldset>
+                          {% csrf_token %}
                           {{ put_form }}
                           <div class="form-actions">
                             <button class="btn btn-primary js-tooltip" title="Make a PUT request on the {{ name }} resource">PUT</button>

@@ -190,6 +190,7 @@
       <form action="{{ request.get_full_path }}" data-method="PUT" enctype="multipart/form-data" class="form-horizontal" novalidate>
         <div class="modal-body">
           <fieldset>
+            {% csrf_token %}
             {{ put_form }}
           </fieldset>
         </div>
@@ -214,6 +215,7 @@
       <form action="{{ request.get_full_path }}" data-method="{{ request.method }}" enctype="multipart/form-data" class="form-horizontal" novalidate>
         <div class="modal-body">
           <fieldset>
+            {% csrf_token %}
             {{ error_form }}
           </fieldset>
         </div>
