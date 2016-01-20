@@ -371,7 +371,7 @@ class Request(object):
         if not _hasattr(self, '_data'):
             self._load_data_and_files()
         if is_form_media_type(self.content_type):
-            return self.data
+            return self.data or self._request.POST
         return QueryDict('', encoding=self._request._encoding)
 
     @property
