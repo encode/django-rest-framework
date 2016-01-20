@@ -27,7 +27,7 @@ matrix:
     - env: TOX_ENV=py35-django19
 
 install:
-  - pip install tox
+  - pip install tox "virtualenv<14"
 
 script:
     - tox -e $TOX_ENV
