@@ -25,7 +25,7 @@
                   <input type="text" name="username" maxlength="100"
                       autocapitalize="off"
                       autocorrect="off" class="form-control textinput textInput"
-                      id="id_username" required
+                      id="id_username" required autofocus
                       {% if form.username.value %}value="{{ form.username.value }}"{% endif %}>
                   {% if form.username.errors %}
                     <p class="text-error">
