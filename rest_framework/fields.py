@@ -491,6 +491,9 @@ class Field(object):
         errors = []
         for validator in self.validators:
             if hasattr(validator, 'set_context'):
+                # Need to make a copy, because validator instances often
+                # are initialised globally
+                validator = copy.deepcopy(validator)
                 validator.set_context(self)
 
             try:
