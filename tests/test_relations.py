@@ -176,10 +176,12 @@ class TestSlugRelatedField(APISimpleTestCase):
         representation = self.field.to_representation(self.instance)
         assert representation == self.instance.name
 
-    def test_no_queryset_init(self):
+    def test_overriding_get_queryset(self):
+        qs = self.queryset
+
         class NoQuerySetSlugRelatedField(serializers.SlugRelatedField):
-            def get_queryset(this):
-                return self.queryset
+            def get_queryset(self):
+                return qs
 
         field = NoQuerySetSlugRelatedField(slug_field='name')
         field.to_internal_value(self.instance.name)
