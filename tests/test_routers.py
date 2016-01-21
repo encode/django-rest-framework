@@ -47,9 +47,19 @@ class MockViewSet(viewsets.ModelViewSet):
     serializer_class = None
 
 
-class PrefixedLookupsViewSet(viewsets.ModelViewSet):
+class SomeActionViewSet(viewsets.ModelViewSet):
     queryset = RouterTestModel.objects.all()
     serializer_class = NoteSerializer
+    lookup_field = 'text'
+
+    @list_route()
+    def some_action(self, request, *args, **kwargs):
+        return Response({
+            'view_name': 'some_action'
+        })
+
+
+class PrefixedLookupViewSet(SomeActionViewSet):
     pre_lookup_prefix = '~'
 
 
@@ -63,7 +73,17 @@ namespaced_router = DefaultRouter()
 namespaced_router.register(r'example', MockViewSet, base_name='example')
 
 prefixed_lookups_router = DefaultRouter()
-prefixed_lookups_router.register(r'example', PrefixedLookupsViewSet)
+prefixed_lookups_router.register(r'clashing', SomeActionViewSet)
+prefixed_lookups_router.register(r'example', PrefixedLookupViewSet)
+
+reordered_router = DefaultRouter()
+reordered_router.routes = [
+    SimpleRouter.routes[0],
+    SimpleRouter.routes[2],  # detail route place before dynamic list routes
+    SimpleRouter.routes[1],  # dynamic list route place after detail route
+    SimpleRouter.routes[3],
+]
+reordered_router.register(r'clashing', SomeActionViewSet)
 
 urlpatterns = [
     url(r'^non-namespaced/', include(namespaced_router.urls)),
@@ -71,6 +91,7 @@ urlpatterns = [
     url(r'^example/', include(notes_router.urls)),
     url(r'^example2/', include(kwarged_notes_router.urls)),
     url(r'^prefixed/', include(prefixed_lookups_router.urls)),
+    url(r'^reordered/', include(reordered_router.urls)),
 ]
 
 
@@ -233,15 +254,61 @@ class TestPreLookupPrefixes(TestCase):
     urls = 'tests.test_routers'
 
     def setUp(self):
-        self.obj = RouterTestModel.objects.create(uuid='123', text='foo bar')
+        self.obj = RouterTestModel.objects.create(
+            uuid='123',
+            text='some_action'
+        )
 
-    def test_prefixed_lookup(self):
-        response = self.client.get('/prefixed/example/~{}/'.format(self.obj.id))
+    def test_clashing_with_routes_order_as_is(self):
+        """
+        Demonstrates that we cannot access instance.
+        """
+        response = self.client.get('/prefixed/clashing/some_action/')
+        self.assertEqual(
+            response.data,
+            {
+                'view_name': 'some_action'
+            }
+        )
+
+    def test_clashing_with_routes_reordered(self):
+        """
+        Demonstrates that we cannot access view.
+        """
+        response = self.client.get('/reordered/clashing/some_action/')
         self.assertEqual(
             response.data,
             {
                 "url": "http://testserver/example/notes/123/",
-                "uuid": "123", "text": "foo bar"
+                "uuid": "123", "text": "some_action"
+            }
+        )
+        self.obj.delete()
+        response = self.client.get('/reordered/clashing/some_action/')
+        self.assertEqual(
+            response.data,
+            {
+                'detail': 'Not found.'
+            }
+        )
+
+    def test_prefixed_lookup(self):
+        """
+        Demonstrates how prefixing helps to get rid of clashing
+        """
+        response = self.client.get('/prefixed/example/~some_action/')
+        self.assertEqual(
+            response.data,
+            {
+                "url": "http://testserver/example/notes/123/",
+                "uuid": "123", "text": "some_action"
+            }
+        )
+        response = self.client.get('/prefixed/clashing/some_action/')
+        self.assertEqual(
+            response.data,
+            {
+                'view_name': 'some_action'
             }
         )
 
