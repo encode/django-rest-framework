@@ -91,12 +91,12 @@ class ChoicesModel(models.Model):
     choices_field_with_nonstandard_args = models.DecimalField(max_digits=3, decimal_places=1, choices=DECIMAL_CHOICES, verbose_name='A label')
 
 
-class ParentModel(models.Model):
+class Issue3674ParentModel(models.Model):
     title = models.CharField(max_length=64)
 
 
-class ChildModel(models.Model):
-    parent = models.ForeignKey(ParentModel, related_name='children')
+class Issue3674ChildModel(models.Model):
+    parent = models.ForeignKey(Issue3674ParentModel, related_name='children')
     value = models.CharField(primary_key=True, max_length=64)
 
 
@@ -989,22 +989,22 @@ class Issue3674Test(TestCase):
 
         class TestChildModelSerializer(serializers.ModelSerializer):
             class Meta:
-                model = ChildModel
+                model = Issue3674ChildModel
                 fields = ('value', 'parent')
 
         class TestParentModelSerializer(serializers.ModelSerializer):
             class Meta:
-                model = ParentModel
+                model = Issue3674ParentModel
                 fields = ('id', 'title', 'children')
 
-        parent = ParentModel.objects.create(title='abc')
-        child = ChildModel.objects.create(value='def', parent=parent)
+        parent = Issue3674ParentModel.objects.create(title='abc')
+        child = Issue3674ChildModel.objects.create(value='def', parent=parent)
 
         parent_serializer = TestParentModelSerializer(parent)
         child_serializer = TestChildModelSerializer(child)
 
-        parent_expected = {u'children': [u'def'], u'id': 1, u'title': u'abc'}
+        parent_expected = {'children': ['def'], 'id': 1, 'title': 'abc'}
         self.assertEqual(parent_serializer.data, parent_expected)
 
-        child_expected = {u'parent': 1, u'value': u'def'}
+        child_expected = {'parent': 1, 'value': 'def'}
         self.assertEqual(child_serializer.data, child_expected)
