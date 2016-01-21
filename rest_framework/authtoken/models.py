@@ -22,6 +22,14 @@ class Token(models.Model):
                                 on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        # Work around for a bug in Django:
+        # https://code.djangoproject.com/ticket/19422
+        #
+        # Also see corresponding ticket:
+        # https://github.com/tomchristie/django-rest-framework/issues/705
+        abstract = 'rest_framework.authtoken' not in settings.INSTALLED_APPS
+
     def save(self, *args, **kwargs):
         if not self.key:
             self.key = self.generate_key()
