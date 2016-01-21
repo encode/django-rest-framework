@@ -47,6 +47,12 @@ class MockViewSet(viewsets.ModelViewSet):
     serializer_class = None
 
 
+class PrefixedLookupsViewSet(viewsets.ModelViewSet):
+    queryset = RouterTestModel.objects.all()
+    serializer_class = NoteSerializer
+    pre_lookup_prefix = '~'
+
+
 notes_router = SimpleRouter()
 notes_router.register(r'notes', NoteViewSet)
 
@@ -56,11 +62,15 @@ kwarged_notes_router.register(r'notes', KWargedNoteViewSet)
 namespaced_router = DefaultRouter()
 namespaced_router.register(r'example', MockViewSet, base_name='example')
 
+prefixed_lookups_router = DefaultRouter()
+prefixed_lookups_router.register(r'example', PrefixedLookupsViewSet)
+
 urlpatterns = [
     url(r'^non-namespaced/', include(namespaced_router.urls)),
     url(r'^namespaced/', include(namespaced_router.urls, namespace='example')),
     url(r'^example/', include(notes_router.urls)),
     url(r'^example2/', include(kwarged_notes_router.urls)),
+    url(r'^prefixed/', include(prefixed_lookups_router.urls)),
 ]
 
 
@@ -209,6 +219,24 @@ class TestLookupUrlKwargs(TestCase):
 
     def test_retrieve_lookup_url_kwarg_detail_view(self):
         response = self.client.get('/example2/notes/fo/')
+        self.assertEqual(
+            response.data,
+            {
+                "url": "http://testserver/example/notes/123/",
+                "uuid": "123", "text": "foo bar"
+            }
+        )
+
+
+class TestPreLookupPrefixes(TestCase):
+
+    urls = 'tests.test_routers'
+
+    def setUp(self):
+        self.obj = RouterTestModel.objects.create(uuid='123', text='foo bar')
+
+    def test_prefixed_lookup(self):
+        response = self.client.get('/prefixed/example/~{}/'.format(self.obj.id))
         self.assertEqual(
             response.data,
             {
