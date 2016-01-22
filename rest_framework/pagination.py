@@ -678,6 +678,11 @@ class CursorPagination(BasePagination):
 
     def _get_position_from_instance(self, instance, ordering):
         attr = getattr(instance, ordering[0].lstrip('-'))
+        # if ordering is a BooleanField, which mean attr is True/False,
+        # six.text_type(attr) will return u'True'/u'False'. And this will result
+        # wrong filter in paginate_queryset()
+        if isinstance(attr, bool):
+            return '1' if attr else '0'
         return six.text_type(attr)
 
     def get_paginated_response(self, data):
