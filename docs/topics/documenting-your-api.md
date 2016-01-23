@@ -14,7 +14,7 @@ The most common way to document Web APIs today is to produce documentation that 
 
 #### DRF Docs
 
-[DRF Docs][drfdocs-repo] allows you to document Web APIs made with Django REST Framework and it is authored by Emmanouil Konstantinidis. It's made to work out of the box and its setup should not take more than a couple of minutes. Complete documentation can be found on the [website][drfdocs-website] while there is also a [demo][drfdocs-demo] available for people to see what it looks like.
+[DRF Docs][drfdocs-repo] allows you to document Web APIs made with Django REST Framework and it is authored by Emmanouil Konstantinidis. It's made to work out of the box and its setup should not take more than a couple of minutes. Complete documentation can be found on the [website][drfdocs-website] while there is also a [demo][drfdocs-demo] available for people to see what it looks like. **Live API Endpoints** allow you to utilize the endpoints from within the documentation in a neat way.
 
 Features include customizing the template with your branding, settings for hiding the docs depending on the environment and more.
 
