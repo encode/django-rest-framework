@@ -96,9 +96,9 @@ Two examples here are `'input_type'` and `'base_template'`:
 
     # Use a radio input instead of a select input.
     color_channel = serializers.ChoiceField(
-        choices=['red', 'green', 'blue']
-        style = {'base_template': 'radio.html'}
-    }
+        choices=['red', 'green', 'blue'],
+        style={'base_template': 'radio.html'}
+    )
 
 For more details see the [HTML & Forms][html-and-forms] documentation.
 
