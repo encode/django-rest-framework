@@ -679,6 +679,129 @@ class TestCursorPagination:
         assert isinstance(self.pagination.to_html(), type(''))
 
 
+class TestCursorPaginationWithBooleanField:
+    """
+    Unit tests for `pagination.CursorPagination`.
+    """
+
+    def setup(self):
+        class MockObject(object):
+            def __init__(self, item):
+                self.is_read = item[0]
+                self.id = item[1]
+
+        class MockQuerySet(object):
+            def __init__(self, items):
+                self.items = items
+
+            def filter(self, is_read__gt=None, is_read__lt=None):
+                if is_read__gt is not None:
+                    # django BooleanField.get_prep_lookup() handle filters like
+                    # this
+                    if is_read__gt in ('1', '0'):
+                        is_read__gt = bool(int(is_read__gt))
+                    else:
+                        is_read__gt = bool(is_read__gt)
+                    return MockQuerySet([
+                        item for item in self.items
+                        if item.is_read > is_read__gt
+                    ])
+
+                assert is_read__lt is not None
+                # django BooleanField.get_prep_lookup() handle filters like this
+                if is_read__lt in ('1', '0'):
+                    is_read__lt = bool(int(is_read__lt))
+                else:
+                    is_read__lt = bool(is_read__lt)
+                return MockQuerySet([
+                    item for item in self.items
+                    if item.is_read < is_read__lt
+                ])
+
+            def order_by(self, *ordering):
+                if ordering[0].startswith('-'):
+                    return MockQuerySet(list(reversed(self.items)))
+                return self
+
+            def __getitem__(self, sliced):
+                return self.items[sliced]
+
+        class ExamplePagination(pagination.CursorPagination):
+            page_size = 5
+            ordering = ('is_read', 'id')
+
+        self.pagination = ExamplePagination()
+        self.queryset = MockQuerySet([
+            MockObject(item) for item in [
+                (False, 1), (False, 2), (False, 3), (False, 4), (False, 5),
+                (False, 6), (False, 7), (False, 8), (True, 9), (True, 10),
+                (True, 11), (True, 12), (True, 13), (True, 14), (True, 15),
+            ]
+        ])
+
+    def get_pages(self, url):
+        """
+        Given a URL return a tuple of:
+
+        (previous page, current page, next page, previous url, next url)
+        """
+        request = Request(factory.get(url))
+        queryset = self.pagination.paginate_queryset(self.queryset, request)
+        current = [(item.is_read, item.id) for item in queryset]
+
+        next_url = self.pagination.get_next_link()
+        previous_url = self.pagination.get_previous_link()
+
+        if next_url is not None:
+            request = Request(factory.get(next_url))
+            queryset = self.pagination.paginate_queryset(self.queryset, request)
+            next = [(item.is_read, item.id) for item in queryset]
+        else:
+            next = None
+
+        if previous_url is not None:
+            request = Request(factory.get(previous_url))
+            queryset = self.pagination.paginate_queryset(self.queryset, request)
+            previous = [(item.is_read, item.id) for item in queryset]
+        else:
+            previous = None
+
+        return (previous, current, next, previous_url, next_url)
+
+    def test_cursor_pagination(self):
+        (previous, current, next, previous_url, next_url) = self.get_pages('/')
+
+        assert previous is None
+        assert current == [(False, 1), (False, 2), (False, 3), (False, 4), (False, 5)]
+        assert next == [(False, 6), (False, 7), (False, 8), (True, 9), (True, 10)]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [(False, 1), (False, 2), (False, 3), (False, 4), (False, 5)]
+        assert current == [(False, 6), (False, 7), (False, 8), (True, 9), (True, 10)]
+        assert next == [(True, 11), (True, 12), (True, 13), (True, 14), (True, 15)]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [(False, 6), (False, 7), (False, 8), (True, 9), (True, 10)]
+        assert current == [(True, 11), (True, 12), (True, 13), (True, 14), (True, 15)]
+        assert next is None
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [(False, 1), (False, 2), (False, 3), (False, 4), (False, 5)]
+        assert current == [(False, 6), (False, 7), (False, 8), (True, 9), (True, 10)]
+        assert next == [(True, 11), (True, 12), (True, 13), (True, 14), (True, 15)]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous is None
+        assert current == [(False, 1), (False, 2), (False, 3), (False, 4), (False, 5)]
+        assert next == [(False, 6), (False, 7), (False, 8), (True, 9), (True, 10)]
+
+        assert isinstance(self.pagination.to_html(), type(''))
+
+
 def test_get_displayed_page_numbers():
     """
     Test our contextual page display function.
