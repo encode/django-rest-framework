@@ -341,6 +341,7 @@ class HTMLFormRenderer(BaseRenderer):
         """
         Render serializer data and return an HTML form, as a string.
         """
+        renderer_context = renderer_context or {}
         form = data.serializer
 
         style = renderer_context.get('style', {})
