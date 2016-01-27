@@ -164,6 +164,9 @@ class RelatedField(Field):
             # even when accessed with a read-only field.
             return {}
 
+        if self.html_cutoff is not None:
+            queryset = queryset[:self.html_cutoff]
+
         return OrderedDict([
             (
                 six.text_type(self.to_representation(item)),
