@@ -47,7 +47,7 @@ class JSONEncoder(json.JSONEncoder):
         elif isinstance(obj, decimal.Decimal):
             # Serializers will coerce decimals to strings by default.
             return float(obj)
-        elif isinstance(obj, uuid.UUID):
+        elif isinstance(obj, (datetime.tzinfo, uuid.UUID)):
             return six.text_type(obj)
         elif isinstance(obj, QuerySet):
             return tuple(obj)
