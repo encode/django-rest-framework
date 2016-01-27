@@ -520,6 +520,14 @@ You can add extra fields to a `ModelSerializer` or override the default fields b
 
 Extra fields can correspond to any property or callable on the model.
 
+**Note**: It is also possible to use the attributes of a ForeignKey field. For example you can get the first name of the User like this.
+
+    class UserSerializer(serializers.ModelSerializer):
+        first_name = serializers.CharField(source='user.first_name', read_only=True)
+
+        class Meta:
+            model = User
+
 ## Specifying read only fields
 
 You may wish to specify multiple fields as read-only. Instead of adding each field explicitly with the `read_only=True` attribute, you may use the shortcut Meta option, `read_only_fields`.
