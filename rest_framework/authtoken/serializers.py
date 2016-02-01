@@ -5,8 +5,8 @@ from rest_framework import serializers
 
 
 class AuthTokenSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField(style={'input_type': 'password'})
+    username = serializers.CharField(label=_("Username"))
+    password = serializers.CharField(label=_("Password"), style={'input_type': 'password'})
 
     def validate(self, attrs):
         username = attrs.get('username')
