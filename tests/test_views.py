@@ -56,18 +56,20 @@ def error_view(request):
 def permissiondenied_instance_view(request):
     raise PermissionDenied()
 
+
 @api_view(['GET'])
 def permissiondenied_class_view(request):
     raise PermissionDenied
+
 
 @api_view(['GET'])
 def django_permissiondenied_instance_view(request):
     raise DjangoPermissionDenied()
 
+
 @api_view(['GET'])
 def django_permissiondenied_class_view(request):
     raise DjangoPermissionDenied
-
 
 
 def sanitise_json_error(error_dict):
@@ -111,7 +113,6 @@ class FunctionBasedViewIntegrationTests(TestCase):
 
 class FunctionBasedPermissionDeniedTests(TestCase):
 
-
     def test_permission_denied_instance_error(self):
         self.view = permissiondenied_instance_view
         request = factory.get('/', content_type='application/json')
@@ -152,7 +153,6 @@ class FunctionBasedPermissionDeniedTests(TestCase):
         }
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(sanitise_json_error(response.data), expected)
-
 
 
 class TestCustomExceptionHandler(TestCase):
