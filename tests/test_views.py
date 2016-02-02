@@ -113,13 +113,6 @@ class FunctionBasedViewIntegrationTests(TestCase):
 class FuncionBasedPermissionDeniedTests(TestCase):
 
 
-    def setUp(self):
-        self.authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
-        api_settings.DEFAULT_AUTHENTICATION_CLASSES = 'rest_framework.permissions.IsAuthenticated'
-
-    def tearDown(self):
-         api_settings.DEFAULT_AUTHENTICATION_CLASSES = self.authentication_classes
-
     def test_permission_denied_instance_error(self):
         self.view = permissiondenied_instance_view
         request = factory.get('/', content_type='application/json')
