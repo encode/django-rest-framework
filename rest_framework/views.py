@@ -84,7 +84,7 @@ def exception_handler(exc, context):
         set_rollback()
         return Response(data, status=status.HTTP_404_NOT_FOUND)
 
-    elif isinstance(exc, PermissionDenied):
+    elif isinstance(exc, PermissionDenied) or isinstance(exc, exceptions.PermissionDenied):
         msg = _('Permission denied.')
         data = {'detail': six.text_type(msg)}
 
