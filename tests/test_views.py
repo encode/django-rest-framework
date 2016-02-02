@@ -54,7 +54,6 @@ def error_view(request):
 
 @api_view(['GET'])
 def permissiondenied_instance_view(request):
-    return PermissionDenied()
     raise PermissionDenied()
 
 @api_view(['GET'])
