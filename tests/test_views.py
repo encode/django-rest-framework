@@ -109,7 +109,7 @@ class FunctionBasedViewIntegrationTests(TestCase):
         self.assertEqual(sanitise_json_error(response.data), expected)
 
 
-class FuncionBasedPermissionDeniedTests(TestCase):
+class FunctionBasedPermissionDeniedTests(TestCase):
 
 
     def test_permission_denied_instance_error(self):
