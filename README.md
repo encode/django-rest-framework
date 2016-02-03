@@ -61,7 +61,9 @@ Startup up a new project like so...
     pip install django
     pip install djangorestframework
     django-admin.py startproject example .
-    ./manage.py syncdb
+    ./manage.py migrate
+    ./manage.py createsuperuser
+
 
 Now edit the `example/urls.py` module in your project:
 
