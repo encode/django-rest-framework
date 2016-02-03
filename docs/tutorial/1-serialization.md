@@ -159,7 +159,7 @@ Deserialization is similar.  First we parse a stream into Python native datatype
     stream = BytesIO(content)
     data = JSONParser().parse(stream)
 
-...then we restore those native datatypes into to a fully populated object instance.
+...then we restore those native datatypes into a fully populated object instance.
 
     serializer = SnippetSerializer(data=data)
     serializer.is_valid()
