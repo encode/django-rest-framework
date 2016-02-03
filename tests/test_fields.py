@@ -1638,3 +1638,28 @@ class TestSerializerMethodField:
             "'ExampleSerializer', because it is the same as the default "
             "method name. Remove the `method_name` argument."
         )
+
+    def test_nested_serializer_method_field(self):
+        class NestedSerializer(serializers.Serializer):
+            example_field = serializers.SerializerMethodField()
+
+            def get_example_field(self, obj):
+                return 'ran get_example_field(%d)' % obj['example_field']
+
+        class TestSerializer(serializers.Serializer):
+            nested = NestedSerializer()
+
+        input_data = {
+            'nested': {
+                'example_field': 123,
+            }
+        }
+        expected_data = {
+            'nested': {
+                'example_field': 'ran get_example_field(123)',
+            }
+        }
+
+        serializer = TestSerializer(data=input_data)
+        assert serializer.is_valid()
+        assert serializer.data == expected_data
