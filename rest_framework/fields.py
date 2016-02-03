@@ -117,9 +117,9 @@ def to_choices_dict(choices):
     """
     Convert choices into key/value dicts.
 
-    pairwise_choices([1]) -> {1: 1}
-    pairwise_choices([(1, '1st'), (2, '2nd')]) -> {1: '1st', 2: '2nd'}
-    pairwise_choices([('Group', ((1, '1st'), 2))]) -> {'Group': {1: '1st', 2: '2nd'}}
+    to_choices_dict([1]) -> {1: 1}
+    to_choices_dict([(1, '1st'), (2, '2nd')]) -> {1: '1st', 2: '2nd'}
+    to_choices_dict([('Group', ((1, '1st'), 2))]) -> {'Group': {1: '1st', 2: '2nd'}}
     """
     # Allow single, paired or grouped choices style:
     # choices = [1, 2, 3]
@@ -145,8 +145,8 @@ def flatten_choices_dict(choices):
     """
     Convert a group choices dict into a flat dict of choices.
 
-    flatten_choices({1: '1st', 2: '2nd'}) -> {1: '1st', 2: '2nd'}
-    flatten_choices({'Group': {1: '1st', 2: '2nd'}}) -> {1: '1st', 2: '2nd'}
+    flatten_choices_dict({1: '1st', 2: '2nd'}) -> {1: '1st', 2: '2nd'}
+    flatten_choices_dict({'Group': {1: '1st', 2: '2nd'}}) -> {1: '1st', 2: '2nd'}
     """
     ret = OrderedDict()
     for key, value in choices.items():
