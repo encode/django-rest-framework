@@ -3,16 +3,16 @@ from __future__ import unicode_literals
 import copy
 import sys
 
+from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
 from django.test import TestCase
 
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView
-from rest_framework.exceptions import PermissionDenied
-from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
 
 factory = APIRequestFactory()
 
