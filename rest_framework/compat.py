@@ -251,7 +251,7 @@ def get_all_related_objects(opts):
     :param opts: Options instance
     :return: list of relations except many-to-many ones
     """
-    if django.VERSION < (1, 9):
+    if django.VERSION < (1, 8):
         return opts.get_all_related_objects()
     else:
         return [r for r in opts.related_objects if not r.field.many_to_many]
@@ -264,7 +264,7 @@ def get_all_related_many_to_many_objects(opts):
     :param opts: Options instance
     :return: list of many-to-many relations
     """
-    if django.VERSION < (1, 9):
+    if django.VERSION < (1, 8):
         return opts.get_all_related_many_to_many_objects()
     else:
         return [r for r in opts.related_objects if r.field.many_to_many]
