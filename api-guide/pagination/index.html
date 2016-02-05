@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -501,7 +505,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 <p>The <code>PageNumberPagination</code> class includes a number of attributes that may be overridden to modify the pagination style.</p>
 <p>To set these attributes you should override the <code>PageNumberPagination</code> class, and then enable your custom pagination class as above.</p>
 <ul>
-<li><code>django_paginator_class</code> - The Django Paginator class to use. Default is <code>django.core.paginator.Paginator</code>, which should be fine for most usecases.</li>
+<li><code>django_paginator_class</code> - The Django Paginator class to use. Default is <code>django.core.paginator.Paginator</code>, which should be fine for most use cases.</li>
 <li><code>page_size</code> - A numeric value indicating the page size. If set, this overrides the <code>PAGE_SIZE</code> setting. Defaults to the same value as the <code>PAGE_SIZE</code> settings key.</li>
 <li><code>page_query_param</code> - A string value indicating the name of the query parameter to use for the pagination control.</li>
 <li><code>page_size_query_param</code> - If set, this is a string value indicating the name of a query parameter that allows the client to set the page size on a per-request basis. Defaults to <code>None</code>, indicating that the client may not control the requested page size.</li>
@@ -564,7 +568,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 <li>Should be a non-nullable value that can be coerced to a string.</li>
 <li>The field should have a database index.</li>
 </ul>
-<p>Using an ordering field that does not satisfy these constraints will generally still work, but you'll be loosing some of the benefits of cursor pagination.</p>
+<p>Using an ordering field that does not satisfy these constraints will generally still work, but you'll be losing some of the benefits of cursor pagination.</p>
 <p>For more technical details on the implementation we use for cursor pagination, the <a href="http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api/">"Building cursors for the Disqus API"</a> blog post gives a good overview of the basic approach.</p>
 <h4 id="setup_2"><a class="toclink" href="#setup_2">Setup</a></h4>
 <p>To enable the <code>CursorPagination</code> style globally, use the following configuration, modifying the <code>PAGE_SIZE</code> as desired:</p>

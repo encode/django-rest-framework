@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../release-notes/">Release Notes</a>
                   </li>
                   
@@ -423,9 +427,10 @@ class ProfileDetail(APIView):
 
     def post(self, request, pk):
         profile = get_object_or_404(Profile, pk=pk)
-        serializer = ProfileSerializer(profile)
+        serializer = ProfileSerializer(profile, data=request.data)
         if not serializer.is_valid():
             return Response({'serializer': serializer, 'profile': profile})
+        serializer.save()
         return redirect('profile-list')
 </code></pre>
 <p><strong>profile_detail.html</strong>:</p>

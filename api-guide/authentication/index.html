@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -576,6 +580,7 @@ print token.key
 <p><strong>Note:</strong> If you use <code>TokenAuthentication</code> in production you must ensure that your API is only available over <code>https</code>.</p>
 <hr />
 <h4 id="generating-tokens"><a class="toclink" href="#generating-tokens">Generating Tokens</a></h4>
+<h5 id="by-using-signals"><a class="toclink" href="#by-using-signals">By using signals</a></h5>
 <p>If you want every user to have an automatically generated Token, you can simply catch the User's <code>post_save</code> signal.</p>
 <pre><code>from django.conf import settings
 from django.db.models.signals import post_save
@@ -595,6 +600,7 @@ from rest_framework.authtoken.models import Token
 for user in User.objects.all():
     Token.objects.get_or_create(user=user)
 </code></pre>
+<h5 id="by-exposing-an-api-endpoint"><a class="toclink" href="#by-exposing-an-api-endpoint">By exposing an api endpoint</a></h5>
 <p>When using <code>TokenAuthentication</code>, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behavior.  To use it, add the <code>obtain_auth_token</code> view to your URLconf:</p>
 <pre><code>from rest_framework.authtoken import views
 urlpatterns += [
@@ -606,6 +612,13 @@ urlpatterns += [
 <pre><code>{ 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
 </code></pre>
 <p>Note that the default <code>obtain_auth_token</code> view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.  If you need a customized version of the <code>obtain_auth_token</code> view, you can do so by overriding the <code>ObtainAuthToken</code> view class, and using that in your url conf instead.</p>
+<h5 id="with-django-admin"><a class="toclink" href="#with-django-admin">With Django admin</a></h5>
+<p>It is also possible to create Tokens manually through admin interface. In case you are using a large user base, we recommend that you monkey patch the <code>TokenAdmin</code> class to customize it to your needs, more specifically by declaring the <code>user</code> field as <code>raw_field</code>.</p>
+<p><code>your_app/admin.py</code>:</p>
+<pre><code>from rest_framework.authtoken.admin import TokenAdmin
+
+TokenAdmin.raw_id_fields = ('user',)
+</code></pre>
 <h4 id="schema-migrations"><a class="toclink" href="#schema-migrations">Schema migrations</a></h4>
 <p>The <code>rest_framework.authtoken</code> app includes both Django native migrations (for Django versions &gt;1.7) and South migrations (for Django versions &lt;1.7) that will create the authtoken table.</p>
 <hr />

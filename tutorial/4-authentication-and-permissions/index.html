@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -550,7 +554,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 }
 </code></pre>
 <p>We can make a successful request by including the username and password of one of the users we created earlier.</p>
-<pre><code>http -a tom:password POST http://127.0.0.1:8000/snippets/ code="print 789"
+<pre><code>http -a tom:password123 POST http://127.0.0.1:8000/snippets/ code="print 789"
 
 {
     "id": 5,

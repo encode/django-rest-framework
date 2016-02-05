@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -577,14 +581,14 @@ class CommentSerializer(serializers.Serializer):
 <p>We can now use <code>CommentSerializer</code> to serialize a comment, or list of comments. Again, using the <code>Serializer</code> class looks a lot like using a <code>Form</code> class.</p>
 <pre><code>serializer = CommentSerializer(comment)
 serializer.data
-# {'email': u'leila@example.com', 'content': u'foo bar', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774)}
+# {'email': 'leila@example.com', 'content': 'foo bar', 'created': '2016-01-27T15:17:10.375877'}
 </code></pre>
 <p>At this point we've translated the model instance into Python native datatypes.  To finalise the serialization process we render the data into <code>json</code>.</p>
 <pre><code>from rest_framework.renderers import JSONRenderer
 
 json = JSONRenderer().render(serializer.data)
 json
-# '{"email": "leila@example.com", "content": "foo bar", "created": "2012-08-22T16:20:09.822"}'
+# b'{"email":"leila@example.com","content":"foo bar","created":"2016-01-27T15:17:10.375877"}'
 </code></pre>
 <h2 id="deserializing-objects"><a class="toclink" href="#deserializing-objects">Deserializing objects</a></h2>
 <p>Deserialization is similar. First we parse a stream into Python native datatypes...</p>
@@ -855,7 +859,7 @@ serializer.errors
         has_support_contract=validated_data['profile']['has_support_contract']
     )
 </code></pre>
-<p>For more details on this approach see the Django documentation on <a href="../model-managers">model managers</a>, and <a href="../encapsulation-blogpost">this blogpost on using model and manager classes</a>.</p>
+<p>For more details on this approach see the Django documentation on <a href="https://docs.djangoproject.com/en/dev/topics/db/managers/">model managers</a>, and <a href="http://www.dabapps.com/blog/django-models-and-encapsulation/">this blogpost on using model and manager classes</a>.</p>
 <h2 id="dealing-with-multiple-objects"><a class="toclink" href="#dealing-with-multiple-objects">Dealing with multiple objects</a></h2>
 <p>The <code>Serializer</code> class can also handle serializing or deserializing lists of objects.</p>
 <h4 id="serializing-multiple-objects"><a class="toclink" href="#serializing-multiple-objects">Serializing multiple objects</a></h4>
@@ -1124,6 +1128,7 @@ class BookSerializer(serializers.Serializer):
 <li>How should removals be handled? Do they imply object deletion, or removing a relationship? Should they be silently ignored, or are they invalid?</li>
 <li>How should ordering be handled? Does changing the position of two items imply any state change or is it ignored?</li>
 </ul>
+<p>You will need to add an explicit <code>id</code> field to the instance serializer. The default implicitly-generated <code>id</code> field is marked as <code>read_only</code>. This causes it to be removed on updates. Once you declare it explicitly, it will be available in the list serializer's <code>update</code> method.</p>
 <p>Here's an example of how you might choose to implement multiple updates:</p>
 <pre><code>class BookListSerializer(serializers.ListSerializer):
     def update(self, instance, validated_data):
@@ -1153,6 +1158,8 @@ class BookSerializer(serializers.Serializer):
     id = serializers.IntegerField()
 
     ...
+    id = serializers.IntegerField(required=False)
+
     class Meta:
         list_serializer_class = BookListSerializer
 </code></pre>

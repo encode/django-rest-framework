@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -745,6 +749,7 @@ True
 <h1 id="custom-relational-fields"><a class="toclink" href="#custom-relational-fields">Custom relational fields</a></h1>
 <p>To implement a custom relational field, you should override <code>RelatedField</code>, and implement the <code>.to_representation(self, value)</code> method. This method takes the target of the field as the <code>value</code> argument, and should return the representation that should be used to serialize the target. The <code>value</code> argument will typically be a model instance.</p>
 <p>If you want to implement a read-write relational field, you must also implement the <code>.to_internal_value(self, data)</code> method.</p>
+<p>To provide a dynamic queryset based on the <code>context</code>, you can also override <code>.get_queryset(self)</code> instead of specifying <code>.queryset</code> on the class or when initializing the field.</p>
 <h2 id="example_1"><a class="toclink" href="#example_1">Example</a></h2>
 <p>For example, we could define a relational field to serialize a track to a custom string representation, using its ordering, title, and duration.</p>
 <pre><code>import time
@@ -840,7 +845,7 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
 <p>In cases where the cutoff is being enforced you may want to instead use a plain input field in the HTML form. You can do so using the <code>style</code> keyword argument. For example:</p>
 <pre><code>assigned_to = serializers.SlugRelatedField(
    queryset=User.objects.all(),
-   slug field='username',
+   slug_field='username',
    style={'base_template': 'input.html'}
 )
 </code></pre>

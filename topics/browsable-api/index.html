@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../release-notes/">Release Notes</a>
                   </li>
                   
@@ -380,7 +384,7 @@
 <h2 id="formats"><a class="toclink" href="#formats">Formats</a></h2>
 <p>By default, the API will return the format specified by the headers, which in the case of the browser is HTML.  The format can be specified using <code>?format=</code> in the request, so you can look at the raw JSON response in a browser by adding <code>?format=json</code> to the URL.  There are helpful extensions for viewing JSON in <a href="https://addons.mozilla.org/en-US/firefox/addon/jsonview/">Firefox</a> and <a href="https://chrome.google.com/webstore/detail/chklaanhfefbnpoihckbnefhakgolnmc">Chrome</a>.</p>
 <h2 id="customizing"><a class="toclink" href="#customizing">Customizing</a></h2>
-<p>The browsable API is built with <a href="http://getbootstrap.com">Twitter's Bootstrap</a> (v 2.1.1), making it easy to customize the look-and-feel.</p>
+<p>The browsable API is built with <a href="http://getbootstrap.com">Twitter's Bootstrap</a> (v 3.3.5), making it easy to customize the look-and-feel.</p>
 <p>To customize the default style, create a template called <code>rest_framework/api.html</code> that extends from <code>rest_framework/base.html</code>.  For example:</p>
 <p><strong>templates/rest_framework/api.html</strong></p>
 <pre><code>{% extends "rest_framework/base.html" %}

@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -432,11 +436,6 @@ cd tutorial
     'snippets',
 )
 </code></pre>
-<p>We also need to wire up the root urlconf, in the <code>tutorial/urls.py</code> file, to include our snippet app's URLs.</p>
-<pre><code>urlpatterns = [
-    url(r'^', include('snippets.urls')),
-]
-</code></pre>
 <p>Okay, we're ready to roll.</p>
 <h2 id="creating-a-model-to-work-with"><a class="toclink" href="#creating-a-model-to-work-with">Creating a model to work with</a></h2>
 <p>For the purposes of this tutorial we're going to start by creating a simple <code>Snippet</code> model that is used to store code snippets.  Go ahead and edit the <code>snippets/models.py</code> file.  Note: Good programming practices include comments.  Although you will find them in our repository version of this tutorial code, we have omitted them here to focus on the code itself.</p>
@@ -532,7 +531,7 @@ content
 stream = BytesIO(content)
 data = JSONParser().parse(stream)
 </code></pre>
-<p>...then we restore those native datatypes into to a fully populated object instance.</p>
+<p>...then we restore those native datatypes into a fully populated object instance.</p>
 <pre><code>serializer = SnippetSerializer(data=data)
 serializer.is_valid()
 # True
@@ -558,16 +557,16 @@ Open the file <code>snippets/serializers.py</code> again, and replace the <code>
         fields = ('id', 'title', 'code', 'linenos', 'language', 'style')
 </code></pre>
 <p>One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing its representation. Open the Django shell with <code>python manage.py shell</code>, then try the following:</p>
-<pre><code>&gt;&gt;&gt; from snippets.serializers import SnippetSerializer
-&gt;&gt;&gt; serializer = SnippetSerializer()
-&gt;&gt;&gt; print(repr(serializer))
-SnippetSerializer():
-    id = IntegerField(label='ID', read_only=True)
-    title = CharField(allow_blank=True, max_length=100, required=False)
-    code = CharField(style={'base_template': 'textarea.html'})
-    linenos = BooleanField(required=False)
-    language = ChoiceField(choices=[('Clipper', 'FoxPro'), ('Cucumber', 'Gherkin'), ('RobotFramework', 'RobotFramework'), ('abap', 'ABAP'), ('ada', 'Ada')...
-    style = ChoiceField(choices=[('autumn', 'autumn'), ('borland', 'borland'), ('bw', 'bw'), ('colorful', 'colorful')...
+<pre><code>from snippets.serializers import SnippetSerializer
+serializer = SnippetSerializer()
+print(repr(serializer))
+# SnippetSerializer():
+#    id = IntegerField(label='ID', read_only=True)
+#    title = CharField(allow_blank=True, max_length=100, required=False)
+#    code = CharField(style={'base_template': 'textarea.html'})
+#    linenos = BooleanField(required=False)
+#    language = ChoiceField(choices=[('Clipper', 'FoxPro'), ('Cucumber', 'Gherkin'), ('RobotFramework', 'RobotFramework'), ('abap', 'ABAP'), ('ada', 'Ada')...
+#    style = ChoiceField(choices=[('autumn', 'autumn'), ('borland', 'borland'), ('bw', 'bw'), ('colorful', 'colorful')...
 </code></pre>
 <p>It's important to remember that <code>ModelSerializer</code> classes don't do anything particularly magical, they are simply a shortcut for creating serializer classes:</p>
 <ul>
@@ -649,6 +648,13 @@ from snippets import views
 urlpatterns = [
     url(r'^snippets/$', views.snippet_list),
     url(r'^snippets/(?P&lt;pk&gt;[0-9]+)/$', views.snippet_detail),
+]
+</code></pre>
+<p>We also need to wire up the root urlconf, in the <code>tutorial/urls.py</code> file, to include our snippet app's URLs.</p>
+<pre><code>from django.conf.urls import url, include
+
+urlpatterns = [
+    url(r'^', include('snippets.urls')),
 ]
 </code></pre>
 <p>It's worth noting that there are a couple of edge cases we're not dealing with properly at the moment.  If we send malformed <code>json</code>, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.</p>

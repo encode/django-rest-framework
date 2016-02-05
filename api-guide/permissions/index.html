@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -514,6 +518,7 @@ def example_view(request, format=None):
     }
     return Response(content)
 </code></pre>
+<p><strong>Note:</strong> when you set new permission classes through class attribute or decorators you're telling the view to ignore the default list set over the <strong>settings.py</strong> file.</p>
 <hr />
 <h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
 <h2 id="allowany"><a class="toclink" href="#allowany">AllowAny</a></h2>
