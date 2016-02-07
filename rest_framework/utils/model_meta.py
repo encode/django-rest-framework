@@ -81,9 +81,10 @@ def get_field_info(model):
 
 def _get_pk(opts):
     pk = opts.pk
-    while get_remote_field(pk) and get_remote_field(pk).parent_link:
+    remote_field = get_remote_field(pk)
+    while remote_field and remote_field.parent_link:
         # If model is a child via multi-table inheritance, use parent's pk.
-        pk = get_remote_field(pk).to._meta.pk
+        pk = remote_field.to._meta.pk
 
     return pk
 
@@ -106,9 +107,10 @@ def _get_forward_relationships(opts):
     """
     forward_relations = OrderedDict()
     for field in [field for field in opts.fields if field.serialize and get_remote_field(field)]:
+        remote_field = get_remote_field(field)
         forward_relations[field.name] = RelationInfo(
             model_field=field,
-            related_model=_resolve_model(get_remote_field(field).to),
+            related_model=_resolve_model(remote_field.to),
             to_many=False,
             to_field=_get_to_field(field),
             has_through_model=False
@@ -116,14 +118,15 @@ def _get_forward_relationships(opts):
 
     # Deal with forward many-to-many relationships.
     for field in [field for field in opts.many_to_many if field.serialize]:
+        remote_field = get_remote_field(field)
         forward_relations[field.name] = RelationInfo(
             model_field=field,
-            related_model=_resolve_model(get_remote_field(field).to),
+            related_model=_resolve_model(remote_field.to),
             to_many=True,
             # manytomany do not have to_fields
             to_field=None,
             has_through_model=(
-                not get_remote_field(field).through._meta.auto_created
+                not remote_field.through._meta.auto_created
             )
         )
 
@@ -142,10 +145,11 @@ def _get_reverse_relationships(opts):
     for relation in get_all_related_objects(opts):
         accessor_name = relation.get_accessor_name()
         related = getattr(relation, 'related_model', relation.model)
+        remote_field = get_remote_field(relation.field)
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
             related_model=related,
-            to_many=get_remote_field(relation.field).multiple,
+            to_many=remote_field.multiple,
             to_field=_get_to_field(relation.field),
             has_through_model=False
         )
@@ -154,6 +158,7 @@ def _get_reverse_relationships(opts):
     for relation in get_all_related_many_to_many_objects(opts):
         accessor_name = relation.get_accessor_name()
         related = getattr(relation, 'related_model', relation.model)
+        remote_field = get_remote_field(relation.field)
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
             related_model=related,
@@ -161,8 +166,8 @@ def _get_reverse_relationships(opts):
             # manytomany do not have to_fields
             to_field=None,
             has_through_model=(
-                (getattr(get_remote_field(relation.field), 'through', None) is not None) and
-                not get_remote_field(relation.field).through._meta.auto_created
+                (getattr(remote_field, 'through', None) is not None) and
+                not remote_field.through._meta.auto_created
             )
         )
 
