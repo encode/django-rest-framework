@@ -28,7 +28,7 @@ def _force_text_recursive(data):
         ]
         if isinstance(data, ReturnList):
             return ReturnList(ret, serializer=data.serializer)
-        return data
+        return ret
     elif isinstance(data, dict):
         ret = {
             key: _force_text_recursive(value)
@@ -36,7 +36,7 @@ def _force_text_recursive(data):
         }
         if isinstance(data, ReturnDict):
             return ReturnDict(ret, serializer=data.serializer)
-        return data
+        return ret
     return force_text(data)
 
 
