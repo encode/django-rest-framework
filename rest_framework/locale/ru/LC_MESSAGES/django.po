@@ -321,7 +321,7 @@ msgstr "Недопустимый первичный ключ \"{pk_value}\" - о
 #: relations.py:197
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
-msgstr "Некорректный тип. Ожилалось значение первичного ключа, получен {data_type}."
+msgstr "Некорректный тип. Ожидалось значение первичного ключа, получен {data_type}."
 
 #: relations.py:229
 msgid "Invalid hyperlink - No URL match."
