@@ -6,6 +6,7 @@ from django.utils import six
 from rest_framework import serializers
 from tests.models import (
     ForeignKeySource, ForeignKeyTarget, ManyToManySource, ManyToManyTarget,
+    ManyToManyThrough, ManyToManyThroughSource, ManyToManyThroughTarget,
     NullableForeignKeySource, NullableOneToOneSource, OneToOneTarget
 )
 
@@ -21,6 +22,25 @@ class ManyToManySourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ManyToManySource
         fields = ('id', 'name', 'targets')
+
+
+# ManyToMany with inheritance and a through model
+class ManyToManyThroughSourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ManyToManyThroughSource
+        fields = ('id', 'name', 'name2', 'targets', 'through')
+
+
+class ManyToManyThroughTargetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ManyToManyThroughTarget
+        fields = ('id', 'name', 'sources', 'through')
+
+
+class ManyToManyThroughSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ManyToManyThrough
+        fields = ('id', 'name', 'source', 'target')
 
 
 # ForeignKey
@@ -173,6 +193,60 @@ class PKManyToManyTests(TestCase):
             {'id': 4, 'name': 'target-4', 'sources': [1, 3]}
         ]
         self.assertEqual(serializer.data, expected)
+
+
+class PKManyToManyThroughTests(TestCase):
+    def setUp(self):
+        through_idx = 1
+        for idx in range(1, 4):
+            source = ManyToManyThroughSource(name='source-%d' % idx,
+                                             name2='source-%d' % idx)
+            source.save()
+        for idx in range(4, 7):
+            target = ManyToManyThroughTarget(name='target-%d' % idx)
+            target.save()
+        for (s, t) in [(1, 4), (2, 4), (2, 5), (3, 4), (3, 5), (3, 6)]:
+            source = ManyToManyThroughSource.objects.get(pk=s)
+            target = ManyToManyThroughTarget.objects.get(pk=t)
+            through = ManyToManyThrough(name='through-%d' % through_idx,
+                                        source=source, target=target)
+            through.save()
+            through_idx += 1
+
+    def test_many_to_many_retrieve(self):
+        queryset = ManyToManyThroughSource.objects.all()
+        serializer = ManyToManyThroughSourceSerializer(queryset, many=True)
+        expected = [
+            {'id': 1, 'name': 'source-1', 'name2': 'source-1',
+             'targets': [4], 'through': [1]},
+            {'id': 2, 'name': 'source-2', 'name2': 'source-2',
+             'targets': [4, 5], 'through': [2, 3]},
+            {'id': 3, 'name': 'source-3', 'name2': 'source-3',
+             'targets': [4, 5, 6], 'through': [4, 5, 6]}
+        ]
+        with self.assertNumQueries(7):
+            self.assertEqual(serializer.data, expected)
+
+    def test_many_to_many_retrieve_prefetch_related(self):
+        queryset = ManyToManyThroughSource.objects.all().prefetch_related('targets').prefetch_related('through')
+        serializer = ManyToManyThroughSourceSerializer(queryset, many=True)
+        with self.assertNumQueries(3):
+            serializer.data
+
+    def test_reverse_many_to_many_retrieve(self):
+        queryset = ManyToManyThroughTarget.objects.all()
+        serializer = ManyToManyThroughTargetSerializer(queryset, many=True)
+        expected = [
+            {'id': 1, 'name': 'source-1', 'sources': [], 'through': []},
+            {'id': 2, 'name': 'source-2', 'sources': [], 'through': []},
+            {'id': 3, 'name': 'source-3', 'sources': [], 'through': []},
+            {'id': 4, 'name': 'target-4', 'sources': [1, 2, 3],
+             'through': [1, 2, 4]},
+            {'id': 5, 'name': 'target-5', 'sources': [2, 3], 'through': [3, 5]},
+            {'id': 6, 'name': 'target-6', 'sources': [3], 'through': [6]}
+        ]
+        with self.assertNumQueries(13):
+            self.assertEqual(serializer.data, expected)
 
 
 class PKForeignKeyTests(TestCase):

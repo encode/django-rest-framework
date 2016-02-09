@@ -7,6 +7,7 @@ from rest_framework import serializers
 from rest_framework.test import APIRequestFactory
 from tests.models import (
     ForeignKeySource, ForeignKeyTarget, ManyToManySource, ManyToManyTarget,
+    ManyToManyThrough, ManyToManyThroughSource, ManyToManyThroughTarget,
     NullableForeignKeySource, NullableOneToOneSource, OneToOneTarget
 )
 
@@ -22,6 +23,9 @@ urlpatterns = [
     url(r'^dummyurl/(?P<pk>[0-9]+)/$', dummy_view, name='dummy-url'),
     url(r'^manytomanysource/(?P<pk>[0-9]+)/$', dummy_view, name='manytomanysource-detail'),
     url(r'^manytomanytarget/(?P<pk>[0-9]+)/$', dummy_view, name='manytomanytarget-detail'),
+    url(r'^manytomanythroughsource/(?P<pk>[0-9]+)/$', dummy_view, name='manytomanythroughsource-detail'),
+    url(r'^manytomanythroughtarget/(?P<pk>[0-9]+)/$', dummy_view, name='manytomanythroughtarget-detail'),
+    url(r'^manytomanythrough/(?P<pk>[0-9]+)/$', dummy_view, name='manytomanythrough-detail'),
     url(r'^foreignkeysource/(?P<pk>[0-9]+)/$', dummy_view, name='foreignkeysource-detail'),
     url(r'^foreignkeytarget/(?P<pk>[0-9]+)/$', dummy_view, name='foreignkeytarget-detail'),
     url(r'^nullableforeignkeysource/(?P<pk>[0-9]+)/$', dummy_view, name='nullableforeignkeysource-detail'),
@@ -41,6 +45,25 @@ class ManyToManySourceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ManyToManySource
         fields = ('url', 'name', 'targets')
+
+
+# ManyToMany with inheritance and a through model
+class ManyToManyThroughSourceSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ManyToManyThroughSource
+        fields = ('url', 'name', 'name2', 'targets', 'through')
+
+
+class ManyToManyThroughTargetSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ManyToManyThroughTarget
+        fields = ('url', 'name', 'sources', 'through')
+
+
+class ManyToManyThroughSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ManyToManyThrough
+        fields = ('url', 'name', 'source', 'target')
 
 
 # ForeignKey
@@ -186,6 +209,64 @@ class HyperlinkedManyToManyTests(TestCase):
             {'url': 'http://testserver/manytomanytarget/4/', 'name': 'target-4', 'sources': ['http://testserver/manytomanysource/1/', 'http://testserver/manytomanysource/3/']}
         ]
         self.assertEqual(serializer.data, expected)
+
+
+class HyperlinkedManyToManyThroughTests(TestCase):
+    urls = 'tests.test_relations_hyperlink'
+
+    def setUp(self):
+        through_idx = 1
+        for idx in range(1, 4):
+            source = ManyToManyThroughSource(name='source-%d' % idx,
+                                             name2='source-%d' % idx)
+            source.save()
+        for idx in range(4, 7):
+            target = ManyToManyThroughTarget(name='target-%d' % idx)
+            target.save()
+        for (s, t) in [(1, 4), (2, 4), (2, 5), (3, 4), (3, 5), (3, 6)]:
+            source = ManyToManyThroughSource.objects.get(pk=s)
+            target = ManyToManyThroughTarget.objects.get(pk=t)
+            through = ManyToManyThrough(name='through-%d' % through_idx,
+                                        source=source, target=target)
+            through.save()
+            through_idx += 1
+
+    def test_many_to_many_retrieve(self):
+        queryset = ManyToManyThroughSource.objects.all()
+        serializer = ManyToManyThroughSourceSerializer(queryset, many=True, context={'request': request})
+        expected = [
+            {'url': 'http://testserver/manytomanythroughsource/1/', 'name': 'source-1', 'name2': 'source-1', 'targets': ['http://testserver/manytomanythroughtarget/4/'],
+             'through': ['http://testserver/manytomanythrough/1/']},
+            {'url': 'http://testserver/manytomanythroughsource/2/', 'name': 'source-2', 'name2': 'source-2', 'targets': ['http://testserver/manytomanythroughtarget/4/', 'http://testserver/manytomanythroughtarget/5/'],
+             'through': ['http://testserver/manytomanythrough/2/', 'http://testserver/manytomanythrough/3/']},
+            {'url': 'http://testserver/manytomanythroughsource/3/', 'name': 'source-3', 'name2': 'source-3', 'targets': ['http://testserver/manytomanythroughtarget/4/', 'http://testserver/manytomanythroughtarget/5/', 'http://testserver/manytomanythroughtarget/6/'],
+             'through': ['http://testserver/manytomanythrough/4/', 'http://testserver/manytomanythrough/5/', 'http://testserver/manytomanythrough/6/']}
+        ]
+        with self.assertNumQueries(7):
+            self.assertEqual(serializer.data, expected)
+
+    def test_many_to_many_retrieve_prefetch_related(self):
+        queryset = ManyToManyThroughSource.objects.all().prefetch_related('targets').prefetch_related('through')
+        serializer = ManyToManyThroughSourceSerializer(queryset, many=True, context={'request': request})
+        with self.assertNumQueries(3):
+            serializer.data
+
+    def test_reverse_many_to_many_retrieve(self):
+        queryset = ManyToManyThroughTarget.objects.all()
+        serializer = ManyToManyThroughTargetSerializer(queryset, many=True, context={'request': request})
+        expected = [
+            {'url': 'http://testserver/manytomanythroughtarget/1/', 'name': 'source-1', 'sources': [], 'through': []},
+            {'url': 'http://testserver/manytomanythroughtarget/2/', 'name': 'source-2', 'sources': [], 'through': []},
+            {'url': 'http://testserver/manytomanythroughtarget/3/', 'name': 'source-3', 'sources': [], 'through': []},
+            {'url': 'http://testserver/manytomanythroughtarget/4/', 'name': 'target-4', 'sources': ['http://testserver/manytomanythroughsource/1/', 'http://testserver/manytomanythroughsource/2/', 'http://testserver/manytomanythroughsource/3/'],
+             'through': ['http://testserver/manytomanythrough/1/', 'http://testserver/manytomanythrough/2/', 'http://testserver/manytomanythrough/4/']},
+            {'url': 'http://testserver/manytomanythroughtarget/5/', 'name': 'target-5', 'sources': ['http://testserver/manytomanythroughsource/2/', 'http://testserver/manytomanythroughsource/3/'],
+             'through': ['http://testserver/manytomanythrough/3/', 'http://testserver/manytomanythrough/5/']},
+            {'url': 'http://testserver/manytomanythroughtarget/6/', 'name': 'target-6', 'sources': ['http://testserver/manytomanythroughsource/3/'],
+             'through': ['http://testserver/manytomanythrough/6/']}
+        ]
+        with self.assertNumQueries(13):
+            self.assertEqual(serializer.data, expected)
 
 
 class HyperlinkedForeignKeyTests(TestCase):

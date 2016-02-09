@@ -41,6 +41,24 @@ class ManyToManySource(RESTFrameworkModel):
     targets = models.ManyToManyField(ManyToManyTarget, related_name='sources')
 
 
+# ManyToMany with inheritance and a through model
+class ManyToManyThroughTarget(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+
+
+class ManyToManyThroughSource(ManyToManyThroughTarget):
+    name2 = models.CharField(max_length=100)
+    targets = models.ManyToManyField(ManyToManyThroughTarget,
+                                     through='ManyToManyThrough',
+                                     related_name='sources')
+
+
+class ManyToManyThrough(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+    source = models.ForeignKey(ManyToManyThroughSource, related_name='through')
+    target = models.ForeignKey(ManyToManyThroughTarget, related_name='through')
+
+
 # ForeignKey
 class ForeignKeyTarget(RESTFrameworkModel):
     name = models.CharField(max_length=100)
