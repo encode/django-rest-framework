@@ -4,14 +4,17 @@ Pagination serializers determine the structure of the output that should
 be used for paginated responses.
 """
 from __future__ import unicode_literals
+
 from base64 import b64decode, b64encode
 from collections import OrderedDict, namedtuple
+
 from django.core.paginator import Paginator as DjangoPaginator
 from django.core.paginator import InvalidPage
 from django.template import loader
 from django.utils import six
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
+
 from rest_framework.compat import template_render
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
@@ -91,7 +94,7 @@ def _get_displayed_page_numbers(current, final):
     included = [
         idx for idx in sorted(list(included))
         if idx > 0 and idx <= final
-        ]
+    ]
 
     # Finally insert any `...` breaks
     if current > 4:
@@ -126,7 +129,6 @@ def _reverse_ordering(ordering_tuple):
     Given an order_by tuple such as `('-created', 'uuid')` reverse the
     ordering and return a new tuple, eg. `('created', '-uuid')`.
     """
-
     def invert(x):
         return x[1:] if (x.startswith('-')) else '-' + x
 
@@ -605,7 +607,7 @@ class CursorPagination(BasePagination):
         ordering_filters = [
             filter_cls for filter_cls in getattr(view, 'filter_backends', [])
             if hasattr(filter_cls, 'get_ordering')
-            ]
+        ]
 
         if ordering_filters:
             # If a filter exists on the view that implements `get_ordering`
