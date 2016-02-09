@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import uuid
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -46,6 +48,11 @@ class ForeignKeyTarget(RESTFrameworkModel):
     name = models.CharField(max_length=100)
 
 
+class UUIDForeignKeyTarget(RESTFrameworkModel):
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    name = models.CharField(max_length=100)
+
+
 class ForeignKeySource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
     target = models.ForeignKey(ForeignKeyTarget, related_name='sources',
@@ -55,6 +62,14 @@ class ForeignKeySource(RESTFrameworkModel):
 
 # Nullable ForeignKey
 class NullableForeignKeySource(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+    target = models.ForeignKey(ForeignKeyTarget, null=True, blank=True,
+                               related_name='nullable_sources',
+                               verbose_name='Optional target object',
+                               on_delete=models.CASCADE)
+
+
+class NullableUUIDForeignKeySource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
     target = models.ForeignKey(ForeignKeyTarget, null=True, blank=True,
                                related_name='nullable_sources',

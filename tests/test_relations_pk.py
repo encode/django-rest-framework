@@ -6,7 +6,8 @@ from django.utils import six
 from rest_framework import serializers
 from tests.models import (
     ForeignKeySource, ForeignKeyTarget, ManyToManySource, ManyToManyTarget,
-    NullableForeignKeySource, NullableOneToOneSource, OneToOneTarget
+    NullableForeignKeySource, NullableOneToOneSource,
+    NullableUUIDForeignKeySource, OneToOneTarget, UUIDForeignKeyTarget
 )
 
 
@@ -40,6 +41,18 @@ class ForeignKeySourceSerializer(serializers.ModelSerializer):
 class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = NullableForeignKeySource
+        fields = ('id', 'name', 'target')
+
+
+# Nullable UUIDForeignKey
+class NullableUUIDForeignKeySourceSerializer(serializers.ModelSerializer):
+    target = serializers.PrimaryKeyRelatedField(
+        pk_field=serializers.UUIDField(),
+        queryset=UUIDForeignKeyTarget.objects.all(),
+        allow_empty=True)
+
+    class Meta:
+        model = NullableUUIDForeignKeySource
         fields = ('id', 'name', 'target')
 
 
@@ -431,6 +444,12 @@ class PKNullableForeignKeyTests(TestCase):
             {'id': 3, 'name': 'source-3', 'target': None}
         ]
         self.assertEqual(serializer.data, expected)
+
+    def test_null_uuid_foreign_key_serializes_as_none(self):
+        source = NullableUUIDForeignKeySource(name='Source')
+        serializer = NullableUUIDForeignKeySourceSerializer(source)
+        data = serializer.data
+        self.assertEqual(data["target"], None)
 
 
 class PKNullableOneToOneTests(TestCase):
