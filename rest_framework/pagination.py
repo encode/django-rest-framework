@@ -4,17 +4,14 @@ Pagination serializers determine the structure of the output that should
 be used for paginated responses.
 """
 from __future__ import unicode_literals
-
 from base64 import b64decode, b64encode
 from collections import OrderedDict, namedtuple
-
 from django.core.paginator import Paginator as DjangoPaginator
 from django.core.paginator import InvalidPage
 from django.template import loader
 from django.utils import six
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
-
 from rest_framework.compat import template_render
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
@@ -94,7 +91,7 @@ def _get_displayed_page_numbers(current, final):
     included = [
         idx for idx in sorted(list(included))
         if idx > 0 and idx <= final
-    ]
+        ]
 
     # Finally insert any `...` breaks
     if current > 4:
@@ -129,6 +126,7 @@ def _reverse_ordering(ordering_tuple):
     Given an order_by tuple such as `('-created', 'uuid')` reverse the
     ordering and return a new tuple, eg. `('created', '-uuid')`.
     """
+
     def invert(x):
         return x[1:] if (x.startswith('-')) else '-' + x
 
@@ -488,7 +486,7 @@ class CursorPagination(BasePagination):
     def get_page_size(self, request):
         return self.page_size
 
-    def get_next_link(self):
+    def get_next_cursor(self):
         if not self.has_next:
             return None
 
@@ -533,10 +531,18 @@ class CursorPagination(BasePagination):
                 offset = self.cursor.offset + self.page_size
                 position = self.previous_position
 
-        cursor = Cursor(offset=offset, reverse=False, position=position)
-        return self.encode_cursor(cursor)
+        return Cursor(offset=offset, reverse=False, position=position)
 
-    def get_previous_link(self):
+    def get_next_encoded_cursor(self):
+        return self.encode_cursor(self.get_next_cursor())
+
+    def get_next_link(self):
+        if not self.has_next:
+            return None
+
+        return self.urify_cursor(self.get_next_encoded_cursor())
+
+    def get_previous_cursor(self):
         if not self.has_previous:
             return None
 
@@ -581,8 +587,16 @@ class CursorPagination(BasePagination):
                 offset = 0
                 position = self.next_position
 
-        cursor = Cursor(offset=offset, reverse=True, position=position)
-        return self.encode_cursor(cursor)
+        return Cursor(offset=offset, reverse=True, position=position)
+
+    def get_previous_encoded_cursor(self):
+        return self.encode_cursor(self.get_previous_cursor())
+
+    def get_previous_link(self):
+        if not self.has_previous:
+            return None
+
+        return self.urify_cursor(self.get_previous_encoded_cursor())
 
     def get_ordering(self, request, queryset, view):
         """
@@ -591,7 +605,7 @@ class CursorPagination(BasePagination):
         ordering_filters = [
             filter_cls for filter_cls in getattr(view, 'filter_backends', [])
             if hasattr(filter_cls, 'get_ordering')
-        ]
+            ]
 
         if ordering_filters:
             # If a filter exists on the view that implements `get_ordering`
@@ -664,6 +678,9 @@ class CursorPagination(BasePagination):
         """
         Given a Cursor instance, return an url with encoded cursor.
         """
+        if cursor is None:
+            return None
+
         tokens = {}
         if cursor.offset != 0:
             tokens['o'] = str(cursor.offset)
@@ -673,8 +690,10 @@ class CursorPagination(BasePagination):
             tokens['p'] = cursor.position
 
         querystring = urlparse.urlencode(tokens, doseq=True)
-        encoded = b64encode(querystring.encode('ascii')).decode('ascii')
-        return replace_query_param(self.base_url, self.cursor_query_param, encoded)
+        return b64encode(querystring.encode('ascii')).decode('ascii')
+
+    def urify_cursor(self, encoded_cursor):
+        return replace_query_param(self.base_url, self.cursor_query_param, encoded_cursor)
 
     def _get_position_from_instance(self, instance, ordering):
         attr = getattr(instance, ordering[0].lstrip('-'))
