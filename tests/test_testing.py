@@ -39,14 +39,14 @@ def redirect_view(request):
 
 
 class BasicSerializer(serializers.Serializer):
-    flag = fields.BooleanField(default=lambda: False)
+    flag = fields.BooleanField(default=lambda: True)
 
 
 @api_view(['POST'])
 def post_view(request):
     serializer = BasicSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    return Response()
+    return Response(serializer.validated_data)
 
 
 urlpatterns = [
@@ -196,14 +196,13 @@ class TestAPITestClient(TestCase):
         )
 
     def test_empty_post_uses_default_boolean_value(self):
-        User.objects.create_user('example', 'example@example.com', 'password')
-        self.client.login(username='example', password='password')
         response = self.client.post(
             '/post-view/',
             data=None,
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual('{"flag":true}', response.content)
 
 
 class TestAPIRequestFactory(TestCase):
