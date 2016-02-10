@@ -1,14 +1,21 @@
 from __future__ import unicode_literals
 
+import django
+import pytest
 from django.test import TestCase
 from django.utils import six
 
 from rest_framework import serializers
 from tests.models import (
     ForeignKeySource, ForeignKeyTarget, ManyToManySource, ManyToManyTarget,
-    NullableForeignKeySource, NullableOneToOneSource,
-    NullableUUIDForeignKeySource, OneToOneTarget, UUIDForeignKeyTarget
+    NullableForeignKeySource, NullableOneToOneSource, OneToOneTarget
 )
+
+if django.VERSION > (1, 7):
+    from tests.models import (
+        NullableUUIDForeignKeySource,
+        UUIDForeignKeyTarget
+    )
 
 
 # ManyToMany
@@ -44,16 +51,17 @@ class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'target')
 
 
-# Nullable UUIDForeignKey
-class NullableUUIDForeignKeySourceSerializer(serializers.ModelSerializer):
-    target = serializers.PrimaryKeyRelatedField(
-        pk_field=serializers.UUIDField(),
-        queryset=UUIDForeignKeyTarget.objects.all(),
-        allow_null=True)
+if django.VERSION > (1, 7):
+    # Nullable UUIDForeignKey
+    class NullableUUIDForeignKeySourceSerializer(serializers.ModelSerializer):
+        target = serializers.PrimaryKeyRelatedField(
+            pk_field=serializers.UUIDField(),
+            queryset=UUIDForeignKeyTarget.objects.all(),
+            allow_null=True)
 
-    class Meta:
-        model = NullableUUIDForeignKeySource
-        fields = ('id', 'name', 'target')
+        class Meta:
+            model = NullableUUIDForeignKeySource
+            fields = ('id', 'name', 'target')
 
 
 # Nullable OneToOne
@@ -445,12 +453,14 @@ class PKNullableForeignKeyTests(TestCase):
         ]
         self.assertEqual(serializer.data, expected)
 
+    @pytest.mark.skipif(django.VERSION < (1, 8), reason="UUIDField not available")
     def test_null_uuid_foreign_key_serializes_as_none(self):
         source = NullableUUIDForeignKeySource(name='Source')
         serializer = NullableUUIDForeignKeySourceSerializer(source)
         data = serializer.data
         self.assertEqual(data["target"], None)
 
+    @pytest.mark.skipif(django.VERSION < (1, 8), reason="UUIDField not available")
     def test_nullable_uuid_foreign_key_is_valid_when_none(self):
         data = {"name": "Source", "target": None}
         serializer = NullableUUIDForeignKeySourceSerializer(data=data)
