@@ -49,7 +49,7 @@ class NullableUUIDForeignKeySourceSerializer(serializers.ModelSerializer):
     target = serializers.PrimaryKeyRelatedField(
         pk_field=serializers.UUIDField(),
         queryset=UUIDForeignKeyTarget.objects.all(),
-        allow_empty=True)
+        allow_null=True)
 
     class Meta:
         model = NullableUUIDForeignKeySource
@@ -450,6 +450,11 @@ class PKNullableForeignKeyTests(TestCase):
         serializer = NullableUUIDForeignKeySourceSerializer(source)
         data = serializer.data
         self.assertEqual(data["target"], None)
+
+    def test_nullable_uuid_foreign_key_is_valid_when_none(self):
+        data = {"name": "Source", "target": None}
+        serializer = NullableUUIDForeignKeySourceSerializer(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
 
 
 class PKNullableOneToOneTests(TestCase):
