@@ -715,7 +715,7 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
         isinstance(validated_data[key], (list, dict))
         for key, field in serializer.fields.items()
     ), (
-        'The `.{method_name}()` method does not support writable nested'
+        'The `.{method_name}()` method does not support writable nested '
         'fields by default.\nWrite an explicit `.{method_name}()` method for '
         'serializer `{module}.{class_name}`, or set `read_only=True` on '
         'nested serializer fields.'.format(
