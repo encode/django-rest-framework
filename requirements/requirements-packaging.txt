@@ -6,3 +6,6 @@ twine==1.4.0
 
 # Transifex client for managing translation resources.
 transifex-client==0.11
+
+# Pandoc to have a nice pypi page
+pypandoc
