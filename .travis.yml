@@ -15,10 +15,6 @@ env:
     - TOX_ENV=py33-django18
     - TOX_ENV=py32-django18
     - TOX_ENV=py27-django18
-    - TOX_ENV=py34-django17
-    - TOX_ENV=py33-django17
-    - TOX_ENV=py32-django17
-    - TOX_ENV=py27-django17
 
 matrix:
   fast_finish: true

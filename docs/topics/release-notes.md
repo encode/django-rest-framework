@@ -40,6 +40,12 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.3.x series
 
+### 3.4
+
+**Unreleased**
+
+* Dropped support for EOL Django 1.7 ([#3933][gh3933])
+
 ### 3.3.2
 
 **Date**: [14th December 2015][3.3.2-milestone].
