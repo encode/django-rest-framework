@@ -499,7 +499,7 @@ class SearchFilterM2MTests(TestCase):
 
     def test_must_call_distinct(self):
         filter_ = filters.SearchFilter()
-        prefixes = ['', '^', '=', '@', '$']
+        prefixes = [''] + list(filter_.lookup_prefixes)
         for prefix in prefixes:
             self.assertFalse(
                 filter_.must_call_distinct(

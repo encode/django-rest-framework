@@ -133,6 +133,12 @@ class SearchFilter(BaseFilterBackend):
     # The URL query parameter used for the search.
     search_param = api_settings.SEARCH_PARAM
     template = 'rest_framework/filters/search.html'
+    lookup_prefixes = {
+        '^': 'istartswith',
+        '=': 'iexact',
+        '@': 'search',
+        '$': 'iregex',
+    }
 
     def get_search_terms(self, request):
         """
@@ -143,23 +149,19 @@ class SearchFilter(BaseFilterBackend):
         return params.replace(',', ' ').split()
 
     def construct_search(self, field_name):
-        if field_name.startswith('^'):
-            return "%s__istartswith" % field_name[1:]
-        elif field_name.startswith('='):
-            return "%s__iexact" % field_name[1:]
-        elif field_name.startswith('@'):
-            return "%s__search" % field_name[1:]
-        if field_name.startswith('$'):
-            return "%s__iregex" % field_name[1:]
+        lookup = self.lookup_prefixes.get(field_name[0])
+        if lookup:
+            field_name = field_name[1:]
         else:
-            return "%s__icontains" % field_name
+            lookup = 'icontains'
+        return LOOKUP_SEP.join([field_name, lookup])
 
     def must_call_distinct(self, opts, lookups):
         """
         Return True if 'distinct()' should be used to query the given lookups.
         """
         for lookup in lookups:
-            if lookup[0] in {'^', '=', '@', '$'}:
+            if lookup[0] in self.lookup_prefixes:
                 lookup = lookup[1:]
             parts = lookup.split(LOOKUP_SEP)
             for part in parts:
