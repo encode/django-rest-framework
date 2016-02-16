@@ -45,6 +45,7 @@ You can determine your currently installed version using `pip freeze`:
 **Unreleased**
 
 * Dropped support for EOL Django 1.7 ([#3933][gh3933])
+* Fixed null foreign keys targeting UUIDField primary keys. ([#3936][gh3936])
 
 ### 3.3.2
 
