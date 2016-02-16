@@ -232,11 +232,15 @@ class OrderingFilter(BaseFilterBackend):
                 msg = ("Cannot use %s on a view which does not have either a "
                        "'serializer_class' or 'ordering_fields' attribute.")
                 raise ImproperlyConfigured(msg % self.__class__.__name__)
-            valid_fields = [
-                (field.source or field_name, field.label)
-                for field_name, field in serializer_class().fields.items()
-                if not getattr(field, 'write_only', False) and not field.source == '*'
-            ]
+            valid_fields = []
+            for field_name, field in serializer_class().fields.items():
+                if getattr(field, 'write_only', False) or field.source == '*':
+                    continue
+                if field.source:
+                    valid_fields += [(field.source, field.label),
+                                     (field_name, field.label)]
+                else:
+                    valid_fields += (field_name, field.label)
         elif valid_fields == '__all__':
             # View explicitly allows filtering on any model field
             valid_fields = [
