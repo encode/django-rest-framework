@@ -130,7 +130,7 @@ Okay, we're done.
 
 We're now ready to test the API we've built.  Let's fire up the server from the command line.
 
-    python ./manage.py runserver
+    python manage.py runserver
 
 We can now access our API, both from the command-line, using tools like `curl`...
 
@@ -157,7 +157,8 @@ We can now access our API, both from the command-line, using tools like `curl`..
 
 Or using the [httpie][httpie], command line tool...
 
-    bash: http -a username:password123 http://127.0.0.1:8000/users/
+    bash: pip install httpie      # if you have not installed it yet
+    bash: http -a admin:password123 http://127.0.0.1:8000/users/
 
     HTTP/1.1 200 OK
     ...
@@ -182,7 +183,7 @@ Or using the [httpie][httpie], command line tool...
     }
 
 
-Or directly through the browser...
+Or directly through the browser, by going to http://127.0.0.1:8000/users/ 
 
 ![Quick start image][image]
 
