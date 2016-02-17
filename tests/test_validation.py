@@ -41,7 +41,8 @@ class ShouldValidateModelSerializer(serializers.ModelSerializer):
 
     def validate_renamed(self, value):
         if len(value) < 3:
-            raise serializers.ValidationError('Minimum 3 characters.')
+            raise serializers.ValidationError('Minimum 3 characters.',
+                                              code='min_length')
         return value
 
     class Meta:

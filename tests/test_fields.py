@@ -1399,7 +1399,10 @@ class TestFieldFieldWithName(FieldValues):
 # call into it's regular validation, or require PIL for testing.
 class FailImageValidation(object):
     def to_python(self, value):
-        raise serializers.ValidationError(self.error_messages['invalid_image'])
+        raise serializers.ValidationError(
+            self.error_messages['invalid_image'],
+            code='invalid_image'
+        )
 
 
 class PassImageValidation(object):
