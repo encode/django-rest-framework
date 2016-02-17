@@ -81,7 +81,13 @@ A text string that may be used as a description of the field in HTML form fields
 
 ### `initial`
 
-A value that should be used for pre-populating the value of HTML form fields.
+A value that should be used for pre-populating the value of HTML form fields. You may pass a callable to it, just as
+you may do with any regular Django `Field`:
+
+    def user_default_color():
+        return 'blue'
+
+    color = serializers.CharField(initial=user_default_color)
 
 ### `style`
 
