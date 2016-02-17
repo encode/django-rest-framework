@@ -23,6 +23,9 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework.compat import DurationField as ModelDurationField
 from rest_framework.compat import JSONField as ModelJSONField
 from rest_framework.compat import postgres_fields, unicode_to_repr
+from rest_framework.exceptions import (
+    ErrorDetails, build_error_from_django_validation_error
+)
 from rest_framework.utils import model_meta
 from rest_framework.utils.field_mapping import (
     ClassLookupDict, get_field_kwargs, get_nested_relation_kwargs,
@@ -299,8 +302,9 @@ def get_validation_error_detail(exc):
         # inside your codebase, but we handle Django's validation
         # exception class as well for simpler compat.
         # Eg. Calling Model.clean() explicitly inside Serializer.validate()
+        error = build_error_from_django_validation_error(exc)
         return {
-            api_settings.NON_FIELD_ERRORS_KEY: list(exc.messages)
+            api_settings.NON_FIELD_ERRORS_KEY: error
         }
     elif isinstance(exc.detail, dict):
         # If errors may be a dict we use the standard {key: list of values}.
@@ -422,8 +426,9 @@ class Serializer(BaseSerializer):
             message = self.error_messages['invalid'].format(
                 datatype=type(data).__name__
             )
+            code = 'invalid'
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
+                api_settings.NON_FIELD_ERRORS_KEY: [ErrorDetails(message, code)]
             })
 
         ret = OrderedDict()
@@ -440,7 +445,8 @@ class Serializer(BaseSerializer):
             except ValidationError as exc:
                 errors[field.field_name] = exc.detail
             except DjangoValidationError as exc:
-                errors[field.field_name] = list(exc.messages)
+                error = build_error_from_django_validation_error(exc)
+                errors[field.field_name] = error
             except SkipField:
                 pass
             else:
@@ -575,14 +581,16 @@ class ListSerializer(BaseSerializer):
             message = self.error_messages['not_a_list'].format(
                 input_type=type(data).__name__
             )
+            code = 'not_a_list'
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
+                api_settings.NON_FIELD_ERRORS_KEY: [ErrorDetails(message, code)]
             })
 
         if not self.allow_empty and len(data) == 0:
             message = self.error_messages['empty']
+            code = 'empty_not_allowed'
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
+                api_settings.NON_FIELD_ERRORS_KEY: [ErrorDetails(message, code)]
             })
 
         ret = []

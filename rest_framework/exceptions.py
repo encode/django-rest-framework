@@ -7,6 +7,7 @@ In addition Django's built in 403 and 404 exceptions are handled.
 from __future__ import unicode_literals
 
 import math
+from collections import namedtuple
 
 from django.utils import six
 from django.utils.encoding import force_text
@@ -58,6 +59,13 @@ class APIException(Exception):
         return self.detail
 
 
+def build_error_from_django_validation_error(exc_info):
+    code = getattr(exc_info, 'code', None) or 'invalid'
+    return [
+        ErrorDetails(msg, code)
+        for msg in exc_info.messages
+    ]
+
 # The recommended style for using `ValidationError` is to keep it namespaced
 # under `serializers`, in order to minimize potential confusion with Django's
 # built in `ValidationError`. For example:
@@ -65,15 +73,61 @@ class APIException(Exception):
 # from rest_framework import serializers
 # raise serializers.ValidationError('Value was invalid')
 
+ErrorDetails = namedtuple('ErrorDetails', ['message', 'code'])
+
+
 class ValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
+    code = None
 
-    def __init__(self, detail):
-        # For validation errors the 'detail' key is always required.
-        # The details should always be coerced to a list if not already.
-        if not isinstance(detail, dict) and not isinstance(detail, list):
-            detail = [detail]
-        self.detail = _force_text_recursive(detail)
+    def __init__(self, detail, code=None):
+        if code:
+            self.full_details = ErrorDetails(detail, code)
+        else:
+            self.full_details = detail
+
+        if not isinstance(self.full_details, dict) \
+                and not isinstance(self.full_details, list):
+            self.full_details = [self.full_details]
+        self.full_details = _force_text_recursive(self.full_details)
+
+        self.detail = detail
+        if isinstance(self.full_details, list):
+            if isinstance(self.full_details, ReturnList):
+                self.detail = ReturnList(
+                    serializer=self.full_details.serializer)
+            else:
+                self.detail = []
+            for full_detail in self.full_details:
+                if isinstance(full_detail, ErrorDetails):
+                    self.detail.append(full_detail.message)
+                elif isinstance(full_detail, dict):
+                    if not full_detail:
+                        self.detail.append(full_detail)
+                    for key, value in full_detail.items():
+                        if isinstance(value, list):
+                            self.detail.append(
+                                {key: [item.message]
+                                    if isinstance(item, ErrorDetails)
+                                    else [item] for item in value})
+                elif isinstance(full_detail, list):
+                    self.detail.extend(full_detail)
+                else:
+                    self.detail.append(full_detail)
+        elif isinstance(self.full_details, dict):
+            if isinstance(self.full_details, ReturnDict):
+                self.detail = ReturnDict(
+                    serializer=self.full_details.serializer)
+            else:
+                self.detail = {}
+            for field_name, full_detail in self.full_details.items():
+                if isinstance(full_detail, list):
+                    self.detail[field_name] = [
+                        item.message if isinstance(item, ErrorDetails) else item
+                        for item in full_detail
+                    ]
+                else:
+                    self.detail[field_name] = full_detail
 
     def __str__(self):
         return six.text_type(self.detail)
