@@ -191,6 +191,24 @@ class TestInitial:
         }
 
 
+class TestInitialWithCallable:
+    def setup(self):
+        def initial_value():
+            return 123
+
+        class TestSerializer(serializers.Serializer):
+            initial_field = serializers.IntegerField(initial=initial_value)
+        self.serializer = TestSerializer()
+
+    def test_initial_should_accept_callable(self):
+        """
+        Follows the default ``Field.initial`` behaviour where they accept a
+        callable to produce the initial value"""
+        assert self.serializer.data == {
+            'initial_field': 123,
+        }
+
+
 class TestLabel:
     def setup(self):
         class TestSerializer(serializers.Serializer):
