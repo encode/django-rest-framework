@@ -268,3 +268,16 @@ def get_all_related_many_to_many_objects(opts):
         return opts.get_all_related_many_to_many_objects()
     else:
         return [r for r in opts.related_objects if r.field.many_to_many]
+
+def get_remote_field(field):
+    """
+    Django 1.9 removed usage of Rel objects, see
+    https://github.com/django/django/pull/4241
+
+    :param field: Field
+    :return: remote field
+    """
+    if django.VERSION < (1, 9):
+        return field.rel
+    else:
+        return field.remote_field
