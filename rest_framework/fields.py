@@ -14,23 +14,23 @@ from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import (
-    EmailValidator, RegexValidator, URLValidator, ip_address_validators
+    EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MinValueValidator, RegexValidator, URLValidator, ip_address_validators
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
-from django.utils.dateparse import parse_date, parse_datetime, parse_time
+from django.utils.dateparse import (
+    parse_date, parse_datetime, parse_duration, parse_time
+)
+from django.utils.duration import duration_string
 from django.utils.encoding import is_protected_type, smart_text
 from django.utils.functional import cached_property
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import ISO_8601
-from rest_framework.compat import (
-    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, duration_string, parse_duration, unicode_repr,
-    unicode_to_repr
-)
+from rest_framework.compat import unicode_repr, unicode_to_repr
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, representation
@@ -1214,12 +1214,6 @@ class DurationField(Field):
     default_error_messages = {
         'invalid': _('Duration has wrong format. Use one of these formats instead: {format}.'),
     }
-
-    def __init__(self, *args, **kwargs):
-        if parse_duration is None:
-            raise NotImplementedError(
-                'DurationField not supported for django versions prior to 1.8')
-        return super(DurationField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, value):
         if isinstance(value, datetime.timedelta):

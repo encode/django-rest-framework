@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-import django
 import pytest
 from django.db import models
 from django.shortcuts import get_object_or_404
@@ -158,7 +157,7 @@ class TestRootView(TestCase):
         self.assertIn(expected_error, response.rendered_content.decode('utf-8'))
 
 
-EXPECTED_QUERIES_FOR_PUT = 3 if django.VERSION < (1, 6) else 2
+EXPECTED_QUERIES_FOR_PUT = 2
 
 
 class TestInstanceView(TestCase):
