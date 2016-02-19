@@ -370,6 +370,8 @@ class Field(object):
         Return a value to use when the field is being returned as a primitive
         value, without any object instance.
         """
+        if callable(self.initial):
+            return self.initial()
         return self.initial
 
     def get_value(self, dictionary):
