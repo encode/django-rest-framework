@@ -11,7 +11,6 @@ from __future__ import unicode_literals
 import json
 from collections import OrderedDict
 
-import django
 from django import forms
 from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Page
@@ -773,7 +772,7 @@ class MultiPartRenderer(BaseRenderer):
     media_type = 'multipart/form-data; boundary=BoUnDaRyStRiNg'
     format = 'multipart'
     charset = 'utf-8'
-    BOUNDARY = 'BoUnDaRyStRiNg' if django.VERSION >= (1, 5) else b'BoUnDaRyStRiNg'
+    BOUNDARY = 'BoUnDaRyStRiNg'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         if hasattr(data, 'items'):
