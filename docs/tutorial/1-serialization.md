@@ -331,9 +331,9 @@ You can install httpie using pip:
 
     pip install httpie
 
-Finally, we can get a list of all of the snippets (note the trailing / on the snippets/ url below. If you don't include it you may get a confusing '301 Moved Permanently' response because Django's default behavior is to redirect to a url with a trailing /):
+Finally, we can get a list of all of the snippets:
 
-    http http://127.0.0.1:8000/snippets/
+    http http://127.0.0.1:8000/snippets/ # Note the trailing slash
 
     HTTP/1.1 200 OK
     ...
