@@ -45,7 +45,7 @@ We'll need to add our new `snippets` app and the `rest_framework` app to `INSTAL
     INSTALLED_APPS = (
         ...
         'rest_framework',
-        'snippets',
+        'snippets.apps.SnippetsConfig',
     )
 
 Okay, we're ready to roll.
@@ -293,11 +293,11 @@ Finally we need to wire these views up.  Create the `snippets/urls.py` file:
         url(r'^snippets/$', views.snippet_list),
         url(r'^snippets/(?P<pk>[0-9]+)/$', views.snippet_detail),
     ]
-    
+
 We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to include our snippet app's URLs.
-    
+
     from django.conf.urls import url, include
-    
+
     urlpatterns = [
         url(r'^', include('snippets.urls')),
     ]
