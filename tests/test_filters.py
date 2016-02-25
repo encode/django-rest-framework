@@ -5,6 +5,7 @@ import unittest
 from decimal import Decimal
 
 from django.conf.urls import url
+from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.test import TestCase
@@ -584,6 +585,53 @@ class OrderingFilterTests(TestCase):
                 chr(idx + ord('c'))
             )
             OrderingFilterModel(title=title, text=text).save()
+
+    def test_get_valid_fields_from_explicit_serializer_class(self):
+        class OrderingListView(generics.ListAPIView):
+            queryset = OrderingFilterModel.objects.all()
+            serializer_class = OrderingFilterSerializer
+            filter_backends = (filters.OrderingFilter, )
+            ordering_fields = None
+
+        queryset = OrderingFilterModel.objects.all()
+        view = OrderingListView()
+        backend = filters.OrderingFilter()
+        valid_fields = backend.get_valid_fields(queryset, view)
+        expected_valid_fields = [(field.source or field_name, field.label)
+                                 for (field_name, field) in OrderingFilterSerializer().fields.items()
+                                 if not getattr(field, 'write_only', False) and not field.source == '*']
+        self.assertEqual(valid_fields, expected_valid_fields)
+
+    def test_get_valid_fields_from_explicit_get_serializer_class(self):
+        class OrderingListView(generics.ListAPIView):
+            queryset = OrderingFilterModel.objects.all()
+            filter_backends = (filters.OrderingFilter,)
+            ordering_fields = None
+
+            def get_serializer_class(self):
+                return OrderingFilterSerializer
+
+        queryset = OrderingFilterModel.objects.all()
+        view = OrderingListView()
+        backend = filters.OrderingFilter()
+        valid_fields = backend.get_valid_fields(queryset, view)
+        expected_valid_fields = [(field.source or field_name, field.label)
+                                 for (field_name, field) in OrderingFilterSerializer().fields.items()
+                                 if not getattr(field, 'write_only', False) and not field.source == '*']
+        self.assertEqual(valid_fields, expected_valid_fields)
+
+    def test_improperly_configured_error_from_get_valid_fields(self):
+        class OrderingListView(generics.ListAPIView):
+            queryset = OrderingFilterModel.objects.all()
+            filter_backends = (filters.OrderingFilter,)
+            ordering_fields = None
+            serializer_class = None
+
+        queryset = OrderingFilterModel.objects.all()
+        view = OrderingListView()
+        backend = filters.OrderingFilter()
+        with self.assertRaises(ImproperlyConfigured):
+            backend.get_valid_fields(queryset, view)
 
     def test_ordering(self):
         class OrderingListView(generics.ListAPIView):
