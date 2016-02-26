@@ -325,7 +325,7 @@ Quit out of the shell...
 
 In another terminal window, we can test the server.
 
-We can test our API using using [curl][curl] or [httpie][httpie]. Httpie is a user friendly http client that's written in Python. Let's install that.
+We can test our API using [curl][curl] or [httpie][httpie]. Httpie is a user friendly http client that's written in Python. Let's install that.
 
 You can install httpie using pip:
 

@@ -507,7 +507,7 @@ For example, given the following model for a tag, which has a generic relationsh
         def __unicode__(self):
             return self.tag_name
 
-And the following two models, which may be have associated tags:
+And the following two models, which may have associated tags:
 
     class Bookmark(models.Model):
         """

@@ -186,7 +186,7 @@ class PageNumberPagination(BasePagination):
 
     template = 'rest_framework/pagination/numbers.html'
 
-    invalid_page_message = _('Invalid page "{page_number}": {message}.')
+    invalid_page_message = _('Invalid page.')
 
     def paginate_queryset(self, queryset, request, view=None):
         """
