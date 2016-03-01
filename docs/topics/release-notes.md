@@ -47,7 +47,7 @@ You can determine your currently installed version using `pip freeze`:
 * Remove version string from templates. Thanks to @blag for the report and fixes. ([#3878][gh3878], [#3913][gh3913], [#3912][gh3912])
 * Fixes vertical html layout for `BooleanField`. Thanks to Mikalai Radchuk for the fix. ([#3910][gh3910])
 * Silenced deprecation warnings on Django 1.8. Thanks to Simon Charette for the fix. ([#3903][gh3903])
-* Internationalization for authtoken. Thanks to Michael Nacharov for the fix. ([#3887][gh3887])
+* Internationalization for authtoken. Thanks to Michael Nacharov for the fix. ([#3887][gh3887], [#3968][gh3968])
 * Fix `Token` model as `abstract` when the authtoken application isn't declared. Thanks to Adam Thomas for the report. ([#3860][gh3860], [#3858][gh3858])
 * Improve Markdown version compatibility. Thanks to Michael J. Schultz for the fix. ([#3604][gh3604], [#3842][gh3842])
 * `QueryParameterVersioning` does not use `DEFAULT_VERSION` setting. Thanks to Brad Montgomery for the fix. ([#3833][gh3833])
@@ -682,6 +682,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh3723]: https://github.com/tomchristie/django-rest-framework/issues/3723
 
 <!-- 3.3.3 -->
+[gh3968]: https://github.com/tomchristie/django-rest-framework/issues/3968
 [gh3913]: https://github.com/tomchristie/django-rest-framework/issues/3913
 [gh3912]: https://github.com/tomchristie/django-rest-framework/issues/3912
 [gh3910]: https://github.com/tomchristie/django-rest-framework/issues/3910
