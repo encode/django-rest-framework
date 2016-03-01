@@ -143,7 +143,7 @@ Your URL conf must include a pattern that matches the version with a `'version'`
 
 ## NamespaceVersioning
 
-To the client, this scheme is the same as `URLParameterVersioning`. The only difference is how it is configured in your Django application, as it uses URL namespacing, instead of URL keyword arguments.
+To the client, this scheme is the same as `URLPathVersioning`. The only difference is how it is configured in your Django application, as it uses URL namespacing, instead of URL keyword arguments.
 
     GET /v1/something/ HTTP/1.1
     Host: example.com
@@ -165,7 +165,7 @@ In the following example we're giving a set of views two different possible URL 
         url(r'^v2/bookings/', include('bookings.urls', namespace='v2'))
     ]
 
-Both `URLParameterVersioning` and `NamespaceVersioning` are reasonable if you just need a simple versioning scheme. The `URLParameterVersioning` approach might be better suitable for small ad-hoc projects, and the `NamespaceVersioning` is probably easier to manage for larger projects.
+Both `URLPathVersioning` and `NamespaceVersioning` are reasonable if you just need a simple versioning scheme. The `URLPathVersioning` approach might be better suitable for small ad-hoc projects, and the `NamespaceVersioning` is probably easier to manage for larger projects.
 
 ## HostNameVersioning
 
