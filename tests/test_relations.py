@@ -87,6 +87,18 @@ class TestProxiedPrimaryKeyRelatedField(APISimpleTestCase):
         assert representation == self.instance.pk.int
 
 
+class TestHyperlinkedRelatedField(APISimpleTestCase):
+    def setUp(self):
+        self.field = serializers.HyperlinkedRelatedField(
+            view_name='example', read_only=True)
+        self.field.reverse = mock_reverse
+        self.field._context = {'request': True}
+
+    def test_representation_unsaved_object_with_non_nullable_pk(self):
+        representation = self.field.to_representation(MockObject(pk=''))
+        assert representation is None
+
+
 class TestHyperlinkedIdentityField(APISimpleTestCase):
     def setUp(self):
         self.instance = MockObject(pk=1, name='foo')
