@@ -68,6 +68,7 @@ You can determine your currently installed version using `pip freeze`:
 * Add missing csrf_token in AdminRenderer post form. Thanks to Piotr Śniegowski for the fix. ([#3703][gh3703])
 * Refactored `_get_reverse_relationships()` to use correct `to_field`. Thanks to Benjamin Phillips for the fix. ([#3696][gh3696])
 * Document the use of `get_queryset` for `RelatedField`. Thanks to Ryan Hiebert for the fix. ([#3605][gh3605])
+* Fix empty pk detection in HyperlinkRelatedField.get_url. Thanks to @jslang for the fix ([#3962][gh3962])
 
 
 ### 3.3.2
@@ -683,6 +684,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 
 <!-- 3.3.3 -->
 [gh3968]: https://github.com/tomchristie/django-rest-framework/issues/3968
+[gh3962]: https://github.com/tomchristie/django-rest-framework/issues/3962
 [gh3913]: https://github.com/tomchristie/django-rest-framework/issues/3913
 [gh3912]: https://github.com/tomchristie/django-rest-framework/issues/3912
 [gh3910]: https://github.com/tomchristie/django-rest-framework/issues/3910
