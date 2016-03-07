@@ -330,6 +330,8 @@ To implement a custom relational field, you should override `RelatedField`, and 
 
 If you want to implement a read-write relational field, you must also implement the `.to_internal_value(self, data)` method.
 
+To provide a dynamic queryset based on the `context`, you can also override `.get_queryset(self)` instead of specifying `.queryset` on the class or when initializing the field.
+
 ## Example
 
 For example, we could define a relational field to serialize a track to a custom string representation, using its ordering, title, and duration.
@@ -505,7 +507,7 @@ For example, given the following model for a tag, which has a generic relationsh
         def __unicode__(self):
             return self.tag_name
 
-And the following two models, which may be have associated tags:
+And the following two models, which may have associated tags:
 
     class Bookmark(models.Model):
         """
@@ -578,9 +580,14 @@ The following third party packages are also available.
 
 The [drf-nested-routers package][drf-nested-routers] provides routers and relationship fields for working with nested resources.
 
+## Rest Framework Generic Relations
+
+The [rest-framework-generic-relations][drf-nested-relations] library provides read/write serialization for generic foreign keys.
+
 [cite]: http://lwn.net/Articles/193245/
 [reverse-relationships]: https://docs.djangoproject.com/en/dev/topics/db/queries/#following-relationships-backward
 [routers]: http://www.django-rest-framework.org/api-guide/routers#defaultrouter
 [generic-relations]: https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#id1
 [2.2-announcement]: ../topics/2.2-announcement.md
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
+[drf-nested-relations]: https://github.com/Ian-Foote/rest-framework-generic-relations

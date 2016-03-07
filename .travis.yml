@@ -1,5 +1,8 @@
 language: python
 
+python:
+  - "3.5"
+
 sudo: false
 
 env:
@@ -12,19 +15,13 @@ env:
     - TOX_ENV=py33-django18
     - TOX_ENV=py32-django18
     - TOX_ENV=py27-django18
-    - TOX_ENV=py34-django17
-    - TOX_ENV=py33-django17
-    - TOX_ENV=py32-django17
-    - TOX_ENV=py27-django17
 
 matrix:
-    # Python 3.5 not yet available on travis, watch this to see when it is.
   fast_finish: true
-  allow_failures:
-    - env: TOX_ENV=py35-django19
 
 install:
-  - pip install tox
+  # Virtualenv < 14 is required to keep the Python 3.2 builds running.
+  - pip install tox "virtualenv<14"
 
 script:
     - tox -e $TOX_ENV

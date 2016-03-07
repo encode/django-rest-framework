@@ -43,7 +43,7 @@ We can now use `CommentSerializer` to serialize a comment, or list of comments. 
 
     serializer = CommentSerializer(comment)
     serializer.data
-    # {'email': u'leila@example.com', 'content': u'foo bar', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774)}
+    # {'email': 'leila@example.com', 'content': 'foo bar', 'created': '2016-01-27T15:17:10.375877'}
 
 At this point we've translated the model instance into Python native datatypes.  To finalise the serialization process we render the data into `json`.
 
@@ -51,7 +51,7 @@ At this point we've translated the model instance into Python native datatypes. 
 
     json = JSONRenderer().render(serializer.data)
     json
-    # '{"email": "leila@example.com", "content": "foo bar", "created": "2012-08-22T16:20:09.822"}'
+    # b'{"email":"leila@example.com","content":"foo bar","created":"2016-01-27T15:17:10.375877"}'
 
 ## Deserializing objects
 
@@ -384,7 +384,7 @@ This manager class now more nicely encapsulates that user instances and profile 
             has_support_contract=validated_data['profile']['has_support_contract']
         )
 
-For more details on this approach see the Django documentation on [model managers](model-managers), and [this blogpost on using model and manager classes](encapsulation-blogpost).
+For more details on this approach see the Django documentation on [model managers][model-managers], and [this blogpost on using model and manager classes][encapsulation-blogpost].
 
 ## Dealing with multiple objects
 
@@ -775,6 +775,8 @@ To support multiple updates you'll need to do so explicitly. When writing your m
 * How should removals be handled? Do they imply object deletion, or removing a relationship? Should they be silently ignored, or are they invalid?
 * How should ordering be handled? Does changing the position of two items imply any state change or is it ignored?
 
+You will need to add an explicit `id` field to the instance serializer. The default implicitly-generated `id` field is marked as `read_only`. This causes it to be removed on updates. Once you declare it explicitly, it will be available in the list serializer's `update` method.
+
 Here's an example of how you might choose to implement multiple updates:
 
     class BookListSerializer(serializers.ListSerializer):
@@ -786,7 +788,7 @@ Here's an example of how you might choose to implement multiple updates:
             # Perform creations and updates.
             ret = []
             for book_id, data in data_mapping.items():
-                book = book_mapping.get(book_id, None):
+                book = book_mapping.get(book_id, None)
                 if book is None:
                     ret.append(self.child.create(data))
                 else:
@@ -805,6 +807,8 @@ Here's an example of how you might choose to implement multiple updates:
         id = serializers.IntegerField()
 
         ...
+        id = serializers.IntegerField(required=False)
+
         class Meta:
             list_serializer_class = BookListSerializer
 

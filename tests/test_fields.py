@@ -3,7 +3,6 @@ import os
 import uuid
 from decimal import Decimal
 
-import django
 import pytest
 from django.http import QueryDict
 from django.utils import six, timezone
@@ -188,6 +187,24 @@ class TestInitial:
         assert self.serializer.data == {
             'initial_field': 123,
             'blank_field': None
+        }
+
+
+class TestInitialWithCallable:
+    def setup(self):
+        def initial_value():
+            return 123
+
+        class TestSerializer(serializers.Serializer):
+            initial_field = serializers.IntegerField(initial=initial_value)
+        self.serializer = TestSerializer()
+
+    def test_initial_should_accept_callable(self):
+        """
+        Follows the default ``Field.initial`` behaviour where they accept a
+        callable to produce the initial value"""
+        assert self.serializer.data == {
+            'initial_field': 123,
         }
 
 
@@ -951,7 +968,7 @@ class TestDateTimeField(FieldValues):
         datetime.datetime(2001, 1, 1, 13, 00): datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
         # Django 1.4 does not support timezone string parsing.
-        '2001-01-01T14:00+01:00' if (django.VERSION > (1, 4)) else '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC())
+        '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC())
     }
     invalid_inputs = {
         'abc': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].'],
@@ -1077,8 +1094,6 @@ class TestNoOutputFormatTimeField(FieldValues):
     field = serializers.TimeField(format=None)
 
 
-@pytest.mark.skipif(django.VERSION < (1, 8),
-                    reason='DurationField is only available for django1.8+')
 class TestDurationField(FieldValues):
     """
     Valid and invalid values for `DurationField`.
@@ -1097,8 +1112,7 @@ class TestDurationField(FieldValues):
     outputs = {
         datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123): '3 08:32:01.000123',
     }
-    if django.VERSION >= (1, 8):
-        field = serializers.DurationField()
+    field = serializers.DurationField()
 
 
 # Choice types...

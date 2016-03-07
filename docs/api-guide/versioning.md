@@ -143,7 +143,7 @@ Your URL conf must include a pattern that matches the version with a `'version'`
 
 ## NamespaceVersioning
 
-To the client, this scheme is the same as `URLParameterVersioning`. The only difference is how it is configured in your Django application, as it uses URL namespacing, instead of URL keyword arguments.
+To the client, this scheme is the same as `URLPathVersioning`. The only difference is how it is configured in your Django application, as it uses URL namespacing, instead of URL keyword arguments.
 
     GET /v1/something/ HTTP/1.1
     Host: example.com
@@ -165,7 +165,7 @@ In the following example we're giving a set of views two different possible URL 
         url(r'^v2/bookings/', include('bookings.urls', namespace='v2'))
     ]
 
-Both `URLParameterVersioning` and `NamespaceVersioning` are reasonable if you just need a simple versioning scheme. The `URLParameterVersioning` approach might be better suitable for small ad-hoc projects, and the `NamespaceVersioning` is probably easier to manage for larger projects.
+Both `URLPathVersioning` and `NamespaceVersioning` are reasonable if you just need a simple versioning scheme. The `URLPathVersioning` approach might be better suitable for small ad-hoc projects, and the `NamespaceVersioning` is probably easier to manage for larger projects.
 
 ## HostNameVersioning
 
@@ -214,7 +214,7 @@ If your versioning scheme is based on the request URL, you will also want to alt
 [cite]: http://www.slideshare.net/evolve_conference/201308-fielding-evolve/31
 [roy-fielding-on-versioning]: http://www.infoq.com/articles/roy-fielding-on-versioning
 [klabnik-guidelines]: http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http#i_want_my_api_to_be_versioned
-[heroku-guidelines]: https://github.com/interagent/http-api-design#version-with-accepts-header
+[heroku-guidelines]: https://github.com/interagent/http-api-design/blob/master/en/foundations/require-versioning-in-the-accepts-header.md
 [json-parameters]: http://tools.ietf.org/html/rfc4627#section-6
 [vendor-media-type]: http://en.wikipedia.org/wiki/Internet_media_type#Vendor_tree
 [lvh]: https://reinteractive.net/posts/199-developing-and-testing-rails-applications-with-subdomains

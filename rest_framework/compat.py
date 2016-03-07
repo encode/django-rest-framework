@@ -86,18 +86,6 @@ except ImportError:
     crispy_forms = None
 
 
-if django.VERSION >= (1, 6):
-    def clean_manytomany_helptext(text):
-        return text
-else:
-    # Up to version 1.5 many to many fields automatically suffix
-    # the `help_text` attribute with hardcoded text.
-    def clean_manytomany_helptext(text):
-        if text.endswith(' Hold down "Control", or "Command" on a Mac, to select more than one.'):
-            text = text[:-69]
-        return text
-
-
 # Django-guardian is optional. Import only if guardian is in INSTALLED_APPS
 # Fixes (#1712). We keep the try/except for the test suite.
 guardian = None
@@ -109,41 +97,6 @@ except ImportError:
     pass
 
 
-# MinValueValidator, MaxValueValidator et al. only accept `message` in 1.8+
-if django.VERSION >= (1, 8):
-    from django.core.validators import MinValueValidator, MaxValueValidator
-    from django.core.validators import MinLengthValidator, MaxLengthValidator
-else:
-    from django.core.validators import MinValueValidator as DjangoMinValueValidator
-    from django.core.validators import MaxValueValidator as DjangoMaxValueValidator
-    from django.core.validators import MinLengthValidator as DjangoMinLengthValidator
-    from django.core.validators import MaxLengthValidator as DjangoMaxLengthValidator
-
-
-    class MinValueValidator(DjangoMinValueValidator):
-        def __init__(self, *args, **kwargs):
-            self.message = kwargs.pop('message', self.message)
-            super(MinValueValidator, self).__init__(*args, **kwargs)
-
-
-    class MaxValueValidator(DjangoMaxValueValidator):
-        def __init__(self, *args, **kwargs):
-            self.message = kwargs.pop('message', self.message)
-            super(MaxValueValidator, self).__init__(*args, **kwargs)
-
-
-    class MinLengthValidator(DjangoMinLengthValidator):
-        def __init__(self, *args, **kwargs):
-            self.message = kwargs.pop('message', self.message)
-            super(MinLengthValidator, self).__init__(*args, **kwargs)
-
-
-    class MaxLengthValidator(DjangoMaxLengthValidator):
-        def __init__(self, *args, **kwargs):
-            self.message = kwargs.pop('message', self.message)
-            super(MaxLengthValidator, self).__init__(*args, **kwargs)
-
-
 # PATCH method is not implemented by Django
 if 'patch' not in View.http_method_names:
     View.http_method_names = View.http_method_names + ['patch']
@@ -153,16 +106,25 @@ if 'patch' not in View.http_method_names:
 try:
     import markdown
 
+    if markdown.version <= '2.2':
+        HEADERID_EXT_PATH = 'headerid'
+    else:
+        HEADERID_EXT_PATH = 'markdown.extensions.headerid'
 
     def apply_markdown(text):
         """
         Simple wrapper around :func:`markdown.markdown` to set the base level
         of '#' style headers to <h2>.
         """
-
-        extensions = ['headerid(level=2)']
-        safe_mode = False
-        md = markdown.Markdown(extensions=extensions, safe_mode=safe_mode)
+        extensions = [HEADERID_EXT_PATH]
+        extension_configs = {
+            HEADERID_EXT_PATH: {
+                'level': '2'
+            }
+        }
+        md = markdown.Markdown(
+            extensions=extensions, extension_configs=extension_configs
+        )
         return md.convert(text)
 except ImportError:
     apply_markdown = None
@@ -178,13 +140,6 @@ else:
     SHORT_SEPARATORS = (b',', b':')
     LONG_SEPARATORS = (b', ', b': ')
     INDENT_SEPARATORS = (b',', b': ')
-
-if django.VERSION >= (1, 8):
-    from django.db.models import DurationField
-    from django.utils.dateparse import parse_duration
-    from django.utils.duration import duration_string
-else:
-    DurationField = duration_string = parse_duration = None
 
 try:
     # DecimalValidator is unavailable in Django < 1.9
@@ -214,14 +169,14 @@ def template_render(template, context=None, request=None):
     """
     Passing Context or RequestContext to Template.render is deprecated in 1.9+,
     see https://github.com/django/django/pull/3883 and
-    https://github.com/django/django/blob/1.9rc1/django/template/backends/django.py#L82-L84
+    https://github.com/django/django/blob/1.9/django/template/backends/django.py#L82-L84
 
     :param template: Template instance
     :param context: dict
     :param request: Request instance
     :return: rendered template as SafeText instance
     """
-    if django.VERSION < (1, 8) or isinstance(template, Template):
+    if isinstance(template, Template):
         if request:
             context = RequestContext(request, context)
         else:
@@ -230,32 +185,3 @@ def template_render(template, context=None, request=None):
     # backends template, e.g. django.template.backends.django.Template
     else:
         return template.render(context, request=request)
-
-
-def get_all_related_objects(opts):
-    """
-    Django 1.8 changed meta api, see
-    https://docs.djangoproject.com/en/1.8/ref/models/meta/#migrating-old-meta-api
-    https://code.djangoproject.com/ticket/12663
-    https://github.com/django/django/pull/3848
-
-    :param opts: Options instance
-    :return: list of relations except many-to-many ones
-    """
-    if django.VERSION < (1, 9):
-        return opts.get_all_related_objects()
-    else:
-        return [r for r in opts.related_objects if not r.field.many_to_many]
-
-
-def get_all_related_many_to_many_objects(opts):
-    """
-    Django 1.8 changed meta api, see docstr in compat.get_all_related_objects()
-
-    :param opts: Options instance
-    :return: list of many-to-many relations
-    """
-    if django.VERSION < (1, 9):
-        return opts.get_all_related_many_to_many_objects()
-    else:
-        return [r for r in opts.related_objects if r.field.many_to_many]

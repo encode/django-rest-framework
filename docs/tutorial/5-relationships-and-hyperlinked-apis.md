@@ -11,7 +11,7 @@ Right now we have endpoints for 'snippets' and 'users', but we don't have a sing
     from rest_framework.reverse import reverse
 
 
-    @api_view(('GET',))
+    @api_view(['GET'])
     def api_root(request, format=None):
         return Response({
             'users': reverse('user-list', request=request, format=format),

@@ -10,6 +10,7 @@ from django.core.cache import cache
 from django.db import models
 from django.test import TestCase
 from django.utils import six
+from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import permissions, serializers, status
@@ -459,3 +460,28 @@ class TestHiddenFieldHTMLFormRenderer(TestCase):
         field = serializer['published']
         rendered = renderer.render_field(field, {})
         assert rendered == ''
+
+
+class TestHTMLFormRenderer(TestCase):
+    def setUp(self):
+        class TestSerializer(serializers.Serializer):
+            test_field = serializers.CharField()
+
+        self.renderer = HTMLFormRenderer()
+        self.serializer = TestSerializer(data={})
+
+    def test_render_with_default_args(self):
+        self.serializer.is_valid()
+        renderer = HTMLFormRenderer()
+
+        result = renderer.render(self.serializer.data)
+
+        self.assertIsInstance(result, SafeText)
+
+    def test_render_with_provided_args(self):
+        self.serializer.is_valid()
+        renderer = HTMLFormRenderer()
+
+        result = renderer.render(self.serializer.data, None, {})
+
+        self.assertIsInstance(result, SafeText)

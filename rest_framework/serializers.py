@@ -15,12 +15,12 @@ from __future__ import unicode_literals
 import warnings
 
 from django.db import models
+from django.db.models import DurationField as ModelDurationField
 from django.db.models.fields import Field as DjangoModelField
 from django.db.models.fields import FieldDoesNotExist
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import DurationField as ModelDurationField
 from rest_framework.compat import JSONField as ModelJSONField
 from rest_framework.compat import postgres_fields, unicode_to_repr
 from rest_framework.utils import model_meta
@@ -715,7 +715,7 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
         isinstance(validated_data[key], (list, dict))
         for key, field in serializer.fields.items()
     ), (
-        'The `.{method_name}()` method does not support writable nested'
+        'The `.{method_name}()` method does not support writable nested '
         'fields by default.\nWrite an explicit `.{method_name}()` method for '
         'serializer `{module}.{class_name}`, or set `read_only=True` on '
         'nested serializer fields.'.format(

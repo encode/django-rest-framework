@@ -81,7 +81,13 @@ A text string that may be used as a description of the field in HTML form fields
 
 ### `initial`
 
-A value that should be used for pre-populating the value of HTML form fields.
+A value that should be used for pre-populating the value of HTML form fields. You may pass a callable to it, just as
+you may do with any regular Django `Field`:
+
+    import datetime
+    from rest_framework import serializers
+    class ExampleSerializer(serializers.Serializer):
+        day = serializers.DateField(initial=datetime.date.today)
 
 ### `style`
 
@@ -96,9 +102,9 @@ Two examples here are `'input_type'` and `'base_template'`:
 
     # Use a radio input instead of a select input.
     color_channel = serializers.ChoiceField(
-        choices=['red', 'green', 'blue']
-        style = {'base_template': 'radio.html'}
-    }
+        choices=['red', 'green', 'blue'],
+        style={'base_template': 'radio.html'}
+    )
 
 For more details see the [HTML & Forms][html-and-forms] documentation.
 

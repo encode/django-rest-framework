@@ -36,7 +36,7 @@
                         <span>
                             {% block branding %}
                                 <a class='navbar-brand' rel="nofollow" href='http://www.django-rest-framework.org'>
-                                    Django REST framework <span class="version">{{ version }}</span>
+                                    Django REST framework
                                 </a>
                             {% endblock %}
                         </span>
@@ -166,6 +166,7 @@
       <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
         <div class="modal-body">
           <fieldset>
+            {% csrf_token %}
             {{ post_form }}
           </fieldset>
         </div>

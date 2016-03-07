@@ -14,23 +14,23 @@ from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import (
-    EmailValidator, RegexValidator, URLValidator, ip_address_validators
+    EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MinValueValidator, RegexValidator, URLValidator, ip_address_validators
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
-from django.utils.dateparse import parse_date, parse_datetime, parse_time
+from django.utils.dateparse import (
+    parse_date, parse_datetime, parse_duration, parse_time
+)
+from django.utils.duration import duration_string
 from django.utils.encoding import is_protected_type, smart_text
 from django.utils.functional import cached_property
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import ISO_8601
-from rest_framework.compat import (
-    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, duration_string, parse_duration, unicode_repr,
-    unicode_to_repr
-)
+from rest_framework.compat import unicode_repr, unicode_to_repr
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, representation
@@ -117,9 +117,9 @@ def to_choices_dict(choices):
     """
     Convert choices into key/value dicts.
 
-    pairwise_choices([1]) -> {1: 1}
-    pairwise_choices([(1, '1st'), (2, '2nd')]) -> {1: '1st', 2: '2nd'}
-    pairwise_choices([('Group', ((1, '1st'), 2))]) -> {'Group': {1: '1st', 2: '2nd'}}
+    to_choices_dict([1]) -> {1: 1}
+    to_choices_dict([(1, '1st'), (2, '2nd')]) -> {1: '1st', 2: '2nd'}
+    to_choices_dict([('Group', ((1, '1st'), 2))]) -> {'Group': {1: '1st', 2: '2nd'}}
     """
     # Allow single, paired or grouped choices style:
     # choices = [1, 2, 3]
@@ -145,8 +145,8 @@ def flatten_choices_dict(choices):
     """
     Convert a group choices dict into a flat dict of choices.
 
-    flatten_choices({1: '1st', 2: '2nd'}) -> {1: '1st', 2: '2nd'}
-    flatten_choices({'Group': {1: '1st', 2: '2nd'}}) -> {1: '1st', 2: '2nd'}
+    flatten_choices_dict({1: '1st', 2: '2nd'}) -> {1: '1st', 2: '2nd'}
+    flatten_choices_dict({'Group': {1: '1st', 2: '2nd'}}) -> {1: '1st', 2: '2nd'}
     """
     ret = OrderedDict()
     for key, value in choices.items():
@@ -370,6 +370,8 @@ class Field(object):
         Return a value to use when the field is being returned as a primitive
         value, without any object instance.
         """
+        if callable(self.initial):
+            return self.initial()
         return self.initial
 
     def get_value(self, dictionary):
@@ -1214,12 +1216,6 @@ class DurationField(Field):
     default_error_messages = {
         'invalid': _('Duration has wrong format. Use one of these formats instead: {format}.'),
     }
-
-    def __init__(self, *args, **kwargs):
-        if parse_duration is None:
-            raise NotImplementedError(
-                'DurationField not supported for django versions prior to 1.8')
-        return super(DurationField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, value):
         if isinstance(value, datetime.timedelta):

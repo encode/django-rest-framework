@@ -45,7 +45,7 @@ We'll need to add our new `snippets` app and the `rest_framework` app to `INSTAL
     INSTALLED_APPS = (
         ...
         'rest_framework',
-        'snippets',
+        'snippets.apps.SnippetsConfig',
     )
 
 Okay, we're ready to roll.
@@ -159,7 +159,7 @@ Deserialization is similar.  First we parse a stream into Python native datatype
     stream = BytesIO(content)
     data = JSONParser().parse(stream)
 
-...then we restore those native datatypes into to a fully populated object instance.
+...then we restore those native datatypes into a fully populated object instance.
 
     serializer = SnippetSerializer(data=data)
     serializer.is_valid()
@@ -293,11 +293,11 @@ Finally we need to wire these views up.  Create the `snippets/urls.py` file:
         url(r'^snippets/$', views.snippet_list),
         url(r'^snippets/(?P<pk>[0-9]+)/$', views.snippet_detail),
     ]
-    
+
 We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to include our snippet app's URLs.
-    
+
     from django.conf.urls import url, include
-    
+
     urlpatterns = [
         url(r'^', include('snippets.urls')),
     ]
@@ -325,7 +325,7 @@ Quit out of the shell...
 
 In another terminal window, we can test the server.
 
-We can test our API using using [curl][curl] or [httpie][httpie]. Httpie is a user friendly http client that's written in Python. Let's install that.
+We can test our API using [curl][curl] or [httpie][httpie]. Httpie is a user friendly http client that's written in Python. Let's install that.
 
 You can install httpie using pip:
 

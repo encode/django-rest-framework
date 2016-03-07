@@ -3,8 +3,6 @@ Tests for content parsing, and form-overloaded content parsing.
 """
 from __future__ import unicode_literals
 
-import django
-import pytest
 from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -201,8 +199,6 @@ class TestAuthSetter(TestCase):
         self.assertEqual(request.auth, 'DUMMY')
 
 
-@pytest.mark.skipif(django.VERSION < (1, 7),
-                    reason='secure argument is only available for django1.7+')
 class TestSecure(TestCase):
 
     def test_default_secure_false(self):
