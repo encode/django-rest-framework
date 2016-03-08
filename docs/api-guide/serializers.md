@@ -788,7 +788,7 @@ Here's an example of how you might choose to implement multiple updates:
             # Perform creations and updates.
             ret = []
             for book_id, data in data_mapping.items():
-                book = book_mapping.get(book_id, None):
+                book = book_mapping.get(book_id, None)
                 if book is None:
                     ret.append(self.child.create(data))
                 else:

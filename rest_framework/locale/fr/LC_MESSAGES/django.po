@@ -6,13 +6,13 @@
 # Etienne Desgagné <etienne.desgagne@evimbec.ca>, 2015
 # Martin Maillard <martin.maillard@gmail.com>, 2015
 # Martin Maillard <martin.maillard@gmail.com>, 2015
-# Xavier Ordoquy <xordoquy@linovia.com>, 2015
+# Xavier Ordoquy <xordoquy@linovia.com>, 2015-2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-07 18:53+0100\n"
-"PO-Revision-Date: 2015-12-07 19:53+0000\n"
+"POT-Creation-Date: 2016-03-01 18:38+0100\n"
+"PO-Revision-Date: 2016-03-01 17:40+0000\n"
 "Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
 "Language-Team: French (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -21,42 +21,74 @@ msgstr ""
 "Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: authentication.py:72
+#: authentication.py:71
 msgid "Invalid basic header. No credentials provided."
 msgstr "En-tête « basic » non valide. Informations d'identification non fournies."
 
-#: authentication.py:75
+#: authentication.py:74
 msgid "Invalid basic header. Credentials string should not contain spaces."
 msgstr "En-tête « basic » non valide. Les informations d'identification ne doivent pas contenir d'espaces."
 
-#: authentication.py:81
+#: authentication.py:80
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
 msgstr "En-tête « basic » non valide. Encodage base64 des informations d'identification incorrect."
 
-#: authentication.py:98
+#: authentication.py:97
 msgid "Invalid username/password."
 msgstr "Nom d'utilisateur et/ou mot de passe non valide(s)."
 
-#: authentication.py:101 authentication.py:188
+#: authentication.py:100 authentication.py:195
 msgid "User inactive or deleted."
 msgstr "Utilisateur inactif ou supprimé."
 
-#: authentication.py:167
+#: authentication.py:173
 msgid "Invalid token header. No credentials provided."
 msgstr "En-tête « token » non valide. Informations d'identification non fournies."
 
-#: authentication.py:170
+#: authentication.py:176
 msgid "Invalid token header. Token string should not contain spaces."
 msgstr "En-tête « token » non valide. Un token ne doit pas contenir d'espaces."
 
-#: authentication.py:176
+#: authentication.py:182
 msgid ""
 "Invalid token header. Token string should not contain invalid characters."
 msgstr "En-tête « token » non valide. Un token ne doit pas contenir de caractères invalides."
 
-#: authentication.py:185
+#: authentication.py:192
 msgid "Invalid token."
 msgstr "Token non valide."
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr "Jeton d'authentification"
+
+#: authtoken/models.py:21
+msgid "Key"
+msgstr "Clef"
+
+#: authtoken/models.py:23
+msgid "User"
+msgstr "Utilisateur"
+
+#: authtoken/models.py:24
+msgid "Created"
+msgstr "Création"
+
+#: authtoken/models.py:33
+msgid "Token"
+msgstr "Jeton"
+
+#: authtoken/models.py:34
+msgid "Tokens"
+msgstr "Jetons"
+
+#: authtoken/serializers.py:8
+msgid "Username"
+msgstr "Nom de l'utilisateur"
+
+#: authtoken/serializers.py:9
+msgid "Password"
+msgstr "Mot de passe"
 
 #: authtoken/serializers.py:20
 msgid "User account is disabled."
@@ -112,7 +144,7 @@ msgstr "Type de média \"{media_type}\" non supporté."
 msgid "Request was throttled."
 msgstr "Requête ralentie."
 
-#: fields.py:266 relations.py:195 relations.py:228 validators.py:79
+#: fields.py:266 relations.py:206 relations.py:239 validators.py:79
 #: validators.py:162
 msgid "This field is required."
 msgstr "Ce champ est obligatoire."
@@ -130,7 +162,7 @@ msgstr "\"{input}\" n'est pas un booléen valide."
 msgid "This field may not be blank."
 msgstr "Ce champ ne peut être vide."
 
-#: fields.py:670 fields.py:1656
+#: fields.py:670 fields.py:1664
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr "Assurez-vous que ce champ comporte au plus {max_length} caractères."
@@ -216,137 +248,136 @@ msgstr "La date + heure n'a pas le bon format. Utilisez un des formats suivants 
 msgid "Expected a datetime but got a date."
 msgstr "Attendait une date + heure mais a reçu une date."
 
-#: fields.py:1079
+#: fields.py:1082
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr "La date n'a pas le bon format. Utilisez un des formats suivants : {format}."
 
-#: fields.py:1080
+#: fields.py:1083
 msgid "Expected a date but got a datetime."
 msgstr "Attendait une date mais a reçu une date + heure."
 
-#: fields.py:1148
+#: fields.py:1151
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr "L'heure n'a pas le bon format. Utilisez un des formats suivants : {format}."
 
-#: fields.py:1207
+#: fields.py:1215
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
 msgstr "La durée n'a pas le bon format. Utilisez l'un des formats suivants: {format}."
 
-#: fields.py:1232 fields.py:1281
+#: fields.py:1240 fields.py:1289
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
 msgstr "\"{input}\" n'est pas un choix valide."
 
-#: fields.py:1235 relations.py:62 relations.py:431
+#: fields.py:1243 relations.py:71 relations.py:442
 #, python-brace-format
 msgid "More than {count} items..."
 msgstr "Plus de {count} éléments..."
 
-#: fields.py:1282 fields.py:1429 relations.py:427 serializers.py:520
+#: fields.py:1290 fields.py:1437 relations.py:438 serializers.py:520
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Attendait une liste d'éléments mais a reçu \"{input_type}\"."
 
-#: fields.py:1283
+#: fields.py:1291
 msgid "This selection may not be empty."
 msgstr "Cette sélection ne peut être vide."
 
-#: fields.py:1320
+#: fields.py:1328
 #, python-brace-format
 msgid "\"{input}\" is not a valid path choice."
 msgstr "\"{input}\" n'est pas un choix de chemin valide."
 
-#: fields.py:1339
+#: fields.py:1347
 msgid "No file was submitted."
 msgstr "Aucun fichier n'a été soumis."
 
-#: fields.py:1340
+#: fields.py:1348
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
 msgstr "La donnée soumise n'est pas un fichier. Vérifiez le type d'encodage du formulaire."
 
-#: fields.py:1341
+#: fields.py:1349
 msgid "No filename could be determined."
 msgstr "Le nom de fichier n'a pu être déterminé."
 
-#: fields.py:1342
+#: fields.py:1350
 msgid "The submitted file is empty."
 msgstr "Le fichier soumis est vide."
 
-#: fields.py:1343
+#: fields.py:1351
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr "Assurez-vous que le nom de fichier comporte au plus {max_length} caractères (il en comporte {length})."
 
-#: fields.py:1391
+#: fields.py:1399
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr "Transférez une image valide. Le fichier que vous avez transféré n'est pas une image, ou il est corrompu."
 
-#: fields.py:1430 relations.py:428 serializers.py:521
+#: fields.py:1438 relations.py:439 serializers.py:521
 msgid "This list may not be empty."
 msgstr "Cette liste ne peut pas être vide."
 
-#: fields.py:1483
+#: fields.py:1491
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
 msgstr "Attendait un dictionnaire d'éléments mais a reçu \"{input_type}\"."
 
-#: fields.py:1530
+#: fields.py:1538
 msgid "Value must be valid JSON."
 msgstr "La valeur doit être un JSON valide."
 
-#: filters.py:35 templates/rest_framework/filters/django_filter.html:5
+#: filters.py:35 templates/rest_framework/filters/django_filter.html.py:5
 msgid "Submit"
 msgstr "Envoyer"
 
 #: pagination.py:189
-#, python-brace-format
-msgid "Invalid page \"{page_number}\": {message}."
-msgstr "Page \"{page_number}\" non valide : {message}."
+msgid "Invalid page."
+msgstr "Page invalide."
 
 #: pagination.py:407
 msgid "Invalid cursor"
 msgstr "Curseur non valide"
 
-#: relations.py:196
+#: relations.py:207
 #, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
 msgstr "Clé primaire \"{pk_value}\" non valide - l'objet n'existe pas."
 
-#: relations.py:197
+#: relations.py:208
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
 msgstr "Type incorrect. Attendait une clé primaire, a reçu {data_type}."
 
-#: relations.py:229
+#: relations.py:240
 msgid "Invalid hyperlink - No URL match."
 msgstr "Lien non valide : pas d'URL correspondante."
 
-#: relations.py:230
+#: relations.py:241
 msgid "Invalid hyperlink - Incorrect URL match."
 msgstr "Lien non valide : URL correspondante incorrecte."
 
-#: relations.py:231
+#: relations.py:242
 msgid "Invalid hyperlink - Object does not exist."
 msgstr "Lien non valide : l'objet n'existe pas."
 
-#: relations.py:232
+#: relations.py:243
 #, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
 msgstr "Type incorrect. Attendait une URL, a reçu {data_type}."
 
-#: relations.py:391
+#: relations.py:402
 #, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
 msgstr "L'object avec {slug_name}={value} n'existe pas."
 
-#: relations.py:392
+#: relations.py:403
 msgid "Invalid value."
 msgstr "Valeur non valide."
 
