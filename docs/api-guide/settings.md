@@ -127,18 +127,9 @@ See the pagination documentation for further guidance on [setting the pagination
 
 ---
 
-The name of a query parameter, which can be used by the client to override the default page size to use for pagination.  If set to `None`, clients may not override the default page size.
+#### PAGE_SIZE
 
-For example, given the following settings:
-
-    REST_FRAMEWORK = {
-    	'PAGINATE_BY': 10,
-    	'PAGINATE_BY_PARAM': 'page_size',
-    }
-
-A client would be able to modify the pagination size by using the `page_size` query parameter.  For example:
-
-    GET http://example.com/api/accounts?page_size=25
+The default page size to use for pagination.  If set to `None`, pagination is disabled by default.
 
 Default: `None`
 
