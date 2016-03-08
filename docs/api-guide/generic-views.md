@@ -26,7 +26,6 @@ Typically when using the generic views, you'll override the view, and set severa
         queryset = User.objects.all()
         serializer_class = UserSerializer
         permission_classes = (IsAdminUser,)
-        paginate_by = 100
 
 For more complex cases you might also want to override various methods on the view class.  For example.
 
