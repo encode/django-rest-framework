@@ -102,9 +102,15 @@ Default: `'rest_framework.negotiation.DefaultContentNegotiation'`
 
 #### DEFAULT_PAGINATION_SERIALIZER_CLASS
 
-A class the determines the default serialization style for paginated responses.
+---
 
-Default: `rest_framework.pagination.PaginationSerializer`
+**This setting has been removed.**
+
+The pagination API does not use serializers to determine the output format, and
+you'll need to instead override the `get_paginated_response method on a
+pagination class in order to specify how the output format is controlled.
+
+---
 
 #### DEFAULT_FILTER_BACKENDS
 
