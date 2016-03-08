@@ -119,15 +119,9 @@ If set to `None` then generic filtering is disabled.
 
 #### PAGINATE_BY
 
-The default page size to use for pagination.  If set to `None`, pagination is disabled by default.
-
-Default: `None`
-
-#### PAGINATE_BY_PARAM
-
 ---
 
-**This setting is pending deprecation.**
+**This setting has been removed.**
 
 See the pagination documentation for further guidance on [setting the pagination style](pagination.md#modifying-the-pagination-style).
 
