@@ -1081,7 +1081,10 @@ class ModelSerializer(Serializer):
                     self.save_object(related)
                 else:
                     # Reverse FK or reverse one-one
-                    setattr(obj, accessor_name, related)
+                    try:
+                        setattr(obj, accessor_name, related)
+                    except ValueError:
+                        getattr(obj, accessor_name).add(*related, bulk=False)
             del(obj._related_data)
 
 
