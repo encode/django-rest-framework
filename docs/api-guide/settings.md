@@ -133,6 +133,16 @@ The default page size to use for pagination.  If set to `None`, pagination is di
 
 Default: `None`
 
+#### PAGINATE_BY_PARAM
+
+---
+
+**This setting has been removed.**
+
+See the pagination documentation for further guidance on [setting the pagination style](pagination.md#modifying-the-pagination-style).
+
+---
+
 #### MAX_PAGINATE_BY
 
 ---
@@ -142,22 +152,6 @@ Default: `None`
 See the pagination documentation for further guidance on [setting the pagination style](pagination.md#modifying-the-pagination-style).
 
 ---
-
-The maximum page size to allow when the page size is specified by the client.  If set to `None`, then no maximum limit is applied.
-
-For example, given the following settings:
-
-    REST_FRAMEWORK = {
-    	'PAGINATE_BY': 10,
-    	'PAGINATE_BY_PARAM': 'page_size',
-        'MAX_PAGINATE_BY': 100
-    }
-
-A client request like the following would return a paginated list of up to 100 items.
-
-    GET http://example.com/api/accounts?page_size=999
-
-Default: `None`
 
 ### SEARCH_PARAM
 
