@@ -62,7 +62,7 @@ def is_simple_callable(obj):
     return len_args <= len_defaults
 
 
-def get_attribute(instance, attrs):
+def get_attribute(instance, attrs, required=True):
     """
     Similar to Python's built in `getattr(instance, attr)`,
     but takes a list of nested attributes, instead of a single attribute.
@@ -80,6 +80,12 @@ def get_attribute(instance, attrs):
                 instance = getattr(instance, attr)
         except ObjectDoesNotExist:
             return None
+        # RelatedObjectDoesNotExist inherits from both ObjectDoesNotExist and
+        # AttributeError, so ObjectDoesNotExist has to come first
+        except (AttributeError, KeyError):
+            if not required:
+                raise SkipField
+            raise
         if is_simple_callable(instance):
             try:
                 instance = instance()
