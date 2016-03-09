@@ -10,6 +10,7 @@ from django.template.response import SimpleTemplateResponse
 from django.utils import six
 from rest_framework.compat import responses
 
+
 class Response(SimpleTemplateResponse):
     """
     An HttpResponse that allows its data to be rendered into
