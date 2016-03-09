@@ -1079,12 +1079,12 @@ class ModelSerializer(Serializer):
                     fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
                     setattr(related, fk_field, obj)
                     self.save_object(related)
+                elif isinstance(related, list):
+                    # Many to One/Many
+                    getattr(obj, accessor_name).add(*related, bulk=False)
                 else:
                     # Reverse FK or reverse one-one
-                    try:
-                        setattr(obj, accessor_name, related)
-                    except ValueError:
-                        getattr(obj, accessor_name).add(*related, bulk=False)
+                    setattr(obj, accessor_name, related)
             del(obj._related_data)
 
 

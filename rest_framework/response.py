@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 import django
 from django.template.response import SimpleTemplateResponse
 from django.utils import six
-import httplib
+from rest_framework.compat import responses
 
 class Response(SimpleTemplateResponse):
     """
@@ -80,7 +80,7 @@ class Response(SimpleTemplateResponse):
         """
         # TODO: Deprecate and use a template tag instead
         # TODO: Status code text for RFC 6585 status codes
-        return httplib[self.status_code]
+        return responses.get(self.status_code, '')
 
     def __getstate__(self):
         """
