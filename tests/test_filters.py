@@ -499,7 +499,7 @@ class SearchFilterM2MTests(TestCase):
 
 
 class OrderingFilterModel(models.Model):
-    title = models.CharField(max_length=20)
+    title = models.CharField(max_length=20, verbose_name='verbose title')
     text = models.CharField(max_length=100)
 
 
@@ -740,6 +740,19 @@ class OrderingFilterTests(TestCase):
             )
 
         reload_module(filters)
+
+    def test_get_template_context(self):
+        class OrderingListView(generics.ListAPIView):
+            ordering_fields = '__all__'
+            serializer_class = OrderingFilterSerializer
+            queryset = OrderingFilterModel.objects.all()
+            filter_backends = (filters.OrderingFilter,)
+
+        request = factory.get('/', {'ordering': 'title'}, HTTP_ACCEPT='text/html')
+        view = OrderingListView.as_view()
+        response = view(request)
+
+        self.assertContains(response, 'verbose title')
 
 
 class SensitiveOrderingFilterModel(models.Model):
