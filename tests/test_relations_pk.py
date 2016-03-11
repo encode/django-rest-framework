@@ -334,12 +334,7 @@ class PKForeignKeyTests(TestCase):
         """
         class ModelSerializer(ForeignKeySourceSerializer):
             class Meta(ForeignKeySourceSerializer.Meta):
-                extra_kwargs = {
-                    'target': {
-                        'required': False,
-                        'allow_empty': True,
-                    }
-                }
+                extra_kwargs = {'target': {'required': False}}
         serializer = ModelSerializer(data={'name': 'test'})
         serializer.is_valid(raise_exception=True)
         self.assertNotIn('target', serializer.data)
