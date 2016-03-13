@@ -322,7 +322,10 @@ class TestLimitOffset:
         self.queryset = range(1, 101)
 
     def paginate_queryset(self, request):
-        return list(self.pagination.paginate_queryset(self.queryset, request))
+        queryset = self.pagination.paginate_queryset(self.queryset, request)
+        if queryset is None:
+            return None
+        return list(queryset)
 
     def get_paginated_content(self, queryset):
         response = self.pagination.get_paginated_response(queryset)
@@ -504,6 +507,52 @@ class TestLimitOffset:
         assert queryset == list(range(51, 66))
         assert content.get('next') == next_url
         assert content.get('previous') == prev_url
+
+    def test_limit_is_zero(self):
+        """
+        A limit of zero should set limit to max_limit.
+        """
+        offset = 20
+        request = Request(factory.get('/', {'limit': 0, 'offset': offset}))
+        queryset = self.paginate_queryset(request)
+        content = self.get_paginated_content(queryset)
+        context = self.get_html_context()
+        assert queryset == self.queryset[20:35]
+        assert content == {
+            'results': self.queryset[20:35],
+            'previous': 'http://testserver/?limit=15&offset=5',
+            'next': 'http://testserver/?limit=15&offset=35',
+            'count': 100
+        }
+        assert context == {
+            'previous_url': 'http://testserver/?limit=15&offset=5',
+            'next_url': 'http://testserver/?limit=15&offset=35',
+            'page_links': [
+                PageLink('http://testserver/?limit=15', 1, False, False),
+                PageLink('http://testserver/?limit=15&offset=5', 2, False, False),
+                PageLink('http://testserver/?limit=15&offset=20', 3, True, False),
+                PageLink('http://testserver/?limit=15&offset=35', 4, False, False),
+                PAGE_BREAK,
+                PageLink('http://testserver/?limit=15&offset=95', 8, False, False),
+            ]
+        }
+
+    def test_limit_is_zero_with_no_limit(self):
+        """
+        A limit of zero should set limit to max_limit, but when it is None,
+        pagination should be disabled and whole queryset returned.
+        """
+        self.pagination.max_limit = None
+        offset = 30
+        request = Request(factory.get('/', {'limit': 0, 'offset': offset}))
+        queryset = self.paginate_queryset(request)
+        context = self.get_html_context()
+        assert queryset is None
+        assert context == {
+            'previous_url': None,
+            'next_url': None,
+            'page_links': []
+        }
 
 
 class TestCursorPagination:
