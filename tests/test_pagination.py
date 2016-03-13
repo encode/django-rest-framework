@@ -517,9 +517,9 @@ class TestLimitOffset:
         queryset = self.paginate_queryset(request)
         content = self.get_paginated_content(queryset)
         context = self.get_html_context()
-        assert queryset == self.queryset[20:35]
+        assert queryset == list(self.queryset[20:35])
         assert content == {
-            'results': self.queryset[20:35],
+            'results': list(self.queryset[20:35]),
             'previous': 'http://testserver/?limit=15&offset=5',
             'next': 'http://testserver/?limit=15&offset=35',
             'count': 100
