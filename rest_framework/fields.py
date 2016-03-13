@@ -778,8 +778,6 @@ class UUIDField(Field):
         return data
 
     def to_representation(self, value):
-        if value is None:
-            return None
         if self.uuid_format == 'hex_verbose':
             return str(value)
         else:
