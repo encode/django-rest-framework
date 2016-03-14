@@ -26,7 +26,6 @@ Typically when using the generic views, you'll override the view, and set severa
         queryset = User.objects.all()
         serializer_class = UserSerializer
         permission_classes = (IsAdminUser,)
-        paginate_by = 100
 
 For more complex cases you might also want to override various methods on the view class.  For example.
 
@@ -71,8 +70,6 @@ The following attributes control the basic view behavior.
 The following attributes are used to control pagination when used with list views.
 
 * `pagination_class` - The pagination class that should be used when paginating list results. Defaults to the same value as the `DEFAULT_PAGINATION_CLASS` setting, which is `'rest_framework.pagination.PageNumberPagination'`.
-
-Note that usage of the `paginate_by`, `paginate_by_param` and `page_kwarg` attributes are now pending deprecation. The `pagination_serializer_class` attribute and `DEFAULT_PAGINATION_SERIALIZER_CLASS` setting have been removed completely. Pagination settings should instead be controlled by overriding a pagination class and setting any configuration attributes there. See the pagination documentation for more details.
 
 **Filtering**:
 

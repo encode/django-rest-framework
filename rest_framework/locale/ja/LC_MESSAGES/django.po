@@ -3,12 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Hiroaki Nakamura <hnakamur@gmail.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-07 18:53+0100\n"
-"PO-Revision-Date: 2015-12-07 17:55+0000\n"
+"POT-Creation-Date: 2016-03-01 18:38+0100\n"
+"PO-Revision-Date: 2016-03-01 17:38+0000\n"
 "Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/ja/)\n"
 "MIME-Version: 1.0\n"
@@ -17,42 +18,74 @@ msgstr ""
 "Language: ja\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: authentication.py:72
+#: authentication.py:71
 msgid "Invalid basic header. No credentials provided."
 msgstr "不正な基本ヘッダです。認証情報が含まれていません。"
 
-#: authentication.py:75
+#: authentication.py:74
 msgid "Invalid basic header. Credentials string should not contain spaces."
 msgstr "不正な基本ヘッダです。認証情報文字列に空白を含めてはいけません。"
 
-#: authentication.py:81
+#: authentication.py:80
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
 msgstr "不正な基本ヘッダです。認証情報がBASE64で正しくエンコードされていません。"
 
-#: authentication.py:98
+#: authentication.py:97
 msgid "Invalid username/password."
 msgstr "ユーザ名かパスワードが違います。"
 
-#: authentication.py:101 authentication.py:188
+#: authentication.py:100 authentication.py:195
 msgid "User inactive or deleted."
 msgstr "ユーザが無効か削除されています。"
 
-#: authentication.py:167
+#: authentication.py:173
 msgid "Invalid token header. No credentials provided."
 msgstr "不正なトークンヘッダです。認証情報が含まれていません。"
 
-#: authentication.py:170
+#: authentication.py:176
 msgid "Invalid token header. Token string should not contain spaces."
 msgstr "不正なトークンヘッダです。トークン文字列に空白を含めてはいけません。"
 
-#: authentication.py:176
+#: authentication.py:182
 msgid ""
 "Invalid token header. Token string should not contain invalid characters."
 msgstr "不正なトークンヘッダです。トークン文字列に不正な文字を含めてはいけません。"
 
-#: authentication.py:185
+#: authentication.py:192
 msgid "Invalid token."
 msgstr "不正なトークンです。"
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr "認証トークン"
+
+#: authtoken/models.py:21
+msgid "Key"
+msgstr "キー"
+
+#: authtoken/models.py:23
+msgid "User"
+msgstr "ユーザ"
+
+#: authtoken/models.py:24
+msgid "Created"
+msgstr "作成された"
+
+#: authtoken/models.py:33
+msgid "Token"
+msgstr "トークン"
+
+#: authtoken/models.py:34
+msgid "Tokens"
+msgstr "トークン"
+
+#: authtoken/serializers.py:8
+msgid "Username"
+msgstr "ユーザ名"
+
+#: authtoken/serializers.py:9
+msgid "Password"
+msgstr "パスワード"
 
 #: authtoken/serializers.py:20
 msgid "User account is disabled."
@@ -108,7 +141,7 @@ msgstr "リクエストのメディアタイプ \"{media_type}\" はサポート
 msgid "Request was throttled."
 msgstr "リクエストの処理は絞られました。"
 
-#: fields.py:266 relations.py:195 relations.py:228 validators.py:79
+#: fields.py:266 relations.py:206 relations.py:239 validators.py:79
 #: validators.py:162
 msgid "This field is required."
 msgstr "この項目は必須です。"
@@ -126,7 +159,7 @@ msgstr "\"{input}\" は有効なブーリアンではありません。"
 msgid "This field may not be blank."
 msgstr "この項目は空にできません。"
 
-#: fields.py:670 fields.py:1656
+#: fields.py:670 fields.py:1664
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr "この項目が{max_length}文字より長くならないようにしてください。"
@@ -212,137 +245,136 @@ msgstr "日時の形式が違います。以下のどれかの形式にしてく
 msgid "Expected a datetime but got a date."
 msgstr "日付ではなく日時を入力してください。"
 
-#: fields.py:1079
+#: fields.py:1082
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr "日付の形式が違います。以下のどれかの形式にしてください: {format}。"
 
-#: fields.py:1080
+#: fields.py:1083
 msgid "Expected a date but got a datetime."
 msgstr "日時ではなく日付を入力してください。"
 
-#: fields.py:1148
+#: fields.py:1151
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr "時刻の形式が違います。以下のどれかの形式にしてください: {format}。"
 
-#: fields.py:1207
+#: fields.py:1215
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
 msgstr "機関の形式が違います。以下のどれかの形式にしてください: {format}。"
 
-#: fields.py:1232 fields.py:1281
+#: fields.py:1240 fields.py:1289
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
 msgstr "\"{input}\"は有効な選択肢ではありません。"
 
-#: fields.py:1235 relations.py:62 relations.py:431
+#: fields.py:1243 relations.py:71 relations.py:442
 #, python-brace-format
 msgid "More than {count} items..."
-msgstr ""
+msgstr " {count} 個より多い..."
 
-#: fields.py:1282 fields.py:1429 relations.py:427 serializers.py:520
+#: fields.py:1290 fields.py:1437 relations.py:438 serializers.py:520
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "\"{input_type}\" 型のデータではなく項目のリストを入力してください。"
 
-#: fields.py:1283
+#: fields.py:1291
 msgid "This selection may not be empty."
 msgstr "空でない項目を選択してください。"
 
-#: fields.py:1320
+#: fields.py:1328
 #, python-brace-format
 msgid "\"{input}\" is not a valid path choice."
 msgstr "\"{input}\"は有効なパスの選択肢ではありません。"
 
-#: fields.py:1339
+#: fields.py:1347
 msgid "No file was submitted."
 msgstr "ファイルが添付されていません。"
 
-#: fields.py:1340
+#: fields.py:1348
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
 msgstr "添付されたデータはファイルではありません。フォームのエンコーディングタイプを確認してください。"
 
-#: fields.py:1341
+#: fields.py:1349
 msgid "No filename could be determined."
 msgstr "ファイル名が取得できませんでした。"
 
-#: fields.py:1342
+#: fields.py:1350
 msgid "The submitted file is empty."
 msgstr "添付ファイルの中身が空でした。"
 
-#: fields.py:1343
+#: fields.py:1351
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr "ファイル名は最大{max_length}文字にしてください({length}文字でした)。"
 
-#: fields.py:1391
+#: fields.py:1399
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr "有効な画像をアップロードしてください。アップロードされたファイルは画像でないか壊れた画像です。"
 
-#: fields.py:1430 relations.py:428 serializers.py:521
+#: fields.py:1438 relations.py:439 serializers.py:521
 msgid "This list may not be empty."
 msgstr "リストは空ではいけません。"
 
-#: fields.py:1483
+#: fields.py:1491
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
 msgstr "\"{input_type}\" 型のデータではなく項目の辞書を入力してください。"
 
-#: fields.py:1530
+#: fields.py:1538
 msgid "Value must be valid JSON."
-msgstr ""
+msgstr "値は有効なJSONでなければなりません。"
 
-#: filters.py:35 templates/rest_framework/filters/django_filter.html:5
+#: filters.py:35 templates/rest_framework/filters/django_filter.html.py:5
 msgid "Submit"
-msgstr ""
+msgstr "提出"
 
 #: pagination.py:189
-#, python-brace-format
-msgid "Invalid page \"{page_number}\": {message}."
-msgstr "ページ番号 \"{page_number}\" は不正です: {message}。"
+msgid "Invalid page."
+msgstr ""
 
 #: pagination.py:407
 msgid "Invalid cursor"
 msgstr "カーソルが不正です。"
 
-#: relations.py:196
+#: relations.py:207
 #, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
 msgstr "主キー \"{pk_value}\" は不正です - データが存在しません。"
 
-#: relations.py:197
+#: relations.py:208
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
 msgstr "不正な型です。{data_type} 型ではなく主キーの値を入力してください。"
 
-#: relations.py:229
+#: relations.py:240
 msgid "Invalid hyperlink - No URL match."
 msgstr "ハイパーリンクが不正です - URLにマッチしません。"
 
-#: relations.py:230
+#: relations.py:241
 msgid "Invalid hyperlink - Incorrect URL match."
 msgstr "ハイパーリンクが不正です - 不正なURLにマッチします。"
 
-#: relations.py:231
+#: relations.py:242
 msgid "Invalid hyperlink - Object does not exist."
 msgstr "ハイパーリンクが不正です - リンク先が存在しません。"
 
-#: relations.py:232
+#: relations.py:243
 #, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
 msgstr "不正なデータ型です。{data_type} 型ではなくURL文字列を入力してください。"
 
-#: relations.py:391
+#: relations.py:402
 #, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
 msgstr "{slug_name}={value} のデータが存在しません。"
 
-#: relations.py:392
+#: relations.py:403
 msgid "Invalid value."
 msgstr "不正な値です。"
 
@@ -354,20 +386,20 @@ msgstr "不正なデータです。{datatype} 型ではなく辞書を入力し�
 #: templates/rest_framework/admin.html:118
 #: templates/rest_framework/base.html:128
 msgid "Filters"
-msgstr ""
+msgstr "フィルタ"
 
 #: templates/rest_framework/filters/django_filter.html:2
 #: templates/rest_framework/filters/django_filter_crispyforms.html:4
 msgid "Field filters"
-msgstr ""
+msgstr "フィールドフィルタ"
 
 #: templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
-msgstr ""
+msgstr "順序"
 
 #: templates/rest_framework/filters/search.html:2
 msgid "Search"
-msgstr ""
+msgstr "検索"
 
 #: templates/rest_framework/horizontal/radio.html:2
 #: templates/rest_framework/inline/radio.html:2
