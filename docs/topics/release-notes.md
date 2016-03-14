@@ -42,7 +42,7 @@ You can determine your currently installed version using `pip freeze`:
 
 ### 3.3.3
 
-**Date**: [7th March 2016][3.3.3-milestone].
+**Date**: [14th March 2016][3.3.3-milestone].
 
 * Remove version string from templates. Thanks to @blag for the report and fixes. ([#3878][gh3878], [#3913][gh3913], [#3912][gh3912])
 * Fixes vertical html layout for `BooleanField`. Thanks to Mikalai Radchuk for the fix. ([#3910][gh3910])
