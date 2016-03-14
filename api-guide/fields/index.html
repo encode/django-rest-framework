@@ -294,10 +294,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/funding/">Funding</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -758,7 +754,7 @@ color_channel = serializers.ChoiceField(
 <p>Format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style datetimes should be used. (eg <code>'2013-01-29T12:34:56.000000Z'</code>)</p>
 <p>When a value of <code>None</code> is used for the format <code>datetime</code> objects will be returned by <code>to_representation</code> and the final output representation will determined by the renderer class.</p>
 <p>In the case of JSON this means the default datetime representation uses the <a href="http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15">ECMA 262 date time string specification</a>.  This is a subset of ISO 8601 which uses millisecond precision, and includes the 'Z' suffix for the UTC timezone, for example: <code>2013-01-29T12:34:56.123Z</code>.</p>
-<h4 id="auto_now-and-auto_now_add-model-fields"><a class="toclink" href="#auto_now-and-auto_now_add-model-fields"><code>auto_now</code> and <code>auto_now_add</code> model fields.</a></h4>
+<h4 id="auto_now-and-auto_now_add-model-fields"><code>auto_now_add</code> model fields.<a class="toclink" href="#auto_now-and-auto_now_add-model-fields"><code>auto_now</code> and </a></h4>
 <p>When using <code>ModelSerializer</code> or <code>HyperlinkedModelSerializer</code>, note that any model fields with <code>auto_now=True</code> or <code>auto_now_add=True</code> will use serializer fields that are <code>read_only=True</code> by default.</p>
 <p>If you want to override this behavior, you'll need to declare the <code>DateTimeField</code> explicitly on the serializer.  For example:</p>
 <pre><code>class CommentSerializer(serializers.ModelSerializer):

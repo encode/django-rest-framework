@@ -294,10 +294,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/funding/">Funding</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -453,6 +449,10 @@
                   
                     <li>
                       <a href="#drf-nested-routers">DRF Nested Routers</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#rest-framework-generic-relations">Rest Framework Generic Relations</a>
                     </li>
                   
                 
@@ -883,7 +883,7 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
     def __unicode__(self):
         return self.tag_name
 </code></pre>
-<p>And the following two models, which may be have associated tags:</p>
+<p>And the following two models, which may have associated tags:</p>
 <pre><code>class Bookmark(models.Model):
     """
     A bookmark consists of a URL, and 0 or more descriptive tags.
@@ -943,6 +943,8 @@ to <code>True</code>.</p>
 <p>The following third party packages are also available.</p>
 <h2 id="drf-nested-routers"><a class="toclink" href="#drf-nested-routers">DRF Nested Routers</a></h2>
 <p>The <a href="https://github.com/alanjds/drf-nested-routers">drf-nested-routers package</a> provides routers and relationship fields for working with nested resources.</p>
+<h2 id="rest-framework-generic-relations"><a class="toclink" href="#rest-framework-generic-relations">Rest Framework Generic Relations</a></h2>
+<p>The <a href="https://github.com/Ian-Foote/rest-framework-generic-relations">rest-framework-generic-relations</a> library provides read/write serialization for generic foreign keys.</p>
             
 
           </div> <!--/span-->

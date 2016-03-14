@@ -294,10 +294,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/funding/">Funding</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -487,47 +483,33 @@ print api_settings.DEFAULT_AUTHENTICATION_CLASSES
 <h2 id="generic-view-settings"><a class="toclink" href="#generic-view-settings">Generic view settings</a></h2>
 <p><em>The following settings control the behavior of the generic class based views.</em></p>
 <h4 id="default_pagination_serializer_class"><a class="toclink" href="#default_pagination_serializer_class">DEFAULT_PAGINATION_SERIALIZER_CLASS</a></h4>
-<p>A class the determines the default serialization style for paginated responses.</p>
-<p>Default: <code>rest_framework.pagination.PaginationSerializer</code></p>
+<hr />
+<p><strong>This setting has been removed.</strong></p>
+<p>The pagination API does not use serializers to determine the output format, and
+you'll need to instead override the `get_paginated_response method on a
+pagination class in order to specify how the output format is controlled.</p>
+<hr />
 <h4 id="default_filter_backends"><a class="toclink" href="#default_filter_backends">DEFAULT_FILTER_BACKENDS</a></h4>
 <p>A list of filter backend classes that should be used for generic filtering.
 If set to <code>None</code> then generic filtering is disabled.</p>
 <h4 id="paginate_by"><a class="toclink" href="#paginate_by">PAGINATE_BY</a></h4>
+<hr />
+<p><strong>This setting has been removed.</strong></p>
+<p>See the pagination documentation for further guidance on <a href="../pagination/#modifying-the-pagination-style">setting the pagination style</a>.</p>
+<hr />
+<h4 id="page_size"><a class="toclink" href="#page_size">PAGE_SIZE</a></h4>
 <p>The default page size to use for pagination.  If set to <code>None</code>, pagination is disabled by default.</p>
 <p>Default: <code>None</code></p>
 <h4 id="paginate_by_param"><a class="toclink" href="#paginate_by_param">PAGINATE_BY_PARAM</a></h4>
 <hr />
-<p><strong>This setting is pending deprecation.</strong></p>
+<p><strong>This setting has been removed.</strong></p>
 <p>See the pagination documentation for further guidance on <a href="../pagination/#modifying-the-pagination-style">setting the pagination style</a>.</p>
 <hr />
-<p>The name of a query parameter, which can be used by the client to override the default page size to use for pagination.  If set to <code>None</code>, clients may not override the default page size.</p>
-<p>For example, given the following settings:</p>
-<pre><code>REST_FRAMEWORK = {
-    'PAGINATE_BY': 10,
-    'PAGINATE_BY_PARAM': 'page_size',
-}
-</code></pre>
-<p>A client would be able to modify the pagination size by using the <code>page_size</code> query parameter.  For example:</p>
-<pre><code>GET http://example.com/api/accounts?page_size=25
-</code></pre>
-<p>Default: <code>None</code></p>
 <h4 id="max_paginate_by"><a class="toclink" href="#max_paginate_by">MAX_PAGINATE_BY</a></h4>
 <hr />
 <p><strong>This setting is pending deprecation.</strong></p>
 <p>See the pagination documentation for further guidance on <a href="../pagination/#modifying-the-pagination-style">setting the pagination style</a>.</p>
 <hr />
-<p>The maximum page size to allow when the page size is specified by the client.  If set to <code>None</code>, then no maximum limit is applied.</p>
-<p>For example, given the following settings:</p>
-<pre><code>REST_FRAMEWORK = {
-    'PAGINATE_BY': 10,
-    'PAGINATE_BY_PARAM': 'page_size',
-    'MAX_PAGINATE_BY': 100
-}
-</code></pre>
-<p>A client request like the following would return a paginated list of up to 100 items.</p>
-<pre><code>GET http://example.com/api/accounts?page_size=999
-</code></pre>
-<p>Default: <code>None</code></p>
 <h3 id="search_param"><a class="toclink" href="#search_param">SEARCH_PARAM</a></h3>
 <p>The name of a query parameter, which can be used to specify the search term used by <code>SearchFilter</code>.</p>
 <p>Default: <code>search</code></p>

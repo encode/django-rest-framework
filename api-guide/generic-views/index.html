@@ -294,10 +294,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/funding/">Funding</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -506,7 +502,6 @@ class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAdminUser,)
-    paginate_by = 100
 </code></pre>
 <p>For more complex cases you might also want to override various methods on the view class.  For example.</p>
 <pre><code>class UserList(generics.ListCreateAPIView):
@@ -542,7 +537,6 @@ class UserList(generics.ListCreateAPIView):
 <ul>
 <li><code>pagination_class</code> - The pagination class that should be used when paginating list results. Defaults to the same value as the <code>DEFAULT_PAGINATION_CLASS</code> setting, which is <code>'rest_framework.pagination.PageNumberPagination'</code>.</li>
 </ul>
-<p>Note that usage of the <code>paginate_by</code>, <code>paginate_by_param</code> and <code>page_kwarg</code> attributes are now pending deprecation. The <code>pagination_serializer_class</code> attribute and <code>DEFAULT_PAGINATION_SERIALIZER_CLASS</code> setting have been removed completely. Pagination settings should instead be controlled by overriding a pagination class and setting any configuration attributes there. See the pagination documentation for more details.</p>
 <p><strong>Filtering</strong>:</p>
 <ul>
 <li><code>filter_backends</code> - A list of filter backend classes that should be used for filtering the queryset.  Defaults to the same value as the <code>DEFAULT_FILTER_BACKENDS</code> setting.</li>

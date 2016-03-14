@@ -64,7 +64,7 @@
           <a class="repo-link btn btn-inverse btn-small disabled" rel="prev" >
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../funding/">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../kickstarter-announcement/">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
@@ -293,10 +293,6 @@
                     <a href="../kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
-                  <li >
-                    <a href="../funding/">Funding</a>
-                  </li>
-                  
                   <li class="active" >
                     <a href="./">Release Notes</a>
                   </li>
@@ -422,6 +418,35 @@
 </code></pre>
 <hr />
 <h2 id="33x-series"><a class="toclink" href="#33x-series">3.3.x series</a></h2>
+<h3 id="333"><a class="toclink" href="#333">3.3.3</a></h3>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.3+Release%22">14th March 2016</a>.</p>
+<ul>
+<li>Remove version string from templates. Thanks to @blag for the report and fixes. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3878">#3878</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3913">#3913</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3912">#3912</a>)</li>
+<li>Fixes vertical html layout for <code>BooleanField</code>. Thanks to Mikalai Radchuk for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3910">#3910</a>)</li>
+<li>Silenced deprecation warnings on Django 1.8. Thanks to Simon Charette for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3903">#3903</a>)</li>
+<li>Internationalization for authtoken. Thanks to Michael Nacharov for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3887">#3887</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3968">#3968</a>)</li>
+<li>Fix <code>Token</code> model as <code>abstract</code> when the authtoken application isn't declared. Thanks to Adam Thomas for the report. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3860">#3860</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3858">#3858</a>)</li>
+<li>Improve Markdown version compatibility. Thanks to Michael J. Schultz for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3604">#3604</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3842">#3842</a>)</li>
+<li><code>QueryParameterVersioning</code> does not use <code>DEFAULT_VERSION</code> setting. Thanks to Brad Montgomery for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3833">#3833</a>)</li>
+<li>Add an explicit <code>on_delete</code> on the models. Thanks to Mads Jensen for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3832">#3832</a>)</li>
+<li>Fix <code>DateField.to_representation</code> to work with Python 2 unicode. Thanks to Mikalai Radchuk for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3819">#3819</a>)</li>
+<li>Fixed <code>TimeField</code> not handling string times. Thanks to Areski Belaid for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3809">#3809</a>)</li>
+<li>Avoid updates of <code>Meta.extra_kwargs</code>. Thanks to Kevin Massey for the report and fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3805">#3805</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3804">#3804</a>)</li>
+<li>Fix nested validation error being rendered incorrectly. Thanks to Craig de Stigter for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3801">#3801</a>)</li>
+<li>Document how to avoid CSRF and missing button issues with <code>django-crispy-forms</code>. Thanks to Emmanuelle Delescolle, José Padilla and Luis San Pablo for the report, analysis and fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3787">#3787</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3636">#3636</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3637">#3637</a>)</li>
+<li>Improve Rest Framework Settings file setup time. Thanks to Miles Hutson for the report and Mads Jensen for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3786">#3786</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3815">#3815</a>)</li>
+<li>Improve authtoken compatibility with Django 1.9. Thanks to S. Andrew Sheppard for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3785">#3785</a>)</li>
+<li>Fix <code>Min/MaxValueValidator</code> transfer from a model's <code>DecimalField</code>. Thanks to Kevin Brown for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3774">#3774</a>)</li>
+<li>Improve HTML title in the Browsable API. Thanks to Mike Lissner for the report and fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3769">#3769</a>)</li>
+<li>Fix <code>AutoFilterSet</code> to inherit from <code>default_filter_set</code>. Thanks to Tom Linford for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3753">#3753</a>)</li>
+<li>Fix transifex config to handle the new Chinese language codes. Thanks to @nypisces for the report and fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3739">#3739</a>)</li>
+<li><code>DateTimeField</code> does not handle empty values correctly. Thanks to Mick Parker for the report and fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3731">#3731</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3726">#3726</a>)</li>
+<li>Raise error when setting a removed rest_framework setting. Thanks to Luis San Pablo for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3715">#3715</a>)</li>
+<li>Add missing csrf_token in AdminRenderer post form. Thanks to Piotr Śniegowski for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3703">#3703</a>)</li>
+<li>Refactored <code>_get_reverse_relationships()</code> to use correct <code>to_field</code>. Thanks to Benjamin Phillips for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3696">#3696</a>)</li>
+<li>Document the use of <code>get_queryset</code> for <code>RelatedField</code>. Thanks to Ryan Hiebert for the fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3605">#3605</a>)</li>
+<li>Fix empty pk detection in HyperlinkRelatedField.get_url. Thanks to @jslang for the fix (<a href="https://github.com/tomchristie/django-rest-framework/issues/3962">#3962</a>)</li>
+</ul>
 <h3 id="332"><a class="toclink" href="#332">3.3.2</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.2+Release%22">14th December 2015</a>.</p>
 <ul>
@@ -715,6 +740,8 @@
 <!-- 3.3.1 -->
 
 <!-- 3.3.2 -->
+
+<!-- 3.3.3 -->
             
 
           </div> <!--/span-->

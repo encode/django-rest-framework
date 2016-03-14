@@ -294,10 +294,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/funding/">Funding</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -488,7 +484,7 @@ Host: example.com
 Accept: application/json; version=1.0
 </code></pre>
 <p>In the example request above <code>request.version</code> attribute would return the string <code>'1.0'</code>.</p>
-<p>Versioning based on accept headers is <a href="http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http#i_want_my_api_to_be_versioned">generally considered</a> as <a href="https://github.com/interagent/http-api-design/blob/master/foundations/require-versioning-in-the-accepts-header.md">best practice</a>, although other styles may be suitable depending on your client requirements.</p>
+<p>Versioning based on accept headers is <a href="http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http#i_want_my_api_to_be_versioned">generally considered</a> as <a href="https://github.com/interagent/http-api-design/blob/master/en/foundations/require-versioning-in-the-accepts-header.md">best practice</a>, although other styles may be suitable depending on your client requirements.</p>
 <h4 id="using-accept-headers-with-vendor-media-types"><a class="toclink" href="#using-accept-headers-with-vendor-media-types">Using accept headers with vendor media types</a></h4>
 <p>Strictly speaking the <code>json</code> media type is not specified as <a href="http://tools.ietf.org/html/rfc4627#section-6">including additional parameters</a>. If you are building a well-specified public API you might consider using a <a href="http://en.wikipedia.org/wiki/Internet_media_type#Vendor_tree">vendor media type</a>. To do so, configure your renderers to use a JSON based renderer with a custom media type:</p>
 <pre><code>class BookingsAPIRenderer(JSONRenderer):
@@ -520,7 +516,7 @@ Accept: application/json
 ]
 </code></pre>
 <h2 id="namespaceversioning"><a class="toclink" href="#namespaceversioning">NamespaceVersioning</a></h2>
-<p>To the client, this scheme is the same as <code>URLParameterVersioning</code>. The only difference is how it is configured in your Django application, as it uses URL namespacing, instead of URL keyword arguments.</p>
+<p>To the client, this scheme is the same as <code>URLPathVersioning</code>. The only difference is how it is configured in your Django application, as it uses URL namespacing, instead of URL keyword arguments.</p>
 <pre><code>GET /v1/something/ HTTP/1.1
 Host: example.com
 Accept: application/json
@@ -539,7 +535,7 @@ urlpatterns = [
     url(r'^v2/bookings/', include('bookings.urls', namespace='v2'))
 ]
 </code></pre>
-<p>Both <code>URLParameterVersioning</code> and <code>NamespaceVersioning</code> are reasonable if you just need a simple versioning scheme. The <code>URLParameterVersioning</code> approach might be better suitable for small ad-hoc projects, and the <code>NamespaceVersioning</code> is probably easier to manage for larger projects.</p>
+<p>Both <code>URLPathVersioning</code> and <code>NamespaceVersioning</code> are reasonable if you just need a simple versioning scheme. The <code>URLPathVersioning</code> approach might be better suitable for small ad-hoc projects, and the <code>NamespaceVersioning</code> is probably easier to manage for larger projects.</p>
 <h2 id="hostnameversioning"><a class="toclink" href="#hostnameversioning">HostNameVersioning</a></h2>
 <p>The hostname versioning scheme requires the client to specify the requested version as part of the hostname in the URL.</p>
 <p>For example the following is an HTTP request to the <code>http://v1.example.com/bookings/</code> URL:</p>

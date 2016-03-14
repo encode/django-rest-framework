@@ -294,10 +294,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/funding/">Funding</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -394,7 +390,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 
-@api_view(('GET',))
+@api_view(['GET'])
 def api_root(request, format=None):
     return Response({
         'users': reverse('user-list', request=request, format=format),

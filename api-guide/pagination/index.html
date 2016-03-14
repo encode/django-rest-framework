@@ -294,10 +294,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/funding/">Funding</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -569,7 +565,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 <li>The field should have a database index.</li>
 </ul>
 <p>Using an ordering field that does not satisfy these constraints will generally still work, but you'll be losing some of the benefits of cursor pagination.</p>
-<p>For more technical details on the implementation we use for cursor pagination, the <a href="http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api/">"Building cursors for the Disqus API"</a> blog post gives a good overview of the basic approach.</p>
+<p>For more technical details on the implementation we use for cursor pagination, the <a href="http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api">"Building cursors for the Disqus API"</a> blog post gives a good overview of the basic approach.</p>
 <h4 id="setup_2"><a class="toclink" href="#setup_2">Setup</a></h4>
 <p>To enable the <code>CursorPagination</code> style globally, use the following configuration, modifying the <code>PAGE_SIZE</code> as desired:</p>
 <pre><code>REST_FRAMEWORK = {
