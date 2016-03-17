@@ -184,7 +184,6 @@ class GenericAPIView(views.APIView):
 
 class CreateAPIView(mixins.CreateModelMixin,
                     GenericAPIView):
-
     """
     Concrete view for creating a model instance.
     """
@@ -212,7 +211,6 @@ class RetrieveAPIView(mixins.RetrieveModelMixin,
 
 class DestroyAPIView(mixins.DestroyModelMixin,
                      GenericAPIView):
-
     """
     Concrete view for deleting a model instance.
     """
@@ -222,7 +220,6 @@ class DestroyAPIView(mixins.DestroyModelMixin,
 
 class UpdateAPIView(mixins.UpdateModelMixin,
                     GenericAPIView):
-
     """
     Concrete view for updating a model instance.
     """

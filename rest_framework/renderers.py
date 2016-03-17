@@ -40,7 +40,6 @@ class BaseRenderer(object):
     All renderers should extend this class, setting the `media_type`
     and `format` attributes, and override the `.render()` method.
     """
-
     media_type = None
     format = None
     charset = 'utf-8'
@@ -54,7 +53,6 @@ class JSONRenderer(BaseRenderer):
     """
     Renderer which serializes to JSON.
     """
-
     media_type = 'application/json'
     format = 'json'
     encoder_class = encoders.JSONEncoder
@@ -136,7 +134,6 @@ class TemplateHTMLRenderer(BaseRenderer):
 
     For pre-rendered HTML, see StaticHTMLRenderer.
     """
-
     media_type = 'text/html'
     format = 'html'
     template_name = None
