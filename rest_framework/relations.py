@@ -397,7 +397,6 @@ class SlugRelatedField(RelatedField):
     A read-write field that represents the target of the relationship
     by a unique 'slug' attribute.
     """
-
     default_error_messages = {
         'does_not_exist': _('Object with {slug_name}={value} does not exist.'),
         'invalid': _('Invalid value.'),

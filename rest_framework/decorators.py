@@ -16,7 +16,6 @@ from rest_framework.views import APIView
 
 
 def api_view(http_method_names=None):
-
     """
     Decorator that converts a function-based view into an APIView subclass.
     Takes a list of allowed methods for the view as an argument.

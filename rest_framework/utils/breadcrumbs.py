@@ -19,7 +19,6 @@ def get_breadcrumbs(url, request=None):
         Add tuples of (name, url) to the breadcrumbs list,
         progressively chomping off parts of the url.
         """
-
         try:
             (view, unused_args, unused_kwargs) = resolve(url)
         except Exception:

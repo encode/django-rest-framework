@@ -144,7 +144,6 @@ class SimpleRouter(BaseRouter):
 
         Returns a list of the Route namedtuple.
         """
-
         known_actions = flatten([route.mapping.values() for route in self.routes if isinstance(route, Route)])
 
         # Determine any `@detail_route` or `@list_route` decorated methods on the viewset

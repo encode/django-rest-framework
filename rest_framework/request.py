@@ -41,6 +41,7 @@ class override_method(object):
         with override_method(view, request, 'POST') as request:
             ... # Do stuff with `view` and `request`
     """
+
     def __init__(self, view, request, method):
         self.view = view
         self.request = request
@@ -129,6 +130,7 @@ class Request(object):
         - authentication_classes(list/tuple). The authentications used to try
           authenticating the request's user.
     """
+
     def __init__(self, request, parsers=None, authenticators=None,
                  negotiator=None, parser_context=None):
         self._request = request

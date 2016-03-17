@@ -35,7 +35,6 @@ class BaseParser(object):
     All parsers should extend `BaseParser`, specifying a `media_type`
     attribute, and overriding the `.parse()` method.
     """
-
     media_type = None
 
     def parse(self, stream, media_type=None, parser_context=None):
@@ -51,7 +50,6 @@ class JSONParser(BaseParser):
     """
     Parses JSON-serialized data.
     """
-
     media_type = 'application/json'
     renderer_class = renderers.JSONRenderer
 
@@ -73,7 +71,6 @@ class FormParser(BaseParser):
     """
     Parser for form data.
     """
-
     media_type = 'application/x-www-form-urlencoded'
 
     def parse(self, stream, media_type=None, parser_context=None):
@@ -91,7 +88,6 @@ class MultiPartParser(BaseParser):
     """
     Parser for multipart form data, which may include file data.
     """
-
     media_type = 'multipart/form-data'
 
     def parse(self, stream, media_type=None, parser_context=None):
@@ -131,7 +127,6 @@ class FileUploadParser(BaseParser):
         `.data` will be None (we expect request body to be a file content).
         `.files` will be a `QueryDict` containing one 'file' element.
         """
-
         parser_context = parser_context or {}
         request = parser_context['request']
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
