@@ -245,7 +245,7 @@ class OrderingFilter(BaseFilterBackend):
             ]
             valid_fields += [
                 (key, key.title().split('__'))
-                for key in queryset.query.aggregates.keys()
+                for key in queryset.query.annotations.keys()
             ]
         else:
             valid_fields = [
