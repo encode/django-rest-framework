@@ -54,7 +54,7 @@ Or apply the style globally, using the `DEFAULT_PAGINATION_CLASS` settings key. 
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.StandardResultsSetPagination'
-        }
+    }
 
 ---
 
