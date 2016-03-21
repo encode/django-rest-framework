@@ -112,13 +112,13 @@ class NamespaceVersioning(BaseVersioning):
     Host: example.com
     Accept: application/json
     """
-    invalid_version_message = _('Invalid version in URL path.')
+    invalid_version_message = _('Invalid version in namespace.')
 
     def determine_version(self, request, *args, **kwargs):
         resolver_match = getattr(request, 'resolver_match', None)
         if (resolver_match is None or not resolver_match.namespace):
             return self.default_version
-        version = resolver_match.namespace
+        version = resolver_match.namespace.split(':')[0]
         if not self.is_allowed_version(version):
             raise exceptions.NotFound(self.invalid_version_message)
         return version
