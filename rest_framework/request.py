@@ -346,10 +346,23 @@ class Request(object):
         else:
             self.auth = None
 
-    def __getattribute__(self, attr):
+    def __getattr__(self, attr):
         """
         If an attribute does not exist on this instance, then we also attempt
         to proxy it to the underlying HttpRequest object.
+        """
+        try:
+            return getattr(self._request, attr)
+        except AttributeError:
+            # Call the original implementation of getattribute
+            # So the correct attribute error will get raised
+            self.__getattr_trace__(attr)
+
+    def __getattr_trace__(self, attr):
+        """
+        The original implementation of __getattribute__ which
+        generates correct tracebacks
+        See #2108 and #2530
         """
         try:
             return super(Request, self).__getattribute__(attr)
