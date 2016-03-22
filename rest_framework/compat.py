@@ -73,6 +73,12 @@ except ImportError:
     from collections import UserDict
     from collections import MutableMapping as DictMixin
 
+# http responses move in Python 3
+try:
+    from httplib import responses
+except ImportError:
+    from http.client import responses
+
 # Try to import PIL in either of the two ways it can end up installed.
 try:
     from PIL import Image

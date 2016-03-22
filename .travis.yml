@@ -22,7 +22,8 @@ env:
     - TOX_ENV=py2.6-django1.4
 
 install:
-  - "pip install tox --download-cache $HOME/.pip-cache"
+# Virtualenv < 14 is required to keep the Python 3.2 builds running.
+  - "pip install tox 'virtualenv<14' --download-cache $HOME/.pip-cache"
 
 script:
     - tox -e $TOX_ENV

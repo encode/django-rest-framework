@@ -15,6 +15,9 @@ import copy
 import datetime
 import inspect
 import types
+
+import django
+
 from decimal import Decimal
 from django.core.paginator import Page
 from django.db import models
@@ -1079,6 +1082,12 @@ class ModelSerializer(Serializer):
                     fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
                     setattr(related, fk_field, obj)
                     self.save_object(related)
+                elif isinstance(related, list):
+                    # Many to One/Many
+                    if django.VERSION >= (1, 9):
+                        getattr(obj, accessor_name).add(*related, bulk=False)
+                    else:
+                        getattr(obj, accessor_name).add(*related)
                 else:
                     # Reverse FK or reverse one-one
                     setattr(obj, accessor_name, related)

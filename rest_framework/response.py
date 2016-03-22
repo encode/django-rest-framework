@@ -6,9 +6,9 @@ The appropriate renderer is called during Django's template response rendering.
 """
 from __future__ import unicode_literals
 import django
-from django.core.handlers.wsgi import STATUS_CODE_TEXT
 from django.template.response import SimpleTemplateResponse
 from django.utils import six
+from rest_framework.compat import responses
 
 
 class Response(SimpleTemplateResponse):
@@ -81,7 +81,7 @@ class Response(SimpleTemplateResponse):
         """
         # TODO: Deprecate and use a template tag instead
         # TODO: Status code text for RFC 6585 status codes
-        return STATUS_CODE_TEXT.get(self.status_code, '')
+        return responses.get(self.status_code, '')
 
     def __getstate__(self):
         """
