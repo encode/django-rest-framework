@@ -203,6 +203,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-gis][djangorestframework-gis] - Geographic add-ons
 * [djangorestframework-hstore][djangorestframework-hstore] - Serializer class to support django-hstore DictionaryField model field and its schema-mode feature.
 * [djangorestframework-jsonapi][djangorestframework-jsonapi] - Provides a parser, renderer, serializers, and other tools to help build an API that is compliant with the jsonapi.org spec.
+* [html-json-forms][html-json-forms]: Provides an algorithm and serializer to process HTML JSON Form submissions per the (inactive) spec.
 
 ### Serializer fields
 
@@ -355,3 +356,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [drf-haystack]: http://drf-haystack.readthedocs.org/en/latest/
 [django-rest-framework-version-transforms]: https://github.com/mrhwick/django-rest-framework-version-transforms
 [djangorestframework-jsonapi]: https://github.com/django-json-api/django-rest-framework-json-api
+[html-json-forms]: https://github.com/wq/html-json-forms

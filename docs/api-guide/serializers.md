@@ -1080,6 +1080,9 @@ The [django-rest-framework-hstore][django-rest-framework-hstore] package provide
 
 The [dynamic-rest][dynamic-rest] package extends the ModelSerializer and ModelViewSet interfaces, adding API query parameters for filtering, sorting, and including / excluding all fields and relationships defined by your serializers.
 
+## HTML JSON Forms
+The [html-json-forms][html-json-forms] package provides an algorithm and serializer for processing `<form>` submissions per the (inactive) [HTML JSON Form specification][json-form-spec].  The serializer facilitates processing of arbitrarily nested JSON structures within HTML.  For example, `<input name="items[0][id]" value="5">` will be interpreted as `{"items": [{"id": "5"}]}`.
+
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
 [model-managers]: https://docs.djangoproject.com/en/dev/topics/db/managers/
@@ -1092,3 +1095,5 @@ The [dynamic-rest][dynamic-rest] package extends the ModelSerializer and ModelVi
 [django-rest-framework-hstore]: https://github.com/djangonauts/django-rest-framework-hstore
 [django-hstore]: https://github.com/djangonauts/django-hstore
 [dynamic-rest]: https://github.com/AltSchool/dynamic-rest
+[html-json-forms]: https://github.com/wq/html-json-forms
+[json-form-spec]: https://www.w3.org/TR/html-json-forms/
