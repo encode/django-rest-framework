@@ -400,7 +400,7 @@ class CursorPagination(BasePagination):
     """
     The cursor pagination implementation is neccessarily complex.
     For an overview of the position/offset style we use, see this post:
-    http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api/
+    http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api
     """
     cursor_query_param = 'cursor'
     page_size = api_settings.PAGE_SIZE
