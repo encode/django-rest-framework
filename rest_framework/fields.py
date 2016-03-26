@@ -1072,10 +1072,24 @@ class DateTimeField(Field):
             return value
 
         if output_format.lower() == ISO_8601:
+            if isinstance(value, str):
+                format_strings = (format_prefix + timezone_extension
+                                  for format_prefix in ('%Y-%m-%dT%H:%M', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%dT%H:%M:%S.%f')
+                                  for timezone_extension in ('', '%Z', '%z'))
+                for format_string in format_strings:
+                    try:
+                        value = datetime.datetime.strptime(value, format_string)
+                        break
+                    except ValueError:
+                        pass
+                else:
+                    raise ValueError('DateTime String %s did not match any valid format string.' % value)
+
             value = value.isoformat()
             if value.endswith('+00:00'):
                 value = value[:-6] + 'Z'
             return value
+
         return value.strftime(output_format)
 
 
