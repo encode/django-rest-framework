@@ -1072,7 +1072,7 @@ class DateTimeField(Field):
             return value
 
         if output_format.lower() == ISO_8601:
-            if isinstance(value, str):
+            if isinstance(value, six.string_types):
                 format_strings = (format_prefix + timezone_extension
                                   for format_prefix in ('%Y-%m-%dT%H:%M', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%dT%H:%M:%S.%f')
                                   for timezone_extension in ('', '%Z', '%z'))
