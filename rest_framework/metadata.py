@@ -103,47 +103,11 @@ class SimpleMetadata(BaseMetadata):
         Given an instance of a serializer, return a dictionary of metadata
         about its fields.
         """
-        if hasattr(serializer, 'child'):
-            # If this is a `ListSerializer` then we want to examine the
-            # underlying child serializer instance instead.
-            serializer = serializer.child
-        return OrderedDict([
-            (field_name, self.get_field_info(field))
-            for field_name, field in serializer.fields.items()
-        ])
+        return serializer.get_metadata()
 
     def get_field_info(self, field):
         """
         Given an instance of a serializer field, return a dictionary
         of metadata about it.
         """
-        field_info = OrderedDict()
-        field_info['type'] = self.label_lookup[field]
-        field_info['required'] = getattr(field, 'required', False)
-
-        attrs = [
-            'read_only', 'label', 'help_text',
-            'min_length', 'max_length',
-            'min_value', 'max_value'
-        ]
-
-        for attr in attrs:
-            value = getattr(field, attr, None)
-            if value is not None and value != '':
-                field_info[attr] = force_text(value, strings_only=True)
-
-        if getattr(field, 'child', None):
-            field_info['child'] = self.get_field_info(field.child)
-        elif getattr(field, 'fields', None):
-            field_info['children'] = self.get_serializer_info(field)
-
-        if not field_info.get('read_only') and hasattr(field, 'choices'):
-            field_info['choices'] = [
-                {
-                    'value': choice_value,
-                    'display_name': force_text(choice_name, strings_only=True)
-                }
-                for choice_value, choice_name in field.choices.items()
-            ]
-
-        return field_info
+        return field.get_metadata()

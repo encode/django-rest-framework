@@ -10,7 +10,7 @@ from django.core.urlresolvers import (
 from django.db.models import Manager
 from django.db.models.query import QuerySet
 from django.utils import six
-from django.utils.encoding import smart_text
+from django.utils.encoding import force_text, smart_text
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
@@ -185,6 +185,18 @@ class RelatedField(Field):
 
     def display_value(self, instance):
         return six.text_type(instance)
+
+    def get_metadata(self):
+        metadata = super(RelatedField, self).get_metadata()
+        if not self.read_only:
+            metadata['choices'] = [
+                {
+                    'value': choice_value,
+                    'display_name': force_text(choice_name, strings_only=True)
+                }
+                for choice_value, choice_name in self.choices.items()
+            ]
+        return metadata
 
 
 class StringRelatedField(RelatedField):
