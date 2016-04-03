@@ -51,6 +51,16 @@ class TestListSerializer:
         serializer = self.Serializer(data=input_data)
         assert serializer.is_valid()
         assert serializer.validated_data == expected_output
+    
+    def test_validate_html_form_field_input(self):
+        """
+        HTML input should be able to mock list structures entered as an HTML text field.
+        """
+        input_data = "[123, 456]"
+        expected_output = [123, 456]
+        serializer = self.Serializer(data=input_data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == expected_output
 
 
 class TestListSerializerContainingNestedSerializer:
