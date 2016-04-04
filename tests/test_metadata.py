@@ -319,7 +319,7 @@ class TestModelSerializerMetadata(TestCase):
                         'label': 'ID'
                     },
                     'children': {
-                        'type': 'field',
+                        'type': 'multiple choice',
                         'required': False,
                         'read_only': True,
                         'label': 'Children'
