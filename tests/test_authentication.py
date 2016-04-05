@@ -5,11 +5,13 @@ from __future__ import unicode_literals
 import base64
 
 from django.conf.urls import include, url
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser, User
 from django.db import models
 from django.http import HttpResponse
 from django.test import TestCase
 from django.utils import six
+
+import pytest
 
 from rest_framework import (
     HTTP_HEADER_ENCODING, exceptions, permissions, renderers, status
@@ -263,6 +265,26 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
 class CustomTokenAuthTests(BaseTokenAuthTests, TestCase):
     model = CustomToken
     path = '/customtoken/'
+
+
+class AttributeErrorInAuthenticateTests(TestCase):
+    def test_incorrect_credentials(self):
+        """
+        Make sure AttributeErrors thrown in .authenticate() are not suppressed.
+        """
+        class AttributeErrorThrowingAuth(BaseAuthentication):
+            def authenticate(self, request):
+                raise AttributeError('This exception should crash the authentication')
+
+        request = factory.get('/')
+        request.user = AnonymousUser()
+        view = MockView.as_view(
+            authentication_classes=(AttributeErrorThrowingAuth,),
+            permission_classes=()
+        )
+
+        with pytest.raises(AttributeError):
+            view(request)
 
 
 class IncorrectCredentialsTests(TestCase):
