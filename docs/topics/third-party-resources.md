@@ -358,3 +358,6 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-framework-version-transforms]: https://github.com/mrhwick/django-rest-framework-version-transforms
 [djangorestframework-jsonapi]: https://github.com/django-json-api/django-rest-framework-json-api
 [html-json-forms]: https://github.com/wq/html-json-forms
+[django-rest-messaging]: https://github.com/raphaelgyory/django-rest-messaging
+[django-rest-messaging-centrifugo]: https://github.com/raphaelgyory/django-rest-messaging-centrifugo
+[django-rest-messaging-js]: https://github.com/raphaelgyory/django-rest-messaging-js
