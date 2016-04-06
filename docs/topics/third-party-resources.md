@@ -253,6 +253,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-rest-framework-braces][django-rest-framework-braces] - Collection of utilities for working with Django Rest Framework. The most notable ones are [FormSerializer](https://django-rest-framework-braces.readthedocs.org/en/latest/overview.html#formserializer) and [SerializerForm](https://django-rest-framework-braces.readthedocs.org/en/latest/overview.html#serializerform), which are adapters between DRF serializers and Django forms.
 * [drf-haystack][drf-haystack] - Haystack search for Django Rest Framework
 * [django-rest-framework-version-transforms][django-rest-framework-version-transforms] - Enables the use of delta transformations for versioning of DRF resource representations.
+* [django-rest-messaging][django-rest-messaging], [django-rest-messaging-centrifugo][django-rest-messaging-centrifugo] and [django-rest-messaging-js][django-rest-messaging-js] - A real-time pluggable messaging service using DRM.
 
 ## Other Resources
 
@@ -357,3 +358,6 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-framework-version-transforms]: https://github.com/mrhwick/django-rest-framework-version-transforms
 [djangorestframework-jsonapi]: https://github.com/django-json-api/django-rest-framework-json-api
 [html-json-forms]: https://github.com/wq/html-json-forms
+[django-rest-messaging]: https://github.com/raphaelgyory/django-rest-messaging
+[django-rest-messaging-centrifugo]: https://github.com/raphaelgyory/django-rest-messaging-centrifugo
+[django-rest-messaging-js]: https://github.com/raphaelgyory/django-rest-messaging-js
