@@ -7,7 +7,7 @@ import base64
 
 from django.contrib.auth import authenticate, get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
-from django.utils.six import text_types
+from django.utils.six import text_type
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import HTTP_HEADER_ENCODING, exceptions
@@ -20,7 +20,7 @@ def get_authorization_header(request):
     Hide some test client ickyness where the header can be unicode.
     """
     auth = request.META.get('HTTP_AUTHORIZATION', b'')
-    if isinstance(auth, text_types):
+    if isinstance(auth, text_type):
         # Work around django test client oddness
         auth = auth.encode(HTTP_HEADER_ENCODING)
     return auth
