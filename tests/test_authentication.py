@@ -321,3 +321,28 @@ class FailingAuthAccessedInRenderer(TestCase):
         response = self.view(request)
         content = response.render().content
         self.assertEqual(content, b'not authenticated')
+
+
+class NoAuthenticationClassesTests(TestCase):
+    def test_permission_message_with_no_authentication_classes(self):
+        """
+        An unauthenticated request made against a view that containes no
+        `authentication_classes` but do contain `permissions_classes` the error
+        code returned should be 403 with the exception's message.
+        """
+
+        class DummyPermission(permissions.BasePermission):
+            message = 'Dummy permission message'
+
+            def has_permission(self, request, view):
+                return False
+
+        request = factory.get('/')
+        view = MockView.as_view(
+            authentication_classes=(),
+            permission_classes=(DummyPermission,),
+        )
+        response = view(request)
+        self.assertEqual(response.status_code,
+                         status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, {'detail': 'Dummy permission message'})
