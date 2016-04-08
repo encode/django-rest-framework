@@ -279,6 +279,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 
 * [Web API performance: profiling Django REST framework][web-api-performance-profiling-django-rest-framework]
 * [API Development with Django and Django REST Framework][api-development-with-django-and-django-rest-framework]
+* [Blog posts about Django REST framework][medium-django-rest-framework]
 
 ### Documentations
 * [Classy Django REST Framework][cdrf.co]
@@ -361,3 +362,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-messaging]: https://github.com/raphaelgyory/django-rest-messaging
 [django-rest-messaging-centrifugo]: https://github.com/raphaelgyory/django-rest-messaging-centrifugo
 [django-rest-messaging-js]: https://github.com/raphaelgyory/django-rest-messaging-js
+[medium-django-rest-framework]: https://medium.com/django-rest-framework
