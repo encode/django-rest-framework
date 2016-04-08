@@ -240,8 +240,7 @@ class OrderingFilter(BaseFilterBackend):
         elif valid_fields == '__all__':
             # View explicitly allows filtering on any model field
             valid_fields = [
-                (field.name, getattr(field, 'label', field.name.title()))
-                for field in queryset.model._meta.fields
+                (field.name, field.verbose_name) for field in queryset.model._meta.fields
             ]
             valid_fields += [
                 (key, key.title().split('__'))
@@ -272,8 +271,8 @@ class OrderingFilter(BaseFilterBackend):
         current = None if current is None else current[0]
         options = []
         for key, label in self.get_valid_fields(queryset, view):
-            options.append((key, '%s - ascending' % label))
-            options.append(('-' + key, '%s - descending' % label))
+            options.append((key, '%s - %s' % (label, _('ascending'))))
+            options.append(('-' + key, '%s - %s' % (label, _('descending'))))
         return {
             'request': request,
             'current': current,
