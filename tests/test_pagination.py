@@ -113,7 +113,7 @@ class TestPaginationIntegration:
         response = self.view(request)
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data == {
-            'detail': 'Invalid page "0": That page number is less than 1.'
+            'detail': 'Invalid page.'
         }
 
     def test_404_not_found_for_invalid_page(self):
@@ -121,7 +121,7 @@ class TestPaginationIntegration:
         response = self.view(request)
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data == {
-            'detail': 'Invalid page "invalid": That page number is not an integer.'
+            'detail': 'Invalid page.'
         }
 
 

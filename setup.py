@@ -7,6 +7,17 @@ import sys
 
 from setuptools import setup
 
+try:
+    from pypandoc import convert
+
+    def read_md(f):
+        return convert(f, 'rst')
+except ImportError:
+    print("warning: pypandoc module not found, could not convert Markdown to RST")
+
+    def read_md(f):
+        return open(f, 'r').read()
+
 
 def get_version(package):
     """
@@ -45,6 +56,10 @@ version = get_version('rest_framework')
 
 
 if sys.argv[-1] == 'publish':
+    try:
+        import pypandoc
+    except ImportError:
+        print("pypandoc not installed.\nUse `pip install pypandoc`.\nExiting.")
     if os.system("pip freeze | grep wheel"):
         print("wheel not installed.\nUse `pip install wheel`.\nExiting.")
         sys.exit()
@@ -68,6 +83,7 @@ setup(
     url='http://www.django-rest-framework.org',
     license='BSD',
     description='Web APIs for Django, made easy.',
+    long_description=read_md('README.md'),
     author='Tom Christie',
     author_email='tom@tomchristie.com',  # SEE NOTE BELOW (*)
     packages=get_packages('rest_framework'),
