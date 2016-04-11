@@ -784,7 +784,7 @@ class TestBulkCreate(TestCase):
         assert serializer.data == data
 
 
-class TestMetaClassModel(models.Model):
+class MetaClassTestModel(models.Model):
     text = models.CharField(max_length=100)
 
 
@@ -792,7 +792,7 @@ class TestSerializerMetaClass(TestCase):
     def test_meta_class_fields_option(self):
         class ExampleSerializer(serializers.ModelSerializer):
             class Meta:
-                model = TestMetaClassModel
+                model = MetaClassTestModel
                 fields = 'text'
 
         with self.assertRaises(TypeError) as result:
@@ -806,7 +806,7 @@ class TestSerializerMetaClass(TestCase):
     def test_meta_class_exclude_option(self):
         class ExampleSerializer(serializers.ModelSerializer):
             class Meta:
-                model = TestMetaClassModel
+                model = MetaClassTestModel
                 exclude = 'text'
 
         with self.assertRaises(TypeError) as result:
@@ -820,7 +820,7 @@ class TestSerializerMetaClass(TestCase):
     def test_meta_class_fields_and_exclude_options(self):
         class ExampleSerializer(serializers.ModelSerializer):
             class Meta:
-                model = TestMetaClassModel
+                model = MetaClassTestModel
                 fields = ('text',)
                 exclude = ('text',)
 

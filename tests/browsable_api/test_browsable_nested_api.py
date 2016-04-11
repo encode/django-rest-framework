@@ -14,13 +14,13 @@ class NestedSerializer(serializers.Serializer):
     two = serializers.IntegerField(max_value=10)
 
 
-class TestNestedSerializerSerializer(serializers.Serializer):
+class NestedSerializerTestSerializer(serializers.Serializer):
     nested = NestedSerializer()
 
 
 class NestedSerializersView(ListCreateAPIView):
     renderer_classes = (BrowsableAPIRenderer, )
-    serializer_class = TestNestedSerializerSerializer
+    serializer_class = NestedSerializerTestSerializer
     queryset = [{'nested': {'one': 1, 'two': 2}}]
 
 
