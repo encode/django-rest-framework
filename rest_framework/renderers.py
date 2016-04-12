@@ -12,6 +12,7 @@ import json
 from collections import OrderedDict
 
 from django import forms
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Page
 from django.http.multipartparser import parse_header
@@ -657,7 +658,8 @@ class BrowsableAPIRenderer(BaseRenderer):
 
             'display_edit_forms': bool(response.status_code != 403),
 
-            'api_settings': api_settings
+            'api_settings': api_settings,
+            'csrf_cookie_name': settings.CSRF_COOKIE_NAME,
         }
         return context
 

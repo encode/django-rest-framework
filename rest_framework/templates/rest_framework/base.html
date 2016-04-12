@@ -258,6 +258,11 @@
   </div><!-- ./wrapper -->
 
   {% block script %}
+    <script>
+      window.drf = {
+        csrfCookieName: "{{ csrf_cookie_name|default:'csrftoken' }}"
+      };
+    </script>
     <script src="{% static "rest_framework/js/jquery-1.11.3.min.js" %}"></script>
     <script src="{% static "rest_framework/js/ajax-form.js" %}"></script>
     <script src="{% static "rest_framework/js/csrf.js" %}"></script>
