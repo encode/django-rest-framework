@@ -56,10 +56,18 @@ def is_simple_callable(obj):
     if not (function or method):
         return False
 
-    args, _, _, defaults = inspect.getargspec(obj)
-    len_args = len(args) if function else len(args) - 1
-    len_defaults = len(defaults) if defaults else 0
-    return len_args <= len_defaults
+    if six.PY2:
+        args, _, _, defaults = inspect.getargspec(obj)
+        len_args = len(args) if function else len(args) - 1
+        len_defaults = len(defaults) if defaults else 0
+        return len_args <= len_defaults
+    else:
+        sig = inspect.signature(obj)
+        for name, param in sig.parameters.items():
+            if param.default is not inspect.Parameter.empty:
+                return False
+
+        return True
 
 
 def get_attribute(instance, attrs):
