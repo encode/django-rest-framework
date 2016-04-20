@@ -12,6 +12,7 @@ from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import six
+from rest_framework.compat import get_remote_field
 
 FieldInfo = namedtuple('FieldResult', [
     'pk',  # Model field instance
@@ -76,9 +77,10 @@ def get_field_info(model):
 
 def _get_pk(opts):
     pk = opts.pk
-    while pk.rel and pk.rel.parent_link:
+    remote_field = get_remote_field(pk)
+    while remote_field and remote_field.parent_link:
         # If model is a child via multi-table inheritance, use parent's pk.
-        pk = pk.rel.to._meta.pk
+        pk = remote_field.to._meta.pk
 
     return pk
 
