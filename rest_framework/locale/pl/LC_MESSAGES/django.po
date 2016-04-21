@@ -5,14 +5,14 @@
 # Translators:
 # Janusz Harkot <jh@blueice.pl>, 2015
 # Piotr Jakimiak <legolass71@gmail.com>, 2015
-# Maciek Olko <maciej.olko@gmail.com>, 2015
+# Maciek Olko <maciej.olko@gmail.com>, 2015-2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-07 18:53+0100\n"
-"PO-Revision-Date: 2015-12-08 19:44+0000\n"
-"Last-Translator: Janusz Harkot <jh@blueice.pl>\n"
+"POT-Creation-Date: 2016-03-01 18:38+0100\n"
+"PO-Revision-Date: 2016-03-07 21:25+0000\n"
+"Last-Translator: Maciek Olko <maciej.olko@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,42 +20,74 @@ msgstr ""
 "Language: pl\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: authentication.py:72
+#: authentication.py:71
 msgid "Invalid basic header. No credentials provided."
 msgstr "Niepoprawny podstawowy nagłówek. Brak danych uwierzytelniających."
 
-#: authentication.py:75
+#: authentication.py:74
 msgid "Invalid basic header. Credentials string should not contain spaces."
 msgstr "Niepoprawny podstawowy nagłówek. Ciąg znaków danych uwierzytelniających nie powinien zawierać spacji."
 
-#: authentication.py:81
+#: authentication.py:80
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
 msgstr "Niepoprawny podstawowy nagłówek. Niewłaściwe kodowanie base64 danych uwierzytelniających."
 
-#: authentication.py:98
+#: authentication.py:97
 msgid "Invalid username/password."
 msgstr "Niepoprawna nazwa użytkownika lub hasło."
 
-#: authentication.py:101 authentication.py:188
+#: authentication.py:100 authentication.py:195
 msgid "User inactive or deleted."
 msgstr "Użytkownik nieaktywny lub usunięty."
 
-#: authentication.py:167
+#: authentication.py:173
 msgid "Invalid token header. No credentials provided."
 msgstr "Niepoprawny nagłówek tokena. Brak danych uwierzytelniających."
 
-#: authentication.py:170
+#: authentication.py:176
 msgid "Invalid token header. Token string should not contain spaces."
 msgstr "Niepoprawny nagłówek tokena. Token nie może zawierać odstępów."
 
-#: authentication.py:176
+#: authentication.py:182
 msgid ""
 "Invalid token header. Token string should not contain invalid characters."
 msgstr "Błędny nagłówek z tokenem. Token nie może zawierać błędnych znaków."
 
-#: authentication.py:185
+#: authentication.py:192
 msgid "Invalid token."
 msgstr "Niepoprawny token."
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr "Token uwierzytelniający"
+
+#: authtoken/models.py:21
+msgid "Key"
+msgstr "Klucz"
+
+#: authtoken/models.py:23
+msgid "User"
+msgstr "Użytkownik"
+
+#: authtoken/models.py:24
+msgid "Created"
+msgstr "Stworzono"
+
+#: authtoken/models.py:33
+msgid "Token"
+msgstr "Token"
+
+#: authtoken/models.py:34
+msgid "Tokens"
+msgstr "Tokeny"
+
+#: authtoken/serializers.py:8
+msgid "Username"
+msgstr "Nazwa użytkownika"
+
+#: authtoken/serializers.py:9
+msgid "Password"
+msgstr "Hasło"
 
 #: authtoken/serializers.py:20
 msgid "User account is disabled."
@@ -111,7 +143,7 @@ msgstr "Brak wsparcia dla żądanego typu danych \"{media_type}\"."
 msgid "Request was throttled."
 msgstr "Żądanie zostało zdławione."
 
-#: fields.py:266 relations.py:195 relations.py:228 validators.py:79
+#: fields.py:266 relations.py:206 relations.py:239 validators.py:79
 #: validators.py:162
 msgid "This field is required."
 msgstr "To pole jest wymagane."
@@ -129,7 +161,7 @@ msgstr "\"{input}\" nie jest poprawną wartością logiczną."
 msgid "This field may not be blank."
 msgstr "To pole nie może być puste."
 
-#: fields.py:670 fields.py:1656
+#: fields.py:670 fields.py:1664
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr "Upewnij się, że to pole ma nie więcej niż {max_length} znaków."
@@ -215,137 +247,136 @@ msgstr "Wartość daty z czasem ma zły format. Użyj jednego z dostępnych form
 msgid "Expected a datetime but got a date."
 msgstr "Oczekiwano datę z czasem, otrzymano tylko datę."
 
-#: fields.py:1079
+#: fields.py:1082
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr "Data ma zły format. Użyj jednego z tych formatów: {format}."
 
-#: fields.py:1080
+#: fields.py:1083
 msgid "Expected a date but got a datetime."
 msgstr "Oczekiwano daty a otrzymano datę z czasem."
 
-#: fields.py:1148
+#: fields.py:1151
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr "Błędny format czasu. Użyj jednego z dostępnych formatów: {format}"
 
-#: fields.py:1207
+#: fields.py:1215
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
 msgstr "Czas trwania ma zły format. Użyj w zamian jednego z tych formatów: {format}."
 
-#: fields.py:1232 fields.py:1281
+#: fields.py:1240 fields.py:1289
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
 msgstr "\"{input}\" nie jest poprawnym wyborem."
 
-#: fields.py:1235 relations.py:62 relations.py:431
+#: fields.py:1243 relations.py:71 relations.py:442
 #, python-brace-format
 msgid "More than {count} items..."
 msgstr "Więcej niż {count} elementów..."
 
-#: fields.py:1282 fields.py:1429 relations.py:427 serializers.py:520
+#: fields.py:1290 fields.py:1437 relations.py:438 serializers.py:520
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Oczekiwano listy elementów, a otrzymano dane typu \"{input_type}\"."
 
-#: fields.py:1283
+#: fields.py:1291
 msgid "This selection may not be empty."
 msgstr "Zaznaczenie nie może być puste."
 
-#: fields.py:1320
+#: fields.py:1328
 #, python-brace-format
 msgid "\"{input}\" is not a valid path choice."
 msgstr "\"{input}\" nie jest poprawną ścieżką."
 
-#: fields.py:1339
+#: fields.py:1347
 msgid "No file was submitted."
 msgstr "Nie przesłano pliku."
 
-#: fields.py:1340
+#: fields.py:1348
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
 msgstr "Przesłane dane nie były plikiem. Sprawdź typ kodowania formatki."
 
-#: fields.py:1341
+#: fields.py:1349
 msgid "No filename could be determined."
 msgstr "Nie można określić nazwy pliku."
 
-#: fields.py:1342
+#: fields.py:1350
 msgid "The submitted file is empty."
 msgstr "Przesłany plik jest pusty."
 
-#: fields.py:1343
+#: fields.py:1351
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr "Upewnij się, że nazwa pliku ma długość co najwyżej {max_length} znaków (aktualnie ma {length})."
 
-#: fields.py:1391
+#: fields.py:1399
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr "Prześlij poprawny plik graficzny. Przesłany plik albo nie jest grafiką lub jest uszkodzony."
 
-#: fields.py:1430 relations.py:428 serializers.py:521
+#: fields.py:1438 relations.py:439 serializers.py:521
 msgid "This list may not be empty."
 msgstr "Lista nie może być pusta."
 
-#: fields.py:1483
+#: fields.py:1491
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
 msgstr "Oczekiwano słownika, ale otrzymano  \"{input_type}\"."
 
-#: fields.py:1530
+#: fields.py:1538
 msgid "Value must be valid JSON."
 msgstr "Wartość musi być poprawnym ciągiem znaków JSON"
 
-#: filters.py:35 templates/rest_framework/filters/django_filter.html:5
+#: filters.py:35 templates/rest_framework/filters/django_filter.html.py:5
 msgid "Submit"
 msgstr "Wyślij"
 
 #: pagination.py:189
-#, python-brace-format
-msgid "Invalid page \"{page_number}\": {message}."
-msgstr "Niepoprawna strona \"{page_number}\": {message}."
+msgid "Invalid page."
+msgstr "Niepoprawna strona."
 
 #: pagination.py:407
 msgid "Invalid cursor"
 msgstr "Niepoprawny wskaźnik"
 
-#: relations.py:196
+#: relations.py:207
 #, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
 msgstr "Błędny klucz główny \"{pk_value}\" - obiekt nie istnieje."
 
-#: relations.py:197
+#: relations.py:208
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
 msgstr "Błędny typ danych. Oczekiwano wartość klucza głównego, otrzymano {data_type}."
 
-#: relations.py:229
+#: relations.py:240
 msgid "Invalid hyperlink - No URL match."
 msgstr "Błędny hyperlink - nie znaleziono pasującego adresu URL."
 
-#: relations.py:230
+#: relations.py:241
 msgid "Invalid hyperlink - Incorrect URL match."
 msgstr "Błędny hyperlink - błędne dopasowanie adresu URL."
 
-#: relations.py:231
+#: relations.py:242
 msgid "Invalid hyperlink - Object does not exist."
 msgstr "Błędny hyperlink - obiekt nie istnieje."
 
-#: relations.py:232
+#: relations.py:243
 #, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
 msgstr "Błędny typ danych. Oczekiwano adresu URL, otrzymano {data_type}"
 
-#: relations.py:391
+#: relations.py:402
 #, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
 msgstr "Obiekt z polem {slug_name}={value} nie istnieje"
 
-#: relations.py:392
+#: relations.py:403
 msgid "Invalid value."
 msgstr "Niepoprawna wartość."
 
