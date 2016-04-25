@@ -1,6 +1,7 @@
 <div class="form-group {% if field.errors %}has-error{% endif %}">
   <div class="checkbox">
     <label>
+      <input type="hidden" name="{{ field.name }}" value="false">
       <input type="checkbox" name="{{ field.name }}" value="true" {% if field.value %}checked{% endif %}>
         {% if field.label %}{{ field.label }}{% endif %}
     </label>
