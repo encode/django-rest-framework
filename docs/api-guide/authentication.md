@@ -300,7 +300,7 @@ The following example will authenticate any incoming request as the user given b
             except User.DoesNotExist:
                 raise exceptions.AuthenticationFailed('No such user')
 
-            return (user, None)
+            return user, None
 
 ---
 
