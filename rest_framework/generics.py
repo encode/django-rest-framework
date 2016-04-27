@@ -106,11 +106,11 @@ class GenericAPIView(views.APIView):
         Return the serializer instance that should be used for validating and
         deserializing input, and for serializing output.
         """
-        serializer_class = self.get_serializer_class()
+        serializer_class = self.get_serializer_class(*args, **kwargs)
         kwargs['context'] = self.get_serializer_context()
         return serializer_class(*args, **kwargs)
 
-    def get_serializer_class(self):
+    def get_serializer_class(self, *args, **kwargs):
         """
         Return the class to use for the serializer.
         Defaults to using `self.serializer_class`.
