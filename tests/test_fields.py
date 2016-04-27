@@ -894,6 +894,21 @@ class TestNoStringCoercionDecimalField(FieldValues):
     )
 
 
+class TestNoDecimalPlaces(FieldValues):
+    valid_inputs = {
+        '0.12345': Decimal('0.12345'),
+    }
+    invalid_inputs = {
+        '0.1234567': ['Ensure that there are no more than 6 digits in total.']
+    }
+    outputs = {
+        '1.2345': '1.2345',
+        '0': '0',
+        '1.1': '1.1',
+    }
+    field = serializers.DecimalField(max_digits=6, decimal_places=None)
+
+
 # Date & time serializers...
 
 class TestDateField(FieldValues):

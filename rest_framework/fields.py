@@ -992,6 +992,9 @@ class DecimalField(Field):
         """
         Quantize the decimal value to the configured precision.
         """
+        if self.decimal_places is None:
+            return value
+
         context = decimal.getcontext().copy()
         context.prec = self.max_digits
         return value.quantize(
