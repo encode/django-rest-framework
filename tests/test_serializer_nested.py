@@ -167,3 +167,30 @@ class TestNestedSerializerWithMany:
 
         expected_errors = {'not_allow_empty': {'non_field_errors': [serializers.ListSerializer.default_error_messages['empty']]}}
         assert serializer.errors == expected_errors
+
+
+class TestNestedSerializerWithParentValidation:
+    def setup(self):
+        class NestedSerializer(serializers.Serializer):
+            one = serializers.IntegerField()
+
+        class TestSerializer(serializers.Serializer):
+            nested = NestedSerializer()
+
+            def validate_nested(self, value):
+                raise serializers.ValidationError(
+                    u'Error from parent serializer.')
+
+        self.Serializer = TestSerializer
+
+    def test_using_serializer_as_form_with_parent_validation(self):
+        input_data = {'nested': {'one': 1}}
+
+        serializer = self.Serializer(data=input_data)
+
+        assert not serializer.is_valid()
+        assert 'nested' in serializer.errors
+
+        nested_bound_field = serializer['nested']
+        # This should not raise an exception:
+        one_bound_field = nested_bound_field['one']
