@@ -193,4 +193,4 @@ class TestNestedSerializerWithParentValidation:
 
         nested_bound_field = serializer['nested']
         # This should not raise an exception:
-        one_bound_field = nested_bound_field['one']
+        nested_bound_field['one']
