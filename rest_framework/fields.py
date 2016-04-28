@@ -30,7 +30,9 @@ from django.utils.ipv6 import clean_ipv6_address
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import ISO_8601
-from rest_framework.compat import unicode_repr, unicode_to_repr, is_simple_callable
+from rest_framework.compat import (
+    is_simple_callable, unicode_repr, unicode_to_repr
+)
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, representation

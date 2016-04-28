@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-import pytest
 import sys
 
 from rest_framework.compat import is_simple_callable

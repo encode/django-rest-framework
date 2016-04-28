@@ -15,9 +15,7 @@ from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import is_simple_callable
-from rest_framework.fields import (
-    Field, empty, get_attribute, iter_options
-)
+from rest_framework.fields import Field, empty, get_attribute, iter_options
 from rest_framework.reverse import reverse
 from rest_framework.utils import html
 
