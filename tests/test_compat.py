@@ -47,7 +47,7 @@ class TestFunctionSimplicityCheck:
 
 
 if sys.version_info >= (3, 5):
-    from tests.compat.test_compat_py35 import FunctionSimplicityCheckPy35Mixin
+    from tests.compat.compat_py35 import FunctionSimplicityCheckPy35Mixin
 
     class TestFunctionSimplicityCheckPy35(FunctionSimplicityCheckPy35Mixin, TestFunctionSimplicityCheck):
         pass
