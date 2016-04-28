@@ -6,6 +6,8 @@ versions of Django/Python, and compatibility wrappers around optional packages.
 # flake8: noqa
 from __future__ import unicode_literals
 
+import inspect
+
 import django
 from django.conf import settings
 from django.db import connection, transaction
@@ -136,10 +138,42 @@ if six.PY3:
     SHORT_SEPARATORS = (',', ':')
     LONG_SEPARATORS = (', ', ': ')
     INDENT_SEPARATORS = (',', ': ')
+
+    def is_simple_callable(obj):
+        function = inspect.isfunction(obj)
+        method = inspect.ismethod(obj)
+
+        if not (function or method):
+            return False
+        # when we drop support of python3.2, we should replace getfullargspec with singnature
+        # signature = inspect.signature(obj)
+        # defaults = [p for p in signature.parameters.values() if p.default is not inspect.Parameter.empty]
+        # return len(signature.parameters) <= len(defaults)
+        function = inspect.isfunction(obj)
+        args, _, _, defaults, _, kwonly, kwdefaults = inspect.getfullargspec(obj)
+        len_args = (len(args) if function else len(args) - 1) + len(kwonly or ()) + len(kwdefaults or ())
+        len_defaults = (len(defaults) if defaults else 0) + len(kwdefaults or ())
+        return len_args <= len_defaults
+
 else:
     SHORT_SEPARATORS = (b',', b':')
     LONG_SEPARATORS = (b', ', b': ')
     INDENT_SEPARATORS = (b',', b': ')
+
+    def is_simple_callable(obj):
+        """
+        True if the object is a callable that takes no arguments.
+        """
+        function = inspect.isfunction(obj)
+        method = inspect.ismethod(obj)
+
+        if not (function or method):
+            return False
+
+        args, _, _, defaults = inspect.getargspec(obj)
+        len_args = len(args) if function else len(args) - 1
+        len_defaults = len(defaults) if defaults else 0
+        return len_args <= len_defaults
 
 try:
     # DecimalValidator is unavailable in Django < 1.9
