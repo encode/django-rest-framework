@@ -128,10 +128,9 @@ To use the `TokenAuthentication` scheme you'll need to [configure the authentica
 
 ---
 
-**Note:** Make sure to run `manage.py syncdb` after changing your settings. The `rest_framework.authtoken` app provides both Django (from v1.7) and South database migrations. See [Schema migrations](#schema-migrations) below.
+**Note:** Make sure to run `manage.py migrate` after changing your settings. The `rest_framework.authtoken` app provides Django database migrations.
 
 ---
-
 
 You'll also need to create tokens for your users.
 
@@ -216,38 +215,6 @@ It is also possible to create Tokens manually through admin interface. In case y
 
     TokenAdmin.raw_id_fields = ('user',)
 
-
-#### Schema migrations
-
-The `rest_framework.authtoken` app includes both Django native migrations (for Django versions >1.7) and South migrations (for Django versions <1.7) that will create the authtoken table.
-
-----
-
-**Note**: From REST Framework v2.4.0 using South with Django <1.7 requires upgrading South v1.0+
-
-----
-
-
-If you're using a [custom user model][custom-user-model] you'll need to make sure that any initial migration that creates the user table runs before the authtoken table is created.
-
-You can do so by inserting a `needed_by` attribute in your user migration:
-
-    class Migration:
-
-        needed_by = (
-            ('authtoken', '0001_initial'),
-        )
-
-        def forwards(self):
-            ...
-
-For more details, see the [south documentation on dependencies][south-dependencies].
-
-Also note that if you're using a `post_save` signal to create tokens, then the first time you create the database tables, you'll need to ensure any migrations are run prior to creating any superusers.  For example:
-
-    python manage.py syncdb --noinput  # Won't create a superuser just yet, due to `--noinput`.
-    python manage.py migrate
-    python manage.py createsuperuser
 
 ## SessionAuthentication
 
@@ -392,8 +359,6 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [throttling]: throttling.md
 [csrf-ajax]: https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
 [mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization
-[custom-user-model]: https://docs.djangoproject.com/en/dev/topics/auth/customizing/#specifying-a-custom-user-model
-[south-dependencies]: http://south.readthedocs.org/en/latest/dependencies.html
 [django-oauth-toolkit-getting-started]: https://django-oauth-toolkit.readthedocs.org/en/latest/rest-framework/getting_started.html
 [django-rest-framework-oauth]: http://jpadilla.github.io/django-rest-framework-oauth/
 [django-rest-framework-oauth-authentication]: http://jpadilla.github.io/django-rest-framework-oauth/authentication/
