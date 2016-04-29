@@ -128,7 +128,7 @@ To use the `TokenAuthentication` scheme you'll need to [configure the authentica
 
 ---
 
-**Note:** Make sure to run manage.py migrate after changing your settings. The rest_framework.authtoken app provides Django database migrations.
+**Note:** Make sure to run `manage.py migrate after changing your settings. The `rest_framework.authtoken` app provides Django database migrations.
 
 ---
 
