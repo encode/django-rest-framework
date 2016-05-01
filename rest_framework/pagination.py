@@ -313,13 +313,22 @@ class LimitOffsetPagination(BasePagination):
             ('results', data)
         ]))
 
+    def get_zero_limit(self):
+        # By default we return max_limit, but one could also return default_limit.
+        return self.max_limit
+
     def get_limit(self, request):
         if self.limit_query_param:
             try:
-                return _positive_int(
+                limit = _positive_int(
                     request.query_params[self.limit_query_param],
                     cutoff=self.max_limit
                 )
+                # User can specify limit == 0 to specify max (and not default) limit.
+                # By default (max_limit is None) this disables pagination.
+                if limit == 0:
+                    limit = self.get_zero_limit()
+                return limit
             except (KeyError, ValueError):
                 pass
 
@@ -357,7 +366,23 @@ class LimitOffsetPagination(BasePagination):
         return replace_query_param(url, self.offset_query_param, offset)
 
     def get_html_context(self):
+        # paginate_queryset should be called before, to set
+        # self.limit and other values on self.
+
+        if self.limit is None:
+            return {
+                'previous_url': None,
+                'next_url': None,
+                'page_links': []
+            }
+
         base_url = self.request.build_absolute_uri()
+
+        # This changes the URL in fact only when limit is 0 (which makes limit == max_limit)
+        # or when limit is missing (which makes it default_limit). We want to inform
+        # the user what this effective limit is.
+        base_url = replace_query_param(base_url, self.limit_query_param, self.limit)
+
         current = _divide_with_ceil(self.offset, self.limit) + 1
         # The number of pages is a little bit fiddly.
         # We need to sum both the number of pages from current offset to end
