@@ -85,6 +85,14 @@ class BasicAuthTests(TestCase):
         response = self.csrf_client.post('/basic/', {'example': 'example'}, format='json', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_regression_handle_bad_base64_basic_auth_header(self):
+        """Ensure POSTing JSON over basic auth with incorrectly padded Base64 string is handled correctly"""
+        # regression test for issue in 'rest_framework.authentication.BasicAuthentication.authenticate'
+        # https://github.com/tomchristie/django-rest-framework/issues/4089
+        auth = 'Basic =a='
+        response = self.csrf_client.post('/basic/', {'example': 'example'}, format='json', HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     def test_post_form_failing_basic_auth(self):
         """Ensure POSTing form over basic auth without correct credentials fails"""
         response = self.csrf_client.post('/basic/', {'example': 'example'})
