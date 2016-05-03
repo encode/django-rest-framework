@@ -295,6 +295,8 @@ class BaseSerializer(WritableField):
             field.initialize(parent=self, field_name=field_name)
             try:
                 field.field_from_native(data, files, field_name, reverted_data)
+                if field.errors:
+                    self._errors[field_name] = [field.errors]
             except ValidationError as err:
                 self._errors[field_name] = list(err.messages)
 
@@ -435,6 +437,9 @@ class BaseSerializer(WritableField):
         Override default so that the serializer can be used as a writable
         nested field across relationships.
         """
+
+        self._errors = {}
+
         if self.read_only:
             return
 
