@@ -489,7 +489,7 @@ See the Django documentation on [reverse relationships][reverse-relationships] f
 
 ## Generic relationships
 
-If you want to serialize a generic foreign key, you need to define a custom field, to determine explicitly how you want serialize the targets of the relationship.
+If you want to serialize a generic foreign key, you need to define a custom field, to determine explicitly how you want to serialize the targets of the relationship.
 
 For example, given the following model for a tag, which has a generic relationship with other arbitrary models:
 
