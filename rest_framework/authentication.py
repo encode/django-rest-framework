@@ -4,6 +4,7 @@ Provides various authentication policies.
 from __future__ import unicode_literals
 
 import base64
+import binascii
 
 from django.contrib.auth import authenticate, get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
@@ -77,7 +78,7 @@ class BasicAuthentication(BaseAuthentication):
 
         try:
             auth_parts = base64.b64decode(auth[1]).decode(HTTP_HEADER_ENCODING).partition(':')
-        except (TypeError, UnicodeDecodeError):
+        except (TypeError, UnicodeDecodeError, binascii.Error):
             msg = _('Invalid basic header. Credentials not correctly base64 encoded.')
             raise exceptions.AuthenticationFailed(msg)
 
