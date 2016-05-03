@@ -4,6 +4,10 @@ python: 2.7
 
 env:
     - TOX_ENV=flake8
+    - TOX_ENV=py3.4-django1.8
+    - TOX_ENV=py3.3-django1.8
+    - TOX_ENV=py3.2-django1.8
+    - TOX_ENV=py2.7-django1.8
     - TOX_ENV=py3.4-django1.7
     - TOX_ENV=py3.3-django1.7
     - TOX_ENV=py3.2-django1.7
