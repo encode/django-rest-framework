@@ -114,6 +114,7 @@ class UpdateModelMixin(object):
     """
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
+        force_insert = kwargs.pop('force_insert', True)
         self.object = self.get_object_or_none()
 
         serializer = self.get_serializer(self.object, data=request.DATA,
@@ -130,7 +131,7 @@ class UpdateModelMixin(object):
             return Response(err.message_dict, status=status.HTTP_400_BAD_REQUEST)
 
         if self.object is None:
-            self.object = serializer.save(force_insert=True)
+            self.object = serializer.save(force_insert=force_insert)
             self.post_save(self.object, created=True)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
