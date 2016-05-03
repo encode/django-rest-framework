@@ -150,6 +150,7 @@ class TokenAuthentication(BaseAuthentication):
         Authorization: Token 401f7ac837da42b97f613d789819ff93537bee6a
     """
 
+    keyword = 'Token'
     model = None
 
     def get_model(self):
@@ -168,7 +169,7 @@ class TokenAuthentication(BaseAuthentication):
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
 
-        if not auth or auth[0].lower() != b'token':
+        if not auth or auth[0].lower() != self.keyword.lower().encode():
             return None
 
         if len(auth) == 1:
@@ -199,4 +200,4 @@ class TokenAuthentication(BaseAuthentication):
         return (token.user, token)
 
     def authenticate_header(self, request):
-        return 'Token'
+        return self.keyword

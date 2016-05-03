@@ -35,6 +35,10 @@ class CustomTokenAuthentication(TokenAuthentication):
     model = CustomToken
 
 
+class CustomKeywordTokenAuthentication(TokenAuthentication):
+    keyword = 'Bearer'
+
+
 class MockView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -53,6 +57,7 @@ urlpatterns = [
     url(r'^basic/$', MockView.as_view(authentication_classes=[BasicAuthentication])),
     url(r'^token/$', MockView.as_view(authentication_classes=[TokenAuthentication])),
     url(r'^customtoken/$', MockView.as_view(authentication_classes=[CustomTokenAuthentication])),
+    url(r'^customkeywordtoken/$', MockView.as_view(authentication_classes=[CustomKeywordTokenAuthentication])),
     url(r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
     url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
@@ -166,6 +171,7 @@ class BaseTokenAuthTests(object):
     urls = 'tests.test_authentication'
     model = None
     path = None
+    header_prefix = 'Token '
 
     def setUp(self):
         self.csrf_client = APIClient(enforce_csrf_checks=True)
@@ -179,31 +185,31 @@ class BaseTokenAuthTests(object):
 
     def test_post_form_passing_token_auth(self):
         """Ensure POSTing json over token auth with correct credentials passes and does not require CSRF"""
-        auth = 'Token ' + self.key
+        auth = self.header_prefix + self.key
         response = self.csrf_client.post(self.path, {'example': 'example'}, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_fail_post_form_passing_nonexistent_token_auth(self):
         # use a nonexistent token key
-        auth = 'Token wxyz6789'
+        auth = self.header_prefix + 'wxyz6789'
         response = self.csrf_client.post(self.path, {'example': 'example'}, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_fail_post_form_passing_invalid_token_auth(self):
         # add an 'invalid' unicode character
-        auth = 'Token ' + self.key + "¸"
+        auth = self.header_prefix + self.key + "¸"
         response = self.csrf_client.post(self.path, {'example': 'example'}, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_post_json_passing_token_auth(self):
         """Ensure POSTing form over token auth with correct credentials passes and does not require CSRF"""
-        auth = "Token " + self.key
+        auth = self.header_prefix + self.key
         response = self.csrf_client.post(self.path, {'example': 'example'}, format='json', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_post_json_makes_one_db_query(self):
         """Ensure that authenticating a user using a token performs only one DB query"""
-        auth = "Token " + self.key
+        auth = self.header_prefix + self.key
 
         def func_to_test():
             return self.csrf_client.post(self.path, {'example': 'example'}, format='json', HTTP_AUTHORIZATION=auth)
@@ -271,6 +277,12 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
 class CustomTokenAuthTests(BaseTokenAuthTests, TestCase):
     model = CustomToken
     path = '/customtoken/'
+
+
+class CustomKeywordTokenAuthTests(BaseTokenAuthTests, TestCase):
+    model = Token
+    path = '/customkeywordtoken/'
+    header_prefix = 'Bearer '
 
 
 class IncorrectCredentialsTests(TestCase):
