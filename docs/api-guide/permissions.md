@@ -144,7 +144,7 @@ To use custom model permissions, override `DjangoModelPermissions` and set the `
 
 #### Using with views that do not include a `queryset` attribute.
 
-If you're using this permission with a view that uses an overridden `get_queryset()` method there may not be a `queryset` attribute on the view. In this case we suggest also marking the view with a sential queryset, so that this class can determine the required permissions. For example:
+If you're using this permission with a view that uses an overridden `get_queryset()` method there may not be a `queryset` attribute on the view. In this case we suggest also marking the view with a sentinel queryset, so that this class can determine the required permissions. For example:
 
     queryset = User.objects.none()  # Required for DjangoModelPermissions
 
