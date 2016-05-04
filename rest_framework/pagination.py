@@ -36,10 +36,11 @@ def _positive_int(integer_string, strict=False, cutoff=None):
 
 def _divide_with_ceil(a, b):
     """
-    Returns 'a' divded by 'b', with any remainder rounded up.
+    Returns 'a' divided by 'b', with any remainder rounded up.
     """
     if a % b:
         return (a // b) + 1
+
     return a // b
 
 
@@ -358,17 +359,24 @@ class LimitOffsetPagination(BasePagination):
 
     def get_html_context(self):
         base_url = self.request.build_absolute_uri()
-        current = _divide_with_ceil(self.offset, self.limit) + 1
-        # The number of pages is a little bit fiddly.
-        # We need to sum both the number of pages from current offset to end
-        # plus the number of pages up to the current offset.
-        # When offset is not strictly divisible by the limit then we may
-        # end up introducing an extra page as an artifact.
-        final = (
-            _divide_with_ceil(self.count - self.offset, self.limit) +
-            _divide_with_ceil(self.offset, self.limit)
-        )
-        if final < 1:
+
+        if self.limit:
+            current = _divide_with_ceil(self.offset, self.limit) + 1
+
+            # The number of pages is a little bit fiddly.
+            # We need to sum both the number of pages from current offset to end
+            # plus the number of pages up to the current offset.
+            # When offset is not strictly divisible by the limit then we may
+            # end up introducing an extra page as an artifact.
+            final = (
+                _divide_with_ceil(self.count - self.offset, self.limit) +
+                _divide_with_ceil(self.offset, self.limit)
+            )
+
+            if final < 1:
+                final = 1
+        else:
+            current = 1
             final = 1
 
         if current > final:
