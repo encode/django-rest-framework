@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import uuid
 
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -87,3 +88,8 @@ class OneToOnePKSource(RESTFrameworkModel):
     target = models.OneToOneField(
         OneToOneTarget, primary_key=True,
         related_name='required_source', on_delete=models.CASCADE)
+
+
+class Hat(RESTFrameworkModel):
+    user = models.OneToOneField(User)
+    some_key = models.CharField(max_length=100)
