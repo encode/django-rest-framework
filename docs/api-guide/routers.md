@@ -226,9 +226,9 @@ The following example will only route to the `list` and `retrieve` actions, and 
             ),
             Route(
             	url=r'^{prefix}/{lookup}$',
-               mapping={'get': 'retrieve'},
-               name='{basename}-detail',
-               initkwargs={'suffix': 'Detail'}
+                mapping={'get': 'retrieve'},
+                name='{basename}-detail',
+                initkwargs={'suffix': 'Detail'}
             ),
             DynamicDetailRoute(
             	url=r'^{prefix}/{lookup}/{methodnamehyphen}$',
