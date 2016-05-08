@@ -2,33 +2,43 @@
 {% load rest_framework %}
 {% load i18n %}
 
+
+{% block prehead %}
 <!DOCTYPE html>
 <html>
 <head>
-  {% block head %}
+{% endblock prehead %}
 
-    {% block meta %}
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-      <meta name="robots" content="NONE,NOARCHIVE" />
-    {% endblock %}
+{% block head %}
 
-    <title>{% block title %}{% if name %}{{ name }} – {% endif %}Django REST framework{% endblock %}</title>
-
-    {% block style %}
-      {% block bootstrap_theme %}
-        <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap.min.css" %}"/>
-        <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap-tweaks.css" %}"/>
-      {% endblock %}
-
-      <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/prettify.css" %}"/>
-      <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/>
-    {% endblock %}
-
+  {% block meta %}
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="robots" content="NONE,NOARCHIVE" />
   {% endblock %}
+
+  <title>{% block title %}{% if name %}{{ name }} – {% endif %}Django REST framework{% endblock %}</title>
+
+  {% block style %}
+    {% block bootstrap_theme %}
+      <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap.min.css" %}"/>
+      <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap-tweaks.css" %}"/>
+    {% endblock %}
+
+    <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/prettify.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/>
+  {% endblock %}
+
+{% endblock %}
+
+{% block posthead %}
 </head>
+{% endblock %}
 
 {% block body %}
+
+{% block bodystart %}
 <body class="{% block bodyclass %}{% endblock %}">
+{% endblock %}
 
   <div class="wrapper">
     {% block navbar %}
@@ -280,6 +290,11 @@
   {{ filter_form }}
   {% endif %}
 
+{% block bodyend %}
 </body>
 {% endblock %}
-</html>
+{% endblock %}
+
+{% block postbody %}
+  </html>
+{% endblock %}
