@@ -505,6 +505,31 @@ class TestLimitOffset:
         assert content.get('next') == next_url
         assert content.get('previous') == prev_url
 
+    def test_limit_zero(self):
+        """
+        A limit of 0 should return empty results.
+        """
+        request = Request(factory.get('/', {'limit': 0, 'offset': 10}))
+        queryset = self.paginate_queryset(request)
+        context = self.get_html_context()
+        content = self.get_paginated_content(queryset)
+
+        assert context == {
+            'previous_url': 'http://testserver/?limit=0&offset=10',
+            'page_links': [
+                PageLink(
+                    url='http://testserver/?limit=0',
+                    number=1,
+                    is_active=True,
+                    is_break=False
+                )
+            ],
+            'next_url': 'http://testserver/?limit=0&offset=10'
+        }
+
+        assert queryset == []
+        assert content.get('results') == []
+
 
 class TestCursorPagination:
     """
