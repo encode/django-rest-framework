@@ -731,9 +731,17 @@ The `ListSerializer` class provides the behavior for serializing and validating 
 
 When a serializer is instantiated and `many=True` is passed, a `ListSerializer` instance will be created. The serializer class then becomes a child of the parent `ListSerializer`
 
+The following argument can also be passed to a `ListSerializer` field or a serializer that is passed `many=True`:
+
+### `allow_empty`
+
+This is `True` by default, but can be set to `False` if you want to disallow empty lists as valid input.
+
+### Customizing `ListSerializer` behavior
+
 There *are* a few use cases when you might want to customize the `ListSerializer` behavior. For example:
 
-* You want to provide particular validation of the lists, such as always ensuring that there is at least one element in a list.
+* You want to provide particular validation of the lists, such as checking that one element does not conflict with another element in a list.
 * You want to customize the create or update behavior of multiple objects.
 
 For these cases you can modify the class that is used when `many=True` is passed, by using the `list_serializer_class` option on the serializer `Meta` class.
