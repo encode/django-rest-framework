@@ -748,6 +748,15 @@ class TestIntegerField(FieldValues):
     }
     field = serializers.IntegerField()
 
+    def test_allow_null(self):
+        """
+        If `allow_null=True` then `None` is a valid input.
+        """
+        field = serializers.IntegerField(allow_null=True)
+        output = field.run_validation(None)
+        assert output is None
+        assert field.to_representation(None) is None
+
 
 class TestMinMaxIntegerField(FieldValues):
     """
@@ -793,6 +802,15 @@ class TestFloatField(FieldValues):
         0.0: 0.0,
     }
     field = serializers.FloatField()
+
+    def test_allow_null(self):
+        """
+        If `allow_null=True` then `None` is a valid input.
+        """
+        field = serializers.FloatField(allow_null=True)
+        output = field.run_validation(None)
+        assert output is None
+        assert field.to_representation(None) is None
 
 
 class TestMinMaxFloatField(FieldValues):
