@@ -845,7 +845,7 @@ class IntegerField(Field):
         return data
 
     def to_representation(self, value):
-        return int(value)
+        return int(value) if value is not None else None
 
 
 class FloatField(Field):
