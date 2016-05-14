@@ -1480,7 +1480,7 @@ class ListField(Field):
         """
         List of object instances -> List of dicts of primitive datatypes.
         """
-        return [self.child.to_representation(item) for item in data]
+        return [self.child.to_representation(item) if item is not None else None for item in data]
 
 
 class DictField(Field):
@@ -1527,7 +1527,7 @@ class DictField(Field):
         List of object instances -> List of dicts of primitive datatypes.
         """
         return {
-            six.text_type(key): self.child.to_representation(val)
+            six.text_type(key): self.child.to_representation(val) if val is not None else None
             for key, val in value.items()
         }
 
