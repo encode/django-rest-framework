@@ -8,7 +8,7 @@ from collections import MutableMapping, OrderedDict
 from django.conf.urls import include, url
 from django.core.cache import cache
 from django.db import models
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import six
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
@@ -572,3 +572,60 @@ class TestMultipleChoiceFieldHTMLFormRenderer(TestCase):
                           result)
         self.assertInHTML('<option value="1">Option1</option>', result)
         self.assertInHTML('<option value="2">Option2</option>', result)
+
+
+class TestIntegerFieldHTMLFormRenderer(TestCase):
+    """
+    Test rendering IntegerField with HTMLFormRenderer.
+    """
+
+    def setUp(self):
+        class TestSerializer(serializers.Serializer):
+            test_field = serializers.IntegerField()
+
+        self.TestSerializer = TestSerializer
+        self.renderer = HTMLFormRenderer()
+
+    def test_render_zero(self):
+        serializer = self.TestSerializer(data={'test_field': '0'})
+        serializer.is_valid()
+
+        result = self.renderer.render(serializer.data)
+
+        self.assertIsInstance(result, SafeText)
+
+        self.assertIsNotNone(re.search(r'<input .*value="0"', result, re.S))
+
+
+class TestFloatFieldHTMLFormRenderer(TestCase):
+    """
+    Test rendering FloatField with HTMLFormRenderer.
+    """
+
+    def setUp(self):
+        class TestSerializer(serializers.Serializer):
+            test_field = serializers.FloatField()
+
+        self.TestSerializer = TestSerializer
+        self.renderer = HTMLFormRenderer()
+
+    def test_render_zero(self):
+        serializer = self.TestSerializer(data={'test_field': '0.0'})
+        serializer.is_valid()
+
+        result = self.renderer.render(serializer.data)
+
+        self.assertIsInstance(result, SafeText)
+
+        self.assertIsNotNone(re.search(r'<input .*value="0\.0"', result, re.S))
+
+    @override_settings(LANGUAGE_CODE='pl')
+    def test_render_with_comma_locale(self):
+        serializer = self.TestSerializer(data={'test_field': '1.5'})
+        serializer.is_valid()
+
+        result = self.renderer.render(serializer.data)
+
+        self.assertIsInstance(result, SafeText)
+
+        self.assertIsNotNone(re.search(r'<input .*value="1\.5"', result, re.S))
