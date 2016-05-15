@@ -72,14 +72,16 @@ class BoundField(object):
     def _proxy_class(self):
         return self._field.__class__
 
+    @property
+    def string_value(self):
+        if self.value is None or self.value is False:
+            return ''
+        return force_text(self.value)
+
     def __repr__(self):
         return unicode_to_repr('<%s value=%s errors=%s>' % (
             self.__class__.__name__, self.value, self.errors
         ))
-
-    def as_form_field(self):
-        value = '' if (self.value is None or self.value is False) else force_text(self.value)
-        return self.__class__(self._field, value, self.errors, self._prefix)
 
 
 class NestedBoundField(BoundField):
@@ -105,15 +107,6 @@ class NestedBoundField(BoundField):
         if hasattr(field, 'fields'):
             return NestedBoundField(field, value, error, prefix=self.name + '.')
         return BoundField(field, value, error, prefix=self.name + '.')
-
-    def as_form_field(self):
-        values = {}
-        for key, value in self.value.items():
-            if isinstance(value, (list, dict)):
-                values[key] = value
-            else:
-                values[key] = '' if (value is None or value is False) else force_text(value)
-        return self.__class__(self._field, values, self.errors, self._prefix)
 
 
 class BindingDict(collections.MutableMapping):

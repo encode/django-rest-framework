@@ -45,15 +45,15 @@ class TestSimpleBoundField:
         assert serializer['amount'].errors is None
         assert serializer['amount'].name == 'amount'
 
-    def test_as_form_fields(self):
+    def test_string_value(self):
         class ExampleSerializer(serializers.Serializer):
             bool_field = serializers.BooleanField()
             null_field = serializers.IntegerField(allow_null=True)
 
         serializer = ExampleSerializer(data={'bool_field': False, 'null_field': None})
         assert serializer.is_valid()
-        assert serializer['bool_field'].as_form_field().value == ''
-        assert serializer['null_field'].as_form_field().value == ''
+        assert serializer['bool_field'].string_value == ''
+        assert serializer['null_field'].string_value == ''
 
 
 class TestNestedBoundField:
@@ -78,7 +78,7 @@ class TestNestedBoundField:
         assert serializer['nested']['amount'].errors is None
         assert serializer['nested']['amount'].name == 'nested.amount'
 
-    def test_as_form_fields(self):
+    def test_string_value(self):
         class Nested(serializers.Serializer):
             bool_field = serializers.BooleanField()
             null_field = serializers.IntegerField(allow_null=True)
@@ -88,8 +88,8 @@ class TestNestedBoundField:
 
         serializer = ExampleSerializer(data={'nested': {'bool_field': False, 'null_field': None}})
         assert serializer.is_valid()
-        assert serializer['nested']['bool_field'].as_form_field().value == ''
-        assert serializer['nested']['null_field'].as_form_field().value == ''
+        assert serializer['nested']['bool_field'].string_value == ''
+        assert serializer['nested']['null_field'].string_value == ''
 
     def test_rendering_nested_fields_with_none_value(self):
         from rest_framework.renderers import HTMLFormRenderer
