@@ -712,12 +712,12 @@ class AdminRenderer(BrowsableAPIRenderer):
 
         # Creation and deletion should use redirects in the admin style.
         if (response.status_code == status.HTTP_201_CREATED) and ('Location' in response):
-            response.status_code = status.HTTP_302_FOUND
+            response.status_code = status.HTTP_303_SEE_OTHER
             response['Location'] = request.build_absolute_uri()
             ret = ''
 
         if response.status_code == status.HTTP_204_NO_CONTENT:
-            response.status_code = status.HTTP_302_FOUND
+            response.status_code = status.HTTP_303_SEE_OTHER
             try:
                 # Attempt to get the parent breadcrumb URL.
                 response['Location'] = self.get_breadcrumbs(request)[-2][1]
