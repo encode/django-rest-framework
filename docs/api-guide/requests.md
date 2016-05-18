@@ -118,10 +118,6 @@ For more information see the [browser enhancements documentation].
 
 You won't typically need to directly access the request's content, as you'll normally rely on REST framework's default request parsing behavior.
 
-If you do need to access the raw content directly, you should use the `.stream` property in preference to using `request.content`, as it provides transparent support for browser-based non-form content.
-
-For more information see the [browser enhancements documentation].
-
 ---
 
 # Standard HttpRequest attributes
