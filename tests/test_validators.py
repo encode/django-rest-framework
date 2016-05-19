@@ -15,6 +15,7 @@ def dedent(blocktext):
 
 class UniquenessModel(models.Model):
     username = models.CharField(unique=True, max_length=100)
+    ip = models.GenericIPAddressField(protocol='IPv4', unique=True, blank=True, null=True)
 
 
 class UniquenessSerializer(serializers.ModelSerializer):
@@ -41,6 +42,7 @@ class TestUniquenessValidation(TestCase):
             UniquenessSerializer():
                 id = IntegerField(label='ID', read_only=True)
                 username = CharField(max_length=100, validators=[<UniqueValidator(queryset=UniquenessModel.objects.all())>])
+                ip = IPAddressField(allow_null=True, required=False, validators=[<django.core.validators.RegexValidator object>, <UniqueValidator(queryset=UniquenessModel.objects.all())>])
         """)
         assert repr(serializer) == expected
 
@@ -72,6 +74,12 @@ class TestUniquenessValidation(TestCase):
         serializer.data
         self.assertEqual(
             AnotherUniquenessModel._meta.get_field('code').validators, [])
+
+    def test_data_error(self):
+        data = {'ip': 'test', 'username': 'test'}
+        serializer = UniquenessSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {'ip': ['Enter a valid IPv4 address.', 'Enter a valid IPv4 or IPv6 address.']}
 
 
 # Tests for `UniqueTogetherValidator`
