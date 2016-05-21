@@ -30,6 +30,7 @@ from rest_framework.settings import api_settings
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework.utils.field_mapping import ClassLookupDict
+from rest_framework.fields import JSONField
 
 
 def zero_as_none(value):
@@ -319,8 +320,13 @@ class HTMLFormRenderer(BaseRenderer):
             style['template_pack'] = parent_style.get('template_pack', self.template_pack)
         style['renderer'] = self
 
+        # If we are rendering a JSON Field we want to convert Python literals to Javascript literals
+        if issubclass(field._proxy_class, JSONField):
+            field.value = json.dumps(field.value)
+
         # Get a clone of the field with text-only value representation.
         field = field.as_form_field()
+
 
         if style.get('input_type') == 'datetime-local' and isinstance(field.value, six.text_type):
             field.value = field.value.rstrip('Z')
