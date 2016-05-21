@@ -7,12 +7,33 @@ import pytest
 
 from rest_framework import serializers
 from rest_framework.compat import unicode_repr
-
 from .utils import MockObject
 
 
 # Tests for core functionality.
 # -----------------------------
+
+from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.request import Request
+from rest_framework import fields
+class TestSerialize:
+    def setup(self):
+        from rest_framework.test import APIRequestFactory
+        class DummyJSONSerializer(serializers.Serializer):
+            json_field = fields.JSONField()
+        self.factory = APIRequestFactory()
+        self.Serializer = DummyJSONSerializer
+
+    def test_request_POST_with_form_content_JSONField(self):
+        data = b'-----------------------------20775962551482475149231161538\r\nContent-Disposition: form-data; name="json_field"\r\n\r\n{"a": true}\r\n-----------------------------20775962551482475149231161538--\r\n'
+        content_type = 'multipart/form-data; boundary=---------------------------20775962551482475149231161538'
+        wsgi_request = self.factory.generic('POST', '/', data, content_type)
+        request = Request(wsgi_request)
+        request.parsers = (FormParser(), MultiPartParser())
+        serializer = self.Serializer(data=request.data)
+        assert serializer.is_valid(raise_exception=True) == True
+        assert dict(serializer.data)['json_field'] == {'a': True}
+
 
 class TestSerializer:
     def setup(self):
