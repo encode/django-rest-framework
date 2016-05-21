@@ -8,6 +8,10 @@ from django.utils.encoding import force_text
 from rest_framework.compat import unicode_to_repr
 
 
+# A singleton helper value to detect unset keyword arguments
+unset = object()
+
+
 class ReturnDict(OrderedDict):
     """
     Return object from `serialier.data` for the `Serializer` class.
@@ -58,10 +62,11 @@ class BoundField(object):
     providing an API similar to Django forms and form fields.
     """
 
-    def __init__(self, field, value, errors, prefix=''):
+    def __init__(self, field, value, errors, prefix='', basic_value=unset):
         self._field = field
         self._prefix = prefix
         self.value = value
+        self.basic_value = value if basic_value is unset else basic_value
         self.errors = errors
         self.name = prefix + self.field_name
 
@@ -79,7 +84,8 @@ class BoundField(object):
 
     def as_form_field(self):
         value = '' if (self.value is None or self.value is False) else force_text(self.value)
-        return self.__class__(self._field, value, self.errors, self._prefix)
+        return self.__class__(self._field, value, self.errors, self._prefix,
+                              self.basic_value)
 
 
 class NestedBoundField(BoundField):
@@ -89,10 +95,11 @@ class NestedBoundField(BoundField):
     `BoundField` that is used for serializer fields.
     """
 
-    def __init__(self, field, value, errors, prefix=''):
+    def __init__(self, field, value, errors, prefix='', basic_value=unset):
         if value is None or value is '':
             value = {}
-        super(NestedBoundField, self).__init__(field, value, errors, prefix)
+        super(NestedBoundField, self).__init__(field, value, errors, prefix,
+                                               basic_value)
 
     def __iter__(self):
         for field in self.fields.values():
@@ -113,7 +120,8 @@ class NestedBoundField(BoundField):
                 values[key] = value
             else:
                 values[key] = '' if (value is None or value is False) else force_text(value)
-        return self.__class__(self._field, values, self.errors, self._prefix)
+        return self.__class__(self._field, values, self.errors, self._prefix,
+                              self.basic_value)
 
 
 class BindingDict(collections.MutableMapping):
