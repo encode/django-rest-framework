@@ -291,7 +291,7 @@ class LimitOffsetPagination(BasePagination):
     default_limit = api_settings.PAGE_SIZE
     limit_query_param = 'limit'
     offset_query_param = 'offset'
-    max_limit = None
+    max_limit = api_settings.MAX_PAGINATE_BY
     template = 'rest_framework/pagination/numbers.html'
 
     def paginate_queryset(self, queryset, request, view=None):
