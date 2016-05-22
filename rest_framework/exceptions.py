@@ -49,10 +49,10 @@ class APIException(Exception):
     default_detail = _('A server error occurred.')
 
     def __init__(self, detail=None):
-        if detail is not None:
-            self.detail = force_text(detail)
-        else:
+        if detail is None:
             self.detail = force_text(self.default_detail)
+        elif isinstance(detail, basestring):
+            self.detail = force_text(detail)
 
     def __str__(self):
         return self.detail
