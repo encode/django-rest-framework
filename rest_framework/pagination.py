@@ -685,7 +685,22 @@ class CursorPagination(BasePagination):
         return replace_query_param(self.base_url, self.cursor_query_param, encoded)
 
     def _get_position_from_instance(self, instance, ordering):
-        attr = getattr(instance, ordering[0].lstrip('-'))
+        attr_path = ordering[0].lstrip('-')
+        object_names = attr_path.split("__")
+        attr_name = object_names[-1]
+
+        # cut off the attribute name
+        object_names = object_names[:-1]
+
+        # start with the instance itself
+        obj = instance
+
+        # fetch any other object
+        for object_name in object_names:
+            obj = getattr(obj, object_name)
+
+        # and get the last split as the attribute
+        attr = getattr(obj, attr_name)
         return six.text_type(attr)
 
     def get_paginated_response(self, data):
