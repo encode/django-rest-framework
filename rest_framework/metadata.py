@@ -85,7 +85,11 @@ class SimpleMetadata(BaseMetadata):
                     view.check_permissions(view.request)
                 # Test object permissions
                 if method == 'PUT' and hasattr(view, 'get_object'):
-                    view.get_object()
+                    # List/Detail views add a .detail property to the view function.
+                    # If the view is a list view, detail will be False, and this
+                    # check should be skipped.
+                    if getattr(view.put, 'detail', True):
+                        view.get_object()
             except (exceptions.APIException, PermissionDenied, Http404):
                 pass
             else:

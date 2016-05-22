@@ -5,8 +5,9 @@ from django.db import models
 from django.test import TestCase
 
 from rest_framework import (
-    exceptions, metadata, serializers, status, versioning, views
+    exceptions, metadata, serializers, status, versioning, views, viewsets
 )
+from rest_framework.decorators import list_route
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
@@ -265,6 +266,43 @@ class TestMetadata:
         options = metadata.SimpleMetadata()
         field_info = options.get_field_info(serializers.NullBooleanField())
         assert field_info['type'] == 'boolean'
+
+    def test_bug_3356_list_route_metadata(self):
+        class Example(models.Model):
+            dummy_field = models.CharField(max_length=64, default='')
+
+        class ExampleSerializer(serializers.Serializer):
+            class Meta:
+                model = Example
+
+        class ListRouteViewSet(viewsets.ModelViewSet):
+            serializer_class = ExampleSerializer
+            queryset = Example.objects.all()
+
+            @list_route(methods=['GET', 'PUT'])
+            def put_route(self, request):
+                return
+
+        put_view = ListRouteViewSet.as_view(actions={'put': 'put_route'})
+        response = put_view(request)
+
+        expected = {
+            'name': 'List Route',
+            'description': '',
+            'renders': [
+                'application/json',
+                'text/html'
+            ],
+            'parses': [
+                'application/json',
+                'application/x-www-form-urlencoded',
+                'multipart/form-data'
+            ],
+            'actions': {
+                'PUT': {}
+            }
+        }
+        assert response.data == expected
 
 
 class TestModelSerializerMetadata(TestCase):
