@@ -68,7 +68,8 @@ class UpdateModelMixin(object):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        return Response(serializer.data)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, headers=headers)
 
     def perform_update(self, serializer):
         serializer.save()
@@ -76,6 +77,12 @@ class UpdateModelMixin(object):
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
+
+    def get_success_headers(self, data):
+        try:
+            return {'Content-Location': data[api_settings.URL_FIELD_NAME]}
+        except (TypeError, KeyError):
+            return {}
 
 
 class DestroyModelMixin(object):
