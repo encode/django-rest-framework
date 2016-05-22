@@ -880,7 +880,16 @@ class ModelSerializer(Serializer):
         # relationships as being a special case. During updates we already
         # have an instance pk for the relationships to be associated with.
         for attr, value in validated_data.items():
-            setattr(instance, attr, value)
+            if isinstance(value, dict):
+                instance_attr = getattr(instance, attr)
+                for _attr, _value in value.items():
+                    setattr(instance_attr, _attr, _value)
+
+                instance_attr.save()
+                setattr(instance, attr, instance_attr)
+            else:
+                setattr(instance, attr, value)
+
         instance.save()
 
         return instance
