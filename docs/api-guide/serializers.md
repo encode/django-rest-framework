@@ -570,6 +570,29 @@ This option is a dictionary, mapping field names to a dictionary of keyword argu
             user.save()
             return user
 
+
+## Return errors on undefined fields
+
+By default, if the user consuming the your API supplies fields in a payload that you have not defined (eg. fields in a POST payload), Django Rest Framework will ignore them.
+
+It is possible to have DRF return validation errors for undefined fields supplied by the user. This is done by setting `error_on_undefined=True` in your Meta class. For example:
+
+    class NameSerializer(serializers.Serializer):
+        first_name = serializers.CharField()
+        last_name = serializers.Charfield()
+
+        class Meta:
+            error_on_undefined = True
+
+    serializer = NameSerializer(data={'first_name': 'George'
+                                      'middle_name': 'Walker',
+                                      'last_name': 'Bush'})
+    serializer.is_valid()  # False
+    print(serializer.errors)  # {'middle_name': 'Not a supported field.'}
+
+This can be helpful to users of your API as they may not realise that they are supplying an unsupported field. For example they may have a typo in their integration code.
+
+
 ## Relational fields
 
 When serializing model instances, there are a number of different ways you might choose to represent relationships.  The default representation for `ModelSerializer` is to use the primary keys of the related instances.
