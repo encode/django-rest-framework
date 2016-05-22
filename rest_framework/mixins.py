@@ -18,9 +18,20 @@ class CreateModelMixin(object):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        status_code = self.perform_create(serializer)
+        if status_code is None:
+          headers = self.get_success_headers(serializer.data)
+          return Response(
+              serializer.data,
+              status=status.HTTP_201_CREATED,
+              headers=headers
+              )
+        else:
+          return Response(
+              serializer.data,
+              status=status_code,
+              headers=headers
+              )
 
     def perform_create(self, serializer):
         serializer.save()
@@ -67,8 +78,11 @@ class UpdateModelMixin(object):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
+        status_code = self.perform_update(serializer)
+        if status_code is None:
+          return Response(serializer.data)
+        else:
+          return Response(serializer.data, status=status_code)
 
     def perform_update(self, serializer):
         serializer.save()
