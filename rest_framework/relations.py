@@ -239,13 +239,14 @@ class SerializableRelatedField(RelatedField):
     }
 
     def __init__(self, **kwargs):
-        self.serializer = kwargs.pop('serializer', None)
-        assert self.serializer is not None, (
-            'SerializableRelatedField field must provide a `serializer` argument'
+        self.serializer_class = kwargs.pop('serializer_class', None)
+        assert self.serializer_class is not None, (
+            'SerializableRelatedField field must provide a `serializer_class` argument'
         )
         self.serializer_params = kwargs.pop('serializer_params', dict())
-        if 'queryset' not in kwargs:
-            kwargs['queryset'] = self.serializer.Meta.model.objects.all()
+        from rest_framework.serializers import ModelSerializer
+        if 'queryset' not in kwargs and issubclass(self.serializer_class, ModelSerializer):
+            kwargs['queryset'] = self.serializer_class.Meta.model.objects.all()
         kwargs['style'] = {'base_template': 'input.html', 'input_type': 'numeric'}
         super(SerializableRelatedField, self).__init__(**kwargs)
 
@@ -258,7 +259,9 @@ class SerializableRelatedField(RelatedField):
             self.fail('incorrect_type', data_type=type(data).__name__)
 
     def to_representation(self, value):
-        return self.serializer(instance=value, context=self.context, **self.serializer_params).data
+        return (self
+                .serializer_class(instance=value, context=self.context, **self.serializer_params)
+                .data)
 
 
 class HyperlinkedRelatedField(RelatedField):

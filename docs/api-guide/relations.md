@@ -126,7 +126,7 @@ By default this field is read-write, although you can change this behavior using
 For example, if we pass `TrackSerializer` the following serializer:
 
     class AlbumSerializer(serializers.ModelSerializer):
-        tracks = serializers.SerializableRelatedField(many=True, read_only=True)
+        tracks = serializers.SerializableRelatedField(many=True, serializer_class=TrackSerializer)
 
         class Meta:
             model = Album
@@ -152,14 +152,14 @@ Would serialize to a representation like this:
         ]
     }
 
-By default this field take queryset from passed `serializer`.
+By default this field take queryset from passed `serializer_class`.
 
 **Arguments**:
 
 * `queryset` - The queryset used for model instance lookups when validating the field input. Relationships must either set a queryset explicitly, or set `read_only=True`.
 * `many` - If applied to a to-many relationship, you should set this argument to `True`.
 * `allow_null` - If set to `True`, the field will accept values of `None` or the empty string for nullable relationships. Defaults to `False`.
-* `serializer` - Required field, serializer to represent the target of the relationship
+* `serializer_class` - serializer class to represent the target of the relationship, required field
 * `serializer_params` - Parameters, passed to serializer
 
 
