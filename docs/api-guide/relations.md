@@ -119,6 +119,50 @@ By default this field is read-write, although you can change this behavior using
 * `pk_field` - Set to a field to control serialization/deserialization of the primary key's value. For example, `pk_field=UUIDField(format='hex')` would serialize a UUID primary key into its compact hex representation.
 
 
+## SerializableRelatedField
+
+`SerializableRelatedField` may be used to represent the target of the relationship using serializer passed as argument.
+
+For example, if we pass `TrackSerializer` the following serializer:
+
+    class AlbumSerializer(serializers.ModelSerializer):
+        tracks = serializers.SerializableRelatedField(many=True, read_only=True)
+
+        class Meta:
+            model = Album
+            fields = ('album_name', 'artist', 'tracks')
+
+Would serialize to a representation like this:
+
+    {
+        'album_name': 'The Roots',
+        'artist': 'Undun',
+        'tracks': [
+            {
+                'order': 1, 
+                'title': 'Public Service Announcement', 
+                'duration': 245,
+            },
+            {
+                'order': 2, 
+                'title': 'What More Can I Say', 
+                'duration': 264,
+            },
+            ...
+        ]
+    }
+
+By default this field take queryset from passed `serializer`.
+
+**Arguments**:
+
+* `queryset` - The queryset used for model instance lookups when validating the field input. Relationships must either set a queryset explicitly, or set `read_only=True`.
+* `many` - If applied to a to-many relationship, you should set this argument to `True`.
+* `allow_null` - If set to `True`, the field will accept values of `None` or the empty string for nullable relationships. Defaults to `False`.
+* `serializer` - Required field, serializer to represent the target of the relationship
+* `serializer_params` - Parameters, passed to serializer
+
+
 ## HyperlinkedRelatedField
 
 `HyperlinkedRelatedField` may be used to represent the target of the relationship using a hyperlink.
