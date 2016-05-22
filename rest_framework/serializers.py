@@ -322,6 +322,7 @@ def get_validation_error_detail(exc):
 
 @six.add_metaclass(SerializerMetaclass)
 class Serializer(BaseSerializer):
+    type = 'nested object'
     default_error_messages = {
         'invalid': _('Invalid data. Expected a dictionary, but got {datatype}.')
     }
@@ -512,6 +513,17 @@ class Serializer(BaseSerializer):
         ret = super(Serializer, self).errors
         return ReturnDict(ret, serializer=self)
 
+    def get_metadata(self):
+        fields_metadata = OrderedDict([
+            (field_name, field.get_metadata())
+            for field_name, field in self.fields.items()
+        ])
+        if self.root is self:
+            return fields_metadata
+        metadata = super(Serializer, self).get_metadata()
+        metadata['children'] = fields_metadata
+        return metadata
+
 
 # There's some replication of `ListField` here,
 # but that's probably better than obfuscating the call hierarchy.
@@ -684,6 +696,16 @@ class ListSerializer(BaseSerializer):
         if isinstance(ret, dict):
             return ReturnDict(ret, serializer=self)
         return ReturnList(ret, serializer=self)
+
+    def get_metadata(self):
+        if self.root is self:
+            return OrderedDict([
+                (field_name, field.get_metadata())
+                for field_name, field in self.child.fields.items()
+            ])
+        metadata = super(ListSerializer, self).get_metadata()
+        metadata['child'] = self.child.get_metadata()
+        return metadata
 
 
 # ModelSerializer & HyperlinkedModelSerializer

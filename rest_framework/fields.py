@@ -24,7 +24,7 @@ from django.utils.dateparse import (
     parse_date, parse_datetime, parse_duration, parse_time
 )
 from django.utils.duration import duration_string
-from django.utils.encoding import is_protected_type, smart_text
+from django.utils.encoding import force_text, is_protected_type, smart_text
 from django.utils.functional import cached_property
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.translation import ugettext_lazy as _
@@ -262,6 +262,7 @@ MISSING_ERROR_MESSAGE = (
 class Field(object):
     _creation_counter = 0
 
+    type = 'field'
     default_error_messages = {
         'required': _('This field is required.'),
         'null': _('This field may not be null.')
@@ -597,10 +598,23 @@ class Field(object):
         """
         return unicode_to_repr(representation.field_repr(self))
 
+    def get_metadata(self):
+        metadata = OrderedDict([
+            ('type', self.type),
+            ('required', self.required),
+            ('read_only', self.read_only),
+        ])
+        for attr in ['label', 'help_text']:
+            value = getattr(self, attr)
+            if value is not None and value != '':
+                metadata[attr] = force_text(value, strings_only=True)
+        return metadata
+
 
 # Boolean types...
 
 class BooleanField(Field):
+    type = 'boolean'
     default_error_messages = {
         'invalid': _('"{input}" is not a valid boolean.')
     }
@@ -632,6 +646,7 @@ class BooleanField(Field):
 
 
 class NullBooleanField(Field):
+    type = 'boolean'
     default_error_messages = {
         'invalid': _('"{input}" is not a valid boolean.')
     }
@@ -667,6 +682,7 @@ class NullBooleanField(Field):
 # String types...
 
 class CharField(Field):
+    type = 'string'
     default_error_messages = {
         'blank': _('This field may not be blank.'),
         'max_length': _('Ensure this field has no more than {max_length} characters.'),
@@ -704,8 +720,17 @@ class CharField(Field):
     def to_representation(self, value):
         return six.text_type(value)
 
+    def get_metadata(self):
+        metadata = super(CharField, self).get_metadata()
+        for attr in ['min_length', 'max_length']:
+            value = getattr(self, attr)
+            if value is not None:
+                metadata[attr] = value
+        return metadata
+
 
 class EmailField(CharField):
+    type = 'email'
     default_error_messages = {
         'invalid': _('Enter a valid email address.')
     }
@@ -717,6 +742,7 @@ class EmailField(CharField):
 
 
 class RegexField(CharField):
+    type = 'regex'
     default_error_messages = {
         'invalid': _('This value does not match the required pattern.')
     }
@@ -728,6 +754,7 @@ class RegexField(CharField):
 
 
 class SlugField(CharField):
+    type = 'slug'
     default_error_messages = {
         'invalid': _('Enter a valid "slug" consisting of letters, numbers, underscores or hyphens.')
     }
@@ -740,6 +767,7 @@ class SlugField(CharField):
 
 
 class URLField(CharField):
+    type = 'url'
     default_error_messages = {
         'invalid': _('Enter a valid URL.')
     }
@@ -814,6 +842,7 @@ class IPAddressField(CharField):
 # Number types...
 
 class IntegerField(Field):
+    type = 'integer'
     default_error_messages = {
         'invalid': _('A valid integer is required.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
@@ -847,8 +876,17 @@ class IntegerField(Field):
     def to_representation(self, value):
         return int(value)
 
+    def get_metadata(self):
+        metadata = super(IntegerField, self).get_metadata()
+        for attr in ['max_value', 'min_value']:
+            value = getattr(self, attr)
+            if value is not None:
+                metadata[attr] = value
+        return metadata
+
 
 class FloatField(Field):
+    type = 'float'
     default_error_messages = {
         'invalid': _('A valid number is required.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
@@ -880,8 +918,17 @@ class FloatField(Field):
     def to_representation(self, value):
         return float(value)
 
+    def get_metadata(self):
+        metadata = super(FloatField, self).get_metadata()
+        for attr in ['max_value', 'min_value']:
+            value = getattr(self, attr)
+            if value is not None:
+                metadata[attr] = value
+        return metadata
+
 
 class DecimalField(Field):
+    type = 'decimal'
     default_error_messages = {
         'invalid': _('A valid number is required.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
@@ -1001,10 +1048,19 @@ class DecimalField(Field):
             decimal.Decimal('.1') ** self.decimal_places,
             context=context)
 
+    def get_metadata(self):
+        metadata = super(DecimalField, self).get_metadata()
+        for attr in ['max_value', 'min_value']:
+            value = getattr(self, attr)
+            if value is not None:
+                metadata[attr] = value
+        return metadata
+
 
 # Date & time fields...
 
 class DateTimeField(Field):
+    type = 'datetime'
     default_error_messages = {
         'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}.'),
         'date': _('Expected a datetime but got a date.'),
@@ -1083,6 +1139,7 @@ class DateTimeField(Field):
 
 
 class DateField(Field):
+    type = 'date'
     default_error_messages = {
         'invalid': _('Date has wrong format. Use one of these formats instead: {format}.'),
         'datetime': _('Expected a date but got a datetime.'),
@@ -1152,6 +1209,7 @@ class DateField(Field):
 
 
 class TimeField(Field):
+    type = 'time'
     default_error_messages = {
         'invalid': _('Time has wrong format. Use one of these formats instead: {format}.'),
     }
@@ -1235,6 +1293,7 @@ class DurationField(Field):
 # Choice types...
 
 class ChoiceField(Field):
+    type = 'choice'
     default_error_messages = {
         'invalid_choice': _('"{input}" is not a valid choice.')
     }
@@ -1282,8 +1341,21 @@ class ChoiceField(Field):
             cutoff_text=self.html_cutoff_text
         )
 
+    def get_metadata(self):
+        metadata = super(ChoiceField, self).get_metadata()
+        if not self.read_only:
+            metadata['choices'] = [
+                {
+                    'value': choice_value,
+                    'display_name': force_text(choice_name, strings_only=True)
+                }
+                for choice_value, choice_name in self.choices.items()
+            ]
+        return metadata
+
 
 class MultipleChoiceField(ChoiceField):
+    type = 'multiple choice'
     default_error_messages = {
         'invalid_choice': _('"{input}" is not a valid choice.'),
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
@@ -1342,6 +1414,7 @@ class FilePathField(ChoiceField):
 # File types...
 
 class FileField(Field):
+    type = 'file upload'
     default_error_messages = {
         'required': _('No file was submitted.'),
         'invalid': _('The submitted data was not a file. Check the encoding type on the form.'),
@@ -1391,8 +1464,15 @@ class FileField(Field):
             return url
         return value.name
 
+    def get_metadata(self):
+        metadata = super(FileField, self).get_metadata()
+        if self.max_length is not None:
+            metadata['max_length'] = self.max_length
+        return metadata
+
 
 class ImageField(FileField):
+    type = 'image upload'
     default_error_messages = {
         'invalid_image': _(
             'Upload a valid image. The file you uploaded was either not an image or a corrupted image.'
@@ -1430,6 +1510,7 @@ class _UnvalidatedField(Field):
 
 
 class ListField(Field):
+    type = 'list'
     child = _UnvalidatedField()
     initial = []
     default_error_messages = {
@@ -1482,8 +1563,14 @@ class ListField(Field):
         """
         return [self.child.to_representation(item) if item is not None else None for item in data]
 
+    def get_metadata(self):
+        metadata = super(ListField, self).get_metadata()
+        metadata['child'] = self.child.get_metadata()
+        return metadata
+
 
 class DictField(Field):
+    type = 'nested object'
     child = _UnvalidatedField()
     initial = {}
     default_error_messages = {
@@ -1530,6 +1617,11 @@ class DictField(Field):
             six.text_type(key): self.child.to_representation(val) if val is not None else None
             for key, val in value.items()
         }
+
+    def get_metadata(self):
+        metadata = super(DictField, self).get_metadata()
+        metadata['child'] = self.child.get_metadata()
+        return metadata
 
 
 class JSONField(Field):
