@@ -263,8 +263,6 @@ class Request(object):
 
         if content_length == 0:
             self._stream = None
-        elif hasattr(self._request, 'read'):
-            self._stream = self._request
         else:
             self._stream = six.BytesIO(self.raw_post_data)
 
