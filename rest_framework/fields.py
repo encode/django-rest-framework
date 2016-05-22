@@ -75,7 +75,14 @@ def get_attribute(instance, attrs):
             return None
         try:
             if isinstance(instance, collections.Mapping):
-                instance = instance[attr]
+                try:
+                    instance = instance[attr]
+                except KeyError as keyerror:
+                    # Does the mapping has a method or property with that name?
+                    try:
+                        instance = getattr(instance, attr)
+                    except AttributeError:
+                        raise keyerror
             else:
                 instance = getattr(instance, attr)
         except ObjectDoesNotExist:
