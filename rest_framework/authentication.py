@@ -7,6 +7,7 @@ import base64
 import binascii
 
 from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.middleware.csrf import CsrfViewMiddleware
 from django.utils.six import text_type
 from django.utils.translation import ugettext_lazy as _
@@ -125,19 +126,21 @@ class SessionAuthentication(BaseAuthentication):
         if not user or not user.is_active:
             return None
 
-        self.enforce_csrf(request)
+        if self.check_csrf(request):
+            # CSRF passed with authenticated user
+            return (user, None)
+        else:
+            return (AnonymousUser(), None)
 
-        # CSRF passed with authenticated user
-        return (user, None)
-
-    def enforce_csrf(self, request):
+    def check_csrf(self, request):
         """
-        Enforce CSRF validation for session based authentication.
+        return True if csrf is correct.
         """
         reason = CSRFCheck().process_view(request, None, (), {})
         if reason:
-            # CSRF failed, bail with explicit error message
-            raise exceptions.PermissionDenied('CSRF Failed: %s' % reason)
+            request._csrf_failed_reason = reason
+
+        return not reason
 
 
 class TokenAuthentication(BaseAuthentication):

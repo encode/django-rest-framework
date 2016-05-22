@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.test import TestCase
 
+from rest_framework import exceptions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.test import (
@@ -17,6 +18,21 @@ from rest_framework.test import (
 
 @api_view(['GET', 'POST'])
 def view(request):
+    return Response({
+        'auth': request.META.get('HTTP_AUTHORIZATION', b''),
+        'user': request.user.username
+    })
+
+
+@api_view(['GET', 'POST'])
+def authenticated_view(request):
+    if not request.user.is_authenticated():
+        reason = getattr(request, '_csrf_failed_reason', None)
+        if reason:
+            raise exceptions.PermissionDenied('CSRF Failed: %s' % reason)
+        else:
+            raise exceptions.PermissionDenied()
+
     return Response({
         'auth': request.META.get('HTTP_AUTHORIZATION', b''),
         'user': request.user.username
@@ -39,6 +55,7 @@ def redirect_view(request):
 
 urlpatterns = [
     url(r'^view/$', view),
+    url(r'^authenticated-view/$', authenticated_view),
     url(r'^session-view/$', session_view),
     url(r'^redirect-view/$', redirect_view),
 ]
@@ -104,7 +121,7 @@ class TestAPITestClient(TestCase):
         client = APIClient(enforce_csrf_checks=True)
         User.objects.create_user('example', 'example@example.com', 'password')
         client.login(username='example', password='password')
-        response = client.post('/view/')
+        response = client.post('/authenticated-view/')
         expected = {'detail': 'CSRF Failed: CSRF cookie not set.'}
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, expected)
@@ -201,9 +218,9 @@ class TestAPIRequestFactory(TestCase):
         """
         user = User.objects.create_user('example', 'example@example.com', 'password')
         factory = APIRequestFactory(enforce_csrf_checks=True)
-        request = factory.post('/view/')
+        request = factory.post('/authenticated-view/')
         request.user = user
-        response = view(request)
+        response = authenticated_view(request)
         expected = {'detail': 'CSRF Failed: CSRF cookie not set.'}
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, expected)
