@@ -24,13 +24,10 @@ env:
 
 matrix:
   allow_failures:
-    - python: "2.7"
-      env: TOX_ENV=py27-django110
-    - python: "3.4"
-      env: TOX_ENV=py34-django110
-    - python: "3.5"
-      env: TOX_ENV=py35-django110
-      
+    - env: TOX_ENV=py27-django110
+    - env: TOX_ENV=py34-django110
+    - env: TOX_ENV=py35-django110
+
 
   fast_finish: true
 
