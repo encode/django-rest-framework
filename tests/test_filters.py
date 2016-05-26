@@ -5,6 +5,7 @@ import unittest
 from decimal import Decimal
 
 from django.conf.urls import url
+from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.test import TestCase
@@ -753,6 +754,41 @@ class OrderingFilterTests(TestCase):
         response = view(request)
 
         self.assertContains(response, 'verbose title')
+
+    def test_ordering_with_overridden_get_serializer_class(self):
+        class OrderingListView(generics.ListAPIView):
+            queryset = OrderingFilterModel.objects.all()
+            filter_backends = (filters.OrderingFilter,)
+            ordering = ('title',)
+            # note: no ordering_fields and serializer_class speficied
+
+            def get_serializer_class(self):
+                return OrderingFilterSerializer
+
+        view = OrderingListView.as_view()
+        request = factory.get('/', {'ordering': 'text'})
+        response = view(request)
+        self.assertEqual(
+            response.data,
+            [
+                {'id': 1, 'title': 'zyx', 'text': 'abc'},
+                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+                {'id': 3, 'title': 'xwv', 'text': 'cde'},
+            ]
+        )
+
+    def test_ordering_with_improper_configuration(self):
+        class OrderingListView(generics.ListAPIView):
+            queryset = OrderingFilterModel.objects.all()
+            filter_backends = (filters.OrderingFilter,)
+            ordering = ('title',)
+            # note: no ordering_fields and serializer_class
+            # or get_serializer_class speficied
+
+        view = OrderingListView.as_view()
+        request = factory.get('/', {'ordering': 'text'})
+        with self.assertRaises(ImproperlyConfigured):
+            view(request)
 
 
 class SensitiveOrderingFilterModel(models.Model):

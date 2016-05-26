@@ -227,11 +227,14 @@ class OrderingFilter(BaseFilterBackend):
 
         if valid_fields is None:
             # Default to allowing filtering on serializer fields
-            serializer_class = getattr(view, 'serializer_class')
-            if serializer_class is None:
+            try:
+                serializer_class = view.get_serializer_class()
+            except AssertionError:  # raised if no serializer_class was found
                 msg = ("Cannot use %s on a view which does not have either a "
-                       "'serializer_class' or 'ordering_fields' attribute.")
+                       "'serializer_class', an overriding 'get_serializer_class' "
+                       "or 'ordering_fields' attribute.")
                 raise ImproperlyConfigured(msg % self.__class__.__name__)
+
             valid_fields = [
                 (field.source or field_name, field.label)
                 for field_name, field in serializer_class().fields.items()
