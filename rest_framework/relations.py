@@ -392,6 +392,15 @@ class HyperlinkedIdentityField(HyperlinkedRelatedField):
         return False
 
 
+class HyperlinkedPrimaryKeyRelatedField(HyperlinkedRelatedField):
+    """
+    A read-write field which act like HyperlinkedRelatedField in output and
+    act like PrimaryKeyRelatedField in input
+    """
+    def to_internal_value(self, data):
+        return self.get_queryset().get(pk=data)
+
+
 class SlugRelatedField(RelatedField):
     """
     A read-write field that represents the target of the relationship
