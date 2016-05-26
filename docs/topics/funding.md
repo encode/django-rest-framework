@@ -8,6 +8,22 @@ if (window.location.hostname == "www.django-rest-framework.org") {
 </script>
 
 <style>
+.promo li a {
+    float: left;
+    width: 130px;
+    height: 20px;
+    text-align: center;
+    margin: 10px 30px;
+    padding: 150px 0 0 0;
+    background-position: 0 50%;
+    background-size: 130px auto;
+    background-repeat: no-repeat;
+    font-size: 120%;
+    color: black;
+}
+.promo li {
+    list-style: none;
+}
 .chart {
     background-color: #e3e3e3;
     background: -webkit-linear-gradient(top, #fff 0, #e3e3e3 100%);
@@ -37,7 +53,7 @@ if (window.location.hostname == "www.django-rest-framework.org") {
     top: -8px;
     margin-left: 4px;}
 .plan-name {
-	 text-align: center;
+    text-align: center;
     font-size: 20px;
     font-weight: 400;
     color: #777;
@@ -47,9 +63,11 @@ if (window.location.hostname == "www.django-rest-framework.org") {
     margin: 0 auto;
     margin-top: 8px;}
 .specs {
-    margin-top: 20px;}
-.specs.startup {
-    margin-bottom: 93px}
+    margin-top: 20px;    min-height: 130px;
+}
+.specs.freelancer {
+    min-height: 0px;
+}
 .spec {
     font-size: 15px;
     color: #474747;
@@ -79,27 +97,32 @@ form.signup {
 
 # Funding
 
+> As a direct result of [a successful Mozilla grant application](mozilla-grant.md), I will be leaving my current role at [DabApps](http://www.dabapps.com), and attempting to secure a sustainable business model for REST framework development. I need your help in order to make this work.
+>
+> &mdash; Tom Christie
+
 If you use REST framework commercially we strongly encourage you to invest in its continued development by signing up for a paid plan.
 
-**We believe that collaboratively funded software can offer outstanding returns on investment, by allowing users and clients to collectively share the cost of development.**
+**We believe that collaboratively funded software can offer outstanding returns on investment, by encouraging our users to collectively share the cost of development.**
 
 Signing up for a paid plan will:
 
-* Directly contribute to faster releases, more features and higher quality software.
-* Allow more time to be invested in documentation, issue triage and community support.
+* Directly contribute to faster releases, more features, and higher quality software.
+* Allow more time to be invested in documentation, issue triage, and community support.
 * Safeguard the future development of REST framework.
 
-REST framework will always be open source and permissively licensed, but we firmly believe it is in the commercial best-interest for users of the project to fund its ongoing development.
+REST framework continues to be open-source and permissively licensed, but we firmly believe it is in the commercial best-interest for users of the project to invest in its ongoing development.
 
 ---
 
 ## Making the business case
 
-Our successful Kickstarter campaign demonstrates the cost-reward ratio of shared development funding.
+Our [successful Kickstarter campaign](https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3) demonstrates the impressive cost-reward ratio of shared funding of open-source software.
 
 With *typical corporate fundings of just £100-£1000 per organization* we successfully delivered:
 
-* The comprehensive 3.0 serializer redesign.
+* The comprehensive serializer redesign, and **version 3.0 release**.
+* Ongoing triage and community support, **closing over 1600 tickets**.
 * Substantial improvements to the Browsable API.
 * The admin interface.
 * A new pagination API including offset/limit and cursor pagination implementations, plus on-page controls.
@@ -110,13 +133,14 @@ With *typical corporate fundings of just £100-£1000 per organization* we succe
 * Internationalization support for API responses, currently with 27 languages.
 * The metadata APIs for handling `OPTIONS` requests and schema endpoints.
 * Numerous minor improvements and better quality throughout the codebase.
-* Ongoing triage and community support, closing over 1600 tickets.
 
 This incredible level of return on investment is *only possible through collaboratively funded models*, which is why we believe that supporting our paid plans is in everyone's best interest.
 
+Sign up for a paid plan today, and help ensure that REST framework becomes a sustainable, full-time funded project.
+
 ---
 
-## Individual plan
+## Freelancer plan
 
 This subscription is recommended for freelancers and other individuals with an interest in seeing REST framework continue to&nbsp;improve.
 
@@ -126,12 +150,12 @@ If you are using REST framework as an full-time employee, consider recommending 
 				<div class="span4">
 					<div class="chart first">
 						<div class="quantity">
-							<span class="dollar">$</span>
-							<span class="price">15</span>
-							<span class="period">/month</span>
+							<span class="dollar">{{ symbol }}</span>
+							<span class="price">{{ rates.personal1 }}</span>
+							<span class="period">/month{% if vat %} +VAT{% endif %}</span>
 						</div>
-						<div class="plan-name">Individual</div>
-						<div class="specs">
+						<div class="plan-name">Freelancer</div>
+						<div class="specs freelancer">
 							<div class="spec">
 								Support ongoing development
 							</div>
@@ -143,10 +167,10 @@ If you are using REST framework as an full-time employee, consider recommending 
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ stripe_public }}"
-    data-amount="1500"
+    data-amount="{{ stripe_amounts.personal1 }}"
     data-name="Django REST framework"
     data-description="Individual"
-    data-currency="usd"
+    data-currency="{{ currency }}"
     data-allow-remember-me=false
     data-billing-address=true
     data-label='Sign up'
@@ -174,9 +198,9 @@ Our professional and premium plans also include **priority support**. At any tim
 				<div class="span4">
 					<div class="chart first">
 						<div class="quantity">
-							<span class="dollar">$</span>
-							<span class="price">50</span>
-							<span class="period">/month</span>
+							<span class="dollar">{{ symbol }}</span>
+							<span class="price">{{ rates.corporate1 }}</span>
+							<span class="period">/month{% if vat %} +VAT{% endif %}</span>
 						</div>
 						<div class="plan-name">Basic</div>
 						<div class="specs startup">
@@ -191,10 +215,10 @@ Our professional and premium plans also include **priority support**. At any tim
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ stripe_public }}"
-    data-amount="5000"
+    data-amount="{{ stripe_amounts.corporate1 }}"
     data-name="Django REST framework"
     data-description="Basic"
-    data-currency="usd"
+    data-currency="{{ currency }}"
     data-allow-remember-me=false
     data-billing-address=true
     data-label='Sign up'
@@ -206,17 +230,17 @@ Our professional and premium plans also include **priority support**. At any tim
 				<div class="span4">
 					<div class="chart">
 						<div class="quantity">
-							<span class="dollar">$</span>
-							<span class="price">250</span>
-							<span class="period">/month</span>
+							<span class="dollar">{{ symbol }}</span>
+							<span class="price">{{ rates.corporate2 }}</span>
+							<span class="period">/month{% if vat %} +VAT{% endif %}</span>
 						</div>
 						<div class="plan-name">Professional</div>
 						<div class="specs">
+                            <div class="spec">
+                                Support ongoing development
+                            </div>
 							<div class="spec">
-								Add a <span class="variable">half day per&nbsp;month</span> development time to the project
-							</div>
-							<div class="spec">
-								<span class="variable">Homepage</span> ad placement
+								<span class="variable">Sidebar</span> ad placement
 							</div>
 							<div class="spec">
 								<span class="variable">Priority support</span> for your engineers
@@ -226,10 +250,10 @@ Our professional and premium plans also include **priority support**. At any tim
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ stripe_public }}"
-    data-amount="25000"
+    data-amount="{{ stripe_amounts.corporate2 }}"
     data-name="Django REST framework"
     data-description="Professional"
-    data-currency="usd"
+    data-currency="{{ currency }}"
     data-allow-remember-me=false
     data-billing-address=true
     data-label='Sign up'
@@ -241,17 +265,20 @@ Our professional and premium plans also include **priority support**. At any tim
 				<div class="span4">
 					<div class="chart last">
 						<div class="quantity">
-							<span class="dollar">$</span>
-							<span class="price">500</span>
-							<span class="period">/month</span>
+							<span class="dollar">{{ symbol }}</span>
+							<span class="price">{{ rates.corporate3 }}</span>
+							<span class="period">/month{% if vat %} +VAT{% endif %}</span>
 						</div>
 						<div class="plan-name">Premium</div>
 						<div class="specs">
+                        <div class="spec">
+                            Support ongoing development
+                        </div>
 							<div class="spec">
-								Add <span class="variable">one full day per&nbsp;month</span> development time to the project
+								<span class="variable">Homepage</span> ad placement
 							</div>
 							<div class="spec">
-								<span class="variable">Full site</span> ad placement
+								<span class="variable">Sidebar</span> ad placement
 							</div>
 							<div class="spec">
 								<span class="variable">Priority support</span> for your engineers
@@ -261,10 +288,10 @@ Our professional and premium plans also include **priority support**. At any tim
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ stripe_public }}"
-    data-amount="50000"
+    data-amount="{{ stripe_amounts.corporate3 }}"
     data-name="Django REST framework"
     data-description="Premium"
-    data-currency="usd"
+    data-currency="{{ currency }}"
     data-allow-remember-me=false
     data-billing-address=true
     data-label='Sign up'
@@ -279,36 +306,54 @@ Our professional and premium plans also include **priority support**. At any tim
 
 *Billing is monthly and you can cancel at any time.*
 
-Once you've signed up we'll contact you via email and arrange your ad placements on the site.
+Once you've signed up I'll contact you via email and arrange your ad placements on the site.
 
 For further enquires please contact <a href=mailto:tom@tomchristie.com>tom@tomchristie.com</a>.
 
 ---
 
-## Roadmap
+## Accountability
 
-Although we're incredibly proud of REST framework in its current state we believe there is still huge scope for improvement. What we're aiming for here is a *highly polished, rock solid product*. This needs to backed up with impeccable documentation and a great third party ecosystem.
+In order to ensure that I can be fully focused on trying to secure a sustainable
+& well-funded open source business I will be leaving my current role at [DabApps](http://www.dabapps.com)
+at the end of May 2016.
 
-The roadmap below is a broad indication of just some of the ongoing and future work we believe is important to REST framework.
+I have formed a UK limited company, [Encode](http://www.encode.io), which will
+act as the business entity behind REST framework. I will be issuing monthly reports
+from Encode on progress both towards the [Mozilla grant](mozilla-grant.md), and for development time
+funded via the REST framework paid plans.
 
-* Increasing our "bus factor" through documented organizational process & safeguards.
-* More time towards testing and hardening releases, with only gradual, well-documented deprecations.
-* A formal policy on security backports for non-current releases.
-* Continuing triage & community support.
-* Improved project documentation, including versioned & internationalized docs.
-* Improved third party package visibility.
-* Refining the admin interface, ensuring it has a fully customizable API and making it suitable as end-user facing application.
-* Cleaning up internal complexities including the `BrowsableAPIRenderer` and `Request` object.
-* Support for alternative backends such as SQLAlchemy.
-* Support for non-database backed services.
-* HTTP Caching API & support for conditional database lookups.
-* Benchmarking and performance improvements.
-* In depth documentation on advanced usage and best practices.
-* Documentation & support for integration with realtime systems.
-* Hypermedia support and client libraries.
-* Support for JSON schema as endpoints or `OPTIONS` responses.
-* API metric tools.
-* Debug & logging tools.
-* Third party GraphQL support.
+<!-- Begin MailChimp Signup Form -->
+<link href="//cdn-images.mailchimp.com/embedcode/classic-10_7.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; }
+	/* Add your own MailChimp form style overrides in your site stylesheet or in this style block.
+	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+</style>
+<div id="mc_embed_signup">
+<form action="//encode.us13.list-manage.com/subscribe/post?u=b6b66bb5e4c7cb484a85c8dd7&amp;id=e382ef68ef" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+    <div id="mc_embed_signup_scroll">
+	<h2>Stay up to date, with our monthly progress reports...</h2>
+<div class="mc-field-group">
+	<label for="mce-EMAIL">Email Address </label>
+	<input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL">
+</div>
+	<div id="mce-responses" class="clear">
+		<div class="response" id="mce-error-response" style="display:none"></div>
+		<div class="response" id="mce-success-response" style="display:none"></div>
+	</div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_b6b66bb5e4c7cb484a85c8dd7_e382ef68ef" tabindex="-1" value=""></div>
+    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+    </div>
+</form>
+</div>
+<script type='text/javascript' src='//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js'></script><script type='text/javascript'>(function($) {window.fnames = new Array(); window.ftypes = new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[1]='FNAME';ftypes[1]='text';fnames[2]='LNAME';ftypes[2]='text';}(jQuery));var $mcj = jQuery.noConflict(true);</script>
+<!--End mc_embed_signup-->
 
-By taking out a paid plan you'll be directly contributing towards making these features happen.
+---
+
+## Our sponsors
+
+<div id="fundingInclude"></div>
+
+<script src="https://fund.django-rest-framework.org/funding_include.js"></script>

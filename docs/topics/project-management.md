@@ -17,7 +17,7 @@ We have a quarterly maintenance cycle where new members may join the maintenance
 
 #### Current team
 
-The [maintenance team for Q1 2015](https://github.com/tomchristie/django-rest-framework/issues/2190):
+The [maintenance team for Q4 2015](https://github.com/tomchristie/django-rest-framework/issues/2190):
 
 * [@tomchristie](https://github.com/tomchristie/)
 * [@xordoquy](https://github.com/xordoquy/) (Release manager.)
