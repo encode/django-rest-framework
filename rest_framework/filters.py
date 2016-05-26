@@ -308,7 +308,7 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
             'model_name': model_cls._meta.model_name
         }
         permission = self.perm_format % kwargs
-        if guardian.VERSION >= (1, 3):
+        if tuple(guardian.VERSION) >= (1, 3):
             # Maintain behavior compatibility with versions prior to 1.3
             extra = {'accept_global_perms': False}
         else:
