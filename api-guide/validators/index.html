@@ -38,15 +38,12 @@
   </script>
 
   <style>
-    span.fusion-wrap a {
-      display: block;
-      margin-top: 10px;
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
       color: black;
-    }
-    a.fusion-poweredby {
-      display: block;
-      margin-top: 10px;
-    }
+  }
     @media (max-width: 767px) {
       div.promo {
         display: none;
@@ -294,6 +291,14 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -399,7 +404,10 @@
                   
                 
 
-                
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
               </ul>
 
             </div>
@@ -604,6 +612,7 @@ It has two required arguments, and a single optional <code>messages</code> argum
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '../..';</script>
   <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>

@@ -38,15 +38,12 @@
   </script>
 
   <style>
-    span.fusion-wrap a {
-      display: block;
-      margin-top: 10px;
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
       color: black;
-    }
-    a.fusion-poweredby {
-      display: block;
-      margin-top: 10px;
-    }
+  }
     @media (max-width: 767px) {
       div.promo {
         display: none;
@@ -294,6 +291,14 @@
                   </li>
                   
                   <li >
+                    <a href="../mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../release-notes/">Release Notes</a>
                   </li>
                   
@@ -367,7 +372,10 @@
                   
                 
 
-                
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
               </ul>
 
             </div>
@@ -417,7 +425,7 @@
 <li><code>view.max_paginate_by</code> - Use <code>paginator.max_page_size</code> instead.</li>
 <li><code>settings.PAGINATE_BY</code> - Use <code>paginator.page_size</code> instead.</li>
 <li><code>settings.PAGINATE_BY_PARAM</code> - Use <code>paginator.page_size_query_param</code> instead.</li>
-<li><code>settings.MAX_PAGINATE_BY</code> - Use <code>max_page_size</code> instead.</li>
+<li><code>settings.MAX_PAGINATE_BY</code> - Use <code>paginator.max_page_size</code> instead.</li>
 </ul>
 <h2 id="modifications-to-list-behaviors"><a class="toclink" href="#modifications-to-list-behaviors">Modifications to list behaviors</a></h2>
 <p>There are a couple of bug fixes that are worth calling out as they introduce differing behavior.</p>
@@ -480,6 +488,7 @@
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '../..';</script>
   <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>

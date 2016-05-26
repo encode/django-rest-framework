@@ -38,15 +38,12 @@
   </script>
 
   <style>
-    span.fusion-wrap a {
-      display: block;
-      margin-top: 10px;
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
       color: black;
-    }
-    a.fusion-poweredby {
-      display: block;
-      margin-top: 10px;
-    }
+  }
     @media (max-width: 767px) {
       div.promo {
         display: none;
@@ -294,6 +291,14 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -477,9 +482,16 @@
                       <a href="#pandas-csv-excel-png">Pandas (CSV, Excel, PNG)</a>
                     </li>
                   
+                    <li>
+                      <a href="#latex">LaTeX</a>
+                    </li>
+                  
                 
 
-                
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
               </ul>
 
             </div>
@@ -821,6 +833,8 @@ In this case you can underspecify the media types it should respond to, by using
 <p><a href="https://github.com/vbabiy/djangorestframework-camel-case">djangorestframework-camel-case</a> provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by <a href="https://github.com/vbabiy">Vitaly Babiy</a>.</p>
 <h2 id="pandas-csv-excel-png"><a class="toclink" href="#pandas-csv-excel-png">Pandas (CSV, Excel, PNG)</a></h2>
 <p><a href="https://github.com/wq/django-rest-pandas">Django REST Pandas</a> provides a serializer and renderers that support additional data processing and output via the <a href="http://pandas.pydata.org/">Pandas</a> DataFrame API.  Django REST Pandas includes renderers for Pandas-style CSV files, Excel workbooks (both <code>.xls</code> and <code>.xlsx</code>), and a number of <a href="https://github.com/wq/django-rest-pandas#supported-formats">other formats</a>. It is maintained by <a href="https://github.com/sheppard">S. Andrew Sheppard</a> as part of the <a href="https://github.com/wq">wq Project</a>.</p>
+<h2 id="latex"><a class="toclink" href="#latex">LaTeX</a></h2>
+<p><a href="https://github.com/mypebble/rest-framework-latex">Rest Framework Latex</a> provides a renderer that outputs PDFs using Laulatex. It is maintained by <a href="https://github.com/mypebble">Pebble (S/F Software)</a>.</p>
             
 
           </div> <!--/span-->
@@ -841,6 +855,7 @@ In this case you can underspecify the media types it should respond to, by using
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '../..';</script>
   <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>

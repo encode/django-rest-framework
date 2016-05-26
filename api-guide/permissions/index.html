@@ -38,15 +38,12 @@
   </script>
 
   <style>
-    span.fusion-wrap a {
-      display: block;
-      margin-top: 10px;
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
       color: black;
-    }
-    a.fusion-poweredby {
-      display: block;
-      margin-top: 10px;
-    }
+  }
     @media (max-width: 767px) {
       div.promo {
         display: none;
@@ -294,6 +291,14 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -421,7 +426,10 @@
                   
                 
 
-                
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
               </ul>
 
             </div>
@@ -539,7 +547,7 @@ def example_view(request, format=None):
 <p>The default behaviour can also be overridden to support custom model permissions.  For example, you might want to include a <code>view</code> model permission for <code>GET</code> requests.</p>
 <p>To use custom model permissions, override <code>DjangoModelPermissions</code> and set the <code>.perms_map</code> property.  Refer to the source code for details.</p>
 <h4 id="using-with-views-that-do-not-include-a-queryset-attribute"><a class="toclink" href="#using-with-views-that-do-not-include-a-queryset-attribute">Using with views that do not include a <code>queryset</code> attribute.</a></h4>
-<p>If you're using this permission with a view that uses an overridden <code>get_queryset()</code> method there may not be a <code>queryset</code> attribute on the view. In this case we suggest also marking the view with a sential queryset, so that this class can determine the required permissions. For example:</p>
+<p>If you're using this permission with a view that uses an overridden <code>get_queryset()</code> method there may not be a <code>queryset</code> attribute on the view. In this case we suggest also marking the view with a sentinel queryset, so that this class can determine the required permissions. For example:</p>
 <pre><code>queryset = User.objects.none()  # Required for DjangoModelPermissions
 </code></pre>
 <h2 id="djangomodelpermissionsoranonreadonly"><a class="toclink" href="#djangomodelpermissionsoranonreadonly">DjangoModelPermissionsOrAnonReadOnly</a></h2>
@@ -644,6 +652,7 @@ class BlacklistPermission(permissions.BasePermission):
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '../..';</script>
   <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>

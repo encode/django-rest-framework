@@ -38,15 +38,12 @@
   </script>
 
   <style>
-    span.fusion-wrap a {
-      display: block;
-      margin-top: 10px;
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
       color: black;
-    }
-    a.fusion-poweredby {
-      display: block;
-      margin-top: 10px;
-    }
+  }
     @media (max-width: 767px) {
       div.promo {
         display: none;
@@ -294,6 +291,14 @@
                   </li>
                   
                   <li >
+                    <a href="../mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../release-notes/">Release Notes</a>
                   </li>
                   
@@ -379,7 +384,10 @@
                   
                 
 
-                
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
               </ul>
 
             </div>
@@ -413,7 +421,7 @@
 </ul>
 <h4 id="new-pagination-schemes"><a class="toclink" href="#new-pagination-schemes">New pagination schemes.</a></h4>
 <p>Until now, there has only been a single built-in pagination style in REST framework. We now have page, limit/offset and cursor based schemes included by default.</p>
-<p>The cursor based pagination scheme is particularly smart, and is a better approach for clients iterating through large or frequently changing result sets. The scheme supports paging against non-unique indexes, by using both cursor and limit/offset information. It also allows for both forward and reverse cursor pagination. Much credit goes to David Cramer for <a href="http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api/">this blog post</a> on the subject.</p>
+<p>The cursor based pagination scheme is particularly smart, and is a better approach for clients iterating through large or frequently changing result sets. The scheme supports paging against non-unique indexes, by using both cursor and limit/offset information. It also allows for both forward and reverse cursor pagination. Much credit goes to David Cramer for <a href="http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api">this blog post</a> on the subject.</p>
 <h4 id="pagination-controls-in-the-browsable-api"><a class="toclink" href="#pagination-controls-in-the-browsable-api">Pagination controls in the browsable API.</a></h4>
 <p>Paginated results now include controls that render directly in the browsable API. If you're using the page or limit/offset style, then you'll see a page based control displayed in the browsable API:</p>
 <p><img alt="page number based pagination" src="../../img/pages-pagination.png" /></p>
@@ -470,7 +478,7 @@ Host: example.org
     "detail": "No se ha podido satisfacer la solicitud de cabecera de Accept."
 }
 </code></pre>
-<p>Note that the structure of the error responses is still the same. We still have a <code>details</code> key in the response. If needed you can modify this behavior too, by using a <a href="../../api-guide/exceptions/#custom-exception-handling">custom exception handler</a>.</p>
+<p>Note that the structure of the error responses is still the same. We still have a <code>detail</code> key in the response. If needed you can modify this behavior too, by using a <a href="../../api-guide/exceptions/#custom-exception-handling">custom exception handler</a>.</p>
 <p>We include built-in translations both for standard exception cases, and for serializer validation errors.</p>
 <p>The full list of supported languages can be found on our <a href="https://www.transifex.com/projects/p/django-rest-framework/">Transifex project page</a>.</p>
 <p>If you only wish to support a subset of the supported languages, use Django's standard <code>LANGUAGES</code> setting:</p>
@@ -551,6 +559,7 @@ Host: example.org
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '../..';</script>
   <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>

@@ -38,15 +38,12 @@
   </script>
 
   <style>
-    span.fusion-wrap a {
-      display: block;
-      margin-top: 10px;
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
       color: black;
-    }
-    a.fusion-poweredby {
-      display: block;
-      margin-top: 10px;
-    }
+  }
     @media (max-width: 767px) {
       div.promo {
         display: none;
@@ -64,7 +61,7 @@
           <a class="repo-link btn btn-inverse btn-small disabled" rel="prev" >
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../kickstarter-announcement/">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../funding/">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
@@ -293,6 +290,14 @@
                     <a href="../kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
+                  <li >
+                    <a href="../mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../funding/">Funding</a>
+                  </li>
+                  
                   <li class="active" >
                     <a href="./">Release Notes</a>
                   </li>
@@ -358,6 +363,10 @@
                     </li>
                   
                     <li>
+                      <a href="#34x-series">3.4.x series</a>
+                    </li>
+                  
+                    <li>
                       <a href="#33x-series">3.3.x series</a>
                     </li>
                   
@@ -375,7 +384,10 @@
                   
                 
 
-                
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
               </ul>
 
             </div>
@@ -417,6 +429,13 @@
 <pre><code>pip freeze | grep djangorestframework
 </code></pre>
 <hr />
+<h2 id="34x-series"><a class="toclink" href="#34x-series">3.4.x series</a></h2>
+<h3 id="34"><a class="toclink" href="#34">3.4</a></h3>
+<p><strong>Unreleased</strong></p>
+<ul>
+<li>Dropped support for EOL Django 1.7 ([#3933][gh3933])</li>
+<li>Fixed null foreign keys targeting UUIDField primary keys. ([#3936][gh3936])</li>
+</ul>
 <h2 id="33x-series"><a class="toclink" href="#33x-series">3.3.x series</a></h2>
 <h3 id="333"><a class="toclink" href="#333">3.3.3</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.3+Release%22">14th March 2016</a>.</p>
@@ -762,6 +781,7 @@
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '../..';</script>
   <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>

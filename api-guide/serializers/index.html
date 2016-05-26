@@ -38,15 +38,12 @@
   </script>
 
   <style>
-    span.fusion-wrap a {
-      display: block;
-      margin-top: 10px;
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
       color: black;
-    }
-    a.fusion-poweredby {
-      display: block;
-      margin-top: 10px;
-    }
+  }
     @media (max-width: 767px) {
       div.promo {
         display: none;
@@ -294,6 +291,14 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -452,15 +457,11 @@
 
                   
                     <li>
-                      <a href="#customizing-multiple-create">Customizing multiple create</a>
+                      <a href="#allow_empty">allow_empty</a>
                     </li>
                   
                     <li>
-                      <a href="#customizing-multiple-update">Customizing multiple update</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#customizing-listserializer-initialization">Customizing ListSerializer initialization</a>
+                      <a href="#customizing-listserializer-behavior">Customizing ListSerializer behavior</a>
                     </li>
                   
                 
@@ -525,9 +526,20 @@
                       <a href="#hstoreserializer">HStoreSerializer</a>
                     </li>
                   
+                    <li>
+                      <a href="#dynamic-rest">Dynamic REST</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#html-json-forms">HTML JSON Forms</a>
+                    </li>
+                  
                 
 
-                
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
               </ul>
 
             </div>
@@ -902,7 +914,7 @@ serializer.data
 <p>To do so, open the Django shell, using <code>python manage.py shell</code>, then import the serializer class, instantiate it, and print the object representation…</p>
 <pre><code>&gt;&gt;&gt; from myapp.serializers import AccountSerializer
 &gt;&gt;&gt; serializer = AccountSerializer()
-&gt;&gt;&gt; print repr(serializer)  # Or `print(repr(serializer))` in Python 3.x.
+&gt;&gt;&gt; print(repr(serializer))
 AccountSerializer():
     id = IntegerField(label='ID', read_only=True)
     name = CharField(allow_blank=True, max_length=100, required=False)
@@ -1087,9 +1099,13 @@ The default implementation raises an error, although subclasses may customize th
 <h1 id="listserializer"><a class="toclink" href="#listserializer">ListSerializer</a></h1>
 <p>The <code>ListSerializer</code> class provides the behavior for serializing and validating multiple objects at once. You won't <em>typically</em> need to use <code>ListSerializer</code> directly, but should instead simply pass <code>many=True</code> when instantiating a serializer.</p>
 <p>When a serializer is instantiated and <code>many=True</code> is passed, a <code>ListSerializer</code> instance will be created. The serializer class then becomes a child of the parent <code>ListSerializer</code></p>
+<p>The following argument can also be passed to a <code>ListSerializer</code> field or a serializer that is passed <code>many=True</code>:</p>
+<h3 id="allow_empty"><a class="toclink" href="#allow_empty"><code>allow_empty</code></a></h3>
+<p>This is <code>True</code> by default, but can be set to <code>False</code> if you want to disallow empty lists as valid input.</p>
+<h3 id="customizing-listserializer-behavior"><a class="toclink" href="#customizing-listserializer-behavior">Customizing <code>ListSerializer</code> behavior</a></h3>
 <p>There <em>are</em> a few use cases when you might want to customize the <code>ListSerializer</code> behavior. For example:</p>
 <ul>
-<li>You want to provide particular validation of the lists, such as always ensuring that there is at least one element in a list.</li>
+<li>You want to provide particular validation of the lists, such as checking that one element does not conflict with another element in a list.</li>
 <li>You want to customize the create or update behavior of multiple objects.</li>
 </ul>
 <p>For these cases you can modify the class that is used when <code>many=True</code> is passed, by using the <code>list_serializer_class</code> option on the serializer <code>Meta</code> class.</p>
@@ -1366,6 +1382,10 @@ def all_high_scores(request):
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-gis">django-rest-framework-gis</a> package provides a <code>GeoFeatureModelSerializer</code> serializer class that supports GeoJSON both for read and write operations.</p>
 <h2 id="hstoreserializer"><a class="toclink" href="#hstoreserializer">HStoreSerializer</a></h2>
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-hstore">django-rest-framework-hstore</a> package provides an <code>HStoreSerializer</code> to support <a href="https://github.com/djangonauts/django-hstore">django-hstore</a> <code>DictionaryField</code> model field and its <code>schema-mode</code> feature.</p>
+<h2 id="dynamic-rest"><a class="toclink" href="#dynamic-rest">Dynamic REST</a></h2>
+<p>The <a href="https://github.com/AltSchool/dynamic-rest">dynamic-rest</a> package extends the ModelSerializer and ModelViewSet interfaces, adding API query parameters for filtering, sorting, and including / excluding all fields and relationships defined by your serializers.</p>
+<h2 id="html-json-forms"><a class="toclink" href="#html-json-forms">HTML JSON Forms</a></h2>
+<p>The <a href="https://github.com/wq/html-json-forms">html-json-forms</a> package provides an algorithm and serializer for processing <code>&lt;form&gt;</code> submissions per the (inactive) <a href="https://www.w3.org/TR/html-json-forms/">HTML JSON Form specification</a>.  The serializer facilitates processing of arbitrarily nested JSON structures within HTML.  For example, <code>&lt;input name="items[0][id]" value="5"&gt;</code> will be interpreted as <code>{"items": [{"id": "5"}]}</code>.</p>
             
 
           </div> <!--/span-->
@@ -1386,6 +1406,7 @@ def all_high_scores(request):
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '../..';</script>
   <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>

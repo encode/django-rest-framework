@@ -38,15 +38,12 @@
   </script>
 
   <style>
-    span.fusion-wrap a {
-      display: block;
-      margin-top: 10px;
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
       color: black;
-    }
-    a.fusion-poweredby {
-      display: block;
-      margin-top: 10px;
-    }
+  }
     @media (max-width: 767px) {
       div.promo {
         display: none;
@@ -294,6 +291,14 @@
                   </li>
                   
                   <li >
+                    <a href="topics/mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="topics/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -411,12 +416,10 @@
                   
                 
 
-                
                   <div class="promo">
                     <hr/>
-                    <script type="text/javascript" src="//cdn.fusionads.net/fusion.js?zoneid=1332&serve=C6SDP2Y&placement=djangorestframework" id="_fusionads_js"></script>
+                    <div id="sidebarInclude">
                   </div>
-                
               </ul>
 
             </div>
@@ -605,6 +608,8 @@ urlpatterns = [
 <li><a href="topics/3.2-announcement/">3.2 Announcement</a></li>
 <li><a href="topics/3.3-announcement/">3.3 Announcement</a></li>
 <li><a href="topics/kickstarter-announcement/">Kickstarter Announcement</a></li>
+<li><a href="topics/mozilla-grant/">Mozilla Grant</a></li>
+<li><a href="topics/funding/">Funding</a></li>
 <li><a href="topics/release-notes/">Release Notes</a></li>
 </ul>
 <h2 id="development"><a class="toclink" href="#development">Development</a></h2>
@@ -660,6 +665,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
   <script src="./js/jquery-1.8.1-min.js"></script>
   <script src="./js/prettify-1.0.js"></script>
   <script src="./js/bootstrap-2.1.1-min.js"></script>
+  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '.';</script>
   <script src="./mkdocs/js/require.js"></script>
   <script src="./js/theme.js"></script>

@@ -38,15 +38,12 @@
   </script>
 
   <style>
-    span.fusion-wrap a {
-      display: block;
-      margin-top: 10px;
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
       color: black;
-    }
-    a.fusion-poweredby {
-      display: block;
-      margin-top: 10px;
-    }
+  }
     @media (max-width: 767px) {
       div.promo {
         display: none;
@@ -294,6 +291,14 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -421,7 +426,10 @@
                   
                 
 
-                
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
               </ul>
 
             </div>
@@ -504,8 +512,6 @@
 <h2 id="stream"><a class="toclink" href="#stream">.stream</a></h2>
 <p><code>request.stream</code> returns a stream representing the content of the request body.</p>
 <p>You won't typically need to directly access the request's content, as you'll normally rely on REST framework's default request parsing behavior.</p>
-<p>If you do need to access the raw content directly, you should use the <code>.stream</code> property in preference to using <code>request.content</code>, as it provides transparent support for browser-based non-form content.</p>
-<p>For more information see the <a href="../../topics/browser-enhancements/">browser enhancements documentation</a>.</p>
 <hr />
 <h1 id="standard-httprequest-attributes"><a class="toclink" href="#standard-httprequest-attributes">Standard HttpRequest attributes</a></h1>
 <p>As REST framework's <code>Request</code> extends Django's <code>HttpRequest</code>, all the other standard attributes and methods are also available.  For example the <code>request.META</code> and <code>request.session</code> dictionaries are available as normal.</p>
@@ -530,6 +536,7 @@
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '../..';</script>
   <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>

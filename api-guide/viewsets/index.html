@@ -38,15 +38,12 @@
   </script>
 
   <style>
-    span.fusion-wrap a {
-      display: block;
-      margin-top: 10px;
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
       color: black;
-    }
-    a.fusion-poweredby {
-      display: block;
-      margin-top: 10px;
-    }
+  }
     @media (max-width: 767px) {
       div.promo {
         display: none;
@@ -294,6 +291,14 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -387,7 +392,10 @@
                   
                 
 
-                
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
               </ul>
 
             </div>
@@ -552,7 +560,7 @@ class UserViewSet(viewsets.ModelViewSet):
 <p>In order to use a <code>GenericViewSet</code> class you'll override the class and either mixin the required mixin classes, or define the action implementations explicitly.</p>
 <h2 id="modelviewset"><a class="toclink" href="#modelviewset">ModelViewSet</a></h2>
 <p>The <code>ModelViewSet</code> class inherits from <code>GenericAPIView</code> and includes implementations for various actions, by mixing in the behavior of the various mixin classes.</p>
-<p>The actions provided by the <code>ModelViewSet</code> class are <code>.list()</code>, <code>.retrieve()</code>,  <code>.create()</code>, <code>.update()</code>, and <code>.destroy()</code>.</p>
+<p>The actions provided by the <code>ModelViewSet</code> class are <code>.list()</code>, <code>.retrieve()</code>,  <code>.create()</code>, <code>.update()</code>, <code>.partial_update()</code>, and <code>.destroy()</code>.</p>
 <h4 id="example_1"><a class="toclink" href="#example_1">Example</a></h4>
 <p>Because <code>ModelViewSet</code> extends <code>GenericAPIView</code>, you'll normally need to provide at least the <code>queryset</code> and <code>serializer_class</code> attributes.  For example:</p>
 <pre><code>class AccountViewSet(viewsets.ModelViewSet):
@@ -626,6 +634,7 @@ class UserViewSet(viewsets.ModelViewSet):
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '../..';</script>
   <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>

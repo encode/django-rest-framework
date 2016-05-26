@@ -38,15 +38,12 @@
   </script>
 
   <style>
-    span.fusion-wrap a {
-      display: block;
-      margin-top: 10px;
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
       color: black;
-    }
-    a.fusion-poweredby {
-      display: block;
-      margin-top: 10px;
-    }
+  }
     @media (max-width: 767px) {
       div.promo {
         display: none;
@@ -294,6 +291,14 @@
                   </li>
                   
                   <li >
+                    <a href="../mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../release-notes/">Release Notes</a>
                   </li>
                   
@@ -367,7 +372,10 @@
                   
                 
 
-                
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
               </ul>
 
             </div>
@@ -389,7 +397,7 @@
 <h2 id="maintenance-team"><a class="toclink" href="#maintenance-team">Maintenance team</a></h2>
 <p>We have a quarterly maintenance cycle where new members may join the maintenance team. We currently cap the size of the team at 5 members, and may encourage folks to step out of the team for a cycle to allow new members to participate.</p>
 <h4 id="current-team"><a class="toclink" href="#current-team">Current team</a></h4>
-<p>The <a href="https://github.com/tomchristie/django-rest-framework/issues/2190">maintenance team for Q1 2015</a>:</p>
+<p>The <a href="https://github.com/tomchristie/django-rest-framework/issues/2190">maintenance team for Q4 2015</a>:</p>
 <ul>
 <li><a href="https://github.com/tomchristie/">@tomchristie</a></li>
 <li><a href="https://github.com/xordoquy/">@xordoquy</a> (Release manager.)</li>
@@ -558,6 +566,7 @@ django-admin.py compilemessages
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '../..';</script>
   <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>

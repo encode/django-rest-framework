@@ -38,15 +38,12 @@
   </script>
 
   <style>
-    span.fusion-wrap a {
-      display: block;
-      margin-top: 10px;
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
       color: black;
-    }
-    a.fusion-poweredby {
-      display: block;
-      margin-top: 10px;
-    }
+  }
     @media (max-width: 767px) {
       div.promo {
         display: none;
@@ -294,6 +291,14 @@
                   </li>
                   
                   <li >
+                    <a href="../mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../release-notes/">Release Notes</a>
                   </li>
                   
@@ -363,7 +368,10 @@
                   
                 
 
-                
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
               </ul>
 
             </div>
@@ -514,6 +522,7 @@ You probably want to also tag the version now:
 <li><a href="https://github.com/djangonauts/django-rest-framework-gis">djangorestframework-gis</a> - Geographic add-ons</li>
 <li><a href="https://github.com/djangonauts/django-rest-framework-hstore">djangorestframework-hstore</a> - Serializer class to support django-hstore DictionaryField model field and its schema-mode feature.</li>
 <li><a href="https://github.com/django-json-api/django-rest-framework-json-api">djangorestframework-jsonapi</a> - Provides a parser, renderer, serializers, and other tools to help build an API that is compliant with the jsonapi.org spec.</li>
+<li><a href="https://github.com/wq/html-json-forms">html-json-forms</a>: Provides an algorithm and serializer to process HTML JSON Form submissions per the (inactive) spec.</li>
 </ul>
 <h3 id="serializer-fields"><a class="toclink" href="#serializer-fields">Serializer fields</a></h3>
 <ul>
@@ -563,6 +572,7 @@ You probably want to also tag the version now:
 <li><a href="https://github.com/dealertrack/django-rest-framework-braces">django-rest-framework-braces</a> - Collection of utilities for working with Django Rest Framework. The most notable ones are <a href="https://django-rest-framework-braces.readthedocs.org/en/latest/overview.html#formserializer">FormSerializer</a> and <a href="https://django-rest-framework-braces.readthedocs.org/en/latest/overview.html#serializerform">SerializerForm</a>, which are adapters between DRF serializers and Django forms.</li>
 <li><a href="http://drf-haystack.readthedocs.org/en/latest/">drf-haystack</a> - Haystack search for Django Rest Framework</li>
 <li><a href="https://github.com/mrhwick/django-rest-framework-version-transforms">django-rest-framework-version-transforms</a> - Enables the use of delta transformations for versioning of DRF resource representations.</li>
+<li><a href="https://github.com/raphaelgyory/django-rest-messaging">django-rest-messaging</a>, <a href="https://github.com/raphaelgyory/django-rest-messaging-centrifugo">django-rest-messaging-centrifugo</a> and <a href="https://github.com/raphaelgyory/django-rest-messaging-js">django-rest-messaging-js</a> - A real-time pluggable messaging service using DRM.</li>
 </ul>
 <h2 id="other-resources"><a class="toclink" href="#other-resources">Other Resources</a></h2>
 <h3 id="tutorials"><a class="toclink" href="#tutorials">Tutorials</a></h3>
@@ -587,6 +597,7 @@ You probably want to also tag the version now:
 <ul>
 <li><a href="http://dabapps.com/blog/api-performance-profiling-django-rest-framework/">Web API performance: profiling Django REST framework</a></li>
 <li><a href="https://bnotions.com/api-development-with-django-and-django-rest-framework/">API Development with Django and Django REST Framework</a></li>
+<li><a href="https://medium.com/django-rest-framework">Blog posts about Django REST framework</a></li>
 </ul>
 <h3 id="documentations"><a class="toclink" href="#documentations">Documentations</a></h3>
 <ul>
@@ -612,6 +623,7 @@ You probably want to also tag the version now:
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '../..';</script>
   <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>

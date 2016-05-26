@@ -38,15 +38,12 @@
   </script>
 
   <style>
-    span.fusion-wrap a {
-      display: block;
-      margin-top: 10px;
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
       color: black;
-    }
-    a.fusion-poweredby {
-      display: block;
-      margin-top: 10px;
-    }
+  }
     @media (max-width: 767px) {
       div.promo {
         display: none;
@@ -294,6 +291,14 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
@@ -441,7 +446,10 @@
                   
                 
 
-                
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
               </ul>
 
             </div>
@@ -550,7 +558,7 @@ WSGIPassAuthorization On
 )
 </code></pre>
 <hr />
-<p><strong>Note:</strong> Make sure to run <code>manage.py syncdb</code> after changing your settings. The <code>rest_framework.authtoken</code> app provides both Django (from v1.7) and South database migrations. See <a href="#schema-migrations">Schema migrations</a> below.</p>
+<p><strong>Note:</strong> Make sure to run <code>manage.py migrate</code> after changing your settings. The <code>rest_framework.authtoken</code> app provides Django database migrations.</p>
 <hr />
 <p>You'll also need to create tokens for your users.</p>
 <pre><code>from rest_framework.authtoken.models import Token
@@ -561,6 +569,7 @@ print token.key
 <p>For clients to authenticate, the token key should be included in the <code>Authorization</code> HTTP header.  The key should be prefixed by the string literal "Token", with whitespace separating the two strings.  For example:</p>
 <pre><code>Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
 </code></pre>
+<p><strong>Note:</strong> If you want to use a different keyword in the header, such as <code>Bearer</code>, simply subclass <code>TokenAuthentication</code> and set the <code>keyword</code> class variable.</p>
 <p>If successfully authenticated, <code>TokenAuthentication</code> provides the following credentials.</p>
 <ul>
 <li><code>request.user</code> will be a Django <code>User</code> instance.</li>
@@ -614,28 +623,6 @@ urlpatterns += [
 <pre><code>from rest_framework.authtoken.admin import TokenAdmin
 
 TokenAdmin.raw_id_fields = ('user',)
-</code></pre>
-<h4 id="schema-migrations"><a class="toclink" href="#schema-migrations">Schema migrations</a></h4>
-<p>The <code>rest_framework.authtoken</code> app includes both Django native migrations (for Django versions &gt;1.7) and South migrations (for Django versions &lt;1.7) that will create the authtoken table.</p>
-<hr />
-<p><strong>Note</strong>: From REST Framework v2.4.0 using South with Django &lt;1.7 requires upgrading South v1.0+</p>
-<hr />
-<p>If you're using a <a href="https://docs.djangoproject.com/en/dev/topics/auth/customizing/#specifying-a-custom-user-model">custom user model</a> you'll need to make sure that any initial migration that creates the user table runs before the authtoken table is created.</p>
-<p>You can do so by inserting a <code>needed_by</code> attribute in your user migration:</p>
-<pre><code>class Migration:
-
-    needed_by = (
-        ('authtoken', '0001_initial'),
-    )
-
-    def forwards(self):
-        ...
-</code></pre>
-<p>For more details, see the <a href="http://south.readthedocs.org/en/latest/dependencies.html">south documentation on dependencies</a>.</p>
-<p>Also note that if you're using a <code>post_save</code> signal to create tokens, then the first time you create the database tables, you'll need to ensure any migrations are run prior to creating any superusers.  For example:</p>
-<pre><code>python manage.py syncdb --noinput  # Won't create a superuser just yet, due to `--noinput`.
-python manage.py migrate
-python manage.py createsuperuser
 </code></pre>
 <h2 id="sessionauthentication"><a class="toclink" href="#sessionauthentication">SessionAuthentication</a></h2>
 <p>This authentication scheme uses Django's default session backend for authentication.  Session authentication is appropriate for AJAX clients that are running in the same session context as your website.</p>
@@ -745,6 +732,7 @@ REST_FRAMEWORK = {
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '../..';</script>
   <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>
