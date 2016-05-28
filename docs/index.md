@@ -42,9 +42,22 @@ Some reasons you might want to use REST framework:
 
 ---
 
-![Screenshot][image]
+We are a [collaboratively funded project](https://fund.django-rest-framework.org/topics/funding/).
+Many thanks to our sponsors for ensuring we can continue to develop, support and improve Django REST framework.
 
-**Above**: *Screenshot from the browsable API*
+<a href="https://www.rover.com/" rel="nofollow" style="background-image:url(./img/rover.png);
+display:block;
+    width: 300px;
+    height: 0px;
+    text-align: center;
+    margin: 10px auto 30px;
+    padding: 300px 0 0 0;
+    background-position: 0 50%;
+    background-size: 280px auto;
+    background-repeat: no-repeat;
+    font-size: 150%;">Rover.com</a>
+
+---
 
 ## Requirements
 
