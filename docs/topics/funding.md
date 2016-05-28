@@ -163,7 +163,7 @@ If you are using REST framework as an full-time employee, consider recommending 
 								Credited on the site
 							</div>
 						</div>
-						<form class="signup" action="/signup/individual/" method="POST">
+						<form class="signup" action="/signup/{{ currency }}-{{ rates.personal1 }}/" method="POST">
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ stripe_public }}"
@@ -211,7 +211,7 @@ Our professional and premium plans also include **priority support**. At any tim
 								<span class="variable">Funding page</span> ad placement
 							</div>
 						</div>
-						<form class="signup" action="/signup/startup/" method="POST">
+						<form class="signup" action="/signup/{{ currency }}-{{ rates.corporate1 }}/" method="POST">
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ stripe_public }}"
@@ -246,7 +246,7 @@ Our professional and premium plans also include **priority support**. At any tim
 								<span class="variable">Priority support</span> for your engineers
 							</div>
 						</div>
-						<form class="signup" action="/signup/professional/" method="POST">
+						<form class="signup" action="/signup/{{ currency }}-{{ rates.corporate2 }}/" method="POST">
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ stripe_public }}"
@@ -284,7 +284,7 @@ Our professional and premium plans also include **priority support**. At any tim
 								<span class="variable">Priority support</span> for your engineers
 							</div>
 						</div>
-						<form class="signup" action="/signup/premium/" method="POST">
+						<form class="signup" action="/signup/{{ currency }}-{{ rates.corporate3 }}/" method="POST">
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ stripe_public }}"
