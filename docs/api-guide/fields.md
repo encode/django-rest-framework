@@ -670,7 +670,7 @@ The [django-rest-framework-hstore][django-rest-framework-hstore] package provide
 [strftime]: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
 [django-widgets]: https://docs.djangoproject.com/en/dev/ref/forms/widgets/
 [iso8601]: http://www.w3.org/TR/NOTE-datetime
-[drf-compound-fields]: http://drf-compound-fields.readthedocs.org
+[drf-compound-fields]: https://drf-compound-fields.readthedocs.io
 [drf-extra-fields]: https://github.com/Hipo/drf-extra-fields
 [djangorestframework-recursive]: https://github.com/heywbj/django-rest-framework-recursive
 [django-rest-framework-gis]: https://github.com/djangonauts/django-rest-framework-gis

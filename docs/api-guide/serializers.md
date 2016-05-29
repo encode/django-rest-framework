@@ -1096,7 +1096,7 @@ The [html-json-forms][html-json-forms] package provides an algorithm and seriali
 [model-managers]: https://docs.djangoproject.com/en/dev/topics/db/managers/
 [encapsulation-blogpost]: http://www.dabapps.com/blog/django-models-and-encapsulation/
 [django-rest-marshmallow]: http://tomchristie.github.io/django-rest-marshmallow/
-[marshmallow]: https://marshmallow.readthedocs.org/en/latest/
+[marshmallow]: https://marshmallow.readthedocs.io/en/latest/
 [serpy]: https://github.com/clarkduvall/serpy
 [mongoengine]: https://github.com/umutbozkurt/django-rest-framework-mongoengine
 [django-rest-framework-gis]: https://github.com/djangonauts/django-rest-framework-gis
