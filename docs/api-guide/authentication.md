@@ -361,7 +361,7 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [throttling]: throttling.md
 [csrf-ajax]: https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
 [mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization
-[django-oauth-toolkit-getting-started]: https://django-oauth-toolkit.readthedocs.org/en/latest/rest-framework/getting_started.html
+[django-oauth-toolkit-getting-started]: https://django-oauth-toolkit.readthedocs.io/en/latest/rest-framework/getting_started.html
 [django-rest-framework-oauth]: http://jpadilla.github.io/django-rest-framework-oauth/
 [django-rest-framework-oauth-authentication]: http://jpadilla.github.io/django-rest-framework-oauth/authentication/
 [django-rest-framework-oauth-permissions]: http://jpadilla.github.io/django-rest-framework-oauth/permissions/
@@ -370,7 +370,7 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [oauth-1.0a]: http://oauth.net/core/1.0a
 [django-oauth-plus]: http://code.larlet.fr/django-oauth-plus
 [django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
-[django-oauth2-provider-docs]: https://django-oauth2-provider.readthedocs.org/en/latest/
+[django-oauth2-provider-docs]: https://django-oauth2-provider.readthedocs.io/en/latest/
 [rfc6749]: http://tools.ietf.org/html/rfc6749
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
 [evonove]: https://github.com/evonove/
@@ -384,9 +384,9 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [djangorestframework-httpsignature]: https://github.com/etoccalino/django-rest-framework-httpsignature
 [amazon-http-signature]: http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
 [http-signature-ietf-draft]: https://datatracker.ietf.org/doc/draft-cavage-http-signatures/
-[hawkrest]: http://hawkrest.readthedocs.org/en/latest/
+[hawkrest]: https://hawkrest.readthedocs.io/en/latest/
 [hawk]: https://github.com/hueniverse/hawk
-[mohawk]: http://mohawk.readthedocs.org/en/latest/
+[mohawk]: https://mohawk.readthedocs.io/en/latest/
 [mac]: http://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05
 [djoser]: https://github.com/sunscrapers/djoser
 [django-rest-auth]: https://github.com/Tivix/django-rest-auth

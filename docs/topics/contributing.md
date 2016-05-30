@@ -205,7 +205,7 @@ If you want to draw attention to a note or warning, use a pair of enclosing line
 [pep-8]: http://www.python.org/dev/peps/pep-0008/
 [travis-status]: ../img/travis-status.png
 [pull-requests]: https://help.github.com/articles/using-pull-requests
-[tox]: http://tox.readthedocs.org/en/latest/
+[tox]: https://tox.readthedocs.io/en/latest/
 [markdown]: http://daringfireball.net/projects/markdown/basics
 [docs]: https://github.com/tomchristie/django-rest-framework/tree/master/docs
 [mou]: http://mouapp.com/
