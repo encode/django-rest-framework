@@ -6,6 +6,8 @@ versions of Django/Python, and compatibility wrappers around optional packages.
 # flake8: noqa
 from __future__ import unicode_literals
 
+import inspect
+
 import django
 from django.conf import settings
 from django.db import connection, transaction
@@ -185,3 +187,36 @@ def template_render(template, context=None, request=None):
     # backends template, e.g. django.template.backends.django.Template
     else:
         return template.render(context, request=request)
+
+
+def is_simple_callable(obj):
+    """
+    True if the object is a callable that takes no arguments.
+    """
+    function = inspect.isfunction(obj)
+    method = inspect.ismethod(obj)
+
+    if not (function or method):
+        return False
+
+    # - `inspect.signature` is introduced in Python 3.3
+    # - `inspect.getfullargspec` is introduced in Python 3.0
+    #     and deprecated since Python 3.5
+    # - `inspect.getargspec` is deprecated since Python 3.0
+    if hasattr(inspect, 'signature'):
+        sig = inspect.signature(obj)
+        for name, param in sig.parameters.items():
+            if param.default is not inspect.Parameter.empty:
+                return False
+
+        return True
+    else:
+        if hasattr(inspect, 'getfullargspec'):
+            spec = inspect.getfullargspec(obj)
+            args, defaults = spec.args, spec.defaults
+        else:
+            args, _, _, defaults = inspect.getargspec(obj)
+
+        len_args = len(args) if function else len(args) - 1
+        len_defaults = len(defaults) if defaults else 0
+        return len_args <= len_defaults
