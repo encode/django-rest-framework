@@ -54,7 +54,16 @@ class IsAdminUser(BasePermission):
 
     def has_permission(self, request, view):
         return request.user and request.user.is_staff
+        
+        
+class IsSuperUser(BasePermission):
+    """
+    Allows access only to superuser users.
+    """
 
+    def has_permission(self, request, view):
+        return request.user and request.user.is_superuser
+        
 
 class IsAuthenticatedOrReadOnly(BasePermission):
     """
