@@ -16,7 +16,11 @@ class DropdownWithAuthTests(TestCase):
         self.username = 'john'
         self.email = 'lennon@thebeatles.com'
         self.password = 'password'
-        self.user = User.objects.create_user(self.username, self.email, self.password)
+        self.user = User.objects.create_user(
+            self.username,
+            self.email,
+            self.password
+        )
 
     def tearDown(self):
         self.client.logout()
@@ -46,7 +50,11 @@ class NoDropdownWithoutAuthTests(TestCase):
         self.username = 'john'
         self.email = 'lennon@thebeatles.com'
         self.password = 'password'
-        self.user = User.objects.create_user(self.username, self.email, self.password)
+        self.user = User.objects.create_user(
+            self.username,
+            self.email,
+            self.password
+        )
 
     def tearDown(self):
         self.client.logout()
