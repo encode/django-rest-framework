@@ -17,7 +17,11 @@ class RESTFrameworkModel(models.Model):
 
 
 class BasicModel(RESTFrameworkModel):
-    text = models.CharField(max_length=100, verbose_name=_("Text comes here"), help_text=_("Text description."))
+    text = models.CharField(
+        max_length=100,
+        verbose_name=_("Text comes here"),
+        help_text=_("Text description.")
+    )
 
 
 class BaseFilterableItem(RESTFrameworkModel):
@@ -84,5 +88,6 @@ class OneToOneTarget(RESTFrameworkModel):
 
 class NullableOneToOneSource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
-    target = models.OneToOneField(OneToOneTarget, null=True, blank=True,
-                                  related_name='nullable_source', on_delete=models.CASCADE)
+    target = models.OneToOneField(
+        OneToOneTarget, null=True, blank=True,
+        related_name='nullable_source', on_delete=models.CASCADE)
