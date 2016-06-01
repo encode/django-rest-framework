@@ -24,7 +24,7 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required):
         else:
             # Regular URL pattern
             regex = urlpattern.regex.pattern.rstrip('$').rstrip('/') + suffix_pattern
-            view = urlpattern._callback or urlpattern._callback_str
+            view = urlpattern.callback
             kwargs = urlpattern.default_args
             name = urlpattern.name
             # Add in both the existing and the new urlpattern
