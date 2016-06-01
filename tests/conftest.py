@@ -15,6 +15,12 @@ def pytest_configure():
             'django.template.loaders.filesystem.Loader',
             'django.template.loaders.app_directories.Loader',
         ),
+        TEMPLATES = [
+            {
+                'BACKEND': 'django.template.backends.django.DjangoTemplates',
+                'APP_DIRS': True,
+            },
+        ],
         MIDDLEWARE_CLASSES=(
             'django.middleware.common.CommonMiddleware',
             'django.contrib.sessions.middleware.SessionMiddleware',
