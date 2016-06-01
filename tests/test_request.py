@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import TestCase
+from django.test.client import RequestFactory as DjangoRequestFactory
 from django.utils import six
 
 from rest_framework import status
@@ -18,6 +19,7 @@ from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
 
+django_factory = DjangoRequestFactory()
 factory = APIRequestFactory()
 
 
@@ -58,6 +60,19 @@ class TestContentParsing(TestCase):
         request.parsers = (FormParser(), MultiPartParser())
         self.assertEqual(list(request.data.items()), list(data.items()))
 
+    def test_request_DATA_with_form_content_after_django_peek(self):
+        """
+        Ensure request.data returns content for POST request with form content
+        after Django has had a look at the POST data (issue #3951).
+        """
+        data = {'qwerty': 'uiop'}
+        django_request = django_factory.post('/', data)
+        # Force Django to exhaust the POST stream
+        django_request.POST
+        request = Request(django_request)
+        request.parsers = (FormParser(), MultiPartParser())
+        self.assertEqual(list(request.data.items()), list(data.items()))
+
     def test_request_DATA_with_text_content(self):
         """
         Ensure request.data returns content for POST request with
@@ -75,6 +90,19 @@ class TestContentParsing(TestCase):
         """
         data = {'qwerty': 'uiop'}
         request = Request(factory.post('/', data))
+        request.parsers = (FormParser(), MultiPartParser())
+        self.assertEqual(list(request.POST.items()), list(data.items()))
+
+    def test_request_POST_with_form_content_after_django_peek(self):
+        """
+        Ensure request.POST returns content for POST request with form content
+        after Django has had a look at the POST data (issue #3951).
+        """
+        data = {'qwerty': 'uiop'}
+        django_request = django_factory.post('/', data)
+        # Force Django to exhaust the POST stream
+        django_request.POST
+        request = Request(django_request)
         request.parsers = (FormParser(), MultiPartParser())
         self.assertEqual(list(request.POST.items()), list(data.items()))
 

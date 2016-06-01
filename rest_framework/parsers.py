@@ -97,9 +97,14 @@ class MultiPartParser(BaseParser):
 
         `.data` will be a `QueryDict` containing all the form parameters.
         `.files` will be a `QueryDict` containing all the form files.
+
+        For POSTs, accept Django request parsing.  See issue #3951.
         """
         parser_context = parser_context or {}
         request = parser_context['request']
+        _request = request._request
+        if _request.method == 'POST':
+            return DataAndFiles(_request.POST, _request.FILES)
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
         meta = request.META.copy()
         meta['CONTENT_TYPE'] = media_type
