@@ -11,6 +11,8 @@ from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
 
+from .models import BasicModel
+
 request = Request(APIRequestFactory().options('/'))
 
 
@@ -261,10 +263,21 @@ class TestMetadata:
         view = ExampleView.as_view(versioning_class=scheme)
         view(request=request)
 
+
+class TestSimpleMetadataFieldInfo(TestCase):
     def test_null_boolean_field_info_type(self):
         options = metadata.SimpleMetadata()
         field_info = options.get_field_info(serializers.NullBooleanField())
-        assert field_info['type'] == 'boolean'
+        self.assertEqual(field_info['type'], 'boolean')
+
+    def test_related_field_choices(self):
+        options = metadata.SimpleMetadata()
+        BasicModel.objects.create()
+        with self.assertNumQueries(0):
+            field_info = options.get_field_info(
+                serializers.RelatedField(queryset=BasicModel.objects.all())
+            )
+        self.assertNotIn('choices', field_info)
 
 
 class TestModelSerializerMetadata(TestCase):
