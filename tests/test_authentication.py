@@ -19,6 +19,7 @@ from rest_framework.authentication import (
     TokenAuthentication
 )
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
@@ -75,7 +76,7 @@ urlpatterns = [
             authentication_classes=[CustomKeywordTokenAuthentication]
         )
     ),
-    url(r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
+    url(r'^auth-token/$', obtain_auth_token),
     url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 
