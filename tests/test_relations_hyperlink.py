@@ -1,14 +1,14 @@
 from __future__ import unicode_literals
 
 from django.conf.urls import url
-from django.test import override_settings, TestCase
-
-from rest_framework import serializers
-from rest_framework.test import APIRequestFactory
+from django.test import TestCase, override_settings
 from tests.models import (
     ForeignKeySource, ForeignKeyTarget, ManyToManySource, ManyToManyTarget,
     NullableForeignKeySource, NullableOneToOneSource, OneToOneTarget
 )
+
+from rest_framework import serializers
+from rest_framework.test import APIRequestFactory
 
 factory = APIRequestFactory()
 request = factory.get('/')  # Just to ensure we have a request in the serializer context

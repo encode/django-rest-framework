@@ -8,7 +8,7 @@ from collections import MutableMapping, OrderedDict
 from django.conf.urls import include, url
 from django.core.cache import cache
 from django.db import models
-from django.test import override_settings, TestCase
+from django.test import TestCase, override_settings
 from django.utils import six
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _

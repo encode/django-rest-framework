@@ -6,7 +6,7 @@ from io import BytesIO
 from django.conf.urls import url
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
-from django.test import override_settings, TestCase
+from django.test import TestCase, override_settings
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response

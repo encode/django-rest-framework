@@ -5,7 +5,7 @@ from collections import namedtuple
 from django.conf.urls import include, url
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
-from django.test import override_settings, TestCase
+from django.test import TestCase, override_settings
 
 from rest_framework import permissions, serializers, viewsets
 from rest_framework.decorators import detail_route, list_route

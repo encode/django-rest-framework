@@ -7,7 +7,7 @@ from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.test import override_settings, TestCase
+from django.test import TestCase, override_settings
 from django.utils import six
 
 from rest_framework import status

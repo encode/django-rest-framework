@@ -5,7 +5,7 @@ from django.conf.urls import url
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.template import Template, TemplateDoesNotExist
-from django.test import override_settings, TestCase
+from django.test import TestCase, override_settings
 from django.utils import six
 
 from rest_framework import status
