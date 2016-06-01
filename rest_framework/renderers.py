@@ -635,6 +635,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             'view': view,
             'request': request,
             'response': response,
+            'user': request.user,
             'description': self.get_description(view, response.status_code),
             'name': self.get_name(view),
             'version': VERSION,
