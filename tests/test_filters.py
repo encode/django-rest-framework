@@ -274,12 +274,11 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
+@override_settings(ROOT_URLCONF='tests.test_filters')
 class IntegrationTestDetailFiltering(CommonFilteringTestCase):
     """
     Integration tests for filtered detail views.
     """
-    urls = 'tests.test_filters'
-
     def _get_url(self, item):
         return reverse('detail-view', kwargs=dict(pk=item.pk))
 

@@ -8,7 +8,7 @@ from django.conf.urls import include, url
 from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponse
-from django.test import TestCase
+from django.test import override_settings, TestCase
 from django.utils import six
 
 from rest_framework import (
@@ -81,10 +81,9 @@ urlpatterns = [
 ]
 
 
+@override_settings(ROOT_URLCONF='tests.test_authentication')
 class BasicAuthTests(TestCase):
     """Basic authentication"""
-    urls = 'tests.test_authentication'
-
     def setUp(self):
         self.csrf_client = APIClient(enforce_csrf_checks=True)
         self.username = 'john'
@@ -152,10 +151,9 @@ class BasicAuthTests(TestCase):
         self.assertEqual(response['WWW-Authenticate'], 'Basic realm="api"')
 
 
+@override_settings(ROOT_URLCONF='tests.test_authentication')
 class SessionAuthTests(TestCase):
     """User session authentication"""
-    urls = 'tests.test_authentication'
-
     def setUp(self):
         self.csrf_client = APIClient(enforce_csrf_checks=True)
         self.non_csrf_client = APIClient(enforce_csrf_checks=False)
@@ -222,9 +220,9 @@ class SessionAuthTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
+@override_settings(ROOT_URLCONF='tests.test_authentication')
 class BaseTokenAuthTests(object):
     """Token authentication"""
-    urls = 'tests.test_authentication'
     model = None
     path = None
     header_prefix = 'Token '
