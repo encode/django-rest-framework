@@ -220,7 +220,6 @@ class SessionAuthTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
-@override_settings(ROOT_URLCONF='tests.test_authentication')
 class BaseTokenAuthTests(object):
     """Token authentication"""
     model = None
@@ -310,6 +309,7 @@ class BaseTokenAuthTests(object):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
+@override_settings(ROOT_URLCONF='tests.test_authentication')
 class TokenAuthTests(BaseTokenAuthTests, TestCase):
     model = Token
     path = '/token/'
@@ -366,11 +366,13 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
         self.assertEqual(response.data['token'], self.key)
 
 
+@override_settings(ROOT_URLCONF='tests.test_authentication')
 class CustomTokenAuthTests(BaseTokenAuthTests, TestCase):
     model = CustomToken
     path = '/customtoken/'
 
 
+@override_settings(ROOT_URLCONF='tests.test_authentication')
 class CustomKeywordTokenAuthTests(BaseTokenAuthTests, TestCase):
     model = Token
     path = '/customkeywordtoken/'
