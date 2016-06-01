@@ -1,5 +1,6 @@
 import pytest
 from django.conf.urls import include, url
+from django.test import override_settings
 
 from rest_framework import serializers, status, versioning
 from rest_framework.decorators import APIView
@@ -9,7 +10,28 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory, APITestCase
 from rest_framework.versioning import NamespaceVersioning
 
-from .utils import UsingURLPatterns
+
+@override_settings(ROOT_URLCONF='tests.test_versioning')
+class URLPatternsTestCase(APITestCase):
+    """
+    Isolates URL patterns used during testing on the test class itself.
+    For example:
+
+    class MyTestCase(URLPatternsTestCase):
+        urlpatterns = [
+            ...
+        ]
+
+        def test_something(self):
+            ...
+    """
+    def setUp(self):
+        global urlpatterns
+        urlpatterns = self.urlpatterns
+
+    def tearDown(self):
+        global urlpatterns
+        urlpatterns = []
 
 
 class RequestVersionView(APIView):
@@ -120,7 +142,7 @@ class TestRequestVersion:
         assert response.data == {'version': None}
 
 
-class TestURLReversing(UsingURLPatterns, APITestCase):
+class TestURLReversing(URLPatternsTestCase):
     included = [
         url(r'^namespaced/$', dummy_view, name='another'),
         url(r'^example/(?P<pk>\d+)/$', dummy_pk_view, name='example-detail')
@@ -238,7 +260,7 @@ class TestInvalidVersion:
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-class TestHyperlinkedRelatedField(UsingURLPatterns, APITestCase):
+class TestHyperlinkedRelatedField(URLPatternsTestCase):
     included = [
         url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='namespaced'),
     ]
@@ -270,7 +292,7 @@ class TestHyperlinkedRelatedField(UsingURLPatterns, APITestCase):
             self.field.to_internal_value('/v2/namespaced/3/')
 
 
-class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(UsingURLPatterns, APITestCase):
+class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(URLPatternsTestCase):
     included = [
         url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='namespaced'),
     ]
