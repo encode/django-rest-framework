@@ -21,10 +21,6 @@ env:
     - TOX_ENV=py34-django110
 
 matrix:
-    allow_failures:
-        - env: TOX_ENV=py27-django110
-        - env: TOX_ENV=py34-django110
-        - env: TOX_ENV=py35-django110
     fast_finish: true
 
 install:
