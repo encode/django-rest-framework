@@ -8,7 +8,7 @@ from collections import MutableMapping, OrderedDict
 from django.conf.urls import include, url
 from django.core.cache import cache
 from django.db import models
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import six
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
@@ -148,13 +148,11 @@ class DocumentingRendererTests(TestCase):
         self.assertContains(response, '>PATCH<')
 
 
+@override_settings(ROOT_URLCONF='tests.test_renderers')
 class RendererEndToEndTests(TestCase):
     """
     End-to-end testing of renderers using an RendererMixin on a generic view.
     """
-
-    urls = 'tests.test_renderers'
-
     def test_default_renderer_serializes_content(self):
         """If the Accept header is not set the default renderer should serialize the response."""
         resp = self.client.get('/')
@@ -397,13 +395,11 @@ class AsciiJSONRendererTests(TestCase):
 
 
 # Tests for caching issue, #346
+@override_settings(ROOT_URLCONF='tests.test_renderers')
 class CacheRenderTest(TestCase):
     """
     Tests specific to caching responses
     """
-
-    urls = 'tests.test_renderers'
-
     def test_head_caching(self):
         """
         Test caching of HEAD requests

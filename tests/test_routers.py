@@ -5,7 +5,7 @@ from collections import namedtuple
 from django.conf.urls import include, url
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from rest_framework import permissions, serializers, viewsets
 from rest_framework.decorators import detail_route, list_route
@@ -113,9 +113,8 @@ class TestSimpleRouter(TestCase):
                 self.assertEqual(route.mapping[method], endpoint)
 
 
+@override_settings(ROOT_URLCONF='tests.test_routers')
 class TestRootView(TestCase):
-    urls = 'tests.test_routers'
-
     def test_retrieve_namespaced_root(self):
         response = self.client.get('/namespaced/')
         self.assertEqual(
@@ -135,12 +134,11 @@ class TestRootView(TestCase):
         )
 
 
+@override_settings(ROOT_URLCONF='tests.test_routers')
 class TestCustomLookupFields(TestCase):
     """
     Ensure that custom lookup fields are correctly routed.
     """
-    urls = 'tests.test_routers'
-
     def setUp(self):
         RouterTestModel.objects.create(uuid='123', text='foo bar')
 
@@ -191,14 +189,13 @@ class TestLookupValueRegex(TestCase):
             self.assertEqual(expected[idx], self.urls[idx].regex.pattern)
 
 
+@override_settings(ROOT_URLCONF='tests.test_routers')
 class TestLookupUrlKwargs(TestCase):
     """
     Ensure the router honors lookup_url_kwarg.
 
     Setup a deep lookup_field, but map it to a simple URL kwarg.
     """
-    urls = 'tests.test_routers'
-
     def setUp(self):
         RouterTestModel.objects.create(uuid='123', text='foo bar')
 

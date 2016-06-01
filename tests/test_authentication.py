@@ -8,7 +8,7 @@ from django.conf.urls import include, url
 from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import six
 
 from rest_framework import (
@@ -19,6 +19,7 @@ from rest_framework.authentication import (
     TokenAuthentication
 )
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
@@ -75,15 +76,14 @@ urlpatterns = [
             authentication_classes=[CustomKeywordTokenAuthentication]
         )
     ),
-    url(r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
+    url(r'^auth-token/$', obtain_auth_token),
     url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 
 
+@override_settings(ROOT_URLCONF='tests.test_authentication')
 class BasicAuthTests(TestCase):
     """Basic authentication"""
-    urls = 'tests.test_authentication'
-
     def setUp(self):
         self.csrf_client = APIClient(enforce_csrf_checks=True)
         self.username = 'john'
@@ -151,10 +151,9 @@ class BasicAuthTests(TestCase):
         self.assertEqual(response['WWW-Authenticate'], 'Basic realm="api"')
 
 
+@override_settings(ROOT_URLCONF='tests.test_authentication')
 class SessionAuthTests(TestCase):
     """User session authentication"""
-    urls = 'tests.test_authentication'
-
     def setUp(self):
         self.csrf_client = APIClient(enforce_csrf_checks=True)
         self.non_csrf_client = APIClient(enforce_csrf_checks=False)
@@ -223,7 +222,6 @@ class SessionAuthTests(TestCase):
 
 class BaseTokenAuthTests(object):
     """Token authentication"""
-    urls = 'tests.test_authentication'
     model = None
     path = None
     header_prefix = 'Token '
@@ -311,6 +309,7 @@ class BaseTokenAuthTests(object):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
+@override_settings(ROOT_URLCONF='tests.test_authentication')
 class TokenAuthTests(BaseTokenAuthTests, TestCase):
     model = Token
     path = '/token/'
@@ -367,11 +366,13 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
         self.assertEqual(response.data['token'], self.key)
 
 
+@override_settings(ROOT_URLCONF='tests.test_authentication')
 class CustomTokenAuthTests(BaseTokenAuthTests, TestCase):
     model = CustomToken
     path = '/customtoken/'
 
 
+@override_settings(ROOT_URLCONF='tests.test_authentication')
 class CustomKeywordTokenAuthTests(BaseTokenAuthTests, TestCase):
     model = Token
     path = '/customkeywordtoken/'

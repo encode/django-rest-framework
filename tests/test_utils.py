@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import six
 
 import rest_framework.utils.model_meta
@@ -47,12 +47,11 @@ urlpatterns = [
 ]
 
 
+@override_settings(ROOT_URLCONF='tests.test_utils')
 class BreadcrumbTests(TestCase):
     """
     Tests the breadcrumb functionality used by the HTML renderer.
     """
-    urls = 'tests.test_utils'
-
     def test_root_breadcrumbs(self):
         url = '/'
         self.assertEqual(

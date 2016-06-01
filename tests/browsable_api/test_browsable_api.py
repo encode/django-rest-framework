@@ -1,16 +1,14 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from rest_framework.test import APIClient
 
 
+@override_settings(ROOT_URLCONF='tests.browsable_api.auth_urls')
 class DropdownWithAuthTests(TestCase):
     """Tests correct dropdown behaviour with Auth views enabled."""
-
-    urls = 'tests.browsable_api.auth_urls'
-
     def setUp(self):
         self.client = APIClient(enforce_csrf_checks=True)
         self.username = 'john'
@@ -40,11 +38,9 @@ class DropdownWithAuthTests(TestCase):
         self.assertContains(response, '>Log in<')
 
 
+@override_settings(ROOT_URLCONF='tests.browsable_api.no_auth_urls')
 class NoDropdownWithoutAuthTests(TestCase):
     """Tests correct dropdown behaviour with Auth views NOT enabled."""
-
-    urls = 'tests.browsable_api.no_auth_urls'
-
     def setUp(self):
         self.client = APIClient(enforce_csrf_checks=True)
         self.username = 'john'

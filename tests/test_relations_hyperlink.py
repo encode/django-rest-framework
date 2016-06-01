@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django.conf.urls import url
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from rest_framework import serializers
 from rest_framework.test import APIRequestFactory
@@ -71,10 +71,8 @@ class NullableOneToOneTargetSerializer(serializers.HyperlinkedModelSerializer):
 
 
 # TODO: Add test that .data cannot be accessed prior to .is_valid
-
+@override_settings(ROOT_URLCONF='tests.test_relations_hyperlink')
 class HyperlinkedManyToManyTests(TestCase):
-    urls = 'tests.test_relations_hyperlink'
-
     def setUp(self):
         for idx in range(1, 4):
             target = ManyToManyTarget(name='target-%d' % idx)
@@ -188,9 +186,8 @@ class HyperlinkedManyToManyTests(TestCase):
         self.assertEqual(serializer.data, expected)
 
 
+@override_settings(ROOT_URLCONF='tests.test_relations_hyperlink')
 class HyperlinkedForeignKeyTests(TestCase):
-    urls = 'tests.test_relations_hyperlink'
-
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
         target.save()
@@ -318,9 +315,8 @@ class HyperlinkedForeignKeyTests(TestCase):
         self.assertEqual(serializer.errors, {'target': ['This field may not be null.']})
 
 
+@override_settings(ROOT_URLCONF='tests.test_relations_hyperlink')
 class HyperlinkedNullableForeignKeyTests(TestCase):
-    urls = 'tests.test_relations_hyperlink'
-
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
         target.save()
@@ -425,9 +421,8 @@ class HyperlinkedNullableForeignKeyTests(TestCase):
         self.assertEqual(serializer.data, expected)
 
 
+@override_settings(ROOT_URLCONF='tests.test_relations_hyperlink')
 class HyperlinkedNullableOneToOneTests(TestCase):
-    urls = 'tests.test_relations_hyperlink'
-
     def setUp(self):
         target = OneToOneTarget(name='target-1')
         target.save()

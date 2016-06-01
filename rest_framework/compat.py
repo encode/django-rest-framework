@@ -58,6 +58,23 @@ def distinct(queryset, base):
     return queryset.distinct()
 
 
+def get_names_and_managers(options):
+    if django.VERSION >= (1, 10):
+        # Django 1.10 onwards provides a `.managers` property on the Options.
+        return [
+            (manager.name, manager)
+            for manager
+            in options.managers
+        ]
+    # For Django 1.8 and 1.9, use the three-tuple information provided
+    # by .concrete_managers and .abstract_managers
+    return [
+        (manager_info[1], manager_info[2])
+        for manager_info
+        in (options.concrete_managers + options.abstract_managers)
+    ]
+
+
 # contrib.postgres only supported from 1.8 onwards.
 try:
     from django.contrib.postgres import fields as postgres_fields

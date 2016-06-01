@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django.conf.urls import include, url
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import six
 
 from rest_framework import generics, routers, serializers, status, viewsets
@@ -131,13 +131,11 @@ urlpatterns = [
 
 
 # TODO: Clean tests bellow - remove duplicates with above, better unit testing, ...
+@override_settings(ROOT_URLCONF='tests.test_response')
 class RendererIntegrationTests(TestCase):
     """
     End-to-end testing of renderers using an ResponseMixin on a generic view.
     """
-
-    urls = 'tests.test_response'
-
     def test_default_renderer_serializes_content(self):
         """If the Accept header is not set the default renderer should serialize the response."""
         resp = self.client.get('/')
@@ -201,9 +199,8 @@ class RendererIntegrationTests(TestCase):
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
 
+@override_settings(ROOT_URLCONF='tests.test_response')
 class UnsupportedMediaTypeTests(TestCase):
-    urls = 'tests.test_response'
-
     def test_should_allow_posting_json(self):
         response = self.client.post('/json', data='{"test": 123}', content_type='application/json')
 
@@ -220,12 +217,11 @@ class UnsupportedMediaTypeTests(TestCase):
         self.assertEqual(response.status_code, 415)
 
 
+@override_settings(ROOT_URLCONF='tests.test_response')
 class Issue122Tests(TestCase):
     """
     Tests that covers #122.
     """
-    urls = 'tests.test_response'
-
     def test_only_html_renderer(self):
         """
         Test if no infinite recursion occurs.
@@ -239,13 +235,11 @@ class Issue122Tests(TestCase):
         self.client.get('/html1')
 
 
+@override_settings(ROOT_URLCONF='tests.test_response')
 class Issue467Tests(TestCase):
     """
     Tests for #467
     """
-
-    urls = 'tests.test_response'
-
     def test_form_has_label_and_help_text(self):
         resp = self.client.get('/html_new_model')
         self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
@@ -253,13 +247,11 @@ class Issue467Tests(TestCase):
         # self.assertContains(resp, 'Text description.')
 
 
+@override_settings(ROOT_URLCONF='tests.test_response')
 class Issue807Tests(TestCase):
     """
     Covers #807
     """
-
-    urls = 'tests.test_response'
-
     def test_does_not_append_charset_by_default(self):
         """
         Renderers don't include a charset unless set explicitly.

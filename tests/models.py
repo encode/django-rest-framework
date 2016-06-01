@@ -27,9 +27,6 @@ class BasicModel(RESTFrameworkModel):
 class BaseFilterableItem(RESTFrameworkModel):
     text = models.CharField(max_length=100)
 
-    class Meta:
-        abstract = True
-
 
 class FilterableItem(BaseFilterableItem):
     decimal = models.DecimalField(max_digits=4, decimal_places=2)
