@@ -507,8 +507,7 @@ class OrderingFilterModel(models.Model):
 
 
 class OrderingFilterRelatedModel(models.Model):
-    related_object = models.ForeignKey(OrderingFilterModel,
-                                       related_name="relateds")
+    related_object = models.ForeignKey(OrderingFilterModel, related_name="relateds", on_delete=models.CASCADE)
 
 
 class OrderingFilterSerializer(serializers.ModelSerializer):

@@ -403,20 +403,20 @@ class ThroughTargetModel(models.Model):
 
 class Supplementary(models.Model):
     extra = models.IntegerField()
-    forwards = models.ForeignKey('ThroughTargetModel')
-    backwards = models.ForeignKey('RelationalModel')
+    forwards = models.ForeignKey('ThroughTargetModel', on_delete=models.CASCADE)
+    backwards = models.ForeignKey('RelationalModel', on_delete=models.CASCADE)
 
 
 class RelationalModel(models.Model):
-    foreign_key = models.ForeignKey(ForeignKeyTargetModel, related_name='reverse_foreign_key')
+    foreign_key = models.ForeignKey(ForeignKeyTargetModel, related_name='reverse_foreign_key', on_delete=models.CASCADE)
     many_to_many = models.ManyToManyField(ManyToManyTargetModel, related_name='reverse_many_to_many')
-    one_to_one = models.OneToOneField(OneToOneTargetModel, related_name='reverse_one_to_one')
+    one_to_one = models.OneToOneField(OneToOneTargetModel, related_name='reverse_one_to_one', on_delete=models.CASCADE)
     through = models.ManyToManyField(ThroughTargetModel, through=Supplementary, related_name='reverse_through')
 
 
 class UniqueTogetherModel(models.Model):
-    foreign_key = models.ForeignKey(ForeignKeyTargetModel, related_name='unique_foreign_key')
-    one_to_one = models.OneToOneField(OneToOneTargetModel, related_name='unique_one_to_one')
+    foreign_key = models.ForeignKey(ForeignKeyTargetModel, related_name='unique_foreign_key', on_delete=models.CASCADE)
+    one_to_one = models.OneToOneField(OneToOneTargetModel, related_name='unique_one_to_one', on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ("foreign_key", "one_to_one")
@@ -598,7 +598,7 @@ class DisplayValueTargetModel(models.Model):
 
 
 class DisplayValueModel(models.Model):
-    color = models.ForeignKey(DisplayValueTargetModel)
+    color = models.ForeignKey(DisplayValueTargetModel, on_delete=models.CASCADE)
 
 
 class TestRelationalFieldDisplayValue(TestCase):
