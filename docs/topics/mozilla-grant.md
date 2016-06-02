@@ -4,7 +4,7 @@ We have recently been [awarded a Mozilla grant](https://blog.mozilla.org/blog/20
 
 Additionally, we will be building on the realtime support that Django Channels provides, supporting and documenting how to build realtime APIs with REST framework. Again, this will include supporting work in the associated client libraries, making it easier to build richly interactive applications.
 
-The [Core API](www.coreapi.org) project will provide the foundations for our client library support, and will allow us to support interaction using a wide range of schemas and hypermedia formats. It's worth noting that these client libraries won't be tightly coupled to solely REST framework APIs either, and will be able to interact with *any* API that exposes a supported schema or hypermedia format.
+The [Core API](http://www.coreapi.org) project will provide the foundations for our client library support, and will allow us to support interaction using a wide range of schemas and hypermedia formats. It's worth noting that these client libraries won't be tightly coupled to solely REST framework APIs either, and will be able to interact with *any* API that exposes a supported schema or hypermedia format.
 
 Specifically, the work includes:
 
