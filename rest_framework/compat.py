@@ -6,9 +6,13 @@ versions of Django/Python, and compatibility wrappers around optional packages.
 # flake8: noqa
 from __future__ import unicode_literals
 
+import inspect
+
 import django
+from django.apps import apps
 from django.conf import settings
-from django.db import connection, transaction
+from django.core.exceptions import ImproperlyConfigured
+from django.db import connection, models, transaction
 from django.template import Context, RequestContext, Template
 from django.utils import six
 from django.views.generic import View
@@ -86,6 +90,36 @@ def get_remote_field(field, **kwargs):
     if django.VERSION < (1, 9):
         return field.rel
     return field.remote_field
+
+
+def _resolve_model(obj):
+    """
+    Resolve supplied `obj` to a Django model class.
+
+    `obj` must be a Django model class itself, or a string
+    representation of one.  Useful in situations like GH #1225 where
+    Django may not have resolved a string-based reference to a model in
+    another model's foreign key definition.
+
+    String representations should have the format:
+        'appname.ModelName'
+    """
+    if isinstance(obj, six.string_types) and len(obj.split('.')) == 2:
+        app_name, model_name = obj.split('.')
+        resolved_model = apps.get_model(app_name, model_name)
+        if resolved_model is None:
+            msg = "Django did not return a model for {0}.{1}"
+            raise ImproperlyConfigured(msg.format(app_name, model_name))
+        return resolved_model
+    elif inspect.isclass(obj) and issubclass(obj, models.Model):
+        return obj
+    raise ValueError("{0} is not a Django model".format(obj))
+
+
+def get_related_model(field):
+    if django.VERSION < (1, 9):
+        return _resolve_model(field.rel.to)
+    return field.remote_field.model
 
 
 # contrib.postgres only supported from 1.8 onwards.
