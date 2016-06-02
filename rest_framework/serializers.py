@@ -327,6 +327,16 @@ class Serializer(BaseSerializer):
     }
 
     @property
+    def depth(self):
+        if not hasattr(self, '_depth'):
+            self._depth = getattr(self.Meta, 'depth', 0)
+        return self._depth
+
+    @depth.setter
+    def depth(self, value):
+        self._depth = value
+
+    @property
     def fields(self):
         """
         A dictionary of {field_name: field_instance}.
@@ -912,7 +922,7 @@ class ModelSerializer(Serializer):
 
         declared_fields = copy.deepcopy(self._declared_fields)
         model = getattr(self.Meta, 'model')
-        depth = getattr(self.Meta, 'depth', 0)
+        depth = self.depth
 
         if depth is not None:
             assert depth >= 0, "'depth' may not be negative."
