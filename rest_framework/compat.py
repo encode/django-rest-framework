@@ -202,3 +202,18 @@ def template_render(template, context=None, request=None):
     # backends template, e.g. django.template.backends.django.Template
     else:
         return template.render(context, request=request)
+
+def get_remote_field(field):
+    """
+    Django 1.9 removed usage of Rel objects, see
+    https://github.com/django/django/pull/4241
+
+    :param field: Field
+    :return: remote field
+    """
+    from django.db.models import fields
+
+    if django.VERSION < (1, 9):
+        return field.rel
+    else:
+        return field.remote_field
