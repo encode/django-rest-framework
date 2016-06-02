@@ -678,6 +678,25 @@ You can explicitly include the primary key by adding it to the `fields` option, 
             model = Account
             fields = ('url', 'id', 'account_name', 'users', 'created')
 
+## Absolute and relative URLs
+
+When instantiating a `HyperlinkedModelSerializer` you must include the current
+`request` in the serializer context, for example:
+
+    serializer = AccountSerializer(queryset, context={'request': request})
+
+Doing so will ensure that the hyperlinks can include an appropriate hostname,
+so that the resulting representation uses fully qualified URLs, such as:
+
+    http://api.example.com/accounts/1/
+
+Rather than relative URLs, such as:
+
+    /accounts/1/
+
+If you *do* want to use relative URLs, you should explicitly pass `{'request': None}`
+in the serializer context.
+
 ## How hyperlinked views are determined
 
 There needs to be a way of determining which views should be used for hyperlinking to model instances.

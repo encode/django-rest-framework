@@ -325,14 +325,14 @@ class HyperlinkedRelatedField(RelatedField):
             self.fail('does_not_exist')
 
     def to_representation(self, value):
-        request = self.context.get('request', None)
-        format = self.context.get('format', None)
-
-        assert request is not None, (
+        assert 'request' in self.context, (
             "`%s` requires the request in the serializer"
             " context. Add `context={'request': request}` when instantiating "
             "the serializer." % self.__class__.__name__
         )
+
+        request = self.context['request']
+        format = self.context.get('format', None)
 
         # By default use whatever format is given for the current context
         # unless the target is a different type to the source.

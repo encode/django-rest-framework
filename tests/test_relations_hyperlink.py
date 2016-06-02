@@ -82,6 +82,17 @@ class HyperlinkedManyToManyTests(TestCase):
             for target in ManyToManyTarget.objects.all():
                 source.targets.add(target)
 
+    def test_relative_hyperlinks(self):
+        queryset = ManyToManySource.objects.all()
+        serializer = ManyToManySourceSerializer(queryset, many=True, context={'request': None})
+        expected = [
+            {'url': '/manytomanysource/1/', 'name': 'source-1', 'targets': ['/manytomanytarget/1/']},
+            {'url': '/manytomanysource/2/', 'name': 'source-2', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/']},
+            {'url': '/manytomanysource/3/', 'name': 'source-3', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/', '/manytomanytarget/3/']}
+        ]
+        with self.assertNumQueries(4):
+            self.assertEqual(serializer.data, expected)
+
     def test_many_to_many_retrieve(self):
         queryset = ManyToManySource.objects.all()
         serializer = ManyToManySourceSerializer(queryset, many=True, context={'request': request})
