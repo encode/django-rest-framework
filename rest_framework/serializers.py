@@ -1135,9 +1135,14 @@ class ModelSerializer(Serializer):
         field_kwargs = get_relation_kwargs(field_name, relation_info)
 
         to_field = field_kwargs.pop('to_field', None)
-        if to_field and not relation_info.related_model._meta.get_field(to_field).primary_key:
-            field_kwargs['slug_field'] = to_field
-            field_class = self.serializer_related_to_field
+        if relation_info.reverse:
+            if to_field and not relation_info.related_model_field.related_fields[0][1].primary_key:
+                field_kwargs['slug_field'] = to_field
+                field_class = self.serializer_related_to_field
+        else:
+            if to_field and not relation_info.related_model._meta.get_field(to_field).primary_key:
+                field_kwargs['slug_field'] = to_field
+                field_class = self.serializer_related_to_field
 
         # `view_name` is only valid for hyperlinked relationships.
         if not issubclass(field_class, HyperlinkedRelatedField):
