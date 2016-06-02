@@ -105,7 +105,7 @@ using the `GenericAPIView` class based views.
 
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
-        serializer = UserSerializer
+        serializer_class = UserSerializer
         filter_backends = (filters.DjangoFilterBackend,)
 
 ## Filtering and object lookups
@@ -257,7 +257,7 @@ The `SearchFilter` class will only be applied if the view has a `search_fields` 
 
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
-        serializer = UserSerializer
+        serializer_class = UserSerializer
         filter_backends = (filters.SearchFilter,)
         search_fields = ('username', 'email')
 
@@ -380,7 +380,7 @@ A complete example using both `DjangoObjectPermissionsFilter` and `DjangoObjectP
     	'change' or 'delete' permissions.
 		"""
         queryset = Event.objects.all()
-        serializer = EventSerializer
+        serializer_class = EventSerializer
         filter_backends = (filters.DjangoObjectPermissionsFilter,)
         permission_classes = (myapp.permissions.CustomObjectPermissions,)
 
