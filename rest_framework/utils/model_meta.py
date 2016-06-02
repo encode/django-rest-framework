@@ -15,7 +15,6 @@ from django.utils import six
 
 from rest_framework.compat import get_remote_field
 
-
 FieldInfo = namedtuple('FieldResult', [
     'pk',  # Model field instance
     'fields',  # Dict of field name -> model field instance
