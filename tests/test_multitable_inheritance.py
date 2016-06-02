@@ -17,7 +17,7 @@ class ChildModel(ParentModel):
 
 
 class AssociatedModel(RESTFrameworkModel):
-    ref = models.OneToOneField(ParentModel, primary_key=True)
+    ref = models.OneToOneField(ParentModel, primary_key=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
 
 
