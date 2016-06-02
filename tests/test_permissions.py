@@ -24,6 +24,7 @@ factory = APIRequestFactory()
 class BasicSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasicModel
+        fields = '__all__'
 
 
 class RootView(generics.ListCreateAPIView):
@@ -215,6 +216,7 @@ class BasicPermModel(models.Model):
 class BasicPermSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasicPermModel
+        fields = '__all__'
 
 
 # Custom object-level permission, that includes 'view' permissions

@@ -30,7 +30,9 @@ from django.utils.ipv6 import clean_ipv6_address
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import ISO_8601
-from rest_framework.compat import unicode_repr, unicode_to_repr
+from rest_framework.compat import (
+    get_remote_field, unicode_repr, unicode_to_repr, value_from_object
+)
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, representation
@@ -1674,7 +1676,7 @@ class ModelField(Field):
             self.validators.append(MaxLengthValidator(max_length, message=message))
 
     def to_internal_value(self, data):
-        rel = getattr(self.model_field, 'rel', None)
+        rel = get_remote_field(self.model_field, default=None)
         if rel is not None:
             return rel.to._meta.get_field(rel.field_name).to_python(data)
         return self.model_field.to_python(data)
@@ -1685,7 +1687,7 @@ class ModelField(Field):
         return obj
 
     def to_representation(self, obj):
-        value = self.model_field._get_val_from_obj(obj)
+        value = value_from_object(self.model_field, obj)
         if is_protected_type(value):
             return value
         return self.model_field.value_to_string(obj)

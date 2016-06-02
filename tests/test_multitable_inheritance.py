@@ -17,7 +17,7 @@ class ChildModel(ParentModel):
 
 
 class AssociatedModel(RESTFrameworkModel):
-    ref = models.OneToOneField(ParentModel, primary_key=True)
+    ref = models.OneToOneField(ParentModel, primary_key=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
 
 
@@ -25,11 +25,13 @@ class AssociatedModel(RESTFrameworkModel):
 class DerivedModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChildModel
+        fields = '__all__'
 
 
 class AssociatedModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = AssociatedModel
+        fields = '__all__'
 
 
 # Tests

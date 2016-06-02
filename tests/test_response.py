@@ -18,6 +18,7 @@ from tests.models import BasicModel
 class BasicModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasicModel
+        fields = '__all__'
 
 
 class MockPickleRenderer(BaseRenderer):

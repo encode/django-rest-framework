@@ -300,6 +300,7 @@ class TestModelSerializerMetadata(TestCase):
 
             class Meta:
                 model = Parent
+                fields = '__all__'
 
         class ExampleView(views.APIView):
             """Example view."""
