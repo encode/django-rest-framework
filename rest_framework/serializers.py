@@ -1153,6 +1153,7 @@ class ModelSerializer(Serializer):
             class Meta:
                 model = relation_info.related_model
                 depth = nested_depth - 1
+                fields = '__all__'
 
         field_class = NestedSerializer
         field_kwargs = get_nested_relation_kwargs(relation_info)
@@ -1469,6 +1470,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
             class Meta:
                 model = relation_info.related_model
                 depth = nested_depth - 1
+                fields = '__all__'
 
         field_class = NestedSerializer
         field_kwargs = get_nested_relation_kwargs(relation_info)
