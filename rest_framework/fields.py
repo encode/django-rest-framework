@@ -31,7 +31,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    get_remote_field, unicode_repr, unicode_to_repr
+    get_remote_field, unicode_repr, unicode_to_repr, value_from_object
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
@@ -1687,7 +1687,7 @@ class ModelField(Field):
         return obj
 
     def to_representation(self, obj):
-        value = self.model_field._get_val_from_obj(obj)
+        value = value_from_object(self.model_field, obj)
         if is_protected_type(value):
             return value
         return self.model_field.value_to_string(obj)
