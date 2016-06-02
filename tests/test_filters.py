@@ -26,6 +26,7 @@ if django_filters:
     class FilterableItemSerializer(serializers.ModelSerializer):
         class Meta:
             model = FilterableItem
+            fields = '__all__'
 
     # Basic filter on a list view.
     class FilterFieldsRootView(generics.ListCreateAPIView):
@@ -336,6 +337,7 @@ class SearchFilterModel(models.Model):
 class SearchFilterSerializer(serializers.ModelSerializer):
     class Meta:
         model = SearchFilterModel
+        fields = '__all__'
 
 
 class SearchFilterTests(TestCase):
@@ -461,6 +463,7 @@ class SearchFilterModelM2M(models.Model):
 class SearchFilterM2MSerializer(serializers.ModelSerializer):
     class Meta:
         model = SearchFilterModelM2M
+        fields = '__all__'
 
 
 class SearchFilterM2MTests(TestCase):
@@ -511,6 +514,7 @@ class OrderingFilterRelatedModel(models.Model):
 class OrderingFilterSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderingFilterModel
+        fields = '__all__'
 
 
 class DjangoFilterOrderingModel(models.Model):
@@ -524,6 +528,7 @@ class DjangoFilterOrderingModel(models.Model):
 class DjangoFilterOrderingSerializer(serializers.ModelSerializer):
     class Meta:
         model = DjangoFilterOrderingModel
+        fields = '__all__'
 
 
 class DjangoFilterOrderingTests(TestCase):

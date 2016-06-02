@@ -21,6 +21,7 @@ class UniquenessModel(models.Model):
 class UniquenessSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniquenessModel
+        fields = '__all__'
 
 
 class RelatedModel(models.Model):
@@ -44,6 +45,7 @@ class AnotherUniquenessModel(models.Model):
 class AnotherUniquenessSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnotherUniquenessModel
+        fields = '__all__'
 
 
 class TestUniquenessValidation(TestCase):
@@ -134,11 +136,13 @@ class NullUniquenessTogetherModel(models.Model):
 class UniquenessTogetherSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniquenessTogetherModel
+        fields = '__all__'
 
 
 class NullUniquenessTogetherSerializer(serializers.ModelSerializer):
     class Meta:
         model = NullUniquenessTogetherModel
+        fields = '__all__'
 
 
 class TestUniquenessTogetherValidation(TestCase):
@@ -275,6 +279,7 @@ class UniqueForDateModel(models.Model):
 class UniqueForDateSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniqueForDateModel
+        fields = '__all__'
 
 
 class TestUniquenessForDateValidation(TestCase):

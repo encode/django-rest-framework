@@ -25,11 +25,13 @@ class AssociatedModel(RESTFrameworkModel):
 class DerivedModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChildModel
+        fields = '__all__'
 
 
 class AssociatedModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = AssociatedModel
+        fields = '__all__'
 
 
 # Tests

@@ -125,6 +125,7 @@ class ValidationMaxValueValidatorModel(models.Model):
 class ValidationMaxValueValidatorModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ValidationMaxValueValidatorModel
+        fields = '__all__'
 
 
 class UpdateMaxValueValidationModel(generics.RetrieveUpdateDestroyAPIView):
