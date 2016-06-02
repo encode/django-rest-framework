@@ -58,6 +58,7 @@ def distinct(queryset, base):
     return queryset.distinct()
 
 
+# Obtaining manager instances and names from model options differs after 1.10.
 def get_names_and_managers(options):
     if django.VERSION >= (1, 10):
         # Django 1.10 onwards provides a `.managers` property on the Options.
@@ -73,6 +74,18 @@ def get_names_and_managers(options):
         for manager_info
         in (options.concrete_managers + options.abstract_managers)
     ]
+
+
+# field.rel is deprecated from 1.9 onwards
+def get_remote_field(field, **kwargs):
+    if 'default' in kwargs:
+        if django.VERSION < (1, 9):
+            return getattr(field, 'rel', kwargs['default'])
+        return getattr(field, 'remote_field', kwargs['default'])
+
+    if django.VERSION < (1, 9):
+        return field.rel
+    return field.remote_field
 
 
 # contrib.postgres only supported from 1.8 onwards.
