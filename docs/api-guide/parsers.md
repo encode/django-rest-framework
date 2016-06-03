@@ -51,7 +51,7 @@ using the `APIView` class based views.
             return Response({'received data': request.data})
 
 Or, if you're using the `@api_view` decorator with function based views.
-    
+
     from rest_framework.decorators import api_view
     from rest_framework.decorators import parser_classes
 
@@ -93,7 +93,9 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 Parses raw file upload content.  The `request.data` property will be a dictionary with a single key `'file'` containing the uploaded file.
 
-If the view used with `FileUploadParser` is called with a `filename` URL keyword argument, then that argument will be used as the filename.  If it is called without a `filename` URL keyword argument, then the client must set the filename in the `Content-Disposition` HTTP header.  For example `Content-Disposition: attachment; filename=upload.jpg`.
+If the view used with `FileUploadParser` is called with a `filename` URL keyword argument, then that argument will be used as the filename.
+
+If it is called without a `filename` URL keyword argument, then the client must set the filename in the `Content-Disposition` HTTP header.  For example `Content-Disposition: attachment; filename=upload.jpg`.
 
 **.media_type**: `*/*`
 
@@ -105,6 +107,7 @@ If the view used with `FileUploadParser` is called with a `filename` URL keyword
 
 ##### Basic usage example:
 
+    # views.py
     class FileUploadView(views.APIView):
         parser_classes = (FileUploadParser,)
 
@@ -115,6 +118,11 @@ If the view used with `FileUploadParser` is called with a `filename` URL keyword
             # ...
             return Response(status=204)
 
+    # urls.py
+    urlpatterns = [
+        # ...
+        url(r'^upload/(?P<filename>[^/]+)$', FileUploadView.as_view())
+    ]
 
 ---
 
