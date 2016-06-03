@@ -1543,6 +1543,16 @@ class JSONField(Field):
         self.binary = kwargs.pop('binary', False)
         super(JSONField, self).__init__(*args, **kwargs)
 
+    def get_value(self, dictionary):
+        """
+            If the incoming data is an html-input then it always comes in stringified via. the
+            multipart/form-input so we should call json.loads on it.
+        """
+        ret = super(JSONField, self).get_value(dictionary)
+        if html.is_html_input(dictionary):
+            return json.loads(ret)
+        return ret
+
     def to_internal_value(self, data):
         try:
             if self.binary:
