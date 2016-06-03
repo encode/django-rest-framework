@@ -425,16 +425,17 @@ class APIView(View):
             else:
                 exc.status_code = status.HTTP_403_FORBIDDEN
 
-        exception_handler = self.settings.EXCEPTION_HANDLER
-
         context = self.get_exception_handler_context()
-        response = exception_handler(exc, context)
+        response = self._get_error_response(exc, context)
 
         if response is None:
             raise
 
         response.exception = True
         return response
+
+    def _get_error_response(self, exc, context):
+        return self.settings.EXCEPTION_HANDLER(exc, context)
 
     # Note: Views are made CSRF exempt from within `as_view` as to prevent
     # accidental removal of this exemption in cases where `dispatch` needs to
