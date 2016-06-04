@@ -128,13 +128,6 @@ def value_from_object(field, obj):
     field.value_from_object(obj)
 
 
-# contrib.postgres only supported from 1.8 onwards.
-try:
-    from django.contrib.postgres import fields as postgres_fields
-except ImportError:
-    postgres_fields = None
-
-
 # JSONField is only supported from 1.9 onwards
 try:
     from django.contrib.postgres.fields import JSONField
