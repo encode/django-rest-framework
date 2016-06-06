@@ -154,7 +154,7 @@ class RelatedField(Field):
                 pass
 
         # Standard case, return the object instance.
-        return get_attribute(instance, self.source_attrs)
+        return get_attribute(instance, self.source_attrs, self.required)
 
     @property
     def choices(self):
