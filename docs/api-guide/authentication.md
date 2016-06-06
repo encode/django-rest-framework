@@ -207,6 +207,10 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
 
 Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.  If you need a customized version of the `obtain_auth_token` view, you can do so by overriding the `ObtainAuthToken` view class, and using that in your url conf instead.
 
+By default there are no permissions or throttling applied to the  `obtain_auth_token` view. If you do wish to apply throttling you'll need to override the view class,
+and include them using the `throttle_classes` attribute.
+
+
 ##### With Django admin
 
 It is also possible to create Tokens manually through admin interface. In case you are using a large user base, we recommend that you monkey patch the `TokenAdmin` class to customize it to your needs, more specifically by declaring the `user` field as `raw_field`.
