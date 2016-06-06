@@ -7,6 +7,7 @@ versions of Django/Python, and compatibility wrappers around optional packages.
 from __future__ import unicode_literals
 
 import inspect
+import sys
 
 import django
 from django.apps import apps
@@ -206,10 +207,33 @@ if six.PY3:
     SHORT_SEPARATORS = (',', ':')
     LONG_SEPARATORS = (', ', ': ')
     INDENT_SEPARATORS = (',', ': ')
+
 else:
     SHORT_SEPARATORS = (b',', b':')
     LONG_SEPARATORS = (b', ', b': ')
     INDENT_SEPARATORS = (b',', b': ')
+
+
+def is_simple_callable(obj):
+    """
+    True if the object is a callable that takes no arguments.
+    """
+
+    function = inspect.isfunction(obj)
+    method = inspect.ismethod(obj)
+
+    if not (function or method):
+        return False
+    if sys.version_info >= (3, 3):
+        signature = inspect.signature(obj)
+        defaults = [p for p in signature.parameters.values() if p.default is not inspect.Parameter.empty]
+        return len(signature.parameters) <= len(defaults)
+    else:
+        function = inspect.isfunction(obj)
+        args, _, _, defaults = inspect.getargspec(obj)
+        len_args = len(args) if function else len(args) - 1
+        len_defaults = len(defaults) if defaults else 0
+        return len_args <= len_defaults
 
 try:
     # DecimalValidator is unavailable in Django < 1.9

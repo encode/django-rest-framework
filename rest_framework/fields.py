@@ -31,7 +31,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    get_remote_field, unicode_repr, unicode_to_repr, value_from_object
+    get_remote_field, is_simple_callable, unicode_repr, unicode_to_repr, value_from_object
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
@@ -46,22 +46,6 @@ class empty:
     It is required because `None` may be a valid input or output value.
     """
     pass
-
-
-def is_simple_callable(obj):
-    """
-    True if the object is a callable that takes no arguments.
-    """
-    function = inspect.isfunction(obj)
-    method = inspect.ismethod(obj)
-
-    if not (function or method):
-        return False
-
-    args, _, _, defaults = inspect.getargspec(obj)
-    len_args = len(args) if function else len(args) - 1
-    len_defaults = len(defaults) if defaults else 0
-    return len_args <= len_defaults
 
 
 def get_attribute(instance, attrs):
