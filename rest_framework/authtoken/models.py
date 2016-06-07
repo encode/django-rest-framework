@@ -1,16 +1,10 @@
 import binascii
 import os
 
-from django.conf import settings
+from django.conf import AUTH_USER_MODEL
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
-
-# Prior to Django 1.5, the AUTH_USER_MODEL setting does not exist.
-# Note that we don't perform this code in the compat module due to
-# bug report #1297
-# See: https://github.com/tomchristie/django-rest-framework/issues/1297
-AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
 
 @python_2_unicode_compatible
@@ -19,8 +13,10 @@ class Token(models.Model):
     The default authorization token model.
     """
     key = models.CharField(_("Key"), max_length=40, primary_key=True)
-    user = models.OneToOneField(AUTH_USER_MODEL, related_name='auth_token',
-                                on_delete=models.CASCADE, verbose_name=_("User"))
+    user = models.OneToOneField(
+        AUTH_USER_MODEL, related_name='auth_token',
+        on_delete=models.CASCADE, verbose_name=_("User")
+    )
     created = models.DateTimeField(_("Created"), auto_now_add=True)
 
     class Meta:
