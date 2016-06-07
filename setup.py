@@ -88,7 +88,7 @@ setup(
     author_email='tom@tomchristie.com',  # SEE NOTE BELOW (*)
     packages=get_packages('rest_framework'),
     package_data=get_package_data('rest_framework'),
-    install_requires=[],
+    install_requires=['django'],
     zip_safe=False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
