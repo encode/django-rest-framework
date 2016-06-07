@@ -61,7 +61,7 @@ Right, we'd better write some views then.  Open `tutorial/quickstart/views.py` a
 
     from django.contrib.auth.models import User, Group
     from rest_framework import viewsets
-    from tutorial.quickstart.serializers import UserSerializer, GroupSerializer
+    from quickstart.serializers import UserSerializer, GroupSerializer
 
 
     class UserViewSet(viewsets.ModelViewSet):
@@ -89,7 +89,7 @@ Okay, now let's wire up the API URLs.  On to `tutorial/urls.py`...
 
     from django.conf.urls import url, include
     from rest_framework import routers
-    from tutorial.quickstart import views
+    from quickstart import views
 
     router = routers.DefaultRouter()
     router.register(r'users', views.UserViewSet)
@@ -115,6 +115,7 @@ We'd also like to set a few global settings.  We'd like to turn on pagination, a
     INSTALLED_APPS = (
         ...
         'rest_framework',
+        'quickstart',
     )
 
     REST_FRAMEWORK = {
