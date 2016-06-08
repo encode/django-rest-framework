@@ -66,6 +66,16 @@ class FKInstanceView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ForeignKeySerializer
 
 
+class ManyPostView(generics.GenericAPIView):
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
+    renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+
 class SlugBasedInstanceView(InstanceView):
     """
     A model with a slug-field.
@@ -546,3 +556,30 @@ class TestGuardedQueryset(TestCase):
         request = factory.get('/')
         with pytest.raises(RuntimeError):
             view(request).render()
+
+
+class TestManyPostView(TestCase):
+    def setUp(self):
+        """
+        Create 3 BasicModel instances.
+        """
+        items = ['foo', 'bar', 'baz']
+        for item in items:
+            BasicModel(text=item).save()
+        self.objects = BasicModel.objects
+        self.data = [
+            {'id': obj.id, 'text': obj.text}
+            for obj in self.objects.all()
+        ]
+        self.view = ManyPostView.as_view()
+
+    def test_post_many_post_view(self):
+        """
+        POST request to ManyPostView should return a list of objects.
+        """
+        data = {}
+        request = factory.post('/', data, format='json')
+        with self.assertNumQueries(1):
+            response = self.view(request).render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
