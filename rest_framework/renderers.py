@@ -472,31 +472,37 @@ class BrowsableAPIRenderer(BaseRenderer):
                 return
 
             if existing_serializer is not None:
-                serializer = existing_serializer
-            else:
-                if has_serializer:
-                    if method in ('PUT', 'PATCH'):
-                        serializer = view.get_serializer(instance=instance, **kwargs)
-                    else:
-                        serializer = view.get_serializer(**kwargs)
+                try:
+                    return self.render_form_for_serializer(existing_serializer)
+                except TypeError:
+                    pass
+
+            if has_serializer:
+                if method in ('PUT', 'PATCH'):
+                    serializer = view.get_serializer(instance=instance, **kwargs)
                 else:
-                    # at this point we must have a serializer_class
-                    if method in ('PUT', 'PATCH'):
-                        serializer = self._get_serializer(view.serializer_class, view,
-                                                          request, instance=instance, **kwargs)
-                    else:
-                        serializer = self._get_serializer(view.serializer_class, view,
-                                                          request, **kwargs)
+                    serializer = view.get_serializer(**kwargs)
+            else:
+                # at this point we must have a serializer_class
+                if method in ('PUT', 'PATCH'):
+                    serializer = self._get_serializer(view.serializer_class, view,
+                                                      request, instance=instance, **kwargs)
+                else:
+                    serializer = self._get_serializer(view.serializer_class, view,
+                                                      request, **kwargs)
 
-            if hasattr(serializer, 'initial_data'):
-                serializer.is_valid()
+            return self.render_form_for_serializer(serializer)
 
-            form_renderer = self.form_renderer_class()
-            return form_renderer.render(
-                serializer.data,
-                self.accepted_media_type,
-                {'style': {'template_pack': 'rest_framework/horizontal'}}
-            )
+    def render_form_for_serializer(self, serializer):
+        if hasattr(serializer, 'initial_data'):
+            serializer.is_valid()
+
+        form_renderer = self.form_renderer_class()
+        return form_renderer.render(
+            serializer.data,
+            self.accepted_media_type,
+            {'style': {'template_pack': 'rest_framework/horizontal'}}
+        )
 
     def get_raw_data_form(self, data, view, method, request):
         """
