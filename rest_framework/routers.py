@@ -18,13 +18,16 @@ from __future__ import unicode_literals
 import itertools
 from collections import OrderedDict, namedtuple
 
+import coreapi
+import uritemplate
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
 
-from rest_framework import views
+from rest_framework import renderers, views
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.settings import api_settings
 from rest_framework.urlpatterns import format_suffix_patterns
 
 Route = namedtuple('Route', ['url', 'mapping', 'name', 'initkwargs'])
@@ -233,6 +236,7 @@ class SimpleRouter(BaseRouter):
         """
         Use the registered viewsets to generate a list of URL patterns.
         """
+        self.get_links()
         ret = []
 
         for prefix, viewset, basename in self.registry:
@@ -252,11 +256,60 @@ class SimpleRouter(BaseRouter):
                     lookup=lookup,
                     trailing_slash=self.trailing_slash
                 )
+
                 view = viewset.as_view(mapping, **route.initkwargs)
                 name = route.name.format(basename=basename)
                 ret.append(url(regex, view, name=name))
 
         return ret
+
+    def get_links(self):
+        ret = []
+        content = {}
+
+        for prefix, viewset, basename in self.registry:
+            lookup_field = getattr(viewset, 'lookup_field', 'pk')
+            lookup_url_kwarg = getattr(viewset, 'lookup_url_kwarg', None) or lookup_field
+            lookup_placeholder = '{' + lookup_url_kwarg + '}'
+
+            routes = self.get_routes(viewset)
+
+            for route in routes:
+                url = '/' + route.url.format(
+                    prefix=prefix,
+                    lookup=lookup_placeholder,
+                    trailing_slash=self.trailing_slash
+                ).lstrip('^').rstrip('$')
+
+                mapping = self.get_method_map(viewset, route.mapping)
+                if not mapping:
+                    continue
+
+                for method, action in mapping.items():
+                    if prefix not in content:
+                        content[prefix] = {}
+                    link = self.get_link(viewset, url, method)
+                    content[prefix][action] = link
+        return content
+
+    def get_link(self, viewset, url, method):
+        fields = []
+
+        for variable in uritemplate.variables(url):
+            field = coreapi.Field(name=variable, location='path', required=True)
+            fields.append(field)
+
+        if method in ('put', 'patch', 'post'):
+            cls = viewset().get_serializer_class()
+            serializer = cls()
+            for field in serializer.fields.values():
+                if field.read_only:
+                    continue
+                required = field.required and method != 'patch'
+                field = coreapi.Field(name=field.source, location='form', required=required)
+                fields.append(field)
+
+        return coreapi.Link(url=url, action=method, fields=fields)
 
 
 class DefaultRouter(SimpleRouter):
@@ -268,6 +321,10 @@ class DefaultRouter(SimpleRouter):
     include_format_suffixes = True
     root_view_name = 'api-root'
 
+    def __init__(self, *args, **kwargs):
+        self.schema_title = kwargs.pop('schema_title', None)
+        super(DefaultRouter, self).__init__(*args, **kwargs)
+
     def get_api_root_view(self):
         """
         Return a view to use as the API root.
@@ -277,10 +334,21 @@ class DefaultRouter(SimpleRouter):
         for prefix, viewset, basename in self.registry:
             api_root_dict[prefix] = list_name.format(basename=basename)
 
+        view_renderers = api_settings.DEFAULT_RENDERER_CLASSES
+
+        if self.schema_title:
+            content = self.get_links()
+            schema = coreapi.Document(title=self.schema_title, content=content)
+            view_renderers += [renderers.CoreJSONRenderer]
+
         class APIRoot(views.APIView):
             _ignore_model_permissions = True
+            renderer_classes = view_renderers
 
             def get(self, request, *args, **kwargs):
+                if request.accepted_renderer.format == 'corejson':
+                    return Response(schema)
+
                 ret = OrderedDict()
                 namespace = request.resolver_match.namespace
                 for key, url_name in api_root_dict.items():
