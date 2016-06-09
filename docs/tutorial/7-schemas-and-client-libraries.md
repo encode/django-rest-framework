@@ -26,7 +26,7 @@ Core API command line client.
 
     $ pip install coreapi-cli
 
-The first
+First we'll load the API schema using the command line client.
 
     $ coreapi get http://127.0.0.1:8000/
     <Pastebin API "http://127.0.0.1:8000/">
@@ -44,6 +44,7 @@ The first
             retrieve(id)
         }
 
+At this point we're able to see all the available API endpoints.
 
 We can now interact with the API using the command line client:
 
