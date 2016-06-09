@@ -18,13 +18,13 @@ from __future__ import unicode_literals
 import itertools
 from collections import OrderedDict, namedtuple
 
-import coreapi
 import uritemplate
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
 
 from rest_framework import renderers, views
+from rest_framework.compat import coreapi
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.settings import api_settings
@@ -335,6 +335,7 @@ class DefaultRouter(SimpleRouter):
         view_renderers = api_settings.DEFAULT_RENDERER_CLASSES
 
         if self.schema_title:
+            assert coreapi is not None, '`coreapi` must be installed for schema support.'
             content = self.get_links()
             schema = coreapi.Document(title=self.schema_title, content=content)
             view_renderers += [renderers.CoreJSONRenderer]
