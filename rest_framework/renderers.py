@@ -792,6 +792,9 @@ class CoreJSONRenderer(BaseRenderer):
     charset = None
     format = 'corejson'
 
+    def __init__(self):
+        assert coreapi, 'Using CoreJSONRenderer, but `coreapi` is not installed.'
+
     def render(self, data, media_type=None, renderer_context=None):
         indent = bool(renderer_context.get('indent', 0))
         codec = coreapi.codecs.CoreJSONCodec()

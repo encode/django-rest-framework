@@ -335,7 +335,7 @@ class DefaultRouter(SimpleRouter):
         view_renderers = api_settings.DEFAULT_RENDERER_CLASSES
 
         if self.schema_title:
-            assert coreapi is not None, '`coreapi` must be installed for schema support.'
+            assert coreapi, '`coreapi` must be installed for schema support.'
             content = self.get_links()
             schema = coreapi.Document(title=self.schema_title, content=content)
             view_renderers += [renderers.CoreJSONRenderer]
