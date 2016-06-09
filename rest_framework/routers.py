@@ -30,7 +30,6 @@ from rest_framework.reverse import reverse
 from rest_framework.settings import api_settings
 from rest_framework.urlpatterns import format_suffix_patterns
 
-
 Route = namedtuple('Route', ['url', 'mapping', 'name', 'initkwargs'])
 DynamicDetailRoute = namedtuple('DynamicDetailRoute', ['url', 'name', 'initkwargs'])
 DynamicListRoute = namedtuple('DynamicListRoute', ['url', 'name', 'initkwargs'])
