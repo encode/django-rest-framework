@@ -58,12 +58,17 @@ content type in the `Accept` header.
         "_type": "document",
         ...
 
+The default output style is to use the [Core JSON][corejson] encoding.
+
+Other schema formats, such as [Open API][openapi] (formerly Swagger) are
+also supported.
+
 ## Using a command line client
 
 Now that our API is exposing a schema endpoint, we can use a dynamic client
 library to interact with the API. To demonstrate this, let's use the
 Core API command line client. We've already installed the `coreapi` package
-using `pip`, so the client tool should already be available. Check that it
+using `pip`, so the client tool should already be installed. Check that it
 is available on the command line...
 
     $ coreapi
@@ -125,3 +130,5 @@ TODO - authentication
 *TODO - document writing an explict schema view.*
 
 [coreapi]: http://www.coreapi.org
+[corejson]: http://www.coreapi.org/specification/encoding/#core-json-encoding
+[openapi]: https://openapis.org/
