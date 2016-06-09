@@ -292,6 +292,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [tut-4]: tutorial/4-authentication-and-permissions.md
 [tut-5]: tutorial/5-relationships-and-hyperlinked-apis.md
 [tut-6]: tutorial/6-viewsets-and-routers.md
+[tut-7]: tutorial/7-schemas-and-client-libraries.md
 
 [request]: api-guide/requests.md
 [response]: api-guide/responses.md

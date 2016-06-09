@@ -332,7 +332,7 @@ class DefaultRouter(SimpleRouter):
         for prefix, viewset, basename in self.registry:
             api_root_dict[prefix] = list_name.format(basename=basename)
 
-        view_renderers = api_settings.DEFAULT_RENDERER_CLASSES
+        view_renderers = list(api_settings.DEFAULT_RENDERER_CLASSES)
 
         if self.schema_title:
             assert coreapi, '`coreapi` must be installed for schema support.'
