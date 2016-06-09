@@ -22,7 +22,7 @@ from django.utils import six
 
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
-    coreapi, INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS,
+    INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi,
     template_render
 )
 from rest_framework.exceptions import ParseError
@@ -795,4 +795,4 @@ class CoreJSONRenderer(BaseRenderer):
     def render(self, data, media_type=None, renderer_context=None):
         indent = bool(renderer_context.get('indent', 0))
         codec = coreapi.codecs.CoreJSONCodec()
-        return codec.dump(data, indent=True)
+        return codec.dump(data, indent=indent)

@@ -236,7 +236,6 @@ class SimpleRouter(BaseRouter):
         """
         Use the registered viewsets to generate a list of URL patterns.
         """
-        self.get_links()
         ret = []
 
         for prefix, viewset, basename in self.registry:
@@ -264,7 +263,6 @@ class SimpleRouter(BaseRouter):
         return ret
 
     def get_links(self):
-        ret = []
         content = {}
 
         for prefix, viewset, basename in self.registry:
