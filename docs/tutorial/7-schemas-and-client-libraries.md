@@ -119,7 +119,7 @@ Let's try listing the existing snippets, using the command line client:
         ...
 
 Some of the API endpoints require named parameters. For example, to get back
-the hightlight HTML for a particular snippet we need to provide an id.
+the highlight HTML for a particular snippet we need to provide an id.
 
     $ coreapi action snippets highlight --param pk 1
     <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
