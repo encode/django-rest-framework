@@ -23,8 +23,9 @@ from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
 
-from rest_framework import renderers, views
+from rest_framework import exceptions, renderers, views
 from rest_framework.compat import coreapi
+from rest_framework.request import override_method
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.settings import api_settings
@@ -262,7 +263,7 @@ class SimpleRouter(BaseRouter):
 
         return ret
 
-    def get_links(self):
+    def get_links(self, request=None):
         content = {}
 
         for prefix, viewset, basename in self.registry:
@@ -284,13 +285,23 @@ class SimpleRouter(BaseRouter):
                     continue
 
                 for method, action in mapping.items():
+                    link = self.get_link(viewset, url, method, request)
+                    if link is None:
+                        continue  # User does not have permissions.
                     if prefix not in content:
                         content[prefix] = {}
-                    link = self.get_link(viewset, url, method)
                     content[prefix][action] = link
         return content
 
-    def get_link(self, viewset, url, method):
+    def get_link(self, viewset, url, method, request=None):
+        view_instance = viewset()
+        if request is not None:
+            with override_method(view_instance, request, method.upper()) as request:
+                try:
+                    view_instance.check_permissions(request)
+                except exceptions.APIException as exc:
+                    return None
+
         fields = []
 
         for variable in uritemplate.variables(url):
@@ -298,7 +309,7 @@ class SimpleRouter(BaseRouter):
             fields.append(field)
 
         if method in ('put', 'patch', 'post'):
-            cls = viewset().get_serializer_class()
+            cls = view_instance.get_serializer_class()
             serializer = cls()
             for field in serializer.fields.values():
                 if field.read_only:
@@ -336,9 +347,8 @@ class DefaultRouter(SimpleRouter):
 
         if self.schema_title:
             assert coreapi, '`coreapi` must be installed for schema support.'
-            content = self.get_links()
-            schema = coreapi.Document(title=self.schema_title, content=content)
             view_renderers += [renderers.CoreJSONRenderer]
+            router = self
 
         class APIRoot(views.APIView):
             _ignore_model_permissions = True
@@ -346,6 +356,10 @@ class DefaultRouter(SimpleRouter):
 
             def get(self, request, *args, **kwargs):
                 if request.accepted_renderer.format == 'corejson':
+                    content = router.get_links(request)
+                    if not content:
+                        raise exceptions.PermissionDenied()
+                    schema = coreapi.Document(title=router.schema_title, content=content)
                     return Response(schema)
 
                 ret = OrderedDict()

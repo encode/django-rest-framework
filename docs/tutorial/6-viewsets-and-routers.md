@@ -130,27 +130,7 @@ Using viewsets can be a really useful abstraction.  It helps ensure that URL con
 
 That doesn't mean it's always the right approach to take.  There's a similar set of trade-offs to consider as when using class-based views instead of function based views.  Using viewsets is less explicit than building your views individually.
 
-## Reviewing our work
+In [part 7][tut-7] of the tutorial we'll look at how we can add an API schema,
+and interact with our API using a client library or command line tool.
 
-With an incredibly small amount of code, we've now got a complete pastebin Web API, which is fully web browsable, and comes complete with authentication, per-object permissions, and multiple renderer formats.
-
-We've walked through each step of the design process, and seen how if we need to customize anything we can gradually work our way down to simply using regular Django views.
-
-You can review the final [tutorial code][repo] on GitHub, or try out a live example in [the sandbox][sandbox].
-
-## Onwards and upwards
-
-We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here are a few places you can start:
-
-* Contribute on [GitHub][github] by reviewing and submitting issues, and making pull requests.
-* Join the [REST framework discussion group][group], and help build the community.
-* Follow [the author][twitter] on Twitter and say hi.
-
-**Now go build awesome things.**
-
-
-[repo]: https://github.com/tomchristie/rest-framework-tutorial
-[sandbox]: http://restframework.herokuapp.com/
-[github]: https://github.com/tomchristie/django-rest-framework
-[group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
-[twitter]: https://twitter.com/_tomchristie
+[tut-7]: 7-schemas-and-client-libraries.md
