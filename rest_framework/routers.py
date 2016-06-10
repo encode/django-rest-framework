@@ -299,7 +299,7 @@ class SimpleRouter(BaseRouter):
             with override_method(view_instance, request, method.upper()) as request:
                 try:
                     view_instance.check_permissions(request)
-                except exceptions.APIException as exc:
+                except exceptions.APIException:
                     return None
 
         fields = []
