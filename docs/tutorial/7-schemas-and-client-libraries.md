@@ -131,8 +131,8 @@ the highlight HTML for a particular snippet we need to provide an id.
 
 ## Authenticating our client
 
-If we want to be able to create and edit snippets, we'll need to authenticate
-as a valid user. In this case we'll just use basic auth.
+If we want to be able to create, edit and delete snippets, we'll need to
+authenticate as a valid user. In this case we'll just use basic auth.
 
 Make sure to replace the `<username>` and `<password>` below with your
 actual username and password.
