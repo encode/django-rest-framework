@@ -2,18 +2,23 @@ from django.contrib.auth import authenticate
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
+from rest_framework.fields import empty
+from django.contrib.auth import get_user_model
 
 
 class AuthTokenSerializer(serializers.Serializer):
-    username = serializers.CharField(label=_("Username"))
     password = serializers.CharField(label=_("Password"), style={'input_type': 'password'})
 
+    def __init__(self, data=empty, **kwargs):
+        self.fields[get_user_model().USERNAME_FIELD] = serializers.CharField(label=_(get_user_model().USERNAME_FIELD))
+        super().__init__(self, data, **kwargs)
+
     def validate(self, attrs):
-        username = attrs.get('username')
+        username = attrs.get('%s' % get_user_model().USERNAME_FIELD)
         password = attrs.get('password')
 
         if username and password:
-            user = authenticate(username=username, password=password)
+            user = authenticate(**{'%s' % get_user_model().USERNAME_FIELD: username, 'password': password})
 
             if user:
                 if not user.is_active:
@@ -23,7 +28,7 @@ class AuthTokenSerializer(serializers.Serializer):
                 msg = _('Unable to log in with provided credentials.')
                 raise serializers.ValidationError(msg)
         else:
-            msg = _('Must include "username" and "password".')
+            msg = _('Must include "%s" and "password".' % get_user_model().USERNAME_FIELD)
             raise serializers.ValidationError(msg)
 
         attrs['user'] = user
