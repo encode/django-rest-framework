@@ -11,7 +11,7 @@ class AuthTokenSerializer(serializers.Serializer):
 
     def __init__(self, data=empty, **kwargs):
         self.fields[get_user_model().USERNAME_FIELD] = serializers.CharField(label=_(get_user_model().USERNAME_FIELD))
-        super().__init__(self, data, **kwargs)
+        super(self.__class__, self).__init__(self, data, **kwargs)
 
     def validate(self, attrs):
         username = attrs.get('%s' % get_user_model().USERNAME_FIELD)
