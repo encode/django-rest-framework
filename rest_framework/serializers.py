@@ -1243,6 +1243,11 @@ class ModelSerializer(Serializer):
 
         read_only_fields = getattr(self.Meta, 'read_only_fields', None)
         if read_only_fields is not None:
+            if not isinstance(read_only_fields, (list, tuple)):
+                raise TypeError(
+                    'The `read_only_fields` option must be a list or tuple. '
+                    'Got %s.' % type(read_only_fields).__name__
+                )
             for field_name in read_only_fields:
                 kwargs = extra_kwargs.get(field_name, {})
                 kwargs['read_only'] = True
@@ -1390,6 +1395,7 @@ class ModelSerializer(Serializer):
         field_names = {
             field.source for field in self.fields.values()
             if (field.source != '*') and ('.' not in field.source)
+            and not field.read_only
         }
 
         # Note that we make sure to check `unique_together` both on the
