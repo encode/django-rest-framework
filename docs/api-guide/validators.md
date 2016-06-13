@@ -156,7 +156,7 @@ If you want the date field to be entirely hidden from the user, then use `Hidden
 
 ---
 
-# Advanced 'default' argument usage
+# Advanced field defaults
 
 Validators that are applied across multiple fields in the serializer can sometimes require a field input that should not be provided by the API client, but that *is* available as input to the validator.
 
@@ -185,6 +185,71 @@ It takes a single argument, which is the default value or callable that should b
         read_only=True,
         default=CreateOnlyDefault(timezone.now)
     )
+
+---
+
+# Limitations of validators
+
+There are some ambiguous cases where you'll need to instead handle validation
+explicitly, rather than relying on the default serializer classes that
+`ModelSerializer` generates.
+
+In these cases you may want to disable the automatically generated validators,
+by specifying an empty list for the serializer `Meta.validators` attribute.
+
+## Optional fields
+
+By default "unique together" validation enforces that all fields be
+`required=True`. In some cases, you might want to explicit apply
+`required=False` to one of the fields, in which case the desired behaviour
+of the validation is ambiguous.
+
+In this case you will typically need to exclude the validator from the
+serializer class, and instead write any validation logic explicitly, either
+in the `.validate()` method, or else in the view.
+
+For example:
+
+    class BillingRecordSerializer(serializers.ModelSerializer):
+        def validate(self, data):
+            # Apply custom validation either here, or in the view.
+
+        class Meta:
+            fields = ('client', 'date', 'amount')
+            extra_kwargs = {'client' {'required': 'False'}}
+            validators = []  # Remove a default "unique together" constraint.
+
+## Updating nested serializers
+
+When applying an update to an existing instance, uniqueness validators will
+exclude the current instance from the uniqueness check. The current instance
+is available in the context of the uniqueness check, because it exists as
+an attribute on the serializer, having initially been passed using
+`instance=...` when instantiating the serializer.
+
+In the case of update operations on *nested* serializers there's no way of
+applying this exclusion, because the instance is not available.
+
+Again, you'll probably want to explicitly remove the validator from the
+serializer class, and write the code the for the validation constraint
+explicitly, in a `.validate()` method, or in the view.
+
+## Debugging complex cases
+
+If you're not sure exactly what behavior a `ModelSerializer` class will
+generate it is usually a good idea to run `manage.py shell`, and print
+an instance of the serializer, so that you can inspect the fields and
+validators that it automatically generates for you.
+
+    >>> serializer = MyComplexModelSerializer()
+    >>> print(serializer)
+    class MyComplexModelSerializer:
+        my_fields = ...
+
+Also keep in mind that with complex cases it can often be better to explicitly
+define your serializer classes, rather than relying on the default
+`ModelSerializer` behavior. This involves a little more code, but ensures
+that the resulting behavior is more transparent.
 
 ---
 
