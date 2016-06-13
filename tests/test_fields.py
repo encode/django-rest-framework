@@ -993,6 +993,16 @@ class TestDateTimeField(FieldValues):
     outputs = {
         datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00',
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): '2001-01-01T13:00:00Z',
+        '2001-01-01T01:01': '2001-01-01T01:01:00',
+        '2001-01-01T01:01:01': '2001-01-01T01:01:01',
+        '2001-01-01T01:01:01.01': '2001-01-01T01:01:01.010000',
+        # Caveat of Python 2's datetime module does not allow '+HHMM' ISO-8601 strings to be parsed in Python 2's strptime
+        '2001-01-01T01:01+0100' if six.PY3 else None: '2001-01-01T01:01:00+01:00' if six.PY3 else None,
+        '2001-01-01T01:01:01+0100' if six.PY3 else None: '2001-01-01T01:01:01+01:00' if six.PY3 else None,
+        '2001-01-01T01:01:01.01+0100' if six.PY3 else None: '2001-01-01T01:01:01.010000+01:00' if six.PY3 else None,
+        '2001-01-01T01:01UTC': '2001-01-01T01:01:00',
+        '2001-01-01T01:01:01UTC': '2001-01-01T01:01:01',
+        '2001-01-01T01:01:01.01UTC': '2001-01-01T01:01:01.010000',
         None: None,
         '': None,
     }
