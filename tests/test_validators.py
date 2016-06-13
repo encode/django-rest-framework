@@ -261,7 +261,7 @@ class TestUniquenessTogetherValidation(TestCase):
 
     def test_allow_explict_override(self):
         """
-        Ensure unique_together can be explicitly removed
+        Ensure validators can be explicitly removed..
         """
         class NoValidatorsSerializer(serializers.ModelSerializer):
             class Meta:
@@ -273,8 +273,8 @@ class TestUniquenessTogetherValidation(TestCase):
         expected = dedent("""
             NoValidatorsSerializer():
                 id = IntegerField(label='ID', read_only=True)
-                race_name = CharField(max_length=100, required=True)
-                position = IntegerField(required=True)
+                race_name = CharField(max_length=100)
+                position = IntegerField()
         """)
         assert repr(serializer) == expected
 

@@ -1263,6 +1263,9 @@ class ModelSerializer(Serializer):
 
         ('dict of updated extra kwargs', 'mapping of hidden fields')
         """
+        if getattr(self.Meta, 'validators', None) is not None:
+            return (extra_kwargs, {})
+
         model = getattr(self.Meta, 'model')
         model_fields = self._get_model_fields(
             field_names, declared_fields, extra_kwargs
@@ -1313,7 +1316,7 @@ class ModelSerializer(Serializer):
                 else:
                     uniqueness_extra_kwargs[unique_constraint_name] = {'default': default}
             elif default is not empty:
-                # The corresponding field is not present in the,
+                # The corresponding field is not present in the
                 # serializer. We have a default to use for it, so
                 # add in a hidden field that populates it.
                 hidden_fields[unique_constraint_name] = HiddenField(default=default)
