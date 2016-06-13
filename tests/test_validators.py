@@ -259,6 +259,25 @@ class TestUniquenessTogetherValidation(TestCase):
         """)
         assert repr(serializer) == expected
 
+    def test_allow_explict_override(self):
+        """
+        Ensure unique_together can be explicitly removed
+        """
+        class NoValidatorsSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ('id', 'race_name', 'position')
+                validators = []
+
+        serializer = NoValidatorsSerializer()
+        expected = dedent("""
+            NoValidatorsSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                race_name = CharField(max_length=100, required=True)
+                position = IntegerField(required=True)
+        """)
+        assert repr(serializer) == expected
+
     def test_ignore_validation_for_null_fields(self):
         # None values that are on fields which are part of the uniqueness
         # constraint cause the instance to ignore uniqueness validation.
