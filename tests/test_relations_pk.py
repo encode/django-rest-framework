@@ -340,6 +340,18 @@ class PKForeignKeyTests(TestCase):
         serializer = NullableForeignKeySourceSerializer()
         self.assertEqual(serializer.data['target'], None)
 
+    def test_foreign_key_not_required(self):
+        """
+        Let's say we wanted to fill the non-nullable model field inside
+        Model.save(), we would make it empty and not required.
+        """
+        class ModelSerializer(ForeignKeySourceSerializer):
+            class Meta(ForeignKeySourceSerializer.Meta):
+                extra_kwargs = {'target': {'required': False}}
+        serializer = ModelSerializer(data={'name': 'test'})
+        serializer.is_valid(raise_exception=True)
+        self.assertNotIn('target', serializer.validated_data)
+
 
 class PKNullableForeignKeyTests(TestCase):
     def setUp(self):
