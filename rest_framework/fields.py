@@ -1073,7 +1073,7 @@ class DateTimeField(Field):
 
         output_format = getattr(self, 'format', api_settings.DATETIME_FORMAT)
 
-        if output_format is None:
+        if output_format is None or isinstance(value, six.string_types):
             return value
 
         if output_format.lower() == ISO_8601:
@@ -1133,7 +1133,7 @@ class DateField(Field):
 
         output_format = getattr(self, 'format', api_settings.DATE_FORMAT)
 
-        if output_format is None:
+        if output_format is None or isinstance(value, six.string_types):
             return value
 
         # Applying a `DateField` to a datetime value is almost always
@@ -1146,8 +1146,6 @@ class DateField(Field):
         )
 
         if output_format.lower() == ISO_8601:
-            if isinstance(value, six.string_types):
-                value = datetime.datetime.strptime(value, '%Y-%m-%d').date()
             return value.isoformat()
 
         return value.strftime(output_format)
