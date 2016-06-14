@@ -319,6 +319,7 @@ class LimitOffsetPagination(BasePagination):
             try:
                 return _positive_int(
                     request.query_params[self.limit_query_param],
+                    strict=True,
                     cutoff=self.max_limit
                 )
             except (KeyError, ValueError):

@@ -51,6 +51,9 @@ class JSONEncoder(json.JSONEncoder):
             return six.text_type(obj)
         elif isinstance(obj, QuerySet):
             return tuple(obj)
+        elif isinstance(obj, six.binary_type):
+            # Best-effort for binary blobs. See #4187.
+            return obj.decode('utf-8')
         elif hasattr(obj, 'tolist'):
             # Numpy arrays and array scalars.
             return obj.tolist()

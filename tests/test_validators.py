@@ -239,6 +239,45 @@ class TestUniquenessTogetherValidation(TestCase):
         """)
         assert repr(serializer) == expected
 
+    def test_ignore_read_only_fields(self):
+        """
+        When serializer fields are read only, then uniqueness
+        validators should not be added for that field.
+        """
+        class ReadOnlyFieldSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ('id', 'race_name', 'position')
+                read_only_fields = ('race_name',)
+
+        serializer = ReadOnlyFieldSerializer()
+        expected = dedent("""
+            ReadOnlyFieldSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                race_name = CharField(read_only=True)
+                position = IntegerField(required=True)
+        """)
+        assert repr(serializer) == expected
+
+    def test_allow_explict_override(self):
+        """
+        Ensure validators can be explicitly removed..
+        """
+        class NoValidatorsSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ('id', 'race_name', 'position')
+                validators = []
+
+        serializer = NoValidatorsSerializer()
+        expected = dedent("""
+            NoValidatorsSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                race_name = CharField(max_length=100)
+                position = IntegerField()
+        """)
+        assert repr(serializer) == expected
+
     def test_ignore_validation_for_null_fields(self):
         # None values that are on fields which are part of the uniqueness
         # constraint cause the instance to ignore uniqueness validation.
