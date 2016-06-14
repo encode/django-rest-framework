@@ -1196,7 +1196,7 @@ class TimeField(Field):
 
         output_format = getattr(self, 'format', api_settings.TIME_FORMAT)
 
-        if output_format is None:
+        if output_format is None or isinstance(value, six.string_types):
             return value
 
         # Applying a `TimeField` to a datetime value is almost always
@@ -1209,8 +1209,6 @@ class TimeField(Field):
         )
 
         if output_format.lower() == ISO_8601:
-            if isinstance(value, six.string_types):
-                value = datetime.datetime.strptime(value, '%H:%M:%S').time()
             return value.isoformat()
         return value.strftime(output_format)
 
