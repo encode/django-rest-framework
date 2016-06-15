@@ -98,6 +98,7 @@ class ViewSetMixin(object):
         # resolved URL.
         view.cls = cls
         view.suffix = initkwargs.get('suffix', None)
+        view.actions = actions
         return csrf_exempt(view)
 
     def initialize_request(self, request, *args, **kwargs):

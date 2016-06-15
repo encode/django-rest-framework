@@ -18,16 +18,15 @@ from __future__ import unicode_literals
 import itertools
 from collections import OrderedDict, namedtuple
 
-import uritemplate
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
 
 from rest_framework import exceptions, renderers, views
 from rest_framework.compat import coreapi
-from rest_framework.request import override_method
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.schemas import SchemaGenerator
 from rest_framework.settings import api_settings
 from rest_framework.urlpatterns import format_suffix_patterns
 
@@ -263,63 +262,6 @@ class SimpleRouter(BaseRouter):
 
         return ret
 
-    def get_links(self, request=None):
-        content = {}
-
-        for prefix, viewset, basename in self.registry:
-            lookup_field = getattr(viewset, 'lookup_field', 'pk')
-            lookup_url_kwarg = getattr(viewset, 'lookup_url_kwarg', None) or lookup_field
-            lookup_placeholder = '{' + lookup_url_kwarg + '}'
-
-            routes = self.get_routes(viewset)
-
-            for route in routes:
-                url = '/' + route.url.format(
-                    prefix=prefix,
-                    lookup=lookup_placeholder,
-                    trailing_slash=self.trailing_slash
-                ).lstrip('^').rstrip('$')
-
-                mapping = self.get_method_map(viewset, route.mapping)
-                if not mapping:
-                    continue
-
-                for method, action in mapping.items():
-                    link = self.get_link(viewset, url, method, request)
-                    if link is None:
-                        continue  # User does not have permissions.
-                    if prefix not in content:
-                        content[prefix] = {}
-                    content[prefix][action] = link
-        return content
-
-    def get_link(self, viewset, url, method, request=None):
-        view_instance = viewset()
-        if request is not None:
-            with override_method(view_instance, request, method.upper()) as request:
-                try:
-                    view_instance.check_permissions(request)
-                except exceptions.APIException:
-                    return None
-
-        fields = []
-
-        for variable in uritemplate.variables(url):
-            field = coreapi.Field(name=variable, location='path', required=True)
-            fields.append(field)
-
-        if method in ('put', 'patch', 'post'):
-            cls = view_instance.get_serializer_class()
-            serializer = cls()
-            for field in serializer.fields.values():
-                if field.read_only:
-                    continue
-                required = field.required and method != 'patch'
-                field = coreapi.Field(name=field.source, location='form', required=required)
-                fields.append(field)
-
-        return coreapi.Link(url=url, action=method, fields=fields)
-
 
 class DefaultRouter(SimpleRouter):
     """
@@ -334,7 +276,7 @@ class DefaultRouter(SimpleRouter):
         self.schema_title = kwargs.pop('schema_title', None)
         super(DefaultRouter, self).__init__(*args, **kwargs)
 
-    def get_api_root_view(self):
+    def get_api_root_view(self, schema_urls=None):
         """
         Return a view to use as the API root.
         """
@@ -345,10 +287,10 @@ class DefaultRouter(SimpleRouter):
 
         view_renderers = list(api_settings.DEFAULT_RENDERER_CLASSES)
 
-        if self.schema_title:
+        if schema_urls and self.schema_title:
             assert coreapi, '`coreapi` must be installed for schema support.'
             view_renderers += [renderers.CoreJSONRenderer]
-            router = self
+            schema_generator = SchemaGenerator(patterns=schema_urls)
 
         class APIRoot(views.APIView):
             _ignore_model_permissions = True
@@ -356,10 +298,9 @@ class DefaultRouter(SimpleRouter):
 
             def get(self, request, *args, **kwargs):
                 if request.accepted_renderer.format == 'corejson':
-                    content = router.get_links(request)
-                    if not content:
+                    schema = schema_generator.get_schema(request)
+                    if schema is None:
                         raise exceptions.PermissionDenied()
-                    schema = coreapi.Document(title=router.schema_title, content=content)
                     return Response(schema)
 
                 ret = OrderedDict()
@@ -388,14 +329,12 @@ class DefaultRouter(SimpleRouter):
         Generate the list of URL patterns, including a default root view
         for the API, and appending `.json` style format suffixes.
         """
-        urls = []
+        urls = super(DefaultRouter, self).get_urls()
 
         if self.include_root_view:
-            root_url = url(r'^$', self.get_api_root_view(), name=self.root_view_name)
+            view = self.get_api_root_view(schema_urls=urls)
+            root_url = url(r'^$', view, name=self.root_view_name)
             urls.append(root_url)
-
-        default_urls = super(DefaultRouter, self).get_urls()
-        urls.extend(default_urls)
 
         if self.include_format_suffixes:
             urls = format_suffix_patterns(urls)
