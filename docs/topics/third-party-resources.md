@@ -267,6 +267,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [ViewSets and Routers - django-rest-framework part 3][viewsets-and-routers-django-rest-framework-part-3]
 * [Django Rest Framework User Endpoint][django-rest-framework-user-endpoint]
 * [Check credentials using Django Rest Framework][check-credentials-using-django-rest-framework]
+* [Django REST Framework course][django-rest-framework-course]
 
 ### Videos
 
@@ -363,3 +364,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-messaging-centrifugo]: https://github.com/raphaelgyory/django-rest-messaging-centrifugo
 [django-rest-messaging-js]: https://github.com/raphaelgyory/django-rest-messaging-js
 [medium-django-rest-framework]: https://medium.com/django-rest-framework
+[django-rest-framework-course]: https://teamtreehouse.com/library/django-rest-framework
