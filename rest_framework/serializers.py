@@ -947,6 +947,11 @@ class ModelSerializer(Serializer):
         # Determine any extra field arguments and hidden fields that
         # should be included
         extra_kwargs = self.get_extra_kwargs()
+        for field in extra_kwargs:
+            assert field not in declared_fields, (
+                "Field {} is declared on the class and also present in "
+                "extra_kwargs or read_only_fields".format(field)
+            )
         extra_kwargs, hidden_fields = self.get_uniqueness_extra_kwargs(
             field_names, declared_fields, extra_kwargs
         )
@@ -1321,12 +1326,11 @@ class ModelSerializer(Serializer):
                 # add in a hidden field that populates it.
                 hidden_fields[unique_constraint_name] = HiddenField(default=default)
 
-        # Update `extra_kwargs` with any new options.
+        # Update `extra_kwargs` with any new options but don't overwrite old values.
         for key, value in uniqueness_extra_kwargs.items():
             if key in extra_kwargs:
-                extra_kwargs[key].update(value)
-            else:
-                extra_kwargs[key] = value
+                value.update(extra_kwargs[key])
+            extra_kwargs[key] = value
 
         return extra_kwargs, hidden_fields
 
