@@ -23,7 +23,6 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
 
 from rest_framework import exceptions, renderers, views
-from rest_framework.compat import coreapi
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.schemas import SchemaGenerator
@@ -288,7 +287,6 @@ class DefaultRouter(SimpleRouter):
         view_renderers = list(api_settings.DEFAULT_RENDERER_CLASSES)
 
         if schema_urls and self.schema_title:
-            assert coreapi, '`coreapi` must be installed for schema support.'
             view_renderers += [renderers.CoreJSONRenderer]
             schema_generator = SchemaGenerator(patterns=schema_urls)
 

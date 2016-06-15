@@ -1,13 +1,12 @@
 from importlib import import_module
 
-import coreapi
-import uritemplate
 from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
 from django.core.urlresolvers import RegexURLPattern, RegexURLResolver
 from django.utils import six
 
 from rest_framework import exceptions
+from rest_framework.compat import coreapi, uritemplate
 from rest_framework.request import clone_request
 from rest_framework.views import APIView
 
@@ -22,6 +21,8 @@ class SchemaGenerator(object):
     }
 
     def __init__(self, schema_title=None, patterns=None, urlconf=None):
+        assert coreapi, '`coreapi` must be installed for schema support.'
+
         if patterns is None and urlconf is not None:
             if isinstance(urlconf, six.string_types):
                 urls = import_module(urlconf)
