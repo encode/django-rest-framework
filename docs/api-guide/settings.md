@@ -340,6 +340,16 @@ The default style is to return minified responses, in line with [Heroku's API de
 
 Default: `True`
 
+#### SORTED_JSON
+
+When set to `True`, keys in JSON responses will be sorted. For example:
+
+    {"email": "jane@example", "is_admin": false, "username": "jane"}
+
+When set to `False`, the JSON responses are arbitrarily ordered.
+
+Default: `False`
+
 #### COERCE_DECIMAL_TO_STRING
 
 When returning decimal objects in API representations that do not support a native decimal type, it is normally best to return the value as a string. This avoids the loss of precision that occurs with binary floating point implementations.

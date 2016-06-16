@@ -97,9 +97,12 @@ class JSONRenderer(BaseRenderer):
             separators = INDENT_SEPARATORS
 
         ret = json.dumps(
-            data, cls=self.encoder_class,
-            indent=indent, ensure_ascii=self.ensure_ascii,
-            separators=separators
+            data,
+            cls=self.encoder_class,
+            indent=indent,
+            ensure_ascii=self.ensure_ascii,
+            separators=separators,
+            sort_keys=api_settings.SORTED_JSON,
         )
 
         # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,
