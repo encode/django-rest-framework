@@ -35,14 +35,26 @@ class Hyperlink(six.text_type):
     A string like object that additionally has an associated name.
     We use this for hyperlinked URLs that may render as a named link
     in some contexts, or render as a plain URL in others.
+
+    If name is callable, it will be called when the name property is
+    accessed.
     """
     def __new__(self, url, name):
         ret = six.text_type.__new__(self, url)
-        ret.name = name
+        if callable(name):
+            ret._name_callable = name
+        else:
+            ret.name = name
         return ret
 
     def __getnewargs__(self):
         return(str(self), self.name,)
+
+    def __getattr__(self, key):
+        if key == 'name' and hasattr(self, '_name_callable'):
+            f = getattr(self, '_name_callable')
+            return f()
+        raise AttributeError
 
     is_hyperlink = True
 
@@ -368,8 +380,8 @@ class HyperlinkedRelatedField(RelatedField):
         if url is None:
             return None
 
-        name = self.get_name(value)
-        return Hyperlink(url, name)
+        name_getter = lambda: self.get_name(value)
+        return Hyperlink(url, name_getter)
 
 
 class HyperlinkedIdentityField(HyperlinkedRelatedField):

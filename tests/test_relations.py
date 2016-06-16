@@ -98,6 +98,11 @@ class TestHyperlinkedRelatedField(APISimpleTestCase):
         representation = self.field.to_representation(MockObject(pk=''))
         assert representation is None
 
+    def test_representation_does_not_call_get_name(self):
+        self.field.get_name = lambda _: pytest.fail(
+            "HyperlinkedRelatedField.get_name() called eagerly")
+        self.field.to_representation(MockObject(pk=1))
+
 
 class TestHyperlinkedIdentityField(APISimpleTestCase):
     def setUp(self):
@@ -233,9 +238,16 @@ class TestManyRelatedField(APISimpleTestCase):
 class TestHyperlink:
     def setup(self):
         self.default_hyperlink = serializers.Hyperlink('http://example.com', 'test')
+        self.callable_hyperlink = serializers.Hyperlink('http://example.com', lambda: 'called')
 
     def test_can_be_pickled(self):
         import pickle
         upkled = pickle.loads(pickle.dumps(self.default_hyperlink))
         assert upkled == self.default_hyperlink
         assert upkled.name == self.default_hyperlink.name
+
+    def test_simple_name_property(self):
+        assert 'test' == self.default_hyperlink.name
+
+    def test_callable_name_property(self):
+        assert 'called' == self.callable_hyperlink.name
