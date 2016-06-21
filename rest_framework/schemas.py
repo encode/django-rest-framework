@@ -11,6 +11,32 @@ from rest_framework.request import clone_request
 from rest_framework.views import APIView
 
 
+def is_api_view(callback):
+    """
+    Return `True` if the given view callback is a REST framework view/viewset.
+    """
+    cls = getattr(callback, 'cls', None)
+    return (cls is not None) and issubclass(cls, APIView)
+
+
+def insert_into(target, keys, item):
+    """
+    Insert `item` into the nested dictionary `target`.
+
+    For example:
+
+        target = {}
+        insert_into(target, ('users', 'list'), Link(...))
+        insert_into(target, ('users', 'detail'), Link(...))
+        assert target == {'users': {'list': Link(...), 'detail': Link(...)}}
+    """
+    for key in keys[:1]:
+        if key not in target:
+            target[key] = {}
+        target = target[key]
+    target[keys[-1]] = item
+
+
 class SchemaGenerator(object):
     default_mapping = {
         'get': 'read',
@@ -20,7 +46,7 @@ class SchemaGenerator(object):
         'delete': 'destroy',
     }
 
-    def __init__(self, schema_title=None, patterns=None, urlconf=None):
+    def __init__(self, title=None, patterns=None, urlconf=None):
         assert coreapi, '`coreapi` must be installed for schema support.'
 
         if patterns is None and urlconf is not None:
@@ -33,7 +59,7 @@ class SchemaGenerator(object):
             urls = import_module(settings.ROOT_URLCONF)
             patterns = urls.urlpatterns
 
-        self.schema_title = schema_title
+        self.title = title
         self.endpoints = self.get_api_endpoints(patterns)
 
     def get_schema(self, request=None):
@@ -61,15 +87,10 @@ class SchemaGenerator(object):
         # ('users', 'list'), Link -> {'users': {'list': Link()}}
         content = {}
         for key, link, callback in endpoints:
-            insert_into = content
-            for item in key[:1]:
-                if item not in insert_into:
-                    insert_into[item] = {}
-                insert_into = insert_into[item]
-            insert_into[key[-1]] = link
+            insert_into(content, key, link)
 
         # Return the schema document.
-        return coreapi.Document(title=self.schema_title, content=content)
+        return coreapi.Document(title=self.title, content=content)
 
     def get_api_endpoints(self, patterns, prefix=''):
         """
@@ -83,7 +104,7 @@ class SchemaGenerator(object):
             if isinstance(pattern, RegexURLPattern):
                 path = self.get_path(path_regex)
                 callback = pattern.callback
-                if self.include_endpoint(path, callback):
+                if self.should_include_endpoint(path, callback):
                     for method in self.get_allowed_methods(callback):
                         key = self.get_key(path, method, callback)
                         link = self.get_link(path, method, callback)
@@ -107,19 +128,18 @@ class SchemaGenerator(object):
         path = path.replace('<', '{').replace('>', '}')
         return path
 
-    def include_endpoint(self, path, callback):
+    def should_include_endpoint(self, path, callback):
         """
-        Return True if the given endpoint should be included.
+        Return `True` if the given endpoint should be included.
         """
-        cls = getattr(callback, 'cls', None)
-        if (cls is None) or not issubclass(cls, APIView):
-            return False
+        if not is_api_view(callback):
+            return False  # Ignore anything except REST framework views.
 
         if path.endswith('.{format}') or path.endswith('.{format}/'):
-            return False
+            return False  # Ignore .json style URLs.
 
         if path == '/':
-            return False
+            return False  # Ignore the root endpoint.
 
         return True
 
@@ -153,25 +173,77 @@ class SchemaGenerator(object):
             return (category, action)
         return (action,)
 
+    # Methods for generating each individual `Link` instance...
+
     def get_link(self, path, method, callback):
         """
         Return a `coreapi.Link` instance for the given endpoint.
         """
         view = callback.cls()
+        fields = self.get_path_fields(path, method, callback, view)
+        fields += self.get_serializer_fields(path, method, callback, view)
+        fields += self.get_pagination_fields(path, method, callback, view)
+        fields += self.get_filter_fields(path, method, callback, view)
+        return coreapi.Link(url=path, action=method.lower(), fields=fields)
+
+    def get_path_fields(self, path, method, callback, view):
+        """
+        Return a list of `coreapi.Field` instances corresponding to any
+        templated path variables.
+        """
         fields = []
 
         for variable in uritemplate.variables(path):
             field = coreapi.Field(name=variable, location='path', required=True)
             fields.append(field)
 
-        if method in ('PUT', 'PATCH', 'POST'):
-            serializer_class = view.get_serializer_class()
-            serializer = serializer_class()
-            for field in serializer.fields.values():
-                if field.read_only:
-                    continue
-                required = field.required and method != 'PATCH'
-                field = coreapi.Field(name=field.source, location='form', required=required)
-                fields.append(field)
+        return fields
 
-        return coreapi.Link(url=path, action=method.lower(), fields=fields)
+    def get_serializer_fields(self, path, method, callback, view):
+        """
+        Return a list of `coreapi.Field` instances corresponding to any
+        request body input, as determined by the serializer class.
+        """
+        if method not in ('PUT', 'PATCH', 'POST'):
+            return []
+
+        fields = []
+
+        serializer_class = view.get_serializer_class()
+        serializer = serializer_class()
+        for field in serializer.fields.values():
+            if field.read_only:
+                continue
+            required = field.required and method != 'PATCH'
+            field = coreapi.Field(name=field.source, location='form', required=required)
+            fields.append(field)
+
+        return fields
+
+    def get_pagination_fields(self, path, method, callback, view):
+        if method != 'GET':
+            return []
+
+        if hasattr(callback, 'actions') and ('list' not in callback.actions.values()):
+            return []
+
+        if not hasattr(view, 'pagination_class'):
+            return []
+
+        paginator = view.pagination_class()
+        return paginator.get_fields()
+
+    def get_filter_fields(self, path, method, callback, view):
+        if method != 'GET':
+            return []
+
+        if hasattr(callback, 'actions') and ('list' not in callback.actions.values()):
+            return []
+
+        if not hasattr(view, 'filter_backends'):
+            return []
+
+        fields = []
+        for filter_backend in view.filter_backends:
+            fields += filter_backend().get_fields()
+        return fields

@@ -270,6 +270,7 @@ class DefaultRouter(SimpleRouter):
     include_root_view = True
     include_format_suffixes = True
     root_view_name = 'api-root'
+    schema_renderers = [renderers.CoreJSONRenderer]
 
     def __init__(self, *args, **kwargs):
         self.schema_title = kwargs.pop('schema_title', None)
@@ -287,20 +288,29 @@ class DefaultRouter(SimpleRouter):
         view_renderers = list(api_settings.DEFAULT_RENDERER_CLASSES)
 
         if schema_urls and self.schema_title:
-            view_renderers += [renderers.CoreJSONRenderer]
-            schema_generator = SchemaGenerator(patterns=schema_urls)
+            view_renderers += list(self.schema_renderers)
+            schema_generator = SchemaGenerator(
+                title=self.schema_title,
+                patterns=schema_urls
+            )
+            schema_media_types = [
+                renderer.media_type
+                for renderer in self.schema_renderers
+            ]
 
         class APIRoot(views.APIView):
             _ignore_model_permissions = True
             renderer_classes = view_renderers
 
             def get(self, request, *args, **kwargs):
-                if request.accepted_renderer.format == 'corejson':
+                if request.accepted_renderer.media_type in schema_media_types:
+                    # Return a schema response.
                     schema = schema_generator.get_schema(request)
                     if schema is None:
                         raise exceptions.PermissionDenied()
                     return Response(schema)
 
+                # Return a plain {"name": "hyperlink"} response.
                 ret = OrderedDict()
                 namespace = request.resolver_match.namespace
                 for key, url_name in api_root_dict.items():

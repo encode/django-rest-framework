@@ -42,6 +42,7 @@ pages:
     - 'Versioning': 'api-guide/versioning.md'
     - 'Content negotiation': 'api-guide/content-negotiation.md'
     - 'Metadata': 'api-guide/metadata.md'
+    - 'Schemas': 'api-guide/schemas.md'
     - 'Format suffixes': 'api-guide/format-suffixes.md'
     - 'Returning URLs': 'api-guide/reverse.md'
     - 'Exceptions': 'api-guide/exceptions.md'
