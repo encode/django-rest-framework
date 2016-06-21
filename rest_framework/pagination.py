@@ -416,7 +416,6 @@ class LimitOffsetPagination(BasePagination):
         return [self.limit_query_param, self.offset_query_param]
 
 
-
 class CursorPagination(BasePagination):
     """
     The cursor pagination implementation is neccessarily complex.
