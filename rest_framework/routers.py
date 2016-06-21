@@ -286,6 +286,7 @@ class DefaultRouter(SimpleRouter):
             api_root_dict[prefix] = list_name.format(basename=basename)
 
         view_renderers = list(api_settings.DEFAULT_RENDERER_CLASSES)
+        schema_media_types = []
 
         if schema_urls and self.schema_title:
             view_renderers += list(self.schema_renderers)
