@@ -186,6 +186,8 @@ Similarly, we can control the format of the request that we send, using the `Con
         "style": "friendly"
     }
 
+If you add a `--debug` switch to the `http` requests above, you will be able to see the request type in request headers.
+
 Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/snippets/][devserver].
 
 ### Browsability
