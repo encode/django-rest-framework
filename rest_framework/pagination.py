@@ -157,7 +157,7 @@ class BasePagination(object):
     def get_results(self, data):
         return data['results']
 
-    def get_fields(self):
+    def get_fields(self, view):
         return []
 
 
@@ -283,7 +283,7 @@ class PageNumberPagination(BasePagination):
         context = self.get_html_context()
         return template_render(template, context)
 
-    def get_fields(self):
+    def get_fields(self, view):
         if self.page_size_query_param is None:
             return [self.page_query_param]
         return [self.page_query_param, self.page_size_query_param]
@@ -412,7 +412,7 @@ class LimitOffsetPagination(BasePagination):
         context = self.get_html_context()
         return template_render(template, context)
 
-    def get_fields(self):
+    def get_fields(self, view):
         return [self.limit_query_param, self.offset_query_param]
 
 
@@ -719,5 +719,5 @@ class CursorPagination(BasePagination):
         context = self.get_html_context()
         return template_render(template, context)
 
-    def get_fields(self):
+    def get_fields(self, view):
         return [self.cursor_query_param]

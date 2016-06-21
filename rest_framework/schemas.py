@@ -231,7 +231,7 @@ class SchemaGenerator(object):
             return []
 
         paginator = view.pagination_class()
-        return paginator.get_fields()
+        return paginator.get_fields(view)
 
     def get_filter_fields(self, path, method, callback, view):
         if method != 'GET':
@@ -245,5 +245,5 @@ class SchemaGenerator(object):
 
         fields = []
         for filter_backend in view.filter_backends:
-            fields += filter_backend().get_fields()
+            fields += filter_backend().get_fields(view)
         return fields

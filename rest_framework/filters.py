@@ -71,7 +71,7 @@ class BaseFilterBackend(object):
         """
         raise NotImplementedError(".filter_queryset() must be overridden.")
 
-    def get_fields(self):
+    def get_fields(self, view):
         return []
 
 
@@ -130,7 +130,7 @@ class DjangoFilterBackend(BaseFilterBackend):
         template = loader.get_template(self.template)
         return template_render(template, context)
 
-    def get_fields(self):
+    def get_fields(self, view):
         filter_class = getattr(view, 'filter_class', None)
         if filter_class:
             return list(filter_class().filters.keys())
@@ -205,7 +205,7 @@ class SearchFilter(BaseFilterBackend):
         template = loader.get_template(self.template)
         return template_render(template, context)
 
-    def get_fields(self):
+    def get_fields(self, view):
         return [self.search_param]
 
 
@@ -321,7 +321,7 @@ class OrderingFilter(BaseFilterBackend):
         context = self.get_template_context(request, queryset, view)
         return template_render(template, context)
 
-    def get_fields(self):
+    def get_fields(self, view):
         return [self.ordering_param]
 
 
