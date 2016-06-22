@@ -407,7 +407,7 @@ class LimitOffsetPagination(BasePagination):
 
 class CursorPagination(BasePagination):
     """
-    The cursor pagination implementation is neccessarily complex.
+    The cursor pagination implementation is necessarily complex.
     For an overview of the position/offset style we use, see this post:
     http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api
     """
@@ -416,6 +416,12 @@ class CursorPagination(BasePagination):
     invalid_cursor_message = _('Invalid cursor')
     ordering = '-created'
     template = 'rest_framework/pagination/previous_and_next.html'
+
+    # The offset in the cursor is used in situations where we have a
+    # nearly-unique index. (Eg millisecond precision creation timestamps)
+    # We guard against malicious users attempting to cause expensive database
+    # queries, by having a hard cap on the maximum possible size of the offset.
+    offset_cutoff = 1000
 
     def paginate_queryset(self, queryset, request, view=None):
         self.page_size = self.get_page_size(request)
@@ -647,18 +653,12 @@ class CursorPagination(BasePagination):
         if encoded is None:
             return None
 
-        # The offset in the cursor is used in situations where we have a
-        # nearly-unique index. (Eg millisecond precision creation timestamps)
-        # We guard against malicious users attempting to cause expensive database
-        # queries, by having a hard cap on the maximum possible size of the offset.
-        OFFSET_CUTOFF = 1000
-
         try:
             querystring = b64decode(encoded.encode('ascii')).decode('ascii')
             tokens = urlparse.parse_qs(querystring, keep_blank_values=True)
 
             offset = tokens.get('o', ['0'])[0]
-            offset = _positive_int(offset, cutoff=OFFSET_CUTOFF)
+            offset = _positive_int(offset, cutoff=self.offset_cutoff)
 
             reverse = tokens.get('r', ['0'])[0]
             reverse = bool(int(reverse))
