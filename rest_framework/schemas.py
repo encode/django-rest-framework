@@ -5,10 +5,21 @@ from django.contrib.admindocs.views import simplify_regex
 from django.core.urlresolvers import RegexURLPattern, RegexURLResolver
 from django.utils import six
 
-from rest_framework import exceptions
+from rest_framework import exceptions, serializers
 from rest_framework.compat import coreapi, uritemplate
 from rest_framework.request import clone_request
 from rest_framework.views import APIView
+
+
+def as_query_fields(items):
+    """
+    Take a list of Fields and plain strings.
+    Convert any pain strings into `location='query'` Field instances.
+    """
+    return [
+        item if isinstance(item, coreapi.Field) else coreapi.Field(name=item, required=False, location='query')
+        for item in items
+    ]
 
 
 def is_api_view(callback):
@@ -180,11 +191,47 @@ class SchemaGenerator(object):
         Return a `coreapi.Link` instance for the given endpoint.
         """
         view = callback.cls()
+
         fields = self.get_path_fields(path, method, callback, view)
         fields += self.get_serializer_fields(path, method, callback, view)
         fields += self.get_pagination_fields(path, method, callback, view)
         fields += self.get_filter_fields(path, method, callback, view)
-        return coreapi.Link(url=path, action=method.lower(), fields=fields)
+
+        if fields:
+            encoding = self.get_encoding(path, method, callback, view)
+        else:
+            encoding = None
+
+        return coreapi.Link(
+            url=path,
+            action=method.lower(),
+            encoding=encoding,
+            fields=fields
+        )
+
+    def get_encoding(self, path, method, callback, view):
+        """
+        Return the 'encoding' parameter to use for a given endpoint.
+        """
+        if method not in set(('POST', 'PUT', 'PATCH')):
+            return None
+
+        # Core API supports the following request encodings over HTTP...
+        supported_media_types = set((
+            'application/json',
+            'application/x-www-form-urlencoded',
+            'multipart/form-data',
+        ))
+        parser_classes = getattr(view, 'parser_classes', [])
+        for parser_class in parser_classes:
+            media_type = getattr(parser_class, 'media_type', None)
+            if media_type in supported_media_types:
+                return media_type
+            # Raw binary uploads are supported with "application/octet-stream"
+            if media_type == '*/*':
+                return 'application/octet-stream'
+
+        return None
 
     def get_path_fields(self, path, method, callback, view):
         """
@@ -211,6 +258,13 @@ class SchemaGenerator(object):
 
         serializer_class = view.get_serializer_class()
         serializer = serializer_class()
+
+        if isinstance(serializer, serializers.ListSerializer):
+            return coreapi.Field(name='data', location='body', required=True)
+
+        if not isinstance(serializer, serializers.Serializer):
+            return []
+
         for field in serializer.fields.values():
             if field.read_only:
                 continue
@@ -231,7 +285,7 @@ class SchemaGenerator(object):
             return []
 
         paginator = view.pagination_class()
-        return paginator.get_fields(view)
+        return as_query_fields(paginator.get_fields(view))
 
     def get_filter_fields(self, path, method, callback, view):
         if method != 'GET':
@@ -245,5 +299,5 @@ class SchemaGenerator(object):
 
         fields = []
         for filter_backend in view.filter_backends:
-            fields += filter_backend().get_fields(view)
+            fields += as_query_fields(filter_backend().get_fields(view))
         return fields

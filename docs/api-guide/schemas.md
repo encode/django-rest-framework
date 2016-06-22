@@ -345,6 +345,29 @@ Included as the complete request body. Typically for `POST`, `PUT` and `PATCH` r
 
 These fields will normally correspond with views that use `ListSerializer` to validate the request input, or with file upload views.
 
+#### `encoding`
+
+**"application/json"**
+
+JSON encoded request content. Corresponds to views using `JSONParser`.
+Valid only if either one or more `location="form"` fields, or a single
+`location="body"` field is included on the `Link`.
+
+**"multipart/form-data"**
+
+Multipart encoded request content. Corresponds to views using `MultiPartParser`.
+Valid only if one or more `location="form"` fields is included on the `Link`.
+
+**"application/x-www-form-urlencoded"**
+
+URL encoded request content. Corresponds to views using `FormParser`. Valid
+only if one or more `location="form"` fields is included on the `Link`.
+
+**"application/octet-stream"**
+
+Binary upload request content. Corresponds to views using `FileUploadParser`.
+Valid only if a `location="body"` field is included on the `Link`.
+
 #### `description`
 
 A short description of the meaning and intended usage of the input field.

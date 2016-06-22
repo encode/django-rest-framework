@@ -13,7 +13,7 @@ from django.utils import six, timezone
 from django.utils.encoding import force_text
 from django.utils.functional import Promise
 
-from rest_framework.compat import total_seconds
+from rest_framework.compat import coreapi, total_seconds
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -64,4 +64,9 @@ class JSONEncoder(json.JSONEncoder):
                 pass
         elif hasattr(obj, '__iter__'):
             return tuple(item for item in obj)
+        elif (coreapi is not None) and isinstance(obj, (coreapi.Document, coreapi.Error)):
+            raise RuntimeError(
+                'Cannot return a coreapi object from a JSON view. '
+                'You should be using a schema renderer instead for this view.'
+            )
         return super(JSONEncoder, self).default(obj)
