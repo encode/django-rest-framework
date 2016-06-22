@@ -197,7 +197,7 @@ class SchemaGenerator(object):
         fields += self.get_pagination_fields(path, method, callback, view)
         fields += self.get_filter_fields(path, method, callback, view)
 
-        if fields:
+        if fields and any([field.location in ('form', 'body') for field in fields]):
             encoding = self.get_encoding(path, method, callback, view)
         else:
             encoding = None
@@ -213,9 +213,6 @@ class SchemaGenerator(object):
         """
         Return the 'encoding' parameter to use for a given endpoint.
         """
-        if method not in set(('POST', 'PUT', 'PATCH')):
-            return None
-
         # Core API supports the following request encodings over HTTP...
         supported_media_types = set((
             'application/json',
