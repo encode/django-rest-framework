@@ -500,6 +500,21 @@ class SearchFilterM2MTests(TestCase):
         response = view(request)
         self.assertEqual(len(response.data), 1)
 
+    def test_must_call_distinct(self):
+        filter_ = filters.SearchFilter()
+        prefixes = [''] + list(filter_.lookup_prefixes)
+        for prefix in prefixes:
+            self.assertFalse(
+                filter_.must_call_distinct(
+                    SearchFilterModelM2M._meta, ["%stitle" % prefix]
+                )
+            )
+            self.assertTrue(
+                filter_.must_call_distinct(
+                    SearchFilterModelM2M._meta, ["%stitle" % prefix, "%sattributes__label" % prefix]
+                )
+            )
+
 
 class OrderingFilterModel(models.Model):
     title = models.CharField(max_length=20, verbose_name='verbose title')
