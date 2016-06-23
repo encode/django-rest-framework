@@ -11,9 +11,11 @@ Full documentation for the project is available at [http://www.django-rest-frame
 
 ---
 
-**Funding**: REST framework is a *collaboratively funded project*. If you use
+# Funding
+
+REST framework is a *collaboratively funded project*. If you use
 REST framework commercially we strongly encourage you to invest in its
-continued development by [signing up for paid plan](https://fund.django-rest-framework.org/topics/funding/).
+continued development by [signing up for a paid plan][funding].
 
 [![rover-image]][rover]
 
@@ -174,6 +176,7 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [sandbox]: http://restframework.herokuapp.com/
 
+[funding]: https://fund.django-rest-framework.org/topics/funding/
 [rover]: http://jobs.rover.com/
 [rover-image]: https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/rover.png
 
