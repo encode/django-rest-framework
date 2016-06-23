@@ -296,8 +296,12 @@ class TestHyperlinkedRelatedField(URLPatternsTestCase):
 
 
 class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(URLPatternsTestCase):
+    nested = [
+        url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='nested'),
+    ]
     included = [
         url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='namespaced'),
+        url(r'^nested/', include(nested, namespace='nested-namespace'))
     ]
 
     urlpatterns = [
@@ -324,6 +328,10 @@ class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(URLPatternsTestCase):
     def test_api_url_is_properly_reversed_with_v2(self):
         field = self._create_field('namespaced', 'v2')
         assert field.to_representation(PKOnlyObject(5)) == 'http://testserver/v2/namespaced/5/'
+
+    def test_api_url_is_properly_reversed_with_nested(self):
+        field = self._create_field('nested', 'v1:nested-namespace')
+        assert field.to_representation(PKOnlyObject(3)) == 'http://testserver/v1/nested/namespaced/3/'
 
     def test_non_api_url_is_properly_reversed_regardless_of_the_version(self):
         """
