@@ -11,8 +11,20 @@ Full documentation for the project is available at [http://www.django-rest-frame
 
 ---
 
-**Funding**: If you use REST framework commercially we strongly encourage you to
-invest in its continued development by [signing up for paid plan](https://fund.django-rest-framework.org/topics/funding/).
+# Funding
+
+REST framework is a *collaboratively funded project*. If you use
+REST framework commercially we strongly encourage you to invest in its
+continued development by **[signing up for a paid plan][funding]**.
+
+The initial aim is to provide a single full-time position on REST framework.
+Right now we're a little over 35% of the way towards achieving that.
+Each basic tier sponsorship makes a significant impact, taking us around 1%
+closer to our funding target.
+
+[![rover-image]][rover]
+
+*Many thanks to all our [awesome sponsors][sponsors], and in particular to our premium backers, [Rover][rover].*
 
 ---
 
@@ -168,6 +180,11 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [twitter]: https://twitter.com/_tomchristie
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [sandbox]: http://restframework.herokuapp.com/
+
+[funding]: https://fund.django-rest-framework.org/topics/funding/
+[sponsors]: https://fund.django-rest-framework.org/topics/funding/#our-sponsors
+[rover]: http://jobs.rover.com/
+[rover-image]: https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/rover.png
 
 [oauth1-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
