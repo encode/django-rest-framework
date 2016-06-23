@@ -8,11 +8,30 @@ object creation, and makes it possible to switch between using the implicit
 """
 from __future__ import unicode_literals
 
+from django.db import DataError
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import unicode_to_repr
 from rest_framework.exceptions import ValidationError
 from rest_framework.utils.representation import smart_repr
+
+
+# Robust filter and exist implementations. Ensures that queryset.exists() for
+# an invalid value returns `False`, rather than raising an error.
+# Refs https://github.com/tomchristie/django-rest-framework/issues/3381
+
+def qs_exists(queryset):
+    try:
+        return queryset.exists()
+    except (TypeError, ValueError, DataError):
+        return False
+
+
+def qs_filter(queryset, **kwargs):
+    try:
+        return queryset.filter(**kwargs)
+    except (TypeError, ValueError, DataError):
+        return queryset.none()
 
 
 class UniqueValidator(object):
@@ -44,7 +63,7 @@ class UniqueValidator(object):
         Filter the queryset to all instances matching the given attribute.
         """
         filter_kwargs = {self.field_name: value}
-        return queryset.filter(**filter_kwargs)
+        return qs_filter(queryset, **filter_kwargs)
 
     def exclude_current_instance(self, queryset):
         """
@@ -59,7 +78,7 @@ class UniqueValidator(object):
         queryset = self.queryset
         queryset = self.filter_queryset(value, queryset)
         queryset = self.exclude_current_instance(queryset)
-        if queryset.exists():
+        if qs_exists(queryset):
             raise ValidationError(self.message)
 
     def __repr__(self):
@@ -124,7 +143,7 @@ class UniqueTogetherValidator(object):
             field_name: attrs[field_name]
             for field_name in self.fields
         }
-        return queryset.filter(**filter_kwargs)
+        return qs_filter(queryset, **filter_kwargs)
 
     def exclude_current_instance(self, attrs, queryset):
         """
@@ -145,7 +164,7 @@ class UniqueTogetherValidator(object):
         checked_values = [
             value for field, value in attrs.items() if field in self.fields
         ]
-        if None not in checked_values and queryset.exists():
+        if None not in checked_values and qs_exists(queryset):
             field_names = ', '.join(self.fields)
             raise ValidationError(self.message.format(field_names=field_names))
 
@@ -209,7 +228,7 @@ class BaseUniqueForValidator(object):
         queryset = self.queryset
         queryset = self.filter_queryset(attrs, queryset)
         queryset = self.exclude_current_instance(attrs, queryset)
-        if queryset.exists():
+        if qs_exists(queryset):
             message = self.message.format(date_field=self.date_field)
             raise ValidationError({self.field: message})
 
@@ -234,7 +253,7 @@ class UniqueForDateValidator(BaseUniqueForValidator):
         filter_kwargs['%s__day' % self.date_field_name] = date.day
         filter_kwargs['%s__month' % self.date_field_name] = date.month
         filter_kwargs['%s__year' % self.date_field_name] = date.year
-        return queryset.filter(**filter_kwargs)
+        return qs_filter(queryset, **filter_kwargs)
 
 
 class UniqueForMonthValidator(BaseUniqueForValidator):
@@ -247,7 +266,7 @@ class UniqueForMonthValidator(BaseUniqueForValidator):
         filter_kwargs = {}
         filter_kwargs[self.field_name] = value
         filter_kwargs['%s__month' % self.date_field_name] = date.month
-        return queryset.filter(**filter_kwargs)
+        return qs_filter(queryset, **filter_kwargs)
 
 
 class UniqueForYearValidator(BaseUniqueForValidator):
@@ -260,4 +279,4 @@ class UniqueForYearValidator(BaseUniqueForValidator):
         filter_kwargs = {}
         filter_kwargs[self.field_name] = value
         filter_kwargs['%s__year' % self.date_field_name] = date.year
-        return queryset.filter(**filter_kwargs)
+        return qs_filter(queryset, **filter_kwargs)
