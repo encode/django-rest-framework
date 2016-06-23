@@ -17,9 +17,14 @@ REST framework is a *collaboratively funded project*. If you use
 REST framework commercially we strongly encourage you to invest in its
 continued development by [signing up for a paid plan][funding].
 
+The initial aim is to provide a single full-time position on REST framework.
+Right now we're a little over 35% of the way towards achieving that.
+Each basic tier sponsorship makes a significant impact, taking us around 1%
+closer to our funding target.
+
 [![rover-image]][rover]
 
-Many thanks to our premium sponsors, [Rover][rover].
+*Many thanks to our [awesome sponsors][sponsors], in particular our premium backers, [Rover][rover].*
 
 ---
 
@@ -177,6 +182,7 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [sandbox]: http://restframework.herokuapp.com/
 
 [funding]: https://fund.django-rest-framework.org/topics/funding/
+[sponsors]: https://fund.django-rest-framework.org/topics/funding/#our-sponsors
 [rover]: http://jobs.rover.com/
 [rover-image]: https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/rover.png
 
