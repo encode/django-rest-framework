@@ -112,16 +112,19 @@ class NamespaceVersioning(BaseVersioning):
     Host: example.com
     Accept: application/json
     """
-    invalid_version_message = _('Invalid version in URL path.')
+    invalid_version_message = _('Invalid version in URL path. Does not match any version namespace.')
 
     def determine_version(self, request, *args, **kwargs):
         resolver_match = getattr(request, 'resolver_match', None)
         if (resolver_match is None or not resolver_match.namespace):
             return self.default_version
-        version = resolver_match.namespace
-        if not self.is_allowed_version(version):
-            raise exceptions.NotFound(self.invalid_version_message)
-        return version
+
+        # Allow for possibly nested namespaces.
+        possible_versions = resolver_match.namespace.split(':')
+        for version in possible_versions:
+            if self.is_allowed_version(version):
+                return version
+        raise exceptions.NotFound(self.invalid_version_message)
 
     def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
         if request.version is not None:
