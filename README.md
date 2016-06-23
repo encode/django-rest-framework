@@ -15,7 +15,7 @@ Full documentation for the project is available at [http://www.django-rest-frame
 
 REST framework is a *collaboratively funded project*. If you use
 REST framework commercially we strongly encourage you to invest in its
-continued development by [signing up for a paid plan][funding].
+continued development by **[signing up for a paid plan][funding]**.
 
 The initial aim is to provide a single full-time position on REST framework.
 Right now we're a little over 35% of the way towards achieving that.
@@ -24,7 +24,7 @@ closer to our funding target.
 
 [![rover-image]][rover]
 
-*Many thanks to our [awesome sponsors][sponsors], in particular our premium backers, [Rover][rover].*
+*Many thanks to all our [awesome sponsors][sponsors], and in particular to our premium backers, [Rover][rover].*
 
 ---
 
