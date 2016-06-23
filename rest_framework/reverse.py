@@ -3,8 +3,10 @@ Provide urlresolver functions that return fully qualified URLs or view names
 """
 from __future__ import unicode_literals
 
+from django.conf import settings, urls
 from django.core.urlresolvers import reverse as django_reverse
-from django.core.urlresolvers import NoReverseMatch
+from django.core.urlresolvers import NoReverseMatch, resolve
+from django.http import Http404
 from django.utils import six
 from django.utils.functional import lazy
 
@@ -35,20 +37,60 @@ def preserve_builtin_query_params(url, request=None):
 def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra):
     """
     If versioning is being used then we pass any `reverse` calls through
-    to the versioning scheme instance, so that the resulting URL
-    can be modified if needed.
+    to the versioning scheme instance, so that the resulting URL can be modified if needed.
     """
+    url = None
+
+    # Substitute reverse function by scheme's one if versioning enabled
     scheme = getattr(request, 'versioning_scheme', None)
     if scheme is not None:
-        try:
-            url = scheme.reverse(viewname, args, kwargs, request, format, **extra)
-        except NoReverseMatch:
-            # In case the versioning scheme reversal fails, fallback to the
-            # default implementation
-            url = _reverse(viewname, args, kwargs, request, format, **extra)
+        def reverse_url(*a, **kw):
+            try:
+                return scheme.reverse(*a, **kw)
+            except NoReverseMatch:
+                # In case the versioning scheme reversal fails, fallback to the default implementation
+                return _reverse(*a, **kw)
     else:
-        url = _reverse(viewname, args, kwargs, request, format, **extra)
+        reverse_url = _reverse
 
+    try:
+        # Resolving URL normally
+        url = reverse_url(viewname, args, kwargs, request, format, **extra)
+    except NoReverseMatch:
+        if request and ':' not in viewname:
+            # Retrieving current namespace through request
+            try:
+                current_namespace = request.resolver_match.namespace
+            except AttributeError:
+                try:
+                    current_namespace = resolve(request.path).namespace
+                except Http404:
+                    current_namespace = None
+
+            if current_namespace:
+                try:
+                    # Trying to resolve URL with current namespace
+                    viewname_to_try = '{namespace}:{viewname}'.format(namespace=current_namespace, viewname=viewname)
+                    url = reverse_url(viewname_to_try, args, kwargs, request, format, **extra)
+                except NoReverseMatch:
+                    # Trying to resolve URL with other namespaces
+                    # (Could be wrong if views have the same name in different namespaces)
+                    urlpatterns = urls.import_module(settings.ROOT_URLCONF).urlpatterns
+                    namespaces = [urlpattern.namespace for urlpattern in urlpatterns
+                                  if getattr(urlpattern, 'namespace', current_namespace) != current_namespace]
+
+                    # Remove duplicates but preserve order of elements
+                    from collections import OrderedDict
+                    for namespace in OrderedDict.fromkeys(namespaces):
+                        try:
+                            viewname_to_try = '{namespace}:{viewname}'.format(namespace=namespace, viewname=viewname)
+                            url = reverse_url(viewname_to_try, args, kwargs, request, format, **extra)
+                            break
+                        except NoReverseMatch:
+                            continue
+        # Raise exception if everything else fails
+        if not url:
+            raise
     return preserve_builtin_query_params(url, request)
 
 
