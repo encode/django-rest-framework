@@ -156,14 +156,15 @@ class SearchFilter(BaseFilterBackend):
             lookup = 'icontains'
         return LOOKUP_SEP.join([field_name, lookup])
 
-    def must_call_distinct(self, opts, lookups):
+    def must_call_distinct(self, queryset, search_fields):
         """
         Return True if 'distinct()' should be used to query the given lookups.
         """
-        for lookup in lookups:
-            if lookup[0] in self.lookup_prefixes:
-                lookup = lookup[1:]
-            parts = lookup.split(LOOKUP_SEP)
+        opts = queryset.model._meta
+        for search_field in search_fields:
+            if search_field[0] in self.lookup_prefixes:
+                search_field = search_field[1:]
+            parts = search_field.split(LOOKUP_SEP)
             for part in parts:
                 field = opts.get_field(part)
                 if hasattr(field, 'get_path_info'):
@@ -195,10 +196,11 @@ class SearchFilter(BaseFilterBackend):
             ]
             queryset = queryset.filter(reduce(operator.or_, queries))
 
-        if self.must_call_distinct(queryset.model._meta, search_fields):
+        if self.must_call_distinct(queryset, search_fields):
             # Filtering against a many-to-many field requires us to
             # call queryset.distinct() in order to avoid duplicate items
             # in the resulting queryset.
+            # We try to avoid this is possible, for performance reasons.
             queryset = distinct(queryset, base)
         return queryset
 
