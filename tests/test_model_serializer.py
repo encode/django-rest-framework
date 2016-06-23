@@ -978,4 +978,4 @@ class TestSerializerDefaultTrueBoolean(TestCase):
         data.update({'required_data': 'foo'})
         serializer = self.default_true_boolean_serializer(data=data)
         serializer.is_valid()
-        self.assertTrue(serializer.data['visible'])
+        self.assertNotIn('visible', serializer.validated_data)
