@@ -4,8 +4,6 @@ from __future__ import unicode_literals
 import pickle
 
 import pytest
-from django.db import models
-from django.http import QueryDict
 
 from rest_framework import serializers
 from rest_framework.compat import unicode_repr
@@ -311,26 +309,3 @@ class TestCacheSerializerData:
         pickled = pickle.dumps(serializer.data)
         data = pickle.loads(pickled)
         assert data == {'field1': 'a', 'field2': 'b'}
-
-
-class DefaultTrueBooleanModel(models.Model):
-    required_data = models.CharField(max_length=255)
-    visible = models.BooleanField(default=True)
-
-
-class TestSerializerDefaultTrueBoolean:
-
-    def setup(self):
-        class DefaultTrueBooleanSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = DefaultTrueBooleanModel
-                fields = ('required_data', 'visible')
-
-        self.default_true_boolean_serializer = DefaultTrueBooleanSerializer
-
-    def test_default_value(self):
-        data = QueryDict('', mutable=True)
-        data.update({'required_data': 'foo'})
-        serializer = self.default_true_boolean_serializer(data=data)
-        serializer.is_valid()
-        assert serializer.data['visible']
