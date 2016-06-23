@@ -48,6 +48,18 @@ class AnotherUniquenessSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class IntegerFieldModel(models.Model):
+    integer = models.IntegerField()
+
+
+class UniquenessIntegerSerializer(serializers.Serializer):
+    # Note that this field *deliberately* does not correspond with the model field.
+    # This allows us to ensure that `ValueError`, `TypeError` or `DataError` etc
+    # raised by a uniqueness check does not trigger a deceptive "this field is not unique"
+    # validation failure.
+    integer = serializers.CharField(validators=[UniqueValidator(queryset=IntegerFieldModel.objects.all())])
+
+
 class TestUniquenessValidation(TestCase):
     def setUp(self):
         self.instance = UniquenessModel.objects.create(username='existing')
@@ -99,6 +111,10 @@ class TestUniquenessValidation(TestCase):
         data = {'username': 'new-username', 'email': 'new-email@example.com'}
         rs = RelatedModelSerializer(data=data)
         self.assertTrue(rs.is_valid())
+
+    def test_value_error_treated_as_not_unique(self):
+        serializer = UniquenessIntegerSerializer(data={'integer': 'abc'})
+        assert serializer.is_valid()
 
 
 # Tests for `UniqueTogetherValidator`
