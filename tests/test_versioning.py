@@ -85,6 +85,7 @@ class TestRequestVersion:
         response = view(request)
         assert response.data == {'version': None}
 
+    @override_settings(ALLOWED_HOSTS=['*'])
     def test_host_name_versioning(self):
         scheme = versioning.HostNameVersioning
         view = RequestVersionView.as_view(versioning_class=scheme)
@@ -173,6 +174,7 @@ class TestURLReversing(URLPatternsTestCase):
         response = view(request)
         assert response.data == {'url': 'http://testserver/another/'}
 
+    @override_settings(ALLOWED_HOSTS=['*'])
     def test_reverse_host_name_versioning(self):
         scheme = versioning.HostNameVersioning
         view = ReverseView.as_view(versioning_class=scheme)
@@ -223,6 +225,7 @@ class TestInvalidVersion:
         response = view(request)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
+    @override_settings(ALLOWED_HOSTS=['*'])
     def test_invalid_host_name_versioning(self):
         scheme = versioning.HostNameVersioning
         view = RequestInvalidVersionView.as_view(versioning_class=scheme)
