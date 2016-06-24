@@ -19,12 +19,15 @@ continued development by **[signing up for a paid plan][funding]**.
 
 The initial aim is to provide a single full-time position on REST framework.
 Right now we're a little over 43% of the way towards achieving that.
-Every single sign-up makes a significant impact, as an example taking out a
-basic tier sponsorship moves us about 1% closer to our funding target.
+*Every single sign-up makes a significant impact.* Taking out a
+[basic tier sponsorship](https://fund.django-rest-framework.org/topics/funding/#corporate-plans) moves us about 1% closer to our funding target.
 
-[![rover-image]][rover]
+<p align="center">
+  <a href="http://jobs.rover.com/"><img src="https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/premium/rover-readme.png"/></a>
+  <a href="https://getsentry.com/welcome/"><img src="https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/premium/sentry-readme.png"/></a>
+</p>
 
-*Many thanks to all our [awesome sponsors][sponsors], and in particular to our premium backers, [Rover][rover].*
+*Many thanks to all our [awesome sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/) and [Sentry](https://getsentry.com/welcome/).*
 
 ---
 
@@ -183,8 +186,6 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 
 [funding]: https://fund.django-rest-framework.org/topics/funding/
 [sponsors]: https://fund.django-rest-framework.org/topics/funding/#our-sponsors
-[rover]: http://jobs.rover.com/
-[rover-image]: https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/rover.png
 
 [oauth1-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
