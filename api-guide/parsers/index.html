@@ -510,7 +510,8 @@ def example_view(request, format=None):
 <p><strong>.media_type</strong>: <code>multipart/form-data</code></p>
 <h2 id="fileuploadparser"><a class="toclink" href="#fileuploadparser">FileUploadParser</a></h2>
 <p>Parses raw file upload content.  The <code>request.data</code> property will be a dictionary with a single key <code>'file'</code> containing the uploaded file.</p>
-<p>If the view used with <code>FileUploadParser</code> is called with a <code>filename</code> URL keyword argument, then that argument will be used as the filename.  If it is called without a <code>filename</code> URL keyword argument, then the client must set the filename in the <code>Content-Disposition</code> HTTP header.  For example <code>Content-Disposition: attachment; filename=upload.jpg</code>.</p>
+<p>If the view used with <code>FileUploadParser</code> is called with a <code>filename</code> URL keyword argument, then that argument will be used as the filename.</p>
+<p>If it is called without a <code>filename</code> URL keyword argument, then the client must set the filename in the <code>Content-Disposition</code> HTTP header.  For example <code>Content-Disposition: attachment; filename=upload.jpg</code>.</p>
 <p><strong>.media_type</strong>: <code>*/*</code></p>
 <h5 id="notes"><a class="toclink" href="#notes">Notes:</a></h5>
 <ul>
@@ -519,7 +520,8 @@ def example_view(request, format=None):
 <li><code>FileUploadParser</code> respects Django's standard <code>FILE_UPLOAD_HANDLERS</code> setting, and the <code>request.upload_handlers</code> attribute.  See the <a href="https://docs.djangoproject.com/en/dev/topics/http/file-uploads/#upload-handlers">Django documentation</a> for more details.</li>
 </ul>
 <h5 id="basic-usage-example"><a class="toclink" href="#basic-usage-example">Basic usage example:</a></h5>
-<pre><code>class FileUploadView(views.APIView):
+<pre><code># views.py
+class FileUploadView(views.APIView):
     parser_classes = (FileUploadParser,)
 
     def put(self, request, filename, format=None):
@@ -528,6 +530,12 @@ def example_view(request, format=None):
         # do some stuff with uploaded file
         # ...
         return Response(status=204)
+
+# urls.py
+urlpatterns = [
+    # ...
+    url(r'^upload/(?P&lt;filename&gt;[^/]+)$', FileUploadView.as_view())
+]
 </code></pre>
 <hr />
 <h1 id="custom-parsers"><a class="toclink" href="#custom-parsers">Custom parsers</a></h1>

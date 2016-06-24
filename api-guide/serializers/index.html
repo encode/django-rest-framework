@@ -443,6 +443,10 @@
 
                   
                     <li>
+                      <a href="#absolute-and-relative-urls">Absolute and relative URLs</a>
+                    </li>
+                  
+                    <li>
                       <a href="#how-hyperlinked-views-are-determined">How hyperlinked views are determined</a>
                     </li>
                   
@@ -1060,6 +1064,20 @@ The default implementation raises an error, although subclasses may customize th
         model = Account
         fields = ('url', 'id', 'account_name', 'users', 'created')
 </code></pre>
+<h2 id="absolute-and-relative-urls"><a class="toclink" href="#absolute-and-relative-urls">Absolute and relative URLs</a></h2>
+<p>When instantiating a <code>HyperlinkedModelSerializer</code> you must include the current
+<code>request</code> in the serializer context, for example:</p>
+<pre><code>serializer = AccountSerializer(queryset, context={'request': request})
+</code></pre>
+<p>Doing so will ensure that the hyperlinks can include an appropriate hostname,
+so that the resulting representation uses fully qualified URLs, such as:</p>
+<pre><code>http://api.example.com/accounts/1/
+</code></pre>
+<p>Rather than relative URLs, such as:</p>
+<pre><code>/accounts/1/
+</code></pre>
+<p>If you <em>do</em> want to use relative URLs, you should explicitly pass <code>{'request': None}</code>
+in the serializer context.</p>
 <h2 id="how-hyperlinked-views-are-determined"><a class="toclink" href="#how-hyperlinked-views-are-determined">How hyperlinked views are determined</a></h2>
 <p>There needs to be a way of determining which views should be used for hyperlinking to model instances.</p>
 <p>By default hyperlinks are expected to correspond to a view name that matches the style <code>'{model_name}-detail'</code>, and looks up the instance by a <code>pk</code> keyword argument.</p>
@@ -1373,7 +1391,7 @@ def all_high_scores(request):
 <h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages are also available.</p>
 <h2 id="django-rest-marshmallow"><a class="toclink" href="#django-rest-marshmallow">Django REST marshmallow</a></h2>
-<p>The <a href="http://tomchristie.github.io/django-rest-marshmallow/">django-rest-marshmallow</a> package provides an alternative implementation for serializers, using the python <a href="https://marshmallow.readthedocs.org/en/latest/">marshmallow</a> library. It exposes the same API as the REST framework serializers, and can be used as a drop-in replacement in some use-cases.</p>
+<p>The <a href="http://tomchristie.github.io/django-rest-marshmallow/">django-rest-marshmallow</a> package provides an alternative implementation for serializers, using the python <a href="https://marshmallow.readthedocs.io/en/latest/">marshmallow</a> library. It exposes the same API as the REST framework serializers, and can be used as a drop-in replacement in some use-cases.</p>
 <h2 id="serpy"><a class="toclink" href="#serpy">Serpy</a></h2>
 <p>The <a href="https://github.com/clarkduvall/serpy">serpy</a> package is an alternative implementation for serializers that is built for speed. <a href="https://github.com/clarkduvall/serpy">Serpy</a> serializes complex datatypes to simple native types. The native types can be easily converted to JSON or any other format needed.</p>
 <h2 id="mongoenginemodelserializer"><a class="toclink" href="#mongoenginemodelserializer">MongoengineModelSerializer</a></h2>

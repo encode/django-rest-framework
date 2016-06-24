@@ -376,7 +376,7 @@
                   
                 
                   <li class="main">
-                    <a href="#advanced-default-argument-usage">Advanced 'default' argument usage</a>
+                    <a href="#advanced-field-defaults">Advanced field defaults</a>
                   </li>
 
                   
@@ -386,6 +386,24 @@
                   
                     <li>
                       <a href="#createonlydefault">CreateOnlyDefault</a>
+                    </li>
+                  
+                
+                  <li class="main">
+                    <a href="#limitations-of-validators">Limitations of validators</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#optional-fields">Optional fields</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#updating-nested-serializers">Updating nested serializers</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#debugging-complex-cases">Debugging complex cases</a>
                     </li>
                   
                 
@@ -543,7 +561,7 @@ It has two required arguments, and a single optional <code>messages</code> argum
 <hr />
 <p><strong>Note</strong>: The <code>UniqueFor&lt;Range&gt;Validation</code> classes always imposes an implicit constraint that the fields they are applied to are always treated as required. Fields with <code>default</code> values are an exception to this as they always supply a value even when omitted from user input.</p>
 <hr />
-<h1 id="advanced-default-argument-usage"><a class="toclink" href="#advanced-default-argument-usage">Advanced 'default' argument usage</a></h1>
+<h1 id="advanced-field-defaults"><a class="toclink" href="#advanced-field-defaults">Advanced field defaults</a></h1>
 <p>Validators that are applied across multiple fields in the serializer can sometimes require a field input that should not be provided by the API client, but that <em>is</em> available as input to the validator.</p>
 <p>Two patterns that you may want to use for this sort of validation include:</p>
 <ul>
@@ -565,6 +583,56 @@ It has two required arguments, and a single optional <code>messages</code> argum
     default=CreateOnlyDefault(timezone.now)
 )
 </code></pre>
+<hr />
+<h1 id="limitations-of-validators"><a class="toclink" href="#limitations-of-validators">Limitations of validators</a></h1>
+<p>There are some ambiguous cases where you'll need to instead handle validation
+explicitly, rather than relying on the default serializer classes that
+<code>ModelSerializer</code> generates.</p>
+<p>In these cases you may want to disable the automatically generated validators,
+by specifying an empty list for the serializer <code>Meta.validators</code> attribute.</p>
+<h2 id="optional-fields"><a class="toclink" href="#optional-fields">Optional fields</a></h2>
+<p>By default "unique together" validation enforces that all fields be
+<code>required=True</code>. In some cases, you might want to explicit apply
+<code>required=False</code> to one of the fields, in which case the desired behaviour
+of the validation is ambiguous.</p>
+<p>In this case you will typically need to exclude the validator from the
+serializer class, and instead write any validation logic explicitly, either
+in the <code>.validate()</code> method, or else in the view.</p>
+<p>For example:</p>
+<pre><code>class BillingRecordSerializer(serializers.ModelSerializer):
+    def validate(self, data):
+        # Apply custom validation either here, or in the view.
+
+    class Meta:
+        fields = ('client', 'date', 'amount')
+        extra_kwargs = {'client' {'required': 'False'}}
+        validators = []  # Remove a default "unique together" constraint.
+</code></pre>
+<h2 id="updating-nested-serializers"><a class="toclink" href="#updating-nested-serializers">Updating nested serializers</a></h2>
+<p>When applying an update to an existing instance, uniqueness validators will
+exclude the current instance from the uniqueness check. The current instance
+is available in the context of the uniqueness check, because it exists as
+an attribute on the serializer, having initially been passed using
+<code>instance=...</code> when instantiating the serializer.</p>
+<p>In the case of update operations on <em>nested</em> serializers there's no way of
+applying this exclusion, because the instance is not available.</p>
+<p>Again, you'll probably want to explicitly remove the validator from the
+serializer class, and write the code the for the validation constraint
+explicitly, in a <code>.validate()</code> method, or in the view.</p>
+<h2 id="debugging-complex-cases"><a class="toclink" href="#debugging-complex-cases">Debugging complex cases</a></h2>
+<p>If you're not sure exactly what behavior a <code>ModelSerializer</code> class will
+generate it is usually a good idea to run <code>manage.py shell</code>, and print
+an instance of the serializer, so that you can inspect the fields and
+validators that it automatically generates for you.</p>
+<pre><code>&gt;&gt;&gt; serializer = MyComplexModelSerializer()
+&gt;&gt;&gt; print(serializer)
+class MyComplexModelSerializer:
+    my_fields = ...
+</code></pre>
+<p>Also keep in mind that with complex cases it can often be better to explicitly
+define your serializer classes, rather than relying on the default
+<code>ModelSerializer</code> behavior. This involves a little more code, but ensures
+that the resulting behavior is more transparent.</p>
 <hr />
 <h1 id="writing-custom-validators"><a class="toclink" href="#writing-custom-validators">Writing custom validators</a></h1>
 <p>You can use any of Django's existing validators, or write your own custom validators.</p>

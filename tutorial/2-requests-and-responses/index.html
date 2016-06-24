@@ -555,6 +555,7 @@ http --json POST http://127.0.0.1:8000/snippets/ code="print 456"
     "style": "friendly"
 }
 </code></pre>
+<p>If you add a <code>--debug</code> switch to the <code>http</code> requests above, you will be able to see the request type in request headers.</p>
 <p>Now go and open the API in a web browser, by visiting <a href="http://127.0.0.1:8000/snippets/">http://127.0.0.1:8000/snippets/</a>.</p>
 <h3 id="browsability"><a class="toclink" href="#browsability">Browsability</a></h3>
 <p>Because the API chooses the content type of the response based on the client request, it will, by default, return an HTML-formatted representation of the resource when that resource is requested by a web browser.  This allows for the API to return a fully web-browsable HTML representation.</p>

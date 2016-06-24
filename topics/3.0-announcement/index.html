@@ -434,7 +434,7 @@
 <hr />
 <p><em>Below is an in-depth guide to the API changes and migration notes for 3.0.</em></p>
 <h2 id="request-objects"><a class="toclink" href="#request-objects">Request objects</a></h2>
-<h4 id="the-data-and-query_params-properties"><a class="toclink" href="#the-data-and-query_params-properties">The <code>.data</code> and <code>.query_params</code> properties.</a></h4>
+<h4 id="the-data-and-query_params-properties"><code>.query_params</code> properties.<a class="toclink" href="#the-data-and-query_params-properties">The <code>.data</code> and </a></h4>
 <p>The usage of <code>request.DATA</code> and <code>request.FILES</code> is now pending deprecation in favor of a single <code>request.data</code> attribute that contains <em>all</em> the parsed data.</p>
 <p>Having separate attributes is reasonable for web applications that only ever parse url-encoded or multipart requests, but makes less sense for the general-purpose request parsing that REST framework supports.</p>
 <p>You may now pass all the request data to a serializer class in a single argument:</p>
@@ -466,7 +466,7 @@ ExampleSerializer(data=request.DATA, files=request.FILES)
 <li>Calling <code>serializer.save()</code> then saves and returns the new object instance.</li>
 </ol>
 <p>The resulting API changes are further detailed below.</p>
-<h4 id="the-create-and-update-methods"><a class="toclink" href="#the-create-and-update-methods">The <code>.create()</code> and <code>.update()</code> methods.</a></h4>
+<h4 id="the-create-and-update-methods"><code>.update()</code> methods.<a class="toclink" href="#the-create-and-update-methods">The <code>.create()</code> and </a></h4>
 <p>The <code>.restore_object()</code> method is now removed, and we instead have two separate methods, <code>.create()</code> and <code>.update()</code>. These methods work slightly different to the previous <code>.restore_object()</code>.</p>
 <p>When using the <code>.create()</code> and <code>.update()</code> methods you should both create <em>and save</em> the object instance. This is in contrast to the previous <code>.restore_object()</code> behavior that would instantiate the object but not save it.</p>
 <p>These methods also replace the optional <code>.save_object()</code> method, which no longer exists.</p>
@@ -498,7 +498,7 @@ def create(self, validated_data):
     return Snippet.objects.create(**validated_data)
 </code></pre>
 <p>Note that these methods should return the newly created object instance.</p>
-<h4 id="use-validated_data-instead-of-object"><a class="toclink" href="#use-validated_data-instead-of-object">Use <code>.validated_data</code> instead of <code>.object</code>.</a></h4>
+<h4 id="use-validated_data-instead-of-object"><code>.object</code>.<a class="toclink" href="#use-validated_data-instead-of-object">Use <code>.validated_data</code> instead of </a></h4>
 <p>You must now use the <code>.validated_data</code> attribute if you need to inspect the data before saving, rather than using the <code>.object</code> attribute, which no longer exists.</p>
 <p>For example the following code <em>is no longer valid</em>:</p>
 <pre><code>if serializer.is_valid():
@@ -846,7 +846,7 @@ def all_high_scores(request):
 </code></pre>
 <hr />
 <h2 id="serializer-fields"><a class="toclink" href="#serializer-fields">Serializer fields</a></h2>
-<h4 id="the-field-and-readonly-field-classes"><a class="toclink" href="#the-field-and-readonly-field-classes">The <code>Field</code> and <code>ReadOnly</code> field classes.</a></h4>
+<h4 id="the-field-and-readonly-field-classes"><code>ReadOnly</code> field classes.<a class="toclink" href="#the-field-and-readonly-field-classes">The <code>Field</code> and </a></h4>
 <p>There are some minor tweaks to the field base classes.</p>
 <p>Previously we had these two base classes:</p>
 <ul>
@@ -858,7 +858,7 @@ def all_high_scores(request):
 <li><code>Field</code> is the base class for all fields. It does not include any default implementation for either serializing or deserializing data.</li>
 <li><code>ReadOnlyField</code> is a concrete implementation for read-only fields that simply returns the attribute value without modification.</li>
 </ul>
-<h4 id="the-required-allow_null-allow_blank-and-default-arguments"><a class="toclink" href="#the-required-allow_null-allow_blank-and-default-arguments">The <code>required</code>, <code>allow_null</code>, <code>allow_blank</code> and <code>default</code> arguments.</a></h4>
+<h4 id="the-required-allow_null-allow_blank-and-default-arguments"><code>allow_null</code>, <code>default</code> arguments.<a class="toclink" href="#the-required-allow_null-allow_blank-and-default-arguments">The <code>required</code>, <code>allow_blank</code> and </a></h4>
 <p>REST framework now has more explicit and clear control over validating empty values for fields.</p>
 <p>Previously the meaning of the <code>required=False</code> keyword argument was underspecified. In practice its use meant that a field could either be not included in the input, or it could be included, but be <code>None</code> or the empty string.</p>
 <p>We now have a better separation, with separate <code>required</code>, <code>allow_null</code> and <code>allow_blank</code> arguments.</p>
@@ -968,7 +968,7 @@ This removes some magic and makes it easier and more obvious to move between imp
 <p>The following usage will <em>now raise an error</em>:</p>
 <pre><code>email = serializers.EmailField(source='email')
 </code></pre>
-<h4 id="the-uniquevalidator-and-uniquetogethervalidator-classes"><a class="toclink" href="#the-uniquevalidator-and-uniquetogethervalidator-classes">The <code>UniqueValidator</code> and <code>UniqueTogetherValidator</code> classes.</a></h4>
+<h4 id="the-uniquevalidator-and-uniquetogethervalidator-classes"><code>UniqueTogetherValidator</code> classes.<a class="toclink" href="#the-uniquevalidator-and-uniquetogethervalidator-classes">The <code>UniqueValidator</code> and </a></h4>
 <p>REST framework now provides new validators that allow you to ensure field uniqueness, while still using a completely explicit <code>Serializer</code> class instead of using <code>ModelSerializer</code>.</p>
 <p>The <code>UniqueValidator</code> should be applied to a serializer field, and takes a single <code>queryset</code> argument.</p>
 <pre><code>from rest_framework import serializers
