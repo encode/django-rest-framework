@@ -533,6 +533,10 @@ class ListSerializer(BaseSerializer):
         super(ListSerializer, self).__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
 
+    def bind(self, field_name, parent):
+        super(ListSerializer, self).bind(field_name, parent)
+        self.partial = self.parent.partial
+
     def get_initial(self):
         if hasattr(self, 'initial_data'):
             return self.to_representation(self.initial_data)
@@ -584,6 +588,9 @@ class ListSerializer(BaseSerializer):
             })
 
         if not self.allow_empty and len(data) == 0:
+            if self.partial:
+                raise SkipField()
+
             message = self.error_messages['empty']
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
