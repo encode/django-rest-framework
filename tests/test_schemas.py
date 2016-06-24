@@ -31,7 +31,7 @@ class ExampleViewSet(ModelViewSet):
     serializer_class = ExampleSerializer
 
 
-router = DefaultRouter(schema_title='Example API')
+router = DefaultRouter(schema_title='Example API' if coreapi else None)
 router.register('example', ExampleViewSet, base_name='example')
 urlpatterns = [
     url(r'^', include(router.urls))
