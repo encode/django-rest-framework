@@ -19,8 +19,8 @@ continued development by **[signing up for a paid plan][funding]**.
 
 The initial aim is to provide a single full-time position on REST framework.
 Right now we're a little over 43% of the way towards achieving that.
-Every single sign-up makes a significant impact, as an example taking out a
-basic tier sponsorship moves us about 1% closer to our funding target.
+*Every single sign-up makes a significant impact.* Taking out a
+[basic tier sponsorship](https://fund.django-rest-framework.org/topics/funding/#corporate-plans) moves us about 1% closer to our funding target.
 
 <p align="center">
   <a href="http://jobs.rover.com/"><img src="https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/premium/rover-readme.png"/></a>
