@@ -18,9 +18,9 @@ REST framework commercially we strongly encourage you to invest in its
 continued development by **[signing up for a paid plan][funding]**.
 
 The initial aim is to provide a single full-time position on REST framework.
-Right now we're a little over 35% of the way towards achieving that.
-Each basic tier sponsorship makes a significant impact, taking us around 1%
-closer to our funding target.
+Right now we're a little over 43% of the way towards achieving that.
+Every single sign-up makes a significant impact, as an example taking out a
+basic tier sponsorship moves us about 1% closer to our funding target.
 
 [![rover-image]][rover]
 
