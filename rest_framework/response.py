@@ -62,12 +62,6 @@ class Response(SimpleTemplateResponse):
         charset = renderer.charset
         content_type = self.content_type
 
-        if content_type is None and charset is not None:
-            content_type = "{0}; charset={1}".format(media_type, charset)
-        elif content_type is None:
-            content_type = media_type
-        self['Content-Type'] = content_type
-
         ret = renderer.render(self.data, media_type, context)
         if isinstance(ret, six.text_type):
             assert charset, (
@@ -76,6 +70,15 @@ class Response(SimpleTemplateResponse):
             )
             return bytes(ret.encode(charset))
 
+        boundary = renderer.boundary if hasattr(renderer, "boundary") else None
+        if not content_type:
+            content_type = "{0}".format(media_type)
+            if charset is not None:
+                content_type += "; charset={0}".format(charset)
+            if boundary is not None:
+                content_type += "; boundary={0}".format(boundary)
+        
+        self['Content-Type'] = content_type
         if not ret:
             del self['Content-Type']
 
