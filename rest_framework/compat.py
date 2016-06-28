@@ -123,6 +123,8 @@ def get_related_model(field):
 
 
 def value_from_object(field, obj):
+    if isinstance(obj, dict):
+        return obj[field.attname]
     if django.VERSION < (1, 9):
         return field._get_val_from_obj(obj)
     field.value_from_object(obj)
