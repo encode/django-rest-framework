@@ -122,6 +122,9 @@ existing API, like so...
 There is also functionality for navigating forward or backward through the
 history of which API URLs have been accessed.
 
+    coreapi history show
+    coreapi history back
+
 For more information and a listing of the available subcommands use
 `coreapi bookmarks --help` or `coreapi history --help`.
 
@@ -137,6 +140,7 @@ To reload the current `Document` from the network, use `reload`.
 
     coreapi reload
 
+To load a schema file from disk.
 
     load
 
