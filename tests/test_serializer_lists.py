@@ -374,7 +374,7 @@ class TestSerializerPartialUsage:
         assert not serializer.is_valid()
         assert serializer.validated_data == []
         assert len(serializer.errors) == 1
-        assert serializer.errors['non_field_errors'] == [u'This list may not be empty.']
+        assert serializer.errors['non_field_errors'][0] == 'This list may not be empty.'
 
     def test_update_allow_empty_false(self):
         class ListSerializer(serializers.Serializer):
