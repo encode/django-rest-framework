@@ -588,7 +588,7 @@ class ListSerializer(BaseSerializer):
             })
 
         if not self.allow_empty and len(data) == 0:
-            if self.partial:
+            if self.parent and self.partial:
                 raise SkipField()
 
             message = self.error_messages['empty']
