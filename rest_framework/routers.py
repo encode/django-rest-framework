@@ -144,7 +144,9 @@ class SimpleRouter(BaseRouter):
 
         Returns a list of the Route namedtuple.
         """
-        known_actions = flatten([route.mapping.values() for route in self.routes if isinstance(route, Route)])
+        # converting to list as iterables are good for one pass, known host needs to be checked again and again for
+        # different functions.
+        known_actions = list(flatten([route.mapping.values() for route in self.routes if isinstance(route, Route)]))
 
         # Determine any `@detail_route` or `@list_route` decorated methods on the viewset
         detail_routes = []
@@ -154,6 +156,7 @@ class SimpleRouter(BaseRouter):
             httpmethods = getattr(attr, 'bind_to_methods', None)
             detail = getattr(attr, 'detail', True)
             if httpmethods:
+                # checking method names against the known actions list
                 if methodname in known_actions:
                     raise ImproperlyConfigured('Cannot use @detail_route or @list_route '
                                                'decorators on method "%s" '
