@@ -25,6 +25,7 @@ from django.utils.dateparse import (
 )
 from django.utils.duration import duration_string
 from django.utils.encoding import is_protected_type, smart_text
+from django.utils.formats import localize_input, sanitize_separators
 from django.utils.functional import cached_property
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.translation import ugettext_lazy as _
@@ -275,7 +276,7 @@ class Field(object):
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=empty, source=None,
                  label=None, help_text=None, style=None,
-                 error_messages=None, validators=None, allow_null=False):
+                 error_messages=None, validators=None, allow_null=False, localize=False):
         self._creation_counter = Field._creation_counter
         Field._creation_counter += 1
 
@@ -299,6 +300,7 @@ class Field(object):
         self.help_text = help_text
         self.style = {} if style is None else style
         self.allow_null = allow_null
+        self.localize = localize
 
         if self.default_empty_html is not empty:
             if default is not empty:
@@ -871,6 +873,9 @@ class FloatField(Field):
             self.validators.append(MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, data):
+
+        if self.localize:
+            data = sanitize_separators(data)
         if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
             self.fail('max_string_length')
 
@@ -880,7 +885,10 @@ class FloatField(Field):
             self.fail('invalid')
 
     def to_representation(self, value):
-        return float(value)
+        value = float(value)
+        if self.localize:
+            value = localize_input(value)
+        return value
 
 
 class DecimalField(Field):
@@ -923,7 +931,12 @@ class DecimalField(Field):
         Validate that the input is a decimal number and return a Decimal
         instance.
         """
+
+        if self.localize:
+            data = sanitize_separators(data)
+
         data = smart_text(data).strip()
+
         if len(data) > self.MAX_STRING_LENGTH:
             self.fail('max_string_length')
 
@@ -988,6 +1001,9 @@ class DecimalField(Field):
 
         if not coerce_to_string:
             return quantized
+        if self.localize:
+            return localize_input(quantized)
+
         return '{0:f}'.format(quantized)
 
     def quantize(self, value):

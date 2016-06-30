@@ -5,6 +5,7 @@ from decimal import Decimal
 
 import pytest
 from django.http import QueryDict
+from django.test import TestCase, override_settings
 from django.utils import six, timezone
 
 import rest_framework
@@ -892,6 +893,30 @@ class TestNoStringCoercionDecimalField(FieldValues):
         max_digits=3, decimal_places=1,
         coerce_to_string=False
     )
+
+
+class TestLocalizedDecimalField(TestCase):
+    @override_settings(USE_L10N=True, LANGUAGE_CODE='pl', LANGUAGES=(('pl', 'Polish'),))
+    def test_to_internal_value(self):
+        field = serializers.DecimalField(max_digits=2, decimal_places=1, localize=True)
+        self.assertEqual(field.to_internal_value('1,1'), Decimal('1.1'))
+
+    @override_settings(USE_L10N=True, LANGUAGE_CODE='pl', LANGUAGES=(('pl', 'Polish'),))
+    def test_to_representation(self):
+        field = serializers.DecimalField(max_digits=2, decimal_places=1, localize=True)
+        self.assertEqual(field.to_representation(Decimal('1.1')), '1,1')
+
+
+class TestLocalizedFloatField(TestCase):
+    @override_settings(USE_L10N=True, LANGUAGE_CODE='pl', LANGUAGES=(('pl', 'Polish'),))
+    def test_to_internal_value(self):
+        field = serializers.FloatField(localize=True)
+        self.assertEqual(field.to_internal_value('1,1'), 1.1)
+
+    @override_settings(USE_L10N=True, LANGUAGE_CODE='pl', LANGUAGES=(('pl', 'Polish'),))
+    def test_to_representation(self):
+        field = serializers.FloatField(localize=True)
+        self.assertEqual(field.to_representation(1.1), '1,1')
 
 
 class TestNoDecimalPlaces(FieldValues):
