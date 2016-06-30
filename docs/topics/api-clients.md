@@ -56,9 +56,12 @@ To install the Core API command line client, use pip.
 
     pip install coreapi
 
-**TODO**
+To start inspecting and interacting with an API the schema must be loaded.
 
     coreapi get http://api.example.org/
+
+This will then load the schema, displaying the resulting `Document`. This
+`Document` includes all the available interactions that may be made against the API.
 
 To interact with the API, use the `action` command. This command requires a list
 of keys that are used to index into the link.
@@ -130,21 +133,20 @@ For more information and a listing of the available subcommands use
 
 ## Other commands
 
-**TODO**
-
-To display the current `Document`, use the `show` command.
+To display the current `Document`:
 
     coreapi show
 
-To reload the current `Document` from the network, use `reload`.
+To reload the current `Document` from the network:
 
     coreapi reload
 
-To load a schema file from disk.
+To load a schema file from disk:
 
-    load
+    coreapi load my-api-schema.json --format corejson
 
-To remove the current document, history, credentials, headers and bookmarks, use `clear`:
+To remove the current document, along with all currently saved history,
+credentials, headers and bookmarks:
 
     coreapi clear
 
@@ -157,12 +159,75 @@ API that exposes a supported schema format.
 
 ## Getting started
 
-    client = coreapi.Client()
-    schema = client.get('http://...')
+You'll need to install the `coreapi` package using `pip` before you can get
+started. Once you've done so, open up a python terminal.
 
-    client.action(schema, ['users', 'list'])
-    client.action(schema, ['users', 'list'], params={"page": 2})
+In order to start working with an API, we first need a `Client` instance. The
+client holds any configuration around which codecs and transports are supported
+when interacting with an API, which allows you to provide for more advanced
+kinds of behaviour.
+
+    import coreapi
+    client = coreapi.Client()
+
+Once we have a `Client` instance, we can fetch an API schema from the network.
+
+    schema = client.get('https://api.example.org/')
+
+The object returned from this call will be a `Document` instance, which is
+the internal representation of the interface that we are interacting with.
+
+Now that we have our schema `Document`, we can now start to interact with the API:
+
+    users = client.action(schema, ['users', 'list'])
+
+Some endpoints may include named parameters, which might be either optional or required:
+
+    new_user = client.action(schema, ['users', 'create'], params={"username": "max"})
+
+**TODO**: *file uploads*, *describe/help?*
 
 ## Codecs
 
+Codecs are responsible for encoding or decoding Documents.
+
+The decoding process is used by a client to take a bytestring of an API schema
+definition, and returning the Core API `Document` that represents that interface.
+
+A codec should be associated with a particular media type, such as **TODO**.
+
+This media type is used by the server in the response `Content-Type` header,
+in order to indicate what kind of data is being returned in the response.
+
+#### Configuring codecs
+
+**TODO**
+
+#### Loading and saving schemas
+
+You can use a codec directly, in order to load an existing schema definition,
+and return the resulting `Document`.
+
+    schema_definition = open('my-api-schema.json', 'r').read()
+    codec = codecs.CoreJSONCodec()
+    schema = codec.load(schema_definition)
+
+You can also use a codec directly to generate a schema definition given a `Document` instance:
+
+    schema_definition = codec.dump(schema)
+    output_file = open('my-api-schema.json', 'r')
+    output_file.write(schema_definition)
+
+#### Writing custom codecs
+
 ## Transports
+
+**TODO**
+
+#### Configuring transports
+
+**TODO**
+
+#### Writing custom transports
+
+**TODO**
