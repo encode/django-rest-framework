@@ -79,16 +79,23 @@ class DjangoFilterBackend(BaseFilterBackend):
     """
     default_filter_set = FilterSet
     template = filter_template
+    filter_fields = None
 
     def __init__(self):
         assert django_filters, 'Using DjangoFilterBackend, but django-filter is not installed'
+
+    def get_filter_fields(self, view):
+        filter_fields = getattr(view, 'filter_fields', None)
+        if not filter_fields:
+            filter_fields = self.filter_fields
+        return filter_fields
 
     def get_filter_class(self, view, queryset=None):
         """
         Return the django-filters `FilterSet` used to filter the queryset.
         """
         filter_class = getattr(view, 'filter_class', None)
-        filter_fields = getattr(view, 'filter_fields', None)
+        filter_fields = self.get_filter_fields(view)
 
         if filter_class:
             filter_model = filter_class.Meta.model
