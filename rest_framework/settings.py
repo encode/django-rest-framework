@@ -64,6 +64,7 @@ DEFAULTS = {
 
     # Pagination
     'PAGE_SIZE': None,
+    'ORDERING': '-created',
 
     # Filtering
     'SEARCH_PARAM': 'search',
