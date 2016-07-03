@@ -578,14 +578,14 @@ class BrowsableAPIRenderer(BaseRenderer):
         return get_breadcrumbs(request.path, request)
 
     def get_filter_form(self, data, view, request):
-        if not hasattr(view, 'get_queryset') or not hasattr(view, 'filter_backends'):
+        if not hasattr(view, 'get_queryset') or not getattr(view, 'filter_backends', None):
             return
 
         # Infer if this is a list view or not.
         paginator = getattr(view, 'paginator', None)
         if isinstance(data, list):
             pass
-        elif (paginator is not None and data is not None):
+        elif paginator is not None and data is not None:
             try:
                 paginator.get_results(data)
             except (TypeError, KeyError):
