@@ -257,7 +257,7 @@ class TestNameableRoot(TestCase):
 
     def test_router_has_custom_name(self):
         expected = 'nameable-root'
-        self.assertEqual(expected, self.urls[0].name)
+        self.assertEqual(expected, self.urls[-1].name)
 
 
 class TestActionKeywordArgs(TestCase):

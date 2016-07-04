@@ -20,6 +20,7 @@ pages:
     - '4 - Authentication and permissions': 'tutorial/4-authentication-and-permissions.md'
     - '5 - Relationships and hyperlinked APIs': 'tutorial/5-relationships-and-hyperlinked-apis.md'
     - '6 - Viewsets and routers': 'tutorial/6-viewsets-and-routers.md'
+    - '7 - Schemas and client libraries': 'tutorial/7-schemas-and-client-libraries.md'
  - API Guide:
     - 'Requests': 'api-guide/requests.md'
     - 'Responses': 'api-guide/responses.md'
@@ -41,6 +42,7 @@ pages:
     - 'Versioning': 'api-guide/versioning.md'
     - 'Content negotiation': 'api-guide/content-negotiation.md'
     - 'Metadata': 'api-guide/metadata.md'
+    - 'Schemas': 'api-guide/schemas.md'
     - 'Format suffixes': 'api-guide/format-suffixes.md'
     - 'Returning URLs': 'api-guide/reverse.md'
     - 'Exceptions': 'api-guide/exceptions.md'
@@ -49,6 +51,7 @@ pages:
     - 'Settings': 'api-guide/settings.md'
  - Topics:
      - 'Documenting your API': 'topics/documenting-your-api.md'
+     - 'API Clients': 'topics/api-clients.md'
      - 'Internationalization': 'topics/internationalization.md'
      - 'AJAX, CSRF & CORS': 'topics/ajax-csrf-cors.md'
      - 'HTML & Forms': 'topics/html-and-forms.md'

@@ -91,6 +91,7 @@ REST framework requires the following:
 
 The following packages are optional:
 
+* [coreapi][coreapi] (1.21.0+) - Schema generation support.
 * [Markdown][markdown] (2.1.0+) - Markdown support for the browsable API.
 * [django-filter][django-filter] (0.9.2+) - Filtering support.
 * [django-crispy-forms][django-crispy-forms] - Improved HTML display for filtering.
@@ -214,6 +215,7 @@ The API guide is your complete reference manual to all the functionality provide
 * [Versioning][versioning]
 * [Content negotiation][contentnegotiation]
 * [Metadata][metadata]
+* [Schemas][schemas]
 * [Format suffixes][formatsuffixes]
 * [Returning URLs][reverse]
 * [Exceptions][exceptions]
@@ -226,6 +228,7 @@ The API guide is your complete reference manual to all the functionality provide
 General guides to using REST framework.
 
 * [Documenting your API][documenting-your-api]
+* [API Clients][api-clients]
 * [Internationalization][internationalization]
 * [AJAX, CSRF & CORS][ajax-csrf-cors]
 * [HTML & Forms][html-and-forms]
@@ -296,6 +299,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [redhat]: https://www.redhat.com/
 [heroku]: https://www.heroku.com/
 [eventbrite]: https://www.eventbrite.co.uk/about/
+[coreapi]: http://pypi.python.org/pypi/coreapi/
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [django-filter]: http://pypi.python.org/pypi/django-filter
 [django-crispy-forms]: https://github.com/maraujop/django-crispy-forms
@@ -318,6 +322,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [tut-4]: tutorial/4-authentication-and-permissions.md
 [tut-5]: tutorial/5-relationships-and-hyperlinked-apis.md
 [tut-6]: tutorial/6-viewsets-and-routers.md
+[tut-7]: tutorial/7-schemas-and-client-libraries.md
 
 [request]: api-guide/requests.md
 [response]: api-guide/responses.md
@@ -339,6 +344,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [versioning]: api-guide/versioning.md
 [contentnegotiation]: api-guide/content-negotiation.md
 [metadata]: api-guide/metadata.md
+[schemas]: 'api-guide/schemas.md'
 [formatsuffixes]: api-guide/format-suffixes.md
 [reverse]: api-guide/reverse.md
 [exceptions]: api-guide/exceptions.md
@@ -347,6 +353,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [settings]: api-guide/settings.md
 
 [documenting-your-api]: topics/documenting-your-api.md
+[api-clients]: topics/api-clients.md
 [internationalization]: topics/internationalization.md
 [ajax-csrf-cors]: topics/ajax-csrf-cors.md
 [html-and-forms]: topics/html-and-forms.md

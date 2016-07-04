@@ -156,6 +156,16 @@ except ImportError:
     crispy_forms = None
 
 
+# coreapi is optional (Note that uritemplate is a dependancy of coreapi)
+try:
+    import coreapi
+    import uritemplate
+except (ImportError, SyntaxError):
+    # SyntaxError is possible under python 3.2
+    coreapi = None
+    uritemplate = None
+
+
 # Django-guardian is optional. Import only if guardian is in INSTALLED_APPS
 # Fixes (#1712). We keep the try/except for the test suite.
 guardian = None

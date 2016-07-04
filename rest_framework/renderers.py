@@ -22,7 +22,8 @@ from django.utils import six
 
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
-    INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, template_render
+    INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi,
+    template_render
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
@@ -790,3 +791,17 @@ class MultiPartRenderer(BaseRenderer):
                     "test case." % key
                 )
         return encode_multipart(self.BOUNDARY, data)
+
+
+class CoreJSONRenderer(BaseRenderer):
+    media_type = 'application/vnd.coreapi+json'
+    charset = None
+    format = 'corejson'
+
+    def __init__(self):
+        assert coreapi, 'Using CoreJSONRenderer, but `coreapi` is not installed.'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        indent = bool(renderer_context.get('indent', 0))
+        codec = coreapi.codecs.CoreJSONCodec()
+        return codec.dump(data, indent=indent)
