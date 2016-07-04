@@ -52,13 +52,29 @@ exposes a supported schema format.
 
 ## Getting started
 
-To install the Core API command line client, use pip.
+To install the Core API command line client, use `pip`.
 
-    pip install coreapi
+    $ pip install coreapi
 
-To start inspecting and interacting with an API the schema must be loaded.
+To start inspecting and interacting with an API the schema must first be loaded
+from the network.
 
-    coreapi get http://api.example.org/
+
+    $ coreapi get http://api.example.org/
+    <Pastebin API "http://127.0.0.1:8000/">
+    snippets: {
+        create(code, [title], [linenos], [language], [style])
+        destroy(pk)
+        highlight(pk)
+        list([page])
+        partial_update(pk, [title], [code], [linenos], [language], [style])
+        retrieve(pk)
+        update(pk, code, [title], [linenos], [language], [style])
+    }
+    users: {
+        list([page])
+        retrieve(pk)
+    }
 
 This will then load the schema, displaying the resulting `Document`. This
 `Document` includes all the available interactions that may be made against the API.
@@ -66,20 +82,46 @@ This will then load the schema, displaying the resulting `Document`. This
 To interact with the API, use the `action` command. This command requires a list
 of keys that are used to index into the link.
 
-    coreapi action users list
-
-Some actions may include optional or required parameters.
-
-    coreapi action users create --params username example
+    $ coreapi action users list
+    [
+        {
+            "url": "http://127.0.0.1:8000/users/2/",
+            "id": 2,
+            "username": "aziz",
+            "snippets": []
+        },
+        ...
+    ]
 
 To inspect the underlying HTTP request and response, use the `--debug` flag.
 
-    coreapi action users create --params username example --debug
+    $ coreapi action users list --debug
+    > GET /users/ HTTP/1.1
+    > Accept: application/vnd.coreapi+json, */*
+    > Authorization: Basic bWF4Om1heA==
+    > Host: 127.0.0.1
+    > User-Agent: coreapi
+    < 200 OK
+    < Allow: GET, HEAD, OPTIONS
+    < Content-Type: application/json
+    < Date: Thu, 30 Jun 2016 10:51:46 GMT
+    < Server: WSGIServer/0.1 Python/2.7.10
+    < Vary: Accept, Cookie
+    <
+    < [{"url":"http://127.0.0.1/users/2/","id":2,"username":"aziz","snippets":[]},{"url":"http://127.0.0.1/users/3/","id":3,"username":"amy","snippets":["http://127.0.0.1/snippets/3/"]},{"url":"http://127.0.0.1/users/4/","id":4,"username":"max","snippets":["http://127.0.0.1/snippets/4/","http://127.0.0.1/snippets/5/","http://127.0.0.1/snippets/6/","http://127.0.0.1/snippets/7/"]},{"url":"http://127.0.0.1/users/5/","id":5,"username":"jose","snippets":[]},{"url":"http://127.0.0.1/users/6/","id":6,"username":"admin","snippets":["http://127.0.0.1/snippets/1/","http://127.0.0.1/snippets/2/"]}]
+
+    [
+        ...
+    ]
+
+Some actions may include optional or required parameters.
+
+    $ coreapi action users create --params username example
 
 To see some brief documentation on a particular link, use the `describe` command,
 passing a list of keys that index into the link.
 
-    coreapi describe users create
+    $ coreapi describe users create
 
 **TODO**:
 
@@ -184,8 +226,6 @@ Now that we have our schema `Document`, we can now start to interact with the AP
 Some endpoints may include named parameters, which might be either optional or required:
 
     new_user = client.action(schema, ['users', 'create'], params={"username": "max"})
-
-**TODO**: *file uploads*, *describe/help?*
 
 ## Codecs
 
