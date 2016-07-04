@@ -4,14 +4,18 @@ An API client handles the underlying details of how network requests are made
 and how responses are decoded. They present the developer with an application
 interface to work against, rather than working directly with the network interface.
 
-The API clients documented here are not restricted to REST framework APIs,
-and *can be used with any API that exposes a supported schema format*.
+The API clients documented here are not restricted to APIs built with Django REST framework.
+ They can be used with any API that exposes a supported schema format.
+
+For example, [the Heroku platform API][heroku-api] exposes a schema in the JSON
+Hyperschema format. As a result, the Core API command line client and Python
+client library can be [used to interact with the Heroku API][heroku-example].
 
 ## Client-side Core API
 
-Core API is a document specification that can be used to describe APIs. It can
-be used either server-side, as is done with REST framework's Schema generation,
-or used client-side, as described here
+[Core API][core-api] is a document specification that can be used to describe APIs. It can
+be used either server-side, as is done with REST framework's [schema generation][schema-generation],
+or used client-side, as described here.
 
 When used client-side, Core API allows for *dynamically driven client libraries*
 that can interact with any API that exposes a supported schema or hypermedia
@@ -117,17 +121,6 @@ To inspect the underlying HTTP request and response, use the `--debug` flag.
 Some actions may include optional or required parameters.
 
     $ coreapi action users create --params username example
-
-To see some brief documentation on a particular link, use the `describe` command,
-passing a list of keys that index into the link.
-
-    $ coreapi describe users create
-
-**TODO**:
-
-* string params / data params
-* file uploads
-* file downloads
 
 ## Authentication & headers
 
@@ -241,7 +234,18 @@ in order to indicate what kind of data is being returned in the response.
 
 #### Configuring codecs
 
-**TODO**
+The codecs that are available can be configured when instantiating a client.
+The keyword argument used here is `decoders`, because in the context of a
+client the codecs are only for *decoding* responses.
+
+In the following example we'll configure a client to only accept `Core JSON`
+and `JSON` responses. This will allow us to receive and decode a Core JSON schema,
+and subsequently to receive JSON responses made against the API.
+
+    from coreapi import codecs, Client
+
+    decoders = [codecs.CoreJSONCodec(), codecs.JSONCodec()]
+    client = Client(decoders=decoders)
 
 #### Loading and saving schemas
 
@@ -258,16 +262,33 @@ You can also use a codec directly to generate a schema definition given a `Docum
     output_file = open('my-api-schema.json', 'r')
     output_file.write(schema_definition)
 
-#### Writing custom codecs
-
 ## Transports
 
-**TODO**
+Transports are responsible for making network requests. The set of transports
+that a client has installed determines which network protocols it is able to
+support.
+
+Currently the `coreapi` library only includes an HTTP/HTTPS transport, but
+other protocols can also be supported.
 
 #### Configuring transports
 
-**TODO**
+The behaviour of the network layer can be customized by configuring the
+transports that the client is instantiated with.
 
-#### Writing custom transports
+    import requests
+    from coreapi import transports, Client
 
-**TODO**
+    credentials = {'api.example.org': 'Token 3bd44a009d16ff'}
+    transports = transports.HTTPTransport(credentials=credentials)
+    client = Client(transports=transports)
+
+More complex customizations can also be achieved, for example modifying the
+underlying `requests.Session` instance to [attach transport adaptors][transport-adaptors]
+that modify the outgoing requests.
+
+[heroku-api]: https://devcenter.heroku.com/categories/platform-api
+[heroku-example]: http://www.coreapi.org/tools-and-resources/example-services/#heroku-json-hyper-schema
+[core-api]: http://www.coreapi.org/
+[schema-generation]: ../api-guide/schemas.md
+[transport-adaptors]: http://docs.python-requests.org/en/master/user/advanced/#transport-adapters
