@@ -109,7 +109,7 @@ simply by adding a `schema_title` argument to the router.
 
     router = DefaultRouter(schema_title='Server Monitoring API')
 
-The schema will be included in by the root URL, `/`, and presented to clients
+The schema will be included at the root URL, `/`, and presented to clients
 that include the Core JSON media type in their `Accept` header.
 
     $ http http://127.0.0.1:8000/ Accept:application/vnd.coreapi+json
