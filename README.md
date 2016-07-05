@@ -18,16 +18,15 @@ REST framework commercially we strongly encourage you to invest in its
 continued development by **[signing up for a paid plan][funding]**.
 
 The initial aim is to provide a single full-time position on REST framework.
-Right now we're a little over 45% of the way towards achieving that.
-*Every single sign-up makes a significant impact.* Taking out a
-[basic tier sponsorship](https://fund.django-rest-framework.org/topics/funding/#corporate-plans) moves us about 1% closer to our funding target.
+Right now we're a little over 50% of the way towards achieving that.
+*Every single sign-up makes a significant impact.*
 
 <p align="center">
   <a href="http://jobs.rover.com/"><img src="https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/premium/rover-readme.png"/></a>
   <a href="https://getsentry.com/welcome/"><img src="https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/premium/sentry-readme.png"/></a>
 </p>
 
-*Many thanks to all our [awesome sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/) and [Sentry](https://getsentry.com/welcome/).*
+*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/) and [Sentry](https://getsentry.com/welcome/).*
 
 ---
 
