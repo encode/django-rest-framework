@@ -276,7 +276,7 @@ class Field(object):
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=empty, source=None,
                  label=None, help_text=None, style=None,
-                 error_messages=None, validators=None, allow_null=False, localize=False):
+                 error_messages=None, validators=None, allow_null=False):
         self._creation_counter = Field._creation_counter
         Field._creation_counter += 1
 
@@ -300,7 +300,6 @@ class Field(object):
         self.help_text = help_text
         self.style = {} if style is None else style
         self.allow_null = allow_null
-        self.localize = localize
 
         if self.default_empty_html is not empty:
             if default is not empty:
@@ -874,8 +873,6 @@ class FloatField(Field):
 
     def to_internal_value(self, data):
 
-        if self.localize:
-            data = sanitize_separators(data)
         if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
             self.fail('max_string_length')
 
@@ -885,10 +882,7 @@ class FloatField(Field):
             self.fail('invalid')
 
     def to_representation(self, value):
-        value = float(value)
-        if self.localize:
-            value = localize_input(value)
-        return value
+        return float(value)
 
 
 class DecimalField(Field):
@@ -903,9 +897,11 @@ class DecimalField(Field):
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
-    def __init__(self, max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None, **kwargs):
+    def __init__(self, max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None,
+                 localize=False, **kwargs):
         self.max_digits = max_digits
         self.decimal_places = decimal_places
+        self.localize = localize
         if coerce_to_string is not None:
             self.coerce_to_string = coerce_to_string
 
