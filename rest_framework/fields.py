@@ -25,6 +25,7 @@ from django.utils.dateparse import (
 )
 from django.utils.duration import duration_string
 from django.utils.encoding import is_protected_type, smart_text
+from django.utils.formats import localize_input, sanitize_separators
 from django.utils.functional import cached_property
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.translation import ugettext_lazy as _
@@ -871,6 +872,7 @@ class FloatField(Field):
             self.validators.append(MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, data):
+
         if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
             self.fail('max_string_length')
 
@@ -895,11 +897,15 @@ class DecimalField(Field):
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
-    def __init__(self, max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None, **kwargs):
+    def __init__(self, max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None,
+                 localize=False, **kwargs):
         self.max_digits = max_digits
         self.decimal_places = decimal_places
+        self.localize = localize
         if coerce_to_string is not None:
             self.coerce_to_string = coerce_to_string
+        if self.localize:
+            self.coerce_to_string = True
 
         self.max_value = max_value
         self.min_value = min_value
@@ -923,7 +929,12 @@ class DecimalField(Field):
         Validate that the input is a decimal number and return a Decimal
         instance.
         """
+
         data = smart_text(data).strip()
+
+        if self.localize:
+            data = sanitize_separators(data)
+
         if len(data) > self.MAX_STRING_LENGTH:
             self.fail('max_string_length')
 
@@ -988,6 +999,9 @@ class DecimalField(Field):
 
         if not coerce_to_string:
             return quantized
+        if self.localize:
+            return localize_input(quantized)
+
         return '{0:f}'.format(quantized)
 
     def quantize(self, value):
