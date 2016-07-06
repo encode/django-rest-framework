@@ -906,6 +906,10 @@ class TestLocalizedDecimalField(TestCase):
         field = serializers.DecimalField(max_digits=2, decimal_places=1, localize=True)
         self.assertEqual(field.to_representation(Decimal('1.1')), '1,1')
 
+    def test_localize_forces_coerce_to_string(self):
+        field = serializers.DecimalField(max_digits=2, decimal_places=1, coerce_to_string=False, localize=True)
+        self.assertTrue(isinstance(field.to_representation(Decimal('1.1')), six.string_types))
+
 
 class TestNoDecimalPlaces(FieldValues):
     valid_inputs = {

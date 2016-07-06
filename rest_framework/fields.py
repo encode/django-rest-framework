@@ -904,6 +904,8 @@ class DecimalField(Field):
         self.localize = localize
         if coerce_to_string is not None:
             self.coerce_to_string = coerce_to_string
+        if self.localize:
+            self.coerce_to_string = True
 
         self.max_value = max_value
         self.min_value = min_value
@@ -928,10 +930,10 @@ class DecimalField(Field):
         instance.
         """
 
+        data = smart_text(data).strip()
+
         if self.localize:
             data = sanitize_separators(data)
-
-        data = smart_text(data).strip()
 
         if len(data) > self.MAX_STRING_LENGTH:
             self.fail('max_string_length')
