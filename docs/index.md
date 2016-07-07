@@ -188,6 +188,7 @@ The tutorial will walk you through the building blocks that make up REST framewo
 * [4 - Authentication & permissions][tut-4]
 * [5 - Relationships & hyperlinked APIs][tut-5]
 * [6 - Viewsets & routers][tut-6]
+* [7 - Schemas & client libraries][tut-7]
 
 There is a live example API of the finished tutorial API for testing purposes, [available here][sandbox].
 
