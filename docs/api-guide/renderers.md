@@ -28,7 +28,7 @@ The default set of renderers may be set globally, using the `DEFAULT_RENDERER_CL
     }
 
 You can also set the renderers used for an individual view, or viewset,
-using the `APIView` class based views.
+using the `APIView` class-based views.
 
     from django.contrib.auth.models import User
     from rest_framework.renderers import JSONRenderer
