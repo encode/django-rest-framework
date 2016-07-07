@@ -4,11 +4,11 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <title>Contributing to REST framework - Django REST framework</title>
+  <title>API Clients - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/topics/contributing/" />
+  <link rel="canonical" href="http://www.django-rest-framework.org/topics/api-clients/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Contributing to REST framework">
+  <meta name="description" content="Django, API, REST, API Clients">
   <meta name="author" content="Tom Christie">
 
   <!-- Le styles -->
@@ -58,10 +58,10 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../project-management/">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../internationalization/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../third-party-resources/">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../documenting-your-api/">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
@@ -238,8 +238,8 @@
                     <a href="../documenting-your-api/">Documenting your API</a>
                   </li>
                   
-                  <li >
-                    <a href="../api-clients/">API Clients</a>
+                  <li class="active" >
+                    <a href="./">API Clients</a>
                   </li>
                   
                   <li >
@@ -270,8 +270,8 @@
                     <a href="../third-party-resources/">Third Party Resources</a>
                   </li>
                   
-                  <li class="active" >
-                    <a href="./">Contributing to REST framework</a>
+                  <li >
+                    <a href="../contributing/">Contributing to REST framework</a>
                   </li>
                   
                   <li >
@@ -354,62 +354,52 @@
 
                 
                   <li class="main">
-                    <a href="#contributing-to-rest-framework">Contributing to REST framework</a>
+                    <a href="#api-clients">API Clients</a>
                   </li>
 
                   
                     <li>
-                      <a href="#community">Community</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#code-of-conduct">Code of conduct</a>
+                      <a href="#client-side-core-api">Client-side Core API</a>
                     </li>
                   
                 
                   <li class="main">
-                    <a href="#issues">Issues</a>
+                    <a href="#command-line-client">Command line client</a>
                   </li>
 
                   
                     <li>
-                      <a href="#triaging-issues">Triaging issues</a>
+                      <a href="#getting-started">Getting started</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#authentication-headers">Authentication &amp; headers</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#utilities">Utilities</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#other-commands">Other commands</a>
                     </li>
                   
                 
                   <li class="main">
-                    <a href="#development">Development</a>
+                    <a href="#python-client-library">Python client library</a>
                   </li>
 
                   
                     <li>
-                      <a href="#testing">Testing</a>
+                      <a href="#getting-started_1">Getting started</a>
                     </li>
                   
                     <li>
-                      <a href="#pull-requests">Pull requests</a>
+                      <a href="#codecs">Codecs</a>
                     </li>
                   
                     <li>
-                      <a href="#managing-compatibility-issues">Managing compatibility issues</a>
-                    </li>
-                  
-                
-                  <li class="main">
-                    <a href="#documentation">Documentation</a>
-                  </li>
-
-                  
-                    <li>
-                      <a href="#building-the-documentation">Building the documentation</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#language-style">Language style</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#markdown-style">Markdown style</a>
+                      <a href="#transports">Transports</a>
                     </li>
                   
                 
@@ -427,142 +417,225 @@
             
               
 
-              <h1 id="contributing-to-rest-framework"><a class="toclink" href="#contributing-to-rest-framework">Contributing to REST framework</a></h1>
-<blockquote>
-<p>The world can only really be changed one piece at a time.  The art is picking that piece.</p>
-<p>&mdash; <a href="http://www.w3.org/People/Berners-Lee/FAQ.html">Tim Berners-Lee</a></p>
-</blockquote>
-<p>There are many ways you can contribute to Django REST framework.  We'd like it to be a community-led project, so please get involved and help shape the future of the project.</p>
-<h2 id="community"><a class="toclink" href="#community">Community</a></h2>
-<p>The most important thing you can do to help push the REST framework project forward is to be actively involved wherever possible.  Code contributions are often overvalued as being the primary way to get involved in a project, we don't believe that needs to be the case.</p>
-<p>If you use REST framework, we'd love you to be vocal about your experiences with it - you might consider writing a blog post about using REST framework, or publishing a tutorial about building a project with a particular JavaScript framework.  Experiences from beginners can be particularly helpful because you'll be in the best position to assess which bits of REST framework are more difficult to understand and work with.</p>
-<p>Other really great ways you can help move the community forward include helping to answer questions on the <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">discussion group</a>, or setting up an <a href="http://stackexchange.com/filters/66475/rest-framework">email alert on StackOverflow</a> so that you get notified of any new questions with the <code>django-rest-framework</code> tag.</p>
-<p>When answering questions make sure to help future contributors find their way around by hyperlinking wherever possible to related threads and tickets, and include backlinks from those items if relevant.</p>
-<h2 id="code-of-conduct"><a class="toclink" href="#code-of-conduct">Code of conduct</a></h2>
-<p>Please keep the tone polite &amp; professional.  For some users a discussion on the REST framework mailing list or ticket tracker may be their first engagement with the open source community.  First impressions count, so let's try to make everyone feel welcome.</p>
-<p>Be mindful in the language you choose.  As an example, in an environment that is heavily male-dominated, posts that start 'Hey guys,' can come across as unintentionally exclusive.  It's just as easy, and more inclusive to use gender neutral language in those situations.</p>
-<p>The <a href="https://www.djangoproject.com/conduct/">Django code of conduct</a> gives a fuller set of guidelines for participating in community forums.</p>
-<h1 id="issues"><a class="toclink" href="#issues">Issues</a></h1>
-<p>It's really helpful if you can make sure to address issues on the correct channel.  Usage questions should be directed to the <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">discussion group</a>.  Feature requests, bug reports and other issues should be raised on the GitHub <a href="https://github.com/tomchristie/django-rest-framework/issues?state=open">issue tracker</a>.</p>
-<p>Some tips on good issue reporting:</p>
-<ul>
-<li>When describing issues try to phrase your ticket in terms of the <em>behavior</em> you think needs changing rather than the <em>code</em> you think need changing.</li>
-<li>Search the issue list first for related items, and make sure you're running the latest version of REST framework before reporting an issue.</li>
-<li>If reporting a bug, then try to include a pull request with a failing test case.  This will help us quickly identify if there is a valid issue, and make sure that it gets fixed more quickly if there is one.</li>
-<li>Feature requests will often be closed with a recommendation that they be implemented outside of the core REST framework library.  Keeping new feature requests implemented as third party libraries allows us to keep down the maintenance overhead of REST framework, so that the focus can be on continued stability, bugfixes, and great documentation.</li>
-<li>Closing an issue doesn't necessarily mean the end of a discussion.  If you believe your issue has been closed incorrectly, explain why and we'll consider if it needs to be reopened.</li>
-</ul>
-<h2 id="triaging-issues"><a class="toclink" href="#triaging-issues">Triaging issues</a></h2>
-<p>Getting involved in triaging incoming issues is a good way to start contributing.  Every single ticket that comes into the ticket tracker needs to be reviewed in order to determine what the next steps should be.  Anyone can help out with this, you just need to be willing to</p>
-<ul>
-<li>Read through the ticket - does it make sense, is it missing any context that would help explain it better?</li>
-<li>Is the ticket reported in the correct place, would it be better suited as a discussion on the discussion group?</li>
-<li>If the ticket is a bug report, can you reproduce it? Are you able to write a failing test case that demonstrates the issue and that can be submitted as a pull request?</li>
-<li>If the ticket is a feature request, do you agree with it, and could the feature request instead be implemented as a third party package?</li>
-<li>If a ticket hasn't had much activity and it addresses something you need, then comment on the ticket and try to find out what's needed to get it moving again.</li>
-</ul>
-<h1 id="development"><a class="toclink" href="#development">Development</a></h1>
-<p>To start developing on Django REST framework, clone the repo:</p>
-<pre><code>git clone git@github.com:tomchristie/django-rest-framework.git
+              <h1 id="api-clients"><a class="toclink" href="#api-clients">API Clients</a></h1>
+<p>An API client handles the underlying details of how network requests are made
+and how responses are decoded. They present the developer with an application
+interface to work against, rather than working directly with the network interface.</p>
+<p>The API clients documented here are not restricted to APIs built with Django REST framework.
+ They can be used with any API that exposes a supported schema format.</p>
+<p>For example, <a href="https://devcenter.heroku.com/categories/platform-api">the Heroku platform API</a> exposes a schema in the JSON
+Hyperschema format. As a result, the Core API command line client and Python
+client library can be <a href="http://www.coreapi.org/tools-and-resources/example-services/#heroku-json-hyper-schema">used to interact with the Heroku API</a>.</p>
+<h2 id="client-side-core-api"><a class="toclink" href="#client-side-core-api">Client-side Core API</a></h2>
+<p><a href="http://www.coreapi.org/">Core API</a> is a document specification that can be used to describe APIs. It can
+be used either server-side, as is done with REST framework's <a href="../../api-guide/schemas/">schema generation</a>,
+or used client-side, as described here.</p>
+<p>When used client-side, Core API allows for <em>dynamically driven client libraries</em>
+that can interact with any API that exposes a supported schema or hypermedia
+format.</p>
+<p>Using a dynamically driven client has a number of advantages over interacting
+with an API by building HTTP requests directly.</p>
+<h4 id="more-meaningful-interaction"><a class="toclink" href="#more-meaningful-interaction">More meaningful interaction</a></h4>
+<p>API interactions are presented in a more meaningful way. You're working at
+the application interface layer, rather than the network interface layer.</p>
+<h4 id="resilience-evolvability"><a class="toclink" href="#resilience-evolvability">Resilience &amp; evolvability</a></h4>
+<p>The client determines what endpoints are available, what parameters exist
+against each particular endpoint, and how HTTP requests are formed.</p>
+<p>This also allows for a degree of API evolvability. URLs can be modified
+without breaking existing clients, or more efficient encodings can be used
+on-the-wire, with clients transparently upgrading.</p>
+<h4 id="self-descriptive-apis"><a class="toclink" href="#self-descriptive-apis">Self-descriptive APIs</a></h4>
+<p>A dynamically driven client is able to present documentation on the API to the
+end user. This documentation allows the user to discover the available endpoints
+and parameters, and better understand the API they are working with.</p>
+<p>Because this documentation is driven by the API schema it will always be fully
+up to date with the most recently deployed version of the service.</p>
+<hr />
+<h1 id="command-line-client"><a class="toclink" href="#command-line-client">Command line client</a></h1>
+<p>The command line client allows you to inspect and interact with any API that
+exposes a supported schema format.</p>
+<h2 id="getting-started"><a class="toclink" href="#getting-started">Getting started</a></h2>
+<p>To install the Core API command line client, use <code>pip</code>.</p>
+<pre><code>$ pip install coreapi
 </code></pre>
-<p>Changes should broadly follow the <a href="http://www.python.org/dev/peps/pep-0008/">PEP 8</a> style conventions, and we recommend you set up your editor to automatically indicate non-conforming styles.</p>
-<h2 id="testing"><a class="toclink" href="#testing">Testing</a></h2>
-<p>To run the tests, clone the repository, and then:</p>
-<pre><code># Setup the virtual environment
-virtualenv env
-source env/bin/activate
-pip install -r requirements.txt
+<p>To start inspecting and interacting with an API the schema must first be loaded
+from the network.</p>
+<pre><code>$ coreapi get http://api.example.org/
+&lt;Pastebin API "http://127.0.0.1:8000/"&gt;
+snippets: {
+    create(code, [title], [linenos], [language], [style])
+    destroy(pk)
+    highlight(pk)
+    list([page])
+    partial_update(pk, [title], [code], [linenos], [language], [style])
+    retrieve(pk)
+    update(pk, code, [title], [linenos], [language], [style])
+}
+users: {
+    list([page])
+    retrieve(pk)
+}
+</code></pre>
+<p>This will then load the schema, displaying the resulting <code>Document</code>. This
+<code>Document</code> includes all the available interactions that may be made against the API.</p>
+<p>To interact with the API, use the <code>action</code> command. This command requires a list
+of keys that are used to index into the link.</p>
+<pre><code>$ coreapi action users list
+[
+    {
+        "url": "http://127.0.0.1:8000/users/2/",
+        "id": 2,
+        "username": "aziz",
+        "snippets": []
+    },
+    ...
+]
+</code></pre>
+<p>To inspect the underlying HTTP request and response, use the <code>--debug</code> flag.</p>
+<pre><code>$ coreapi action users list --debug
+&gt; GET /users/ HTTP/1.1
+&gt; Accept: application/vnd.coreapi+json, */*
+&gt; Authorization: Basic bWF4Om1heA==
+&gt; Host: 127.0.0.1
+&gt; User-Agent: coreapi
+&lt; 200 OK
+&lt; Allow: GET, HEAD, OPTIONS
+&lt; Content-Type: application/json
+&lt; Date: Thu, 30 Jun 2016 10:51:46 GMT
+&lt; Server: WSGIServer/0.1 Python/2.7.10
+&lt; Vary: Accept, Cookie
+&lt;
+&lt; [{"url":"http://127.0.0.1/users/2/","id":2,"username":"aziz","snippets":[]},{"url":"http://127.0.0.1/users/3/","id":3,"username":"amy","snippets":["http://127.0.0.1/snippets/3/"]},{"url":"http://127.0.0.1/users/4/","id":4,"username":"max","snippets":["http://127.0.0.1/snippets/4/","http://127.0.0.1/snippets/5/","http://127.0.0.1/snippets/6/","http://127.0.0.1/snippets/7/"]},{"url":"http://127.0.0.1/users/5/","id":5,"username":"jose","snippets":[]},{"url":"http://127.0.0.1/users/6/","id":6,"username":"admin","snippets":["http://127.0.0.1/snippets/1/","http://127.0.0.1/snippets/2/"]}]
 
-# Run the tests
-./runtests.py
+[
+    ...
+]
 </code></pre>
-<h3 id="test-options"><a class="toclink" href="#test-options">Test options</a></h3>
-<p>Run using a more concise output style.</p>
-<pre><code>./runtests.py -q
+<p>Some actions may include optional or required parameters.</p>
+<pre><code>$ coreapi action users create --params username example
 </code></pre>
-<p>Run the tests using a more concise output style, no coverage, no flake8.</p>
-<pre><code>./runtests.py --fast
+<h2 id="authentication-headers"><a class="toclink" href="#authentication-headers">Authentication &amp; headers</a></h2>
+<p>The <code>credentials</code> command is used to manage the request <code>Authentication:</code> header.
+Any credentials added are always linked to a particular domain, so as to ensure
+that credentials are not leaked across differing APIs.</p>
+<p>The format for adding a new credential is:</p>
+<pre><code>coreapi credentials add &lt;domain&gt; &lt;credentials string&gt;
 </code></pre>
-<p>Don't run the flake8 code linting.</p>
-<pre><code>./runtests.py --nolint
+<p>For instance:</p>
+<pre><code>coreapi credentials add api.example.org "Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b"
 </code></pre>
-<p>Only run the flake8 code linting, don't run the tests.</p>
-<pre><code>./runtests.py --lintonly
+<p>The optional <code>--auth</code> flag also allows you to add specific types of authentication,
+handling the encoding for you. Currently only <code>"basic"</code> is supported as an option here.
+For example:</p>
+<pre><code>coreapi credentials add api.example.org tomchristie:foobar --auth basic
 </code></pre>
-<p>Run the tests for a given test case.</p>
-<pre><code>./runtests.py MyTestCase
+<p>You can also add specific request headers, using the <code>headers</code> command:</p>
+<pre><code>coreapi headers add api.example.org x-api-version 2
 </code></pre>
-<p>Run the tests for a given test method.</p>
-<pre><code>./runtests.py MyTestCase.test_this_method
+<p>For more information and a listing of the available subcommands use <code>coreapi
+credentials --help</code> or <code>coreapi headers --help</code>.</p>
+<h2 id="utilities"><a class="toclink" href="#utilities">Utilities</a></h2>
+<p>The command line client includes functionality for bookmarking API URLs
+under a memorable name. For example, you can add a bookmark for the
+existing API, like so...</p>
+<pre><code>coreapi bookmarks add accountmanagement
 </code></pre>
-<p>Shorter form to run the tests for a given test method.</p>
-<pre><code>./runtests.py test_this_method
+<p>There is also functionality for navigating forward or backward through the
+history of which API URLs have been accessed.</p>
+<pre><code>coreapi history show
+coreapi history back
 </code></pre>
-<p>Note: The test case and test method matching is fuzzy and will sometimes run other tests that contain a partial string match to the given  command line input.</p>
-<h3 id="running-against-multiple-environments"><a class="toclink" href="#running-against-multiple-environments">Running against multiple environments</a></h3>
-<p>You can also use the excellent <a href="https://tox.readthedocs.io/en/latest/">tox</a> testing tool to run the tests against all supported versions of Python and Django.  Install <code>tox</code> globally, and then simply run:</p>
-<pre><code>tox
+<p>For more information and a listing of the available subcommands use
+<code>coreapi bookmarks --help</code> or <code>coreapi history --help</code>.</p>
+<h2 id="other-commands"><a class="toclink" href="#other-commands">Other commands</a></h2>
+<p>To display the current <code>Document</code>:</p>
+<pre><code>coreapi show
 </code></pre>
-<h2 id="pull-requests"><a class="toclink" href="#pull-requests">Pull requests</a></h2>
-<p>It's a good idea to make pull requests early on.  A pull request represents the start of a discussion, and doesn't necessarily need to be the final, finished submission.</p>
-<p>It's also always best to make a new branch before starting work on a pull request.  This means that you'll be able to later switch back to working on another separate issue without interfering with an ongoing pull requests.</p>
-<p>It's also useful to remember that if you have an outstanding pull request then pushing new commits to your GitHub repo will also automatically update the pull requests.</p>
-<p>GitHub's documentation for working on pull requests is <a href="https://help.github.com/articles/using-pull-requests">available here</a>.</p>
-<p>Always run the tests before submitting pull requests, and ideally run <code>tox</code> in order to check that your modifications are compatible with both Python 2 and Python 3, and that they run properly on all supported versions of Django.</p>
-<p>Once you've made a pull request take a look at the Travis build status in the GitHub interface and make sure the tests are running as you'd expect.</p>
-<p><img alt="Travis status" src="../../img/travis-status.png" /></p>
-<p><em>Above: Travis build notifications</em></p>
-<h2 id="managing-compatibility-issues"><a class="toclink" href="#managing-compatibility-issues">Managing compatibility issues</a></h2>
-<p>Sometimes, in order to ensure your code works on various different versions of Django, Python or third party libraries, you'll need to run slightly different code depending on the environment.  Any code that branches in this way should be isolated into the <code>compat.py</code> module, and should provide a single common interface that the rest of the codebase can use.</p>
-<h1 id="documentation"><a class="toclink" href="#documentation">Documentation</a></h1>
-<p>The documentation for REST framework is built from the <a href="http://daringfireball.net/projects/markdown/basics">Markdown</a> source files in <a href="https://github.com/tomchristie/django-rest-framework/tree/master/docs">the docs directory</a>.</p>
-<p>There are many great Markdown editors that make working with the documentation really easy.  The <a href="http://mouapp.com/">Mou editor for Mac</a> is one such editor that comes highly recommended.</p>
-<h2 id="building-the-documentation"><a class="toclink" href="#building-the-documentation">Building the documentation</a></h2>
-<p>To build the documentation, install MkDocs with <code>pip install mkdocs</code> and then run the following command.</p>
-<pre><code>mkdocs build
+<p>To reload the current <code>Document</code> from the network:</p>
+<pre><code>coreapi reload
 </code></pre>
-<p>This will build the documentation into the <code>site</code> directory.</p>
-<p>You can build the documentation and open a preview in a browser window by using the <code>serve</code> command.</p>
-<pre><code>mkdocs serve
+<p>To load a schema file from disk:</p>
+<pre><code>coreapi load my-api-schema.json --format corejson
 </code></pre>
-<h2 id="language-style"><a class="toclink" href="#language-style">Language style</a></h2>
-<p>Documentation should be in American English.  The tone of the documentation is very important - try to stick to a simple, plain, objective and well-balanced style where possible.</p>
-<p>Some other tips:</p>
-<ul>
-<li>Keep paragraphs reasonably short.</li>
-<li>Don't use abbreviations such as 'e.g.' but instead use the long form, such as 'For example'.</li>
-</ul>
-<h2 id="markdown-style"><a class="toclink" href="#markdown-style">Markdown style</a></h2>
-<p>There are a couple of conventions you should follow when working on the documentation.</p>
-<h5 id="1-headers"><a class="toclink" href="#1-headers">1. Headers</a></h5>
-<p>Headers should use the hash style.  For example:</p>
-<pre><code>### Some important topic
+<p>To remove the current document, along with all currently saved history,
+credentials, headers and bookmarks:</p>
+<pre><code>coreapi clear
 </code></pre>
-<p>The underline style should not be used.  <strong>Don't do this:</strong></p>
-<pre><code>Some important topic
-====================
+<hr />
+<h1 id="python-client-library"><a class="toclink" href="#python-client-library">Python client library</a></h1>
+<p>The <code>coreapi</code> Python package allows you to programatically interact with any
+API that exposes a supported schema format.</p>
+<h2 id="getting-started_1"><a class="toclink" href="#getting-started_1">Getting started</a></h2>
+<p>You'll need to install the <code>coreapi</code> package using <code>pip</code> before you can get
+started. Once you've done so, open up a python terminal.</p>
+<p>In order to start working with an API, we first need a <code>Client</code> instance. The
+client holds any configuration around which codecs and transports are supported
+when interacting with an API, which allows you to provide for more advanced
+kinds of behaviour.</p>
+<pre><code>import coreapi
+client = coreapi.Client()
 </code></pre>
-<h5 id="2-links"><a class="toclink" href="#2-links">2. Links</a></h5>
-<p>Links should always use the reference style, with the referenced hyperlinks kept at the end of the document.</p>
-<pre><code>Here is a link to [some other thing][other-thing].
+<p>Once we have a <code>Client</code> instance, we can fetch an API schema from the network.</p>
+<pre><code>schema = client.get('https://api.example.org/')
+</code></pre>
+<p>The object returned from this call will be a <code>Document</code> instance, which is
+the internal representation of the interface that we are interacting with.</p>
+<p>Now that we have our schema <code>Document</code>, we can now start to interact with the API:</p>
+<pre><code>users = client.action(schema, ['users', 'list'])
+</code></pre>
+<p>Some endpoints may include named parameters, which might be either optional or required:</p>
+<pre><code>new_user = client.action(schema, ['users', 'create'], params={"username": "max"})
+</code></pre>
+<h2 id="codecs"><a class="toclink" href="#codecs">Codecs</a></h2>
+<p>Codecs are responsible for encoding or decoding Documents.</p>
+<p>The decoding process is used by a client to take a bytestring of an API schema
+definition, and returning the Core API <code>Document</code> that represents that interface.</p>
+<p>A codec should be associated with a particular media type, such as <strong>TODO</strong>.</p>
+<p>This media type is used by the server in the response <code>Content-Type</code> header,
+in order to indicate what kind of data is being returned in the response.</p>
+<h4 id="configuring-codecs"><a class="toclink" href="#configuring-codecs">Configuring codecs</a></h4>
+<p>The codecs that are available can be configured when instantiating a client.
+The keyword argument used here is <code>decoders</code>, because in the context of a
+client the codecs are only for <em>decoding</em> responses.</p>
+<p>In the following example we'll configure a client to only accept <code>Core JSON</code>
+and <code>JSON</code> responses. This will allow us to receive and decode a Core JSON schema,
+and subsequently to receive JSON responses made against the API.</p>
+<pre><code>from coreapi import codecs, Client
 
-More text...
-
-[other-thing]: http://example.com/other/thing
+decoders = [codecs.CoreJSONCodec(), codecs.JSONCodec()]
+client = Client(decoders=decoders)
 </code></pre>
-<p>This style helps keep the documentation source consistent and readable.</p>
-<p>If you are hyperlinking to another REST framework document, you should use a relative link, and link to the <code>.md</code> suffix.  For example:</p>
-<pre><code>[authentication]: ../api-guide/authentication.md
+<h4 id="loading-and-saving-schemas"><a class="toclink" href="#loading-and-saving-schemas">Loading and saving schemas</a></h4>
+<p>You can use a codec directly, in order to load an existing schema definition,
+and return the resulting <code>Document</code>.</p>
+<pre><code>schema_definition = open('my-api-schema.json', 'r').read()
+codec = codecs.CoreJSONCodec()
+schema = codec.load(schema_definition)
 </code></pre>
-<p>Linking in this style means you'll be able to click the hyperlink in your Markdown editor to open the referenced document.  When the documentation is built, these links will be converted into regular links to HTML pages.</p>
-<h5 id="3-notes"><a class="toclink" href="#3-notes">3. Notes</a></h5>
-<p>If you want to draw attention to a note or warning, use a pair of enclosing lines, like so:</p>
-<pre><code>---
-
-**Note:** A useful documentation note.
-
----
+<p>You can also use a codec directly to generate a schema definition given a <code>Document</code> instance:</p>
+<pre><code>schema_definition = codec.dump(schema)
+output_file = open('my-api-schema.json', 'r')
+output_file.write(schema_definition)
 </code></pre>
+<h2 id="transports"><a class="toclink" href="#transports">Transports</a></h2>
+<p>Transports are responsible for making network requests. The set of transports
+that a client has installed determines which network protocols it is able to
+support.</p>
+<p>Currently the <code>coreapi</code> library only includes an HTTP/HTTPS transport, but
+other protocols can also be supported.</p>
+<h4 id="configuring-transports"><a class="toclink" href="#configuring-transports">Configuring transports</a></h4>
+<p>The behaviour of the network layer can be customized by configuring the
+transports that the client is instantiated with.</p>
+<pre><code>import requests
+from coreapi import transports, Client
+
+credentials = {'api.example.org': 'Token 3bd44a009d16ff'}
+transports = transports.HTTPTransport(credentials=credentials)
+client = Client(transports=transports)
+</code></pre>
+<p>More complex customizations can also be achieved, for example modifying the
+underlying <code>requests.Session</code> instance to <a href="http://docs.python-requests.org/en/master/user/advanced/#transport-adapters">attach transport adaptors</a>
+that modify the outgoing requests.</p>
             
 
           </div> <!--/span-->

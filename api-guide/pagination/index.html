@@ -200,6 +200,10 @@
                   </li>
                   
                   <li >
+                    <a href="../schemas/">Schemas</a>
+                  </li>
+                  
+                  <li >
                     <a href="../format-suffixes/">Format suffixes</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   
                   <li >
                     <a href="../../topics/documenting-your-api/">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/api-clients/">API Clients</a>
                   </li>
                   
                   <li >
@@ -471,7 +479,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 <p>You can then apply your new style to a view using the <code>.pagination_class</code> attribute:</p>
 <pre><code>class BillingRecordsView(generics.ListAPIView):
     queryset = Billing.objects.all()
-    serializer = BillingRecordsSerializer
+    serializer_class = BillingRecordsSerializer
     pagination_class = LargeResultsSetPagination
 </code></pre>
 <p>Or apply the style globally, using the <code>DEFAULT_PAGINATION_CLASS</code> settings key. For example:</p>

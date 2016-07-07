@@ -200,6 +200,10 @@
                   </li>
                   
                   <li >
+                    <a href="../schemas/">Schemas</a>
+                  </li>
+                  
+                  <li >
                     <a href="../format-suffixes/">Format suffixes</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   
                   <li >
                     <a href="../../topics/documenting-your-api/">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/api-clients/">API Clients</a>
                   </li>
                   
                   <li >
@@ -605,7 +613,7 @@ in the <code>.validate()</code> method, or else in the view.</p>
 
     class Meta:
         fields = ('client', 'date', 'amount')
-        extra_kwargs = {'client' {'required': 'False'}}
+        extra_kwargs = {'client': {'required': 'False'}}
         validators = []  # Remove a default "unique together" constraint.
 </code></pre>
 <h2 id="updating-nested-serializers"><a class="toclink" href="#updating-nested-serializers">Updating nested serializers</a></h2>

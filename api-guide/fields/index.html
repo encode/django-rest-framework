@@ -200,6 +200,10 @@
                   </li>
                   
                   <li >
+                    <a href="../schemas/">Schemas</a>
+                  </li>
+                  
+                  <li >
                     <a href="../format-suffixes/">Format suffixes</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   
                   <li >
                     <a href="../../topics/documenting-your-api/">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/api-clients/">API Clients</a>
                   </li>
                   
                   <li >
@@ -741,9 +749,10 @@ color_channel = serializers.ChoiceField(
 <ul>
 <li><code>max_digits</code> The maximum number of digits allowed in the number. Note that this number must be greater than or equal to decimal_places.</li>
 <li><code>decimal_places</code> The number of decimal places to store with the number.</li>
-<li><code>coerce_to_string</code> Set to <code>True</code> if string values should be returned for the representation, or <code>False</code> if <code>Decimal</code> objects should be returned. Defaults to the same value as the <code>COERCE_DECIMAL_TO_STRING</code> settings key, which will be <code>True</code> unless overridden. If <code>Decimal</code> objects are returned by the serializer, then the final output format will be determined by the renderer.</li>
+<li><code>coerce_to_string</code> Set to <code>True</code> if string values should be returned for the representation, or <code>False</code> if <code>Decimal</code> objects should be returned. Defaults to the same value as the <code>COERCE_DECIMAL_TO_STRING</code> settings key, which will be <code>True</code> unless overridden. If <code>Decimal</code> objects are returned by the serializer, then the final output format will be determined by the renderer. Note that setting <code>localize</code> will force the value to <code>True</code>.</li>
 <li><code>max_value</code> Validate that the number provided is no greater than this value.</li>
 <li><code>min_value</code> Validate that the number provided is no less than this value.</li>
+<li><code>localize</code> Set to <code>True</code> to enable localization of input and output based on the current locale. This will also force <code>coerce_to_string</code> to <code>True</code>. Defaults to <code>False</code>. Note that data formatting is enabled if you have set <code>USE_L10N=True</code> in your settings file.</li>
 </ul>
 <h4 id="example-usage"><a class="toclink" href="#example-usage">Example usage</a></h4>
 <p>To validate numbers up to 999 with a resolution of 2 decimal places, you would use:</p>

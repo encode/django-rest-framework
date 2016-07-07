@@ -200,6 +200,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../api-guide/schemas/">Schemas</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../api-guide/format-suffixes/">Format suffixes</a>
                   </li>
                   
@@ -232,6 +236,10 @@
                   
                   <li >
                     <a href="../../topics/documenting-your-api/">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/api-clients/">API Clients</a>
                   </li>
                   
                   <li >
@@ -496,7 +504,7 @@ urlpatterns = [
 <p>Using viewsets can be a really useful abstraction.  It helps ensure that URL conventions will be consistent across your API, minimizes the amount of code you need to write, and allows you to concentrate on the interactions and representations your API provides rather than the specifics of the URL conf.</p>
 <p>That doesn't mean it's always the right approach to take.  There's a similar set of trade-offs to consider as when using class-based views instead of function based views.  Using viewsets is less explicit than building your views individually.</p>
 <h2 id="reviewing-our-work"><a class="toclink" href="#reviewing-our-work">Reviewing our work</a></h2>
-<p>With an incredibly small amount of code, we've now got a complete pastebin Web API, which is fully web browsable, and comes complete with authentication, per-object permissions, and multiple renderer formats.</p>
+<p>With an incredibly small amount of code, we've now got a complete pastebin Web API, which is fully web browsable, includes a schema-driven client library, and comes complete with authentication, per-object permissions, and multiple renderer formats.</p>
 <p>We've walked through each step of the design process, and seen how if we need to customize anything we can gradually work our way down to simply using regular Django views.</p>
 <p>You can review the final <a href="https://github.com/tomchristie/rest-framework-tutorial">tutorial code</a> on GitHub, or try out a live example in <a href="http://restframework.herokuapp.com/">the sandbox</a>.</p>
 <h2 id="onwards-and-upwards"><a class="toclink" href="#onwards-and-upwards">Onwards and upwards</a></h2>
@@ -506,7 +514,6 @@ urlpatterns = [
 <li>Join the <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">REST framework discussion group</a>, and help build the community.</li>
 <li>Follow <a href="https://twitter.com/_tomchristie">the author</a> on Twitter and say hi.</li>
 </ul>
-<p><strong>Now go build awesome things.</strong></p>
             
 
           </div> <!--/span-->
