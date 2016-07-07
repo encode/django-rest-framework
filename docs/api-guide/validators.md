@@ -265,9 +265,9 @@ A validator may be any callable that raises a `serializers.ValidationError` on f
         if value % 2 != 0:
             raise serializers.ValidationError('This field must be an even number.')
 
-## Class based
+## Class-based
 
-To write a class based validator, use the `__call__` method. Class based validators are useful as they allow you to parameterize and reuse behavior.
+To write a class-based validator, use the `__call__` method. Class-based validators are useful as they allow you to parameterize and reuse behavior.
 
     class MultipleOf(object):
         def __init__(self, base):
@@ -280,7 +280,7 @@ To write a class based validator, use the `__call__` method. Class based validat
 
 #### Using `set_context()`
 
-In some advanced cases you might want a validator to be passed the serializer field it is being used with as additional context. You can do so by declaring a `set_context` method on a class based validator.
+In some advanced cases you might want a validator to be passed the serializer field it is being used with as additional context. You can do so by declaring a `set_context` method on a class-based validator.
 
     def set_context(self, serializer_field):
         # Determine if this is an update or a create operation.
