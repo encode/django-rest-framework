@@ -1,9 +1,9 @@
 source: decorators.py
         views.py
 
-# Class Based Views
+# Class-based Views
 
-> Django's class based views are a welcome departure from the old-style views.
+> Django's class-based views are a welcome departure from the old-style views.
 >
 > &mdash; [Reinout van Rees][cite]
 
@@ -119,7 +119,7 @@ You won't typically need to override this method.
 
 # Function Based Views
 
-> Saying [that Class based views] is always the superior solution is a mistake.
+> Saying [that class-based views] is always the superior solution is a mistake.
 >
 > &mdash; [Nick Coghlan][cite2]
 

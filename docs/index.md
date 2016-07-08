@@ -184,7 +184,7 @@ The tutorial will walk you through the building blocks that make up REST framewo
 
 * [1 - Serialization][tut-1]
 * [2 - Requests & Responses][tut-2]
-* [3 - Class based views][tut-3]
+* [3 - Class-based views][tut-3]
 * [4 - Authentication & permissions][tut-4]
 * [5 - Relationships & hyperlinked APIs][tut-5]
 * [6 - Viewsets & routers][tut-6]
