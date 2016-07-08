@@ -36,7 +36,7 @@ The `api_settings` object will check for any user-defined settings, and otherwis
 
 ## API policy settings
 
-*The following settings control the basic API policies, and are applied to every `APIView` class based view, or `@api_view` function based view.*
+*The following settings control the basic API policies, and are applied to every `APIView` class-based view, or `@api_view` function based view.*
 
 #### DEFAULT_RENDERER_CLASSES
 
@@ -98,7 +98,7 @@ Default: `'rest_framework.negotiation.DefaultContentNegotiation'`
 
 ## Generic view settings
 
-*The following settings control the behavior of the generic class based views.*
+*The following settings control the behavior of the generic class-based views.*
 
 #### DEFAULT_PAGINATION_SERIALIZER_CLASS
 
