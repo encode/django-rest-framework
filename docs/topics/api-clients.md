@@ -58,11 +58,13 @@ exposes a supported schema format.
 
 To install the Core API command line client, use `pip`.
 
-    $ pip install coreapi
+Note that the command-line client is a separate package to the
+python client library `coreapi`. Make sure to install `coreapi-cli`.
+
+    $ pip install coreapi-cli
 
 To start inspecting and interacting with an API the schema must first be loaded
 from the network.
-
 
     $ coreapi get http://api.example.org/
     <Pastebin API "http://127.0.0.1:8000/">
@@ -120,7 +122,14 @@ To inspect the underlying HTTP request and response, use the `--debug` flag.
 
 Some actions may include optional or required parameters.
 
-    $ coreapi action users create --params username example
+    $ coreapi action users create --param username=example
+
+When using `--param`, the type of the input will be determined automatically.
+
+If you want to be more explicit about the parameter type then use `--data` for
+any null, numeric, boolean, list, or object inputs, and use `--string` for string inputs.
+
+    $ coreapi action users edit --string username=tomchristie --data is_admin=true
 
 ## Authentication & headers
 
@@ -195,7 +204,9 @@ API that exposes a supported schema format.
 ## Getting started
 
 You'll need to install the `coreapi` package using `pip` before you can get
-started. Once you've done so, open up a python terminal.
+started.
+
+    pip install coreapi
 
 In order to start working with an API, we first need a `Client` instance. The
 client holds any configuration around which codecs and transports are supported
