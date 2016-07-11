@@ -15,7 +15,9 @@ from django.utils import six
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
+from rest_framework import status
 from rest_framework.compat import template_render
+from rest_framework.exceptions import APIException
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -720,3 +722,67 @@ class CursorPagination(BasePagination):
 
     def get_fields(self, view):
         return [self.cursor_query_param]
+
+
+class IncorrectLimitOffsetError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _('Incorrect offset or limit.')
+
+
+class NoCountsLimitOffsetPagination(LimitOffsetPagination):
+    """
+    A limit/offset based pagination, without performing counts. For example:
+
+    http://api.example.org/accounts/?limit=100 - will return first 100 items
+    http://api.example.org/accounts/?offset=400&limit=100 - will returns 100 items starting from 401th
+    http://api.example.org/accounts/?offset=-50&limit=100 - will return first 50 items
+
+    Pros:
+        - no counts
+        - easier to use than cursor pagination (especially if you need sorting)
+        - works with angular ui-scroll (which requires negative offsets)
+
+    Cons:
+        - html is not handled
+        - skip is a relatively slow operation, so this paginator is not as fast as cursor paginator when you use
+          large offsets
+    """
+    def paginate_queryset(self, queryset, request, view=None):
+        self.limit = self.get_limit(request)
+        if self.limit is None:
+            raise IncorrectLimitOffsetError
+
+        self.offset = self.get_offset(request)
+        if self.offset < 0:
+            self.limit += self.offset  # + because offset is negative
+            self.offset = 0
+        if self.limit <= 0:
+            raise IncorrectLimitOffsetError
+
+        self.request = request
+        self.results = list(queryset[self.offset:self.offset + self.limit])
+        return self.results
+
+    def get_paginated_response(self, data):
+        return Response(OrderedDict([
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('results', data)
+        ]))
+        return self.default_limit
+
+    def get_offset(self, request):
+        try:
+            return int(request.query_params[self.offset_query_param])
+        except (KeyError, ValueError):
+            return 0
+
+    def get_next_link(self):
+        if len(self.results) < self.limit:
+            return None
+
+        url = self.request.build_absolute_uri()
+        url = replace_query_param(url, self.limit_query_param, self.limit)
+
+        offset = self.offset + self.limit
+        return replace_query_param(url, self.offset_query_param, offset)
