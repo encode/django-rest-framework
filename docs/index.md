@@ -91,7 +91,7 @@ REST framework requires the following:
 
 The following packages are optional:
 
-* [coreapi][coreapi] (1.21.0+) - Schema generation support.
+* [coreapi][coreapi] (1.31.0+) - Schema generation support.
 * [Markdown][markdown] (2.1.0+) - Markdown support for the browsable API.
 * [django-filter][django-filter] (0.9.2+) - Filtering support.
 * [django-crispy-forms][django-crispy-forms] - Improved HTML display for filtering.

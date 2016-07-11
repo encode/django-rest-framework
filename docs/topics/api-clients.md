@@ -139,24 +139,37 @@ that credentials are not leaked across differing APIs.
 
 The format for adding a new credential is:
 
-    coreapi credentials add <domain> <credentials string>
+    $ coreapi credentials add <domain> <credentials string>
 
 For instance:
 
-    coreapi credentials add api.example.org "Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b"
+    $ coreapi credentials add api.example.org "Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b"
 
 The optional `--auth` flag also allows you to add specific types of authentication,
 handling the encoding for you. Currently only `"basic"` is supported as an option here.
 For example:
 
-    coreapi credentials add api.example.org tomchristie:foobar --auth basic
+    $ coreapi credentials add api.example.org tomchristie:foobar --auth basic
 
 You can also add specific request headers, using the `headers` command:
 
-    coreapi headers add api.example.org x-api-version 2
+    $ coreapi headers add api.example.org x-api-version 2
 
 For more information and a listing of the available subcommands use `coreapi
 credentials --help` or `coreapi headers --help`.
+
+## Codecs
+
+By default the command line client only includes support for reading Core JSON
+schemas, however it for installing additional codecs.
+
+    $ pip install openapi-codec jsonhyperschema-codec hal-codec
+    $ coreapi codecs show
+    Codecs
+    corejson "application/vnd.coreapi+json"
+    openapi "application/openapi+json"
+    jsonhyperschema "application/schema+json"
+    hal "application/hal+json"
 
 ## Utilities
 
@@ -164,13 +177,13 @@ The command line client includes functionality for bookmarking API URLs
 under a memorable name. For example, you can add a bookmark for the
 existing API, like so...
 
-    coreapi bookmarks add accountmanagement
+    $ coreapi bookmarks add accountmanagement
 
 There is also functionality for navigating forward or backward through the
 history of which API URLs have been accessed.
 
-    coreapi history show
-    coreapi history back
+    $ coreapi history show
+    $ coreapi history back
 
 For more information and a listing of the available subcommands use
 `coreapi bookmarks --help` or `coreapi history --help`.
@@ -179,20 +192,20 @@ For more information and a listing of the available subcommands use
 
 To display the current `Document`:
 
-    coreapi show
+    $ coreapi show
 
 To reload the current `Document` from the network:
 
-    coreapi reload
+    $ coreapi reload
 
 To load a schema file from disk:
 
-    coreapi load my-api-schema.json --format corejson
+    $ coreapi load my-api-schema.json --format corejson
 
 To remove the current document, along with all currently saved history,
 credentials, headers and bookmarks:
 
-    coreapi clear
+    $ coreapi clear
 
 ---
 
@@ -206,7 +219,7 @@ API that exposes a supported schema format.
 You'll need to install the `coreapi` package using `pip` before you can get
 started.
 
-    pip install coreapi
+    $ pip install coreapi
 
 In order to start working with an API, we first need a `Client` instance. The
 client holds any configuration around which codecs and transports are supported
@@ -263,14 +276,15 @@ and subsequently to receive JSON responses made against the API.
 You can use a codec directly, in order to load an existing schema definition,
 and return the resulting `Document`.
 
-    schema_definition = open('my-api-schema.json', 'r').read()
+    input_file = open('my-api-schema.json', 'rb')
+    schema_definition = input_file.read()
     codec = codecs.CoreJSONCodec()
     schema = codec.load(schema_definition)
 
 You can also use a codec directly to generate a schema definition given a `Document` instance:
 
     schema_definition = codec.dump(schema)
-    output_file = open('my-api-schema.json', 'r')
+    output_file = open('my-api-schema.json', 'rb')
     output_file.write(schema_definition)
 
 ## Transports
