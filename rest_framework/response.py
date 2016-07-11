@@ -51,14 +51,13 @@ class Response(SimpleTemplateResponse):
     @property
     def rendered_content(self):
         renderer = getattr(self, 'accepted_renderer', None)
-        media_type = getattr(self, 'accepted_media_type', None)
         context = getattr(self, 'renderer_context', None)
 
         assert renderer, ".accepted_renderer not set on Response"
-        assert media_type, ".accepted_media_type not set on Response"
         assert context, ".renderer_context not set on Response"
         context['response'] = self
 
+        media_type = renderer.media_type
         charset = renderer.charset
         content_type = self.content_type
 
