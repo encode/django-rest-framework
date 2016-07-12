@@ -218,7 +218,7 @@ class APISettings(object):
         SETTINGS_DOC = "http://www.django-rest-framework.org/api-guide/settings/"
         for setting in REMOVED_SETTINGS:
             if setting in user_settings:
-                warnings.warn("The '%s' setting has been removed. Please refer to '%s' for available settings." % (setting, SETTINGS_DOC), DeprecationWarning)
+                raise RuntimeError("The '%s' setting has been removed. Please refer to '%s' for available settings." % (setting, SETTINGS_DOC))
         return user_settings
 
 

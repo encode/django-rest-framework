@@ -59,7 +59,7 @@ exposes a supported schema format.
 To install the Core API command line client, use `pip`.
 
 Note that the command-line client is a separate package to the
-python client library `coreapi`. Make sure to install `coreapi-cli`.
+python client library. Make sure to install `coreapi-cli`.
 
     $ pip install coreapi-cli
 
