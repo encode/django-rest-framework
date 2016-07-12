@@ -17,8 +17,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import status
 from rest_framework.compat import template_render
-from rest_framework.exceptions import APIException
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import APIException, NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.utils.urls import remove_query_param, replace_query_param
