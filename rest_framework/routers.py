@@ -273,10 +273,11 @@ class DefaultRouter(SimpleRouter):
     include_root_view = True
     include_format_suffixes = True
     root_view_name = 'api-root'
-    schema_renderers = [renderers.CoreJSONRenderer]
+    default_schema_renderers = [renderers.CoreJSONRenderer]
 
     def __init__(self, *args, **kwargs):
         self.schema_title = kwargs.pop('schema_title', None)
+        self.schema_renderers = kwargs.pop('schema_renderers', self.default_schema_renderers)
         super(DefaultRouter, self).__init__(*args, **kwargs)
 
     def get_api_root_view(self, schema_urls=None):

@@ -65,6 +65,7 @@ pages:
      - '3.1 Announcement': 'topics/3.1-announcement.md'
      - '3.2 Announcement': 'topics/3.2-announcement.md'
      - '3.3 Announcement': 'topics/3.3-announcement.md'
+     - '3.4 Announcement': 'topics/3.4-announcement.md'
      - 'Kickstarter Announcement': 'topics/kickstarter-announcement.md'
      - 'Mozilla Grant': 'topics/mozilla-grant.md'
      - 'Funding': 'topics/funding.md'

@@ -1013,12 +1013,12 @@ class ModelSerializer(Serializer):
         if fields is None and exclude is None:
             warnings.warn(
                 "Creating a ModelSerializer without either the 'fields' "
-                "attribute or the 'exclude' attribute is pending deprecation "
+                "attribute or the 'exclude' attribute is deprecated "
                 "since 3.3.0. Add an explicit fields = '__all__' to the "
                 "{serializer_class} serializer.".format(
                     serializer_class=self.__class__.__name__
                 ),
-                PendingDeprecationWarning
+                DeprecationWarning
             )
 
         if fields == ALL_FIELDS:
