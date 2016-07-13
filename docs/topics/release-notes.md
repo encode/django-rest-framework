@@ -126,7 +126,7 @@ You can determine your currently installed version using `pip freeze`:
 * Unique constraint prevents nested serializers from updating. ([#2996][gh2996])
 * Uniqueness validators should not be run for excluded (read_only) fields. ([#2848][gh2848])
 * UniqueValidator raises exception for nested objects. ([#2403][gh2403])
-
+* `lookup_type` is deprecated in favor of `lookup_expr`. ([#4259][gh4259])
 ---
 
 ## 3.3.x series
@@ -895,3 +895,4 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh4254]: https://github.com/tomchristie/django-rest-framework/issues/4254
 [gh4255]: https://github.com/tomchristie/django-rest-framework/issues/4255
 [gh4256]: https://github.com/tomchristie/django-rest-framework/issues/4256
+[gh4259]: https://github.com/tomchristie/django-rest-framework/issues/4259
