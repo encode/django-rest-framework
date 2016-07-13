@@ -126,8 +126,21 @@ that include the Core JSON media type in their `Accept` header.
     }
 
 This is a great zero-configuration option for when you want to get up and
-running really quickly. If you want a little more flexibility over the
-schema output then you'll need to consider using `SchemaGenerator` instead.
+running really quickly.
+
+The only other available option to `DefaultRouter` is `schema_renderers`, which
+may be used to pass the set of renderer classes that can be used to render
+schema output.
+
+    from rest_framework.renderers import CoreJSONRenderer
+    from my_custom_package import APIBlueprintRenderer
+
+    router = DefaultRouter(schema_title='Server Monitoring API', schema_renderers=[
+        CoreJSONRenderer, APIBlueprintRenderer
+    ])
+
+If you want more flexibility over the schema output then you'll need to consider
+using `SchemaGenerator` instead.
 
 ## Using SchemaGenerator
 
