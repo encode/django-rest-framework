@@ -178,8 +178,8 @@ For more advanced filtering requirements you can specify a `FilterSet` class tha
     from rest_framework import generics
 
     class ProductFilter(filters.FilterSet):
-        min_price = django_filters.NumberFilter(name="price", lookup_type='gte')
-        max_price = django_filters.NumberFilter(name="price", lookup_type='lte')
+        min_price = django_filters.NumberFilter(name="price", lookup_expr='gte')
+        max_price = django_filters.NumberFilter(name="price", lookup_expr='lte')
         class Meta:
             model = Product
             fields = ['category', 'in_stock', 'min_price', 'max_price']
