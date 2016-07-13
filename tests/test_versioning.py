@@ -305,8 +305,8 @@ class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(URLPatternsTestCase):
     ]
 
     urlpatterns = [
-        url(r'^v1/', include(included, namespace='v1')),
-        url(r'^v2/', include(included, namespace='v2')),
+        url(r'^v1/', include(included, namespace='v1', app_name='restframeworkv1')),
+        url(r'^v2/', include(included, namespace='v2', app_name='restframeworkv2')),
         url(r'^non-api/(?P<pk>\d+)/$', dummy_pk_view, name='non-api-view')
     ]
 

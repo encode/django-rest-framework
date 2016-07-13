@@ -37,9 +37,9 @@ if django_filters:
 
     # These class are used to test a filter class.
     class SeveralFieldsFilter(django_filters.FilterSet):
-        text = django_filters.CharFilter(lookup_type='icontains')
-        decimal = django_filters.NumberFilter(lookup_type='lt')
-        date = django_filters.DateFilter(lookup_type='gt')
+        text = django_filters.CharFilter(lookup_expr='icontains')
+        decimal = django_filters.NumberFilter(lookup_expr='lt')
+        date = django_filters.DateFilter(lookup_expr='gt')
 
         class Meta:
             model = FilterableItem
@@ -53,7 +53,7 @@ if django_filters:
 
     # These classes are used to test a misconfigured filter class.
     class MisconfiguredFilter(django_filters.FilterSet):
-        text = django_filters.CharFilter(lookup_type='icontains')
+        text = django_filters.CharFilter(lookup_expr='icontains')
 
         class Meta:
             model = BasicModel
