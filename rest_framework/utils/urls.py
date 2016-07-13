@@ -7,7 +7,7 @@ def replace_query_param(url, key, val):
     parameters of the URL, and return the new URL.
     """
     (scheme, netloc, path, query, fragment) = urlparse.urlsplit(url)
-    query_dict = urlparse.parse_qs(query)
+    query_dict = urlparse.parse_qs(query, keep_blank_values=True)
     query_dict[key] = [val]
     query = urlparse.urlencode(sorted(list(query_dict.items())), doseq=True)
     return urlparse.urlunsplit((scheme, netloc, path, query, fragment))
@@ -19,7 +19,7 @@ def remove_query_param(url, key):
     parameters of the URL, and return the new URL.
     """
     (scheme, netloc, path, query, fragment) = urlparse.urlsplit(url)
-    query_dict = urlparse.parse_qs(query)
+    query_dict = urlparse.parse_qs(query, keep_blank_values=True)
     query_dict.pop(key, None)
     query = urlparse.urlencode(sorted(list(query_dict.items())), doseq=True)
     return urlparse.urlunsplit((scheme, netloc, path, query, fragment))

@@ -108,6 +108,17 @@ class TestPaginationIntegration:
             'count': 50
         }
 
+    def test_empty_query_params_are_preserved(self):
+        request = factory.get('/', {'page': 2, 'filter': ''})
+        response = self.view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {
+            'results': [12, 14, 16, 18, 20],
+            'previous': 'http://testserver/?filter=',
+            'next': 'http://testserver/?filter=&page=3',
+            'count': 50
+        }
+
     def test_404_not_found_for_zero_page(self):
         request = factory.get('/', {'page': '0'})
         response = self.view(request)
