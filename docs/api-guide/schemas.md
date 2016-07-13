@@ -68,7 +68,7 @@ has to be rendered into the actual bytes that are used in the response.
 REST framework includes a renderer class for handling this media type, which
 is available as `renderers.CoreJSONRenderer`.
 
-Other schema formats such as [Open API][open-api] (Formerly "Swagger"),
+Other schema formats such as [Open API][open-api] ("Swagger"),
 [JSON HyperSchema][json-hyperschema], or [API Blueprint][api-blueprint] can
 also be supported by implementing a custom renderer class.
 
@@ -135,7 +135,7 @@ The most common way to add a schema to your API is to use the `SchemaGenerator`
 class to auto-generate the `Document` instance, and to return that from a view.
 
 This option gives you the flexibility of setting up the schema endpoint
-with whatever behaviour you want. For example, you can apply different
+with whatever behavior you want. For example, you can apply different
 permission, throttling or authentication policies to the schema endpoint.
 
 Here's an example of using `SchemaGenerator` together with a view to
@@ -207,6 +207,32 @@ You could then either:
 * Write a schema definition as a static file, and [serve the static file directly][static-files].
 * Write a schema definition that is loaded using `Core API`, and then
   rendered to one of many available formats, depending on the client request.
+
+---
+
+# Alternate schema formats
+
+In order to support an alternate schema format, you need to implement a custom renderer
+class that handles converting a `Document` instance into a bytestring representation.
+
+If there is a Core API codec package that supports encoding into the format you
+want to use then implementing the renderer class can be done by using the codec.
+
+## Example
+
+For example, the `openapi_codec` package provides support for encoding or decoding
+to the Open API ("Swagger") format:
+
+    from rest_framework import renderers
+    from openapi_codec import OpenAPICodec
+
+    class SwaggerRenderer(renderers.BaseRenderer):
+        media_type = 'application/openapi+json;version=2.0'
+        format = 'swagger'
+
+        def render(self, data, media_type=None, renderer_context=None):
+            codec = OpenAPICodec()
+            return OpenAPICodec.dump(data)
 
 ---
 
