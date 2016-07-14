@@ -67,9 +67,13 @@ also supported.
 
 Now that our API is exposing a schema endpoint, we can use a dynamic client
 library to interact with the API. To demonstrate this, let's use the
-Core API command line client. We've already installed the `coreapi` package
-using `pip`, so the client tool should already be installed. Check that it
-is available on the command line...
+Core API command line client.
+
+The command line client is available as the `coreapi-cli` package:
+
+    $ pip install coreapi-cli
+
+Now check that it is available on the command line...
 
     $ coreapi
     Usage: coreapi [OPTIONS] COMMAND [ARGS]...
@@ -108,6 +112,7 @@ Let's try listing the existing snippets, using the command line client:
     [
         {
             "url": "http://127.0.0.1:8000/snippets/1/",
+            "pk": 1,
             "highlight": "http://127.0.0.1:8000/snippets/1/highlight/",
             "owner": "lucy",
             "title": "Example",
@@ -166,7 +171,7 @@ snippet:
     $ coreapi action snippets create --param title "Example" --param code "print('hello, world')"
     {
         "url": "http://127.0.0.1:8000/snippets/7/",
-        "id": 7,
+        "pk": 7,
         "highlight": "http://127.0.0.1:8000/snippets/7/highlight/",
         "owner": "lucy",
         "title": "Example",

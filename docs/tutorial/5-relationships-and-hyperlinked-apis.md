@@ -18,7 +18,7 @@ Right now we have endpoints for 'snippets' and 'users', but we don't have a sing
             'snippets': reverse('snippet-list', request=request, format=format)
         })
 
-Two things should be noticed here. First, we're using REST framework's `reverse` function in order to return fully-qualified URLs; second, URL patterns are identified by convenience names that we will declare later on in our `snippets/urls.py`. 
+Two things should be noticed here. First, we're using REST framework's `reverse` function in order to return fully-qualified URLs; second, URL patterns are identified by convenience names that we will declare later on in our `snippets/urls.py`.
 
 ## Creating an endpoint for the highlighted snippets
 
@@ -80,7 +80,7 @@ We can easily re-write our existing serializers to use hyperlinking. In your `sn
 
         class Meta:
             model = Snippet
-            fields = ('url', 'highlight', 'owner',
+            fields = ('url', 'pk', 'highlight', 'owner',
                       'title', 'code', 'linenos', 'language', 'style')
 
 
@@ -89,7 +89,7 @@ We can easily re-write our existing serializers to use hyperlinking. In your `sn
 
         class Meta:
             model = User
-            fields = ('url', 'username', 'snippets')
+            fields = ('url', 'pk', 'username', 'snippets')
 
 Notice that we've also added a new `'highlight'` field.  This field is of the same type as the `url` field, except that it points to the `'snippet-highlight'` url pattern, instead of the `'snippet-detail'` url pattern.
 
