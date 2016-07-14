@@ -161,15 +161,17 @@ credentials --help` or `coreapi headers --help`.
 ## Codecs
 
 By default the command line client only includes support for reading Core JSON
-schemas, however it for installing additional codecs.
+schemas, however it includes a plugin system for installing additional codecs.
 
     $ pip install openapi-codec jsonhyperschema-codec hal-codec
     $ coreapi codecs show
     Codecs
-    corejson "application/vnd.coreapi+json"
-    openapi "application/openapi+json"
-    jsonhyperschema "application/schema+json"
-    hal "application/hal+json"
+    corejson        application/vnd.coreapi+json encoding, decoding
+    hal             application/hal+json         encoding, decoding
+    openapi         application/openapi+json     encoding, decoding
+    jsonhyperschema application/schema+json      decoding
+    json            application/json             data
+    text            text/*                       data
 
 ## Utilities
 
@@ -201,6 +203,10 @@ To reload the current `Document` from the network:
 To load a schema file from disk:
 
     $ coreapi load my-api-schema.json --format corejson
+
+To dump the current document to console in a given format:
+
+    $ coreapi dump --format openapi
 
 To remove the current document, along with all currently saved history,
 credentials, headers and bookmarks:
