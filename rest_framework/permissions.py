@@ -4,10 +4,54 @@ Provides a set of pluggable permission policies.
 from __future__ import unicode_literals
 
 from django.http import Http404
+from django.utils import six
 
 SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
 
 
+class BasePermissionMetaClass(type):
+    """
+    Metaclass for the base permission class.
+    """
+
+    def __init__(cls, name, bases, dct):
+        super(BasePermissionMetaClass, cls).__init__(name, bases, dct)
+
+    def __or__(klass, perm_class):
+        """
+        Returns a new permission class performing a logical OR between two
+        different permission classes.
+        """
+        assert issubclass(perm_class, BasePermission), (
+            "%s is not a subclass of BasePermission" % perm_class
+        )
+
+        def has_permission(self, request, view):
+            perm = klass.has_permission(self, request, view)
+            otherwise = perm_class().has_permission(request, view)
+
+            return perm or otherwise
+
+        def has_object_permission(self, request, view, obj):
+            perm = klass.has_object_permission(self, request, view, obj)
+            otherwise = perm_class().has_object_permission(request, view, obj)
+
+            return perm or otherwise
+
+        t = type(
+            str('{0}Or{1}').format(klass.__name__, perm_class.__name__),
+            (klass,),
+            {}
+        )
+
+        t.has_permission = has_permission
+        t.has_object_permission = has_object_permission
+
+        return t
+
+
+# Needed for performing logical operations between permission classes.
+@six.add_metaclass(BasePermissionMetaClass)
 class BasePermission(object):
     """
     A base class from which all permission classes should inherit.

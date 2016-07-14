@@ -470,3 +470,25 @@ class CustomPermissionsTests(TestCase):
             detail = response.data.get('detail')
             self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
             self.assertEqual(detail, self.custom_message)
+
+
+class AllowPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return True
+
+
+class DenyPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return False
+
+
+class PermissionOperatorTests(TestCase):
+    def test_permission_logical_or(self):
+        # We evaluate all possible combinations.
+
+        # We pass None to the has_permission function, request and view aren't
+        # relevant to these classes.
+        self.assertFalse((DenyPermission | DenyPermission)().has_permission(None, None))
+        self.assertTrue((AllowPermission | DenyPermission)().has_permission(None, None))
+        self.assertTrue((DenyPermission | AllowPermission)().has_permission(None, None))
+        self.assertTrue((AllowPermission | AllowPermission)().has_permission(None, None))
