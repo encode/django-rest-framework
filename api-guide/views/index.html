@@ -112,6 +112,10 @@
                     <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
                   </li>
                   
+                  <li >
+                    <a href="../../tutorial/7-schemas-and-client-libraries/">7 - Schemas and client libraries</a>
+                  </li>
+                  
                 </ul>
               </li>
                 
@@ -295,6 +299,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -354,7 +362,7 @@
 
                 
                   <li class="main">
-                    <a href="#class-based-views">Class Based Views</a>
+                    <a href="#class-based-views">Class-based Views</a>
                   </li>
 
                   
@@ -413,9 +421,9 @@
                 
               
 
-              <h1 id="class-based-views"><a class="toclink" href="#class-based-views">Class Based Views</a></h1>
+              <h1 id="class-based-views"><a class="toclink" href="#class-based-views">Class-based Views</a></h1>
 <blockquote>
-<p>Django's class based views are a welcome departure from the old-style views.</p>
+<p>Django's class-based views are a welcome departure from the old-style views.</p>
 <p>&mdash; <a href="http://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html">Reinout van Rees</a></p>
 </blockquote>
 <p>REST framework provides an <code>APIView</code> class, which subclasses Django's <code>View</code> class.</p>
@@ -490,7 +498,7 @@ This method is used to enforce permissions and throttling, and perform content n
 <hr />
 <h1 id="function-based-views"><a class="toclink" href="#function-based-views">Function Based Views</a></h1>
 <blockquote>
-<p>Saying [that Class based views] is always the superior solution is a mistake.</p>
+<p>Saying [that class-based views] is always the superior solution is a mistake.</p>
 <p>&mdash; <a href="http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html">Nick Coghlan</a></p>
 </blockquote>
 <p>REST framework also allows you to work with regular function based views.  It provides a set of simple decorators that wrap your function based views to ensure they receive an instance of <code>Request</code> (rather than the usual Django <code>HttpRequest</code>) and allows them to return a <code>Response</code> (instead of a Django <code>HttpResponse</code>), and allow you to configure how the request is processed.</p>

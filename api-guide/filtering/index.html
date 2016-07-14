@@ -112,6 +112,10 @@
                     <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
                   </li>
                   
+                  <li >
+                    <a href="../../tutorial/7-schemas-and-client-libraries/">7 - Schemas and client libraries</a>
+                  </li>
+                  
                 </ul>
               </li>
                 
@@ -292,6 +296,10 @@
                   
                   <li >
                     <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
                   </li>
                   
                   <li >
@@ -536,7 +544,7 @@ class PurchaseList(generics.ListAPIView):
 }
 </code></pre>
 <p>You can also set the filter backends on a per-view, or per-viewset basis,
-using the <code>GenericAPIView</code> class based views.</p>
+using the <code>GenericAPIView</code> class-based views.</p>
 <pre><code>from django.contrib.auth.models import User
 from myapp.serializers import UserSerializer
 from rest_framework import filters
@@ -599,8 +607,8 @@ from rest_framework import filters
 from rest_framework import generics
 
 class ProductFilter(filters.FilterSet):
-    min_price = django_filters.NumberFilter(name="price", lookup_type='gte')
-    max_price = django_filters.NumberFilter(name="price", lookup_type='lte')
+    min_price = django_filters.NumberFilter(name="price", lookup_expr='gte')
+    max_price = django_filters.NumberFilter(name="price", lookup_expr='lte')
     class Meta:
         model = Product
         fields = ['category', 'in_stock', 'min_price', 'max_price']

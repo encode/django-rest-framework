@@ -112,6 +112,10 @@
                     <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
                   </li>
                   
+                  <li >
+                    <a href="../../tutorial/7-schemas-and-client-libraries/">7 - Schemas and client libraries</a>
+                  </li>
+                  
                 </ul>
               </li>
                 
@@ -292,6 +296,10 @@
                   
                   <li >
                     <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
                   </li>
                   
                   <li >
@@ -1230,7 +1238,7 @@ class BookSerializer(serializers.Serializer):
 <li><code>.to_internal_value()</code> - Override this to support deserialization, for write operations.</li>
 <li><code>.create()</code> and <code>.update()</code> - Override either or both of these to support saving instances.</li>
 </ul>
-<p>Because this class provides the same interface as the <code>Serializer</code> class, you can use it with the existing generic class based views exactly as you would for a regular <code>Serializer</code> or <code>ModelSerializer</code>.</p>
+<p>Because this class provides the same interface as the <code>Serializer</code> class, you can use it with the existing generic class-based views exactly as you would for a regular <code>Serializer</code> or <code>ModelSerializer</code>.</p>
 <p>The only difference you'll notice when doing so is the <code>BaseSerializer</code> classes will not generate HTML forms in the browsable API. This is because the data they return does not include all the field information that would allow each field to be rendered into a suitable HTML input.</p>
 <h5 id="read-only-baseserializer-classes"><a class="toclink" href="#read-only-baseserializer-classes">Read-only <code>BaseSerializer</code> classes</a></h5>
 <p>To implement a read-only serializer using the <code>BaseSerializer</code> class, we just need to override the <code>.to_representation()</code> method. Let's take a look at an example using a simple Django model:</p>

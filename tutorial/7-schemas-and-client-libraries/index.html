@@ -4,11 +4,11 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <title>Quickstart - Django REST framework</title>
+  <title>7 - Schemas and client libraries - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/tutorial/quickstart/" />
+  <link rel="canonical" href="http://www.django-rest-framework.org/tutorial/7-schemas-and-client-libraries/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Quickstart">
+  <meta name="description" content="Django, API, REST, 7 - Schemas and client libraries">
   <meta name="author" content="Tom Christie">
 
   <!-- Le styles -->
@@ -58,10 +58,10 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../1-serialization/">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../../api-guide/requests/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../..">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../6-viewsets-and-routers/">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
@@ -84,8 +84,8 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   
-                  <li class="active" >
-                    <a href="./">Quickstart</a>
+                  <li >
+                    <a href="../quickstart/">Quickstart</a>
                   </li>
                   
                   <li >
@@ -112,8 +112,8 @@
                     <a href="../6-viewsets-and-routers/">6 - Viewsets and routers</a>
                   </li>
                   
-                  <li >
-                    <a href="../7-schemas-and-client-libraries/">7 - Schemas and client libraries</a>
+                  <li class="active" >
+                    <a href="./">7 - Schemas and client libraries</a>
                   </li>
                   
                 </ul>
@@ -362,32 +362,32 @@
 
                 
                   <li class="main">
-                    <a href="#quickstart">Quickstart</a>
+                    <a href="#tutorial-7-schemas-client-libraries">Tutorial 7: Schemas &amp; client libraries</a>
                   </li>
 
                   
                     <li>
-                      <a href="#project-setup">Project setup</a>
+                      <a href="#core-api">Core API</a>
                     </li>
                   
                     <li>
-                      <a href="#serializers">Serializers</a>
+                      <a href="#adding-a-schema">Adding a schema</a>
                     </li>
                   
                     <li>
-                      <a href="#views">Views</a>
+                      <a href="#using-a-command-line-client">Using a command line client</a>
                     </li>
                   
                     <li>
-                      <a href="#urls">URLs</a>
+                      <a href="#authenticating-our-client">Authenticating our client</a>
                     </li>
                   
                     <li>
-                      <a href="#settings">Settings</a>
+                      <a href="#reviewing-our-work">Reviewing our work</a>
                     </li>
                   
                     <li>
-                      <a href="#testing-our-api">Testing our API</a>
+                      <a href="#onwards-and-upwards">Onwards and upwards</a>
                     </li>
                   
                 
@@ -405,167 +405,180 @@
             
               
 
-              <h1 id="quickstart"><a class="toclink" href="#quickstart">Quickstart</a></h1>
-<p>We're going to create a simple API to allow admin users to view and edit the users and groups in the system.</p>
-<h2 id="project-setup"><a class="toclink" href="#project-setup">Project setup</a></h2>
-<p>Create a new Django project named <code>tutorial</code>, then start a new app called <code>quickstart</code>.</p>
-<pre><code># Create the project directory
-mkdir tutorial
-cd tutorial
-
-# Create a virtualenv to isolate our package dependencies locally
-virtualenv env
-source env/bin/activate  # On Windows use `env\Scripts\activate`
-
-# Install Django and Django REST framework into the virtualenv
-pip install django
-pip install djangorestframework
-
-# Set up a new project with a single application
-django-admin.py startproject tutorial .  # Note the trailing '.' character
-cd tutorial
-django-admin.py startapp quickstart
-cd ..
+              <h1 id="tutorial-7-schemas-client-libraries"><a class="toclink" href="#tutorial-7-schemas-client-libraries">Tutorial 7: Schemas &amp; client libraries</a></h1>
+<p>A schema is a machine-readable document that describes the available API
+endpoints, their URLS, and what operations they support.</p>
+<p>Schemas can be a useful tool for auto-generated documentation, and can also
+be used to drive dynamic client libraries that can interact with the API.</p>
+<h2 id="core-api"><a class="toclink" href="#core-api">Core API</a></h2>
+<p>In order to provide schema support REST framework uses <a href="http://www.coreapi.org">Core API</a>.</p>
+<p>Core API is a document specification for describing APIs. It is used to provide
+an internal representation format of the available endpoints and possible
+interactions that an API exposes. It can either be used server-side, or
+client-side.</p>
+<p>When used server-side, Core API allows an API to support rendering to a wide
+range of schema or hypermedia formats.</p>
+<p>When used client-side, Core API allows for dynamically driven client libraries
+that can interact with any API that exposes a supported schema or hypermedia
+format.</p>
+<h2 id="adding-a-schema"><a class="toclink" href="#adding-a-schema">Adding a schema</a></h2>
+<p>REST framework supports either explicitly defined schema views, or
+automatically generated schemas. Since we're using viewsets and routers,
+we can simply use the automatic schema generation.</p>
+<p>You'll need to install the <code>coreapi</code> python package in order to include an
+API schema.</p>
+<pre><code>$ pip install coreapi
 </code></pre>
-<p>Now sync your database for the first time:</p>
-<pre><code>python manage.py migrate
+<p>We can now include a schema for our API, by adding a <code>schema_title</code> argument to
+the router instantiation.</p>
+<pre><code>router = DefaultRouter(schema_title='Pastebin API')
 </code></pre>
-<p>We'll also create an initial user named <code>admin</code> with a password of <code>password123</code>. We'll authenticate as that user later in our example.</p>
-<pre><code>python manage.py createsuperuser
-</code></pre>
-<p>Once you've set up a database and initial user created and ready to go, open up the app's directory and we'll get coding...</p>
-<h2 id="serializers"><a class="toclink" href="#serializers">Serializers</a></h2>
-<p>First up we're going to define some serializers. Let's create a new module named <code>tutorial/quickstart/serializers.py</code> that we'll use for our data representations.</p>
-<pre><code>from django.contrib.auth.models import User, Group
-from rest_framework import serializers
+<p>If you visit the API root endpoint in a browser you should now see <code>corejson</code>
+representation become available as an option.</p>
+<p><img alt="Schema format" src="../../img/corejson-format.png" /></p>
+<p>We can also request the schema from the command line, by specifying the desired
+content type in the <code>Accept</code> header.</p>
+<pre><code>$ http http://127.0.0.1:8000/ Accept:application/vnd.coreapi+json
+HTTP/1.0 200 OK
+Allow: GET, HEAD, OPTIONS
+Content-Type: application/vnd.coreapi+json
 
-
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ('url', 'username', 'email', 'groups')
-
-
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Group
-        fields = ('url', 'name')
-</code></pre>
-<p>Notice that we're using hyperlinked relations in this case, with <code>HyperlinkedModelSerializer</code>.  You can also use primary key and various other relationships, but hyperlinking is good RESTful design.</p>
-<h2 id="views"><a class="toclink" href="#views">Views</a></h2>
-<p>Right, we'd better write some views then.  Open <code>tutorial/quickstart/views.py</code> and get typing.</p>
-<pre><code>from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
-from tutorial.quickstart.serializers import UserSerializer, GroupSerializer
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
-
-
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-</code></pre>
-<p>Rather than write multiple views we're grouping together all the common behavior into classes called <code>ViewSets</code>.</p>
-<p>We can easily break these down into individual views if we need to, but using viewsets keeps the view logic nicely organized as well as being very concise.</p>
-<h2 id="urls"><a class="toclink" href="#urls">URLs</a></h2>
-<p>Okay, now let's wire up the API URLs.  On to <code>tutorial/urls.py</code>...</p>
-<pre><code>from django.conf.urls import url, include
-from rest_framework import routers
-from tutorial.quickstart import views
-
-router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'groups', views.GroupViewSet)
-
-# Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browsable API.
-urlpatterns = [
-    url(r'^', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-]
-</code></pre>
-<p>Because we're using viewsets instead of views, we can automatically generate the URL conf for our API, by simply registering the viewsets with a router class.</p>
-<p>Again, if we need more control over the API URLs we can simply drop down to using regular class-based views, and writing the URL conf explicitly.</p>
-<p>Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browsable API.</p>
-<h2 id="settings"><a class="toclink" href="#settings">Settings</a></h2>
-<p>We'd also like to set a few global settings.  We'd like to turn on pagination, and we want our API to only be accessible to admin users.  The settings module will be in <code>tutorial/settings.py</code></p>
-<pre><code>INSTALLED_APPS = (
+{
+    "_meta": {
+        "title": "Pastebin API"
+    },
+    "_type": "document",
     ...
-    'rest_framework',
-)
+</code></pre>
+<p>The default output style is to use the <a href="http://www.coreapi.org/specification/encoding/#core-json-encoding">Core JSON</a> encoding.</p>
+<p>Other schema formats, such as <a href="https://openapis.org/">Open API</a> (formerly Swagger) are
+also supported.</p>
+<h2 id="using-a-command-line-client"><a class="toclink" href="#using-a-command-line-client">Using a command line client</a></h2>
+<p>Now that our API is exposing a schema endpoint, we can use a dynamic client
+library to interact with the API. To demonstrate this, let's use the
+Core API command line client.</p>
+<p>The command line client is available as the <code>coreapi-cli</code> package:</p>
+<pre><code>$ pip install coreapi-cli
+</code></pre>
+<p>Now check that it is available on the command line...</p>
+<pre><code>$ coreapi
+Usage: coreapi [OPTIONS] COMMAND [ARGS]...
 
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
-    'PAGE_SIZE': 10
-}
-</code></pre>
-<p>Okay, we're done.</p>
-<hr />
-<h2 id="testing-our-api"><a class="toclink" href="#testing-our-api">Testing our API</a></h2>
-<p>We're now ready to test the API we've built.  Let's fire up the server from the command line.</p>
-<pre><code>python manage.py runserver
-</code></pre>
-<p>We can now access our API, both from the command-line, using tools like <code>curl</code>...</p>
-<pre><code>bash: curl -H 'Accept: application/json; indent=4' -u admin:password123 http://127.0.0.1:8000/users/
-{
-    "count": 2,
-    "next": null,
-    "previous": null,
-    "results": [
-        {
-            "email": "admin@example.com",
-            "groups": [],
-            "url": "http://127.0.0.1:8000/users/1/",
-            "username": "admin"
-        },
-        {
-            "email": "tom@example.com",
-            "groups": [                ],
-            "url": "http://127.0.0.1:8000/users/2/",
-            "username": "tom"
-        }
-    ]
-}
-</code></pre>
-<p>Or using the <a href="https://github.com/jakubroztocil/httpie#installation">httpie</a>, command line tool...</p>
-<pre><code>bash: http -a admin:password123 http://127.0.0.1:8000/users/
+  Command line client for interacting with CoreAPI services.
 
-HTTP/1.1 200 OK
+  Visit http://www.coreapi.org for more information.
+
+Options:
+  --version  Display the package version number.
+  --help     Show this message and exit.
+
+Commands:
 ...
+</code></pre>
+<p>First we'll load the API schema using the command line client.</p>
+<pre><code>$ coreapi get http://127.0.0.1:8000/
+&lt;Pastebin API "http://127.0.0.1:8000/"&gt;
+    snippets: {
+        highlight(pk)
+        list()
+        retrieve(pk)
+    }
+    users: {
+        list()
+        retrieve(pk)
+    }
+</code></pre>
+<p>We haven't authenticated yet, so right now we're only able to see the read only
+endpoints, in line with how we've set up the permissions on the API.</p>
+<p>Let's try listing the existing snippets, using the command line client:</p>
+<pre><code>$ coreapi action snippets list
+[
+    {
+        "url": "http://127.0.0.1:8000/snippets/1/",
+        "pk": 1,
+        "highlight": "http://127.0.0.1:8000/snippets/1/highlight/",
+        "owner": "lucy",
+        "title": "Example",
+        "code": "print('hello, world!')",
+        "linenos": true,
+        "language": "python",
+        "style": "friendly"
+    },
+    ...
+</code></pre>
+<p>Some of the API endpoints require named parameters. For example, to get back
+the highlight HTML for a particular snippet we need to provide an id.</p>
+<pre><code>$ coreapi action snippets highlight --param pk 1
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"&gt;
+
+&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;Example&lt;/title&gt;
+  ...
+</code></pre>
+<h2 id="authenticating-our-client"><a class="toclink" href="#authenticating-our-client">Authenticating our client</a></h2>
+<p>If we want to be able to create, edit and delete snippets, we'll need to
+authenticate as a valid user. In this case we'll just use basic auth.</p>
+<p>Make sure to replace the <code>&lt;username&gt;</code> and <code>&lt;password&gt;</code> below with your
+actual username and password.</p>
+<pre><code>$ coreapi credentials add 127.0.0.1 &lt;username&gt;:&lt;password&gt; --auth basic
+Added credentials
+127.0.0.1 "Basic &lt;...&gt;"
+</code></pre>
+<p>Now if we fetch the schema again, we should be able to see the full
+set of available interactions.</p>
+<pre><code>$ coreapi reload
+Pastebin API "http://127.0.0.1:8000/"&gt;
+    snippets: {
+        create(code, [title], [linenos], [language], [style])
+        destroy(pk)
+        highlight(pk)
+        list()
+        partial_update(pk, [title], [code], [linenos], [language], [style])
+        retrieve(pk)
+        update(pk, code, [title], [linenos], [language], [style])
+    }
+    users: {
+        list()
+        retrieve(pk)
+    }
+</code></pre>
+<p>We're now able to interact with these endpoints. For example, to create a new
+snippet:</p>
+<pre><code>$ coreapi action snippets create --param title "Example" --param code "print('hello, world')"
 {
-    "count": 2,
-    "next": null,
-    "previous": null,
-    "results": [
-        {
-            "email": "admin@example.com",
-            "groups": [],
-            "url": "http://localhost:8000/users/1/",
-            "username": "paul"
-        },
-        {
-            "email": "tom@example.com",
-            "groups": [                ],
-            "url": "http://127.0.0.1:8000/users/2/",
-            "username": "tom"
-        }
-    ]
+    "url": "http://127.0.0.1:8000/snippets/7/",
+    "pk": 7,
+    "highlight": "http://127.0.0.1:8000/snippets/7/highlight/",
+    "owner": "lucy",
+    "title": "Example",
+    "code": "print('hello, world')",
+    "linenos": false,
+    "language": "python",
+    "style": "friendly"
 }
 </code></pre>
-<p>Or directly through the browser, by going to the URL <code>http://127.0.0.1:8000/users/</code>...</p>
-<p><img alt="Quick start image" src="../../img/quickstart.png" /></p>
-<p>If you're working through the browser, make sure to login using the control in the top right corner.</p>
-<p>Great, that was easy!</p>
-<p>If you want to get a more in depth understanding of how REST framework fits together head on over to <a href="../1-serialization/">the tutorial</a>, or start browsing the <a href="../../#api-guide">API guide</a>.</p>
+<p>And to delete a snippet:</p>
+<pre><code>$ coreapi action snippets destroy --param pk 7
+</code></pre>
+<p>As well as the command line client, developers can also interact with your
+API using client libraries. The Python client library is the first of these
+to be available, and a Javascript client library is planned to be released
+soon.</p>
+<p>For more details on customizing schema generation and using Core API
+client libraries you'll need to refer to the full documentation.</p>
+<h2 id="reviewing-our-work"><a class="toclink" href="#reviewing-our-work">Reviewing our work</a></h2>
+<p>With an incredibly small amount of code, we've now got a complete pastebin Web API, which is fully web browsable, includes a schema-driven client library, and comes complete with authentication, per-object permissions, and multiple renderer formats.</p>
+<p>We've walked through each step of the design process, and seen how if we need to customize anything we can gradually work our way down to simply using regular Django views.</p>
+<p>You can review the final <a href="https://github.com/tomchristie/rest-framework-tutorial">tutorial code</a> on GitHub, or try out a live example in <a href="http://restframework.herokuapp.com/">the sandbox</a>.</p>
+<h2 id="onwards-and-upwards"><a class="toclink" href="#onwards-and-upwards">Onwards and upwards</a></h2>
+<p>We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here are a few places you can start:</p>
+<ul>
+<li>Contribute on <a href="https://github.com/tomchristie/django-rest-framework">GitHub</a> by reviewing and submitting issues, and making pull requests.</li>
+<li>Join the <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">REST framework discussion group</a>, and help build the community.</li>
+<li>Follow <a href="https://twitter.com/_tomchristie">the author</a> on Twitter and say hi.</li>
+</ul>
+<p><strong>Now go build awesome things.</strong></p>
             
 
           </div> <!--/span-->

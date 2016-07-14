@@ -112,6 +112,10 @@
                     <a href="../6-viewsets-and-routers/">6 - Viewsets and routers</a>
                   </li>
                   
+                  <li >
+                    <a href="../7-schemas-and-client-libraries/">7 - Schemas and client libraries</a>
+                  </li>
+                  
                 </ul>
               </li>
                 
@@ -295,6 +299,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -423,7 +431,7 @@ request.data  # Handles arbitrary data.  Works for 'POST', 'PUT' and 'PATCH' met
 <p>REST framework provides two wrappers you can use to write API views.</p>
 <ol>
 <li>The <code>@api_view</code> decorator for working with function based views.</li>
-<li>The <code>APIView</code> class for working with class based views.</li>
+<li>The <code>APIView</code> class for working with class-based views.</li>
 </ol>
 <p>These wrappers provide a few bits of functionality such as making sure you receive <code>Request</code> instances in your view, and adding context to <code>Response</code> objects so that content negotiation can be performed.</p>
 <p>The wrappers also provide behaviour such as returning <code>405 Method Not Allowed</code> responses when appropriate, and handling any <code>ParseError</code> exception that occurs when accessing <code>request.data</code> with malformed input.</p>
@@ -484,7 +492,7 @@ def snippet_detail(request, pk):
 <p>This should all feel very familiar - it is not a lot different from working with regular Django views.</p>
 <p>Notice that we're no longer explicitly tying our requests or responses to a given content type.  <code>request.data</code> can handle incoming <code>json</code> requests, but it can also handle other formats.  Similarly we're returning response objects with data, but allowing REST framework to render the response into the correct content type for us.</p>
 <h2 id="adding-optional-format-suffixes-to-our-urls"><a class="toclink" href="#adding-optional-format-suffixes-to-our-urls">Adding optional format suffixes to our URLs</a></h2>
-<p>To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints.  Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as <a href="http://example.com/api/items/4/.json">http://example.com/api/items/4/.json</a>.</p>
+<p>To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints.  Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as <a href="http://example.com/api/items/4.json">http://example.com/api/items/4.json</a>.</p>
 <p>Start by adding a <code>format</code> keyword argument to both of the views, like so.</p>
 <pre><code>def snippet_list(request, format=None):
 </code></pre>
@@ -570,7 +578,7 @@ http --json POST http://127.0.0.1:8000/snippets/ code="print 456"
 <p>Having a web-browsable API is a huge usability win, and makes developing and using your API much easier.  It also dramatically lowers the barrier-to-entry for other developers wanting to inspect and work with your API.</p>
 <p>See the <a href="../../topics/browsable-api/">browsable api</a> topic for more information about the browsable API feature and how to customize it.</p>
 <h2 id="whats-next"><a class="toclink" href="#whats-next">What's next?</a></h2>
-<p>In <a href="../3-class-based-views/">tutorial part 3</a>, we'll start using class based views, and see how generic views reduce the amount of code we need to write.</p>
+<p>In <a href="../3-class-based-views/">tutorial part 3</a>, we'll start using class-based views, and see how generic views reduce the amount of code we need to write.</p>
             
 
           </div> <!--/span-->

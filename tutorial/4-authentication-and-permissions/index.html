@@ -112,6 +112,10 @@
                     <a href="../6-viewsets-and-routers/">6 - Viewsets and routers</a>
                   </li>
                   
+                  <li >
+                    <a href="../7-schemas-and-client-libraries/">7 - Schemas and client libraries</a>
+                  </li>
+                  
                 </ul>
               </li>
                 
@@ -295,6 +299,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -466,7 +474,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'snippets')
 </code></pre>
 <p>Because <code>'snippets'</code> is a <em>reverse</em> relationship on the User model, it will not be included by default when using the <code>ModelSerializer</code> class, so we needed to add an explicit field for it.</p>
-<p>We'll also add a couple of views to <code>views.py</code>.  We'd like to just use read-only views for the user representations, so we'll use the <code>ListAPIView</code> and <code>RetrieveAPIView</code> generic class based views.</p>
+<p>We'll also add a couple of views to <code>views.py</code>.  We'd like to just use read-only views for the user representations, so we'll use the <code>ListAPIView</code> and <code>RetrieveAPIView</code> generic class-based views.</p>
 <pre><code>from django.contrib.auth.models import User
 
 

@@ -112,6 +112,10 @@
                     <a href="../6-viewsets-and-routers/">6 - Viewsets and routers</a>
                   </li>
                   
+                  <li >
+                    <a href="../7-schemas-and-client-libraries/">7 - Schemas and client libraries</a>
+                  </li>
+                  
                 </ul>
               </li>
                 
@@ -295,6 +299,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -413,7 +421,7 @@ def api_root(request, format=None):
         'snippets': reverse('snippet-list', request=request, format=format)
     })
 </code></pre>
-<p>Two things should be noticed here. First, we're using REST framework's <code>reverse</code> function in order to return fully-qualified URLs; second, URL patterns are identified by convenience names that we will declare later on in our <code>snippets/urls.py</code>. </p>
+<p>Two things should be noticed here. First, we're using REST framework's <code>reverse</code> function in order to return fully-qualified URLs; second, URL patterns are identified by convenience names that we will declare later on in our <code>snippets/urls.py</code>.</p>
 <h2 id="creating-an-endpoint-for-the-highlighted-snippets"><a class="toclink" href="#creating-an-endpoint-for-the-highlighted-snippets">Creating an endpoint for the highlighted snippets</a></h2>
 <p>The other obvious thing that's still missing from our pastebin API is the code highlighting endpoints.</p>
 <p>Unlike all our other API endpoints, we don't want to use JSON, but instead just present an HTML representation.  There are two styles of HTML renderer provided by REST framework, one for dealing with HTML rendered using templates, the other for dealing with pre-rendered HTML.  The second renderer is the one we'd like to use for this endpoint.</p>
@@ -463,7 +471,7 @@ We'll add a url pattern for our new API root in <code>snippets/urls.py</code>:</
 
     class Meta:
         model = Snippet
-        fields = ('url', 'highlight', 'owner',
+        fields = ('url', 'pk', 'highlight', 'owner',
                   'title', 'code', 'linenos', 'language', 'style')
 
 
@@ -472,7 +480,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ('url', 'username', 'snippets')
+        fields = ('url', 'pk', 'username', 'snippets')
 </code></pre>
 <p>Notice that we've also added a new <code>'highlight'</code> field.  This field is of the same type as the <code>url</code> field, except that it points to the <code>'snippet-highlight'</code> url pattern, instead of the <code>'snippet-detail'</code> url pattern.</p>
 <p>Because we've included format suffixed URLs such as <code>'.json'</code>, we also need to indicate on the <code>highlight</code> field that any format suffixed hyperlinks it returns should use the <code>'.html'</code> suffix.</p>

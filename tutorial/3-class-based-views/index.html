@@ -112,6 +112,10 @@
                     <a href="../6-viewsets-and-routers/">6 - Viewsets and routers</a>
                   </li>
                   
+                  <li >
+                    <a href="../7-schemas-and-client-libraries/">7 - Schemas and client libraries</a>
+                  </li>
+                  
                 </ul>
               </li>
                 
@@ -295,6 +299,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -354,12 +362,12 @@
 
                 
                   <li class="main">
-                    <a href="#tutorial-3-class-based-views">Tutorial 3: Class Based Views</a>
+                    <a href="#tutorial-3-class-based-views">Tutorial 3: Class-based Views</a>
                   </li>
 
                   
                     <li>
-                      <a href="#rewriting-our-api-using-class-based-views">Rewriting our API using class based views</a>
+                      <a href="#rewriting-our-api-using-class-based-views">Rewriting our API using class-based views</a>
                     </li>
                   
                     <li>
@@ -367,7 +375,7 @@
                     </li>
                   
                     <li>
-                      <a href="#using-generic-class-based-views">Using generic class based views</a>
+                      <a href="#using-generic-class-based-views">Using generic class-based views</a>
                     </li>
                   
                 
@@ -385,10 +393,10 @@
             
               
 
-              <h1 id="tutorial-3-class-based-views"><a class="toclink" href="#tutorial-3-class-based-views">Tutorial 3: Class Based Views</a></h1>
-<p>We can also write our API views using class based views, rather than function based views.  As we'll see this is a powerful pattern that allows us to reuse common functionality, and helps us keep our code <a href="http://en.wikipedia.org/wiki/Don't_repeat_yourself">DRY</a>.</p>
-<h2 id="rewriting-our-api-using-class-based-views"><a class="toclink" href="#rewriting-our-api-using-class-based-views">Rewriting our API using class based views</a></h2>
-<p>We'll start by rewriting the root view as a class based view.  All this involves is a little bit of refactoring of <code>views.py</code>.</p>
+              <h1 id="tutorial-3-class-based-views"><a class="toclink" href="#tutorial-3-class-based-views">Tutorial 3: Class-based Views</a></h1>
+<p>We can also write our API views using class-based views, rather than function based views.  As we'll see this is a powerful pattern that allows us to reuse common functionality, and helps us keep our code <a href="http://en.wikipedia.org/wiki/Don't_repeat_yourself">DRY</a>.</p>
+<h2 id="rewriting-our-api-using-class-based-views"><a class="toclink" href="#rewriting-our-api-using-class-based-views">Rewriting our API using class-based views</a></h2>
+<p>We'll start by rewriting the root view as a class-based view.  All this involves is a little bit of refactoring of <code>views.py</code>.</p>
 <pre><code>from snippets.models import Snippet
 from snippets.serializers import SnippetSerializer
 from django.http import Http404
@@ -443,7 +451,7 @@ class SnippetList(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 </code></pre>
 <p>That's looking good.  Again, it's still pretty similar to the function based view right now.</p>
-<p>We'll also need to refactor our <code>urls.py</code> slightly now we're using class based views.</p>
+<p>We'll also need to refactor our <code>urls.py</code> slightly now we're using class-based views.</p>
 <pre><code>from django.conf.urls import url
 from rest_framework.urlpatterns import format_suffix_patterns
 from snippets import views
@@ -457,7 +465,7 @@ urlpatterns = format_suffix_patterns(urlpatterns)
 </code></pre>
 <p>Okay, we're done.  If you run the development server everything should be working just as before.</p>
 <h2 id="using-mixins"><a class="toclink" href="#using-mixins">Using mixins</a></h2>
-<p>One of the big wins of using class based views is that it allows us to easily compose reusable bits of behaviour.</p>
+<p>One of the big wins of using class-based views is that it allows us to easily compose reusable bits of behaviour.</p>
 <p>The create/retrieve/update/delete operations that we've been using so far are going to be pretty similar for any model-backed API views we create.  Those bits of common behaviour are implemented in REST framework's mixin classes.</p>
 <p>Let's take a look at how we can compose the views by using the mixin classes.  Here's our <code>views.py</code> module again.</p>
 <pre><code>from snippets.models import Snippet
@@ -496,7 +504,7 @@ class SnippetList(mixins.ListModelMixin,
         return self.destroy(request, *args, **kwargs)
 </code></pre>
 <p>Pretty similar.  Again we're using the <code>GenericAPIView</code> class to provide the core functionality, and adding in mixins to provide the <code>.retrieve()</code>, <code>.update()</code> and <code>.destroy()</code> actions.</p>
-<h2 id="using-generic-class-based-views"><a class="toclink" href="#using-generic-class-based-views">Using generic class based views</a></h2>
+<h2 id="using-generic-class-based-views"><a class="toclink" href="#using-generic-class-based-views">Using generic class-based views</a></h2>
 <p>Using the mixin classes we've rewritten the views to use slightly less code than before, but we can go one step further.  REST framework provides a set of already mixed-in generic views that we can use to trim down our <code>views.py</code> module even more.</p>
 <pre><code>from snippets.models import Snippet
 from snippets.serializers import SnippetSerializer

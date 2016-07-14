@@ -58,7 +58,7 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../../api-guide/requests/">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../7-schemas-and-client-libraries/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
           <a class="repo-link btn btn-inverse btn-small " rel="next" href="../5-relationships-and-hyperlinked-apis/">
@@ -110,6 +110,10 @@
                   
                   <li class="active" >
                     <a href="./">6 - Viewsets and routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../7-schemas-and-client-libraries/">7 - Schemas and client libraries</a>
                   </li>
                   
                 </ul>
@@ -295,6 +299,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -372,14 +380,6 @@
                   
                     <li>
                       <a href="#trade-offs-between-views-vs-viewsets">Trade-offs between views vs viewsets</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#reviewing-our-work">Reviewing our work</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#onwards-and-upwards">Onwards and upwards</a>
                     </li>
                   
                 
@@ -503,17 +503,8 @@ urlpatterns = [
 <h2 id="trade-offs-between-views-vs-viewsets"><a class="toclink" href="#trade-offs-between-views-vs-viewsets">Trade-offs between views vs viewsets</a></h2>
 <p>Using viewsets can be a really useful abstraction.  It helps ensure that URL conventions will be consistent across your API, minimizes the amount of code you need to write, and allows you to concentrate on the interactions and representations your API provides rather than the specifics of the URL conf.</p>
 <p>That doesn't mean it's always the right approach to take.  There's a similar set of trade-offs to consider as when using class-based views instead of function based views.  Using viewsets is less explicit than building your views individually.</p>
-<h2 id="reviewing-our-work"><a class="toclink" href="#reviewing-our-work">Reviewing our work</a></h2>
-<p>With an incredibly small amount of code, we've now got a complete pastebin Web API, which is fully web browsable, includes a schema-driven client library, and comes complete with authentication, per-object permissions, and multiple renderer formats.</p>
-<p>We've walked through each step of the design process, and seen how if we need to customize anything we can gradually work our way down to simply using regular Django views.</p>
-<p>You can review the final <a href="https://github.com/tomchristie/rest-framework-tutorial">tutorial code</a> on GitHub, or try out a live example in <a href="http://restframework.herokuapp.com/">the sandbox</a>.</p>
-<h2 id="onwards-and-upwards"><a class="toclink" href="#onwards-and-upwards">Onwards and upwards</a></h2>
-<p>We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here are a few places you can start:</p>
-<ul>
-<li>Contribute on <a href="https://github.com/tomchristie/django-rest-framework">GitHub</a> by reviewing and submitting issues, and making pull requests.</li>
-<li>Join the <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">REST framework discussion group</a>, and help build the community.</li>
-<li>Follow <a href="https://twitter.com/_tomchristie">the author</a> on Twitter and say hi.</li>
-</ul>
+<p>In <a href="../7-schemas-and-client-libraries/">part 7</a> of the tutorial we'll look at how we can add an API schema,
+and interact with our API using a client library or command line tool.</p>
             
 
           </div> <!--/span-->

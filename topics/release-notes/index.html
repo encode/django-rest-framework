@@ -112,6 +112,10 @@
                     <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
                   </li>
                   
+                  <li >
+                    <a href="../../tutorial/7-schemas-and-client-libraries/">7 - Schemas and client libraries</a>
+                  </li>
+                  
                 </ul>
               </li>
                 
@@ -295,6 +299,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.4-announcement/">3.4 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -438,12 +446,94 @@
 </code></pre>
 <hr />
 <h2 id="34x-series"><a class="toclink" href="#34x-series">3.4.x series</a></h2>
-<h3 id="34"><a class="toclink" href="#34">3.4</a></h3>
-<p><strong>Unreleased</strong></p>
+<h3 id="340"><a class="toclink" href="#340">3.4.0</a></h3>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.0+Release%22">14th July 2016</a></p>
 <ul>
-<li>Dropped support for EOL Django 1.7 ([#3933][gh3933])</li>
-<li>Fixed null foreign keys targeting UUIDField primary keys. ([#3936][gh3936])</li>
+<li>Don't strip microseconds in JSON output. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4256">#4256</a>)</li>
+<li>Two slightly different iso 8601 datetime serialization. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4255">#4255</a>)</li>
+<li>Resolve incorrect inclusion of media type parameters. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4254">#4254</a>)</li>
+<li>Response Content-Type potentially malformed. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4253">#4253</a>)</li>
+<li>Fix setup.py error on some platforms. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4246">#4246</a>)</li>
+<li>Move alternate formats in coreapi into separate packages. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4244">#4244</a>)</li>
+<li>Add localize keyword argument to <code>DecimalField</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4233">#4233</a>)</li>
+<li>Fix issues with routers for custom list-route and detail-routes. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4229">#4229</a>)</li>
+<li>Namespace versioning with nested namespaces. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4219">#4219</a>)</li>
+<li>Robust uniqueness checks. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4217">#4217</a>)</li>
+<li>Minor refactoring of <code>must_call_distinct</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4215">#4215</a>)</li>
+<li>Overridable offset cutoff in CursorPagination. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4212">#4212</a>)</li>
+<li>Pass through strings as-in with date/time fields. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4196">#4196</a>)</li>
+<li>Add test confirming that required=False is valid on a relational field. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4195">#4195</a>)</li>
+<li>In LimitOffsetPagination <code>limit=0</code> should revert to default limit. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4194">#4194</a>)</li>
+<li>Exclude read_only=True fields from unique_together validation &amp; add docs. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4192">#4192</a>)</li>
+<li>Handle bytestrings in JSON. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4191">#4191</a>)</li>
+<li>JSONField(binary=True) represents using binary strings, which JSONRenderer does not support. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4187">#4187</a>)</li>
+<li>JSONField(binary=True) represents using binary strings, which JSONRenderer does not support. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4185">#4185</a>)</li>
+<li>More robust form rendering in the browsable API. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4181">#4181</a>)</li>
+<li>Empty cases of <code>.validated_data</code> and <code>.errors</code> as lists not dicts for ListSerializer. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4180">#4180</a>)</li>
+<li>Schemas &amp; client libraries. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4179">#4179</a>)</li>
+<li>Removed <code>AUTH_USER_MODEL</code> compat property. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4176">#4176</a>)</li>
+<li>Clean up existing deprecation warnings. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4166">#4166</a>)</li>
+<li>Django 1.10 support. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4158">#4158</a>)</li>
+<li>Updated jQuery version to 1.12.4. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4157">#4157</a>)</li>
+<li>More robust default behavior on OrderingFilter. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4156">#4156</a>)</li>
+<li>description.py codes and tests removal. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4153">#4153</a>)</li>
+<li>Wrap guardian.VERSION in tuple. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4149">#4149</a>)</li>
+<li>Refine validator for fields with <source=> kwargs. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4146">#4146</a>)</li>
+<li>Fix None values representation in childs of ListField, DictField. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4118">#4118</a>)</li>
+<li>Resolve TimeField representation for midnight value. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4107">#4107</a>)</li>
+<li>Set proper status code in AdminRenderer for the redirection after POST/DELETE requests. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4106">#4106</a>)</li>
+<li>TimeField render returns None instead of 00:00:00. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4105">#4105</a>)</li>
+<li>Fix incorrectly named zh-hans and zh-hant locale path. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4103">#4103</a>)</li>
+<li>Prevent raising exception when limit is 0. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4098">#4098</a>)</li>
+<li>TokenAuthentication: Allow custom keyword in the header. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4097">#4097</a>)</li>
+<li>Handle incorrectly padded HTTP basic auth header. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4090">#4090</a>)</li>
+<li>LimitOffset pagination crashes Browseable API when limit=0. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4079">#4079</a>)</li>
+<li>Fixed DecimalField arbitrary precision support. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4075">#4075</a>)</li>
+<li>Added support for custom CSRF cookie names. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4049">#4049</a>)</li>
+<li>Fix regression introduced by #4035. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4041">#4041</a>)</li>
+<li>No auth view failing permission should raise 403. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4040">#4040</a>)</li>
+<li>Fix string_types / text_types confusion. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4025">#4025</a>)</li>
+<li>Do not list related field choices in OPTIONS requests. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4021">#4021</a>)</li>
+<li>Fix typo. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4008">#4008</a>)</li>
+<li>Reorder initializing the view. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4006">#4006</a>)</li>
+<li>Type error in DjangoObjectPermissionsFilter on Python 3.4. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4005">#4005</a>)</li>
+<li>Fixed use of deprecated Query.aggregates. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4003">#4003</a>)</li>
+<li>Fix blank lines around docstrings. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4002">#4002</a>)</li>
+<li>Fixed admin pagination when limit is 0. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3990">#3990</a>)</li>
+<li>OrderingFilter adjustements. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3983">#3983</a>)</li>
+<li>Non-required serializer related fields. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3976">#3976</a>)</li>
+<li>Using safer calling way of "@api_view" in tutorial. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3971">#3971</a>)</li>
+<li>ListSerializer doesn't handle unique_together constraints. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3970">#3970</a>)</li>
+<li>Add missing migration file. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3968">#3968</a>)</li>
+<li><code>OrderingFilter</code> should call <code>get_serializer_class()</code> to determine default fields. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3964">#3964</a>)</li>
+<li>Remove old django checks from tests and compat. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3953">#3953</a>)</li>
+<li>Support callable as the value of <code>initial</code> for any <code>serializer.Field</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3943">#3943</a>)</li>
+<li>Prevented unnecessary distinct() call in SearchFilter. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3938">#3938</a>)</li>
+<li>Fix None UUID ForeignKey serialization. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3936">#3936</a>)</li>
+<li>Drop EOL Django 1.7. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3933">#3933</a>)</li>
+<li>Add missing space in serializer error message. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3926">#3926</a>)</li>
+<li>Fixed _force_text_recursive typo. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3908">#3908</a>)</li>
+<li>Attempt to address Django 2.0 deprecate warnings related to <code>field.rel</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3906">#3906</a>)</li>
+<li>Fix parsing multipart data using a nested serializer with list. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3820">#3820</a>)</li>
+<li>Resolving APIs URL to different namespaces. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3816">#3816</a>)</li>
+<li>Do not HTML-escape <code>help_text</code> in Browsable API forms. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3812">#3812</a>)</li>
+<li>OPTIONS fetches and shows all possible foreign keys in choices field. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3751">#3751</a>)</li>
+<li>Django 1.9 deprecation warnings (<a href="https://github.com/tomchristie/django-rest-framework/issues/3729">#3729</a>)</li>
+<li>Test case for #3598 (<a href="https://github.com/tomchristie/django-rest-framework/issues/3710">#3710</a>)</li>
+<li>Adding support for multiple values for search filter. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3541">#3541</a>)</li>
+<li>Use get_serializer_class in ordering filter. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3487">#3487</a>)</li>
+<li>Serializers with many=True should return empty list rather than empty dict. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3476">#3476</a>)</li>
+<li>LimitOffsetPagination limit=0 fix. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3444">#3444</a>)</li>
+<li>Enable Validators to defer string evaluation and handle new string format. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3438">#3438</a>)</li>
+<li>Unique validator is executed and breaks if field is invalid. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3381">#3381</a>)</li>
+<li>Do not ignore overridden View.get_view_name() in breadcrumbs. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3273">#3273</a>)</li>
+<li>Retry form rendering when rendering with serializer fails. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3164">#3164</a>)</li>
+<li>Unique constraint prevents nested serializers from updating. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2996">#2996</a>)</li>
+<li>Uniqueness validators should not be run for excluded (read_only) fields. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2848">#2848</a>)</li>
+<li>UniqueValidator raises exception for nested objects. (<a href="https://github.com/tomchristie/django-rest-framework/issues/2403">#2403</a>)</li>
+<li><code>lookup_type</code> is deprecated in favor of <code>lookup_expr</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4259">#4259</a>)</li>
 </ul>
+<hr />
 <h2 id="33x-series"><a class="toclink" href="#33x-series">3.3.x series</a></h2>
 <h3 id="333"><a class="toclink" href="#333">3.3.3</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.3+Release%22">14th March 2016</a>.</p>
@@ -519,6 +609,7 @@
 <li>Removed support for Django 1.5 &amp; 1.6. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3421">#3421</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3429">#3429</a>)</li>
 <li>Removed 'south' migrations. (<a href="https://github.com/tomchristie/django-rest-framework/issues/3495">#3495</a>)</li>
 </ul>
+<hr />
 <h2 id="32x-series"><a class="toclink" href="#32x-series">3.2.x series</a></h2>
 <h3 id="325"><a class="toclink" href="#325">3.2.5</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.2.5+Release%22">27th October 2015</a>.</p>
@@ -769,6 +860,8 @@
 <!-- 3.3.2 -->
 
 <!-- 3.3.3 -->
+
+<!-- 3.4.0 -->
             
 
           </div> <!--/span-->

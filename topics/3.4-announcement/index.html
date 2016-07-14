@@ -4,11 +4,11 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <title>Browser Enhancements - Django REST framework</title>
+  <title>3.4 Announcement - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/topics/browser-enhancements/" />
+  <link rel="canonical" href="http://www.django-rest-framework.org/topics/3.4-announcement/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Browser Enhancements">
+  <meta name="description" content="Django, API, REST, 3.4 Announcement">
   <meta name="author" content="Tom Christie">
 
   <!-- Le styles -->
@@ -58,10 +58,10 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../browsable-api/">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../kickstarter-announcement/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../html-and-forms/">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3.3-announcement/">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
@@ -258,8 +258,8 @@
                     <a href="../html-and-forms/">HTML & Forms</a>
                   </li>
                   
-                  <li class="active" >
-                    <a href="./">Browser Enhancements</a>
+                  <li >
+                    <a href="../browser-enhancements/">Browser Enhancements</a>
                   </li>
                   
                   <li >
@@ -298,8 +298,8 @@
                     <a href="../3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
-                  <li >
-                    <a href="../3.4-announcement/">3.4 Announcement</a>
+                  <li class="active" >
+                    <a href="./">3.4 Announcement</a>
                   </li>
                   
                   <li >
@@ -362,32 +362,28 @@
 
                 
                   <li class="main">
-                    <a href="#browser-enhancements">Browser enhancements</a>
+                    <a href="#django-rest-framework-34">Django REST framework 3.4</a>
                   </li>
 
                   
                     <li>
-                      <a href="#browser-based-put-delete-etc">Browser based PUT, DELETE, etc...</a>
+                      <a href="#funding">Funding</a>
                     </li>
                   
                     <li>
-                      <a href="#browser-based-submission-of-non-form-content">Browser based submission of non-form content</a>
+                      <a href="#schemas-client-libraries">Schemas &amp; client libraries</a>
                     </li>
                   
                     <li>
-                      <a href="#url-based-format-suffixes">URL based format suffixes</a>
+                      <a href="#supported-versions">Supported versions</a>
                     </li>
                   
                     <li>
-                      <a href="#http-header-based-method-overriding">HTTP header based method overriding</a>
+                      <a href="#deprecations-and-changes">Deprecations and changes</a>
                     </li>
                   
                     <li>
-                      <a href="#url-based-accept-headers">URL based accept headers</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#doesnt-html5-support-put-and-delete-forms">Doesn't HTML5 support PUT and DELETE forms?</a>
+                      <a href="#other-improvements">Other improvements</a>
                     </li>
                   
                 
@@ -405,65 +401,161 @@
             
               
 
-              <h1 id="browser-enhancements"><a class="toclink" href="#browser-enhancements">Browser enhancements</a></h1>
-<blockquote>
-<p>"There are two noncontroversial uses for overloaded POST.  The first is to <em>simulate</em> HTTP's uniform interface for clients like web browsers that don't support PUT or DELETE"</p>
-<p>&mdash; <a href="http://www.amazon.com/Restful-Web-Services-Leonard-Richardson/dp/0596529260">RESTful Web Services</a>, Leonard Richardson &amp; Sam Ruby.</p>
-</blockquote>
-<p>In order to allow the browsable API to function, there are a couple of browser enhancements that REST framework needs to provide.</p>
-<p>As of version 3.3.0 onwards these are enabled with javascript, using the <a href="https://github.com/tomchristie/ajax-form">ajax-form</a> library.</p>
-<h2 id="browser-based-put-delete-etc"><a class="toclink" href="#browser-based-put-delete-etc">Browser based PUT, DELETE, etc...</a></h2>
-<p>The <a href="https://github.com/tomchristie/ajax-form">AJAX form library</a> supports browser-based <code>PUT</code>, <code>DELETE</code> and other methods on HTML forms.</p>
-<p>After including the library, use the <code>data-method</code> attribute on the form, like so:</p>
-<pre><code>&lt;form action="/" data-method="PUT"&gt;
-    &lt;input name='foo'/&gt;
-    ...
-&lt;/form&gt;
-</code></pre>
-<p>Note that prior to 3.3.0, this support was server-side rather than javascript based. The method overloading style (as used in <a href="http://guides.rubyonrails.org/form_helpers.html#how-do-forms-with-put-or-delete-methods-work">Ruby on Rails</a>) is no longer supported due to subtle issues that it introduces in request parsing.</p>
-<h2 id="browser-based-submission-of-non-form-content"><a class="toclink" href="#browser-based-submission-of-non-form-content">Browser based submission of non-form content</a></h2>
-<p>Browser-based submission of content types such as JSON are supported by the <a href="https://github.com/tomchristie/ajax-form">AJAX form library</a>, using form fields with <code>data-override='content-type'</code> and <code>data-override='content'</code> attributes.</p>
-<p>For example:</p>
-<pre><code>    &lt;form action="/"&gt;
-        &lt;input data-override='content-type' value='application/json' type='hidden'/&gt;
-        &lt;textarea data-override='content'&gt;{}&lt;/textarea&gt;
-        &lt;input type="submit"/&gt;
-    &lt;/form&gt;
-</code></pre>
-<p>Note that prior to 3.3.0, this support was server-side rather than javascript based.</p>
-<h2 id="url-based-format-suffixes"><a class="toclink" href="#url-based-format-suffixes">URL based format suffixes</a></h2>
-<p>REST framework can take <code>?format=json</code> style URL parameters, which can be a
-useful shortcut for determining which content type should be returned from
-the view.</p>
-<p>This behavior is controlled using the <code>URL_FORMAT_OVERRIDE</code> setting.</p>
-<h2 id="http-header-based-method-overriding"><a class="toclink" href="#http-header-based-method-overriding">HTTP header based method overriding</a></h2>
-<p>Prior to version 3.3.0 the semi extension header <code>X-HTTP-Method-Override</code> was supported for overriding the request method. This behavior is no longer in core, but can be adding if needed using middleware.</p>
-<p>For example:</p>
-<pre><code>METHOD_OVERRIDE_HEADER = 'HTTP_X_HTTP_METHOD_OVERRIDE'
+              <style>
+.promo li a {
+    float: left;
+    width: 130px;
+    height: 20px;
+    text-align: center;
+    margin: 10px 30px;
+    padding: 150px 0 0 0;
+    background-position: 0 50%;
+    background-size: 130px auto;
+    background-repeat: no-repeat;
+    font-size: 120%;
+    color: black;
+}
+.promo li {
+    list-style: none;
+}
+</style>
 
-class MethodOverrideMiddleware(object):
-    def process_view(self, request, callback, callback_args, callback_kwargs):
-        if request.method != 'POST':
-            return
-        if METHOD_OVERRIDE_HEADER not in request.META:
-            return
-        request.method = request.META[METHOD_OVERRIDE_HEADER]
-</code></pre>
-<h2 id="url-based-accept-headers"><a class="toclink" href="#url-based-accept-headers">URL based accept headers</a></h2>
-<p>Until version 3.3.0 REST framework included built-in support for <code>?accept=application/json</code> style URL parameters, which would allow the <code>Accept</code> header to be overridden.</p>
-<p>Since the introduction of the content negotiation API this behavior is no longer included in core, but may be added using a custom content negotiation class, if needed.</p>
-<p>For example:</p>
-<pre><code>class AcceptQueryParamOverride()
-    def get_accept_list(self, request):
-       header = request.META.get('HTTP_ACCEPT', '*/*')
-       header = request.query_params.get('_accept', header)
-       return [token.strip() for token in header.split(',')]
-</code></pre>
-<h2 id="doesnt-html5-support-put-and-delete-forms"><a class="toclink" href="#doesnt-html5-support-put-and-delete-forms">Doesn't HTML5 support PUT and DELETE forms?</a></h2>
-<p>Nope.  It was at one point intended to support <code>PUT</code> and <code>DELETE</code> forms, but
-was later <a href="http://www.w3.org/TR/html5-diff/#changes-2010-06-24">dropped from the spec</a>.  There remains
-<a href="http://amundsen.com/examples/put-delete-forms/">ongoing discussion</a> about adding support for <code>PUT</code> and <code>DELETE</code>,
-as well as how to support content types other than form-encoded data.</p>
+<h1 id="django-rest-framework-34"><a class="toclink" href="#django-rest-framework-34">Django REST framework 3.4</a></h1>
+<p>The 3.4 release is the first in a planned series that will be addressing schema
+generation, hypermedia support, API clients, and finally realtime support.</p>
+<hr />
+<h2 id="funding"><a class="toclink" href="#funding">Funding</a></h2>
+<p>The 3.4 release has been made possible a recent <a href="../mozilla-grant/">Mozilla grant</a>, and by our
+<a href="../funding/">collaborative funding model</a>. If you use REST framework commercially, and would
+like to see this work continue, we strongly encourage you to invest in its
+continued development by <strong><a href="../funding/">signing up for a paid plan</a></strong>.</p>
+<p>The initial aim is to provide a single full-time position on REST framework.
+Right now we're over 60% of the way towards achieving that.
+<em>Every single sign-up makes a significant impact.</em></p>
+<ul class="premium-promo promo">
+    <li><a href="http://jobs.rover.com/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rover_130x130.png)">Rover.com</a></li>
+    <li><a href="https://getsentry.com/welcome/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/sentry130.png)">Sentry</a></li>
+    <li><a href="https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/stream-130.png)">Stream</a></li>
+</ul>
+
+<div style="clear: both; padding-bottom: 20px;"></div>
+
+<p><em>Many thanks to all our <a href="https://fund.django-rest-framework.org/topics/funding/#our-sponsors">awesome sponsors</a>, and in particular to our premium backers, <a href="http://jobs.rover.com/">Rover</a>, <a href="https://getsentry.com/welcome/">Sentry</a>, and <a href="https://getstream.io/?utm_source=drf&amp;utm_medium=banner&amp;utm_campaign=drf">Stream</a>.</em></p>
+<hr />
+<h2 id="schemas-client-libraries"><a class="toclink" href="#schemas-client-libraries">Schemas &amp; client libraries</a></h2>
+<p>REST framework 3.4 brings built-in support for generating API schemas.</p>
+<p>We provide this support by using <a href="http://www.coreapi.org/">Core API</a>, a Document Object Model
+for describing APIs.</p>
+<p>Because Core API represents the API schema in an format-independent
+manner, we're able to render the Core API <code>Document</code> object into many different
+schema formats, by allowing the renderer class to determine how the internal
+representation maps onto the external schema format.</p>
+<p>This approach should also open the door to a range of auto-generated API
+documentation options in the future, by rendering the <code>Document</code> object into
+HTML documentation pages.</p>
+<p>Alongside the built-in schema support, we're also now providing the following:</p>
+<ul>
+<li>A <a href="../api-clients#command-line-client">command line tool</a> for interacting with APIs.</li>
+<li>A <a href="../api-clients#python-client-library">Python client library</a> for interacting with APIs.</li>
+</ul>
+<p>These API clients are dynamically driven, and able to interact with any API
+that exposes a supported schema format.</p>
+<p>Dynamically driven clients allow you to interact with an API at an application
+layer interface, rather than a network layer interface, while still providing
+the benefits of RESTful Web API design.</p>
+<p>We're expecting to expand the range of languages that we provide client libraries
+for over the coming months.</p>
+<p>Further work on maturing the API schema support is also planned, including
+documentation on supporting file upload and download, and improved support for
+documentation generation and parameter annotation.</p>
+<hr />
+<p>Current support for schema formats is as follows:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Support</th>
+<th>PyPI package</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="http://www.coreapi.org/specification/encoding/#core-json-encoding">Core JSON</a></td>
+<td>Schema generation &amp; client support.</td>
+<td>Built-in support in <code>coreapi</code></td>
+</tr>
+<tr>
+<td><a href="https://openapis.org/specification">Swagger / OpenAPI</a></td>
+<td>Schema generation &amp; client support.</td>
+<td>The <code>openapi-codec</code>package.</td>
+</tr>
+<tr>
+<td><a href="http://json-schema.org/latest/json-schema-hypermedia.html">JSON Hyper-Schema</a></td>
+<td>Currrently client support only.</td>
+<td>The <code>hyperschema-codec</code>package.</td>
+</tr>
+<tr>
+<td><a href="https://apiblueprint.org/">API Blueprint</a></td>
+<td>Not yet available.</td>
+<td>Not yet available.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>You can read more about any of this new functionality in the following:</p>
+<ul>
+<li>New tutorial section on <a href="../../../tutorial/7-schemas-and-client-libraries/">schemas &amp; client libraries</a>.</li>
+<li>Documentation page on <a href="../../../api-guide/schemas/">schema generation</a>.</li>
+<li>Topic page on <a href="../api-clients/">API clients</a>.</li>
+</ul>
+<p>It is also worth noting that Marc Gibbons is currently working towards a 2.0 release of
+the popular Django REST Swagger package, which will tie in with our new built-in support.</p>
+<hr />
+<h2 id="supported-versions"><a class="toclink" href="#supported-versions">Supported versions</a></h2>
+<p>The 3.4.0 release adds support for Django 1.10.</p>
+<p>The following versions of Python and Django are now supported:</p>
+<ul>
+<li>Django versions 1.8, 1.9, and 1.10.</li>
+<li>Python versions 2.7, 3.2(*), 3.3(*), 3.4, 3.5.</li>
+</ul>
+<p>(*) Note that Python 3.2 and 3.3 are not supported from Django 1.9 onwards.</p>
+<hr />
+<h2 id="deprecations-and-changes"><a class="toclink" href="#deprecations-and-changes">Deprecations and changes</a></h2>
+<p>The 3.4 release includes very limited deprecation or behavioral changes, and
+should present a straightforward upgrade.</p>
+<h3 id="use-fields-or-exclude-on-serializer-classes"><a class="toclink" href="#use-fields-or-exclude-on-serializer-classes">Use fields or exclude on serializer classes.</a></h3>
+<p>The following change in 3.3.0 is now escalated from "pending deprecation" to
+"deprecated". Its usage will continue to function but will raise warnings:</p>
+<p><code>ModelSerializer</code> and <code>HyperlinkedModelSerializer</code> should include either a <code>fields</code>
+option, or an <code>exclude</code> option. The <code>fields = '__all__'</code> shortcut may be used
+to explicitly include all fields.</p>
+<h3 id="microsecond-precision-when-returning-time-or-datetime"><a class="toclink" href="#microsecond-precision-when-returning-time-or-datetime">Microsecond precision when returning time or datetime.</a></h3>
+<p>Using the default JSON renderer and directly returning a <code>datetime</code> or <code>time</code>
+instance will now render with microsecond precision (6 digits), rather than
+millisecond precision (3 digits). This makes the output format consistent with the
+default string output of <code>serializers.DateTimeField</code> and <code>serializers.TimeField</code>.</p>
+<p>This change <em>does not affect the default behavior when using serializers</em>,
+which is to serialize <code>datetime</code> and <code>time</code> instances into strings with
+microsecond precision.</p>
+<p>The serializer behavior can be modified if needed, using the <code>DATETIME_FORMAT</code>
+and <code>TIME_FORMAT</code> settings.</p>
+<p>The renderer behavior can be modified by setting a custom <code>encoder_class</code>
+attribute on a <code>JSONRenderer</code> subclass.</p>
+<h3 id="relational-choices-no-longer-displayed-in-options-requests"><a class="toclink" href="#relational-choices-no-longer-displayed-in-options-requests">Relational choices no longer displayed in OPTIONS requests.</a></h3>
+<p>Making an <code>OPTIONS</code> request to views that have a serializer choice field
+will result in a list of the available choices being returned in the response.</p>
+<p>In cases where there is a relational field, the previous behavior would be
+to return a list of available instances to choose from for that relational field.</p>
+<p>In order to minimise exposed information the behavior now is to <em>not</em> return
+choices information for relational fields.</p>
+<p>If you want to override this new behavior you'll need to <a href="../../../api-guide/metadata/#custom-metadata-classes">implement a custom
+metadata class</a>.</p>
+<p>See <a href="https://github.com/tomchristie/django-rest-framework/issues/3751">issue #3751</a> for more information on this behavioral change.</p>
+<hr />
+<h2 id="other-improvements"><a class="toclink" href="#other-improvements">Other improvements</a></h2>
+<p>This release includes further work from a huge number of <a href="https://github.com/tomchristie/django-rest-framework/milestone/35">pull requests and issues</a>.</p>
+<p>Many thanks to all our contributors who've been involved in the release, either through raising issues, giving feedback, improving the documentation, or suggesting and implementing code changes.</p>
+<p>The full set of itemized release notes <a href="../release-notes#34">are available here</a>.</p>
             
 
           </div> <!--/span-->

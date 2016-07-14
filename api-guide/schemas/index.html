@@ -112,6 +112,10 @@
                     <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
                   </li>
                   
+                  <li >
+                    <a href="../../tutorial/7-schemas-and-client-libraries/">7 - Schemas and client libraries</a>
+                  </li>
+                  
                 </ul>
               </li>
                 
@@ -295,6 +299,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -394,6 +402,16 @@
                   
                 
                   <li class="main">
+                    <a href="#alternate-schema-formats">Alternate schema formats</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#example">Example</a>
+                    </li>
+                  
+                
+                  <li class="main">
                     <a href="#api-reference">API Reference</a>
                   </li>
 
@@ -486,7 +504,7 @@ has to be rendered into the actual bytes that are used in the response.</p>
 <p><a href="http://www.coreapi.org/specification/encoding/#core-json-encoding">Core JSON</a> is designed as a canonical format for use with Core API.
 REST framework includes a renderer class for handling this media type, which
 is available as <code>renderers.CoreJSONRenderer</code>.</p>
-<p>Other schema formats such as <a href="https://openapis.org/">Open API</a> (Formerly "Swagger"),
+<p>Other schema formats such as <a href="https://openapis.org/">Open API</a> ("Swagger"),
 <a href="http://json-schema.org/latest/json-schema-hypermedia.html">JSON HyperSchema</a>, or <a href="https://apiblueprint.org/">API Blueprint</a> can
 also be supported by implementing a custom renderer class.</p>
 <h2 id="schemas-vs-hypermedia"><a class="toclink" href="#schemas-vs-hypermedia">Schemas vs Hypermedia</a></h2>
@@ -531,13 +549,24 @@ Content-Type: application/vnd.coreapi+json
 }
 </code></pre>
 <p>This is a great zero-configuration option for when you want to get up and
-running really quickly. If you want a little more flexibility over the
-schema output then you'll need to consider using <code>SchemaGenerator</code> instead.</p>
+running really quickly.</p>
+<p>The only other available option to <code>DefaultRouter</code> is <code>schema_renderers</code>, which
+may be used to pass the set of renderer classes that can be used to render
+schema output.</p>
+<pre><code>from rest_framework.renderers import CoreJSONRenderer
+from my_custom_package import APIBlueprintRenderer
+
+router = DefaultRouter(schema_title='Server Monitoring API', schema_renderers=[
+    CoreJSONRenderer, APIBlueprintRenderer
+])
+</code></pre>
+<p>If you want more flexibility over the schema output then you'll need to consider
+using <code>SchemaGenerator</code> instead.</p>
 <h2 id="using-schemagenerator"><a class="toclink" href="#using-schemagenerator">Using SchemaGenerator</a></h2>
 <p>The most common way to add a schema to your API is to use the <code>SchemaGenerator</code>
 class to auto-generate the <code>Document</code> instance, and to return that from a view.</p>
 <p>This option gives you the flexibility of setting up the schema endpoint
-with whatever behaviour you want. For example, you can apply different
+with whatever behavior you want. For example, you can apply different
 permission, throttling or authentication policies to the schema endpoint.</p>
 <p>Here's an example of using <code>SchemaGenerator</code> together with a view to
 return the schema.</p>
@@ -600,6 +629,26 @@ of the available formats, such as Core JSON or Open API.</p>
 <li>Write a schema definition that is loaded using <code>Core API</code>, and then
   rendered to one of many available formats, depending on the client request.</li>
 </ul>
+<hr />
+<h1 id="alternate-schema-formats"><a class="toclink" href="#alternate-schema-formats">Alternate schema formats</a></h1>
+<p>In order to support an alternate schema format, you need to implement a custom renderer
+class that handles converting a <code>Document</code> instance into a bytestring representation.</p>
+<p>If there is a Core API codec package that supports encoding into the format you
+want to use then implementing the renderer class can be done by using the codec.</p>
+<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
+<p>For example, the <code>openapi_codec</code> package provides support for encoding or decoding
+to the Open API ("Swagger") format:</p>
+<pre><code>from rest_framework import renderers
+from openapi_codec import OpenAPICodec
+
+class SwaggerRenderer(renderers.BaseRenderer):
+    media_type = 'application/openapi+json;version=2.0'
+    format = 'swagger'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        codec = OpenAPICodec()
+        return OpenAPICodec.dump(data)
+</code></pre>
 <hr />
 <h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
 <h2 id="schemagenerator"><a class="toclink" href="#schemagenerator">SchemaGenerator</a></h2>
