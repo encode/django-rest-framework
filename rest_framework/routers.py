@@ -238,7 +238,7 @@ class SimpleRouter(BaseRouter):
         """
         Use the registered viewsets to generate a list of URL patterns.
         """
-        ret = []
+        urls_data = {}
 
         for prefix, viewset, basename in self.registry:
             lookup = self.get_lookup_regex(viewset)
@@ -260,7 +260,31 @@ class SimpleRouter(BaseRouter):
 
                 view = viewset.as_view(mapping, **route.initkwargs)
                 name = route.name.format(basename=basename)
-                ret.append(url(regex, view, name=name))
+
+                # It is possible to define multiples '@detail_route' for the
+                # same endpoint with different methods (GET, POST, etc). So, we
+                # need to merge all those routes with the same URL allowing
+                # those multiples method
+                if regex in urls_data:
+                    # merge mapping and view for the same regex
+                    urls_data[regex]['mapping'].update(mapping)
+                else:
+                    urls_data[regex] = {
+                        'mapping': mapping,
+                        'viewset': viewset,
+                        'route': route,
+                        'name': name,
+                    }
+
+        ret = []
+        # Build all the URLs for the values saved on the previous iteration
+        for regex, values in urls_data.items():
+            name = values['name']
+            view = values['viewset'].as_view(
+                values['mapping'],
+                **values['route'].initkwargs
+            )
+            ret.append(url(regex, view, name=name))
 
         return ret
 
