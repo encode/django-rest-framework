@@ -181,7 +181,7 @@ If set, this value will restrict the set of versions that may be returned by the
 
 Default: `None`
 
-#### VERSION_PARAMETER
+#### VERSION_PARAM
 
 The string that should used for any versioning parameters, such as in the media type or URL query parameters.
 
