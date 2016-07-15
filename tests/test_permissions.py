@@ -476,9 +476,15 @@ class AllowPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         return True
 
+    def has_object_permission(self, request, view, obj):
+        return True
+
 
 class DenyPermission(permissions.BasePermission):
     def has_permission(self, request, view):
+        return False
+
+    def has_object_permission(self, request, view, obj):
         return False
 
 
@@ -492,3 +498,8 @@ class PermissionOperatorTests(TestCase):
         self.assertTrue((AllowPermission | DenyPermission)().has_permission(None, None))
         self.assertTrue((DenyPermission | AllowPermission)().has_permission(None, None))
         self.assertTrue((AllowPermission | AllowPermission)().has_permission(None, None))
+
+        self.assertFalse((DenyPermission | DenyPermission)().has_object_permission(None, None, None))
+        self.assertTrue((AllowPermission | DenyPermission)().has_object_permission(None, None, None))
+        self.assertTrue((DenyPermission | AllowPermission)().has_object_permission(None, None, None))
+        self.assertTrue((AllowPermission | AllowPermission)().has_object_permission(None, None, None))
