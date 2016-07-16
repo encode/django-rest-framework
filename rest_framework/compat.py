@@ -125,7 +125,7 @@ def get_related_model(field):
 def value_from_object(field, obj):
     if django.VERSION < (1, 9):
         return field._get_val_from_obj(obj)
-    field.value_from_object(obj)
+    return field.value_from_object(obj)
 
 
 # contrib.postgres only supported from 1.8 onwards.
