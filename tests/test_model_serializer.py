@@ -19,7 +19,7 @@ from django.db.models import DurationField as ModelDurationField
 from django.test import TestCase
 from django.utils import six
 
-from rest_framework import serializers
+from rest_framework import compat, serializers
 from rest_framework.compat import unicode_repr
 
 
@@ -380,6 +380,23 @@ class TestGenericIPAddressFieldValidation(TestCase):
         self.assertEqual(1, len(s.errors['address']),
                          'Unexpected number of validation errors: '
                          '{0}'.format(s.errors))
+
+
+if compat.postgres_fields:
+    class TestRangeFieldMapping(TestCase):
+        def test_date_range_field(self):
+            class DateRangeFieldModel(models.Model):
+                timestamps = compat.postgres_fields.DateTimeRangeField()
+
+            class TestSerializer(serializers.ModelSerializer):
+                class Meta:
+                    model = DateRangeFieldModel
+                    fields = serializers.ALL_FIELDS
+                    extra_kwargs = {'timestamps': {'allow_empty': False}}
+
+            s = TestSerializer(data={'timestamps': {'empty': True}})
+            self.assertFalse(s.is_valid())
+            self.assertEqual(s.errors['timestamps'], ['Range may not be empty.'])
 
 
 # Tests for relational field mappings.

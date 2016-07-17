@@ -1138,7 +1138,7 @@ class ModelSerializer(Serializer):
             # `allow_blank` is only valid for textual fields.
             field_kwargs.pop('allow_blank', None)
 
-        if postgres_fields and isinstance(model_field, postgres_fields.ArrayField):
+        if postgres_fields and isinstance(model_field, (postgres_fields.ArrayField, postgres_fields.RangeField)):
             # Populate the `child` argument on `ListField` instances generated
             # for the PostgrSQL specfic `ArrayField`.
             child_model_field = model_field.base_field
@@ -1146,6 +1146,9 @@ class ModelSerializer(Serializer):
                 'child', child_model_field
             )
             field_kwargs['child'] = child_field_class(**child_field_kwargs)
+
+            if isinstance(model_field, postgres_fields.RangeField):
+                field_kwargs['range_type'] = model_field.range_type
 
         return field_class, field_kwargs
 
@@ -1469,6 +1472,7 @@ if postgres_fields:
 
     ModelSerializer.serializer_field_mapping[postgres_fields.HStoreField] = CharMappingField
     ModelSerializer.serializer_field_mapping[postgres_fields.ArrayField] = ListField
+    ModelSerializer.serializer_field_mapping[postgres_fields.RangeField] = RangeField
 
 
 class HyperlinkedModelSerializer(ModelSerializer):

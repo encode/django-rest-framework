@@ -9,7 +9,7 @@ from django.test import TestCase, override_settings
 from django.utils import six, timezone
 
 import rest_framework
-from rest_framework import serializers
+from rest_framework import compat, serializers
 
 
 # Tests for field keyword arguments and core functionality.
@@ -1640,6 +1640,37 @@ class TestBinaryJSONField(FieldValues):
         (['some', 'list', True, 1.23], b'["some", "list", true, 1.23]'),
     ]
     field = serializers.JSONField(binary=True)
+
+
+if compat.postgres_fields:
+    from psycopg2.extras import DateTimeTZRange
+
+    class TestRangeField(FieldValues):
+        """
+        Values for `ListField` with no `child` argument.
+        """
+        valid_inputs = [
+            ({'lower': '2016-01-01T00:30:01', 'upper': '2016-01-01T01:00', 'bounds': '[]', 'empty': False},
+             DateTimeTZRange(datetime.datetime(2016, 1, 1, 0, 30, 1), datetime.datetime(2016, 1, 1, 1, 0), '[]')),
+            ({'lower': '2016-01-01T00:30:01'}, DateTimeTZRange(datetime.datetime(2016, 1, 1, 0, 30, 1), None, '[)')),
+            ({'upper': '2016-01-01T00:00'}, DateTimeTZRange(None, datetime.datetime(2016, 1, 1, 0, 0, 0), '[)')),
+            ({'empty': True}, DateTimeTZRange(empty=True)),
+            (DateTimeTZRange(None, datetime.datetime(2016, 1, 1, 0, 0, 0), '[)'), DateTimeTZRange(None, datetime.datetime(2016, 1, 1, 0, 0, 0), '[)'))
+        ]
+        invalid_inputs = [
+            ('not a dict', ['Expected a dictionary of items but got type "str".']),
+            (['not a dict'], ['Expected a dictionary of items but got type "list".']),
+            ({'lower': 0}, {'lower': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].']}),
+            ({'bounds': '['}, ['Bounds flags "[" not valid. Valid bounds are "[), (], (), []".']),
+            ({'unexpected': '[]'}, ['Got unexpected keys "unexpected".']),
+        ]
+        outputs = [
+            (DateTimeTZRange(datetime.datetime(2016, 1, 1, 0, 30, 1), datetime.datetime(2016, 1, 1, 1, 0), '[]'),
+             {'lower': '2016-01-01T00:30:01', 'upper': '2016-01-01T01:00:00', 'bounds': '[]'}),
+            (DateTimeTZRange(empty=True), {'empty': True}),
+            (None, None),
+        ]
+        field = serializers.RangeField(range_type=DateTimeTZRange, child=serializers.DateTimeField())
 
 
 # Tests for FieldField.
