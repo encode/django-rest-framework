@@ -508,7 +508,7 @@ endpoints, in line with how we've set up the permissions on the API.</p>
 </code></pre>
 <p>Some of the API endpoints require named parameters. For example, to get back
 the highlight HTML for a particular snippet we need to provide an id.</p>
-<pre><code>$ coreapi action snippets highlight --param pk 1
+<pre><code>$ coreapi action snippets highlight --param pk=1
 &lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"&gt;
 
 &lt;html&gt;
@@ -545,7 +545,7 @@ Pastebin API "http://127.0.0.1:8000/"&gt;
 </code></pre>
 <p>We're now able to interact with these endpoints. For example, to create a new
 snippet:</p>
-<pre><code>$ coreapi action snippets create --param title "Example" --param code "print('hello, world')"
+<pre><code>$ coreapi action snippets create --param title="Example" --param code="print('hello, world')"
 {
     "url": "http://127.0.0.1:8000/snippets/7/",
     "pk": 7,
@@ -559,7 +559,7 @@ snippet:</p>
 }
 </code></pre>
 <p>And to delete a snippet:</p>
-<pre><code>$ coreapi action snippets destroy --param pk 7
+<pre><code>$ coreapi action snippets destroy --param pk=7
 </code></pre>
 <p>As well as the command line client, developers can also interact with your
 API using client libraries. The Python client library is the first of these
