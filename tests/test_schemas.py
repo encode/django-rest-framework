@@ -30,6 +30,10 @@ class ExampleViewSet(ModelViewSet):
     filter_backends = [filters.OrderingFilter]
     serializer_class = ExampleSerializer
 
+    def get_serializer_class(self):
+        request = self.request
+        return ExampleSerializer
+
 
 router = DefaultRouter(schema_title='Example API' if coreapi else None)
 router.register('example', ExampleViewSet, base_name='example')
