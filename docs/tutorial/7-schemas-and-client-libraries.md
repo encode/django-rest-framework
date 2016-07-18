@@ -126,7 +126,7 @@ Let's try listing the existing snippets, using the command line client:
 Some of the API endpoints require named parameters. For example, to get back
 the highlight HTML for a particular snippet we need to provide an id.
 
-    $ coreapi action snippets highlight --param pk 1
+    $ coreapi action snippets highlight --param pk=1
     <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 
     <html>
@@ -168,7 +168,7 @@ set of available interactions.
 We're now able to interact with these endpoints. For example, to create a new
 snippet:
 
-    $ coreapi action snippets create --param title "Example" --param code "print('hello, world')"
+    $ coreapi action snippets create --param title="Example" --param code="print('hello, world')"
     {
         "url": "http://127.0.0.1:8000/snippets/7/",
         "pk": 7,
@@ -183,7 +183,7 @@ snippet:
 
 And to delete a snippet:
 
-    $ coreapi action snippets destroy --param pk 7
+    $ coreapi action snippets destroy --param pk=7
 
 As well as the command line client, developers can also interact with your
 API using client libraries. The Python client library is the first of these
