@@ -157,14 +157,14 @@ return the schema.
 **views.py:**
 
     from rest_framework.decorators import api_view, renderer_classes
-    from rest_framework import renderers, schemas
+    from rest_framework import renderers, response, schemas
 
-    generator = schemas.SchemaGenerator(title='Bookings API')
 
     @api_view()
     @renderer_classes([renderers.CoreJSONRenderer])
     def schema_view(request):
-        return generator.get_schema()
+        generator = schemas.SchemaGenerator(title='Bookings API')
+        return response.Response(generator.get_schema())
 
 **urls.py:**
 
@@ -185,7 +185,8 @@ you need to pass the `request` argument to the `get_schema()` method, like so:
     @api_view()
     @renderer_classes([renderers.CoreJSONRenderer])
     def schema_view(request):
-        return generator.get_schema(request=request)
+        generator = schemas.SchemaGenerator(title='Bookings API')
+        return response.Response(generator.get_schema(request=request))
 
 ## Explicit schema definition
 
@@ -196,7 +197,7 @@ representation.
 
     import coreapi
     from rest_framework.decorators import api_view, renderer_classes
-    from rest_framework import renderers
+    from rest_framework import renderers, response
 
     schema = coreapi.Document(
         title='Bookings API',
@@ -208,7 +209,7 @@ representation.
     @api_view()
     @renderer_classes([renderers.CoreJSONRenderer])
     def schema_view(request):
-        return schema
+        return response.Response(schema)
 
 ## Static schema file
 
@@ -273,7 +274,8 @@ Returns a `coreapi.Document` instance that represents the API schema.
     @api_view
     @renderer_classes([renderers.CoreJSONRenderer])
     def schema_view(request):
-        return generator.get_schema()
+        generator = schemas.SchemaGenerator(title='Bookings API')
+        return Response(generator.get_schema())
 
 Arguments:
 
