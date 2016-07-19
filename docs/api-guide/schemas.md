@@ -246,7 +246,7 @@ to the Open API ("Swagger") format:
 
         def render(self, data, media_type=None, renderer_context=None):
             codec = OpenAPICodec()
-            return OpenAPICodec.dump(data)
+            return codec.dump(data)
 
 ---
 
