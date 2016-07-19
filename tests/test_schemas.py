@@ -5,8 +5,11 @@ from django.test import TestCase, override_settings
 
 from rest_framework import filters, pagination, permissions, serializers
 from rest_framework.compat import coreapi
+from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
+from rest_framework.schemas import SchemaGenerator
 from rest_framework.test import APIClient
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 
@@ -31,10 +34,23 @@ class ExampleViewSet(ModelViewSet):
     serializer_class = ExampleSerializer
 
 
+class ExampleView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get(self, request, *args, **kwargs):
+        return Response()
+
+    def post(self, request, *args, **kwargs):
+        return Response()
+
+
 router = DefaultRouter(schema_title='Example API' if coreapi else None)
 router.register('example', ExampleViewSet, base_name='example')
 urlpatterns = [
     url(r'^', include(router.urls))
+]
+urlpatterns2 = [
+    url(r'^example-view/$', ExampleView.as_view(), name='example-view')
 ]
 
 
@@ -135,3 +151,29 @@ class TestRouterGeneratedSchema(TestCase):
             }
         )
         self.assertEqual(response.data, expected)
+
+
+@unittest.skipUnless(coreapi, 'coreapi is not installed')
+class TestSchemaGenerator(TestCase):
+    def test_view(self):
+        schema_generator = SchemaGenerator(title='Test View', patterns=urlpatterns2)
+        schema = schema_generator.get_schema()
+        expected = coreapi.Document(
+            url='',
+            title='Test View',
+            content={
+                'example-view': {
+                    'create': coreapi.Link(
+                        url='/example-view/',
+                        action='post',
+                        fields=[]
+                    ),
+                    'read': coreapi.Link(
+                        url='/example-view/',
+                        action='get',
+                        fields=[]
+                    )
+                }
+            }
+        )
+        self.assertEquals(schema, expected)
