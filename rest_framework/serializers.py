@@ -1157,9 +1157,34 @@ class ModelSerializer(Serializer):
         field_kwargs = get_relation_kwargs(field_name, relation_info)
 
         to_field = field_kwargs.pop('to_field', None)
-        if to_field and not relation_info.related_model._meta.get_field(to_field).primary_key:
-            field_kwargs['slug_field'] = to_field
-            field_class = self.serializer_related_to_field
+        if to_field:
+            def get_related_field(related_model, to_field):
+                '''Returns the primary key of the field defined by to_field
+                on the model passed in'''
+                from django.core.exceptions import FieldDoesNotExist
+                try:
+                    return related_model._meta.get_field(to_field)
+                except FieldDoesNotExist as e:
+                    for field in related_model._meta.fields:
+                        if field.related_model:
+                            try:
+                                new_field = get_related_field(
+                                    field.related_model, to_field)
+                                return new_field
+                            except FieldDoesNotExist as e:
+                                continue
+                raise FieldDoesNotExist(
+                    '%s has not field named %r' % (related_model, to_field))
+            #try:
+            #    related_pk = (relation_info.related_model._meta
+            #        .get_field(to_field).primary_key)
+            #except FieldDoesNotExist as e:
+            #   import ipdb; ipdb.set_trace()
+            pk = (get_related_field(relation_info.related_model, to_field)
+                .primary_key)
+            if not pk:
+                field_kwargs['slug_field'] = to_field
+                field_class = self.serializer_related_to_field
 
         # `view_name` is only valid for hyperlinked relationships.
         if not issubclass(field_class, HyperlinkedRelatedField):
