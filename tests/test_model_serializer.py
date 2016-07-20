@@ -16,6 +16,7 @@ from django.core.validators import (
 )
 from django.db import models
 from django.db.models import DurationField as ModelDurationField
+from django.http import QueryDict
 from django.test import TestCase
 from django.utils import six
 
@@ -955,3 +956,26 @@ class TestMetaInheritance(TestCase):
         self.assertEqual(unicode_repr(ChildSerializer()), child_expected)
         self.assertEqual(unicode_repr(TestSerializer()), test_expected)
         self.assertEqual(unicode_repr(ChildSerializer()), child_expected)
+
+
+class DefaultTrueBooleanModel(models.Model):
+    required_data = models.CharField(max_length=255)
+    visible = models.BooleanField(default=True)
+
+
+class TestSerializerDefaultTrueBoolean(TestCase):
+
+    def setUp(self):
+        class DefaultTrueBooleanSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DefaultTrueBooleanModel
+                fields = ('required_data', 'visible')
+
+        self.default_true_boolean_serializer = DefaultTrueBooleanSerializer
+
+    def test_default_value(self):
+        data = QueryDict('', mutable=True)
+        data.update({'required_data': 'foo'})
+        serializer = self.default_true_boolean_serializer(data=data)
+        serializer.is_valid()
+        self.assertNotIn('visible', serializer.validated_data)
