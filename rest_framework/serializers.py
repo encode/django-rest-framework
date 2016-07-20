@@ -1164,24 +1164,19 @@ class ModelSerializer(Serializer):
                 from django.core.exceptions import FieldDoesNotExist
                 try:
                     return related_model._meta.get_field(to_field)
-                except FieldDoesNotExist as e:
+                except FieldDoesNotExist:
                     for field in related_model._meta.fields:
                         if field.related_model:
                             try:
                                 new_field = get_related_field(
                                     field.related_model, to_field)
                                 return new_field
-                            except FieldDoesNotExist as e:
+                            except FieldDoesNotExist:
                                 continue
                 raise FieldDoesNotExist(
                     '%s has not field named %r' % (related_model, to_field))
-            #try:
-            #    related_pk = (relation_info.related_model._meta
-            #        .get_field(to_field).primary_key)
-            #except FieldDoesNotExist as e:
-            #   import ipdb; ipdb.set_trace()
             pk = (get_related_field(relation_info.related_model, to_field)
-                .primary_key)
+                  .primary_key)
             if not pk:
                 field_kwargs['slug_field'] = to_field
                 field_class = self.serializer_related_to_field
