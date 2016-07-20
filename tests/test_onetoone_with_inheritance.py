@@ -42,15 +42,3 @@ class InheritedModelSerializationTests(TestCase):
         serializer = DerivedModelSerializer(child)
         self.assertEqual(set(serializer.data.keys()),
                          set(['name1', 'name2', 'id', 'childassociatedmodel']))
-
-    def test_data_is_valid_without_parent_ptr(self):
-        """
-        Assert that the pointer to the parent table is not a required field
-        for input data
-        """
-        data = {
-            'name1': 'parent name',
-            'name2': 'child name',
-        }
-        serializer = DerivedModelSerializer(data=data)
-        self.assertEqual(serializer.is_valid(), True)
