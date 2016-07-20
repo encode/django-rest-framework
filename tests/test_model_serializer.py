@@ -933,8 +933,8 @@ class TestMetaInheritance(TestCase):
 
             class Meta:
                 model = OneFieldModel
-                read_only_fields = ('char_field', 'non_model_field')
-                fields = read_only_fields
+                read_only_fields = ('char_field',)
+                fields = read_only_fields + ('non_model_field', )
                 extra_kwargs = {}
 
         class ChildSerializer(TestSerializer):
@@ -955,3 +955,44 @@ class TestMetaInheritance(TestCase):
         self.assertEqual(unicode_repr(ChildSerializer()), child_expected)
         self.assertEqual(unicode_repr(TestSerializer()), test_expected)
         self.assertEqual(unicode_repr(ChildSerializer()), child_expected)
+
+
+class TestDeclaredFieldsConflict(TestCase):
+    def test_extra_kwargs_conflict(self):
+        class TestSerializer(serializers.ModelSerializer):
+            some_field = serializers.CharField()
+
+            class Meta:
+                model = OneFieldModel
+                extra_kwargs = {'some_field': {'read_only': True}}
+        with self.assertRaises(AssertionError):
+            TestSerializer().get_fields()
+
+    def test_read_only_fields_conflict(self):
+        class TestSerializer(serializers.ModelSerializer):
+            some_field = serializers.CharField()
+
+            class Meta:
+                model = OneFieldModel
+                read_only_fields = ('some_field', )
+        with self.assertRaises(AssertionError):
+            TestSerializer().get_fields()
+
+
+class TestUniquenessOverride(TestCase):
+    def test_required_not_overwritten(self):
+        class TestModel(models.Model):
+            field_1 = models.IntegerField(null=True)
+            field_2 = models.IntegerField()
+
+            class Meta:
+                unique_together = (('field_1', 'field_2'),)
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = TestModel
+                extra_kwargs = {'field_1': {'required': False}}
+
+        fields = TestSerializer().fields
+        self.assertFalse(fields['field_1'].required)
+        self.assertTrue(fields['field_2'].required)

@@ -532,7 +532,7 @@ This option should be a list or tuple of field names, and is declared as follows
             fields = ('id', 'account_name', 'users', 'created')
             read_only_fields = ('account_name',)
 
-Model fields which have `editable=False` set, and `AutoField` fields will be set to read-only by default, and do not need to be added to the `read_only_fields` option.
+Model fields which have `editable=False` set, and `AutoField` fields will be set to read-only by default, and do not need to be added to the `read_only_fields` option. Having a field listed in `read_only_fields` and declared on the class will raise an exception.
 
 ---
 
@@ -569,6 +569,8 @@ This option is a dictionary, mapping field names to a dictionary of keyword argu
             user.set_password(validated_data['password'])
             user.save()
             return user
+
+Having arguments for a field in `extra_kwargs` for a field declared on the class will raise an exception.
 
 ## Relational fields
 
