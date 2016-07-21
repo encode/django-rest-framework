@@ -8,7 +8,7 @@ from tests.models import RESTFrameworkModel
 
 
 # Models
-from tests.test_multitable_inheritance import ChildModel, DerivedModelSerializer
+from tests.test_multitable_inheritance import ChildModel
 
 
 class ChildAssociatedModel(RESTFrameworkModel):
