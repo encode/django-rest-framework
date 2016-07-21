@@ -50,6 +50,7 @@ This class of status code indicates that the client's request was successfully r
     HTTP_204_NO_CONTENT
     HTTP_205_RESET_CONTENT
     HTTP_206_PARTIAL_CONTENT
+    HTTP_207_MULTI_STATUS
 
 ## Redirection - 3xx
 
@@ -86,6 +87,9 @@ The 4xx class of status code is intended for cases in which the client seems to 
     HTTP_415_UNSUPPORTED_MEDIA_TYPE
     HTTP_416_REQUESTED_RANGE_NOT_SATISFIABLE
     HTTP_417_EXPECTATION_FAILED
+    HTTP_422_UNPROCESSABLE_ENTITY
+    HTTP_423_LOCKED
+    HTTP_424_FAILED_DEPENDENCY
     HTTP_428_PRECONDITION_REQUIRED
     HTTP_429_TOO_MANY_REQUESTS
     HTTP_431_REQUEST_HEADER_FIELDS_TOO_LARGE
@@ -101,6 +105,7 @@ Response status codes beginning with the digit "5" indicate cases in which the s
     HTTP_503_SERVICE_UNAVAILABLE
     HTTP_504_GATEWAY_TIMEOUT
     HTTP_505_HTTP_VERSION_NOT_SUPPORTED
+    HTTP_507_INSUFFICIENT_STORAGE
     HTTP_511_NETWORK_AUTHENTICATION_REQUIRED
 
 ## Helper functions
