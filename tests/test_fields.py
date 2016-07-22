@@ -5,6 +5,7 @@ from decimal import Decimal
 
 import pytest
 from django.http import QueryDict
+from django.test import TestCase, override_settings
 from django.utils import six, timezone
 
 import rest_framework
@@ -894,6 +895,22 @@ class TestNoStringCoercionDecimalField(FieldValues):
     )
 
 
+class TestLocalizedDecimalField(TestCase):
+    @override_settings(USE_L10N=True, LANGUAGE_CODE='pl')
+    def test_to_internal_value(self):
+        field = serializers.DecimalField(max_digits=2, decimal_places=1, localize=True)
+        self.assertEqual(field.to_internal_value('1,1'), Decimal('1.1'))
+
+    @override_settings(USE_L10N=True, LANGUAGE_CODE='pl')
+    def test_to_representation(self):
+        field = serializers.DecimalField(max_digits=2, decimal_places=1, localize=True)
+        self.assertEqual(field.to_representation(Decimal('1.1')), '1,1')
+
+    def test_localize_forces_coerce_to_string(self):
+        field = serializers.DecimalField(max_digits=2, decimal_places=1, coerce_to_string=False, localize=True)
+        self.assertTrue(isinstance(field.to_representation(Decimal('1.1')), six.string_types))
+
+
 class TestNoDecimalPlaces(FieldValues):
     valid_inputs = {
         '0.12345': Decimal('0.12345'),
@@ -993,6 +1010,8 @@ class TestDateTimeField(FieldValues):
     outputs = {
         datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00',
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): '2001-01-01T13:00:00Z',
+        '2001-01-01T00:00:00': '2001-01-01T00:00:00',
+        six.text_type('2016-01-10T00:00:00'): '2016-01-10T00:00:00',
         None: None,
         '': None,
     }

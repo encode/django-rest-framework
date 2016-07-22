@@ -37,9 +37,9 @@ if django_filters:
 
     # These class are used to test a filter class.
     class SeveralFieldsFilter(django_filters.FilterSet):
-        text = django_filters.CharFilter(lookup_type='icontains')
-        decimal = django_filters.NumberFilter(lookup_type='lt')
-        date = django_filters.DateFilter(lookup_type='gt')
+        text = django_filters.CharFilter(lookup_expr='icontains')
+        decimal = django_filters.NumberFilter(lookup_expr='lt')
+        date = django_filters.DateFilter(lookup_expr='gt')
 
         class Meta:
             model = FilterableItem
@@ -53,7 +53,7 @@ if django_filters:
 
     # These classes are used to test a misconfigured filter class.
     class MisconfiguredFilter(django_filters.FilterSet):
-        text = django_filters.CharFilter(lookup_type='icontains')
+        text = django_filters.CharFilter(lookup_expr='icontains')
 
         class Meta:
             model = BasicModel
@@ -499,6 +499,21 @@ class SearchFilterM2MTests(TestCase):
         request = factory.get('/', {'search': 'zz'})
         response = view(request)
         self.assertEqual(len(response.data), 1)
+
+    def test_must_call_distinct(self):
+        filter_ = filters.SearchFilter()
+        prefixes = [''] + list(filter_.lookup_prefixes)
+        for prefix in prefixes:
+            self.assertFalse(
+                filter_.must_call_distinct(
+                    SearchFilterModelM2M._meta, ["%stitle" % prefix]
+                )
+            )
+            self.assertTrue(
+                filter_.must_call_distinct(
+                    SearchFilterModelM2M._meta, ["%stitle" % prefix, "%sattributes__label" % prefix]
+                )
+            )
 
 
 class OrderingFilterModel(models.Model):

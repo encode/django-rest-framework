@@ -22,7 +22,8 @@ from django.utils import six
 
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
-    INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, template_render
+    INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi,
+    template_render
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
@@ -472,31 +473,37 @@ class BrowsableAPIRenderer(BaseRenderer):
                 return
 
             if existing_serializer is not None:
-                serializer = existing_serializer
-            else:
-                if has_serializer:
-                    if method in ('PUT', 'PATCH'):
-                        serializer = view.get_serializer(instance=instance, **kwargs)
-                    else:
-                        serializer = view.get_serializer(**kwargs)
+                try:
+                    return self.render_form_for_serializer(existing_serializer)
+                except TypeError:
+                    pass
+
+            if has_serializer:
+                if method in ('PUT', 'PATCH'):
+                    serializer = view.get_serializer(instance=instance, **kwargs)
                 else:
-                    # at this point we must have a serializer_class
-                    if method in ('PUT', 'PATCH'):
-                        serializer = self._get_serializer(view.serializer_class, view,
-                                                          request, instance=instance, **kwargs)
-                    else:
-                        serializer = self._get_serializer(view.serializer_class, view,
-                                                          request, **kwargs)
+                    serializer = view.get_serializer(**kwargs)
+            else:
+                # at this point we must have a serializer_class
+                if method in ('PUT', 'PATCH'):
+                    serializer = self._get_serializer(view.serializer_class, view,
+                                                      request, instance=instance, **kwargs)
+                else:
+                    serializer = self._get_serializer(view.serializer_class, view,
+                                                      request, **kwargs)
 
-            if hasattr(serializer, 'initial_data'):
-                serializer.is_valid()
+            return self.render_form_for_serializer(serializer)
 
-            form_renderer = self.form_renderer_class()
-            return form_renderer.render(
-                serializer.data,
-                self.accepted_media_type,
-                {'style': {'template_pack': 'rest_framework/horizontal'}}
-            )
+    def render_form_for_serializer(self, serializer):
+        if hasattr(serializer, 'initial_data'):
+            serializer.is_valid()
+
+        form_renderer = self.form_renderer_class()
+        return form_renderer.render(
+            serializer.data,
+            self.accepted_media_type,
+            {'style': {'template_pack': 'rest_framework/horizontal'}}
+        )
 
     def get_raw_data_form(self, data, view, method, request):
         """
@@ -784,3 +791,17 @@ class MultiPartRenderer(BaseRenderer):
                     "test case." % key
                 )
         return encode_multipart(self.BOUNDARY, data)
+
+
+class CoreJSONRenderer(BaseRenderer):
+    media_type = 'application/vnd.coreapi+json'
+    charset = None
+    format = 'corejson'
+
+    def __init__(self):
+        assert coreapi, 'Using CoreJSONRenderer, but `coreapi` is not installed.'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        indent = bool(renderer_context.get('indent', 0))
+        codec = coreapi.codecs.CoreJSONCodec()
+        return codec.dump(data, indent=indent)

@@ -667,6 +667,28 @@ class ListSerializer(BaseSerializer):
 
         return self.instance
 
+    def is_valid(self, raise_exception=False):
+        # This implementation is the same as the default,
+        # except that we use lists, rather than dicts, as the empty case.
+        assert hasattr(self, 'initial_data'), (
+            'Cannot call `.is_valid()` as no `data=` keyword argument was '
+            'passed when instantiating the serializer instance.'
+        )
+
+        if not hasattr(self, '_validated_data'):
+            try:
+                self._validated_data = self.run_validation(self.initial_data)
+            except ValidationError as exc:
+                self._validated_data = []
+                self._errors = exc.detail
+            else:
+                self._errors = []
+
+        if self._errors and raise_exception:
+            raise ValidationError(self.errors)
+
+        return not bool(self._errors)
+
     def __repr__(self):
         return unicode_to_repr(representation.list_repr(self, indent=1))
 
@@ -991,12 +1013,12 @@ class ModelSerializer(Serializer):
         if fields is None and exclude is None:
             warnings.warn(
                 "Creating a ModelSerializer without either the 'fields' "
-                "attribute or the 'exclude' attribute is pending deprecation "
+                "attribute or the 'exclude' attribute is deprecated "
                 "since 3.3.0. Add an explicit fields = '__all__' to the "
                 "{serializer_class} serializer.".format(
                     serializer_class=self.__class__.__name__
                 ),
-                PendingDeprecationWarning
+                DeprecationWarning
             )
 
         if fields == ALL_FIELDS:
@@ -1221,6 +1243,11 @@ class ModelSerializer(Serializer):
 
         read_only_fields = getattr(self.Meta, 'read_only_fields', None)
         if read_only_fields is not None:
+            if not isinstance(read_only_fields, (list, tuple)):
+                raise TypeError(
+                    'The `read_only_fields` option must be a list or tuple. '
+                    'Got %s.' % type(read_only_fields).__name__
+                )
             for field_name in read_only_fields:
                 kwargs = extra_kwargs.get(field_name, {})
                 kwargs['read_only'] = True
@@ -1236,6 +1263,9 @@ class ModelSerializer(Serializer):
 
         ('dict of updated extra kwargs', 'mapping of hidden fields')
         """
+        if getattr(self.Meta, 'validators', None) is not None:
+            return (extra_kwargs, {})
+
         model = getattr(self.Meta, 'model')
         model_fields = self._get_model_fields(
             field_names, declared_fields, extra_kwargs
@@ -1286,7 +1316,7 @@ class ModelSerializer(Serializer):
                 else:
                     uniqueness_extra_kwargs[unique_constraint_name] = {'default': default}
             elif default is not empty:
-                # The corresponding field is not present in the,
+                # The corresponding field is not present in the
                 # serializer. We have a default to use for it, so
                 # add in a hidden field that populates it.
                 hidden_fields[unique_constraint_name] = HiddenField(default=default)
@@ -1368,6 +1398,7 @@ class ModelSerializer(Serializer):
         field_names = {
             field.source for field in self.fields.values()
             if (field.source != '*') and ('.' not in field.source)
+            and not field.read_only
         }
 
         # Note that we make sure to check `unique_together` both on the

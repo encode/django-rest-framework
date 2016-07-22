@@ -85,6 +85,7 @@ class TestRequestVersion:
         response = view(request)
         assert response.data == {'version': None}
 
+    @override_settings(ALLOWED_HOSTS=['*'])
     def test_host_name_versioning(self):
         scheme = versioning.HostNameVersioning
         view = RequestVersionView.as_view(versioning_class=scheme)
@@ -173,6 +174,7 @@ class TestURLReversing(URLPatternsTestCase):
         response = view(request)
         assert response.data == {'url': 'http://testserver/another/'}
 
+    @override_settings(ALLOWED_HOSTS=['*'])
     def test_reverse_host_name_versioning(self):
         scheme = versioning.HostNameVersioning
         view = ReverseView.as_view(versioning_class=scheme)
@@ -223,6 +225,7 @@ class TestInvalidVersion:
         response = view(request)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
+    @override_settings(ALLOWED_HOSTS=['*'])
     def test_invalid_host_name_versioning(self):
         scheme = versioning.HostNameVersioning
         view = RequestInvalidVersionView.as_view(versioning_class=scheme)
@@ -293,13 +296,17 @@ class TestHyperlinkedRelatedField(URLPatternsTestCase):
 
 
 class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(URLPatternsTestCase):
+    nested = [
+        url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='nested'),
+    ]
     included = [
         url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='namespaced'),
+        url(r'^nested/', include(nested, namespace='nested-namespace'))
     ]
 
     urlpatterns = [
-        url(r'^v1/', include(included, namespace='v1')),
-        url(r'^v2/', include(included, namespace='v2')),
+        url(r'^v1/', include(included, namespace='v1', app_name='restframeworkv1')),
+        url(r'^v2/', include(included, namespace='v2', app_name='restframeworkv2')),
         url(r'^non-api/(?P<pk>\d+)/$', dummy_pk_view, name='non-api-view')
     ]
 
@@ -321,6 +328,10 @@ class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(URLPatternsTestCase):
     def test_api_url_is_properly_reversed_with_v2(self):
         field = self._create_field('namespaced', 'v2')
         assert field.to_representation(PKOnlyObject(5)) == 'http://testserver/v2/namespaced/5/'
+
+    def test_api_url_is_properly_reversed_with_nested(self):
+        field = self._create_field('nested', 'v1:nested-namespace')
+        assert field.to_representation(PKOnlyObject(3)) == 'http://testserver/v1/nested/namespaced/3/'
 
     def test_non_api_url_is_properly_reversed_regardless_of_the_version(self):
         """

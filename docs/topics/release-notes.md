@@ -40,12 +40,94 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.4.x series
 
-### 3.4
+### 3.4.0
 
-**Unreleased**
+**Date**: [14th July 2016][3.4.0-milestone]
 
-* Dropped support for EOL Django 1.7 ([#3933][gh3933])
-* Fixed null foreign keys targeting UUIDField primary keys. ([#3936][gh3936])
+* Don't strip microseconds in JSON output. ([#4256][gh4256])
+* Two slightly different iso 8601 datetime serialization. ([#4255][gh4255])
+* Resolve incorrect inclusion of media type parameters. ([#4254][gh4254])
+* Response Content-Type potentially malformed. ([#4253][gh4253])
+* Fix setup.py error on some platforms. ([#4246][gh4246])
+* Move alternate formats in coreapi into separate packages. ([#4244][gh4244])
+* Add localize keyword argument to `DecimalField`. ([#4233][gh4233])
+* Fix issues with routers for custom list-route and detail-routes. ([#4229][gh4229])
+* Namespace versioning with nested namespaces. ([#4219][gh4219])
+* Robust uniqueness checks. ([#4217][gh4217])
+* Minor refactoring of `must_call_distinct`. ([#4215][gh4215])
+* Overridable offset cutoff in CursorPagination. ([#4212][gh4212])
+* Pass through strings as-in with date/time fields. ([#4196][gh4196])
+* Add test confirming that required=False is valid on a relational field. ([#4195][gh4195])
+* In LimitOffsetPagination `limit=0` should revert to default limit. ([#4194][gh4194])
+* Exclude read_only=True fields from unique_together validation & add docs. ([#4192][gh4192])
+* Handle bytestrings in JSON. ([#4191][gh4191])
+* JSONField(binary=True) represents using binary strings, which JSONRenderer does not support. ([#4187][gh4187])
+* JSONField(binary=True) represents using binary strings, which JSONRenderer does not support. ([#4185][gh4185])
+* More robust form rendering in the browsable API. ([#4181][gh4181])
+* Empty cases of `.validated_data` and `.errors` as lists not dicts for ListSerializer. ([#4180][gh4180])
+* Schemas & client libraries. ([#4179][gh4179])
+* Removed `AUTH_USER_MODEL` compat property. ([#4176][gh4176])
+* Clean up existing deprecation warnings. ([#4166][gh4166])
+* Django 1.10 support. ([#4158][gh4158])
+* Updated jQuery version to 1.12.4. ([#4157][gh4157])
+* More robust default behavior on OrderingFilter. ([#4156][gh4156])
+* description.py codes and tests removal. ([#4153][gh4153])
+* Wrap guardian.VERSION in tuple. ([#4149][gh4149])
+* Refine validator for fields with <source=> kwargs. ([#4146][gh4146])
+* Fix None values representation in childs of ListField, DictField. ([#4118][gh4118])
+* Resolve TimeField representation for midnight value. ([#4107][gh4107])
+* Set proper status code in AdminRenderer for the redirection after POST/DELETE requests. ([#4106][gh4106])
+* TimeField render returns None instead of 00:00:00. ([#4105][gh4105])
+* Fix incorrectly named zh-hans and zh-hant locale path. ([#4103][gh4103])
+* Prevent raising exception when limit is 0. ([#4098][gh4098])
+* TokenAuthentication: Allow custom keyword in the header. ([#4097][gh4097])
+* Handle incorrectly padded HTTP basic auth header. ([#4090][gh4090])
+* LimitOffset pagination crashes Browseable API when limit=0. ([#4079][gh4079])
+* Fixed DecimalField arbitrary precision support. ([#4075][gh4075])
+* Added support for custom CSRF cookie names. ([#4049][gh4049])
+* Fix regression introduced by #4035. ([#4041][gh4041])
+* No auth view failing permission should raise 403. ([#4040][gh4040])
+* Fix string_types / text_types confusion. ([#4025][gh4025])
+* Do not list related field choices in OPTIONS requests. ([#4021][gh4021])
+* Fix typo. ([#4008][gh4008])
+* Reorder initializing the view. ([#4006][gh4006])
+* Type error in DjangoObjectPermissionsFilter on Python 3.4. ([#4005][gh4005])
+* Fixed use of deprecated Query.aggregates. ([#4003][gh4003])
+* Fix blank lines around docstrings. ([#4002][gh4002])
+* Fixed admin pagination when limit is 0. ([#3990][gh3990])
+* OrderingFilter adjustements. ([#3983][gh3983])
+* Non-required serializer related fields. ([#3976][gh3976])
+* Using safer calling way of "@api_view" in tutorial. ([#3971][gh3971])
+* ListSerializer doesn't handle unique_together constraints. ([#3970][gh3970])
+* Add missing migration file. ([#3968][gh3968])
+* `OrderingFilter` should call `get_serializer_class()` to determine default fields. ([#3964][gh3964])
+* Remove old django checks from tests and compat. ([#3953][gh3953])
+* Support callable as the value of `initial` for any `serializer.Field`. ([#3943][gh3943])
+* Prevented unnecessary distinct() call in SearchFilter. ([#3938][gh3938])
+* Fix None UUID ForeignKey serialization. ([#3936][gh3936])
+* Drop EOL Django 1.7. ([#3933][gh3933])
+* Add missing space in serializer error message. ([#3926][gh3926])
+* Fixed _force_text_recursive typo. ([#3908][gh3908])
+* Attempt to address Django 2.0 deprecate warnings related to `field.rel`. ([#3906][gh3906])
+* Fix parsing multipart data using a nested serializer with list. ([#3820][gh3820])
+* Resolving APIs URL to different namespaces. ([#3816][gh3816])
+* Do not HTML-escape `help_text` in Browsable API forms. ([#3812][gh3812])
+* OPTIONS fetches and shows all possible foreign keys in choices field. ([#3751][gh3751])
+* Django 1.9 deprecation warnings ([#3729][gh3729])
+* Test case for #3598 ([#3710][gh3710])
+* Adding support for multiple values for search filter. ([#3541][gh3541])
+* Use get_serializer_class in ordering filter. ([#3487][gh3487])
+* Serializers with many=True should return empty list rather than empty dict. ([#3476][gh3476])
+* LimitOffsetPagination limit=0 fix. ([#3444][gh3444])
+* Enable Validators to defer string evaluation and handle new string format. ([#3438][gh3438])
+* Unique validator is executed and breaks if field is invalid. ([#3381][gh3381])
+* Do not ignore overridden View.get_view_name() in breadcrumbs. ([#3273][gh3273])
+* Retry form rendering when rendering with serializer fails. ([#3164][gh3164])
+* Unique constraint prevents nested serializers from updating. ([#2996][gh2996])
+* Uniqueness validators should not be run for excluded (read_only) fields. ([#2848][gh2848])
+* UniqueValidator raises exception for nested objects. ([#2403][gh2403])
+* `lookup_type` is deprecated in favor of `lookup_expr`. ([#4259][gh4259])
+---
 
 ## 3.3.x series
 
@@ -126,6 +208,8 @@ You can determine your currently installed version using `pip freeze`:
 * Added support for Django 1.9. ([#3450][gh3450], [#3525][gh3525])
 * Removed support for Django 1.5 & 1.6. ([#3421][gh3421], [#3429][gh3429])
 * Removed 'south' migrations. ([#3495][gh3495])
+
+---
 
 ## 3.2.x series
 
@@ -410,6 +494,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.3.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.1+Release%22
 [3.3.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.2+Release%22
 [3.3.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.3.3+Release%22
+[3.4.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.0+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -726,3 +811,88 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh3636]: https://github.com/tomchristie/django-rest-framework/issues/3636
 [gh3605]: https://github.com/tomchristie/django-rest-framework/issues/3605
 [gh3604]: https://github.com/tomchristie/django-rest-framework/issues/3604
+
+<!-- 3.4.0 -->
+[gh2403]: https://github.com/tomchristie/django-rest-framework/issues/2403
+[gh2848]: https://github.com/tomchristie/django-rest-framework/issues/2848
+[gh2996]: https://github.com/tomchristie/django-rest-framework/issues/2996
+[gh3164]: https://github.com/tomchristie/django-rest-framework/issues/3164
+[gh3273]: https://github.com/tomchristie/django-rest-framework/issues/3273
+[gh3381]: https://github.com/tomchristie/django-rest-framework/issues/3381
+[gh3438]: https://github.com/tomchristie/django-rest-framework/issues/3438
+[gh3444]: https://github.com/tomchristie/django-rest-framework/issues/3444
+[gh3476]: https://github.com/tomchristie/django-rest-framework/issues/3476
+[gh3487]: https://github.com/tomchristie/django-rest-framework/issues/3487
+[gh3541]: https://github.com/tomchristie/django-rest-framework/issues/3541
+[gh3710]: https://github.com/tomchristie/django-rest-framework/issues/3710
+[gh3729]: https://github.com/tomchristie/django-rest-framework/issues/3729
+[gh3751]: https://github.com/tomchristie/django-rest-framework/issues/3751
+[gh3812]: https://github.com/tomchristie/django-rest-framework/issues/3812
+[gh3816]: https://github.com/tomchristie/django-rest-framework/issues/3816
+[gh3820]: https://github.com/tomchristie/django-rest-framework/issues/3820
+[gh3906]: https://github.com/tomchristie/django-rest-framework/issues/3906
+[gh3908]: https://github.com/tomchristie/django-rest-framework/issues/3908
+[gh3926]: https://github.com/tomchristie/django-rest-framework/issues/3926
+[gh3933]: https://github.com/tomchristie/django-rest-framework/issues/3933
+[gh3936]: https://github.com/tomchristie/django-rest-framework/issues/3936
+[gh3938]: https://github.com/tomchristie/django-rest-framework/issues/3938
+[gh3943]: https://github.com/tomchristie/django-rest-framework/issues/3943
+[gh3953]: https://github.com/tomchristie/django-rest-framework/issues/3953
+[gh3964]: https://github.com/tomchristie/django-rest-framework/issues/3964
+[gh3968]: https://github.com/tomchristie/django-rest-framework/issues/3968
+[gh3970]: https://github.com/tomchristie/django-rest-framework/issues/3970
+[gh3971]: https://github.com/tomchristie/django-rest-framework/issues/3971
+[gh3976]: https://github.com/tomchristie/django-rest-framework/issues/3976
+[gh3983]: https://github.com/tomchristie/django-rest-framework/issues/3983
+[gh3990]: https://github.com/tomchristie/django-rest-framework/issues/3990
+[gh4002]: https://github.com/tomchristie/django-rest-framework/issues/4002
+[gh4003]: https://github.com/tomchristie/django-rest-framework/issues/4003
+[gh4005]: https://github.com/tomchristie/django-rest-framework/issues/4005
+[gh4006]: https://github.com/tomchristie/django-rest-framework/issues/4006
+[gh4008]: https://github.com/tomchristie/django-rest-framework/issues/4008
+[gh4021]: https://github.com/tomchristie/django-rest-framework/issues/4021
+[gh4025]: https://github.com/tomchristie/django-rest-framework/issues/4025
+[gh4040]: https://github.com/tomchristie/django-rest-framework/issues/4040
+[gh4041]: https://github.com/tomchristie/django-rest-framework/issues/4041
+[gh4049]: https://github.com/tomchristie/django-rest-framework/issues/4049
+[gh4075]: https://github.com/tomchristie/django-rest-framework/issues/4075
+[gh4079]: https://github.com/tomchristie/django-rest-framework/issues/4079
+[gh4090]: https://github.com/tomchristie/django-rest-framework/issues/4090
+[gh4097]: https://github.com/tomchristie/django-rest-framework/issues/4097
+[gh4098]: https://github.com/tomchristie/django-rest-framework/issues/4098
+[gh4103]: https://github.com/tomchristie/django-rest-framework/issues/4103
+[gh4105]: https://github.com/tomchristie/django-rest-framework/issues/4105
+[gh4106]: https://github.com/tomchristie/django-rest-framework/issues/4106
+[gh4107]: https://github.com/tomchristie/django-rest-framework/issues/4107
+[gh4118]: https://github.com/tomchristie/django-rest-framework/issues/4118
+[gh4146]: https://github.com/tomchristie/django-rest-framework/issues/4146
+[gh4149]: https://github.com/tomchristie/django-rest-framework/issues/4149
+[gh4153]: https://github.com/tomchristie/django-rest-framework/issues/4153
+[gh4156]: https://github.com/tomchristie/django-rest-framework/issues/4156
+[gh4157]: https://github.com/tomchristie/django-rest-framework/issues/4157
+[gh4158]: https://github.com/tomchristie/django-rest-framework/issues/4158
+[gh4166]: https://github.com/tomchristie/django-rest-framework/issues/4166
+[gh4176]: https://github.com/tomchristie/django-rest-framework/issues/4176
+[gh4179]: https://github.com/tomchristie/django-rest-framework/issues/4179
+[gh4180]: https://github.com/tomchristie/django-rest-framework/issues/4180
+[gh4181]: https://github.com/tomchristie/django-rest-framework/issues/4181
+[gh4185]: https://github.com/tomchristie/django-rest-framework/issues/4185
+[gh4187]: https://github.com/tomchristie/django-rest-framework/issues/4187
+[gh4191]: https://github.com/tomchristie/django-rest-framework/issues/4191
+[gh4192]: https://github.com/tomchristie/django-rest-framework/issues/4192
+[gh4194]: https://github.com/tomchristie/django-rest-framework/issues/4194
+[gh4195]: https://github.com/tomchristie/django-rest-framework/issues/4195
+[gh4196]: https://github.com/tomchristie/django-rest-framework/issues/4196
+[gh4212]: https://github.com/tomchristie/django-rest-framework/issues/4212
+[gh4215]: https://github.com/tomchristie/django-rest-framework/issues/4215
+[gh4217]: https://github.com/tomchristie/django-rest-framework/issues/4217
+[gh4219]: https://github.com/tomchristie/django-rest-framework/issues/4219
+[gh4229]: https://github.com/tomchristie/django-rest-framework/issues/4229
+[gh4233]: https://github.com/tomchristie/django-rest-framework/issues/4233
+[gh4244]: https://github.com/tomchristie/django-rest-framework/issues/4244
+[gh4246]: https://github.com/tomchristie/django-rest-framework/issues/4246
+[gh4253]: https://github.com/tomchristie/django-rest-framework/issues/4253
+[gh4254]: https://github.com/tomchristie/django-rest-framework/issues/4254
+[gh4255]: https://github.com/tomchristie/django-rest-framework/issues/4255
+[gh4256]: https://github.com/tomchristie/django-rest-framework/issues/4256
+[gh4259]: https://github.com/tomchristie/django-rest-framework/issues/4259

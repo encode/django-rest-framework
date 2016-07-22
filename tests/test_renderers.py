@@ -286,14 +286,14 @@ class JSONRendererTests(TestCase):
         qs = DummyTestModel.objects.values('id', 'name')
         ret = JSONRenderer().render(qs)
         data = json.loads(ret.decode('utf-8'))
-        self.assertEquals(data, [{'id': o.id, 'name': o.name}])
+        self.assertEqual(data, [{'id': o.id, 'name': o.name}])
 
     def test_render_queryset_values_list(self):
         o = DummyTestModel.objects.create(name='dummy')
         qs = DummyTestModel.objects.values_list('id', 'name')
         ret = JSONRenderer().render(qs)
         data = json.loads(ret.decode('utf-8'))
-        self.assertEquals(data, [[o.id, o.name]])
+        self.assertEqual(data, [[o.id, o.name]])
 
     def test_render_dict_abc_obj(self):
         class Dict(MutableMapping):
@@ -323,7 +323,7 @@ class JSONRendererTests(TestCase):
         x[2] = 3
         ret = JSONRenderer().render(x)
         data = json.loads(ret.decode('utf-8'))
-        self.assertEquals(data, {'key': 'string value', '2': 3})
+        self.assertEqual(data, {'key': 'string value', '2': 3})
 
     def test_render_obj_with_getitem(self):
         class DictLike(object):

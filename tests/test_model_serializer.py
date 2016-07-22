@@ -377,9 +377,9 @@ class TestGenericIPAddressFieldValidation(TestCase):
 
         s = TestSerializer(data={'address': 'not an ip address'})
         self.assertFalse(s.is_valid())
-        self.assertEquals(1, len(s.errors['address']),
-                          'Unexpected number of validation errors: '
-                          '{0}'.format(s.errors))
+        self.assertEqual(1, len(s.errors['address']),
+                         'Unexpected number of validation errors: '
+                         '{0}'.format(s.errors))
 
 
 # Tests for relational field mappings.
@@ -521,8 +521,6 @@ class TestRelationalFieldMappings(TestCase):
                 one_to_one = NestedSerializer(read_only=True):
                     url = HyperlinkedIdentityField(view_name='onetoonetargetmodel-detail')
                     name = CharField(max_length=100)
-                class Meta:
-                    validators = [<UniqueTogetherValidator(queryset=UniqueTogetherModel.objects.all(), fields=('foreign_key', 'one_to_one'))>]
         """)
         if six.PY2:
             # This case is also too awkward to resolve fully across both py2

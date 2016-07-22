@@ -44,7 +44,7 @@ The default authentication schemes may be set globally, using the `DEFAULT_AUTHE
     }
 
 You can also set the authentication scheme on a per-view or per-viewset basis,
-using the `APIView` class based views.
+using the `APIView` class-based views.
 
     from rest_framework.authentication import SessionAuthentication, BasicAuthentication
     from rest_framework.permissions import IsAuthenticated
@@ -206,6 +206,10 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
     { 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
 
 Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.  If you need a customized version of the `obtain_auth_token` view, you can do so by overriding the `ObtainAuthToken` view class, and using that in your url conf instead.
+
+By default there are no permissions or throttling applied to the  `obtain_auth_token` view. If you do wish to apply throttling you'll need to override the view class,
+and include them using the `throttle_classes` attribute.
+
 
 ##### With Django admin
 

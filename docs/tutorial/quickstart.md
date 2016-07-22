@@ -104,7 +104,7 @@ Okay, now let's wire up the API URLs.  On to `tutorial/urls.py`...
 
 Because we're using viewsets instead of views, we can automatically generate the URL conf for our API, by simply registering the viewsets with a router class.
 
-Again, if we need more control over the API URLs we can simply drop down to using regular class based views, and writing the URL conf explicitly.
+Again, if we need more control over the API URLs we can simply drop down to using regular class-based views, and writing the URL conf explicitly.
 
 Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browsable API.
 
@@ -130,7 +130,7 @@ Okay, we're done.
 
 We're now ready to test the API we've built.  Let's fire up the server from the command line.
 
-    python ./manage.py runserver
+    python manage.py runserver
 
 We can now access our API, both from the command-line, using tools like `curl`...
 
@@ -182,7 +182,7 @@ Or using the [httpie][httpie], command line tool...
     }
 
 
-Or directly through the browser...
+Or directly through the browser, by going to the URL `http://127.0.0.1:8000/users/`...
 
 ![Quick start image][image]
 

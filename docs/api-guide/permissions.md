@@ -71,7 +71,7 @@ If not specified, this setting defaults to allowing unrestricted access:
     )
 
 You can also set the authentication policy on a per-view, or per-viewset basis,
-using the `APIView` class based views.
+using the `APIView` class-based views.
 
     from rest_framework.permissions import IsAuthenticated
     from rest_framework.response import Response

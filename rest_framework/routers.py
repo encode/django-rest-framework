@@ -22,9 +22,11 @@ from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
 
-from rest_framework import views
+from rest_framework import exceptions, renderers, views
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.schemas import SchemaGenerator
+from rest_framework.settings import api_settings
 from rest_framework.urlpatterns import format_suffix_patterns
 
 Route = namedtuple('Route', ['url', 'mapping', 'name', 'initkwargs'])
@@ -144,7 +146,9 @@ class SimpleRouter(BaseRouter):
 
         Returns a list of the Route namedtuple.
         """
-        known_actions = flatten([route.mapping.values() for route in self.routes if isinstance(route, Route)])
+        # converting to list as iterables are good for one pass, known host needs to be checked again and again for
+        # different functions.
+        known_actions = list(flatten([route.mapping.values() for route in self.routes if isinstance(route, Route)]))
 
         # Determine any `@detail_route` or `@list_route` decorated methods on the viewset
         detail_routes = []
@@ -154,6 +158,7 @@ class SimpleRouter(BaseRouter):
             httpmethods = getattr(attr, 'bind_to_methods', None)
             detail = getattr(attr, 'detail', True)
             if httpmethods:
+                # checking method names against the known actions list
                 if methodname in known_actions:
                     raise ImproperlyConfigured('Cannot use @detail_route or @list_route '
                                                'decorators on method "%s" '
@@ -252,6 +257,7 @@ class SimpleRouter(BaseRouter):
                     lookup=lookup,
                     trailing_slash=self.trailing_slash
                 )
+
                 view = viewset.as_view(mapping, **route.initkwargs)
                 name = route.name.format(basename=basename)
                 ret.append(url(regex, view, name=name))
@@ -267,8 +273,14 @@ class DefaultRouter(SimpleRouter):
     include_root_view = True
     include_format_suffixes = True
     root_view_name = 'api-root'
+    default_schema_renderers = [renderers.CoreJSONRenderer]
 
-    def get_api_root_view(self):
+    def __init__(self, *args, **kwargs):
+        self.schema_title = kwargs.pop('schema_title', None)
+        self.schema_renderers = kwargs.pop('schema_renderers', self.default_schema_renderers)
+        super(DefaultRouter, self).__init__(*args, **kwargs)
+
+    def get_api_root_view(self, schema_urls=None):
         """
         Return a view to use as the API root.
         """
@@ -277,10 +289,33 @@ class DefaultRouter(SimpleRouter):
         for prefix, viewset, basename in self.registry:
             api_root_dict[prefix] = list_name.format(basename=basename)
 
+        view_renderers = list(api_settings.DEFAULT_RENDERER_CLASSES)
+        schema_media_types = []
+
+        if schema_urls and self.schema_title:
+            view_renderers += list(self.schema_renderers)
+            schema_generator = SchemaGenerator(
+                title=self.schema_title,
+                patterns=schema_urls
+            )
+            schema_media_types = [
+                renderer.media_type
+                for renderer in self.schema_renderers
+            ]
+
         class APIRoot(views.APIView):
             _ignore_model_permissions = True
+            renderer_classes = view_renderers
 
             def get(self, request, *args, **kwargs):
+                if request.accepted_renderer.media_type in schema_media_types:
+                    # Return a schema response.
+                    schema = schema_generator.get_schema(request)
+                    if schema is None:
+                        raise exceptions.PermissionDenied()
+                    return Response(schema)
+
+                # Return a plain {"name": "hyperlink"} response.
                 ret = OrderedDict()
                 namespace = request.resolver_match.namespace
                 for key, url_name in api_root_dict.items():
@@ -307,14 +342,12 @@ class DefaultRouter(SimpleRouter):
         Generate the list of URL patterns, including a default root view
         for the API, and appending `.json` style format suffixes.
         """
-        urls = []
+        urls = super(DefaultRouter, self).get_urls()
 
         if self.include_root_view:
-            root_url = url(r'^$', self.get_api_root_view(), name=self.root_view_name)
+            view = self.get_api_root_view(schema_urls=urls)
+            root_url = url(r'^$', view, name=self.root_view_name)
             urls.append(root_url)
-
-        default_urls = super(DefaultRouter, self).get_urls()
-        urls.extend(default_urls)
 
         if self.include_format_suffixes:
             urls = format_suffix_patterns(urls)

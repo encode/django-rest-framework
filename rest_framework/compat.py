@@ -126,7 +126,7 @@ def get_related_model(field):
 def value_from_object(field, obj):
     if django.VERSION < (1, 9):
         return field._get_val_from_obj(obj)
-    field.value_from_object(obj)
+    return field.value_from_object(obj)
 
 
 # contrib.postgres only supported from 1.8 onwards.
@@ -155,6 +155,16 @@ try:
     import crispy_forms
 except ImportError:
     crispy_forms = None
+
+
+# coreapi is optional (Note that uritemplate is a dependancy of coreapi)
+try:
+    import coreapi
+    import uritemplate
+except (ImportError, SyntaxError):
+    # SyntaxError is possible under python 3.2
+    coreapi = None
+    uritemplate = None
 
 
 # Django-guardian is optional. Import only if guardian is in INSTALLED_APPS

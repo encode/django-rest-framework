@@ -4,6 +4,7 @@ import os
 import re
 import shutil
 import sys
+from io import open
 
 from setuptools import setup
 
@@ -16,7 +17,7 @@ except ImportError:
     print("warning: pypandoc module not found, could not convert Markdown to RST")
 
     def read_md(f):
-        return open(f, 'r').read()
+        return open(f, 'r', encoding='utf-8').read()
 
 
 def get_version(package):
