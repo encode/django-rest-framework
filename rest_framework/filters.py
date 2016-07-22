@@ -174,8 +174,8 @@ class SearchFilter(BaseFilterBackend):
         """
         Return True if 'distinct()' should be used to query the given lookups.
         """
-        opts = queryset.model._meta
         for search_field in search_fields:
+            opts = queryset.model._meta
             if search_field[0] in self.lookup_prefixes:
                 search_field = search_field[1:]
             parts = search_field.split(LOOKUP_SEP)
