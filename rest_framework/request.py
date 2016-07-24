@@ -81,7 +81,8 @@ def clone_request(request, method):
                   parsers=request.parsers,
                   authenticators=request.authenticators,
                   negotiator=request.negotiator,
-                  parser_context=request.parser_context)
+                  parser_context=request.parser_context,
+                  csrf_exempt=request.csrf_exempt)
     ret._data = request._data
     ret._files = request._files
     ret._full_data = request._full_data
@@ -132,7 +133,7 @@ class Request(object):
     """
 
     def __init__(self, request, parsers=None, authenticators=None,
-                 negotiator=None, parser_context=None):
+                 negotiator=None, parser_context=None, csrf_exempt=False):
         self._request = request
         self.parsers = parsers or ()
         self.authenticators = authenticators or ()
@@ -143,6 +144,7 @@ class Request(object):
         self._full_data = Empty
         self._content_type = Empty
         self._stream = Empty
+        self._csrf_exempt = csrf_exempt
 
         if self.parser_context is None:
             self.parser_context = {}
@@ -236,6 +238,13 @@ class Request(object):
         if not hasattr(self, '_authenticator'):
             self._authenticate()
         return self._authenticator
+
+    @property
+    def csrf_exempt(self):
+        """
+        Return the _csrf_exempt attribute
+        """
+        return self._csrf_exempt
 
     def _load_data_and_files(self):
         """

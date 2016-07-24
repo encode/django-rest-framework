@@ -358,12 +358,15 @@ class APIView(View):
         """
         parser_context = self.get_parser_context(request)
 
+        csrf_exempt = getattr(self, 'csrf_exempt', False)
+
         return Request(
             request,
             parsers=self.get_parsers(),
             authenticators=self.get_authenticators(),
             negotiator=self.get_content_negotiator(),
-            parser_context=parser_context
+            parser_context=parser_context,
+            csrf_exempt=csrf_exempt
         )
 
     def initial(self, request, *args, **kwargs):
