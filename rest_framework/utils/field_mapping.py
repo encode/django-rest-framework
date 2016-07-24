@@ -59,7 +59,7 @@ def get_detail_view_name(model):
     """
     return '%(model_name)s-detail' % {
         'app_label': model._meta.app_label,
-        'model_name': model._meta.verbose_name.lower()
+        'model_name': model._meta.object_name.lower()
     }
 
 
