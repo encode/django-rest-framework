@@ -450,6 +450,39 @@ class SearchFilterTests(TestCase):
         reload_module(filters)
 
 
+class AttributeModelForeign(models.Model):
+    label = models.CharField(max_length=32)
+
+
+class SearchFilterModelForeign(models.Model):
+    title = models.CharField(max_length=20)
+    text = models.CharField(max_length=100)
+    attribute = models.ForeignKey(AttributeModelForeign)
+
+
+class SearchFilterForeignSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SearchFilterModelForeign
+        fields = '__all__'
+
+
+class SearchFilterForeignTests(TestCase):
+    def test_must_call_distinct(self):
+        filter_ = filters.SearchFilter()
+        prefixes = [''] + list(filter_.lookup_prefixes)
+        for prefix in prefixes:
+            self.assertFalse(
+                filter_.must_call_distinct(
+                    SearchFilterModelForeign._meta, ["%sattribute__label" % prefix, "%stitle" % prefix]
+                )
+            )
+            self.assertFalse(
+                filter_.must_call_distinct(
+                    SearchFilterModelForeign._meta, ["%stitle" % prefix, "%sattribute__label" % prefix]
+                )
+            )
+
+
 class AttributeModel(models.Model):
     label = models.CharField(max_length=32)
 
