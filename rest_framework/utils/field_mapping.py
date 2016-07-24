@@ -59,7 +59,7 @@ def get_detail_view_name(model):
     """
     return '%(model_name)s-detail' % {
         'app_label': model._meta.app_label,
-        'model_name': model._meta.object_name.lower()
+        'model_name': model._meta.verbose_name.lower()
     }
 
 
@@ -220,7 +220,7 @@ def get_field_kwargs(field_name, model_field):
         unique_error_message = model_field.error_messages.get('unique', None)
         if unique_error_message:
             unique_error_message = unique_error_message % {
-                'model_name': model_field.model._meta.object_name,
+                'model_name': model_field.model._meta.verbose_name,
                 'field_label': model_field.verbose_name
             }
         validator = UniqueValidator(
