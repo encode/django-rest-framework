@@ -151,6 +151,9 @@ class DjangoObjectPermissions(DjangoModelPermissions):
     This permission can only be applied against view classes that
     provide a `.queryset` attribute.
     """
+
+    requires_object_permission = True
+
     perms_map = {
         'GET': [],
         'OPTIONS': [],
