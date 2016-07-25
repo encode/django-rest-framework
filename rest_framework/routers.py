@@ -278,6 +278,7 @@ class DefaultRouter(SimpleRouter):
     def __init__(self, *args, **kwargs):
         self.schema_title = kwargs.pop('schema_title', None)
         self.schema_renderers = kwargs.pop('schema_renderers', self.default_schema_renderers)
+        self.schema_prefix = kwargs.pop('schema_prefix', '')
         super(DefaultRouter, self).__init__(*args, **kwargs)
 
     def get_api_root_view(self, schema_urls=None):
@@ -296,7 +297,8 @@ class DefaultRouter(SimpleRouter):
             view_renderers += list(self.schema_renderers)
             schema_generator = SchemaGenerator(
                 title=self.schema_title,
-                patterns=schema_urls
+                patterns=schema_urls,
+                prefix=self.schema_prefix
             )
             schema_media_types = [
                 renderer.media_type
