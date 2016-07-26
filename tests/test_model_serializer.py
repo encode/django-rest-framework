@@ -955,3 +955,24 @@ class TestMetaInheritance(TestCase):
         self.assertEqual(unicode_repr(ChildSerializer()), child_expected)
         self.assertEqual(unicode_repr(TestSerializer()), test_expected)
         self.assertEqual(unicode_repr(ChildSerializer()), child_expected)
+
+
+class OneToOneTargetTestModel(models.Model):
+    text = models.CharField(max_length=100)
+
+
+class OneToOneSourceTestModel(models.Model):
+    target = models.OneToOneField(OneToOneTargetTestModel, primary_key=True)
+
+
+class TestModelFieldValues(TestCase):
+    def test_model_field(self):
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = OneToOneSourceTestModel
+                fields = ('target',)
+
+        target = OneToOneTargetTestModel(id=1, text='abc')
+        source = OneToOneSourceTestModel(target=target)
+        serializer = ExampleSerializer(source)
+        self.assertEqual(serializer.data, {'target': 1})
