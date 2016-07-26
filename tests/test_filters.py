@@ -454,6 +454,47 @@ class AttributeModel(models.Model):
     label = models.CharField(max_length=32)
 
 
+class SearchFilterModelFk(models.Model):
+    title = models.CharField(max_length=20)
+    attribute = models.ForeignKey(AttributeModel)
+
+
+class SearchFilterFkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SearchFilterModelFk
+        fields = '__all__'
+
+
+class SearchFilterFkTests(TestCase):
+
+    def test_must_call_distinct(self):
+        filter_ = filters.SearchFilter()
+        prefixes = [''] + list(filter_.lookup_prefixes)
+        for prefix in prefixes:
+            self.assertFalse(
+                filter_.must_call_distinct(
+                    SearchFilterModelFk._meta, ["%stitle" % prefix]
+                )
+            )
+            self.assertFalse(
+                filter_.must_call_distinct(
+                    SearchFilterModelFk._meta, ["%stitle" % prefix, "%sattribute__label" % prefix]
+                )
+            )
+
+    def test_must_call_distinct_restores_meta_for_each_field(self):
+        # In this test case the attribute of the fk model comes first in the
+        # list of search fields.
+        filter_ = filters.SearchFilter()
+        prefixes = [''] + list(filter_.lookup_prefixes)
+        for prefix in prefixes:
+            self.assertFalse(
+                filter_.must_call_distinct(
+                    SearchFilterModelFk._meta, ["%sattribute__label" % prefix, "%stitle" % prefix]
+                )
+            )
+
+
 class SearchFilterModelM2M(models.Model):
     title = models.CharField(max_length=20)
     text = models.CharField(max_length=100)
