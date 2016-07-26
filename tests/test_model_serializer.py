@@ -965,7 +965,7 @@ class OneToOneSourceTestModel(models.Model):
     target = models.OneToOneField(OneToOneTargetTestModel, primary_key=True)
 
 
-class TestSerializerMetaClass(TestCase):
+class TestModelFieldValues(TestCase):
     def test_model_field(self):
         class ExampleSerializer(serializers.ModelSerializer):
             class Meta:
