@@ -57,7 +57,7 @@ class SchemaGenerator(object):
         'delete': 'destroy',
     }
 
-    def __init__(self, title=None, patterns=None, urlconf=None):
+    def __init__(self, title=None, patterns=None, urlconf=None, prefix=''):
         assert coreapi, '`coreapi` must be installed for schema support.'
 
         if patterns is None and urlconf is not None:
@@ -71,7 +71,7 @@ class SchemaGenerator(object):
             patterns = urls.urlpatterns
 
         self.title = title
-        self.endpoints = self.get_api_endpoints(patterns)
+        self.endpoints = self.get_api_endpoints(patterns, prefix)
 
     def get_schema(self, request=None):
         if request is None:
