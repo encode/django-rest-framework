@@ -278,7 +278,7 @@ class SchemaGenerator(object):
         if hasattr(callback, 'actions') and ('list' not in callback.actions.values()):
             return []
 
-        if not hasattr(view, 'pagination_class'):
+        if not getattr(view, 'pagination_class', None):
             return []
 
         paginator = view.pagination_class()
