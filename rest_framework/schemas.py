@@ -112,7 +112,6 @@ class SchemaGenerator(object):
 
         for pattern in patterns:
             path_regex = prefix + pattern.regex.pattern
-
             if isinstance(pattern, RegexURLPattern):
                 path = self.get_path(path_regex)
                 callback = pattern.callback
@@ -253,6 +252,9 @@ class SchemaGenerator(object):
             return []
 
         fields = []
+
+        if not (hasattr(view, 'get_serializer_class') and callable(getattr(view, 'get_serializer_class'))):
+            return []
 
         serializer_class = view.get_serializer_class()
         serializer = serializer_class()
