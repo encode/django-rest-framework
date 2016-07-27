@@ -251,10 +251,10 @@ class SchemaGenerator(object):
         if method not in ('PUT', 'PATCH', 'POST'):
             return []
 
-        fields = []
-
-        if not (hasattr(view, 'get_serializer_class') and callable(getattr(view, 'get_serializer_class'))):
+        if not hasattr(view, 'get_serializer_class'):
             return []
+
+        fields = []
 
         serializer_class = view.get_serializer_class()
         serializer = serializer_class()
