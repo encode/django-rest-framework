@@ -276,6 +276,8 @@ class DefaultRouter(SimpleRouter):
     default_schema_renderers = [renderers.CoreJSONRenderer]
 
     def __init__(self, *args, **kwargs):
+        if 'schema_renderers' in kwargs:
+            assert 'schema_title' in kwargs, 'Missing "schema_title" argument.'
         self.schema_title = kwargs.pop('schema_title', None)
         self.schema_renderers = kwargs.pop('schema_renderers', self.default_schema_renderers)
         super(DefaultRouter, self).__init__(*args, **kwargs)

@@ -241,7 +241,7 @@ to the Open API ("Swagger") format:
     from openapi_codec import OpenAPICodec
 
     class SwaggerRenderer(renderers.BaseRenderer):
-        media_type = 'application/openapi+json;version=2.0'
+        media_type = 'application/openapi+json'
         format = 'swagger'
 
         def render(self, data, media_type=None, renderer_context=None):
