@@ -51,9 +51,11 @@ class Response(SimpleTemplateResponse):
     @property
     def rendered_content(self):
         renderer = getattr(self, 'accepted_renderer', None)
+        accepted_media_type = getattr(self, 'accepted_media_type', None)
         context = getattr(self, 'renderer_context', None)
 
         assert renderer, ".accepted_renderer not set on Response"
+        assert accepted_media_type, ".accepted_media_type not set on Response"
         assert context, ".renderer_context not set on Response"
         context['response'] = self
 
@@ -67,7 +69,7 @@ class Response(SimpleTemplateResponse):
             content_type = media_type
         self['Content-Type'] = content_type
 
-        ret = renderer.render(self.data, media_type, context)
+        ret = renderer.render(self.data, accepted_media_type, context)
         if isinstance(ret, six.text_type):
             assert charset, (
                 'renderer returned unicode, and did not specify '
