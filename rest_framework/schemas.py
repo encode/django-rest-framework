@@ -84,6 +84,7 @@ class SchemaGenerator(object):
                 method = link.action.upper()
                 view = callback.cls()
                 view.request = clone_request(request, method)
+                view.format_kwarg = None
                 try:
                     view.check_permissions(view.request)
                 except exceptions.APIException:
