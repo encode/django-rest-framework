@@ -1396,9 +1396,8 @@ class ModelSerializer(Serializer):
         # cannot map to a field, and must be a traversal, so we're not
         # including those.
         field_names = {
-            field.source for field in self.fields.values()
+            field.source for field in self._writable_fields
             if (field.source != '*') and ('.' not in field.source)
-            and not field.read_only
         }
 
         # Note that we make sure to check `unique_together` both on the
