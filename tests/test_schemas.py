@@ -23,8 +23,8 @@ class ExamplePagination(pagination.PageNumberPagination):
 
 
 class ExampleSerializer(serializers.Serializer):
-    a = serializers.CharField(required=True)
-    b = serializers.CharField(required=False)
+    a = serializers.CharField(required=True, help_text='About a')
+    b = serializers.CharField(required=False, help_text='About b')
 
 
 class ExampleViewSet(ModelViewSet):
@@ -109,8 +109,8 @@ class TestRouterGeneratedSchema(TestCase):
                         action='post',
                         encoding='application/json',
                         fields=[
-                            coreapi.Field('a', required=True, location='form'),
-                            coreapi.Field('b', required=False, location='form')
+                            coreapi.Field('a', required=True, location='form', description='About a'),
+                            coreapi.Field('b', required=False, location='form', description='About b')
                         ]
                     ),
                     'retrieve': coreapi.Link(
@@ -126,8 +126,8 @@ class TestRouterGeneratedSchema(TestCase):
                         encoding='application/json',
                         fields=[
                             coreapi.Field('pk', required=True, location='path'),
-                            coreapi.Field('a', required=True, location='form'),
-                            coreapi.Field('b', required=False, location='form')
+                            coreapi.Field('a', required=True, location='form', description='About a'),
+                            coreapi.Field('b', required=False, location='form', description='About b')
                         ]
                     ),
                     'partial_update': coreapi.Link(
@@ -136,8 +136,8 @@ class TestRouterGeneratedSchema(TestCase):
                         encoding='application/json',
                         fields=[
                             coreapi.Field('pk', required=True, location='path'),
-                            coreapi.Field('a', required=False, location='form'),
-                            coreapi.Field('b', required=False, location='form')
+                            coreapi.Field('a', required=False, location='form', description='About a'),
+                            coreapi.Field('b', required=False, location='form', description='About b')
                         ]
                     ),
                     'destroy': coreapi.Link(

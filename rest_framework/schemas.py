@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
 from django.core.urlresolvers import RegexURLPattern, RegexURLResolver
 from django.utils import six
+from django.utils.encoding import force_text
 
 from rest_framework import exceptions, serializers
 from rest_framework.compat import coreapi, uritemplate, urlparse
@@ -258,8 +259,6 @@ class SchemaGenerator(object):
         if not hasattr(view, 'get_serializer_class'):
             return []
 
-        fields = []
-
         serializer_class = view.get_serializer_class()
         serializer = serializer_class()
 
@@ -269,11 +268,17 @@ class SchemaGenerator(object):
         if not isinstance(serializer, serializers.Serializer):
             return []
 
+        fields = []
         for field in serializer.fields.values():
             if field.read_only:
                 continue
             required = field.required and method != 'PATCH'
-            field = coreapi.Field(name=field.source, location='form', required=required)
+            field = coreapi.Field(
+                name=field.source,
+                location='form',
+                required=required,
+                description=force_text(field.help_text),
+            )
             fields.append(field)
 
         return fields
