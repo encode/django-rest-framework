@@ -40,9 +40,9 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.4.x series
 
- ### 3.4.1
+### 3.4.1
 
- **Date**: [28th July 2016][3.4.1-milestone]
+**Date**: [28th July 2016][3.4.1-milestone]
 
 * Added `root_renderers` argument to `DefaultRouter`. ([#4323][gh4323], [#4268][gh4268])
 * Added `url` and `schema_url` arguments. ([#4321][gh4321], [#4308][gh4308], [#4305][gh4305])
