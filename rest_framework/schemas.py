@@ -246,10 +246,16 @@ class SchemaGenerator(object):
         Return a list of `coreapi.Field` instances corresponding to any
         templated path variables.
         """
+        path_descriptions = getattr(view, 'path_fields_descriptions', {})
+
         fields = []
 
         for variable in uritemplate.variables(path):
-            field = coreapi.Field(name=variable, location='path', required=True)
+            field = coreapi.Field(name=variable,
+                                  location='path',
+                                  required=True,
+                                  description=path_descriptions.get(variable, ''),
+                                  )
             fields.append(field)
 
         return fields

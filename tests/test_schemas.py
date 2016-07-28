@@ -36,6 +36,9 @@ class ExampleViewSet(ModelViewSet):
 
 class ExampleView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    path_fields_descriptions = {
+        'example_id': 'Description of example_id path parameter',
+    }
 
     def get(self, request, *args, **kwargs):
         """get documentation"""
@@ -256,7 +259,7 @@ class TestSchemaAndSubSchemaGenerator(TestCase):
                         url='/{example_id}/example-view/',
                         action='post',
                         fields=[
-                            coreapi.Field('example_id', required=True, location='path')
+                            coreapi.Field('example_id', required=True, location='path', description='Description of example_id path parameter')
                         ]
                     ),
                     'read': coreapi.Link(
@@ -264,7 +267,7 @@ class TestSchemaAndSubSchemaGenerator(TestCase):
                         action='get',
                         description='get documentation',
                         fields=[
-                            coreapi.Field('example_id', required=True, location='path')
+                            coreapi.Field('example_id', required=True, location='path', description='Description of example_id path parameter')
                         ]
                     )
                 },
