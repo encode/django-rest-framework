@@ -6,7 +6,7 @@ from django.core.urlresolvers import RegexURLPattern, RegexURLResolver
 from django.utils import six
 from django.utils.encoding import force_text
 
-from rest_framework import exceptions, serializers
+from rest_framework import exceptions, serializers, viewsets
 from rest_framework.compat import coreapi, uritemplate, urlparse
 from rest_framework.request import clone_request
 from rest_framework.views import APIView
@@ -207,10 +207,18 @@ class SchemaGenerator(object):
         else:
             encoding = None
 
+        if isinstance(view, viewsets.GenericViewSet):
+            actions = getattr(callback, 'actions', self.default_mapping)
+            action = actions[method.lower()]
+            view_fn = getattr(callback.cls, action, None)
+        else:
+            view_fn = getattr(callback.cls, method.lower(), None)
+
         return coreapi.Link(
             url=urlparse.urljoin(self.url, path),
             action=method.lower(),
             encoding=encoding,
+            description=view_fn.__doc__ if view_fn else '',
             fields=fields
         )
 

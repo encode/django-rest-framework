@@ -38,6 +38,7 @@ class ExampleView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request, *args, **kwargs):
+        """get documentation"""
         return Response()
 
     def post(self, request, *args, **kwargs):
@@ -171,6 +172,7 @@ class TestSchemaGenerator(TestCase):
                     'read': coreapi.Link(
                         url='/example-view/',
                         action='get',
+                        description='get documentation',
                         fields=[]
                     )
                 }
