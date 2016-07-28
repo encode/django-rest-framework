@@ -283,6 +283,10 @@ class DefaultRouter(SimpleRouter):
         self.schema_title = kwargs.pop('schema_title', None)
         self.schema_url = kwargs.pop('schema_url', None)
         self.schema_renderers = kwargs.pop('schema_renderers', self.default_schema_renderers)
+        if 'root_renderers' in kwargs:
+            self.root_renderers = kwargs.pop('root_renderers')
+        else:
+            self.root_renderers = list(api_settings.DEFAULT_RENDERER_CLASSES)
         super(DefaultRouter, self).__init__(*args, **kwargs)
 
     def get_api_root_view(self, api_urls=None):
@@ -294,7 +298,7 @@ class DefaultRouter(SimpleRouter):
         for prefix, viewset, basename in self.registry:
             api_root_dict[prefix] = list_name.format(basename=basename)
 
-        view_renderers = list(api_settings.DEFAULT_RENDERER_CLASSES)
+        view_renderers = list(self.root_renderers)
         schema_media_types = []
 
         if api_urls and self.schema_title:
