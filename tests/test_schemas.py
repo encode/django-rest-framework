@@ -5,8 +5,8 @@ from django.test import TestCase, override_settings
 
 from rest_framework import filters, pagination, permissions, serializers
 from rest_framework.compat import coreapi
-from rest_framework.response import Response
 from rest_framework.decorators import detail_route
+from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 from rest_framework.schemas import SchemaGenerator
 from rest_framework.test import APIClient
