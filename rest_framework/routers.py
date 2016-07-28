@@ -278,11 +278,14 @@ class DefaultRouter(SimpleRouter):
     def __init__(self, *args, **kwargs):
         if 'schema_renderers' in kwargs:
             assert 'schema_title' in kwargs, 'Missing "schema_title" argument.'
+        if 'schema_url' in kwargs:
+            assert 'schema_title' in kwargs, 'Missing "schema_title" argument.'
         self.schema_title = kwargs.pop('schema_title', None)
+        self.schema_url = kwargs.pop('schema_url', None)
         self.schema_renderers = kwargs.pop('schema_renderers', self.default_schema_renderers)
         super(DefaultRouter, self).__init__(*args, **kwargs)
 
-    def get_api_root_view(self, schema_urls=None):
+    def get_api_root_view(self, api_urls=None):
         """
         Return a view to use as the API root.
         """
@@ -294,11 +297,12 @@ class DefaultRouter(SimpleRouter):
         view_renderers = list(api_settings.DEFAULT_RENDERER_CLASSES)
         schema_media_types = []
 
-        if schema_urls and self.schema_title:
+        if api_urls and self.schema_title:
             view_renderers += list(self.schema_renderers)
             schema_generator = SchemaGenerator(
                 title=self.schema_title,
-                patterns=schema_urls
+                url=self.schema_url,
+                patterns=api_urls
             )
             schema_media_types = [
                 renderer.media_type
@@ -347,7 +351,7 @@ class DefaultRouter(SimpleRouter):
         urls = super(DefaultRouter, self).get_urls()
 
         if self.include_root_view:
-            view = self.get_api_root_view(schema_urls=urls)
+            view = self.get_api_root_view(api_urls=urls)
             root_url = url(r'^$', view, name=self.root_view_name)
             urls.append(root_url)
 

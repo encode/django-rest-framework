@@ -128,9 +128,11 @@ that include the Core JSON media type in their `Accept` header.
 This is a great zero-configuration option for when you want to get up and
 running really quickly.
 
-The only other available option to `DefaultRouter` is `schema_renderers`, which
-may be used to pass the set of renderer classes that can be used to render
-schema output.
+The other available options to `DefaultRouter` are:
+
+#### schema_renderers
+
+May be used to pass the set of renderer classes that can be used to render schema output.
 
     from rest_framework.renderers import CoreJSONRenderer
     from my_custom_package import APIBlueprintRenderer
@@ -138,6 +140,17 @@ schema output.
     router = DefaultRouter(schema_title='Server Monitoring API', schema_renderers=[
         CoreJSONRenderer, APIBlueprintRenderer
     ])
+
+#### schema_url
+
+May be used to pass the root URL for the schema. This can either be used to ensure that
+the schema URLs include a canonical hostname and schema, or to ensure that all the
+schema URLs include a path prefix.
+
+    router = DefaultRouter(
+        schema_title='Server Monitoring API',
+        schema_url='https://www.example.org/api/'
+    )
 
 If you want more flexibility over the schema output then you'll need to consider
 using `SchemaGenerator` instead.
@@ -264,6 +277,7 @@ Typically you'll instantiate `SchemaGenerator` with a single argument, like so:
 Arguments:
 
 * `title` - The name of the API. **required**
+* `url` - The root URL of the API schema. This option is not required unless the schema is included under path prefix.
 * `patterns` - A list of URLs to inspect when generating the schema. Defaults to the project's URL conf.
 * `urlconf` - A URL conf module name to use when generating the schema. Defaults to `settings.ROOT_URLCONF`.
 
