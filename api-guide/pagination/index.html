@@ -466,11 +466,13 @@
 <p>Pagination is only performed automatically if you're using the generic views or viewsets. If you're using a regular <code>APIView</code>, you'll need to call into the pagination API yourself to ensure you return a paginated response. See the source code for the <code>mixins.ListModelMixin</code> and <code>generics.GenericAPIView</code> classes for an example.</p>
 <p>Pagination can be turned off by setting the pagination class to <code>None</code>.</p>
 <h2 id="setting-the-pagination-style"><a class="toclink" href="#setting-the-pagination-style">Setting the pagination style</a></h2>
-<p>The default pagination style may be set globally, using the <code>DEFAULT_PAGINATION_CLASS</code> settings key. For example, to use the built-in limit/offset pagination, you would do:</p>
+<p>The default pagination style may be set globally, using the <code>DEFAULT_PAGINATION_CLASS</code> and <code>PAGE_SIZE</code> setting keys. For example, to use the built-in limit/offset pagination, you would do something like this:</p>
 <pre><code>REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100
 }
 </code></pre>
+<p>Note that you need to set both the pagination class, and the page size that should be used.</p>
 <p>You can also set the pagination class on an individual view by using the <code>pagination_class</code> attribute. Typically you'll want to use the same pagination style throughout your API, although you might want to vary individual aspects of the pagination, such as default or maximum page size, on a per-view basis.</p>
 <h2 id="modifying-the-pagination-style"><a class="toclink" href="#modifying-the-pagination-style">Modifying the pagination style</a></h2>
 <p>If you want to modify particular aspects of the pagination style, you'll want to override one of the pagination classes, and set the attributes that you want to change.</p>
@@ -535,7 +537,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 </ul>
 <hr />
 <h2 id="limitoffsetpagination"><a class="toclink" href="#limitoffsetpagination">LimitOffsetPagination</a></h2>
-<p>This pagination style mirrors the syntax used when looking up multiple database records. The client includes both a "limit" and an 
+<p>This pagination style mirrors the syntax used when looking up multiple database records. The client includes both a "limit" and an
 "offset" query parameter. The limit indicates the maximum number of items to return, and is equivalent to the <code>page_size</code> in other styles. The offset indicates the starting position of the query in relation to the complete set of unpaginated items.</p>
 <p><strong>Request</strong>:</p>
 <pre><code>GET https://api.example.org/accounts/?limit=100&amp;offset=400

@@ -776,9 +776,9 @@ color_channel = serializers.ChoiceField(
 <h2 id="datetimefield"><a class="toclink" href="#datetimefield">DateTimeField</a></h2>
 <p>A date and time representation.</p>
 <p>Corresponds to <code>django.db.models.fields.DateTimeField</code>.</p>
-<p><strong>Signature:</strong> <code>DateTimeField(format=None, input_formats=None)</code></p>
+<p><strong>Signature:</strong> <code>DateTimeField(format=api_settings.DATETIME_FORMAT, input_formats=None)</code></p>
 <ul>
-<li><code>format</code> - A string representing the output format.  If not specified, this defaults to the same value as the <code>DATETIME_FORMAT</code> settings key, which will be <code>'iso-8601'</code> unless set. Setting to a format string indicates that <code>to_representation</code> return values should be coerced to string output. Format strings are described below. Setting this value to <code>None</code> indicates that Python <code>datetime</code> objects should be returned by <code>to_representation</code>. In this case the datetime encoding will be determined by the renderer.</li>
+<li><code>format</code> - A string representing the output format. If not specified, this defaults to the same value as the <code>DATETIME_FORMAT</code> settings key, which will be <code>'iso-8601'</code> unless set. Setting to a format string indicates that <code>to_representation</code> return values should be coerced to string output. Format strings are described below. Setting this value to <code>None</code> indicates that Python <code>datetime</code> objects should be returned by <code>to_representation</code>. In this case the datetime encoding will be determined by the renderer.</li>
 <li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>DATETIME_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
 </ul>
 <h4 id="datetimefield-format-strings"><a class="toclink" href="#datetimefield-format-strings"><code>DateTimeField</code> format strings.</a></h4>
@@ -797,7 +797,7 @@ color_channel = serializers.ChoiceField(
 <h2 id="datefield"><a class="toclink" href="#datefield">DateField</a></h2>
 <p>A date representation.</p>
 <p>Corresponds to <code>django.db.models.fields.DateField</code></p>
-<p><strong>Signature:</strong> <code>DateField(format=None, input_formats=None)</code></p>
+<p><strong>Signature:</strong> <code>DateField(format=api_settings.DATE_FORMAT, input_formats=None)</code></p>
 <ul>
 <li><code>format</code> - A string representing the output format.  If not specified, this defaults to the same value as the <code>DATE_FORMAT</code> settings key, which will be <code>'iso-8601'</code> unless set. Setting to a format string indicates that <code>to_representation</code> return values should be coerced to string output. Format strings are described below. Setting this value to <code>None</code> indicates that Python <code>date</code> objects should be returned by <code>to_representation</code>. In this case the date encoding will be determined by the renderer.</li>
 <li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>DATE_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
@@ -807,7 +807,7 @@ color_channel = serializers.ChoiceField(
 <h2 id="timefield"><a class="toclink" href="#timefield">TimeField</a></h2>
 <p>A time representation.</p>
 <p>Corresponds to <code>django.db.models.fields.TimeField</code></p>
-<p><strong>Signature:</strong> <code>TimeField(format=None, input_formats=None)</code></p>
+<p><strong>Signature:</strong> <code>TimeField(format=api_settings.TIME_FORMAT, input_formats=None)</code></p>
 <ul>
 <li><code>format</code> - A string representing the output format.  If not specified, this defaults to the same value as the <code>TIME_FORMAT</code> settings key, which will be <code>'iso-8601'</code> unless set. Setting to a format string indicates that <code>to_representation</code> return values should be coerced to string output. Format strings are described below. Setting this value to <code>None</code> indicates that Python <code>time</code> objects should be returned by <code>to_representation</code>. In this case the time encoding will be determined by the renderer.</li>
 <li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>TIME_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>

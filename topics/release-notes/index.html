@@ -446,6 +446,23 @@
 </code></pre>
 <hr />
 <h2 id="34x-series"><a class="toclink" href="#34x-series">3.4.x series</a></h2>
+<p>### 3.4.1</p>
+<p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.1+Release%22">28th July 2016</a></p>
+<ul>
+<li>Added <code>root_renderers</code> argument to <code>DefaultRouter</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4323">#4323</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4268">#4268</a>)</li>
+<li>Added <code>url</code> and <code>schema_url</code> arguments. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4321">#4321</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4308">#4308</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4305">#4305</a>)</li>
+<li>Unique together checks should apply to read-only fields which have a default. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4316">#4316</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4294">#4294</a>)</li>
+<li>Set view.format_kwarg in schema generator. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4293">#4293</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4315">#4315</a>)</li>
+<li>Fix schema generator for views with <code>pagination_class = None</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4314">#4314</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4289">#4289</a>)</li>
+<li>Fix schema generator for views with no <code>get_serializer_class</code>. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4265">#4265</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4285">#4285</a>)</li>
+<li>Fixes for media type parameters in <code>Accept</code> and <code>Content-Type</code> headers. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4287">#4287</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4313">#4313</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4281">#4281</a>)</li>
+<li>Use verbose_name instead of object_name in error messages. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4299">#4299</a>)</li>
+<li>Minor version update to Twitter Bootstrap. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4307">#4307</a>)</li>
+<li>SearchFilter raises error when using with related field. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4302">#4302</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4303">#4303</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4298">#4298</a>)</li>
+<li>Adding support for RFC 4918 status codes. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4291">#4291</a>)</li>
+<li>Add LICENSE.md to the built wheel. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4270">#4270</a>)</li>
+<li>Serializing "complex" field returns None instead of the value since 3.4 (<a href="https://github.com/tomchristie/django-rest-framework/issues/4272">#4272</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4273">#4273</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4288">#4288</a>)</li>
+</ul>
 <h3 id="340"><a class="toclink" href="#340">3.4.0</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.0+Release%22">14th July 2016</a></p>
 <ul>
@@ -862,6 +879,8 @@
 <!-- 3.3.3 -->
 
 <!-- 3.4.0 -->
+
+<!-- 3.4.1 -->
             
 
           </div> <!--/span-->

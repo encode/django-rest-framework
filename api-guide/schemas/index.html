@@ -550,9 +550,9 @@ Content-Type: application/vnd.coreapi+json
 </code></pre>
 <p>This is a great zero-configuration option for when you want to get up and
 running really quickly.</p>
-<p>The only other available option to <code>DefaultRouter</code> is <code>schema_renderers</code>, which
-may be used to pass the set of renderer classes that can be used to render
-schema output.</p>
+<p>The other available options to <code>DefaultRouter</code> are:</p>
+<h4 id="schema_renderers"><a class="toclink" href="#schema_renderers">schema_renderers</a></h4>
+<p>May be used to pass the set of renderer classes that can be used to render schema output.</p>
 <pre><code>from rest_framework.renderers import CoreJSONRenderer
 from my_custom_package import APIBlueprintRenderer
 
@@ -560,8 +560,19 @@ router = DefaultRouter(schema_title='Server Monitoring API', schema_renderers=[
     CoreJSONRenderer, APIBlueprintRenderer
 ])
 </code></pre>
+<h4 id="schema_url"><a class="toclink" href="#schema_url">schema_url</a></h4>
+<p>May be used to pass the root URL for the schema. This can either be used to ensure that
+the schema URLs include a canonical hostname and schema, or to ensure that all the
+schema URLs include a path prefix.</p>
+<pre><code>router = DefaultRouter(
+    schema_title='Server Monitoring API',
+    schema_url='https://www.example.org/api/'
+)
+</code></pre>
 <p>If you want more flexibility over the schema output then you'll need to consider
 using <code>SchemaGenerator</code> instead.</p>
+<h4 id="root_renderers"><a class="toclink" href="#root_renderers">root_renderers</a></h4>
+<p>May be used to pass the set of renderer classes that can be used to render the API root endpoint.</p>
 <h2 id="using-schemagenerator"><a class="toclink" href="#using-schemagenerator">Using SchemaGenerator</a></h2>
 <p>The most common way to add a schema to your API is to use the <code>SchemaGenerator</code>
 class to auto-generate the <code>Document</code> instance, and to return that from a view.</p>
@@ -643,12 +654,12 @@ to the Open API ("Swagger") format:</p>
 from openapi_codec import OpenAPICodec
 
 class SwaggerRenderer(renderers.BaseRenderer):
-    media_type = 'application/openapi+json;version=2.0'
+    media_type = 'application/openapi+json'
     format = 'swagger'
 
     def render(self, data, media_type=None, renderer_context=None):
         codec = OpenAPICodec()
-        return OpenAPICodec.dump(data)
+        return codec.dump(data)
 </code></pre>
 <hr />
 <h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
@@ -661,6 +672,7 @@ generate a schema.</p>
 <p>Arguments:</p>
 <ul>
 <li><code>title</code> - The name of the API. <strong>required</strong></li>
+<li><code>url</code> - The root URL of the API schema. This option is not required unless the schema is included under path prefix.</li>
 <li><code>patterns</code> - A list of URLs to inspect when generating the schema. Defaults to the project's URL conf.</li>
 <li><code>urlconf</code> - A URL conf module name to use when generating the schema. Defaults to <code>settings.ROOT_URLCONF</code>.</li>
 </ul>
