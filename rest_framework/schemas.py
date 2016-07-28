@@ -4,8 +4,9 @@ from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
 from django.core.urlresolvers import RegexURLPattern, RegexURLResolver
 from django.utils import six
+from django.utils.encoding import force_text
 
-from rest_framework import exceptions, serializers
+from rest_framework import exceptions, serializers, viewsets
 from rest_framework.compat import coreapi, uritemplate, urlparse
 from rest_framework.request import clone_request
 from rest_framework.views import APIView
@@ -175,18 +176,16 @@ class SchemaGenerator(object):
         Return a tuple of strings, indicating the identity to use for a
         given endpoint. eg. ('users', 'list').
         """
-        category = None
+        category = []
         for item in path.strip('/').split('/'):
             if '{' in item:
-                break
-            category = item
+                continue
+            category.append(item.capitalize())
 
         actions = getattr(callback, 'actions', self.default_mapping)
         action = actions[method.lower()]
 
-        if category:
-            return (category, action)
-        return (action,)
+        return (' '.join(category), action)
 
     # Methods for generating each individual `Link` instance...
 
@@ -206,10 +205,18 @@ class SchemaGenerator(object):
         else:
             encoding = None
 
+        if isinstance(view, viewsets.GenericViewSet):
+            actions = getattr(callback, 'actions', self.default_mapping)
+            action = actions[method.lower()]
+            view_fn = getattr(callback.cls, action, None)
+        else:
+            view_fn = getattr(callback.cls, method.lower(), None)
+
         return coreapi.Link(
             url=urlparse.urljoin(self.url, path),
             action=method.lower(),
             encoding=encoding,
+            description=view_fn.__doc__ if view_fn else '',
             fields=fields
         )
 
@@ -239,10 +246,16 @@ class SchemaGenerator(object):
         Return a list of `coreapi.Field` instances corresponding to any
         templated path variables.
         """
+        path_descriptions = getattr(view, 'path_fields_descriptions', {})
+
         fields = []
 
         for variable in uritemplate.variables(path):
-            field = coreapi.Field(name=variable, location='path', required=True)
+            field = coreapi.Field(name=variable,
+                                  location='path',
+                                  required=True,
+                                  description=path_descriptions.get(variable, ''),
+                                  )
             fields.append(field)
 
         return fields
@@ -258,8 +271,6 @@ class SchemaGenerator(object):
         if not hasattr(view, 'get_serializer_class'):
             return []
 
-        fields = []
-
         serializer_class = view.get_serializer_class()
         serializer = serializer_class()
 
@@ -269,11 +280,17 @@ class SchemaGenerator(object):
         if not isinstance(serializer, serializers.Serializer):
             return []
 
+        fields = []
         for field in serializer.fields.values():
             if field.read_only:
                 continue
             required = field.required and method != 'PATCH'
-            field = coreapi.Field(name=field.source, location='form', required=required)
+            field = coreapi.Field(
+                name=field.source,
+                location='form',
+                required=required,
+                description=force_text(field.help_text),
+            )
             fields.append(field)
 
         return fields
