@@ -74,7 +74,7 @@ class TestRouterGeneratedSchema(TestCase):
             url='',
             title='Example API',
             content={
-                'example': {
+                'Example': {
                     'list': coreapi.Link(
                         url='/example/',
                         action='get',
@@ -104,7 +104,7 @@ class TestRouterGeneratedSchema(TestCase):
             url='',
             title='Example API',
             content={
-                'example': {
+                'Example': {
                     'list': coreapi.Link(
                         url='/example/',
                         action='get',
@@ -171,7 +171,7 @@ class TestSchemaGenerator(TestCase):
             url='',
             title='Test View',
             content={
-                'example-view': {
+                'Example-view': {
                     'create': coreapi.Link(
                         url='/example-view/',
                         action='post',
@@ -198,7 +198,7 @@ class TestSchemaAndSubSchemaGenerator(TestCase):
             url='',
             title='Test View',
             content={
-                'example': {
+                'Example': {
                     'list': coreapi.Link(
                         url='/example/',
                         action='get',
@@ -251,7 +251,7 @@ class TestSchemaAndSubSchemaGenerator(TestCase):
                         ]
                     )
                 },
-                'example-view': {
+                'Example-view': {
                     'create': coreapi.Link(
                         url='/{example_id}/example-view/',
                         action='post',

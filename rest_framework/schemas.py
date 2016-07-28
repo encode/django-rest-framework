@@ -180,7 +180,7 @@ class SchemaGenerator(object):
         for item in path.strip('/').split('/'):
             if '{' in item:
                 continue
-            category.append(item)
+            category.append(item.capitalize())
 
         actions = getattr(callback, 'actions', self.default_mapping)
         action = actions[method.lower()]
