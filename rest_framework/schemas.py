@@ -176,18 +176,16 @@ class SchemaGenerator(object):
         Return a tuple of strings, indicating the identity to use for a
         given endpoint. eg. ('users', 'list').
         """
-        category = None
+        category = []
         for item in path.strip('/').split('/'):
             if '{' in item:
-                break
-            category = item
+                continue
+            category.append(item)
 
         actions = getattr(callback, 'actions', self.default_mapping)
         action = actions[method.lower()]
 
-        if category:
-            return (category, action)
-        return (action,)
+        return (' '.join(category), action)
 
     # Methods for generating each individual `Link` instance...
 
