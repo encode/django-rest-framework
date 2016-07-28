@@ -97,16 +97,6 @@ def exception_handler(exc, context):
 
 class APIView(View):
 
-    # The following policies may be set at either globally, or per-view.
-    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
-    parser_classes = api_settings.DEFAULT_PARSER_CLASSES
-    authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
-    throttle_classes = api_settings.DEFAULT_THROTTLE_CLASSES
-    permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
-    content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS
-    metadata_class = api_settings.DEFAULT_METADATA_CLASS
-    versioning_class = api_settings.DEFAULT_VERSIONING_CLASS
-
     # Allow dependency injection of other settings to make testing easier.
     settings = api_settings
 
@@ -237,6 +227,70 @@ class APIView(View):
         return func(self.__class__, html)
 
     # API policy instantiation methods
+
+    @property
+    def versioning_class(self):
+        return getattr(self, '_versioning_class', self.settings.DEFAULT_VERSIONING_CLASS)
+
+    @versioning_class.setter
+    def versioning_class(self, value):
+        self._versioning_class = value
+
+    @property
+    def metadata_class(self):
+        return getattr(self, '_metadata_class', self.settings.DEFAULT_METADATA_CLASS)
+
+    @metadata_class.setter
+    def metadata_class(self, value):
+        self._metadata_class = value
+
+    @property
+    def content_negotiation_class(self):
+        return getattr(self, '_content_negotiation_class', self.settings.DEFAULT_CONTENT_NEGOTIATION_CLASS)
+
+    @content_negotiation_class.setter
+    def content_negotiation_class(self, value):
+        self._content_negotiation_class = value
+
+    @property
+    def permission_classes(self):
+        return getattr(self, '_permission_classes', self.settings.DEFAULT_PERMISSION_CLASSES)
+
+    @permission_classes.setter
+    def permission_classes(self, value):
+        self._permission_classes = value
+
+    @property
+    def throttle_classes(self):
+        return getattr(self, '_throttle_classes', self.settings.DEFAULT_THROTTLE_CLASSES)
+
+    @throttle_classes.setter
+    def throttle_classes(self, value):
+        self._throttle_classes = value
+
+    @property
+    def authentication_classes(self):
+        return getattr(self, '_authentication_classes', self.settings.DEFAULT_AUTHENTICATION_CLASSES)
+
+    @authentication_classes.setter
+    def authentication_classes(self, value):
+        self._authentication_classes = value
+
+    @property
+    def parser_classes(self):
+        return getattr(self, '_parser_classes', self.settings.DEFAULT_PARSER_CLASSES)
+
+    @parser_classes.setter
+    def parser_classes(self, value):
+        self._parser_classes = value
+
+    @property
+    def renderer_classes(self):
+        return getattr(self, '_renderer_classes', self.settings.DEFAULT_RENDERER_CLASSES)
+
+    @renderer_classes.setter
+    def renderer_classes(self, value):
+        self._renderer_classes = value
 
     def get_format_suffix(self, **kwargs):
         """
