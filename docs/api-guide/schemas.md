@@ -155,6 +155,10 @@ schema URLs include a path prefix.
 If you want more flexibility over the schema output then you'll need to consider
 using `SchemaGenerator` instead.
 
+#### root_renderers
+
+May be used to pass the set of renderer classes that can be used to render the API root endpoint.
+
 ## Using SchemaGenerator
 
 The most common way to add a schema to your API is to use the `SchemaGenerator`
