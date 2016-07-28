@@ -265,7 +265,7 @@ class SchemaGenerator(object):
 
         if serializer_class is None and hasattr(view, 'get_serializer_class'):
             serializer_class = view.get_serializer_class()
-        
+
         if serializer_class is None:
             return []
 
