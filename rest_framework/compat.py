@@ -23,6 +23,12 @@ except ImportError:
     from django.utils import importlib  # Will be removed in Django 1.9
 
 
+try:
+    import urlparse  # Python 2.x
+except ImportError:
+    import urllib.parse as urlparse
+
+
 def unicode_repr(instance):
     # Get the repr of an instance, but ensure it is a unicode string
     # on both python 3 (already the case) and 2 (not the case).

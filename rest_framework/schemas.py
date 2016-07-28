@@ -6,7 +6,7 @@ from django.core.urlresolvers import RegexURLPattern, RegexURLResolver
 from django.utils import six
 
 from rest_framework import exceptions, serializers
-from rest_framework.compat import coreapi, uritemplate
+from rest_framework.compat import coreapi, uritemplate, urlparse
 from rest_framework.request import clone_request
 from rest_framework.views import APIView
 
@@ -57,7 +57,7 @@ class SchemaGenerator(object):
         'delete': 'destroy',
     }
 
-    def __init__(self, title=None, patterns=None, urlconf=None):
+    def __init__(self, title=None, url=None, patterns=None, urlconf=None):
         assert coreapi, '`coreapi` must be installed for schema support.'
 
         if patterns is None and urlconf is not None:
@@ -70,7 +70,11 @@ class SchemaGenerator(object):
             urls = import_module(settings.ROOT_URLCONF)
             patterns = urls.urlpatterns
 
+        if url and not url.endswith('/'):
+            url += '/'
+
         self.title = title
+        self.url = url
         self.endpoints = self.get_api_endpoints(patterns)
 
     def get_schema(self, request=None):
@@ -102,7 +106,7 @@ class SchemaGenerator(object):
             insert_into(content, key, link)
 
         # Return the schema document.
-        return coreapi.Document(title=self.title, content=content)
+        return coreapi.Document(title=self.title, content=content, url=self.url)
 
     def get_api_endpoints(self, patterns, prefix=''):
         """
@@ -203,7 +207,7 @@ class SchemaGenerator(object):
             encoding = None
 
         return coreapi.Link(
-            url=path,
+            url=urlparse.urljoin(self.url, path),
             action=method.lower(),
             encoding=encoding,
             fields=fields
