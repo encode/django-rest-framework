@@ -290,10 +290,52 @@ A date and time representation.
 
 Corresponds to `django.db.models.fields.DateTimeField`.
 
-**Signature:** `DateTimeField(format=None, input_formats=None)`
+**Signature:** `DateTimeField(format=DATETIME_FORMAT, input_formats=None)`
 
-* `format` - A string representing the output format.  If not specified, this defaults to the same value as the `DATETIME_FORMAT` settings key, which will be `'iso-8601'` unless set. Setting to a format string indicates that `to_representation` return values should be coerced to string output. Format strings are described below. Setting this value to `None` indicates that Python `datetime` objects should be returned by `to_representation`. In this case the datetime encoding will be determined by the renderer.
+* `format` - A string representing the output format.  If not specified, this defaults to the same value as the `DATETIME_FORMAT` settings key, which will be `'iso-8601'` unless set.
+  * Setting to a format string indicates that `to_representation` return values should be coerced to string output. Format strings are described below.
+  * Setting this value to `None` indicates that Python `datetime` objects should be returned by `to_representation`. In this case the datetime encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
+
+For example, lets have the following model:
+
+```python
+from django.db import models
+
+
+class Comment(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+```
+
+And the following serializers:
+
+```python
+from rest_framework import serializers
+
+
+class CommentSerializerWithDefaultDateTimeField(serializers.Serializer):
+    created_at = serializers.DateTimeField()
+
+
+class CommentSerializerWithFormatNone(serializers.Serializer):
+    created_at = serializers.DateTimeField(format=None)
+```
+
+Now we have the following types:
+
+```python
+import datetime
+
+c = Comment.objects.create()
+
+s1 = CommentSerializerWithDefaultDateTimeField(c)
+s2 = CommentSerializerWithFormatNone(c)
+
+
+assert type(s1.data['created_at']) is str
+assert type(s2.data['created_at']) is datetime.datetime
+```
+
 
 #### `DateTimeField` format strings.
 
