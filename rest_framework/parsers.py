@@ -138,6 +138,9 @@ class FileUploadParser(BaseParser):
         upload_handlers = request.upload_handlers
         filename = self.get_filename(stream, media_type, parser_context)
 
+        if not filename:
+            raise ParseError(self.errors['no_filename'])
+
         # Note that this code is extracted from Django's handling of
         # file uploads in MultiPartParser.
         content_type = meta.get('HTTP_CONTENT_TYPE',
@@ -183,8 +186,6 @@ class FileUploadParser(BaseParser):
         for index, handler in enumerate(upload_handlers):
             file_obj = handler.file_complete(counters[index])
             if file_obj is not None:
-                if not file_obj.name:
-                    raise ParseError(self.errors['no_filename'])
                 return DataAndFiles({}, {'file': file_obj})
 
         raise ParseError(self.errors['unhandled'])
