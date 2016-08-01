@@ -1372,9 +1372,14 @@ class ModelSerializer(Serializer):
         Determine the set of validators to use when instantiating serializer.
         """
         # If the validators have been declared explicitly then use that.
-        validators = getattr(getattr(self, 'Meta', None), 'validators', None)
-        if validators is not None:
-            return validators[:]
+        meta = getattr(self, 'Meta', None)
+        if meta is not None:
+            validators = getattr(meta, 'validators', None)
+            if isinstance(validators, property):
+                validators = getattr(meta(), 'validators', None)
+
+            if validators is not None:
+                return validators[:]
 
         # Otherwise use the default set of validators.
         return (
