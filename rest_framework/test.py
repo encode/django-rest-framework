@@ -12,6 +12,7 @@ from django.test.client import ClientHandler
 from django.utils import six
 from django.utils.encoding import force_bytes
 from django.utils.http import urlencode
+from requests import Session
 
 from rest_framework.settings import api_settings
 
@@ -220,6 +221,10 @@ class APITransactionTestCase(testcases.TransactionTestCase):
 
 class APITestCase(testcases.TestCase):
     client_class = APIClient
+
+    def _pre_setup(self):
+        super(APITestCase, self)._pre_setup()
+        self.requests = Session()
 
 
 class APISimpleTestCase(testcases.SimpleTestCase):
