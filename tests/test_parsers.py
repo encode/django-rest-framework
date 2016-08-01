@@ -42,7 +42,7 @@ class TestFileUploadParser(TestCase):
             "Test text file".encode('utf-8')
         )
         request = MockRequest()
-        request.upload_handlers = (MemoryFileUploadHandler(),)
+        request.upload_handlers = (MemoryFileUploadHandler(), TemporaryFileUploadHandler(),)
         request.META = {
             'HTTP_CONTENT_DISPOSITION': 'Content-Disposition: inline; filename=file.txt',
             'HTTP_CONTENT_LENGTH': 14,
@@ -69,6 +69,18 @@ class TestFileUploadParser(TestCase):
         with pytest.raises(ParseError) as excinfo:
             parser.parse(self.stream, None, self.parser_context)
         assert str(excinfo.value) == 'Missing filename. Request should include a Content-Disposition header with a filename parameter.'
+
+    def test_parse_missing_filename_large_file(self):
+        """
+        Parse large raw file upload when filename is missing.
+        """
+        from django.conf import settings
+        self.parser_context['request'].META['HTTP_CONTENT_LENGTH'] = settings.FILE_UPLOAD_MAX_MEMORY_SIZE + 1
+        parser = FileUploadParser()
+        self.stream.seek(0)
+        self.parser_context['request'].META['HTTP_CONTENT_DISPOSITION'] = ''
+        with self.assertRaises(ParseError):
+            parser.parse(self.stream, None, self.parser_context)
 
     def test_parse_missing_filename_multiple_upload_handlers(self):
         """
