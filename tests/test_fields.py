@@ -912,6 +912,26 @@ class TestLocalizedDecimalField(TestCase):
         self.assertTrue(isinstance(field.to_representation(Decimal('1.1')), six.string_types))
 
 
+class TestQuantizedValueForDecimal(TestCase):
+    def test_int_quantized_value_for_decimal(self):
+        field = serializers.DecimalField(max_digits=4, decimal_places=2)
+        value = field.to_internal_value(12).as_tuple()
+        expected_digit_tuple = (0, (1, 2, 0, 0), -2)
+        self.assertEqual(value, expected_digit_tuple)
+
+    def test_string_quantized_value_for_decimal(self):
+        field = serializers.DecimalField(max_digits=4, decimal_places=2)
+        value = field.to_internal_value('12').as_tuple()
+        expected_digit_tuple = (0, (1, 2, 0, 0), -2)
+        self.assertEqual(value, expected_digit_tuple)
+
+    def test_part_precision_string_quantized_value_for_decimal(self):
+        field = serializers.DecimalField(max_digits=4, decimal_places=2)
+        value = field.to_internal_value('12.0').as_tuple()
+        expected_digit_tuple = (0, (1, 2, 0, 0), -2)
+        self.assertEqual(value, expected_digit_tuple)
+
+
 class TestNoDecimalPlaces(FieldValues):
     valid_inputs = {
         '0.12345': Decimal('0.12345'),
