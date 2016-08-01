@@ -118,6 +118,10 @@ class FileUploadParser(BaseParser):
     Parser for file upload data.
     """
     media_type = '*/*'
+    errors = {
+        'unhandled': 'FileUpload parse error - none of upload handlers can handle the stream',
+        'no_filename': 'Missing filename. Request should include a Content-Disposition header with a filename parameter.',
+    }
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
@@ -146,7 +150,7 @@ class FileUploadParser(BaseParser):
 
         # See if the handler will want to take care of the parsing.
         for handler in upload_handlers:
-            result = handler.handle_raw_input(None,
+            result = handler.handle_raw_input(stream,
                                               meta,
                                               content_length,
                                               None,
@@ -178,10 +182,12 @@ class FileUploadParser(BaseParser):
 
         for index, handler in enumerate(upload_handlers):
             file_obj = handler.file_complete(counters[index])
-            if file_obj:
+            if file_obj is not None:
+                if not file_obj.name:
+                    raise ParseError(self.errors['no_filename'])
                 return DataAndFiles({}, {'file': file_obj})
-        raise ParseError("FileUpload parse error - "
-                         "none of upload handlers can handle the stream")
+
+        raise ParseError(self.errors['unhandled'])
 
     def get_filename(self, stream, media_type, parser_context):
         """
