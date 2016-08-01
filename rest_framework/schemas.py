@@ -206,6 +206,9 @@ class SchemaGenerator(object):
         else:
             encoding = None
 
+        if self.url and path.startswith('/'):
+            path = path[1:]
+
         return coreapi.Link(
             url=urlparse.urljoin(self.url, path),
             action=method.lower(),
