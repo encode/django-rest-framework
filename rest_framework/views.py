@@ -451,10 +451,10 @@ class APIView(View):
         self.headers = self.default_response_headers  # deprecate?
 
         try:
-            self.initial(request, *args, **kwargs)
-
             # Get the appropriate handler method
             if request.method.lower() in self.http_method_names:
+                self.initial(request, *args, **kwargs)
+
                 handler = getattr(self, request.method.lower(),
                                   self.http_method_not_allowed)
             else:
