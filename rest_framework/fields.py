@@ -804,7 +804,10 @@ class IPAddressField(CharField):
         self.validators.extend(validators)
 
     def to_internal_value(self, data):
-        if data and ':' in data:
+        if not isinstance(data, six.string_types):
+            self.fail('invalid', value=data)
+
+        if ':' in data:
             try:
                 if self.protocol in ('both', 'ipv6'):
                     return clean_ipv6_address(data, self.unpack_ipv4)

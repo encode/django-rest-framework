@@ -663,6 +663,7 @@ class TestIPAddressField(FieldValues):
         '127.122.111.2231': ['Enter a valid IPv4 or IPv6 address.'],
         '2001:::9652': ['Enter a valid IPv4 or IPv6 address.'],
         '2001:0db8:85a3:0042:1000:8a2e:0370:73341': ['Enter a valid IPv4 or IPv6 address.'],
+        1000: ['Enter a valid IPv4 or IPv6 address.'],
     }
     outputs = {}
     field = serializers.IPAddressField()
