@@ -955,7 +955,7 @@ class DecimalField(Field):
         if value in (decimal.Decimal('Inf'), decimal.Decimal('-Inf')):
             self.fail('invalid')
 
-        return self.validate_precision(value)
+        return self.quantize(self.validate_precision(value))
 
     def validate_precision(self, value):
         """
@@ -1018,7 +1018,8 @@ class DecimalField(Field):
         context.prec = self.max_digits
         return value.quantize(
             decimal.Decimal('.1') ** self.decimal_places,
-            context=context)
+            context=context
+        )
 
 
 # Date & time fields...
