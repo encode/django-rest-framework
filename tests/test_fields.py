@@ -1594,6 +1594,29 @@ class TestDictField(FieldValues):
             "Remove `source=` from the field declaration."
         )
 
+    def test_allow_null(self):
+        """
+        If `allow_null=True` then `None` is a valid input.
+        """
+        field = serializers.DictField(allow_null=True)
+        output = field.run_validation(None)
+        assert output is None
+
+
+class TestDictFieldWithNullChild(FieldValues):
+    """
+    Values for `ListField` with allow_null CharField as child.
+    """
+    valid_inputs = [
+        ({'a': None, 'b': '2', 3: 3}, {'a': None, 'b': '2', '3': '3'}),
+    ]
+    invalid_inputs = [
+    ]
+    outputs = [
+        ({'a': None, 'b': '2', 3: 3}, {'a': None, 'b': '2', '3': '3'}),
+    ]
+    field = serializers.DictField(child=serializers.CharField(allow_null=True))
+
 
 class TestUnvalidatedDictField(FieldValues):
     """
