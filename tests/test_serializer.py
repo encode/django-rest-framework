@@ -324,11 +324,11 @@ class TestDefaultInclusions:
         assert serializer.validated_data == {'char': 'abc', 'integer': 456}
         assert serializer.errors == {}
 
-    def test_default_should_not_be_included_on_update(self):
+    def test_default_should_be_included_on_update(self):
         instance = MockObject(char='def', integer=123)
         serializer = self.Serializer(instance, data={'integer': 456})
         assert serializer.is_valid()
-        assert serializer.validated_data == {'integer': 456}
+        assert serializer.validated_data == {'char': 'abc', 'integer': 456}
         assert serializer.errors == {}
 
     def test_default_should_not_be_included_on_partial_update(self):
