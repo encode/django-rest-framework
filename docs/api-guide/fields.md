@@ -49,7 +49,9 @@ Defaults to `False`
 
 ### `default`
 
-If set, this gives the default value that will be used for the field if no input value is supplied.  If not set the default behavior is to not populate the attribute at all.
+If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behaviour is to not populate the attribute at all.
+
+The `default` is not applied during partial update operations. In the partial update case only fields that are provided in the incoming data will have a validated value returned.
 
 May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a `set_context` method, that will be called each time before getting the value with the field instance as only argument. This works the same way as for [validators](validators.md#using-set_context).
 

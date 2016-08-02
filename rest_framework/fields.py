@@ -435,7 +435,8 @@ class Field(object):
         return `empty`, indicating that no value should be set in the
         validated data for this field.
         """
-        if self.default is empty:
+        if self.default is empty or getattr(self.root, 'partial', False):
+            # No default, or this is a partial update.
             raise SkipField()
         if callable(self.default):
             if hasattr(self.default, 'set_context'):
