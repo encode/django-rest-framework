@@ -33,6 +33,10 @@ class ExampleViewSet(ModelViewSet):
     filter_backends = [filters.OrderingFilter]
     serializer_class = ExampleSerializer
 
+    def get_serializer_class(self):
+        request = self.request
+        return ExampleSerializer
+
 
 class ExampleView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
