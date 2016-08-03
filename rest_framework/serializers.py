@@ -1324,9 +1324,8 @@ class ModelSerializer(Serializer):
         # Update `extra_kwargs` with any new options.
         for key, value in uniqueness_extra_kwargs.items():
             if key in extra_kwargs:
-                extra_kwargs[key].update(value)
-            else:
-                extra_kwargs[key] = value
+                value.update(extra_kwargs[key])
+            extra_kwargs[key] = value
 
         return extra_kwargs, hidden_fields
 

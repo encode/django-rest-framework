@@ -663,6 +663,7 @@ class TestIPAddressField(FieldValues):
         '127.122.111.2231': ['Enter a valid IPv4 or IPv6 address.'],
         '2001:::9652': ['Enter a valid IPv4 or IPv6 address.'],
         '2001:0db8:85a3:0042:1000:8a2e:0370:73341': ['Enter a valid IPv4 or IPv6 address.'],
+        1000: ['Enter a valid IPv4 or IPv6 address.'],
     }
     outputs = {}
     field = serializers.IPAddressField()
@@ -909,6 +910,26 @@ class TestLocalizedDecimalField(TestCase):
     def test_localize_forces_coerce_to_string(self):
         field = serializers.DecimalField(max_digits=2, decimal_places=1, coerce_to_string=False, localize=True)
         self.assertTrue(isinstance(field.to_representation(Decimal('1.1')), six.string_types))
+
+
+class TestQuantizedValueForDecimal(TestCase):
+    def test_int_quantized_value_for_decimal(self):
+        field = serializers.DecimalField(max_digits=4, decimal_places=2)
+        value = field.to_internal_value(12).as_tuple()
+        expected_digit_tuple = (0, (1, 2, 0, 0), -2)
+        self.assertEqual(value, expected_digit_tuple)
+
+    def test_string_quantized_value_for_decimal(self):
+        field = serializers.DecimalField(max_digits=4, decimal_places=2)
+        value = field.to_internal_value('12').as_tuple()
+        expected_digit_tuple = (0, (1, 2, 0, 0), -2)
+        self.assertEqual(value, expected_digit_tuple)
+
+    def test_part_precision_string_quantized_value_for_decimal(self):
+        field = serializers.DecimalField(max_digits=4, decimal_places=2)
+        value = field.to_internal_value('12.0').as_tuple()
+        expected_digit_tuple = (0, (1, 2, 0, 0), -2)
+        self.assertEqual(value, expected_digit_tuple)
 
 
 class TestNoDecimalPlaces(FieldValues):
@@ -1572,6 +1593,29 @@ class TestDictField(FieldValues):
             "The `source` argument is not meaningful when applied to a `child=` field. "
             "Remove `source=` from the field declaration."
         )
+
+    def test_allow_null(self):
+        """
+        If `allow_null=True` then `None` is a valid input.
+        """
+        field = serializers.DictField(allow_null=True)
+        output = field.run_validation(None)
+        assert output is None
+
+
+class TestDictFieldWithNullChild(FieldValues):
+    """
+    Values for `ListField` with allow_null CharField as child.
+    """
+    valid_inputs = [
+        ({'a': None, 'b': '2', 3: 3}, {'a': None, 'b': '2', '3': '3'}),
+    ]
+    invalid_inputs = [
+    ]
+    outputs = [
+        ({'a': None, 'b': '2', 3: 3}, {'a': None, 'b': '2', '3': '3'}),
+    ]
+    field = serializers.DictField(child=serializers.CharField(allow_null=True))
 
 
 class TestUnvalidatedDictField(FieldValues):
