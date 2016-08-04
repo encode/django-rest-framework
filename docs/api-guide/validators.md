@@ -64,6 +64,8 @@ It takes a single required argument, and an optional `messages` argument:
 
 This validator should be applied to *serializer fields*, like so:
 
+    from rest_framework.validators import UniqueValidator
+
     slug = SlugField(
         max_length=100,
         validators=[UniqueValidator(queryset=BlogPost.objects.all())]
@@ -80,6 +82,8 @@ It has two required arguments, and a single optional `messages` argument:
 
 The validator should be applied to *serializer classes*, like so:
 
+    from rest_framework.validators import UniqueTogetherValidator
+    
     class ExampleSerializer(serializers.Serializer):
         # ...
         class Meta:
@@ -113,6 +117,8 @@ These validators can be used to enforce the `unique_for_date`, `unique_for_month
 * `message` - The error message that should be used when validation fails.
 
 The validator should be applied to *serializer classes*, like so:
+
+    from rest_framework.validators import UniqueForYearValidator
 
     class ExampleSerializer(serializers.Serializer):
         # ...
@@ -183,7 +189,7 @@ It takes a single argument, which is the default value or callable that should b
 
     created_at = serializers.DateTimeField(
         read_only=True,
-        default=CreateOnlyDefault(timezone.now)
+        default=serializers.CreateOnlyDefault(timezone.now)
     )
 
 ---
