@@ -260,12 +260,22 @@ class SchemaGenerator(object):
         if method not in ('PUT', 'PATCH', 'POST'):
             return []
 
-        if not hasattr(view, 'get_serializer_class'):
+        serializer_class = None
+
+        # looking for serializer_class override
+        if hasattr(callback, 'actions'):
+            func = getattr(view, callback.actions[method.lower()])
+            if 'serializer_class' in getattr(func, 'kwargs', ()):
+                serializer_class = func.kwargs['serializer_class']
+
+        if serializer_class is None and hasattr(view, 'get_serializer_class'):
+            serializer_class = view.get_serializer_class()
+
+        if serializer_class is None:
             return []
 
         fields = []
 
-        serializer_class = view.get_serializer_class()
         serializer = serializer_class()
 
         if isinstance(serializer, serializers.ListSerializer):
