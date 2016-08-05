@@ -195,6 +195,8 @@ class SchemaGenerator(object):
         Return a `coreapi.Link` instance for the given endpoint.
         """
         view = callback.cls()
+        for attr, val in getattr(callback, 'initkwargs', {}).items():
+            setattr(view, attr, val)
 
         fields = self.get_path_fields(path, method, callback, view)
         fields += self.get_serializer_fields(path, method, callback, view)
