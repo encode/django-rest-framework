@@ -488,7 +488,7 @@ This field is used by default with `ModelSerializer` when including field names 
 
 **Signature**: `ReadOnlyField()`
 
-For example, is `has_expired` was a property on the `Account` model, then the following serializer would automatically generate it as a `ReadOnlyField`:
+For example, if `has_expired` was a property on the `Account` model, then the following serializer would automatically generate it as a `ReadOnlyField`:
 
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
