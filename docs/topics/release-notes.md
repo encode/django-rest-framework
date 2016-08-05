@@ -44,19 +44,19 @@ You can determine your currently installed version using `pip freeze`:
 
 **Date**: [5th August 2016][3.4.2-milestone]
 
-Include kwargs passed to 'as_view' when generating schemas. ([#4359][gh4359], [#4330][gh4330], [#4331][gh4331])
-Access `request.user.is_authenticated` as property not method, under Django 1.10+ ([#4358][gh4358], [#4354][gh4354])
-Filter HEAD out from schemas. ([#4357][gh4357])
-extra_kwargs takes precedence over uniqueness kwargs. ([#4198][gh4198], [#4199][gh4199], [#4349][gh4349])
-Correct descriptions when tabs are used in code indentation. ([#4345][gh4345], [#4347][gh4347])
-Change template context generation in TemplateHTMLRenderer. ([#4236][gh4236])
-Serializer defaults should not be included in partial updates. ([#4346][gh4346], [#3565][gh3565])
-Consistent behavior & descriptive error from FileUploadParser when filename not included. ([#4340][gh4340], [#3610][gh3610], [#4292][gh4292], [#4296][gh4296])
-DecimalField quantizes incoming digitals. ([#4339][gh4339], [#4318][gh4318])
-Handle non-string input for IP fields. ([#4335][gh4335], [#4336][gh4336], [#4338][gh4338])
-Fix leading slash handling when Schema generation includes a root URL. ([#4332][gh4332])
-Test cases for DictField with allow_null options. ([#4348][gh4348])
-Update tests from Django 1.10 beta to Django 1.10. ([#4344][gh4344])
+* Include kwargs passed to 'as_view' when generating schemas. ([#4359][gh4359], [#4330][gh4330], [#4331][gh4331])
+* Access `request.user.is_authenticated` as property not method, under Django 1.10+ ([#4358][gh4358], [#4354][gh4354])
+* Filter HEAD out from schemas. ([#4357][gh4357])
+* extra_kwargs takes precedence over uniqueness kwargs. ([#4198][gh4198], [#4199][gh4199], [#4349][gh4349])
+* Correct descriptions when tabs are used in code indentation. ([#4345][gh4345], [#4347][gh4347])*
+* Change template context generation in TemplateHTMLRenderer. ([#4236][gh4236])
+* Serializer defaults should not be included in partial updates. ([#4346][gh4346], [#3565][gh3565])
+* Consistent behavior & descriptive error from FileUploadParser when filename not included. ([#4340][gh4340], [#3610][gh3610], [#4292][gh4292], [#4296][gh4296])
+* DecimalField quantizes incoming digitals. ([#4339][gh4339], [#4318][gh4318])
+* Handle non-string input for IP fields. ([#4335][gh4335], [#4336][gh4336], [#4338][gh4338])
+* Fix leading slash handling when Schema generation includes a root URL. ([#4332][gh4332])
+* Test cases for DictField with allow_null options. ([#4348][gh4348])
+* Update tests from Django 1.10 beta to Django 1.10. ([#4344][gh4344])
 
 ### 3.4.1
 
