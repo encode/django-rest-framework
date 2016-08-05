@@ -5,6 +5,7 @@ from django.test import TestCase, override_settings
 
 from rest_framework import filters, pagination, permissions, serializers
 from rest_framework.compat import coreapi
+from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 from rest_framework.schemas import SchemaGenerator
@@ -27,11 +28,20 @@ class ExampleSerializer(serializers.Serializer):
     b = serializers.CharField(required=False)
 
 
+class AnotherSerializer(serializers.Serializer):
+    c = serializers.CharField(required=True)
+    d = serializers.CharField(required=False)
+
+
 class ExampleViewSet(ModelViewSet):
     pagination_class = ExamplePagination
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.OrderingFilter]
     serializer_class = ExampleSerializer
+
+    @detail_route(methods=['post'], serializer_class=AnotherSerializer)
+    def custom_action(self, request, pk):
+        return super(ExampleSerializer, self).retrieve(self, request)
 
 
 class ExampleView(APIView):
@@ -118,6 +128,16 @@ class TestRouterGeneratedSchema(TestCase):
                         action='get',
                         fields=[
                             coreapi.Field('pk', required=True, location='path')
+                        ]
+                    ),
+                    'custom_action': coreapi.Link(
+                        url='/example/{pk}/custom_action/',
+                        action='post',
+                        encoding='application/json',
+                        fields=[
+                            coreapi.Field('pk', required=True, location='path'),
+                            coreapi.Field('c', required=True, location='form'),
+                            coreapi.Field('d', required=False, location='form'),
                         ]
                     ),
                     'update': coreapi.Link(

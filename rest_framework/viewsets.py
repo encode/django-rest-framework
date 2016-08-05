@@ -97,6 +97,7 @@ class ViewSetMixin(object):
         # generation can pick out these bits of information from a
         # resolved URL.
         view.cls = cls
+        view.initkwargs = initkwargs
         view.suffix = initkwargs.get('suffix', None)
         view.actions = actions
         return csrf_exempt(view)
