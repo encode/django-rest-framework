@@ -40,6 +40,12 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.4.x series
 
+### 3.4.3
+
+**Date**: [5th August 2016][3.4.3-milestone]
+
+* Include fallaback for users of older TemplateHTMLRenderer internal API. ([#4361][gh4361])
+
 ### 3.4.2
 
 **Date**: [5th August 2016][3.4.2-milestone]
@@ -533,6 +539,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.4.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.0+Release%22
 [3.4.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.1+Release%22
 [3.4.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.2+Release%22
+[3.4.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.3+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -990,3 +997,6 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh4357]: https://github.com/tomchristie/django-rest-framework/issues/4357
 [gh4358]: https://github.com/tomchristie/django-rest-framework/issues/4358
 [gh4359]: https://github.com/tomchristie/django-rest-framework/issues/4359
+
+<!-- 3.4.3 -->
+[gh4361]: https://github.com/tomchristie/django-rest-framework/issues/4361
