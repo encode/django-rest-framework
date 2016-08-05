@@ -167,7 +167,7 @@ class SchemaGenerator(object):
 
         return [
             method for method in
-            callback.cls().allowed_methods if method != 'OPTIONS'
+            callback.cls().allowed_methods if method not in ('OPTIONS', 'HEAD')
         ]
 
     def get_key(self, path, method, callback):
