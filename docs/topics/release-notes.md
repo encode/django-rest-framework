@@ -40,6 +40,12 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.4.x series
 
+### 3.4.3
+
+**Date**: [5th August 2016][3.4.3-milestone]
+
+* Include fallaback for users of older TemplateHTMLRenderer internal API.
+
 ### 3.4.2
 
 **Date**: [5th August 2016][3.4.2-milestone]

@@ -166,7 +166,11 @@ class TemplateHTMLRenderer(BaseRenderer):
             template_names = self.get_template_names(response, view)
             template = self.resolve_template(template_names)
 
-        context = self.get_template_context(data, renderer_context)
+        if hasattr(self, 'resolve_context'):
+            # Fallback for older versions.
+            context = self.resolve_context(self, data, request, response)
+        else:
+            context = self.get_template_context(data, renderer_context)
         return template_render(template, context, request=request)
 
     def resolve_template(self, template_names):
@@ -229,7 +233,10 @@ class StaticHTMLRenderer(TemplateHTMLRenderer):
         if response and response.exception:
             request = renderer_context['request']
             template = self.get_exception_template(response)
-            context = self.resolve_context(data, request, response)
+            if hasattr(self, 'resolve_context'):
+                context = self.resolve_context(data, request, response)
+            else:
+                context = self.get_template_context(data, renderer_context)
             return template_render(template, context, request=request)
 
         return data
