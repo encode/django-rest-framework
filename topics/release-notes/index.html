@@ -448,19 +448,21 @@
 <h2 id="34x-series"><a class="toclink" href="#34x-series">3.4.x series</a></h2>
 <h3 id="342"><a class="toclink" href="#342">3.4.2</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.2+Release%22">5th August 2016</a></p>
-<p>Include kwargs passed to 'as_view' when generating schemas. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4359">#4359</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4330">#4330</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4331">#4331</a>)
-Access <code>request.user.is_authenticated</code> as property not method, under Django 1.10+ (<a href="https://github.com/tomchristie/django-rest-framework/issues/4358">#4358</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4354">#4354</a>)
-Filter HEAD out from schemas. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4357">#4357</a>)
-extra_kwargs takes precedence over uniqueness kwargs. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4198">#4198</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4199">#4199</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4349">#4349</a>)
-Correct descriptions when tabs are used in code indentation. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4345">#4345</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4347">#4347</a>)
-Change template context generation in TemplateHTMLRenderer. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4236">#4236</a>)
-Serializer defaults should not be included in partial updates. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4346">#4346</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3565">#3565</a>)
-Consistent behavior &amp; descriptive error from FileUploadParser when filename not included. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4340">#4340</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3610">#3610</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4292">#4292</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4296">#4296</a>)
-DecimalField quantizes incoming digitals. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4339">#4339</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4318">#4318</a>)
-Handle non-string input for IP fields. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4335">#4335</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4336">#4336</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4338">#4338</a>)
-Fix leading slash handling when Schema generation includes a root URL. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4332">#4332</a>)
-Test cases for DictField with allow_null options. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4348">#4348</a>)
-Update tests from Django 1.10 beta to Django 1.10. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4344">#4344</a>)</p>
+<ul>
+<li>Include kwargs passed to 'as_view' when generating schemas. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4359">#4359</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4330">#4330</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4331">#4331</a>)</li>
+<li>Access <code>request.user.is_authenticated</code> as property not method, under Django 1.10+ (<a href="https://github.com/tomchristie/django-rest-framework/issues/4358">#4358</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4354">#4354</a>)</li>
+<li>Filter HEAD out from schemas. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4357">#4357</a>)</li>
+<li>extra_kwargs takes precedence over uniqueness kwargs. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4198">#4198</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4199">#4199</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4349">#4349</a>)</li>
+<li>Correct descriptions when tabs are used in code indentation. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4345">#4345</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4347">#4347</a>)*</li>
+<li>Change template context generation in TemplateHTMLRenderer. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4236">#4236</a>)</li>
+<li>Serializer defaults should not be included in partial updates. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4346">#4346</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3565">#3565</a>)</li>
+<li>Consistent behavior &amp; descriptive error from FileUploadParser when filename not included. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4340">#4340</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3610">#3610</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4292">#4292</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4296">#4296</a>)</li>
+<li>DecimalField quantizes incoming digitals. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4339">#4339</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4318">#4318</a>)</li>
+<li>Handle non-string input for IP fields. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4335">#4335</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4336">#4336</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4338">#4338</a>)</li>
+<li>Fix leading slash handling when Schema generation includes a root URL. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4332">#4332</a>)</li>
+<li>Test cases for DictField with allow_null options. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4348">#4348</a>)</li>
+<li>Update tests from Django 1.10 beta to Django 1.10. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4344">#4344</a>)</li>
+</ul>
 <h3 id="341"><a class="toclink" href="#341">3.4.1</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.1+Release%22">28th July 2016</a></p>
 <ul>
