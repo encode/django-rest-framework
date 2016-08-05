@@ -8,6 +8,7 @@ import time
 from django.core.cache import cache as default_cache
 from django.core.exceptions import ImproperlyConfigured
 
+from rest_framework.compat import is_authenticated
 from rest_framework.settings import api_settings
 
 
@@ -173,7 +174,7 @@ class AnonRateThrottle(SimpleRateThrottle):
     scope = 'anon'
 
     def get_cache_key(self, request, view):
-        if request.user.is_authenticated():
+        if is_authenticated(request.user):
             return None  # Only throttle unauthenticated requests.
 
         return self.cache_format % {
@@ -193,7 +194,7 @@ class UserRateThrottle(SimpleRateThrottle):
     scope = 'user'
 
     def get_cache_key(self, request, view):
-        if request.user.is_authenticated():
+        if is_authenticated(request.user):
             ident = request.user.pk
         else:
             ident = self.get_ident(request)
@@ -241,7 +242,7 @@ class ScopedRateThrottle(SimpleRateThrottle):
         Otherwise generate the unique cache key by concatenating the user id
         with the '.throttle_scope` property of the view.
         """
-        if request.user.is_authenticated():
+        if is_authenticated(request.user):
             ident = request.user.pk
         else:
             ident = self.get_ident(request)
