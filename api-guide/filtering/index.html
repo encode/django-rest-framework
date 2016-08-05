@@ -662,7 +662,6 @@ class ProductFilter(filters.FilterSet):
 <li>By default filtering is not enabled.  If you want to use <code>DjangoFilterBackend</code> remember to make sure it is installed by using the <code>'DEFAULT_FILTER_BACKENDS'</code> setting.</li>
 <li>When using boolean fields, you should use the values <code>True</code> and <code>False</code> in the URL query parameters, rather than <code>0</code>, <code>1</code>, <code>true</code> or <code>false</code>.  (The allowed boolean values are currently hardwired in Django's <a href="https://github.com/django/django/blob/master/django/forms/widgets.py">NullBooleanSelect implementation</a>.)</li>
 <li><code>django-filter</code> supports filtering across relationships, using Django's double-underscore syntax.</li>
-<li>For Django 1.3 support, make sure to install <code>django-filter</code> version 0.5.4, as later versions drop support for 1.3.</li>
 </ul>
 <hr />
 <h2 id="searchfilter"><a class="toclink" href="#searchfilter">SearchFilter</a></h2>

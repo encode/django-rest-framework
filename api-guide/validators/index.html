@@ -506,7 +506,9 @@ It takes a single required argument, and an optional <code>messages</code> argum
 <li><code>message</code> - The error message that should be used when validation fails.</li>
 </ul>
 <p>This validator should be applied to <em>serializer fields</em>, like so:</p>
-<pre><code>slug = SlugField(
+<pre><code>from rest_framework.validators import UniqueValidator
+
+slug = SlugField(
     max_length=100,
     validators=[UniqueValidator(queryset=BlogPost.objects.all())]
 )
@@ -520,7 +522,9 @@ It has two required arguments, and a single optional <code>messages</code> argum
 <li><code>message</code> - The error message that should be used when validation fails.</li>
 </ul>
 <p>The validator should be applied to <em>serializer classes</em>, like so:</p>
-<pre><code>class ExampleSerializer(serializers.Serializer):
+<pre><code>from rest_framework.validators import UniqueTogetherValidator
+
+class ExampleSerializer(serializers.Serializer):
     # ...
     class Meta:
         # ToDo items belong to a parent list, and have an ordering defined
@@ -547,7 +551,9 @@ It has two required arguments, and a single optional <code>messages</code> argum
 <li><code>message</code> - The error message that should be used when validation fails.</li>
 </ul>
 <p>The validator should be applied to <em>serializer classes</em>, like so:</p>
-<pre><code>class ExampleSerializer(serializers.Serializer):
+<pre><code>from rest_framework.validators import UniqueForYearValidator
+
+class ExampleSerializer(serializers.Serializer):
     # ...
     class Meta:
         # Blog posts should have a slug that is unique for the current year.
@@ -596,7 +602,7 @@ It has two required arguments, and a single optional <code>messages</code> argum
 <p>It takes a single argument, which is the default value or callable that should be used during create operations.</p>
 <pre><code>created_at = serializers.DateTimeField(
     read_only=True,
-    default=CreateOnlyDefault(timezone.now)
+    default=serializers.CreateOnlyDefault(timezone.now)
 )
 </code></pre>
 <hr />
