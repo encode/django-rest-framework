@@ -711,7 +711,7 @@ class OrderingFilterTests(TestCase):
             serializer_class = OrderingFilterSerializer
             filter_backends = (filters.OrderingFilter,)
             ordering = ('title',)
-            oredering_fields = ('text',)
+            ordering_fields = ('text',)
 
         view = OrderingListView.as_view()
         request = factory.get('')
@@ -819,7 +819,7 @@ class OrderingFilterTests(TestCase):
             queryset = OrderingFilterModel.objects.all()
             filter_backends = (filters.OrderingFilter,)
             ordering = ('title',)
-            # note: no ordering_fields and serializer_class speficied
+            # note: no ordering_fields and serializer_class specified
 
             def get_serializer_class(self):
                 return OrderingFilterSerializer
@@ -842,7 +842,7 @@ class OrderingFilterTests(TestCase):
             filter_backends = (filters.OrderingFilter,)
             ordering = ('title',)
             # note: no ordering_fields and serializer_class
-            # or get_serializer_class speficied
+            # or get_serializer_class specified
 
         view = OrderingListView.as_view()
         request = factory.get('/', {'ordering': 'text'})

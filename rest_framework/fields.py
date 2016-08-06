@@ -395,8 +395,8 @@ class Field(object):
                 # determine if we should use null instead.
                 return '' if getattr(self, 'allow_blank', False) else None
             elif ret == '' and not self.required:
-                # If the field is blank, and emptyness is valid then
-                # determine if we should use emptyness instead.
+                # If the field is blank, and emptiness is valid then
+                # determine if we should use emptiness instead.
                 return '' if getattr(self, 'allow_blank', False) else empty
             return ret
         return dictionary.get(self.field_name, empty)
@@ -1346,7 +1346,7 @@ class FilePathField(ChoiceField):
 
     def __init__(self, path, match=None, recursive=False, allow_files=True,
                  allow_folders=False, required=None, **kwargs):
-        # Defer to Django's FilePathField implmentation to get the
+        # Defer to Django's FilePathField implementation to get the
         # valid set of choices.
         field = DjangoFilePathField(
             path, match=match, recursive=recursive, allow_files=allow_files,

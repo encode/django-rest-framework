@@ -136,7 +136,7 @@ class TestModelSerializer(TestCase):
 class TestRegularFieldMappings(TestCase):
     def test_regular_fields(self):
         """
-        Model fields should map to their equivelent serializer fields.
+        Model fields should map to their equivalent serializer fields.
         """
         class TestSerializer(serializers.ModelSerializer):
             class Meta:

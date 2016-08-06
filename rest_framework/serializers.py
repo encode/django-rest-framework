@@ -1383,7 +1383,7 @@ class ModelSerializer(Serializer):
 
     def get_unique_together_validators(self):
         """
-        Determine a default set of validators for any unique_together contraints.
+        Determine a default set of validators for any unique_together constraints.
         """
         model_class_inheritance_tree = (
             [self.Meta.model] +
@@ -1414,7 +1414,7 @@ class ModelSerializer(Serializer):
 
     def get_unique_for_date_validators(self):
         """
-        Determine a default set of validators for the following contraints:
+        Determine a default set of validators for the following constraints:
 
         * unique_for_date
         * unique_for_month

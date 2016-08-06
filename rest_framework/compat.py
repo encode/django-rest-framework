@@ -168,7 +168,7 @@ except ImportError:
     crispy_forms = None
 
 
-# coreapi is optional (Note that uritemplate is a dependancy of coreapi)
+# coreapi is optional (Note that uritemplate is a dependency of coreapi)
 try:
     import coreapi
     import uritemplate

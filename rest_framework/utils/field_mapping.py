@@ -1,6 +1,6 @@
 """
 Helper functions for mapping model fields to a dictionary of default
-keyword arguments that should be used for their equivelent serializer fields.
+keyword arguments that should be used for their equivalent serializer fields.
 """
 import inspect
 

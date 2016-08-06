@@ -78,7 +78,7 @@ class TestAPITestClient(TestCase):
         response = self.client.get('/session-view/')
         self.assertEqual(response.data['active_session'], False)
 
-        # Subsequant requests have an active session
+        # Subsequent requests have an active session
         response = self.client.get('/session-view/')
         self.assertEqual(response.data['active_session'], True)
 
