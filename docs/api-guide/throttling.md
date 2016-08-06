@@ -185,6 +185,7 @@ If the `.wait()` method is implemented and the request is throttled, then a `Ret
 The following is an example of a rate throttle, that will randomly throttle 1 in every 10 requests.
 
     class RandomRateThrottle(throttling.BaseThrottle):
+   	import random
         def allow_request(self, request, view):
             return random.randint(1, 10) == 1
 
