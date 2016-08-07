@@ -61,6 +61,19 @@ class TestSerializer:
         with pytest.raises(AssertionError):
             serializer.save()
 
+    def test_non_validation_error_escapes(self):
+        from rest_framework.exceptions import APIException
+
+        class CustomException(APIException):
+            @classmethod
+            def throw(self, *a, **kw):
+                raise self
+
+        serializer = self.Serializer(data={'char': 'abc', 'integer': 123})
+        serializer.validate_char = CustomException.throw
+        with pytest.raises(CustomException):
+            serializer.is_valid()
+
 
 class TestValidateMethod:
     def test_non_field_error_validate_method(self):
