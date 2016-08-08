@@ -974,7 +974,7 @@ class TestDateField(FieldValues):
 
 class TestCustomInputFormatDateField(FieldValues):
     """
-    Valid and invalid values for `DateField` with a cutom input format.
+    Valid and invalid values for `DateField` with a custom input format.
     """
     valid_inputs = {
         '1 Jan 2001': datetime.date(2001, 1, 1),
@@ -1041,7 +1041,7 @@ class TestDateTimeField(FieldValues):
 
 class TestCustomInputFormatDateTimeField(FieldValues):
     """
-    Valid and invalid values for `DateTimeField` with a cutom input format.
+    Valid and invalid values for `DateTimeField` with a custom input format.
     """
     valid_inputs = {
         '1:35pm, 1 Jan 2001': datetime.datetime(2001, 1, 1, 13, 35, tzinfo=timezone.UTC()),

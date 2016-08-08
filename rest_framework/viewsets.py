@@ -112,7 +112,7 @@ class ViewSetMixin(object):
         if method == 'options':
             # This is a special case as we always provide handling for the
             # options method in the base `View` class.
-            # Unlike the other explicitly defined actions, 'metadata' is implict.
+            # Unlike the other explicitly defined actions, 'metadata' is implicit.
             self.action = 'metadata'
         else:
             self.action = self.action_map.get(method)

@@ -90,7 +90,7 @@ class DefaultContentNegotiation(BaseContentNegotiation):
 
     def get_accept_list(self, request):
         """
-        Given the incoming request, return a tokenised list of media
+        Given the incoming request, return a tokenized list of media
         type strings.
         """
         header = request.META.get('HTTP_ACCEPT', '*/*')
