@@ -1,8 +1,8 @@
-from importlib import import_module
-
 from django.apps import AppConfig
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+
+from rest_framework.compat import importlib
 
 
 class RestFrameworkConfig(AppConfig):
@@ -18,6 +18,6 @@ class RestFrameworkConfig(AppConfig):
         for app in settings.INSTALLED_APPS:
             for mod_name in ['api']:
                 try:
-                    import_module('%s.%s' % (app, mod_name))
+                    importlib.import_module('%s.%s' % (app, mod_name))
                 except ImportError:
                     pass

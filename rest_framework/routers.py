@@ -23,6 +23,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
 
 from rest_framework import exceptions, renderers, views
+from rest_framework.compat import six
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.schemas import SchemaGenerator
@@ -347,7 +348,7 @@ class SimpleRouter(BaseRouter):
         """
         def normalize(entry):
             prefix, viewset, base_name = entry
-            if isinstance(prefix, str):
+            if isinstance(prefix, six.string_types):
                 prefix = [prefix]
             return prefix, viewset, base_name
 
