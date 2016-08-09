@@ -159,6 +159,26 @@ class TestSimpleRouter(TestCase):
             for method in methods_map:
                 self.assertEqual(route.mapping[method], endpoint)
 
+    def test_route_nodes_path(self):
+        """
+        Should return a full prefix for the given route_nodes. Duplicate parent
+        lookups should have a count appended.
+        """
+        tree = RouteTree()
+        tree.set(NoteViewSet, [], 'first')
+        tree.set(NoteViewSet, ['first'], 'first')
+        tree.set(NoteViewSet, ['first', 'first'], 'last')
+
+        self.assertEqual(
+            self.router.get_route_nodes_path(tree.get([], 'first')),
+            r'first')
+        self.assertEqual(
+            self.router.get_route_nodes_path(tree.get(['first'], 'first')),
+            r'first/(?P<first_uuid>[^/.]+)/first')
+        self.assertEqual(
+            self.router.get_route_nodes_path(tree.get(['first', 'first'], 'last')),
+            r'first/(?P<first_uuid>[^/.]+)/first/(?P<first_2_uuid>[^/.]+)/last')
+
 
 @override_settings(ROOT_URLCONF='tests.test_routers')
 class TestRootView(TestCase):
