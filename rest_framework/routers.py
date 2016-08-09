@@ -173,6 +173,32 @@ class SimpleRouter(BaseRouter):
         self.trailing_slash = trailing_slash and '/' or ''
         super(SimpleRouter, self).__init__()
 
+    def route(self, *full_path, **kwargs):
+        """
+        ViewSet class decorator for automatically registering a route:
+
+            router = SimpleRouter()
+
+            @router.route('parent')
+            class ParentViewSet(ViewSet):
+                pass
+
+            @router.route('parent', 'child', base_name='children)
+            class ChildViewSet(ViewSet):
+                pass
+        """
+        full_path = list(full_path)
+        assert len(full_path) > 0, 'Must provide a route prefix'
+        base_name = kwargs.pop('base_name', '-'.join(full_path))
+
+        def wrapper(viewset_cls):
+            self.register(wrapper._full_path, viewset_cls, wrapper._base_name)
+            return viewset_cls
+
+        wrapper._full_path = full_path
+        wrapper._base_name = base_name
+        return wrapper
+
     def get_default_base_name(self, viewset):
         """
         If `base_name` is not specified, attempt to automatically determine

@@ -179,6 +179,23 @@ class TestSimpleRouter(TestCase):
             self.router.get_route_nodes_path(tree.get(['first', 'first'], 'last')),
             r'first/(?P<first_uuid>[^/.]+)/first/(?P<first_2_uuid>[^/.]+)/last')
 
+    def test_route(self):
+        """
+        Should allow registering ViewSets via a class decorator.
+        """
+        @self.router.route('parent', 'child')
+        class ChildViewSet(NoteViewSet):
+            pass
+
+        @self.router.route('parent')
+        class ParentViewSet(NoteViewSet):
+            pass
+
+        self.assertEqual(self.router._process_registry(), [
+            (['parent'], ParentViewSet, 'parent'),
+            (['parent', 'child'], ChildViewSet, 'parent-child')
+        ])
+
 
 @override_settings(ROOT_URLCONF='tests.test_routers')
 class TestRootView(TestCase):
