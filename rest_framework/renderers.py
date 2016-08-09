@@ -168,7 +168,7 @@ class TemplateHTMLRenderer(BaseRenderer):
 
         if hasattr(self, 'resolve_context'):
             # Fallback for older versions.
-            context = self.resolve_context(self, data, request, response)
+            context = self.resolve_context(data, request, response)
         else:
             context = self.get_template_context(data, renderer_context)
         return template_render(template, context, request=request)
