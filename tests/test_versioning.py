@@ -44,14 +44,17 @@ class ReverseView(APIView):
         return Response({'url': reverse('another', request=request)})
 
 
-class RequestInvalidVersionView(APIView):
+class RequestVersionView(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response({'version': request.version})
+
+
+class AllowedVersionsView(RequestVersionView):
     def determine_version(self, request, *args, **kwargs):
         scheme = self.versioning_class()
         scheme.allowed_versions = ('v1', 'v2')
         return (scheme.determine_version(request, *args, **kwargs), scheme)
 
-    def get(self, request, *args, **kwargs):
-        return Response({'version': request.version})
 
 
 factory = APIRequestFactory()
@@ -219,7 +222,7 @@ class TestURLReversing(URLPatternsTestCase):
 class TestInvalidVersion:
     def test_invalid_query_param_versioning(self):
         scheme = versioning.QueryParameterVersioning
-        view = RequestInvalidVersionView.as_view(versioning_class=scheme)
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
 
         request = factory.get('/endpoint/?version=v3')
         response = view(request)
@@ -228,7 +231,7 @@ class TestInvalidVersion:
     @override_settings(ALLOWED_HOSTS=['*'])
     def test_invalid_host_name_versioning(self):
         scheme = versioning.HostNameVersioning
-        view = RequestInvalidVersionView.as_view(versioning_class=scheme)
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
 
         request = factory.get('/endpoint/', HTTP_HOST='v3.example.org')
         response = view(request)
@@ -236,7 +239,7 @@ class TestInvalidVersion:
 
     def test_invalid_accept_header_versioning(self):
         scheme = versioning.AcceptHeaderVersioning
-        view = RequestInvalidVersionView.as_view(versioning_class=scheme)
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
 
         request = factory.get('/endpoint/', HTTP_ACCEPT='application/json; version=v3')
         response = view(request)
@@ -244,7 +247,7 @@ class TestInvalidVersion:
 
     def test_invalid_url_path_versioning(self):
         scheme = versioning.URLPathVersioning
-        view = RequestInvalidVersionView.as_view(versioning_class=scheme)
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
 
         request = factory.get('/v3/endpoint/')
         response = view(request, version='v3')
@@ -255,7 +258,7 @@ class TestInvalidVersion:
             namespace = 'v3'
 
         scheme = versioning.NamespaceVersioning
-        view = RequestInvalidVersionView.as_view(versioning_class=scheme)
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
 
         request = factory.get('/v3/endpoint/')
         request.resolver_match = FakeResolverMatch
