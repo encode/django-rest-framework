@@ -68,16 +68,18 @@ class RouteTree:
         been set or if the path doesn't exist.
         """
         routes = self.routes
+        parent_path = []
 
         for part in path:
             if part not in routes:
-                # TODO: invalid path error message
-                raise KeyError('')
-            routes = routes[path].routes
+                on_path = (' on path %s' % parent_path) if len(parent_path) > 0 else ''
+                raise KeyError('Parent route "%s"%s was not registred' % (part, on_path))
+            parent_path.append(part)
+            routes = routes[part].routes
 
         if name in routes:
-            # TODO: route name already exists error message
-            raise KeyError('')
+            on_path = (' on path %s' % path) if len(path) > 0 else ''
+            raise KeyError('Route "%s" already set%s' % (name, on_path))
 
         routes[name] = self.Node({}, value)
 

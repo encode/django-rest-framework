@@ -10,7 +10,7 @@ from django.test import TestCase, override_settings
 from rest_framework import permissions, serializers, viewsets
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
-from rest_framework.routers import DefaultRouter, SimpleRouter
+from rest_framework.routers import DefaultRouter, RouteTree, SimpleRouter
 from rest_framework.test import APIRequestFactory
 
 factory = APIRequestFactory()
@@ -87,6 +87,53 @@ class BasicViewSet(viewsets.ViewSet):
     @detail_route()
     def link2(self, request, *args, **kwargs):
         return Response({'method': 'link2'})
+
+
+class TestRouteTree(TestCase):
+    def setUp(self):
+        self.tree = RouteTree()
+
+    def test_set(self):
+        """
+        Should set the value for the given name and path.
+        """
+        self.tree.set(1, [], 'A')
+        self.tree.set(2, ['A'], 'B')
+        self.tree.set(3, ['A', 'B'], 'C')
+
+        root = self.tree.routes
+        self.assertEqual(list(root.keys()), ['A'])
+        self.assertEqual(root['A'].value, 1)
+        self.assertEqual(list(root['A'].routes.keys()), ['B'])
+        self.assertEqual(root['A'].routes['B'].value, 2)
+        self.assertEqual(list(root['A'].routes['B'].routes.keys()), ['C'])
+        self.assertEqual(root['A'].routes['B'].routes['C'].value, 3)
+
+    def test_set_invalid(self):
+        """
+        A KeyError should be raised for an invalid name or path.
+        """
+        self.tree.set(1, [], 'A')
+        self.tree.set(2, ['A'], 'B')
+
+        with self.assertRaises(KeyError):
+            self.tree.set(5, ['A', 'B', 'C', 'C'], 'E')
+
+        with self.assertRaises(KeyError):
+            self.tree.set(20, ['A'], 'B')
+
+    def test_get(self):
+        """
+        Should return a list of (name, value) for each node on
+        the path.
+        """
+        self.tree.set(1, [], 'A')
+        self.tree.set(2, ['A'], 'B')
+        self.tree.set(3, ['A', 'B'], 'C')
+
+        self.assertEqual(self.tree.get(['A', 'B'], 'C'), [
+            ('A', 1), ('B', 2), ('C', 3)
+        ])
 
 
 class TestSimpleRouter(TestCase):
