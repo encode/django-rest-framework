@@ -672,6 +672,7 @@ class NullBooleanField(Field):
 
 class CharField(Field):
     default_error_messages = {
+        'invalid': _('Not a valid string.'),
         'blank': _('This field may not be blank.'),
         'max_length': _('Ensure this field has no more than {max_length} characters.'),
         'min_length': _('Ensure this field has at least {min_length} characters.')
@@ -702,6 +703,11 @@ class CharField(Field):
         return super(CharField, self).run_validation(data)
 
     def to_internal_value(self, data):
+        # We're lenient with allowing basic numerics to be coerced into strings,
+        # but other types should fail. Eg. unclear if booleans should represent as `true` or `True`,
+        # and composites such as lists are likely user error.
+        if isinstance(data, bool) or not isinstance(data, six.string_types + six.integer_types + (float,)):
+            self.fail('invalid')
         value = six.text_type(data)
         return value.strip() if self.trim_whitespace else value
 
