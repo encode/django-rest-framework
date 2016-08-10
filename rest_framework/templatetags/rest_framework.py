@@ -90,6 +90,16 @@ def add_query_param(request, key, val):
 
 
 @register.filter
+def as_string(value):
+    return "%s" % value
+
+
+@register.filter
+def as_list_of_strings(value):
+    return ["%s" % item for item in value]
+
+
+@register.filter
 def add_class(value, css_class):
     """
     http://stackoverflow.com/questions/4124220/django-adding-css-classes-when-rendering-form-fields-in-a-template
