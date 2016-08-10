@@ -175,14 +175,20 @@ class SchemaGenerator(object):
         Return a tuple of strings, indicating the identity to use for a
         given endpoint. eg. ('users', 'list').
         """
-        category = None
-        for item in path.strip('/').split('/'):
-            if '{' in item:
-                break
-            category = item
-
         actions = getattr(callback, 'actions', self.default_mapping)
         action = actions[method.lower()]
+
+        list_route = None
+        if hasattr(callback.cls, action):
+            list_route_action = getattr(callback.cls, action)
+            if hasattr(list_route_action, 'bind_to_methods') and not getattr(list_route_action, 'detail', None):
+                list_route = list_route_action.kwargs.get('url_path', action)
+
+        category = None
+        for item in path.strip('/').split('/'):
+            if '{' in item or item == list_route:
+                break
+            category = item
 
         if category:
             return (category, action)
