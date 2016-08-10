@@ -614,7 +614,7 @@ class TestRelationalFieldDisplayValue(TestCase):
                 fields = '__all__'
 
         serializer = TestSerializer()
-        expected = OrderedDict([('1', 'Red Color'), ('2', 'Yellow Color'), ('3', 'Green Color')])
+        expected = OrderedDict([(1, 'Red Color'), (2, 'Yellow Color'), (3, 'Green Color')])
         self.assertEqual(serializer.fields['color'].choices, expected)
 
     def test_custom_display_value(self):
@@ -630,7 +630,7 @@ class TestRelationalFieldDisplayValue(TestCase):
                 fields = '__all__'
 
         serializer = TestSerializer()
-        expected = OrderedDict([('1', 'My Red Color'), ('2', 'My Yellow Color'), ('3', 'My Green Color')])
+        expected = OrderedDict([(1, 'My Red Color'), (2, 'My Yellow Color'), (3, 'My Green Color')])
         self.assertEqual(serializer.fields['color'].choices, expected)
 
 
