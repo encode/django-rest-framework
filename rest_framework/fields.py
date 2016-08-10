@@ -1016,7 +1016,8 @@ class DecimalField(Field):
             return value
 
         context = decimal.getcontext().copy()
-        context.prec = self.max_digits
+        if self.max_digits is not None:
+            context.prec = self.max_digits
         return value.quantize(
             decimal.Decimal('.1') ** self.decimal_places,
             context=context

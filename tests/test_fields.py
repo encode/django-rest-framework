@@ -876,6 +876,18 @@ class TestMinMaxDecimalField(FieldValues):
     )
 
 
+class TestNoMaxDigitsDecimalField(FieldValues):
+    field = serializers.DecimalField(
+        max_value=100, min_value=0,
+        decimal_places=2, max_digits=None
+    )
+    valid_inputs = {
+        '10': Decimal('10.00')
+    }
+    invalid_inputs = {}
+    outputs = {}
+
+
 class TestNoStringCoercionDecimalField(FieldValues):
     """
     Output values for `DecimalField` with `coerce_to_string=False`.
