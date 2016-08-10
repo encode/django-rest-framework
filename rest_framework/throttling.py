@@ -118,7 +118,7 @@ class SimpleRateThrottle(BaseThrottle):
         """
         if self.rate is None:
             return True
-            
+
         if request.method == 'OPTIONS':
             return True
 
