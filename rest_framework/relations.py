@@ -156,13 +156,15 @@ class RelatedField(Field):
         # Standard case, return the object instance.
         return get_attribute(instance, self.source_attrs)
 
-    @property
-    def choices(self):
+    def get_choices(self, cutoff=None):
         queryset = self.get_queryset()
         if queryset is None:
             # Ensure that field.choices returns something sensible
             # even when accessed with a read-only field.
             return {}
+
+        if cutoff:
+            queryset = queryset[:cutoff]
 
         return OrderedDict([
             (
@@ -173,12 +175,16 @@ class RelatedField(Field):
         ])
 
     @property
+    def choices(self):
+        return self.get_choices()
+
+    @property
     def grouped_choices(self):
         return self.choices
 
     def iter_options(self):
         return iter_options(
-            self.grouped_choices,
+            self.get_choices(self.html_cutoff),
             cutoff=self.html_cutoff,
             cutoff_text=self.html_cutoff_text
         )
