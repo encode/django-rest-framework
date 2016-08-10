@@ -535,6 +535,8 @@ class TestCharField(FieldValues):
         'abc': 'abc'
     }
     invalid_inputs = {
+        (): ['Not a valid string.'],
+        True: ['Not a valid string.'],
         '': ['This field may not be blank.']
     }
     outputs = {
