@@ -41,7 +41,7 @@ class ExampleViewSet(ModelViewSet):
 
     @detail_route(methods=['post'], serializer_class=AnotherSerializer)
     def custom_action(self, request, pk):
-        return super(ExampleSerializer, self).retrieve(self, request)
+        return super(ExampleViewSet, self).retrieve(self, request)
 
 
 class ExampleView(APIView):
