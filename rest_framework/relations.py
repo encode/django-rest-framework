@@ -168,7 +168,7 @@ class RelatedField(Field):
 
         return OrderedDict([
             (
-                six.text_type(self.to_representation(item)),
+                self.to_representation(item),
                 self.display_value(item)
             )
             for item in queryset
