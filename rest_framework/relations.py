@@ -10,7 +10,7 @@ from django.core.urlresolvers import (
 from django.db.models import Manager
 from django.db.models.query import QuerySet
 from django.utils import six
-from django.utils.encoding import smart_text
+from django.utils.encoding import force_text, smart_text
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
@@ -168,7 +168,7 @@ class RelatedField(Field):
 
         return OrderedDict([
             (
-                six.text_type(self.to_representation(item)),
+                force_text(self.to_representation(item), strings_only=True),
                 self.display_value(item)
             )
             for item in queryset
