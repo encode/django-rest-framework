@@ -86,9 +86,10 @@ class SchemaGenerator(object):
             endpoints = []
             for key, link, callback in self.endpoints:
                 method = link.action.upper()
-                view = callback.cls()
+                view = self.get_view(callback)
                 view.request = clone_request(request, method)
                 view.format_kwarg = None
+
                 try:
                     view.check_permissions(view.request)
                 except exceptions.APIException:
@@ -135,6 +136,15 @@ class SchemaGenerator(object):
 
         return api_endpoints
 
+    def get_view(self, callback):
+        """
+        Return constructed view with respect of overrided attributes by detail_route and list_route
+        """
+        view = callback.cls()
+        for attr, val in getattr(callback, 'initkwargs', {}).iteritems():
+            setattr(view, attr, val)
+        return view
+
     def get_path(self, path_regex):
         """
         Given a URL conf regex, return a URI template string.
@@ -165,9 +175,10 @@ class SchemaGenerator(object):
         if hasattr(callback, 'actions'):
             return [method.upper() for method in callback.actions.keys()]
 
+        view = self.get_view(callback)
         return [
             method for method in
-            callback.cls().allowed_methods if method not in ('OPTIONS', 'HEAD')
+            view.allowed_methods if method not in ('OPTIONS', 'HEAD')
         ]
 
     def get_key(self, path, method, callback):
@@ -194,9 +205,7 @@ class SchemaGenerator(object):
         """
         Return a `coreapi.Link` instance for the given endpoint.
         """
-        view = callback.cls()
-        for attr, val in getattr(callback, 'initkwargs', {}).items():
-            setattr(view, attr, val)
+        view = self.get_view(callback)
 
         fields = self.get_path_fields(path, method, callback, view)
         fields += self.get_serializer_fields(path, method, callback, view)

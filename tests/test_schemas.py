@@ -33,15 +33,25 @@ class AnotherSerializer(serializers.Serializer):
     d = serializers.CharField(required=False)
 
 
+class ForbidAll(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return False
+
+
 class ExampleViewSet(ModelViewSet):
     pagination_class = ExamplePagination
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.OrderingFilter]
     serializer_class = ExampleSerializer
 
-    @detail_route(methods=['post'], serializer_class=AnotherSerializer)
+    @detail_route(methods=['put', 'post'],
+                  serializer_class=AnotherSerializer)
     def custom_action(self, request, pk):
-        return super(ExampleSerializer, self).retrieve(self, request)
+        return super(ExampleSerializer, self).update(self, request)
+
+    @detail_route(permission_classes=[ForbidAll])
+    def forbidden_action(self, request, pk):
+        return super(ExampleSerializer, self).update(self, request)
 
 
 class ExampleView(APIView):
@@ -128,6 +138,16 @@ class TestRouterGeneratedSchema(TestCase):
                         action='get',
                         fields=[
                             coreapi.Field('pk', required=True, location='path')
+                        ]
+                    ),
+                    'custom_action': coreapi.Link(
+                        url='/example/{pk}/custom_action/',
+                        action='put',
+                        encoding='application/json',
+                        fields=[
+                            coreapi.Field('pk', required=True, location='path'),
+                            coreapi.Field('c', required=True, location='form'),
+                            coreapi.Field('d', required=False, location='form'),
                         ]
                     ),
                     'custom_action': coreapi.Link(
