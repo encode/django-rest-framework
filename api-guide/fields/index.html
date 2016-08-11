@@ -912,7 +912,7 @@ Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#st
 <p>A field class that simply returns the value of the field without modification.</p>
 <p>This field is used by default with <code>ModelSerializer</code> when including field names that relate to an attribute rather than a model field.</p>
 <p><strong>Signature</strong>: <code>ReadOnlyField()</code></p>
-<p>For example, is <code>has_expired</code> was a property on the <code>Account</code> model, then the following serializer would automatically generate it as a <code>ReadOnlyField</code>:</p>
+<p>For example, if <code>has_expired</code> was a property on the <code>Account</code> model, then the following serializer would automatically generate it as a <code>ReadOnlyField</code>:</p>
 <pre><code>class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account

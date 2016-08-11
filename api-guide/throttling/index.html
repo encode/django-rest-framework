@@ -568,7 +568,9 @@ class UploadView(APIView):
 <p>If the <code>.wait()</code> method is implemented and the request is throttled, then a <code>Retry-After</code> header will be included in the response.</p>
 <h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>The following is an example of a rate throttle, that will randomly throttle 1 in every 10 requests.</p>
-<pre><code>class RandomRateThrottle(throttling.BaseThrottle):
+<pre><code>import random
+
+class RandomRateThrottle(throttling.BaseThrottle):
     def allow_request(self, request, view):
         return random.randint(1, 10) == 1
 </code></pre>
