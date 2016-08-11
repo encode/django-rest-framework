@@ -64,7 +64,8 @@ class SchemaGenerator(object):
 
     def get_schema(self, request=None):
         if self.endpoints is None:
-            self.endpoints = self.get_api_endpoints(self.patterns)
+            endpoints = self.get_api_endpoints(self.patterns)
+            self.endpoints = self.add_categories(endpoints)
 
         links = []
         for path, method, category, action, callback in self.endpoints:
@@ -127,7 +128,7 @@ class SchemaGenerator(object):
                 )
                 api_endpoints.extend(nested_endpoints)
 
-        return self.add_categories(api_endpoints)
+        return api_endpoints
 
     def add_categories(self, api_endpoints):
         """
