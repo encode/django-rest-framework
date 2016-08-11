@@ -9,7 +9,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 from rest_framework.schemas import SchemaGenerator
-from rest_framework.test import APIClient
+from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
@@ -33,15 +33,25 @@ class AnotherSerializer(serializers.Serializer):
     d = serializers.CharField(required=False)
 
 
+class ForbidAll(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return False
+
+
 class ExampleViewSet(ModelViewSet):
     pagination_class = ExamplePagination
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.OrderingFilter]
     serializer_class = ExampleSerializer
 
-    @detail_route(methods=['post'], serializer_class=AnotherSerializer)
+    @detail_route(methods=['put', 'post'],
+                  serializer_class=AnotherSerializer)
     def custom_action(self, request, pk):
-        return super(ExampleSerializer, self).retrieve(self, request)
+        return super(ExampleSerializer, self).update(self, request)
+
+    @detail_route(permission_classes=[ForbidAll])
+    def forbidden_action(self, request, pk):
+        return super(ExampleSerializer, self).update(self, request)
 
     @list_route()
     def custom_list_action(self, request):
@@ -50,6 +60,15 @@ class ExampleViewSet(ModelViewSet):
     def get_serializer(self, *args, **kwargs):
         assert self.request
         return super(ExampleViewSet, self).get_serializer(*args, **kwargs)
+
+
+class RestrictiveViewSet(ModelViewSet):
+    permission_classes = [ForbidAll]
+    serializer_class = ExampleSerializer
+
+    @detail_route(methods=['put'], permission_classes=[permissions.AllowAny])
+    def allowed_action(self, request):
+        return super(RestrictiveViewSet, self).update(self, request)
 
 
 class ExampleView(APIView):
@@ -67,7 +86,14 @@ router.register('example', ExampleViewSet, base_name='example')
 urlpatterns = [
     url(r'^', include(router.urls))
 ]
-urlpatterns2 = [
+
+router = DefaultRouter(schema_title='Restrictive API' if coreapi else None)
+router.register('example', RestrictiveViewSet, base_name='example')
+urlpatterns_restrict = [
+    url(r'^', include(router.urls))
+]
+
+urlpatterns_view = [
     url(r'^example-view/$', ExampleView.as_view(), name='example-view')
 ]
 
@@ -144,6 +170,16 @@ class TestRouterGeneratedSchema(TestCase):
                     ),
                     'custom_action': coreapi.Link(
                         url='/example/{pk}/custom_action/',
+                        action='put',
+                        encoding='application/json',
+                        fields=[
+                            coreapi.Field('pk', required=True, location='path'),
+                            coreapi.Field('c', required=True, location='form'),
+                            coreapi.Field('d', required=False, location='form'),
+                        ]
+                    ),
+                    'custom_action': coreapi.Link(
+                        url='/example/{pk}/custom_action/',
                         action='post',
                         encoding='application/json',
                         fields=[
@@ -190,9 +226,38 @@ class TestRouterGeneratedSchema(TestCase):
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
+class TestSchemaForRestrictedMethods(TestCase):
+    def test_resctricted_methods(self):
+        schema_generator = SchemaGenerator(title='Restrictive API', patterns=urlpatterns_restrict)
+        factory = APIRequestFactory()
+        from rest_framework.request import Request
+        mock_request = factory.get('/')
+        schema = schema_generator.get_schema(request=Request(mock_request))
+        expected = coreapi.Document(
+            url='',
+            title='Restrictive API',
+            content={
+                'example': {
+                    'allowed_action': coreapi.Link(
+                        url='/example/{pk}/allowed_action/',
+                        action='put',
+                        encoding='application/json',
+                        fields=[
+                            coreapi.Field('pk', required=True, location='path'),
+                            coreapi.Field('a', required=True, location='form', description='A field description'),
+                            coreapi.Field('b', required=False, location='form')
+                        ]
+                    ),
+                }
+            }
+        )
+        self.assertEqual(schema, expected)
+
+
+@unittest.skipUnless(coreapi, 'coreapi is not installed')
 class TestSchemaGenerator(TestCase):
     def test_view(self):
-        schema_generator = SchemaGenerator(title='Test View', patterns=urlpatterns2)
+        schema_generator = SchemaGenerator(title='Test View', patterns=urlpatterns_view)
         schema = schema_generator.get_schema()
         expected = coreapi.Document(
             url='',

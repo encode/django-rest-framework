@@ -64,19 +64,19 @@ class SchemaGenerator(object):
 
     def get_schema(self, request=None):
         if self.endpoints is None:
-            self.endpoints = self.get_api_endpoints(self.patterns)
+            endpoints = self.get_api_endpoints(self.patterns)
+            self.endpoints = self.add_categories(endpoints)
 
         links = []
         for path, method, category, action, callback in self.endpoints:
-            view = callback.cls()
-            for attr, val in getattr(callback, 'initkwargs', {}).items():
-                setattr(view, attr, val)
+            view = self.get_view(callback)
             view.args = ()
             view.kwargs = {}
             view.format_kwarg = None
 
             if request is not None:
                 view.request = clone_request(request, method)
+
                 try:
                     view.check_permissions(view.request)
                 except exceptions.APIException:
@@ -128,7 +128,7 @@ class SchemaGenerator(object):
                 )
                 api_endpoints.extend(nested_endpoints)
 
-        return self.add_categories(api_endpoints)
+        return api_endpoints
 
     def add_categories(self, api_endpoints):
         """
@@ -143,6 +143,15 @@ class SchemaGenerator(object):
             (path, method, self.get_category(categories, path), action, callback)
             for (path, method, action, callback) in api_endpoints
         ]
+
+    def get_view(self, callback):
+        """
+        Return constructed view with respect of overrided attributes by detail_route and list_route
+        """
+        view = callback.cls()
+        for attr, val in getattr(callback, 'initkwargs', {}).items():
+            setattr(view, attr, val)
+        return view
 
     def get_path(self, path_regex):
         """
@@ -174,9 +183,10 @@ class SchemaGenerator(object):
         if hasattr(callback, 'actions'):
             return [method.upper() for method in callback.actions.keys()]
 
+        view = self.get_view(callback)
         return [
             method for method in
-            callback.cls().allowed_methods if method not in ('OPTIONS', 'HEAD')
+            view.allowed_methods if method not in ('OPTIONS', 'HEAD')
         ]
 
     def get_action(self, path, method, callback):
