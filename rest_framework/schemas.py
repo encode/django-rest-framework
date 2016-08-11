@@ -149,7 +149,7 @@ class SchemaGenerator(object):
         Return constructed view with respect of overrided attributes by detail_route and list_route
         """
         view = callback.cls()
-        for attr, val in getattr(callback, 'initkwargs', {}).iteritems():
+        for attr, val in getattr(callback, 'initkwargs', {}).items():
             setattr(view, attr, val)
         return view
 
