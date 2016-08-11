@@ -43,6 +43,10 @@ class ExampleViewSet(ModelViewSet):
     def custom_action(self, request, pk):
         return super(ExampleSerializer, self).retrieve(self, request)
 
+    def get_serializer(self, *args, **kwargs):
+        assert self.request
+        return super(ExampleViewSet, self).get_serializer(*args, **kwargs)
+
 
 class ExampleView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
