@@ -24,7 +24,7 @@ class ExamplePagination(pagination.PageNumberPagination):
 
 
 class ExampleSerializer(serializers.Serializer):
-    a = serializers.CharField(required=True)
+    a = serializers.CharField(required=True, help_text='A field description')
     b = serializers.CharField(required=False)
 
 
@@ -131,7 +131,7 @@ class TestRouterGeneratedSchema(TestCase):
                         action='post',
                         encoding='application/json',
                         fields=[
-                            coreapi.Field('a', required=True, location='form'),
+                            coreapi.Field('a', required=True, location='form', description='A field description'),
                             coreapi.Field('b', required=False, location='form')
                         ]
                     ),
@@ -162,7 +162,7 @@ class TestRouterGeneratedSchema(TestCase):
                         encoding='application/json',
                         fields=[
                             coreapi.Field('pk', required=True, location='path'),
-                            coreapi.Field('a', required=True, location='form'),
+                            coreapi.Field('a', required=True, location='form', description='A field description'),
                             coreapi.Field('b', required=False, location='form')
                         ]
                     ),
@@ -172,7 +172,7 @@ class TestRouterGeneratedSchema(TestCase):
                         encoding='application/json',
                         fields=[
                             coreapi.Field('pk', required=True, location='path'),
-                            coreapi.Field('a', required=False, location='form'),
+                            coreapi.Field('a', required=False, location='form', description='A field description'),
                             coreapi.Field('b', required=False, location='form')
                         ]
                     ),
