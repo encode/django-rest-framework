@@ -268,8 +268,7 @@ class SchemaGenerator(object):
 
         fields = []
 
-        serializer_class = view.get_serializer_class()
-        serializer = serializer_class()
+        serializer = view.get_serializer()
 
         if isinstance(serializer, serializers.ListSerializer):
             return coreapi.Field(name='data', location='body', required=True)
