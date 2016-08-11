@@ -44,14 +44,34 @@ class ReverseView(APIView):
         return Response({'url': reverse('another', request=request)})
 
 
-class RequestInvalidVersionView(APIView):
+class AllowedVersionsView(RequestVersionView):
     def determine_version(self, request, *args, **kwargs):
         scheme = self.versioning_class()
         scheme.allowed_versions = ('v1', 'v2')
         return (scheme.determine_version(request, *args, **kwargs), scheme)
 
-    def get(self, request, *args, **kwargs):
-        return Response({'version': request.version})
+
+class AllowedAndDefaultVersionsView(RequestVersionView):
+    def determine_version(self, request, *args, **kwargs):
+        scheme = self.versioning_class()
+        scheme.allowed_versions = ('v1', 'v2')
+        scheme.default_version = 'v2'
+        return (scheme.determine_version(request, *args, **kwargs), scheme)
+
+
+class AllowedWithNoneVersionsView(RequestVersionView):
+    def determine_version(self, request, *args, **kwargs):
+        scheme = self.versioning_class()
+        scheme.allowed_versions = ('v1', 'v2', None)
+        return (scheme.determine_version(request, *args, **kwargs), scheme)
+
+
+class AllowedWithNoneAndDefaultVersionsView(RequestVersionView):
+    def determine_version(self, request, *args, **kwargs):
+        scheme = self.versioning_class()
+        scheme.allowed_versions = ('v1', 'v2', None)
+        scheme.default_version = 'v2'
+        return (scheme.determine_version(request, *args, **kwargs), scheme)
 
 
 factory = APIRequestFactory()
@@ -219,7 +239,7 @@ class TestURLReversing(URLPatternsTestCase):
 class TestInvalidVersion:
     def test_invalid_query_param_versioning(self):
         scheme = versioning.QueryParameterVersioning
-        view = RequestInvalidVersionView.as_view(versioning_class=scheme)
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
 
         request = factory.get('/endpoint/?version=v3')
         response = view(request)
@@ -228,7 +248,7 @@ class TestInvalidVersion:
     @override_settings(ALLOWED_HOSTS=['*'])
     def test_invalid_host_name_versioning(self):
         scheme = versioning.HostNameVersioning
-        view = RequestInvalidVersionView.as_view(versioning_class=scheme)
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
 
         request = factory.get('/endpoint/', HTTP_HOST='v3.example.org')
         response = view(request)
@@ -236,7 +256,7 @@ class TestInvalidVersion:
 
     def test_invalid_accept_header_versioning(self):
         scheme = versioning.AcceptHeaderVersioning
-        view = RequestInvalidVersionView.as_view(versioning_class=scheme)
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
 
         request = factory.get('/endpoint/', HTTP_ACCEPT='application/json; version=v3')
         response = view(request)
@@ -244,7 +264,7 @@ class TestInvalidVersion:
 
     def test_invalid_url_path_versioning(self):
         scheme = versioning.URLPathVersioning
-        view = RequestInvalidVersionView.as_view(versioning_class=scheme)
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
 
         request = factory.get('/v3/endpoint/')
         response = view(request, version='v3')
@@ -255,12 +275,58 @@ class TestInvalidVersion:
             namespace = 'v3'
 
         scheme = versioning.NamespaceVersioning
-        view = RequestInvalidVersionView.as_view(versioning_class=scheme)
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
 
         request = factory.get('/v3/endpoint/')
         request.resolver_match = FakeResolverMatch
         response = view(request, version='v3')
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+class TestAllowedAndDefaultVersion:
+    def test_missing_without_default(self):
+        scheme = versioning.AcceptHeaderVersioning
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/', HTTP_ACCEPT='application/json')
+        response = view(request)
+        assert response.status_code == status.HTTP_406_NOT_ACCEPTABLE
+
+    def test_missing_with_default(self):
+        scheme = versioning.AcceptHeaderVersioning
+        view = AllowedAndDefaultVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/', HTTP_ACCEPT='application/json')
+        response = view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'version': 'v2'}
+
+    def test_with_default(self):
+        scheme = versioning.AcceptHeaderVersioning
+        view = AllowedAndDefaultVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/',
+                              HTTP_ACCEPT='application/json; version=v2')
+        response = view(request)
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_missing_without_default_but_none_allowed(self):
+        scheme = versioning.AcceptHeaderVersioning
+        view = AllowedWithNoneVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/', HTTP_ACCEPT='application/json')
+        response = view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'version': None}
+
+    def test_missing_with_default_and_none_allowed(self):
+        scheme = versioning.AcceptHeaderVersioning
+        view = AllowedWithNoneAndDefaultVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/', HTTP_ACCEPT='application/json')
+        response = view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'version': 'v2'}
 
 
 class TestHyperlinkedRelatedField(URLPatternsTestCase):

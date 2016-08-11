@@ -312,6 +312,9 @@ class LimitOffsetPagination(BasePagination):
         self.request = request
         if self.count > self.limit and self.template is not None:
             self.display_page_controls = True
+
+        if self.count == 0 or self.offset > self.count:
+            return []
         return list(queryset[self.offset:self.offset + self.limit])
 
     def get_paginated_response(self, data):

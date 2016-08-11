@@ -535,6 +535,8 @@ class TestCharField(FieldValues):
         'abc': 'abc'
     }
     invalid_inputs = {
+        (): ['Not a valid string.'],
+        True: ['Not a valid string.'],
         '': ['This field may not be blank.']
     }
     outputs = {
@@ -874,6 +876,18 @@ class TestMinMaxDecimalField(FieldValues):
         max_digits=3, decimal_places=1,
         min_value=10, max_value=20
     )
+
+
+class TestNoMaxDigitsDecimalField(FieldValues):
+    field = serializers.DecimalField(
+        max_value=100, min_value=0,
+        decimal_places=2, max_digits=None
+    )
+    valid_inputs = {
+        '10': Decimal('10.00')
+    }
+    invalid_inputs = {}
+    outputs = {}
 
 
 class TestNoStringCoercionDecimalField(FieldValues):

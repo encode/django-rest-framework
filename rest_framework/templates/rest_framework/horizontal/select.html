@@ -1,3 +1,5 @@
+{% load rest_framework %}
+
 <div class="form-group">
   {% if field.label %}
     <label class="col-sm-2 control-label {% if style.hide_label %}sr-only{% endif %}">
@@ -16,7 +18,7 @@
           {% elif select.end_option_group %}
             </optgroup>
           {% else %}
-            <option value="{{ select.value }}" {% if select.value == field.value %}selected{% endif %} {% if select.disabled %}disabled{% endif %}>{{ select.display_text }}</option>
+            <option value="{{ select.value }}" {% if select.value|as_string == field.value|as_string %}selected{% endif %} {% if select.disabled %}disabled{% endif %}>{{ select.display_text }}</option>
           {% endif %}
       {% endfor %}
     </select>
