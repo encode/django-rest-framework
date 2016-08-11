@@ -263,19 +263,18 @@ class SchemaGenerator(object):
         if method not in ('PUT', 'PATCH', 'POST'):
             return []
 
-        if not hasattr(view, 'get_serializer_class'):
+        if not hasattr(view, 'get_serializer'):
             return []
-
-        fields = []
 
         serializer = view.get_serializer()
 
         if isinstance(serializer, serializers.ListSerializer):
-            return coreapi.Field(name='data', location='body', required=True)
+            return [coreapi.Field(name='data', location='body', required=True)]
 
         if not isinstance(serializer, serializers.Serializer):
             return []
 
+        fields = []
         for field in serializer.fields.values():
             if field.read_only:
                 continue
