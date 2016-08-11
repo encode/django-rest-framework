@@ -24,4 +24,4 @@ class ObtainAuthToken(APIView):
         return response
 
 
-obtain_auth_token = ObtainAuthToken.as_view
+obtain_auth_token = ObtainAuthToken.as_view()
