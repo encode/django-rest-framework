@@ -1656,7 +1656,7 @@ class SerializerMethodField(Field):
     def bind(self, field_name, parent):
         # In order to enforce a consistent style, we error if a redundant
         # 'method_name' argument has been used. For example:
-        # my_field = serializer.CharField(source='my_field')
+        # my_field = serializer.SerializerMethodField(method_name='get_my_field')
         default_method_name = 'get_{field_name}'.format(field_name=field_name)
         assert self.method_name != default_method_name, (
             "It is redundant to specify `%s` on SerializerMethodField '%s' in "
