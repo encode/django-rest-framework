@@ -5,7 +5,7 @@ from django.test import TestCase, override_settings
 
 from rest_framework import filters, pagination, permissions, serializers
 from rest_framework.compat import coreapi
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 from rest_framework.schemas import SchemaGenerator
@@ -42,6 +42,10 @@ class ExampleViewSet(ModelViewSet):
     @detail_route(methods=['post'], serializer_class=AnotherSerializer)
     def custom_action(self, request, pk):
         return super(ExampleSerializer, self).retrieve(self, request)
+
+    @list_route()
+    def custom_list_action(self, request):
+        return super(ExampleViewSet, self).list(self, request)
 
     def get_serializer(self, *args, **kwargs):
         assert self.request
@@ -87,6 +91,10 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('page', required=False, location='query'),
                             coreapi.Field('ordering', required=False, location='query')
                         ]
+                    ),
+                    'custom_list_action': coreapi.Link(
+                        url='/example/custom_list_action/',
+                        action='get'
                     ),
                     'retrieve': coreapi.Link(
                         url='/example/{pk}/',
@@ -143,6 +151,10 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('c', required=True, location='form'),
                             coreapi.Field('d', required=False, location='form'),
                         ]
+                    ),
+                    'custom_list_action': coreapi.Link(
+                        url='/example/custom_list_action/',
+                        action='get'
                     ),
                     'update': coreapi.Link(
                         url='/example/{pk}/',
