@@ -68,8 +68,7 @@ REST framework commercially we strongly encourage you to invest in its
 continued development by **[signing up for a paid plan][funding]**.
 
 The initial aim is to provide a single full-time position on REST framework.
-Right now we're over 58% of the way towards achieving that.
-*Every single sign-up makes a significant impact.*
+*Every single sign-up makes a significant impact towards making that possible.*
 
 <ul class="premium-promo promo">
     <li><a href="http://jobs.rover.com/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rover_130x130.png)">Rover.com</a></li>
@@ -87,7 +86,7 @@ Right now we're over 58% of the way towards achieving that.
 REST framework requires the following:
 
 * Python (2.7, 3.2, 3.3, 3.4, 3.5)
-* Django (1.7+, 1.8, 1.9)
+* Django (1.8, 1.9, 1.10)
 
 The following packages are optional:
 

@@ -440,7 +440,7 @@ class FailingAuthAccessedInRenderer(TestCase):
 class NoAuthenticationClassesTests(TestCase):
     def test_permission_message_with_no_authentication_classes(self):
         """
-        An unauthenticated request made against a view that containes no
+        An unauthenticated request made against a view that contains no
         `authentication_classes` but do contain `permissions_classes` the error
         code returned should be 403 with the exception's message.
         """

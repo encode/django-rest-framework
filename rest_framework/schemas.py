@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
 from django.core.urlresolvers import RegexURLPattern, RegexURLResolver
 from django.utils import six
+from django.utils.encoding import force_text
 
 from rest_framework import exceptions, serializers
 from rest_framework.compat import coreapi, uritemplate, urlparse
@@ -30,24 +31,6 @@ def is_api_view(callback):
     return (cls is not None) and issubclass(cls, APIView)
 
 
-def insert_into(target, keys, item):
-    """
-    Insert `item` into the nested dictionary `target`.
-
-    For example:
-
-        target = {}
-        insert_into(target, ('users', 'list'), Link(...))
-        insert_into(target, ('users', 'detail'), Link(...))
-        assert target == {'users': {'list': Link(...), 'detail': Link(...)}}
-    """
-    for key in keys[:1]:
-        if key not in target:
-            target[key] = {}
-        target = target[key]
-    target[keys[-1]] = item
-
-
 class SchemaGenerator(object):
     default_mapping = {
         'get': 'read',
@@ -56,6 +39,10 @@ class SchemaGenerator(object):
         'patch': 'partial_update',
         'delete': 'destroy',
     }
+    known_actions = (
+        'create', 'read', 'retrieve', 'list',
+        'update', 'partial_update', 'destroy'
+    )
 
     def __init__(self, title=None, url=None, patterns=None, urlconf=None):
         assert coreapi, '`coreapi` must be installed for schema support.'
@@ -65,45 +52,58 @@ class SchemaGenerator(object):
                 urls = import_module(urlconf)
             else:
                 urls = urlconf
-            patterns = urls.urlpatterns
+            self.patterns = urls.urlpatterns
         elif patterns is None and urlconf is None:
             urls = import_module(settings.ROOT_URLCONF)
-            patterns = urls.urlpatterns
+            self.patterns = urls.urlpatterns
+        else:
+            self.patterns = patterns
 
         if url and not url.endswith('/'):
             url += '/'
 
         self.title = title
         self.url = url
-        self.endpoints = self.get_api_endpoints(patterns)
+        self.endpoints = None
 
     def get_schema(self, request=None):
-        if request is None:
-            endpoints = self.endpoints
-        else:
-            # Filter the list of endpoints to only include those that
-            # the user has permission on.
-            endpoints = []
-            for key, link, callback in self.endpoints:
-                method = link.action.upper()
-                view = callback.cls()
+        if self.endpoints is None:
+            self.endpoints = self.get_api_endpoints(self.patterns)
+
+        links = []
+        for path, method, category, action, callback in self.endpoints:
+            view = callback.cls()
+            for attr, val in getattr(callback, 'initkwargs', {}).items():
+                setattr(view, attr, val)
+            view.args = ()
+            view.kwargs = {}
+            view.format_kwarg = None
+
+            if request is not None:
                 view.request = clone_request(request, method)
-                view.format_kwarg = None
                 try:
                     view.check_permissions(view.request)
                 except exceptions.APIException:
-                    pass
-                else:
-                    endpoints.append((key, link, callback))
+                    continue
+            else:
+                view.request = None
 
-        if not endpoints:
+            link = self.get_link(path, method, callback, view)
+            links.append((category, action, link))
+
+        if not links:
             return None
 
-        # Generate the schema content structure, from the endpoints.
-        # ('users', 'list'), Link -> {'users': {'list': Link()}}
+        # Generate the schema content structure, eg:
+        # {'users': {'list': Link()}}
         content = {}
-        for key, link, callback in endpoints:
-            insert_into(content, key, link)
+        for category, action, link in links:
+            if category is None:
+                content[action] = link
+            elif category in content:
+                content[category][action] = link
+            else:
+                content[category] = {action: link}
 
         # Return the schema document.
         return coreapi.Document(title=self.title, content=content, url=self.url)
@@ -121,9 +121,9 @@ class SchemaGenerator(object):
                 callback = pattern.callback
                 if self.should_include_endpoint(path, callback):
                     for method in self.get_allowed_methods(callback):
-                        key = self.get_key(path, method, callback)
-                        link = self.get_link(path, method, callback)
-                        endpoint = (key, link, callback)
+                        action = self.get_action(path, method, callback)
+                        category = self.get_category(path, method, callback, action)
+                        endpoint = (path, method, category, action, callback)
                         api_endpoints.append(endpoint)
 
             elif isinstance(pattern, RegexURLResolver):
@@ -167,35 +167,53 @@ class SchemaGenerator(object):
 
         return [
             method for method in
-            callback.cls().allowed_methods if method != 'OPTIONS'
+            callback.cls().allowed_methods if method not in ('OPTIONS', 'HEAD')
         ]
 
-    def get_key(self, path, method, callback):
+    def get_action(self, path, method, callback):
         """
-        Return a tuple of strings, indicating the identity to use for a
-        given endpoint. eg. ('users', 'list').
+        Return a descriptive action string for the endpoint, eg. 'list'.
         """
-        category = None
-        for item in path.strip('/').split('/'):
-            if '{' in item:
-                break
-            category = item
-
         actions = getattr(callback, 'actions', self.default_mapping)
-        action = actions[method.lower()]
+        return actions[method.lower()]
 
-        if category:
-            return (category, action)
-        return (action,)
+    def get_category(self, path, method, callback, action):
+        """
+        Return a descriptive category string for the endpoint, eg. 'users'.
+
+        Examples of category/action pairs that should be generated for various
+        endpoints:
+
+        /users/                     [users][list], [users][create]
+        /users/{pk}/                [users][read], [users][update], [users][destroy]
+        /users/enabled/             [users][enabled]  (custom action)
+        /users/{pk}/star/           [users][star]     (custom action)
+        /users/{pk}/groups/         [groups][list], [groups][create]
+        /users/{pk}/groups/{pk}/    [groups][read], [groups][update], [groups][destroy]
+        """
+        path_components = path.strip('/').split('/')
+        path_components = [
+            component for component in path_components
+            if '{' not in component
+        ]
+        if action in self.known_actions:
+            # Default action, eg "/users/", "/users/{pk}/"
+            idx = -1
+        else:
+            # Custom action, eg "/users/{pk}/activate/", "/users/active/"
+            idx = -2
+
+        try:
+            return path_components[idx]
+        except IndexError:
+            return None
 
     # Methods for generating each individual `Link` instance...
 
-    def get_link(self, path, method, callback):
+    def get_link(self, path, method, callback, view):
         """
         Return a `coreapi.Link` instance for the given endpoint.
         """
-        view = callback.cls()
-
         fields = self.get_path_fields(path, method, callback, view)
         fields += self.get_serializer_fields(path, method, callback, view)
         fields += self.get_pagination_fields(path, method, callback, view)
@@ -205,6 +223,9 @@ class SchemaGenerator(object):
             encoding = self.get_encoding(path, method, callback, view)
         else:
             encoding = None
+
+        if self.url and path.startswith('/'):
+            path = path[1:]
 
         return coreapi.Link(
             url=urlparse.urljoin(self.url, path),
@@ -255,25 +276,29 @@ class SchemaGenerator(object):
         if method not in ('PUT', 'PATCH', 'POST'):
             return []
 
-        if not hasattr(view, 'get_serializer_class'):
+        if not hasattr(view, 'get_serializer'):
             return []
 
-        fields = []
-
-        serializer_class = view.get_serializer_class()
-        serializer = serializer_class()
+        serializer = view.get_serializer()
 
         if isinstance(serializer, serializers.ListSerializer):
-            return coreapi.Field(name='data', location='body', required=True)
+            return [coreapi.Field(name='data', location='body', required=True)]
 
         if not isinstance(serializer, serializers.Serializer):
             return []
 
+        fields = []
         for field in serializer.fields.values():
             if field.read_only:
                 continue
             required = field.required and method != 'PATCH'
-            field = coreapi.Field(name=field.source, location='form', required=required)
+            description = force_text(field.help_text) if field.help_text else ''
+            field = coreapi.Field(
+                name=field.source,
+                location='form',
+                required=required,
+                description=description
+            )
             fields.append(field)
 
         return fields

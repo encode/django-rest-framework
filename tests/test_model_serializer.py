@@ -136,7 +136,7 @@ class TestModelSerializer(TestCase):
 class TestRegularFieldMappings(TestCase):
     def test_regular_fields(self):
         """
-        Model fields should map to their equivelent serializer fields.
+        Model fields should map to their equivalent serializer fields.
         """
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
@@ -614,7 +614,7 @@ class TestRelationalFieldDisplayValue(TestCase):
                 fields = '__all__'
 
         serializer = TestSerializer()
-        expected = OrderedDict([('1', 'Red Color'), ('2', 'Yellow Color'), ('3', 'Green Color')])
+        expected = OrderedDict([(1, 'Red Color'), (2, 'Yellow Color'), (3, 'Green Color')])
         self.assertEqual(serializer.fields['color'].choices, expected)
 
     def test_custom_display_value(self):
@@ -630,7 +630,7 @@ class TestRelationalFieldDisplayValue(TestCase):
                 fields = '__all__'
 
         serializer = TestSerializer()
-        expected = OrderedDict([('1', 'My Red Color'), ('2', 'My Yellow Color'), ('3', 'My Green Color')])
+        expected = OrderedDict([(1, 'My Red Color'), (2, 'My Yellow Color'), (3, 'My Green Color')])
         self.assertEqual(serializer.fields['color'].choices, expected)
 
 
@@ -976,3 +976,22 @@ class TestModelFieldValues(TestCase):
         source = OneToOneSourceTestModel(target=target)
         serializer = ExampleSerializer(source)
         self.assertEqual(serializer.data, {'target': 1})
+
+
+class TestUniquenessOverride(TestCase):
+    def test_required_not_overwritten(self):
+        class TestModel(models.Model):
+            field_1 = models.IntegerField(null=True)
+            field_2 = models.IntegerField()
+
+            class Meta:
+                unique_together = (('field_1', 'field_2'),)
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = TestModel
+                extra_kwargs = {'field_1': {'required': False}}
+
+        fields = TestSerializer().fields
+        self.assertFalse(fields['field_1'].required)
+        self.assertTrue(fields['field_2'].required)

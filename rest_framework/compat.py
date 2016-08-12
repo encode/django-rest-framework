@@ -122,6 +122,12 @@ def _resolve_model(obj):
     raise ValueError("{0} is not a Django model".format(obj))
 
 
+def is_authenticated(user):
+    if django.VERSION < (1, 10):
+        return user.is_authenticated()
+    return user.is_authenticated
+
+
 def get_related_model(field):
     if django.VERSION < (1, 9):
         return _resolve_model(field.rel.to)
@@ -162,7 +168,7 @@ except ImportError:
     crispy_forms = None
 
 
-# coreapi is optional (Note that uritemplate is a dependancy of coreapi)
+# coreapi is optional (Note that uritemplate is a dependency of coreapi)
 try:
     import coreapi
     import uritemplate

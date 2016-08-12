@@ -2,8 +2,11 @@
 
 from __future__ import unicode_literals
 
+import pytest
 from django import forms
-from django.core.files.uploadhandler import MemoryFileUploadHandler
+from django.core.files.uploadhandler import (
+    MemoryFileUploadHandler, TemporaryFileUploadHandler
+)
 from django.test import TestCase
 from django.utils.six.moves import StringIO
 
@@ -63,8 +66,9 @@ class TestFileUploadParser(TestCase):
         parser = FileUploadParser()
         self.stream.seek(0)
         self.parser_context['request'].META['HTTP_CONTENT_DISPOSITION'] = ''
-        with self.assertRaises(ParseError):
+        with pytest.raises(ParseError) as excinfo:
             parser.parse(self.stream, None, self.parser_context)
+        assert str(excinfo.value) == 'Missing filename. Request should include a Content-Disposition header with a filename parameter.'
 
     def test_parse_missing_filename_multiple_upload_handlers(self):
         """
@@ -78,8 +82,23 @@ class TestFileUploadParser(TestCase):
             MemoryFileUploadHandler()
         )
         self.parser_context['request'].META['HTTP_CONTENT_DISPOSITION'] = ''
-        with self.assertRaises(ParseError):
+        with pytest.raises(ParseError) as excinfo:
             parser.parse(self.stream, None, self.parser_context)
+        assert str(excinfo.value) == 'Missing filename. Request should include a Content-Disposition header with a filename parameter.'
+
+    def test_parse_missing_filename_large_file(self):
+        """
+        Parse raw file upload when filename is missing with TemporaryFileUploadHandler.
+        """
+        parser = FileUploadParser()
+        self.stream.seek(0)
+        self.parser_context['request'].upload_handlers = (
+            TemporaryFileUploadHandler(),
+        )
+        self.parser_context['request'].META['HTTP_CONTENT_DISPOSITION'] = ''
+        with pytest.raises(ParseError) as excinfo:
+            parser.parse(self.stream, None, self.parser_context)
+        assert str(excinfo.value) == 'Missing filename. Request should include a Content-Disposition header with a filename parameter.'
 
     def test_get_filename(self):
         parser = FileUploadParser()

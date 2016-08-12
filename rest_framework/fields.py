@@ -395,8 +395,8 @@ class Field(object):
                 # determine if we should use null instead.
                 return '' if getattr(self, 'allow_blank', False) else None
             elif ret == '' and not self.required:
-                # If the field is blank, and emptyness is valid then
-                # determine if we should use emptyness instead.
+                # If the field is blank, and emptiness is valid then
+                # determine if we should use emptiness instead.
                 return '' if getattr(self, 'allow_blank', False) else empty
             return ret
         return dictionary.get(self.field_name, empty)
@@ -435,7 +435,8 @@ class Field(object):
         return `empty`, indicating that no value should be set in the
         validated data for this field.
         """
-        if self.default is empty:
+        if self.default is empty or getattr(self.root, 'partial', False):
+            # No default, or this is a partial update.
             raise SkipField()
         if callable(self.default):
             if hasattr(self.default, 'set_context'):
@@ -671,6 +672,7 @@ class NullBooleanField(Field):
 
 class CharField(Field):
     default_error_messages = {
+        'invalid': _('Not a valid string.'),
         'blank': _('This field may not be blank.'),
         'max_length': _('Ensure this field has no more than {max_length} characters.'),
         'min_length': _('Ensure this field has at least {min_length} characters.')
@@ -701,6 +703,11 @@ class CharField(Field):
         return super(CharField, self).run_validation(data)
 
     def to_internal_value(self, data):
+        # We're lenient with allowing basic numerics to be coerced into strings,
+        # but other types should fail. Eg. unclear if booleans should represent as `true` or `True`,
+        # and composites such as lists are likely user error.
+        if isinstance(data, bool) or not isinstance(data, six.string_types + six.integer_types + (float,)):
+            self.fail('invalid')
         value = six.text_type(data)
         return value.strip() if self.trim_whitespace else value
 
@@ -804,7 +811,10 @@ class IPAddressField(CharField):
         self.validators.extend(validators)
 
     def to_internal_value(self, data):
-        if data and ':' in data:
+        if not isinstance(data, six.string_types):
+            self.fail('invalid', value=data)
+
+        if ':' in data:
             try:
                 if self.protocol in ('both', 'ipv6'):
                     return clean_ipv6_address(data, self.unpack_ipv4)
@@ -952,7 +962,7 @@ class DecimalField(Field):
         if value in (decimal.Decimal('Inf'), decimal.Decimal('-Inf')):
             self.fail('invalid')
 
-        return self.validate_precision(value)
+        return self.quantize(self.validate_precision(value))
 
     def validate_precision(self, value):
         """
@@ -1012,10 +1022,12 @@ class DecimalField(Field):
             return value
 
         context = decimal.getcontext().copy()
-        context.prec = self.max_digits
+        if self.max_digits is not None:
+            context.prec = self.max_digits
         return value.quantize(
             decimal.Decimal('.1') ** self.decimal_places,
-            context=context)
+            context=context
+        )
 
 
 # Date & time fields...
@@ -1341,7 +1353,7 @@ class FilePathField(ChoiceField):
 
     def __init__(self, path, match=None, recursive=False, allow_files=True,
                  allow_folders=False, required=None, **kwargs):
-        # Defer to Django's FilePathField implmentation to get the
+        # Defer to Django's FilePathField implementation to get the
         # valid set of choices.
         field = DjangoFilePathField(
             path, match=match, recursive=recursive, allow_files=allow_files,
@@ -1644,7 +1656,7 @@ class SerializerMethodField(Field):
     def bind(self, field_name, parent):
         # In order to enforce a consistent style, we error if a redundant
         # 'method_name' argument has been used. For example:
-        # my_field = serializer.CharField(source='my_field')
+        # my_field = serializer.SerializerMethodField(method_name='get_my_field')
         default_method_name = 'get_{field_name}'.format(field_name=field_name)
         assert self.method_name != default_method_name, (
             "It is redundant to specify `%s` on SerializerMethodField '%s' in "

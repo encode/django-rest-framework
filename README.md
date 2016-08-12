@@ -18,8 +18,7 @@ REST framework commercially we strongly encourage you to invest in its
 continued development by **[signing up for a paid plan][funding]**.
 
 The initial aim is to provide a single full-time position on REST framework.
-Right now we're over 58% of the way towards achieving that.
-*Every single sign-up makes a significant impact.*
+*Every single sign-up makes a significant impact towards making that possible.*
 
 <p align="center">
   <a href="http://jobs.rover.com/"><img src="https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/premium/rover-readme.png"/></a>

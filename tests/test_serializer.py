@@ -309,3 +309,31 @@ class TestCacheSerializerData:
         pickled = pickle.dumps(serializer.data)
         data = pickle.loads(pickled)
         assert data == {'field1': 'a', 'field2': 'b'}
+
+
+class TestDefaultInclusions:
+    def setup(self):
+        class ExampleSerializer(serializers.Serializer):
+            char = serializers.CharField(read_only=True, default='abc')
+            integer = serializers.IntegerField()
+        self.Serializer = ExampleSerializer
+
+    def test_default_should_included_on_create(self):
+        serializer = self.Serializer(data={'integer': 456})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'char': 'abc', 'integer': 456}
+        assert serializer.errors == {}
+
+    def test_default_should_be_included_on_update(self):
+        instance = MockObject(char='def', integer=123)
+        serializer = self.Serializer(instance, data={'integer': 456})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'char': 'abc', 'integer': 456}
+        assert serializer.errors == {}
+
+    def test_default_should_not_be_included_on_partial_update(self):
+        instance = MockObject(char='def', integer=123)
+        serializer = self.Serializer(instance, data={'integer': 456}, partial=True)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'integer': 456}
+        assert serializer.errors == {}

@@ -5,6 +5,7 @@ from django.test import TestCase, override_settings
 
 from rest_framework import filters, pagination, permissions, serializers
 from rest_framework.compat import coreapi
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 from rest_framework.schemas import SchemaGenerator
@@ -23,8 +24,13 @@ class ExamplePagination(pagination.PageNumberPagination):
 
 
 class ExampleSerializer(serializers.Serializer):
-    a = serializers.CharField(required=True)
+    a = serializers.CharField(required=True, help_text='A field description')
     b = serializers.CharField(required=False)
+
+
+class AnotherSerializer(serializers.Serializer):
+    c = serializers.CharField(required=True)
+    d = serializers.CharField(required=False)
 
 
 class ExampleViewSet(ModelViewSet):
@@ -32,6 +38,18 @@ class ExampleViewSet(ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.OrderingFilter]
     serializer_class = ExampleSerializer
+
+    @detail_route(methods=['post'], serializer_class=AnotherSerializer)
+    def custom_action(self, request, pk):
+        return super(ExampleSerializer, self).retrieve(self, request)
+
+    @list_route()
+    def custom_list_action(self, request):
+        return super(ExampleViewSet, self).list(self, request)
+
+    def get_serializer(self, *args, **kwargs):
+        assert self.request
+        return super(ExampleViewSet, self).get_serializer(*args, **kwargs)
 
 
 class ExampleView(APIView):
@@ -74,6 +92,10 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('ordering', required=False, location='query')
                         ]
                     ),
+                    'custom_list_action': coreapi.Link(
+                        url='/example/custom_list_action/',
+                        action='get'
+                    ),
                     'retrieve': coreapi.Link(
                         url='/example/{pk}/',
                         action='get',
@@ -109,7 +131,7 @@ class TestRouterGeneratedSchema(TestCase):
                         action='post',
                         encoding='application/json',
                         fields=[
-                            coreapi.Field('a', required=True, location='form'),
+                            coreapi.Field('a', required=True, location='form', description='A field description'),
                             coreapi.Field('b', required=False, location='form')
                         ]
                     ),
@@ -120,13 +142,27 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('pk', required=True, location='path')
                         ]
                     ),
+                    'custom_action': coreapi.Link(
+                        url='/example/{pk}/custom_action/',
+                        action='post',
+                        encoding='application/json',
+                        fields=[
+                            coreapi.Field('pk', required=True, location='path'),
+                            coreapi.Field('c', required=True, location='form'),
+                            coreapi.Field('d', required=False, location='form'),
+                        ]
+                    ),
+                    'custom_list_action': coreapi.Link(
+                        url='/example/custom_list_action/',
+                        action='get'
+                    ),
                     'update': coreapi.Link(
                         url='/example/{pk}/',
                         action='put',
                         encoding='application/json',
                         fields=[
                             coreapi.Field('pk', required=True, location='path'),
-                            coreapi.Field('a', required=True, location='form'),
+                            coreapi.Field('a', required=True, location='form', description='A field description'),
                             coreapi.Field('b', required=False, location='form')
                         ]
                     ),
@@ -136,7 +172,7 @@ class TestRouterGeneratedSchema(TestCase):
                         encoding='application/json',
                         fields=[
                             coreapi.Field('pk', required=True, location='path'),
-                            coreapi.Field('a', required=False, location='form'),
+                            coreapi.Field('a', required=False, location='form', description='A field description'),
                             coreapi.Field('b', required=False, location='form')
                         ]
                     ),

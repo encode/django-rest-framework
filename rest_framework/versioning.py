@@ -30,7 +30,8 @@ class BaseVersioning(object):
     def is_allowed_version(self, version):
         if not self.allowed_versions:
             return True
-        return (version == self.default_version) or (version in self.allowed_versions)
+        return ((version is not None and version == self.default_version) or
+                (version in self.allowed_versions))
 
 
 class AcceptHeaderVersioning(BaseVersioning):
@@ -94,7 +95,7 @@ class NamespaceVersioning(BaseVersioning):
     The difference is in the backend - this implementation uses
     Django's URL namespaces to determine the version.
 
-    An example URL conf that is namespaced into two seperate versions
+    An example URL conf that is namespaced into two separate versions
 
     # users/urls.py
     urlpatterns = [
@@ -147,7 +148,7 @@ class HostNameVersioning(BaseVersioning):
     invalid_version_message = _('Invalid version in hostname.')
 
     def determine_version(self, request, *args, **kwargs):
-        hostname, seperator, port = request.get_host().partition(':')
+        hostname, separator, port = request.get_host().partition(':')
         match = self.hostname_regex.match(hostname)
         if not match:
             return self.default_version

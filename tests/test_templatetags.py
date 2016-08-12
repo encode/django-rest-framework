@@ -13,7 +13,7 @@ factory = APIRequestFactory()
 
 class TemplateTagTests(TestCase):
 
-    def test_add_query_param_with_non_latin_charactor(self):
+    def test_add_query_param_with_non_latin_character(self):
         # Ensure we don't double-escape non-latin characters
         # that are present in the querystring.
         # See #1314.

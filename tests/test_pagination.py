@@ -67,8 +67,8 @@ class TestPaginationIntegration:
 
     def test_setting_page_size_over_maximum(self):
         """
-        When page_size parameter exceeds maxiumum allowable,
-        then it should be capped to the maxiumum.
+        When page_size parameter exceeds maximum allowable,
+        then it should be capped to the maximum.
         """
         request = factory.get('/', {'page_size': 1000})
         response = self.view(request)
@@ -105,6 +105,17 @@ class TestPaginationIntegration:
             'results': [12, 14, 16, 18, 20],
             'previous': 'http://testserver/?filter=even',
             'next': 'http://testserver/?filter=even&page=3',
+            'count': 50
+        }
+
+    def test_empty_query_params_are_preserved(self):
+        request = factory.get('/', {'page': 2, 'filter': ''})
+        response = self.view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {
+            'results': [12, 14, 16, 18, 20],
+            'previous': 'http://testserver/?filter=',
+            'next': 'http://testserver/?filter=&page=3',
             'count': 50
         }
 
@@ -259,7 +270,7 @@ class TestPageNumberPaginationOverride:
 
     def setup(self):
         class OverriddenDjangoPaginator(DjangoPaginator):
-            # override the count in our overriden Django Paginator
+            # override the count in our overridden Django Paginator
             # we will only return one page, with one item
             count = 1
 

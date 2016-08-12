@@ -241,7 +241,6 @@ For more details on using filter sets see the [django-filter documentation][djan
 * By default filtering is not enabled.  If you want to use `DjangoFilterBackend` remember to make sure it is installed by using the `'DEFAULT_FILTER_BACKENDS'` setting.
 * When using boolean fields, you should use the values `True` and `False` in the URL query parameters, rather than `0`, `1`, `true` or `false`.  (The allowed boolean values are currently hardwired in Django's [NullBooleanSelect implementation][nullbooleanselect].)
 * `django-filter` supports filtering across relationships, using Django's double-underscore syntax.
-* For Django 1.3 support, make sure to install `django-filter` version 0.5.4, as later versions drop support for 1.3.
 
 ---
 
