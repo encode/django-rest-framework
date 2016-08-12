@@ -40,7 +40,9 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.4.x series
 
-### 3.4.4 [12th August 2016][3.4.4-milestone]
+### 3.4.4
+
+**Date**: [12th August 2016][3.4.4-milestone]
 
 * Ensure views are fully initialized when generating schemas. ([#4373][gh4373], [#4382][gh4382], [#4383][gh4383], [#4279][gh4279], [#4278][gh4278])
 * Add form field descriptions to schemas. ([#4387][gh4387])
