@@ -180,6 +180,16 @@ class SchemaGenerator(object):
     def get_category(self, path, method, callback, action):
         """
         Return a descriptive category string for the endpoint, eg. 'users'.
+
+        Examples of category/action pairs that should be generated for various
+        endpoints:
+
+        /users/                     [users][list], [users][create]
+        /users/{pk}/                [users][read], [users][update], [users][destroy]
+        /users/enabled/             [users][enabled]  (custom action)
+        /users/{pk}/star/           [users][star]     (custom action)
+        /users/{pk}/groups/         [groups][list], [groups][create]
+        /users/{pk}/groups/{pk}/    [groups][read], [groups][update], [groups][destroy]
         """
         path_components = path.strip('/').split('/')
         path_components = [
