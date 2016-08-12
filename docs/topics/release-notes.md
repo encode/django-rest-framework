@@ -40,6 +40,23 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.4.x series
 
+### 3.4.4 [12th August 2016][3.4.4-milestone]
+
+* Ensure views are fully initialized when generating schemas. ([#4373][gh4373], [#4382][gh4382], [#4383][gh4383], [#4279][gh4279], [#4278][gh4278])
+* Add form field descriptions to schemas. ([#4387][gh4387])
+* Fix category generation for schema endpoints. ([#4391][gh4391], [#4394][gh4394], [#4390][gh4390], [#4386][gh4386], [#4376][gh4376], [#4329][gh4329])
+* Don't strip empty query params when paginating. ([#4392][gh4392], [#4393][gh4393], [#4260][gh4260])
+* Do not re-run query for empty results with LimitOffsetPagination. ([#4201][gh4201], [#4388][gh4388])
+* Stricter type validation for CharField. ([#4380][gh4380], [#3394][gh3394])
+* RelatedField.choices should preserve non-string values. ([#4111][gh4111], [#4379][gh4379], [#3365][gh3365])
+* Test case for rendering checkboxes in vertical form style. ([#4378][gh4378], [#3868][gh3868], [#3868][gh3868])
+* Show error traceback HTML in browsable API ([#4042][gh4042], [#4172][gh4172])
+* Fix handling of ALLOWED_VERSIONS and no DEFAULT_VERSION. [#4370][gh4370]
+* Allow `max_digits=None` on DecimalField. ([#4377][gh4377], [#4372][gh4372])
+* Limit queryset when rendering relational choices. ([#4375][gh4375], [#4122][gh4122], [#3329][gh3329], [#3330][gh3330], [#3877][gh3877])
+* Resolve form display with ChoiceField, MultipleChoiceField and non-string choices. ([#4374][gh4374], [#4119][gh4119], [#4121][gh4121], [#4137][gh4137], [#4120][gh4120])
+* Fix call to TemplateHTMLRenderer.resolve_context() fallback method. ([#4371][gh4371])
+
 ### 3.4.3
 
 **Date**: [5th August 2016][3.4.3-milestone]
@@ -540,6 +557,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.4.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.1+Release%22
 [3.4.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.2+Release%22
 [3.4.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.3+Release%22
+[3.4.4-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.4+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -1000,3 +1018,48 @@ For older release notes, [please see the version 2.x documentation][old-release-
 
 <!-- 3.4.3 -->
 [gh4361]: https://github.com/tomchristie/django-rest-framework/issues/4361
+
+<!-- 3.4.4 -->
+
+[gh2829]: https://github.com/tomchristie/django-rest-framework/issues/2829
+[gh3329]: https://github.com/tomchristie/django-rest-framework/issues/3329
+[gh3330]: https://github.com/tomchristie/django-rest-framework/issues/3330
+[gh3365]: https://github.com/tomchristie/django-rest-framework/issues/3365
+[gh3394]: https://github.com/tomchristie/django-rest-framework/issues/3394
+[gh3868]: https://github.com/tomchristie/django-rest-framework/issues/3868
+[gh3868]: https://github.com/tomchristie/django-rest-framework/issues/3868
+[gh3877]: https://github.com/tomchristie/django-rest-framework/issues/3877
+[gh4042]: https://github.com/tomchristie/django-rest-framework/issues/4042
+[gh4111]: https://github.com/tomchristie/django-rest-framework/issues/4111
+[gh4119]: https://github.com/tomchristie/django-rest-framework/issues/4119
+[gh4120]: https://github.com/tomchristie/django-rest-framework/issues/4120
+[gh4121]: https://github.com/tomchristie/django-rest-framework/issues/4121
+[gh4122]: https://github.com/tomchristie/django-rest-framework/issues/4122
+[gh4137]: https://github.com/tomchristie/django-rest-framework/issues/4137
+[gh4172]: https://github.com/tomchristie/django-rest-framework/issues/4172
+[gh4201]: https://github.com/tomchristie/django-rest-framework/issues/4201
+[gh4260]: https://github.com/tomchristie/django-rest-framework/issues/4260
+[gh4278]: https://github.com/tomchristie/django-rest-framework/issues/4278
+[gh4279]: https://github.com/tomchristie/django-rest-framework/issues/4279
+[gh4329]: https://github.com/tomchristie/django-rest-framework/issues/4329
+[gh4370]: https://github.com/tomchristie/django-rest-framework/issues/4370
+[gh4371]: https://github.com/tomchristie/django-rest-framework/issues/4371
+[gh4372]: https://github.com/tomchristie/django-rest-framework/issues/4372
+[gh4373]: https://github.com/tomchristie/django-rest-framework/issues/4373
+[gh4374]: https://github.com/tomchristie/django-rest-framework/issues/4374
+[gh4375]: https://github.com/tomchristie/django-rest-framework/issues/4375
+[gh4376]: https://github.com/tomchristie/django-rest-framework/issues/4376
+[gh4377]: https://github.com/tomchristie/django-rest-framework/issues/4377
+[gh4378]: https://github.com/tomchristie/django-rest-framework/issues/4378
+[gh4379]: https://github.com/tomchristie/django-rest-framework/issues/4379
+[gh4380]: https://github.com/tomchristie/django-rest-framework/issues/4380
+[gh4382]: https://github.com/tomchristie/django-rest-framework/issues/4382
+[gh4383]: https://github.com/tomchristie/django-rest-framework/issues/4383
+[gh4386]: https://github.com/tomchristie/django-rest-framework/issues/4386
+[gh4387]: https://github.com/tomchristie/django-rest-framework/issues/4387
+[gh4388]: https://github.com/tomchristie/django-rest-framework/issues/4388
+[gh4390]: https://github.com/tomchristie/django-rest-framework/issues/4390
+[gh4391]: https://github.com/tomchristie/django-rest-framework/issues/4391
+[gh4392]: https://github.com/tomchristie/django-rest-framework/issues/4392
+[gh4393]: https://github.com/tomchristie/django-rest-framework/issues/4393
+[gh4394]: https://github.com/tomchristie/django-rest-framework/issues/4394
