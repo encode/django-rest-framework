@@ -446,6 +446,23 @@
 </code></pre>
 <hr />
 <h2 id="34x-series"><a class="toclink" href="#34x-series">3.4.x series</a></h2>
+<h3 id="344-12th-august-2016"><a class="toclink" href="#344-12th-august-2016">3.4.4 <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.4+Release%22">12th August 2016</a></a></h3>
+<ul>
+<li>Ensure views are fully initialized when generating schemas. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4373">#4373</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4382">#4382</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4383">#4383</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4279">#4279</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4278">#4278</a>)</li>
+<li>Add form field descriptions to schemas. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4387">#4387</a>)</li>
+<li>Fix category generation for schema endpoints. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4391">#4391</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4394">#4394</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4390">#4390</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4386">#4386</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4376">#4376</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4329">#4329</a>)</li>
+<li>Don't strip empty query params when paginating. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4392">#4392</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4393">#4393</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4260">#4260</a>)</li>
+<li>Do not re-run query for empty results with LimitOffsetPagination. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4201">#4201</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4388">#4388</a>)</li>
+<li>Stricter type validation for CharField. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4380">#4380</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3394">#3394</a>)</li>
+<li>RelatedField.choices should preserve non-string values. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4111">#4111</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4379">#4379</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3365">#3365</a>)</li>
+<li>Test case for rendering checkboxes in vertical form style. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4378">#4378</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3868">#3868</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3868">#3868</a>)</li>
+<li>Show error traceback HTML in browsable API (<a href="https://github.com/tomchristie/django-rest-framework/issues/4042">#4042</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4172">#4172</a>)</li>
+<li>Fix handling of ALLOWED_VERSIONS and no DEFAULT_VERSION. <a href="https://github.com/tomchristie/django-rest-framework/issues/4370">#4370</a></li>
+<li>Allow <code>max_digits=None</code> on DecimalField. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4377">#4377</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4372">#4372</a>)</li>
+<li>Limit queryset when rendering relational choices. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4375">#4375</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4122">#4122</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3329">#3329</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3330">#3330</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/3877">#3877</a>)</li>
+<li>Resolve form display with ChoiceField, MultipleChoiceField and non-string choices. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4374">#4374</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4119">#4119</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4121">#4121</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4137">#4137</a>, <a href="https://github.com/tomchristie/django-rest-framework/issues/4120">#4120</a>)</li>
+<li>Fix call to TemplateHTMLRenderer.resolve_context() fallback method. (<a href="https://github.com/tomchristie/django-rest-framework/issues/4371">#4371</a>)</li>
+</ul>
 <h3 id="343"><a class="toclink" href="#343">3.4.3</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.3+Release%22">5th August 2016</a></p>
 <ul>
@@ -907,6 +924,8 @@
 <!-- 3.4.2 -->
 
 <!-- 3.4.3 -->
+
+<!-- 3.4.4 -->
             
 
           </div> <!--/span-->
