@@ -92,7 +92,7 @@ Or, if you're using the `@api_view` decorator with function based views.
     from rest_framework.permissions import IsAuthenticated
     from rest_framework.response import Response
 
-    @api_view('GET')
+    @api_view(['GET'])
     @permission_classes((IsAuthenticated, ))
     def example_view(request, format=None):
         content = {
