@@ -39,7 +39,7 @@ class ExampleViewSet(ModelViewSet):
     filter_backends = [filters.OrderingFilter]
     serializer_class = ExampleSerializer
 
-    @detail_route(methods=['post'], serializer_class=AnotherSerializer)
+    @detail_route(methods=['put', 'post'], serializer_class=AnotherSerializer)
     def custom_action(self, request, pk):
         return super(ExampleSerializer, self).retrieve(self, request)
 
@@ -187,6 +187,37 @@ class TestRouterGeneratedSchema(TestCase):
             }
         )
         self.assertEqual(response.data, expected)
+
+    def test_multiple_http_methods_for_detail_route(self):
+        client = APIClient()
+        client.force_authenticate(MockUser())
+        response = client.get('/', HTTP_ACCEPT='application/vnd.coreapi+json')
+        put_action = ('custom_action',
+                      coreapi.Link(
+                          url='/example/{pk}/custom_action/',
+                          action='put',
+                          encoding='application/json',
+                          fields=[
+                              coreapi.Field('pk', required=True, location='path'),
+                              coreapi.Field('c', required=True, location='form'),
+                              coreapi.Field('d', required=False, location='form'),
+                          ]
+                      ))
+        post_action = ('custom_action',
+                      coreapi.Link(
+                          url='/example/{pk}/custom_action/',
+                          action='post',
+                          encoding='application/json',
+                          fields=[
+                              coreapi.Field('pk', required=True, location='path'),
+                              coreapi.Field('c', required=True, location='form'),
+                              coreapi.Field('d', required=False, location='form'),
+                          ]
+                      ))
+
+        self.assertIn(put_action, response.data['example'].items())
+        self.assertIn(post_action, response.data['example'].items())
+
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
