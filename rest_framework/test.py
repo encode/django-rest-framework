@@ -4,7 +4,10 @@
 # to make it harder for the user to import the wrong thing without realizing.
 from __future__ import unicode_literals
 
+import io
+
 from django.conf import settings
+from django.core.handlers.wsgi import WSGIHandler
 from django.test import testcases
 from django.test.client import Client as DjangoClient
 from django.test.client import RequestFactory as DjangoRequestFactory
@@ -13,6 +16,10 @@ from django.utils import six
 from django.utils.encoding import force_bytes
 from django.utils.http import urlencode
 from requests import Session
+from requests.adapters import BaseAdapter
+from requests.models import Response
+from requests.structures import CaseInsensitiveDict
+from requests.utils import get_encoding_from_headers
 
 from rest_framework.settings import api_settings
 
@@ -20,6 +27,83 @@ from rest_framework.settings import api_settings
 def force_authenticate(request, user=None, token=None):
     request._force_auth_user = user
     request._force_auth_token = token
+
+
+class DjangoTestAdapter(BaseAdapter):
+    """
+    A transport adaptor for `requests`, that makes requests via the
+    Django WSGI app, rather than making actual HTTP requests ovet the network.
+    """
+    def __init__(self):
+        self.app = WSGIHandler()
+        self.factory = DjangoRequestFactory()
+
+    def get_environ(self, request):
+        """
+        Given a `requests.PreparedRequest` instance, return a WSGI environ dict.
+        """
+        method = request.method
+        url = request.url
+        kwargs = {}
+
+        # Set request content, if any exists.
+        if request.body is not None:
+            kwargs['data'] = request.body
+        if 'content-type' in request.headers:
+            kwargs['content_type'] = request.headers['content-type']
+
+        # Set request headers.
+        for key, value in request.headers.items():
+            key = key.upper()
+            if key in ('CONNECTION', 'CONTENT_LENGTH', 'CONTENT-TYPE'):
+                continue
+            kwargs['HTTP_%s' % key] = value
+
+        return self.factory.generic(method, url, **kwargs).environ
+
+    def send(self, request, *args, **kwargs):
+        """
+        Make an outgoing request to the Django WSGI application.
+        """
+        response = Response()
+
+        def start_response(status, headers):
+            status_code, _, reason_phrase = status.partition(' ')
+            response.status_code = int(status_code)
+            response.reason = reason_phrase
+            response.headers = CaseInsensitiveDict(headers)
+            response.encoding = get_encoding_from_headers(response.headers)
+
+        environ = self.get_environ(request)
+        raw_bytes = self.app(environ, start_response)
+
+        response.request = request
+        response.url = request.url
+        response.raw = io.BytesIO(b''.join(raw_bytes))
+
+        return response
+
+    def close(self):
+        pass
+
+
+class DjangoTestSession(Session):
+    def __init__(self, *args, **kwargs):
+        super(DjangoTestSession, self).__init__(*args, **kwargs)
+
+        adapter = DjangoTestAdapter()
+        hostnames = list(settings.ALLOWED_HOSTS) + ['testserver']
+
+        for hostname in hostnames:
+            if hostname == '*':
+                hostname = ''
+            self.mount('http://%s' % hostname, adapter)
+            self.mount('https://%s' % hostname, adapter)
+
+    def request(self, method, url, *args, **kwargs):
+        if ':' not in url:
+            url = 'http://testserver/' + url.lstrip('/')
+        return super(DjangoTestSession, self).request(method, url, *args, **kwargs)
 
 
 class APIRequestFactory(DjangoRequestFactory):
@@ -224,7 +308,7 @@ class APITestCase(testcases.TestCase):
 
     def _pre_setup(self):
         super(APITestCase, self)._pre_setup()
-        self.requests = Session()
+        self.requests = DjangoTestSession()
 
 
 class APISimpleTestCase(testcases.SimpleTestCase):
