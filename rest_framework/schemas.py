@@ -79,6 +79,13 @@ class SchemaGenerator(object):
             view.kwargs = {}
             view.format_kwarg = None
 
+            actions = getattr(callback, 'actions', None)
+            if actions is not None:
+                if method == 'OPTIONS':
+                    view.action = 'metadata'
+                else:
+                    view.action = actions.get(method.lower())
+
             if request is not None:
                 view.request = clone_request(request, method)
                 try:
