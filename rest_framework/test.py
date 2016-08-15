@@ -31,8 +31,8 @@ def force_authenticate(request, user=None, token=None):
 
 class DjangoTestAdapter(BaseAdapter):
     """
-    A transport adaptor for `requests`, that makes requests via the
-    Django WSGI app, rather than making actual HTTP requests ovet the network.
+    A transport adapter for `requests`, that makes requests via the
+    Django WSGI app, rather than making actual HTTP requests over the network.
     """
     def __init__(self):
         self.app = WSGIHandler()
@@ -55,9 +55,9 @@ class DjangoTestAdapter(BaseAdapter):
         # Set request headers.
         for key, value in request.headers.items():
             key = key.upper()
-            if key in ('CONNECTION', 'CONTENT_LENGTH', 'CONTENT-TYPE'):
+            if key in ('CONNECTION', 'CONTENT-LENGTH', 'CONTENT-TYPE'):
                 continue
-            kwargs['HTTP_%s' % key] = value
+            kwargs['HTTP_%s' % key.replace('-', '_')] = value
 
         return self.factory.generic(method, url, **kwargs).environ
 
