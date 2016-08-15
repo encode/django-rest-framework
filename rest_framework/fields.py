@@ -432,7 +432,7 @@ class Field(object):
         is provided for this field.
 
         If a default has not been set for this field then this will simply
-        return `empty`, indicating that no value should be set in the
+        raise `SkipField`, indicating that no value should be set in the
         validated data for this field.
         """
         if self.default is empty or getattr(self.root, 'partial', False):
