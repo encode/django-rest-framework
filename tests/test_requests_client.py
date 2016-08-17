@@ -37,7 +37,7 @@ class Root(APIView):
         })
 
 
-class Headers(APIView):
+class HeadersView(APIView):
     def get(self, request):
         headers = {
             key[5:].replace('_', '-'): value
@@ -50,9 +50,32 @@ class Headers(APIView):
         })
 
 
+class SessionView(APIView):
+    def get(self, request):
+        return Response({
+            key: value for key, value in request.session.items()
+        })
+
+    def post(self, request):
+        for key, value in request.data.items():
+            request.session[key] = value
+        return Response({
+            key: value for key, value in request.session.items()
+        })
+
+
+class CookiesView(APIView):
+    def get(self, request):
+        return Response({
+            key: value for key, value in request.COOKIES.items()
+        })
+
+
 urlpatterns = [
     url(r'^$', Root.as_view()),
-    url(r'^headers/$', Headers.as_view()),
+    url(r'^headers/$', HeadersView.as_view()),
+    url(r'^session/$', SessionView.as_view()),
+    url(r'^cookies/$', CookiesView.as_view()),
 ]
 
 
@@ -136,6 +159,55 @@ class RequestsClientTests(APITestCase):
             'POST': {},
             'JSON': None
         }
+        assert response.json() == expected
+
+    def test_session(self):
+        response = self.requests.get('/session/')
+        assert response.status_code == 200
+        assert response.headers['Content-Type'] == 'application/json'
+        expected = {}
+        assert response.json() == expected
+
+        response = self.requests.post('/session/', json={'example': 'abc'})
+        assert response.status_code == 200
+        assert response.headers['Content-Type'] == 'application/json'
+        expected = {'example': 'abc'}
+        assert response.json() == expected
+
+        response = self.requests.get('/session/')
+        assert response.status_code == 200
+        assert response.headers['Content-Type'] == 'application/json'
+        expected = {'example': 'abc'}
+        assert response.json() == expected
+
+    def test_cookies(self):
+        """
+        Test for explicitly setting a cookie.
+        """
+        my_cookie = {
+            "version": 0,
+            "name": 'COOKIE_NAME',
+            "value": 'COOKIE_VALUE',
+            "port": None,
+            # "port_specified":False,
+            "domain": 'testserver.local',
+            # "domain_specified":False,
+            # "domain_initial_dot":False,
+            "path": '/',
+            # "path_specified":True,
+            "secure": False,
+            "expires": None,
+            "discard": True,
+            "comment": None,
+            "comment_url": None,
+            "rest": {},
+            "rfc2109": False
+        }
+        self.requests.cookies.set(**my_cookie)
+        response = self.requests.get('/cookies/')
+        assert response.status_code == 200
+        assert response.headers['Content-Type'] == 'application/json'
+        expected = {'COOKIE_NAME': 'COOKIE_VALUE'}
         assert response.json() == expected
 
     # cookies/session auth

@@ -26,7 +26,7 @@ def force_authenticate(request, user=None, token=None):
 
 
 if requests is not None:
-    class DjangoTestAdapter(requests.adapters.BaseAdapter):
+    class DjangoTestAdapter(requests.adapters.HTTPAdapter):
         """
         A transport adapter for `requests`, that makes requests via the
         Django WSGI app, rather than making actual HTTP requests over the network.
@@ -62,23 +62,38 @@ if requests is not None:
             """
             Make an outgoing request to the Django WSGI application.
             """
-            response = requests.models.Response()
+            raw_kwargs = {}
 
-            def start_response(status, headers):
-                status_code, _, reason_phrase = status.partition(' ')
-                response.status_code = int(status_code)
-                response.reason = reason_phrase
-                response.headers = requests.structures.CaseInsensitiveDict(headers)
-                response.encoding = requests.utils.get_encoding_from_headers(response.headers)
+            def start_response(wsgi_status, wsgi_headers):
+                class MockOriginalResponse(object):
+                    def __init__(self, headers):
+                        self.msg = requests.packages.urllib3._collections.HTTPHeaderDict(headers)
+                        self.closed = False
 
+                    def isclosed(self):
+                        return self.closed
+
+                    def close(self):
+                        self.closed = True
+
+                status, _, reason = wsgi_status.partition(' ')
+                raw_kwargs['status'] = int(status)
+                raw_kwargs['reason'] = reason
+                raw_kwargs['headers'] = wsgi_headers
+                raw_kwargs['version'] = 11
+                raw_kwargs['preload_content'] = False
+                raw_kwargs['original_response'] = MockOriginalResponse(wsgi_headers)
+
+            # Make the outgoing request via WSGI.
             environ = self.get_environ(request)
-            raw_bytes = self.app(environ, start_response)
+            wsgi_response = self.app(environ, start_response)
 
-            response.request = request
-            response.url = request.url
-            response.raw = io.BytesIO(b''.join(raw_bytes))
+            # Build the underlying urllib3.HTTPResponse
+            raw_kwargs['body'] = io.BytesIO(b''.join(wsgi_response))
+            raw = requests.packages.urllib3.HTTPResponse(**raw_kwargs)
 
-            return response
+            # Build the requests.Response
+            return self.build_response(request, raw)
 
         def close(self):
             pass
