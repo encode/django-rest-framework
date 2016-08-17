@@ -1,8 +1,11 @@
 from __future__ import unicode_literals
 
+import unittest
+
 from django.conf.urls import url
 from django.test import override_settings
 
+from rest_framework.compat import requests
 from rest_framework.response import Response
 from rest_framework.test import APITestCase
 from rest_framework.views import APIView
@@ -37,7 +40,7 @@ class Root(APIView):
 class Headers(APIView):
     def get(self, request):
         headers = {
-            key[5:]: value
+            key[5:].replace('_', '-'): value
             for key, value in request.META.items()
             if key.startswith('HTTP_')
         }
@@ -53,6 +56,7 @@ urlpatterns = [
 ]
 
 
+@unittest.skipUnless(requests, 'requests not installed')
 @override_settings(ROOT_URLCONF='tests.test_requests_client')
 class RequestsClientTests(APITestCase):
     def test_get_request(self):
