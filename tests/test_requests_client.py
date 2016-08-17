@@ -3,9 +3,14 @@ from __future__ import unicode_literals
 import unittest
 
 from django.conf.urls import url
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from django.shortcuts import redirect
 from django.test import override_settings
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 
-from rest_framework.compat import requests
+from rest_framework.compat import is_authenticated, requests
 from rest_framework.response import Response
 from rest_framework.test import APITestCase
 from rest_framework.views import APIView
@@ -64,18 +69,33 @@ class SessionView(APIView):
         })
 
 
-class CookiesView(APIView):
+class AuthView(APIView):
+    @method_decorator(ensure_csrf_cookie)
     def get(self, request):
+        if is_authenticated(request.user):
+            username = request.user.username
+        else:
+            username = None
         return Response({
-            key: value for key, value in request.COOKIES.items()
+            'username': username
         })
+
+    @method_decorator(csrf_protect)
+    def post(self, request):
+        username = request.data['username']
+        password = request.data['password']
+        user = authenticate(username=username, password=password)
+        if user is None:
+            return Response({'error': 'incorrect credentials'})
+        login(request, user)
+        return redirect('/auth/')
 
 
 urlpatterns = [
     url(r'^$', Root.as_view()),
     url(r'^headers/$', HeadersView.as_view()),
     url(r'^session/$', SessionView.as_view()),
-    url(r'^cookies/$', CookiesView.as_view()),
+    url(r'^auth/$', AuthView.as_view()),
 ]
 
 
@@ -180,34 +200,39 @@ class RequestsClientTests(APITestCase):
         expected = {'example': 'abc'}
         assert response.json() == expected
 
-    def test_cookies(self):
-        """
-        Test for explicitly setting a cookie.
-        """
-        my_cookie = {
-            "version": 0,
-            "name": 'COOKIE_NAME',
-            "value": 'COOKIE_VALUE',
-            "port": None,
-            # "port_specified":False,
-            "domain": 'testserver.local',
-            # "domain_specified":False,
-            # "domain_initial_dot":False,
-            "path": '/',
-            # "path_specified":True,
-            "secure": False,
-            "expires": None,
-            "discard": True,
-            "comment": None,
-            "comment_url": None,
-            "rest": {},
-            "rfc2109": False
-        }
-        self.requests.cookies.set(**my_cookie)
-        response = self.requests.get('/cookies/')
+    def test_auth(self):
+        # Confirm session is not authenticated
+        response = self.requests.get('/auth/')
         assert response.status_code == 200
         assert response.headers['Content-Type'] == 'application/json'
-        expected = {'COOKIE_NAME': 'COOKIE_VALUE'}
+        expected = {
+            'username': None
+        }
+        assert response.json() == expected
+        assert 'csrftoken' in response.cookies
+        csrftoken = response.cookies['csrftoken']
+
+        user = User.objects.create(username='tom')
+        user.set_password('password')
+        user.save()
+
+        # Perform a login
+        response = self.requests.post('/auth/', json={
+            'username': 'tom',
+            'password': 'password'
+        }, headers={'X-CSRFToken': csrftoken})
+        assert response.status_code == 200
+        assert response.headers['Content-Type'] == 'application/json'
+        expected = {
+            'username': 'tom'
+        }
         assert response.json() == expected
 
-    # cookies/session auth
+        # Confirm session is authenticated
+        response = self.requests.get('/auth/')
+        assert response.status_code == 200
+        assert response.headers['Content-Type'] == 'application/json'
+        expected = {
+            'username': 'tom'
+        }
+        assert response.json() == expected
