@@ -26,6 +26,21 @@ def force_authenticate(request, user=None, token=None):
 
 
 if requests is not None:
+    class HeaderDict(requests.packages.urllib3._collections.HTTPHeaderDict):
+        def get_all(self, key):
+            return self.getheaders(self, key)
+
+    class MockOriginalResponse(object):
+        def __init__(self, headers):
+            self.msg = HeaderDict(headers)
+            self.closed = False
+
+        def isclosed(self):
+            return self.closed
+
+        def close(self):
+            self.closed = True
+
     class DjangoTestAdapter(requests.adapters.HTTPAdapter):
         """
         A transport adapter for `requests`, that makes requests via the
@@ -65,17 +80,6 @@ if requests is not None:
             raw_kwargs = {}
 
             def start_response(wsgi_status, wsgi_headers):
-                class MockOriginalResponse(object):
-                    def __init__(self, headers):
-                        self.msg = requests.packages.urllib3._collections.HTTPHeaderDict(headers)
-                        self.closed = False
-
-                    def isclosed(self):
-                        return self.closed
-
-                    def close(self):
-                        self.closed = True
-
                 status, _, reason = wsgi_status.partition(' ')
                 raw_kwargs['status'] = int(status)
                 raw_kwargs['reason'] = reason
