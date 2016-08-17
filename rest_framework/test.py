@@ -27,7 +27,7 @@ def force_authenticate(request, user=None, token=None):
 
 if requests is not None:
     class HeaderDict(requests.packages.urllib3._collections.HTTPHeaderDict):
-        def get_all(self, key):
+        def get_all(self, key, default):
             return self.getheaders(self, key)
 
     class MockOriginalResponse(object):
