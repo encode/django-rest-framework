@@ -143,6 +143,7 @@ class Request(object):
         self._full_data = Empty
         self._content_type = Empty
         self._stream = Empty
+        self.debug_plaintext_traceback = None
 
         if self.parser_context is None:
             self.parser_context = {}
@@ -391,3 +392,8 @@ class Request(object):
             '`request.QUERY_PARAMS` has been deprecated in favor of `request.query_params` '
             'since version 3.0, and has been fully removed as of version 3.2.'
         )
+
+    def force_plaintext_errors(self, value):
+        # Hack to allow our exception handler to force choice of
+        # plaintext or html error responses.
+        self._request.is_ajax = lambda: value
