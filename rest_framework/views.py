@@ -438,9 +438,10 @@ class APIView(View):
 
     def raise_uncaught_exception(self, exc):
         if settings.DEBUG:
-            renderer = self.request.accepted_renderer
-            use_plaintext_traceback = getattr(renderer, 'format') not in ('html', 'api')
-            self.request.force_plaintext_errors(use_plaintext_traceback)
+            request = self.request
+            renderer_format = getattr(request.accepted_renderer, 'format')
+            use_plaintext_traceback = renderer_format not in ('html', 'api', 'admin')
+            request.force_plaintext_errors(use_plaintext_traceback)
         raise
 
     # Note: Views are made CSRF exempt from within `as_view` as to prevent
