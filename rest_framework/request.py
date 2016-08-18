@@ -143,7 +143,6 @@ class Request(object):
         self._full_data = Empty
         self._content_type = Empty
         self._stream = Empty
-        self.debug_plaintext_traceback = None
 
         if self.parser_context is None:
             self.parser_context = {}
