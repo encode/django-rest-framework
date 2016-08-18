@@ -46,7 +46,7 @@ $.ajaxSetup({
       // Send the token to same-origin, relative URLs only.
       // Send the token only if the method warrants CSRF protection
       // Using the CSRFToken value acquired earlier
-      xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      xhr.setRequestHeader(window.drf.csrfHeaderName, csrftoken);
     }
   }
 });
