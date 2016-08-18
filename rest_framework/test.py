@@ -121,6 +121,11 @@ if requests is not None:
             return super(DjangoTestSession, self).request(method, url, *args, **kwargs)
 
 
+def get_requests_client():
+    assert requests is not None, 'requests must be installed'
+    return DjangoTestSession()
+
+
 class APIRequestFactory(DjangoRequestFactory):
     renderer_classes_list = api_settings.TEST_REQUEST_RENDERER_CLASSES
     default_format = api_settings.TEST_REQUEST_DEFAULT_FORMAT
@@ -320,13 +325,6 @@ class APITransactionTestCase(testcases.TransactionTestCase):
 
 class APITestCase(testcases.TestCase):
     client_class = APIClient
-
-    @property
-    def requests(self):
-        if not hasattr(self, '_requests'):
-            assert requests is not None, 'requests must be installed'
-            self._requests = DjangoTestSession()
-        return self._requests
 
 
 class APISimpleTestCase(testcases.SimpleTestCase):
