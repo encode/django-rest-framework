@@ -16,7 +16,7 @@ from django.utils import six
 from django.utils.encoding import force_bytes
 from django.utils.http import urlencode
 
-from rest_framework.compat import requests
+from rest_framework.compat import coreapi, requests
 from rest_framework.settings import api_settings
 
 
@@ -124,6 +124,14 @@ if requests is not None:
 def get_requests_client():
     assert requests is not None, 'requests must be installed'
     return DjangoTestSession()
+
+
+def get_api_client():
+    assert coreapi is not None, 'coreapi must be installed'
+    session = get_requests_client()
+    return coreapi.Client(transports=[
+        coreapi.transports.HTTPTransport(session=session)
+    ])
 
 
 class APIRequestFactory(DjangoRequestFactory):
