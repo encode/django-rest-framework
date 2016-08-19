@@ -40,6 +40,18 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.4.x series
 
+### 3.4.5
+
+**Date**: [19th August 2016][3.4.5-milestone]
+
+* Improve debug error handling. ([#4416][gh4416], [#4409][gh4409])
+* Allow custom CSRF_HEADER_NAME setting. ([#4415][gh4415], [#4410][gh4410])
+* Include .action attribute on viewsets when generating schemas. ([#4408][gh4408], [#4398][gh4398])
+* Do not include request.FILES items in request.POST. ([#4407][gh4407])
+* Fix rendering of checkbox multiple. ([#4403][gh4403])
+* Fix docstring of Field.get_default. ([#4404][gh4404])
+* Replace utf8 character with its ascii counterpart in README. ([#4412][gh4412])
+
 ### 3.4.4
 
 **Date**: [12th August 2016][3.4.4-milestone]
@@ -560,6 +572,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.4.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.2+Release%22
 [3.4.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.3+Release%22
 [3.4.4-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.4+Release%22
+[3.4.5-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.5+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -1065,3 +1078,15 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh4392]: https://github.com/tomchristie/django-rest-framework/issues/4392
 [gh4393]: https://github.com/tomchristie/django-rest-framework/issues/4393
 [gh4394]: https://github.com/tomchristie/django-rest-framework/issues/4394
+
+<!-- 3.4.5 -->
+[gh4416]: https://github.com/tomchristie/django-rest-framework/issues/4416
+[gh4409]: https://github.com/tomchristie/django-rest-framework/issues/4409
+[gh4415]: https://github.com/tomchristie/django-rest-framework/issues/4415
+[gh4410]: https://github.com/tomchristie/django-rest-framework/issues/4410
+[gh4408]: https://github.com/tomchristie/django-rest-framework/issues/4408
+[gh4398]: https://github.com/tomchristie/django-rest-framework/issues/4398
+[gh4407]: https://github.com/tomchristie/django-rest-framework/issues/4407
+[gh4403]: https://github.com/tomchristie/django-rest-framework/issues/4403
+[gh4404]: https://github.com/tomchristie/django-rest-framework/issues/4404
+[gh4412]: https://github.com/tomchristie/django-rest-framework/issues/4412
