@@ -440,6 +440,10 @@
                       <a href="#dry-rest-permissions">DRY Rest Permissions</a>
                     </li>
                   
+                    <li>
+                      <a href="#django-rest-framework-roles">Django Rest Framework Roles</a>
+                    </li>
+                  
                 
 
                   <div class="promo">
@@ -530,7 +534,7 @@ class ExampleView(APIView):
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-@api_view('GET')
+@api_view(['GET'])
 @permission_classes((IsAuthenticated, ))
 def example_view(request, format=None):
     content = {
@@ -648,6 +652,8 @@ class BlacklistPermission(permissions.BasePermission):
 <p>The <a href="https://github.com/caxap/rest_condition">REST Condition</a> package is another extension for building complex permissions in a simple and convenient way.  The extension allows you to combine permissions with logical operators.</p>
 <h2 id="dry-rest-permissions"><a class="toclink" href="#dry-rest-permissions">DRY Rest Permissions</a></h2>
 <p>The <a href="https://github.com/Helioscene/dry-rest-permissions">DRY Rest Permissions</a> package provides the ability to define different permissions for individual default and custom actions. This package is made for apps with permissions that are derived from relationships defined in the app's data model. It also supports permission checks being returned to a client app through the API's serializer. Additionally it supports adding permissions to the default and custom list actions to restrict the data they retrive per user.</p>
+<h2 id="django-rest-framework-roles"><a class="toclink" href="#django-rest-framework-roles">Django Rest Framework Roles</a></h2>
+<p>The <a href="https://github.com/computer-lab/django-rest-framework-roles">Django Rest Framework Roles</a> package makes it easier to parameterize your API over multiple types of users.</p>
             
 
           </div> <!--/span-->
