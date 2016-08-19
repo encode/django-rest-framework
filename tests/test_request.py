@@ -7,6 +7,7 @@ from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.utils import six
 
@@ -77,6 +78,16 @@ class TestContentParsing(TestCase):
         request = Request(factory.post('/', data))
         request.parsers = (FormParser(), MultiPartParser())
         self.assertEqual(list(request.POST.items()), list(data.items()))
+
+    def test_request_POST_with_files(self):
+        """
+        Ensure request.POST returns no content for POST request with file content.
+        """
+        upload = SimpleUploadedFile("file.txt", b"file_content")
+        request = Request(factory.post('/', {'upload': upload}))
+        request.parsers = (FormParser(), MultiPartParser())
+        self.assertEqual(list(request.POST.keys()), [])
+        self.assertEqual(list(request.FILES.keys()), ['upload'])
 
     def test_standard_behaviour_determines_form_content_PUT(self):
         """
