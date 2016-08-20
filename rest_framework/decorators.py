@@ -15,7 +15,7 @@ from django.utils import six
 from rest_framework.views import APIView
 
 
-def api_view(http_method_names=None):
+def api_view(http_method_names=None, **kwargs):
     """
     Decorator that converts a function-based view into an APIView subclass.
     Takes a list of allowed methods for the view as an argument.
@@ -70,6 +70,10 @@ def api_view(http_method_names=None):
 
         WrappedAPIView.permission_classes = getattr(func, 'permission_classes',
                                                     APIView.permission_classes)
+
+        # Extend APIView with attrs mentioned explicitly
+        for (attrname, attrvalue) in kwargs.items():
+            setattr(WrappedAPIView, attrname, attrvalue)
 
         return WrappedAPIView.as_view()
     return decorator
