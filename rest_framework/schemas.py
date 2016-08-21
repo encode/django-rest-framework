@@ -296,8 +296,9 @@ class SchemaGenerator(object):
 
         fields = []
         for field in serializer.fields.values():
-            if field.read_only:
+            if field.read_only or isinstance(field, serializers.HiddenField):
                 continue
+
             required = field.required and method != 'PATCH'
             description = force_text(field.help_text) if field.help_text else ''
             field = coreapi.Field(
