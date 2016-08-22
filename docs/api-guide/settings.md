@@ -382,6 +382,22 @@ This should be a function with the following signature:
 
 Default: `'rest_framework.views.get_view_description'`
 
+## HTML Select Field cutoffs
+
+Global settings for [select field cutoffs for rendering relational fields](relations.md#select-field-cutoffs) in the browsable API.
+
+#### HTML_SELECT_CUTOFF
+
+Global setting for the `html_cutoff` value.  Must be an integer.
+
+Default: 1000
+
+#### HTML_SELECT_CUTOFF_TEXT
+
+A string representing a global setting for `html_cutoff_text`.
+
+Default: `"More than {count} items..."`
+
 ---
 
 ## Miscellaneous settings
