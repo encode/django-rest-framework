@@ -196,7 +196,7 @@ class APIClientTests(APITestCase):
         schema = client.get('http://api.example.com/')
 
         temp = tempfile.NamedTemporaryFile()
-        temp.write('example file contents')
+        temp.write(b'example file contents')
         temp.flush()
 
         with open(temp.name, 'rb') as upload:
@@ -230,7 +230,7 @@ class APIClientTests(APITestCase):
         schema = client.get('http://api.example.com/')
 
         temp = tempfile.NamedTemporaryFile()
-        temp.write('example file contents')
+        temp.write(b'example file contents')
         temp.flush()
 
         with open(temp.name, 'rb') as upload:
