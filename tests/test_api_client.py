@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import tempfile
 import unittest
 
 from django.conf.urls import url
@@ -17,19 +18,29 @@ def get_schema():
         url='https://api.example.com/',
         title='Example API',
         content={
-            'simple_link': coreapi.Link('/example/'),
-            'query_params': coreapi.Link('/example/', fields=[
-                coreapi.Field(name='example')
-            ]),
-            'form_params': coreapi.Link('/example/', action='post', fields=[
-                coreapi.Field(name='example')
-            ]),
-            'body_params': coreapi.Link('/example/', action='post', fields=[
-                coreapi.Field(name='example', location='body')
-            ]),
-            'path_params': coreapi.Link('/example/{id}', fields=[
-                coreapi.Field(name='id', location='path')
-            ]),
+            'simple_link': coreapi.Link('/example/', description='example link'),
+            'location': {
+                'query': coreapi.Link('/example/', fields=[
+                    coreapi.Field(name='example', description='example field')
+                ]),
+                'form': coreapi.Link('/example/', action='post', fields=[
+                    coreapi.Field(name='example'),
+                ]),
+                'body': coreapi.Link('/example/', action='post', fields=[
+                    coreapi.Field(name='example', location='body')
+                ]),
+                'path': coreapi.Link('/example/{id}', fields=[
+                    coreapi.Field(name='id', location='path')
+                ])
+            },
+            'encoding': {
+                'multipart': coreapi.Link('/example/', action='post', encoding='multipart/form-data', fields=[
+                    coreapi.Field(name='example')
+                ]),
+                'urlencoded': coreapi.Link('/example/', action='post', encoding='application/x-www-form-urlencoded', fields=[
+                    coreapi.Field(name='example')
+                ]),
+            }
         }
     )
 
@@ -46,15 +57,39 @@ class ListView(APIView):
     def get(self, request):
         return Response({
             'method': request.method,
-            'query_params': request.query_params,
-            'data': request.data
+            'query_params': request.query_params
         })
 
     def post(self, request):
+        if request.content_type:
+            content_type = request.content_type.split(';')[0]
+        else:
+            content_type = None
+
+        if isinstance(request.data, dict):
+            # Coerce multidict into regular dict, and remove files to
+            # make assertions simpler.
+            data = {
+                key: value for key, value in request.data.items()
+                if key not in request.FILES
+            }
+        else:
+            data = request.data
+
+        if request.FILES:
+            files = {
+                key: {'name': value.name, 'contents': value.read()}
+                for key, value in request.FILES.items()
+            }
+        else:
+            files = None
+
         return Response({
             'method': request.method,
             'query_params': request.query_params,
-            'data': request.data
+            'data': data,
+            'files': files,
+            'content_type': content_type
         })
 
 
@@ -63,8 +98,7 @@ class DetailView(APIView):
         return Response({
             'id': id,
             'method': request.method,
-            'query_params': request.query_params,
-            'data': request.data
+            'query_params': request.query_params
         })
 
 
@@ -82,33 +116,88 @@ class APIClientTests(APITestCase):
         client = get_api_client()
         schema = client.get('http://api.example.com/')
         assert schema.title == 'Example API'
+        assert schema.url == 'https://api.example.com/'
+        assert schema['simple_link'].description == 'example link'
+        assert schema['location']['query'].fields[0].description == 'example field'
         data = client.action(schema, ['simple_link'])
-        assert data == {'method': 'GET', 'query_params': {}, 'data': {}}
+        expected = {
+            'method': 'GET',
+            'query_params': {}
+        }
+        assert data == expected
 
     def test_query_params(self):
         client = get_api_client()
         schema = client.get('http://api.example.com/')
-        assert schema.title == 'Example API'
-        data = client.action(schema, ['query_params'], params={'example': 123})
-        assert data == {'method': 'GET', 'query_params': {'example': '123'}, 'data': {}}
+        data = client.action(schema, ['location', 'query'], params={'example': 123})
+        expected = {
+            'method': 'GET',
+            'query_params': {'example': '123'}
+        }
+        assert data == expected
 
     def test_form_params(self):
         client = get_api_client()
         schema = client.get('http://api.example.com/')
-        assert schema.title == 'Example API'
-        data = client.action(schema, ['form_params'], params={'example': 123})
-        assert data == {'method': 'POST', 'query_params': {}, 'data': {'example': 123}}
+        data = client.action(schema, ['location', 'form'], params={'example': 123})
+        expected = {
+            'method': 'POST',
+            'content_type': 'application/json',
+            'query_params': {},
+            'data': {'example': 123},
+            'files': None
+        }
+        assert data == expected
 
     def test_body_params(self):
         client = get_api_client()
         schema = client.get('http://api.example.com/')
-        assert schema.title == 'Example API'
-        data = client.action(schema, ['body_params'], params={'example': 123})
-        assert data == {'method': 'POST', 'query_params': {}, 'data': 123}
+        data = client.action(schema, ['location', 'body'], params={'example': 123})
+        expected = {
+            'method': 'POST',
+            'content_type': 'application/json',
+            'query_params': {},
+            'data': 123,
+            'files': None
+        }
+        assert data == expected
 
     def test_path_params(self):
         client = get_api_client()
         schema = client.get('http://api.example.com/')
-        assert schema.title == 'Example API'
-        data = client.action(schema, ['path_params'], params={'id': 123})
-        assert data == {'method': 'GET', 'query_params': {}, 'data': {}, 'id': '123'}
+        data = client.action(schema, ['location', 'path'], params={'id': 123})
+        expected = {
+            'method': 'GET',
+            'query_params': {},
+            'id': '123'
+        }
+        assert data == expected
+
+    def test_multipart_encoding(self):
+        client = get_api_client()
+        schema = client.get('http://api.example.com/')
+        temp = tempfile.TemporaryFile()
+        temp.write('example file contents')
+        temp.seek(0)
+        data = client.action(schema, ['encoding', 'multipart'], params={'example': temp})
+        expected = {
+            'method': 'POST',
+            'content_type': 'multipart/form-data',
+            'query_params': {},
+            'data': {},
+            'files': {'example': {'name': 'example', 'contents': 'example file contents'}}
+        }
+        assert data == expected
+
+    def test_urlencoded_encoding(self):
+        client = get_api_client()
+        schema = client.get('http://api.example.com/')
+        data = client.action(schema, ['encoding', 'urlencoded'], params={'example': 123})
+        expected = {
+            'method': 'POST',
+            'content_type': 'application/x-www-form-urlencoded',
+            'query_params': {},
+            'data': {'example': '123'},
+            'files': None
+        }
+        assert data == expected
