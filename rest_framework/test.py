@@ -60,7 +60,10 @@ if requests is not None:
 
             # Set request content, if any exists.
             if request.body is not None:
-                kwargs['data'] = request.body
+                if hasattr(request.body, 'read'):
+                    kwargs['data'] = request.body.read()
+                else:
+                    kwargs['data'] = request.body
             if 'content-type' in request.headers:
                 kwargs['content_type'] = request.headers['content-type']
 
