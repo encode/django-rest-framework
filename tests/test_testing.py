@@ -237,6 +237,24 @@ class TestAPITestClient(TestCase):
         response = self.client.get('/my_hat/')
         self.assertEqual(response.status_code, 404)
 
+    def test_get_my_hat_with_django_force_login(self):
+        user = User.objects.create_user('example', 'example@example.com', 'password')
+        self.client.force_login(user)
+
+        response = self.client.get('/my_hat/')
+        self.assertEqual(response.status_code, 404)
+
+        hat = Hat.objects.create(user=user, some_key='some_value')
+        response = self.client.get('/my_hat/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {'id': hat.id, 'some_key': 'some_value'})
+
+        another_user = User.objects.create_user('another_example', 'another_example@example.com', 'password')
+        hat.user = another_user
+        hat.save()
+        response = self.client.get('/my_hat/')
+        self.assertEqual(response.status_code, 404)
+
     def test_get_my_hat_with_login(self):
         user = User.objects.create_user('example', 'example@example.com', 'password')
         self.client.login(username='example', password='password')
