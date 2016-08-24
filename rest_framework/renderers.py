@@ -645,6 +645,12 @@ class BrowsableAPIRenderer(BaseRenderer):
         else:
             paginator = None
 
+        csrf_cookie_name = settings.CSRF_COOKIE_NAME
+        csrf_header_name = getattr(settings, 'CSRF_HEADER_NAME', 'HTTP_X_CSRFToken')  # Fallback for Django 1.8
+        if csrf_header_name.startswith('HTTP_'):
+            csrf_header_name = csrf_header_name[5:]
+        csrf_header_name = csrf_header_name.replace('_', '-')
+
         context = {
             'content': self.get_content(renderer, data, accepted_media_type, renderer_context),
             'view': view,
@@ -675,7 +681,8 @@ class BrowsableAPIRenderer(BaseRenderer):
             'display_edit_forms': bool(response.status_code != 403),
 
             'api_settings': api_settings,
-            'csrf_cookie_name': settings.CSRF_COOKIE_NAME,
+            'csrf_cookie_name': csrf_cookie_name,
+            'csrf_header_name': csrf_header_name
         }
         return context
 

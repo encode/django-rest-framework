@@ -26,6 +26,8 @@ class ExamplePagination(pagination.PageNumberPagination):
 class ExampleSerializer(serializers.Serializer):
     a = serializers.CharField(required=True, help_text='A field description')
     b = serializers.CharField(required=False)
+    read_only = serializers.CharField(read_only=True)
+    hidden = serializers.HiddenField(default='hello')
 
 
 class AnotherSerializer(serializers.Serializer):
@@ -49,6 +51,7 @@ class ExampleViewSet(ModelViewSet):
 
     def get_serializer(self, *args, **kwargs):
         assert self.request
+        assert self.action
         return super(ExampleViewSet, self).get_serializer(*args, **kwargs)
 
 

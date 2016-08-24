@@ -12,6 +12,7 @@ response content is handled by parsers and renderers.
 """
 from __future__ import unicode_literals
 
+import traceback
 import warnings
 
 from django.db import models
@@ -870,19 +871,20 @@ class ModelSerializer(Serializer):
 
         try:
             instance = ModelClass.objects.create(**validated_data)
-        except TypeError as exc:
+        except TypeError:
+            tb = traceback.format_exc()
             msg = (
                 'Got a `TypeError` when calling `%s.objects.create()`. '
                 'This may be because you have a writable field on the '
                 'serializer class that is not a valid argument to '
                 '`%s.objects.create()`. You may need to make the field '
                 'read-only, or override the %s.create() method to handle '
-                'this correctly.\nOriginal exception text was: %s.' %
+                'this correctly.\nOriginal exception was:\n %s' %
                 (
                     ModelClass.__name__,
                     ModelClass.__name__,
                     self.__class__.__name__,
-                    exc
+                    tb
                 )
             )
             raise TypeError(msg)
