@@ -145,9 +145,19 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('pk', required=True, location='path')
                         ]
                     ),
-                    'custom_action': coreapi.Link(
+                    'custom_action_post': coreapi.Link(
                         url='/example/{pk}/custom_action/',
                         action='post',
+                        encoding='application/json',
+                        fields=[
+                            coreapi.Field('pk', required=True, location='path'),
+                            coreapi.Field('c', required=True, location='form'),
+                            coreapi.Field('d', required=False, location='form'),
+                        ]
+                    ),
+                    'custom_action_put': coreapi.Link(
+                        url='/example/{pk}/custom_action/',
+                        action='put',
                         encoding='application/json',
                         fields=[
                             coreapi.Field('pk', required=True, location='path'),
@@ -195,7 +205,7 @@ class TestRouterGeneratedSchema(TestCase):
         client = APIClient()
         client.force_authenticate(MockUser())
         response = client.get('/', HTTP_ACCEPT='application/vnd.coreapi+json')
-        put_action = ('custom_action',
+        put_action = ('custom_action_put',
                       coreapi.Link(
                           url='/example/{pk}/custom_action/',
                           action='put',
@@ -206,7 +216,7 @@ class TestRouterGeneratedSchema(TestCase):
                               coreapi.Field('d', required=False, location='form'),
                           ]
                       ))
-        post_action = ('custom_action',
+        post_action = ('custom_action_post',
                       coreapi.Link(
                           url='/example/{pk}/custom_action/',
                           action='post',
