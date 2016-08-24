@@ -5,6 +5,9 @@ import pickle
 
 import pytest
 
+from django.core.validators import RegexValidator
+from django.db import models
+
 from rest_framework import serializers
 from rest_framework.compat import unicode_repr
 
@@ -86,6 +89,25 @@ class TestValidateMethod:
         serializer = ExampleSerializer(data={'char': 'abc', 'integer': 123})
         assert not serializer.is_valid()
         assert serializer.errors == {'char': ['Field error']}
+
+    def test_serializer_with_validator(self):
+        class ExampleModel(models.Model):
+            username = models.CharField(max_length=100)
+
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ExampleModel
+                fields = '__all__'
+                extra_kwargs = {
+                    'username': {
+                        'validators': [
+                            RegexValidator('^\w+$'),
+                        ],
+                    },
+                }
+
+        serializer = ExampleSerializer(data={})
+        serializer.is_valid()
 
 
 class TestBaseSerializer:
