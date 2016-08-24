@@ -217,20 +217,19 @@ class TestRouterGeneratedSchema(TestCase):
                           ]
                       ))
         post_action = ('custom_action_post',
-                      coreapi.Link(
-                          url='/example/{pk}/custom_action/',
-                          action='post',
-                          encoding='application/json',
-                          fields=[
-                              coreapi.Field('pk', required=True, location='path'),
-                              coreapi.Field('c', required=True, location='form'),
-                              coreapi.Field('d', required=False, location='form'),
-                          ]
-                      ))
+                       coreapi.Link(
+                           url='/example/{pk}/custom_action/',
+                           action='post',
+                           encoding='application/json',
+                           fields=[
+                               coreapi.Field('pk', required=True, location='path'),
+                               coreapi.Field('c', required=True, location='form'),
+                               coreapi.Field('d', required=False, location='form'),
+                           ]
+                       ))
 
         self.assertIn(put_action, response.data['example'].items())
         self.assertIn(post_action, response.data['example'].items())
-
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
