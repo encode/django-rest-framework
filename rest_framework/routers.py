@@ -18,11 +18,11 @@ from __future__ import unicode_literals
 import itertools
 from collections import OrderedDict, namedtuple
 
-from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
 
 from rest_framework import exceptions, renderers, views
+from rest_framework.resolvers import url
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.schemas import SchemaGenerator
@@ -260,7 +260,7 @@ class SimpleRouter(BaseRouter):
 
                 view = viewset.as_view(mapping, **route.initkwargs)
                 name = route.name.format(basename=basename)
-                ret.append(url(regex, view, name=name))
+                ret.append(url(regex, view, name=name, router=self))
 
         return ret
 
@@ -356,7 +356,7 @@ class DefaultRouter(SimpleRouter):
 
         if self.include_root_view:
             view = self.get_api_root_view(api_urls=urls)
-            root_url = url(r'^$', view, name=self.root_view_name)
+            root_url = url(r'^$', view, name=self.root_view_name, router=self)
             urls.append(root_url)
 
         if self.include_format_suffixes:
