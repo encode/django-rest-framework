@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # SUN CHOI <best2378@gmail.com>, 2015
 msgid ""
@@ -57,35 +57,35 @@ msgstr "토큰이 유효하지 않습니다."
 
 #: authtoken/apps.py:7
 msgid "Auth Token"
-msgstr ""
+msgstr "인증 토큰"
 
 #: authtoken/models.py:15
 msgid "Key"
-msgstr ""
+msgstr "키"
 
 #: authtoken/models.py:18
 msgid "User"
-msgstr ""
+msgstr "사용자"
 
 #: authtoken/models.py:20
 msgid "Created"
-msgstr ""
+msgstr "생성"
 
 #: authtoken/models.py:29
 msgid "Token"
-msgstr ""
+msgstr "토큰"
 
 #: authtoken/models.py:30
 msgid "Tokens"
-msgstr ""
+msgstr "토큰들"
 
 #: authtoken/serializers.py:8
 msgid "Username"
-msgstr ""
+msgstr "사용자 이름"
 
 #: authtoken/serializers.py:9
 msgid "Password"
-msgstr ""
+msgstr "비밀번호"
 
 #: authtoken/serializers.py:20
 msgid "User account is disabled."
@@ -117,7 +117,7 @@ msgstr "자격 인증데이터(authentication credentials)가 제공되지 않�
 
 #: exceptions.py:99
 msgid "You do not have permission to perform this action."
-msgstr "이 작업을 "
+msgstr "이 작업을 수행할 권한이 없습니다."
 
 #: exceptions.py:104 views.py:81
 msgid "Not found."
@@ -154,7 +154,7 @@ msgstr "\"{input}\"이 유효하지 않은 부울(boolean)입니다."
 
 #: fields.py:674
 msgid "This field may not be blank."
-msgstr "이 칸은 blank일 수 없습니다."
+msgstr "이 항목은 비어있을 수 없습니다."
 
 #: fields.py:675 fields.py:1675
 msgid "Ensure this field has no more than {max_length} characters."
@@ -170,7 +170,7 @@ msgstr "유효한 이메일 주소를 입력하십시오."
 
 #: fields.py:724
 msgid "This value does not match the required pattern."
-msgstr "형식에 맞지 않는 값입니다."
+msgstr "요청한 형식에 맞지 않는 값입니다."
 
 #: fields.py:735
 msgid ""
@@ -247,7 +247,7 @@ msgstr "Time의 포멧이 잘못되었습니다. 이 형식들 중 한가지를 
 
 #: fields.py:1232
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Duration의 포멧이 잘못되었습니다. 이 형식들 중 한가지를 사용하세요: {format}."
 
 #: fields.py:1251 fields.py:1300
 msgid "\"{input}\" is not a valid choice."
@@ -255,7 +255,7 @@ msgstr "\"{input}\"이 유효하지 않은 선택(choice)입니다."
 
 #: fields.py:1254 relations.py:71 relations.py:441
 msgid "More than {count} items..."
-msgstr ""
+msgstr "{count} 항목보다 더 많이..."
 
 #: fields.py:1301 fields.py:1448 relations.py:437 serializers.py:524
 msgid "Expected a list of items but got type \"{input_type}\"."
@@ -263,11 +263,11 @@ msgstr "아이템 리스트가 예상되었으나 \"{input_type}\"를 받았습�
 
 #: fields.py:1302
 msgid "This selection may not be empty."
-msgstr ""
+msgstr "선택된 항목은 비어있을 수 없습니다."
 
 #: fields.py:1339
 msgid "\"{input}\" is not a valid path choice."
-msgstr ""
+msgstr "\"{input}\" 는 유효한 경로 선택이 아닙니다."
 
 #: fields.py:1358
 msgid "No file was submitted."
@@ -299,7 +299,7 @@ msgstr "유효한 이미지 파일을 업로드 하십시오. 업로드 하신 �
 
 #: fields.py:1449 relations.py:438 serializers.py:525
 msgid "This list may not be empty."
-msgstr ""
+msgstr "해당 목록은 비어있을 수 없습니다."
 
 #: fields.py:1502
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
@@ -307,23 +307,23 @@ msgstr "아이템 딕셔너리가 예상되었으나 \"{input_type}\" 타입을 
 
 #: fields.py:1549
 msgid "Value must be valid JSON."
-msgstr ""
+msgstr "해당 값은 유효한 JSON 형식이어야 합니다."
 
 #: filters.py:36 templates/rest_framework/filters/django_filter.html:5
 msgid "Submit"
-msgstr ""
+msgstr "제출"
 
 #: filters.py:336
 msgid "ascending"
-msgstr ""
+msgstr "오름차순"
 
 #: filters.py:337
 msgid "descending"
-msgstr ""
+msgstr "내림차순"
 
 #: pagination.py:193
 msgid "Invalid page."
-msgstr ""
+msgstr "유효하지 않은 페이지."
 
 #: pagination.py:427
 msgid "Invalid cursor"
@@ -368,26 +368,26 @@ msgstr "유효하지 않은 데이터. 딕셔너리(dictionary)대신 {datatype}
 #: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:128
 msgid "Filters"
-msgstr ""
+msgstr "필터"
 
 #: templates/rest_framework/filters/django_filter.html:2
 #: templates/rest_framework/filters/django_filter_crispyforms.html:4
 msgid "Field filters"
-msgstr ""
+msgstr "항목 필터"
 
 #: templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
-msgstr ""
+msgstr "정렬"
 
 #: templates/rest_framework/filters/search.html:2
 msgid "Search"
-msgstr ""
+msgstr "검색"
 
 #: templates/rest_framework/horizontal/radio.html:2
 #: templates/rest_framework/inline/radio.html:2
 #: templates/rest_framework/vertical/radio.html:2
 msgid "None"
-msgstr ""
+msgstr "없음"
 
 #: templates/rest_framework/horizontal/select_multiple.html:2
 #: templates/rest_framework/inline/select_multiple.html:2
@@ -401,7 +401,7 @@ msgstr "이 칸은 반드시 고유해야 합니다."
 
 #: validators.py:97
 msgid "The fields {field_names} must make a unique set."
-msgstr ""
+msgstr "{field_names} 은(는) 중복될 수 없습니다."
 
 #: validators.py:245
 msgid "This field must be unique for the \"{date_field}\" date."
@@ -421,11 +421,11 @@ msgstr "\"Accept\" header내 버전이 유효하지 않습니다."
 
 #: versioning.py:73
 msgid "Invalid version in URL path."
-msgstr "URL path내 버전이 유효하지 않습니다."
+msgstr "URL 경로 내 버전이 유효하지 않습니다."
 
 #: versioning.py:115
 msgid "Invalid version in URL path. Does not match any version namespace."
-msgstr ""
+msgstr "URL 경로 내 버전이 유효하지 않습니다. 일치하는 버전명이 존재하지 않습니다."
 
 #: versioning.py:147
 msgid "Invalid version in hostname."
@@ -437,4 +437,4 @@ msgstr "쿼리 파라메터내 버전이 유효하지 않습니다."
 
 #: views.py:88
 msgid "Permission denied."
-msgstr ""
+msgstr "권한이 없습니다."
