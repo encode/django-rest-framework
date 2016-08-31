@@ -12,16 +12,15 @@ Create a new Django project named `tutorial`, then start a new app called `quick
 
     # Create a virtualenv to isolate our package dependencies locally
     virtualenv env
-    source env/bin/activate  # On Windows use `env\Scripts\activate`
+    . env/bin/activate  # On Windows use `env\Scripts\activate`
 
     # Install Django and Django REST framework into the virtualenv
-    pip install django
-    pip install djangorestframework
+    pip install django djangorestframework
 
     # Set up a new project with a single application
-    django-admin.py startproject tutorial .  # Note the trailing '.' character
+    django-admin startproject tutorial .  # Note the trailing '.' character
     cd tutorial
-    django-admin.py startapp quickstart
+    ./manage.py startapp quickstart
     cd ..
 
 Now sync your database for the first time:
