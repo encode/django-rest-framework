@@ -11,11 +11,16 @@ from rest_framework.routers import DefaultRouter
 from rest_framework.schemas import SchemaGenerator
 from rest_framework.test import APIClient
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 
 class MockUser(object):
     def is_authenticated(self):
+        return True
+
+
+class MockCoreapiObject(object):
+    def __eq__(self, value):
         return True
 
 
@@ -43,16 +48,32 @@ class ExampleViewSet(ModelViewSet):
 
     @detail_route(methods=['put', 'post'], serializer_class=AnotherSerializer)
     def custom_action(self, request, pk):
-        return super(ExampleSerializer, self).retrieve(self, request)
+        pass
 
     @list_route()
     def custom_list_action(self, request):
-        return super(ExampleViewSet, self).list(self, request)
+        pass
 
     def get_serializer(self, *args, **kwargs):
         assert self.request
         assert self.action
         return super(ExampleViewSet, self).get_serializer(*args, **kwargs)
+
+
+class ExampleViewSet1(GenericViewSet):
+    serializer_class = ExampleSerializer
+
+    @detail_route(methods=['post'])
+    def custom_action(self, request, pk):
+        pass
+
+
+class ExampleViewSet2(GenericViewSet):
+    serializer_class = ExampleSerializer
+
+    @detail_route(methods=['post'])
+    def custom_action(self, request, pk):
+        pass
 
 
 class ExampleView(APIView):
@@ -70,8 +91,16 @@ router.register('example', ExampleViewSet, base_name='example')
 urlpatterns = [
     url(r'^', include(router.urls))
 ]
+
 urlpatterns2 = [
     url(r'^example-view/$', ExampleView.as_view(), name='example-view')
+]
+
+router = DefaultRouter(schema_title='Example API' if coreapi else None)
+router.register('example1', ExampleViewSet1, base_name='example')
+router.register('example2', ExampleViewSet2, base_name='example')
+urlpatterns3 = [
+    url(r'^', include(router.urls))
 ]
 
 
@@ -119,121 +148,128 @@ class TestRouterGeneratedSchema(TestCase):
         expected = coreapi.Document(
             url='',
             title='Example API',
-            content={
-                'example': {
-                    'list': coreapi.Link(
-                        url='/example/',
-                        action='get',
-                        fields=[
-                            coreapi.Field('page', required=False, location='query'),
-                            coreapi.Field('ordering', required=False, location='query')
-                        ]
-                    ),
-                    'create': coreapi.Link(
-                        url='/example/',
-                        action='post',
-                        encoding='application/json',
-                        fields=[
-                            coreapi.Field('a', required=True, location='form', description='A field description'),
-                            coreapi.Field('b', required=False, location='form')
-                        ]
-                    ),
-                    'retrieve': coreapi.Link(
-                        url='/example/{pk}/',
-                        action='get',
-                        fields=[
-                            coreapi.Field('pk', required=True, location='path')
-                        ]
-                    ),
-                    'custom_action_post': coreapi.Link(
-                        url='/example/{pk}/custom_action/',
-                        action='post',
-                        encoding='application/json',
-                        fields=[
-                            coreapi.Field('pk', required=True, location='path'),
-                            coreapi.Field('c', required=True, location='form'),
-                            coreapi.Field('d', required=False, location='form'),
-                        ]
-                    ),
-                    'custom_action_put': coreapi.Link(
-                        url='/example/{pk}/custom_action/',
-                        action='put',
-                        encoding='application/json',
-                        fields=[
-                            coreapi.Field('pk', required=True, location='path'),
-                            coreapi.Field('c', required=True, location='form'),
-                            coreapi.Field('d', required=False, location='form'),
-                        ]
-                    ),
-                    'custom_list_action': coreapi.Link(
-                        url='/example/custom_list_action/',
-                        action='get'
-                    ),
-                    'update': coreapi.Link(
-                        url='/example/{pk}/',
-                        action='put',
-                        encoding='application/json',
-                        fields=[
-                            coreapi.Field('pk', required=True, location='path'),
-                            coreapi.Field('a', required=True, location='form', description='A field description'),
-                            coreapi.Field('b', required=False, location='form')
-                        ]
-                    ),
-                    'partial_update': coreapi.Link(
-                        url='/example/{pk}/',
-                        action='patch',
-                        encoding='application/json',
-                        fields=[
-                            coreapi.Field('pk', required=True, location='path'),
-                            coreapi.Field('a', required=False, location='form', description='A field description'),
-                            coreapi.Field('b', required=False, location='form')
-                        ]
-                    ),
-                    'destroy': coreapi.Link(
-                        url='/example/{pk}/',
-                        action='delete',
-                        fields=[
-                            coreapi.Field('pk', required=True, location='path')
-                        ]
-                    )
-                }
-            }
+            content={'example': MockCoreapiObject()}
         )
         self.assertEqual(response.data, expected)
 
-    def test_multiple_http_methods_for_detail_route(self):
+    def test_links(self):
         client = APIClient()
         client.force_authenticate(MockUser())
         response = client.get('/', HTTP_ACCEPT='application/vnd.coreapi+json')
-        put_action = ('custom_action_put',
-                      coreapi.Link(
-                          url='/example/{pk}/custom_action/',
-                          action='put',
-                          encoding='application/json',
-                          fields=[
-                              coreapi.Field('pk', required=True, location='path'),
-                              coreapi.Field('c', required=True, location='form'),
-                              coreapi.Field('d', required=False, location='form'),
-                          ]
-                      ))
-        post_action = ('custom_action_post',
-                       coreapi.Link(
-                           url='/example/{pk}/custom_action/',
-                           action='post',
-                           encoding='application/json',
-                           fields=[
-                               coreapi.Field('pk', required=True, location='path'),
-                               coreapi.Field('c', required=True, location='form'),
-                               coreapi.Field('d', required=False, location='form'),
-                           ]
-                       ))
+        self.assertEqual(response.status_code, 200)
+        expected_links = [
+            coreapi.Link(  # list
+                url='/example/',
+                action='get',
+                fields=[
+                    coreapi.Field('page', required=False, location='query'),
+                    coreapi.Field('ordering', required=False, location='query')
+                ]
+            ),
+            coreapi.Link(  # create
+                url='/example/',
+                action='post',
+                encoding='application/json',
+                fields=[
+                    coreapi.Field('a', required=True, location='form', description='A field description'),
+                    coreapi.Field('b', required=False, location='form')
+                ]
+            ),
+            coreapi.Link(  # retrieve
+                url='/example/{pk}/',
+                action='get',
+                fields=[
+                    coreapi.Field('pk', required=True, location='path')
+                ]
+            ),
+            coreapi.Link(  # custom_action post
+                url='/example/{pk}/custom_action/',
+                action='post',
+                encoding='application/json',
+                fields=[
+                    coreapi.Field('pk', required=True, location='path'),
+                    coreapi.Field('c', required=True, location='form'),
+                    coreapi.Field('d', required=False, location='form'),
+                ]
+            ),
+            coreapi.Link(  # custom_action put
+                url='/example/{pk}/custom_action/',
+                action='put',
+                encoding='application/json',
+                fields=[
+                    coreapi.Field('pk', required=True, location='path'),
+                    coreapi.Field('c', required=True, location='form'),
+                    coreapi.Field('d', required=False, location='form'),
+                ]
+            ),
+            coreapi.Link(  # custom_list_action
+                url='/example/custom_list_action/',
+                action='get'
+            ),
+            coreapi.Link(  # update
+                url='/example/{pk}/',
+                action='put',
+                encoding='application/json',
+                fields=[
+                    coreapi.Field('pk', required=True, location='path'),
+                    coreapi.Field('a', required=True, location='form', description='A field description'),
+                    coreapi.Field('b', required=False, location='form')
+                ]
+            ),
+            coreapi.Link(  # partial_update
+                url='/example/{pk}/',
+                action='patch',
+                encoding='application/json',
+                fields=[
+                    coreapi.Field('pk', required=True, location='path'),
+                    coreapi.Field('a', required=False, location='form', description='A field description'),
+                    coreapi.Field('b', required=False, location='form')
+                ]
+            ),
+            coreapi.Link(  # destroy
+                url='/example/{pk}/',
+                action='delete',
+                fields=[
+                    coreapi.Field('pk', required=True, location='path')
+                ]
+            ),
+        ]
 
-        self.assertIn(put_action, response.data['example'].items())
-        self.assertIn(post_action, response.data['example'].items())
+        response_links = response.data['example'].links.values()
+        for link in expected_links:
+            self.assertIn(link, response_links)
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
 class TestSchemaGenerator(TestCase):
+    def test_similar_actions(self):
+        schema_generator = SchemaGenerator(title='Test View', patterns=urlpatterns3)
+        schema = schema_generator.get_schema()
+        self.assertIn('example1', schema)
+        self.assertIn('example2', schema)
+        custom_action_1 = coreapi.Link(
+            url='/example1/{pk}/custom_action/',
+            action='post',
+            encoding='application/json',
+            fields=[
+                coreapi.Field('pk', required=True, location='path'),
+                coreapi.Field('a', required=True, location='form', description='A field description'),
+                coreapi.Field('b', required=False, location='form')
+            ]
+        )
+        custom_action_2 = coreapi.Link(
+            url='/example2/{pk}/custom_action/',
+            action='post',
+            encoding='application/json',
+            fields=[
+                coreapi.Field('pk', required=True, location='path'),
+                coreapi.Field('a', required=True, location='form', description='A field description'),
+                coreapi.Field('b', required=False, location='form')
+            ]
+        )
+        self.assertIn(custom_action_1, schema['example1'].links.values())
+        self.assertIn(custom_action_2, schema['example2'].links.values())
+
     def test_view(self):
         schema_generator = SchemaGenerator(title='Test View', patterns=urlpatterns2)
         schema = schema_generator.get_schema()
