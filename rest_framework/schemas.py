@@ -9,6 +9,7 @@ from django.utils.encoding import force_text
 from rest_framework import exceptions, serializers
 from rest_framework.compat import coreapi, uritemplate, urlparse
 from rest_framework.request import clone_request
+from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
 
@@ -88,10 +89,11 @@ class SchemaGenerator(object):
 
             if request is not None:
                 view.request = clone_request(request, method)
-                try:
-                    view.check_permissions(view.request)
-                except exceptions.APIException:
-                    continue
+                if api_settings.SCHEMA_CHECK_PERMISSIONS:
+                    try:
+                        view.check_permissions(view.request)
+                    except exceptions.APIException:
+                        continue
             else:
                 view.request = None
 
