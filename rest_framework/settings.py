@@ -84,9 +84,6 @@ DEFAULTS = {
     'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
     'NON_FIELD_ERRORS_KEY': 'non_field_errors',
 
-    # Schema generation
-    'SCHEMA_CHECK_PERMISSIONS': True,
-
     # Testing
     'TEST_REQUEST_RENDERER_CLASSES': (
         'rest_framework.renderers.MultiPartRenderer',
