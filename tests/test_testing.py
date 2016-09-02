@@ -245,3 +245,10 @@ class TestAPIRequestFactory(TestCase):
         self.assertEqual(dict(request.GET), {'demo': ['test']})
         request = factory.get('/view/', {'demo': 'test'})
         self.assertEqual(dict(request.GET), {'demo': ['test']})
+
+    def test_request_factory_url_arguments_with_unicode(self):
+        factory = APIRequestFactory()
+        request = factory.get('/view/?demo=testé')
+        self.assertEqual(dict(request.GET), {'demo': ['testé']})
+        request = factory.get('/view/', {'demo': 'testé'})
+        self.assertEqual(dict(request.GET), {'demo': ['testé']})
