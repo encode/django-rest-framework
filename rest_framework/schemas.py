@@ -72,31 +72,10 @@ class SchemaGenerator(object):
 
         links = []
         for path, method, category, action, callback in self.endpoints:
-            view = callback.cls()
-            for attr, val in getattr(callback, 'initkwargs', {}).items():
-                setattr(view, attr, val)
-            view.args = ()
-            view.kwargs = {}
-            view.format_kwarg = None
-
-            actions = getattr(callback, 'actions', None)
-            if actions is not None:
-                if method == 'OPTIONS':
-                    view.action = 'metadata'
-                else:
-                    view.action = actions.get(method.lower())
-
-            if request is not None:
-                view.request = clone_request(request, method)
-                try:
-                    view.check_permissions(view.request)
-                except exceptions.APIException:
-                    continue
-            else:
-                view.request = None
-
-            link = self.get_link(path, method, callback, view)
-            links.append((category, action, link))
+            view = self.setup_view(callback, method, request)
+            if self.should_include_link(path, method, callback, view):
+                link = self.get_link(path, method, callback, view)
+                links.append((category, action, link))
 
         if not links:
             return None
@@ -215,7 +194,43 @@ class SchemaGenerator(object):
         except IndexError:
             return None
 
+    def setup_view(self, callback, method, request):
+        """
+        Setup a view instance.
+        """
+        view = callback.cls()
+        for attr, val in getattr(callback, 'initkwargs', {}).items():
+            setattr(view, attr, val)
+        view.args = ()
+        view.kwargs = {}
+        view.format_kwarg = None
+
+        actions = getattr(callback, 'actions', None)
+        if actions is not None:
+            if method == 'OPTIONS':
+                view.action = 'metadata'
+            else:
+                view.action = actions.get(method.lower())
+
+        if request is not None:
+            view.request = clone_request(request, method)
+        else:
+            view.request = None
+
+        return view
+
     # Methods for generating each individual `Link` instance...
+
+    def should_include_link(self, path, method, callback, view):
+        if view.request is None:
+            return True
+
+        try:
+            view.check_permissions(view.request)
+        except exceptions.APIException:
+            return False
+
+        return True
 
     def get_link(self, path, method, callback, view):
         """
