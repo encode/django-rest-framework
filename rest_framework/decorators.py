@@ -55,6 +55,7 @@ def api_view(http_method_names=None):
             setattr(WrappedAPIView, method.lower(), handler)
 
         WrappedAPIView.__name__ = func.__name__
+        WrappedAPIView.__module__ = func.__module__
 
         WrappedAPIView.renderer_classes = getattr(func, 'renderer_classes',
                                                   APIView.renderer_classes)
