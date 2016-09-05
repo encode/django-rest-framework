@@ -130,6 +130,7 @@ class APIView(View):
 
         view = super(APIView, cls).as_view(**initkwargs)
         view.cls = cls
+        view.initkwagrs = initkwargs
 
         # Note: session based authentication is explicitly CSRF validated,
         # all other authentication is CSRF exempt.
