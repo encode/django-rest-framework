@@ -12,10 +12,11 @@ Create a new Django project named `tutorial`, then start a new app called `quick
 
     # Create a virtualenv to isolate our package dependencies locally
     virtualenv env
-    . env/bin/activate  # On Windows use `env\Scripts\activate`
+    source env/bin/activate  # On Windows use `env\Scripts\activate`
 
     # Install Django and Django REST framework into the virtualenv
-    pip install django djangorestframework
+    pip install django 
+    pip install djangorestframework
 
     # Set up a new project with a single application
     django-admin startproject tutorial .  # Note the trailing '.' character
@@ -25,11 +26,11 @@ Create a new Django project named `tutorial`, then start a new app called `quick
 
 Now sync your database for the first time:
 
-    python manage.py migrate
+    ./manage.py migrate
 
 We'll also create an initial user named `admin` with a password of `password123`. We'll authenticate as that user later in our example.
 
-    python manage.py createsuperuser
+    ./manage.py createsuperuser
 
 Once you've set up a database and initial user created and ready to go, open up the app's directory and we'll get coding...
 
