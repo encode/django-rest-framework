@@ -97,21 +97,32 @@ form.signup {
 
 # Funding
 
-> As a direct result of [a successful Mozilla grant application](mozilla-grant.md), I will be leaving my current role at [DabApps](http://www.dabapps.com), and attempting to secure a sustainable business model for REST framework development. I need your help in order to make this work.
+> As a direct result of [a successful Mozilla grant
+> application](mozilla-grant.md), I will be leaving my current role at
+> [DabApps](http://www.dabapps.com), and attempting to secure a sustainable
+> business model for REST framework development. I need your help in order to
+> make this work.
 >
 > &mdash; Tom Christie
 
-If you use REST framework commercially we strongly encourage you to invest in its continued development by signing up for a paid plan.
+If you use REST framework commercially we strongly encourage you to invest in
+its continued development by signing up for a paid plan.
 
-**We believe that collaboratively funded software can offer outstanding returns on investment, by encouraging our users to collectively share the cost of development.**
+**We believe that collaboratively funded software can offer outstanding returns
+on investment, by encouraging our users to collectively share the cost of
+development.**
 
 Signing up for a paid plan will:
 
-* Directly contribute to faster releases, more features, and higher quality software.
-* Allow more time to be invested in documentation, issue triage, and community support.
+* Directly contribute to faster releases, more features, and higher quality
+  software.
+* Allow more time to be invested in documentation, issue triage, and community
+  support.
 * Safeguard the future development of REST framework.
 
-REST framework continues to be open-source and permissively licensed, but we firmly believe it is in the commercial best-interest for users of the project to invest in its ongoing development.
+REST framework continues to be open-source and permissively licensed, but we
+firmly believe it is in the commercial best-interest for users of the project
+to invest in its ongoing development.
 
 ---
 
@@ -134,17 +145,22 @@ With *typical corporate fundings of just £100-£1000 per organization* we succe
 * The metadata APIs for handling `OPTIONS` requests and schema endpoints.
 * Numerous minor improvements and better quality throughout the codebase.
 
-This incredible level of return on investment is *only possible through collaboratively funded models*, which is why we believe that supporting our paid plans is in everyone's best interest.
+This incredible level of return on investment is *only possible through
+collaboratively funded models*, which is why we believe that supporting our
+paid plans is in everyone's best interest.
 
-Sign up for a paid plan today, and help ensure that REST framework becomes a sustainable, full-time funded project.
+Sign up for a paid plan today, and help ensure that REST framework becomes a
+sustainable, full-time funded project.
 
 ---
 
 ## Freelancer plan
 
-This subscription is recommended for freelancers and other individuals with an interest in seeing REST framework continue to&nbsp;improve.
+This subscription is recommended for freelancers and other individuals with an
+interest in seeing REST framework continue to&nbsp;improve.
 
-If you are using REST framework as an full-time employee, consider recommending that your company takes out a [corporate&nbsp;plan](#corporate-plans).
+If you are using REST framework as an full-time employee, consider recommending
+that your company takes out a [corporate&nbsp;plan](#corporate-plans).
 
 <div class="pricing">
 				<div class="span4">
@@ -188,11 +204,16 @@ If you are using REST framework as an full-time employee, consider recommending 
 
 ## Corporate plans
 
-These subscriptions are recommended for companies and organizations using REST framework either publicly or privately.
+These subscriptions are recommended for companies and organizations using REST
+framework either publicly or privately.
 
-In exchange for funding you'll also receive advertising space on our site, allowing you to **promote your company or product to many tens of thousands of developers worldwide**.
+In exchange for funding you'll also receive advertising space on our site,
+allowing you to **promote your company or product to many tens of thousands of
+developers worldwide**.
 
-Our professional and premium plans also include **priority support**. At any time your engineers can escalate an issue or discussion group thread, and we'll ensure it gets a guaranteed response within the next working day.
+Our professional and premium plans also include **priority support**. At any
+time your engineers can escalate an issue or discussion group thread, and we'll
+ensure it gets a guaranteed response within the next working day.
 
 <div class="pricing">
 				<div class="span4">

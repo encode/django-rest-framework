@@ -31,7 +31,8 @@
 
 ---
 
-**Note**: This is the documentation for the **version 3** of REST framework. Documentation for [version 2](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
+**Note**: This is the documentation for the **version 3** of REST framework.
+Documentation for [version 2](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
 
 ---
 
@@ -116,14 +117,18 @@ Add `'rest_framework'` to your `INSTALLED_APPS` setting.
         'rest_framework',
     )
 
-If you're intending to use the browsable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
+If you're intending to use the browsable API you'll probably also want to add
+REST framework's login and logout views.  Add the following to your root
+`urls.py` file.
 
     urlpatterns = [
         ...
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     ]
 
-Note that the URL path can be whatever you want, but you must include `'rest_framework.urls'` with the `'rest_framework'` namespace. You may leave out the namespace in Django 1.9+, and REST framework will set it for you.
+Note that the URL path can be whatever you want, but you must include
+`'rest_framework.urls'` with the `'rest_framework'` namespace. You may leave
+out the namespace in Django 1.9+, and REST framework will set it for you.
 
 ## Example
 
@@ -131,7 +136,9 @@ Let's take a look at a quick example of using REST framework to build a simple m
 
 We'll create a read-write API for accessing information on the users of our project.
 
-Any global settings for a REST framework API are kept in a single configuration dictionary named `REST_FRAMEWORK`.  Start off by adding the following to your `settings.py` module:
+Any global settings for a REST framework API are kept in a single configuration
+dictionary named `REST_FRAMEWORK`.  Start off by adding the following to your
+`settings.py` module:
 
     REST_FRAMEWORK = {
         # Use Django's standard `django.contrib.auth` permissions,
@@ -172,15 +179,22 @@ Here's our project's root `urls.py` module:
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     ]
 
-You can now open the API in your browser at [http://127.0.0.1:8000/](http://127.0.0.1:8000/), and view your new 'users' API. If you use the login control in the top right corner you'll also be able to add, create and delete users from the system.
+You can now open the API in your browser at
+[http://127.0.0.1:8000/](http://127.0.0.1:8000/), and view your new 'users'
+API. If you use the login control in the top right corner you'll also be able
+to add, create and delete users from the system.
 
 ## Quickstart
 
-Can't wait to get started? The [quickstart guide][quickstart] is the fastest way to get up and running, and building APIs with REST framework.
+Can't wait to get started? The [quickstart guide][quickstart] is the fastest
+way to get up and running, and building APIs with REST framework.
 
 ## Tutorial
 
-The tutorial will walk you through the building blocks that make up REST framework.   It'll take a little while to get through, but it'll give you a comprehensive understanding of how everything fits together, and is highly recommended reading.
+The tutorial will walk you through the building blocks that make up REST
+framework.   It'll take a little while to get through, but it'll give you a
+comprehensive understanding of how everything fits together, and is highly
+recommended reading.
 
 * [1 - Serialization][tut-1]
 * [2 - Requests & Responses][tut-2]
@@ -257,20 +271,32 @@ Framework.
 
 ## Support
 
-For support please see the [REST framework discussion group][group], try the  `#restframework` channel on `irc.freenode.net`, search [the IRC archives][botbot], or raise a  question on [Stack Overflow][stack-overflow], making sure to include the ['django-rest-framework'][django-rest-framework-tag] tag.
+For support please see the [REST framework discussion group][group], try the
+`#restframework` channel on `irc.freenode.net`, search [the IRC
+archives][botbot], or raise a  question on [Stack Overflow][stack-overflow],
+making sure to include the ['django-rest-framework'][django-rest-framework-tag]
+tag.
 
-[Paid support is available][paid-support] from [DabApps][dabapps], and can include work on REST framework core, or support with building your REST framework API.  Please [contact DabApps][contact-dabapps] if you'd like to discuss commercial support options.
+[Paid support is available][paid-support] from [DabApps][dabapps], and can
+include work on REST framework core, or support with building your REST
+framework API.  Please [contact DabApps][contact-dabapps] if you'd like to
+discuss commercial support options.
 
-For updates on REST framework development, you may also want to follow [the author][twitter] on Twitter.
+For updates on REST framework development, you may also want to follow [the
+author][twitter] on Twitter.
 
 <a style="padding-top: 10px" href="https://twitter.com/_tomchristie" class="twitter-follow-button" data-show-count="false">Follow @_tomchristie</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 
 ## Security
 
-If you believe you’ve found something in Django REST framework which has security implications, please **do not raise the issue in a public forum**.
+If you believe you’ve found something in Django REST framework which has
+security implications, please **do not raise the issue in a public forum**.
 
-Send a description of the issue via email to [rest-framework-security@googlegroups.com][security-mail].  The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
+Send a description of the issue via email to
+[rest-framework-security@googlegroups.com][security-mail].  The project
+maintainers will then work with you to resolve any issues where required, prior
+to any public disclosure.
 
 ## License
 
