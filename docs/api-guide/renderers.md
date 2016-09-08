@@ -2,23 +2,39 @@ source: renderers.py
 
 # Renderers
 
-> Before a TemplateResponse instance can be returned to the client, it must be rendered. The rendering process takes the intermediate representation of template and context, and turns it into the final byte stream that can be served to the client.
+> Before a TemplateResponse instance can be returned to the client, it must be
+> rendered. The rendering process takes the intermediate representation of
+> template and context, and turns it into the final byte stream that can be
+> served to the client.
 >
 > &mdash; [Django documentation][cite]
 
-REST framework includes a number of built in Renderer classes, that allow you to return responses with various media types.  There is also support for defining your own custom renderers, which gives you the flexibility to design your own media types.
+REST framework includes a number of built in Renderer classes, that allow you
+to return responses with various media types.  There is also support for
+defining your own custom renderers, which gives you the flexibility to design
+your own media types.
 
 ## How the renderer is determined
 
-The set of valid renderers for a view is always defined as a list of classes.  When a view is entered REST framework will perform content negotiation on the incoming request, and determine the most appropriate renderer to satisfy the request.
+The set of valid renderers for a view is always defined as a list of classes.
+When a view is entered REST framework will perform content negotiation on the
+incoming request, and determine the most appropriate renderer to satisfy the
+request.
 
-The basic process of content negotiation involves examining the request's `Accept` header, to determine which media types it expects in the response.  Optionally, format suffixes on the URL may be used to explicitly request a particular representation.  For example the URL `http://example.com/api/users_count.json` might be an endpoint that always returns JSON data.
+The basic process of content negotiation involves examining the request's
+`Accept` header, to determine which media types it expects in the response.
+Optionally, format suffixes on the URL may be used to explicitly request a
+particular representation.  For example the URL
+`http://example.com/api/users_count.json` might be an endpoint that always
+returns JSON data.
 
 For more information see the documentation on [content negotiation][conneg].
 
 ## Setting the renderers
 
-The default set of renderers may be set globally, using the `DEFAULT_RENDERER_CLASSES` setting.  For example, the following settings would use `JSON` as the main media type and also include the self describing API.
+The default set of renderers may be set globally, using the
+`DEFAULT_RENDERER_CLASSES` setting.  For example, the following settings would
+use `JSON` as the main media type and also include the self describing API.
 
     REST_FRAMEWORK = {
         'DEFAULT_RENDERER_CLASSES': (
@@ -60,11 +76,20 @@ Or, if you're using the `@api_view` decorator with function based views.
 
 ## Ordering of renderer classes
 
-It's important when specifying the renderer classes for your API to think about what priority you want to assign to each media type.  If a client underspecifies the representations it can accept, such as sending an `Accept: */*` header, or not including an `Accept` header at all, then REST framework will select the first renderer in the list to use for the response.
+It's important when specifying the renderer classes for your API to think about
+what priority you want to assign to each media type.  If a client
+underspecifies the representations it can accept, such as sending an `Accept:
+*/*` header, or not including an `Accept` header at all, then REST framework
+will select the first renderer in the list to use for the response.
 
-For example if your API serves JSON responses and the HTML browsable API, you might want to make `JSONRenderer` your default renderer, in order to send `JSON` responses to clients that do not specify an `Accept` header.
+For example if your API serves JSON responses and the HTML browsable API, you
+might want to make `JSONRenderer` your default renderer, in order to send
+`JSON` responses to clients that do not specify an `Accept` header.
 
-If your API includes views that can serve both regular webpages and API responses depending on the request, then you might consider making `TemplateHTMLRenderer` your default renderer, in order to play nicely with older browsers that send [broken accept headers][browser-accept-headers].
+If your API includes views that can serve both regular webpages and API
+responses depending on the request, then you might consider making
+`TemplateHTMLRenderer` your default renderer, in order to play nicely with
+older browsers that send [broken accept headers][browser-accept-headers].
 
 ---
 
@@ -74,18 +99,22 @@ If your API includes views that can serve both regular webpages and API response
 
 Renders the request data into `JSON`, using utf-8 encoding.
 
-Note that the default style is to include unicode characters, and render the response using a compact style with no unnecessary whitespace:
+Note that the default style is to include unicode characters, and render the
+response using a compact style with no unnecessary whitespace:
 
     {"unicode black star":"★","value":999}
 
-The client may additionally include an `'indent'` media type parameter, in which case the returned `JSON` will be indented.  For example `Accept: application/json; indent=4`.
+The client may additionally include an `'indent'` media type parameter, in
+which case the returned `JSON` will be indented.  For example `Accept:
+application/json; indent=4`.
 
     {
         "unicode black star": "★",
         "value": 999
     }
 
-The default JSON encoding style can be altered using the `UNICODE_JSON` and `COMPACT_JSON` settings keys.
+The default JSON encoding style can be altered using the `UNICODE_JSON` and
+`COMPACT_JSON` settings keys.
 
 **.media_type**: `application/json`
 
@@ -95,10 +124,14 @@ The default JSON encoding style can be altered using the `UNICODE_JSON` and `COM
 
 ## TemplateHTMLRenderer
 
-Renders data to HTML, using Django's standard template rendering.
-Unlike other renderers, the data passed to the `Response` does not need to be serialized.  Also, unlike other renderers, you may want to include a `template_name` argument when creating the `Response`.
+Renders data to HTML, using Django's standard template rendering.  Unlike other
+renderers, the data passed to the `Response` does not need to be serialized.
+Also, unlike other renderers, you may want to include a `template_name`
+argument when creating the `Response`.
 
-The TemplateHTMLRenderer will create a `RequestContext`, using the `response.data` as the context dict, and determine a template name to use to render the context.
+The TemplateHTMLRenderer will create a `RequestContext`, using the
+`response.data` as the context dict, and determine a template name to use to
+render the context.
 
 The template name is determined by (in order of preference):
 
@@ -119,9 +152,14 @@ An example of a view that uses `TemplateHTMLRenderer`:
             self.object = self.get_object()
             return Response({'user': self.object}, template_name='user_detail.html')
 
-You can use `TemplateHTMLRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
+You can use `TemplateHTMLRenderer` either to return regular HTML pages using
+REST framework, or to return both HTML and API responses from a single
+endpoint.
 
-If you're building websites that use `TemplateHTMLRenderer` along with other renderer classes, you should consider listing `TemplateHTMLRenderer` as the first class in the `renderer_classes` list, so that it will be prioritised first even for browsers that send poorly formed `ACCEPT:` headers.
+If you're building websites that use `TemplateHTMLRenderer` along with other
+renderer classes, you should consider listing `TemplateHTMLRenderer` as the
+first class in the `renderer_classes` list, so that it will be prioritised
+first even for browsers that send poorly formed `ACCEPT:` headers.
 
 **.media_type**: `text/html`
 
@@ -133,7 +171,9 @@ See also: `StaticHTMLRenderer`
 
 ## StaticHTMLRenderer
 
-A simple renderer that simply returns pre-rendered HTML.  Unlike other renderers, the data passed to the response object should be a string representing the content to be returned.
+A simple renderer that simply returns pre-rendered HTML.  Unlike other
+renderers, the data passed to the response object should be a string
+representing the content to be returned.
 
 An example of a view that uses `StaticHTMLRenderer`:
 
@@ -143,7 +183,8 @@ An example of a view that uses `StaticHTMLRenderer`:
         data = '<html><body><h1>Hello, world</h1></body></html>'
         return Response(data)
 
-You can use `StaticHTMLRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
+You can use `StaticHTMLRenderer` either to return regular HTML pages using REST
+framework, or to return both HTML and API responses from a single endpoint.
 
 **.media_type**: `text/html`
 
@@ -159,7 +200,8 @@ Renders data into HTML for the Browsable API:
 
 ![The BrowsableAPIRenderer](../img/quickstart.png)
 
-This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.
+This renderer will determine which other renderer would have been given highest
+priority, and use that to display an API style response within the HTML page.
 
 **.media_type**: `text/html`
 
@@ -171,7 +213,11 @@ This renderer will determine which other renderer would have been given highest 
 
 #### Customizing BrowsableAPIRenderer
 
-By default the response content will be rendered with the highest priority renderer apart from `BrowsableAPIRenderer`.  If you need to customize this behavior, for example to use HTML as the default return format, but use JSON in the browsable API, you can do so by overriding the `get_default_renderer()` method.  For example:
+By default the response content will be rendered with the highest priority
+renderer apart from `BrowsableAPIRenderer`.  If you need to customize this
+behavior, for example to use HTML as the default return format, but use JSON in
+the browsable API, you can do so by overriding the `get_default_renderer()`
+method.  For example:
 
     class CustomBrowsableAPIRenderer(BrowsableAPIRenderer):
         def get_default_renderer(self, view):
@@ -183,9 +229,12 @@ Renders data into HTML for an admin-like display:
 
 ![The AdminRender view](../img/admin.png)
 
-This renderer is suitable for CRUD-style web APIs that should also present a user-friendly interface for managing the data.
+This renderer is suitable for CRUD-style web APIs that should also present a
+user-friendly interface for managing the data.
 
-Note that views that have nested or list serializers for their input won't work well with the `AdminRenderer`, as the HTML forms are unable to properly support them.
+Note that views that have nested or list serializers for their input won't work
+well with the `AdminRenderer`, as the HTML forms are unable to properly support
+them.
 
 **Note**: The `AdminRenderer` is only able to include links to detail pages when a properly configured `URL_FIELD_NAME` (`url` by default) attribute is present in the data. For `HyperlinkedModelSerializer` this will be the case, but for `ModelSerializer` or plain `Serializer` classes you'll need to make sure to include the field explicitly. For example here we use models `get_absolute_url` method:
 
@@ -206,9 +255,12 @@ Note that views that have nested or list serializers for their input won't work 
 
 ## HTMLFormRenderer
 
-Renders data returned by a serializer into an HTML form. The output of this renderer does not include the enclosing `<form>` tags, a hidden CSRF input or any submit buttons.
+Renders data returned by a serializer into an HTML form. The output of this
+renderer does not include the enclosing `<form>` tags, a hidden CSRF input or
+any submit buttons.
 
-This renderer is not intended to be used directly, but can instead be used in templates by passing a serializer instance to the `render_form` template tag.
+This renderer is not intended to be used directly, but can instead be used in
+templates by passing a serializer instance to the `render_form` template tag.
 
     {% load rest_framework %}
 
@@ -230,7 +282,10 @@ For more information see the [HTML & Forms][html-and-forms] documentation.
 
 ## MultiPartRenderer
 
-This renderer is used for rendering HTML multipart form data.  **It is not suitable as a response renderer**, but is instead used for creating test requests, using REST framework's [test client and test request factory][testing].
+This renderer is used for rendering HTML multipart form data.  **It is not
+suitable as a response renderer**, but is instead used for creating test
+requests, using REST framework's [test client and test request
+factory][testing].
 
 **.media_type**: `multipart/form-data; boundary=BoUnDaRyStRiNg`
 
@@ -242,9 +297,12 @@ This renderer is used for rendering HTML multipart form data.  **It is not suita
 
 # Custom renderers
 
-To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, media_type=None, renderer_context=None)` method.
+To implement a custom renderer, you should override `BaseRenderer`, set the
+`.media_type` and `.format` properties, and implement the `.render(self, data,
+media_type=None, renderer_context=None)` method.
 
-The method should return a bytestring, which will be used as the body of the HTTP response.
+The method should return a bytestring, which will be used as the body of the
+HTTP response.
 
 The arguments passed to the `.render()` method are:
 
@@ -254,19 +312,25 @@ The request data, as set by the `Response()` instantiation.
 
 ### `media_type=None`
 
-Optional.  If provided, this is the accepted media type, as determined by the content negotiation stage.
+Optional.  If provided, this is the accepted media type, as determined by the
+content negotiation stage.
 
-Depending on the client's `Accept:` header, this may be more specific than the renderer's `media_type` attribute, and may include media type parameters.  For example `"application/json; nested=true"`.
+Depending on the client's `Accept:` header, this may be more specific than the
+renderer's `media_type` attribute, and may include media type parameters.  For
+example `"application/json; nested=true"`.
 
 ### `renderer_context=None`
 
-Optional.  If provided, this is a dictionary of contextual information provided by the view.
+Optional.  If provided, this is a dictionary of contextual information provided
+by the view.
 
-By default this will include the following keys: `view`, `request`, `response`, `args`, `kwargs`.
+By default this will include the following keys: `view`, `request`, `response`,
+`args`, `kwargs`.
 
 ## Example
 
-The following is an example plaintext renderer that will return a response with the `data` parameter as the content of the response.
+The following is an example plaintext renderer that will return a response with
+the `data` parameter as the content of the response.
 
     from django.utils.encoding import smart_unicode
     from rest_framework import renderers
@@ -281,7 +345,8 @@ The following is an example plaintext renderer that will return a response with 
 
 ## Setting the character set
 
-By default renderer classes are assumed to be using the `UTF-8` encoding.  To use a different encoding, set the `charset` attribute on the renderer.
+By default renderer classes are assumed to be using the `UTF-8` encoding.  To
+use a different encoding, set the `charset` attribute on the renderer.
 
     class PlainTextRenderer(renderers.BaseRenderer):
         media_type = 'text/plain'
@@ -291,11 +356,17 @@ By default renderer classes are assumed to be using the `UTF-8` encoding.  To us
         def render(self, data, media_type=None, renderer_context=None):
             return data.encode(self.charset)
 
-Note that if a renderer class returns a unicode string, then the response content will be coerced into a bytestring by the `Response` class, with the `charset` attribute set on the renderer used to determine the encoding.
+Note that if a renderer class returns a unicode string, then the response
+content will be coerced into a bytestring by the `Response` class, with the
+`charset` attribute set on the renderer used to determine the encoding.
 
-If the renderer returns a bytestring representing raw binary content, you should set a charset value of `None`, which will ensure the `Content-Type` header of the response will not have a `charset` value set.
+If the renderer returns a bytestring representing raw binary content, you
+should set a charset value of `None`, which will ensure the `Content-Type`
+header of the response will not have a `charset` value set.
 
-In some cases you may also want to set the `render_style` attribute to `'binary'`.  Doing so will also ensure that the browsable API will not attempt to display the binary content as a string.
+In some cases you may also want to set the `render_style` attribute to
+`'binary'`.  Doing so will also ensure that the browsable API will not attempt
+to display the binary content as a string.
 
     class JPEGRenderer(renderers.BaseRenderer):
         media_type = 'image/jpeg'
@@ -312,14 +383,20 @@ In some cases you may also want to set the `render_style` attribute to `'binary'
 
 You can do some pretty flexible things using REST framework's renderers.  Some examples...
 
-* Provide either flat or nested representations from the same endpoint, depending on the requested media type.
-* Serve both regular HTML webpages, and JSON based API responses from the same endpoints.
+* Provide either flat or nested representations from the same endpoint,
+  depending on the requested media type.
+* Serve both regular HTML webpages, and JSON based API responses from the same
+  endpoints.
 * Specify multiple types of HTML representation for API clients to use.
-* Underspecify a renderer's media type, such as using `media_type = 'image/*'`, and use the `Accept` header to vary the encoding of the response.
+* Underspecify a renderer's media type, such as using `media_type = 'image/*'`,
+  and use the `Accept` header to vary the encoding of the response.
 
 ## Varying behaviour by media type
 
-In some cases you might want your view to use different serialization styles depending on the accepted media type.  If you need to do this you can access `request.accepted_renderer` to determine the negotiated renderer that will be used for the response.
+In some cases you might want your view to use different serialization styles
+depending on the accepted media type.  If you need to do this you can access
+`request.accepted_renderer` to determine the negotiated renderer that will be
+used for the response.
 
 For example:
 
@@ -346,36 +423,55 @@ For example:
 
 ## Underspecifying the media type
 
-In some cases you might want a renderer to serve a range of media types.
-In this case you can underspecify the media types it should respond to, by using a `media_type` value such as `image/*`, or `*/*`.
+In some cases you might want a renderer to serve a range of media types.  In
+this case you can underspecify the media types it should respond to, by using a
+`media_type` value such as `image/*`, or `*/*`.
 
-If you underspecify the renderer's media type, you should make sure to specify the media type explicitly when you return the response, using the `content_type` attribute.  For example:
+If you underspecify the renderer's media type, you should make sure to specify
+the media type explicitly when you return the response, using the
+`content_type` attribute.  For example:
 
     return Response(data, content_type='image/png')
 
 ## Designing your media types
 
-For the purposes of many Web APIs, simple `JSON` responses with hyperlinked relations may be sufficient.  If you want to fully embrace RESTful design and [HATEOAS] you'll need to consider the design and usage of your media types in more detail.
+For the purposes of many Web APIs, simple `JSON` responses with hyperlinked
+relations may be sufficient.  If you want to fully embrace RESTful design and
+[HATEOAS] you'll need to consider the design and usage of your media types in
+more detail.
 
-In [the words of Roy Fielding][quote], "A REST API should spend almost all of its descriptive effort in defining the media type(s) used for representing resources and driving application state, or in defining extended relation names and/or hypertext-enabled mark-up for existing standard media types.".
+In [the words of Roy Fielding][quote], "A REST API should spend almost all of
+its descriptive effort in defining the media type(s) used for representing
+resources and driving application state, or in defining extended relation names
+and/or hypertext-enabled mark-up for existing standard media types.".
 
-For good examples of custom media types, see GitHub's use of a custom [application/vnd.github+json] media type, and Mike Amundsen's IANA approved [application/vnd.collection+json] JSON-based hypermedia.
+For good examples of custom media types, see GitHub's use of a custom
+[application/vnd.github+json] media type, and Mike Amundsen's IANA approved
+[application/vnd.collection+json] JSON-based hypermedia.
 
 ## HTML error views
 
-Typically a renderer will behave the same regardless of if it's dealing with a regular response, or with a response caused by an exception being raised, such as an `Http404` or `PermissionDenied` exception, or a subclass of `APIException`.
+Typically a renderer will behave the same regardless of if it's dealing with a
+regular response, or with a response caused by an exception being raised, such
+as an `Http404` or `PermissionDenied` exception, or a subclass of
+`APIException`.
 
-If you're using either the `TemplateHTMLRenderer` or the `StaticHTMLRenderer` and an exception is raised, the behavior is slightly different, and mirrors [Django's default handling of error views][django-error-views].
+If you're using either the `TemplateHTMLRenderer` or the `StaticHTMLRenderer`
+and an exception is raised, the behavior is slightly different, and mirrors
+[Django's default handling of error views][django-error-views].
 
-Exceptions raised and handled by an HTML renderer will attempt to render using one of the following methods, by order of precedence.
+Exceptions raised and handled by an HTML renderer will attempt to render using
+one of the following methods, by order of precedence.
 
 * Load and render a template named `{status_code}.html`.
 * Load and render a template named `api_exception.html`.
 * Render the HTTP status code and text, for example "404 Not Found".
 
-Templates will render with a `RequestContext` which includes the `status_code` and `details` keys.
+Templates will render with a `RequestContext` which includes the `status_code`
+and `details` keys.
 
-**Note**: If `DEBUG=True`, Django's standard traceback error page will be displayed instead of rendering the HTTP status code and text.
+**Note**: If `DEBUG=True`, Django's standard traceback error page will be
+displayed instead of rendering the HTTP status code and text.
 
 ---
 
@@ -385,7 +481,9 @@ The following third party packages are also available.
 
 ## YAML
 
-[REST framework YAML][rest-framework-yaml] provides [YAML][yaml] parsing and rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.
+[REST framework YAML][rest-framework-yaml] provides [YAML][yaml] parsing and
+rendering support. It was previously included directly in the REST framework
+package, and is now instead supported as a third-party package.
 
 #### Installation & configuration
 
@@ -406,7 +504,9 @@ Modify your REST framework settings.
 
 ## XML
 
-[REST Framework XML][rest-framework-xml] provides a simple informal XML format. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.
+[REST Framework XML][rest-framework-xml] provides a simple informal XML format.
+It was previously included directly in the REST framework package, and is now
+instead supported as a third-party package.
 
 #### Installation & configuration
 
@@ -427,13 +527,19 @@ Modify your REST framework settings.
 
 ## JSONP
 
-[REST framework JSONP][rest-framework-jsonp] provides JSONP rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.
+[REST framework JSONP][rest-framework-jsonp] provides JSONP rendering support.
+It was previously included directly in the REST framework package, and is now
+instead supported as a third-party package.
 
 ---
 
-**Warning**: If you require cross-domain AJAX requests, you should generally be using the more modern approach of [CORS][cors] as an alternative to `JSONP`. See the [CORS documentation][cors-docs] for more details.
+**Warning**: If you require cross-domain AJAX requests, you should generally be
+using the more modern approach of [CORS][cors] as an alternative to `JSONP`.
+See the [CORS documentation][cors-docs] for more details.
 
-The `jsonp` approach is essentially a browser hack, and is [only appropriate for globally readable API endpoints][jsonp-security], where `GET` requests are unauthenticated and do not require any user permissions.
+The `jsonp` approach is essentially a browser hack, and is [only appropriate
+for globally readable API endpoints][jsonp-security], where `GET` requests are
+unauthenticated and do not require any user permissions.
 
 ---
 
@@ -453,27 +559,44 @@ Modify your REST framework settings.
 
 ## MessagePack
 
-[MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
+[MessagePack][messagepack] is a fast, efficient binary serialization format.
+[Juan Riaza][juanriaza] maintains the
+[djangorestframework-msgpack][djangorestframework-msgpack] package which
+provides MessagePack renderer and parser support for REST framework.
 
 ## CSV
 
-Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications. [Mjumbe Poe][mjumbewu] maintains the [djangorestframework-csv][djangorestframework-csv] package which provides CSV renderer support for REST framework.
+Comma-separated values are a plain-text tabular data format, that can be easily
+imported into spreadsheet applications. [Mjumbe Poe][mjumbewu] maintains the
+[djangorestframework-csv][djangorestframework-csv] package which provides CSV
+renderer support for REST framework.
 
 ## UltraJSON
 
-[UltraJSON][ultrajson] is an optimized C JSON encoder which can give significantly faster JSON rendering. [Jacob Haslehurst][hzy] maintains the [drf-ujson-renderer][drf-ujson-renderer] package which implements JSON rendering using the UJSON package.
+[UltraJSON][ultrajson] is an optimized C JSON encoder which can give
+significantly faster JSON rendering. [Jacob Haslehurst][hzy] maintains the
+[drf-ujson-renderer][drf-ujson-renderer] package which implements JSON
+rendering using the UJSON package.
 
 ## CamelCase JSON
 
-[djangorestframework-camel-case] provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by [Vitaly Babiy][vbabiy].
+[djangorestframework-camel-case] provides camel case JSON renderers and parsers
+for REST framework.  This allows serializers to use Python-style underscored
+field names, but be exposed in the API as Javascript-style camel case
+field names.  It is maintained by [Vitaly Babiy][vbabiy].
 
 ## Pandas (CSV, Excel, PNG)
 
-[Django REST Pandas] provides a serializer and renderers that support additional data processing and output via the [Pandas] DataFrame API.  Django REST Pandas includes renderers for Pandas-style CSV files, Excel workbooks (both `.xls` and `.xlsx`), and a number of [other formats]. It is maintained by [S. Andrew Sheppard][sheppard] as part of the [wq Project][wq].
+[Django REST Pandas] provides a serializer and renderers that support
+additional data processing and output via the [Pandas] DataFrame API.  Django
+REST Pandas includes renderers for Pandas-style CSV files, Excel workbooks
+(both `.xls` and `.xlsx`), and a number of [other formats]. It is maintained by
+[S. Andrew Sheppard][sheppard] as part of the [wq Project][wq].
 
 ## LaTeX
 
-[Rest Framework Latex] provides a renderer that outputs PDFs using Laulatex. It is maintained by [Pebble (S/F Software)][mypebble].
+[Rest Framework Latex] provides a renderer that outputs PDFs using Laulatex. It
+is maintained by [Pebble (S/F Software)][mypebble].
 
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process

@@ -195,15 +195,22 @@ client libraries you'll need to refer to the full documentation.
 
 ## Reviewing our work
 
-With an incredibly small amount of code, we've now got a complete pastebin Web API, which is fully web browsable, includes a schema-driven client library, and comes complete with authentication, per-object permissions, and multiple renderer formats.
+With an incredibly small amount of code, we've now got a complete pastebin Web
+API, which is fully web browsable, includes a schema-driven client library, and
+comes complete with authentication, per-object permissions, and multiple
+renderer formats.
 
-We've walked through each step of the design process, and seen how if we need to customize anything we can gradually work our way down to simply using regular Django views.
+We've walked through each step of the design process, and seen how if we need
+to customize anything we can gradually work our way down to simply using
+regular Django views.
 
-You can review the final [tutorial code][repo] on GitHub, or try out a live example in [the sandbox][sandbox].
+You can review the final [tutorial code][repo] on GitHub, or try out a live
+example in [the sandbox][sandbox].
 
 ## Onwards and upwards
 
-We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here are a few places you can start:
+We've reached the end of our tutorial.  If you want to get more involved in the
+REST framework project, here are a few places you can start:
 
 * Contribute on [GitHub][github] by reviewing and submitting issues, and making pull requests.
 * Join the [REST framework discussion group][group], and help build the community.

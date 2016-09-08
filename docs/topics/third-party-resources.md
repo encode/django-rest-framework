@@ -6,33 +6,52 @@
 
 ## About Third Party Packages
 
-Third Party Packages allow developers to share code that extends the functionality of Django REST framework, in order to support additional use-cases.
+Third Party Packages allow developers to share code that extends the
+functionality of Django REST framework, in order to support additional
+use-cases.
 
-We **support**, **encourage** and **strongly favor** the creation of Third Party Packages to encapsulate new behavior rather than adding additional functionality directly to Django REST Framework.
+We **support**, **encourage** and **strongly favor** the creation of Third
+Party Packages to encapsulate new behavior rather than adding additional
+functionality directly to Django REST Framework.
 
-We aim to make creating third party packages as easy as possible, whilst keeping a **simple** and **well maintained** core API. By promoting third party packages we ensure that the responsibility for a package remains with its author. If a package proves suitably popular it can always be considered for inclusion into the core REST framework.
+We aim to make creating third party packages as easy as possible, whilst
+keeping a **simple** and **well maintained** core API. By promoting third party
+packages we ensure that the responsibility for a package remains with its
+author. If a package proves suitably popular it can always be considered for
+inclusion into the core REST framework.
 
-If you have an idea for a new feature please consider how it may be packaged as a Third Party Package. We're always happy to discuss ideas on the [Mailing List][discussion-group].
+If you have an idea for a new feature please consider how it may be packaged as
+a Third Party Package. We're always happy to discuss ideas on the [Mailing
+List][discussion-group].
 
 ## How to create a Third Party Package
 
 ### Creating your package
 
-You can use [this cookiecutter template][cookiecutter] for creating reusable Django REST Framework packages quickly. Cookiecutter creates projects from project templates. While optional, this cookiecutter template includes best practices from Django REST framework and other packages, as well as a Travis CI configuration, Tox configuration, and a sane setup.py for easy PyPI registration/distribution.
+You can use [this cookiecutter template][cookiecutter] for creating reusable
+Django REST Framework packages quickly. Cookiecutter creates projects from
+project templates. While optional, this cookiecutter template includes best
+practices from Django REST framework and other packages, as well as a Travis CI
+configuration, Tox configuration, and a sane setup.py for easy PyPI
+registration/distribution.
 
-Note: Let us know if you have an alternate cookiecuter package so we can also link to it.
+Note: Let us know if you have an alternate cookiecuter package so we can also
+link to it.
 
 #### Running the initial cookiecutter command
 
-To run the initial cookiecutter command, you'll first need to install the Python `cookiecutter` package.
+To run the initial cookiecutter command, you'll first need to install the
+Python `cookiecutter` package.
 
     $ pip install cookiecutter
 
-Once `cookiecutter` is installed just run the following to create a new project.
+Once `cookiecutter` is installed just run the following to create a new
+project.
 
     $ cookiecutter gh:jpadilla/cookiecutter-django-rest-framework
 
-You'll be prompted for some questions, answer them, then it'll create your Python package in the current working directory based on those values.
+You'll be prompted for some questions, answer them, then it'll create your
+Python package in the current working directory based on those values.
 
     full_name (default is "Your full name here")? Johnny Appleseed
     email (default is "you@example.com")? jappleseed@example.com
@@ -46,20 +65,29 @@ You'll be prompted for some questions, answer them, then it'll create your Pytho
 
 #### Getting it onto GitHub
 
-To put your project up on GitHub, you'll need a repository for it to live in. You can create a new repository [here][new-repo]. If you need help, check out the [Create A Repo][create-a-repo] article on GitHub.
+To put your project up on GitHub, you'll need a repository for it to live in.
+You can create a new repository [here][new-repo]. If you need help, check out
+the [Create A Repo][create-a-repo] article on GitHub.
 
 
 #### Adding to Travis CI
 
-We recommend using [Travis CI][travis-ci], a hosted continuous integration service which integrates well with GitHub and is free for public repositories.
+We recommend using [Travis CI][travis-ci], a hosted continuous integration
+service which integrates well with GitHub and is free for public repositories.
 
-To get started with Travis CI, [sign in][travis-ci] with your GitHub account. Once you're signed in, go to your [profile page][travis-profile] and enable the service hook for the repository you want.
+To get started with Travis CI, [sign in][travis-ci] with your GitHub account.
+Once you're signed in, go to your [profile page][travis-profile] and enable the
+service hook for the repository you want.
 
-If you use the cookiecutter template, your project will already contain a `.travis.yml` file which Travis CI will use to build your project and run tests.  By default, builds are triggered everytime you push to your repository or create Pull Request.
+If you use the cookiecutter template, your project will already contain a
+`.travis.yml` file which Travis CI will use to build your project and run
+tests.  By default, builds are triggered everytime you push to your repository
+or create Pull Request.
 
 #### Uploading to PyPI
 
-Once you've got at least a prototype working and tests running, you should publish it on PyPI to allow others to install it via `pip`.
+Once you've got at least a prototype working and tests running, you should
+publish it on PyPI to allow others to install it via `pip`.
 
 You must [register][pypi-register] an account before publishing to PyPI.
 
@@ -69,7 +97,8 @@ To register your package on PyPI run the following command.
 
 If this is the first time publishing to PyPI, you'll be prompted to login.
 
-Note: Before publishing you'll need to make sure you have the latest pip that supports `wheel` as well as install the `wheel` package.
+Note: Before publishing you'll need to make sure you have the latest pip that
+supports `wheel` as well as install the `wheel` package.
 
     $ pip install --upgrade pip
     $ pip install wheel
@@ -81,7 +110,8 @@ After this, every time you want to release a new version on PyPI just run the fo
         git tag -a {0} -m 'version 0.1.0'
         git push --tags
 
-After releasing a new version to PyPI, it's always a good idea to tag the version and make available as a GitHub Release.
+After releasing a new version to PyPI, it's always a good idea to tag the
+version and make available as a GitHub Release.
 
 We recommend to follow [Semantic Versioning][semver] for your package's versions.
 
@@ -89,7 +119,10 @@ We recommend to follow [Semantic Versioning][semver] for your package's versions
 
 #### Version requirements
 
-The cookiecutter template assumes a set of supported versions will be provided for Python and Django. Make sure you correctly update your requirements, docs, `tox.ini`, `.travis.yml`, and `setup.py` to match the set of versions you wish to support.
+The cookiecutter template assumes a set of supported versions will be provided
+for Python and Django. Make sure you correctly update your requirements, docs,
+`tox.ini`, `.travis.yml`, and `setup.py` to match the set of versions
+you wish to support.
 
 #### Tests
 
@@ -131,7 +164,9 @@ Shorter form to run the tests for a given test method.
 
     $ ./runtests.py test_this_method
 
-To run your tests against multiple versions of Python as different versions of requirements such as Django we recommend using `tox`. [Tox][tox-docs] is a generic virtualenv management and test command line tool.
+To run your tests against multiple versions of Python as different versions of
+requirements such as Django we recommend using `tox`. [Tox][tox-docs] is a
+generic virtualenv management and test command line tool.
 
 First, install `tox` globally.
 
@@ -145,13 +180,18 @@ To run a particular `tox` environment:
 
     $ tox -e envlist
 
-`envlist` is a comma-separated value to that specifies the environments to run tests against. To view a list of all possible test environments, run:
+`envlist` is a comma-separated value to that specifies the environments to run
+tests against. To view a list of all possible test environments, run:
 
     $ tox -l
 
 #### Version compatibility
 
-Sometimes, in order to ensure your code works on various different versions of Django, Python or third party libraries, you'll need to run slightly different code depending on the environment. Any code that branches in this way should be isolated into a `compat.py` module, and should provide a single common interface that the rest of the codebase can use.
+Sometimes, in order to ensure your code works on various different versions of
+Django, Python or third party libraries, you'll need to run slightly different
+code depending on the environment. Any code that branches in this way should be
+isolated into a `compat.py` module, and should provide a single common
+interface that the rest of the codebase can use.
 
 Check out Django REST framework's [compat.py][drf-compat] for an example.
 
@@ -165,7 +205,12 @@ We suggest adding your package to the [REST Framework][rest-framework-grid] grid
 
 #### Adding to the Django REST framework docs
 
-Create a [Pull Request][drf-create-pr] or [Issue][drf-create-issue] on GitHub, and we'll add a link to it from the main REST framework documentation. You can add your package under **Third party packages** of the API Guide section that best applies, like [Authentication][authentication] or [Permissions][permissions]. You can also link your package under the [Third Party Resources][third-party-resources] section.
+Create a [Pull Request][drf-create-pr] or [Issue][drf-create-issue] on GitHub,
+and we'll add a link to it from the main REST framework documentation. You can
+add your package under **Third party packages** of the API Guide section that
+best applies, like [Authentication][authentication] or
+[Permissions][permissions]. You can also link your package under the [Third
+Party Resources][third-party-resources] section.
 
 #### Announce on the discussion group.
 
@@ -173,11 +218,14 @@ You can also let others know about your package through the [discussion group][d
 
 ## Existing Third Party Packages
 
-Django REST Framework has a growing community of developers, packages, and resources.
+Django REST Framework has a growing community of developers, packages, and
+resources.
 
-Check out a grid detailing all the packages and ecosystem around Django REST Framework at [Django Packages][rest-framework-grid].
+Check out a grid detailing all the packages and ecosystem around Django REST
+Framework at [Django Packages][rest-framework-grid].
 
-To submit new content, [open an issue][drf-create-issue] or [create a pull request][drf-create-pr].
+To submit new content, [open an issue][drf-create-issue] or [create a pull
+request][drf-create-pr].
 
 ### Authentication
 

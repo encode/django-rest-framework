@@ -6,11 +6,14 @@
 
 ---
 
-In order to continue to drive the project forward, I'm launching a Kickstarter campaign to help fund the development of a major new release - Django REST framework 3.
+In order to continue to drive the project forward, I'm launching a Kickstarter
+campaign to help fund the development of a major new release - Django REST
+framework 3.
 
 ## Project details
 
-This new release will allow us to comprehensively address some of the shortcomings of the framework, and will aim to include the following:
+This new release will allow us to comprehensively address some of the
+shortcomings of the framework, and will aim to include the following:
 
 * Faster, simpler and easier-to-use serializers.
 * An alternative admin-style interface for the browsable API.
@@ -20,9 +23,13 @@ This new release will allow us to comprehensively address some of the shortcomin
 * Triage of outstanding tickets.
 * Improving the ongoing quality and maintainability of the project.
 
-Full details are available now on the [project page](https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3).
+Full details are available now on the [project
+page](https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3).
 
-If you're interested in helping make sustainable open source development a reality please [visit the Kickstarter page](https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3) and consider funding the project.
+If you're interested in helping make sustainable open source development a
+reality please [visit the Kickstarter
+page](https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3)
+and consider funding the project.
 
 I can't wait to see where this takes us!
 
@@ -34,13 +41,19 @@ Many thanks to everyone for your support so far,
 
 ## Sponsors
 
-We've now blazed way past all our goals, with a staggering £30,000 (~$50,000), meaning I'll be in a position to work on the project significantly beyond what we'd originally planned for. I owe a huge debt of gratitude to all the wonderful companies and individuals who have been backing the project so generously, and making this possible.
+We've now blazed way past all our goals, with a staggering £30,000 (~$50,000),
+meaning I'll be in a position to work on the project significantly beyond what
+we'd originally planned for. I owe a huge debt of gratitude to all the
+wonderful companies and individuals who have been backing the project so
+generously, and making this possible.
 
 ---
 
 ### Platinum sponsors
 
-Our platinum sponsors have each made a hugely substantial contribution to the future development of Django REST framework, and I simply can't thank them enough.
+Our platinum sponsors have each made a hugely substantial contribution to the
+future development of Django REST framework, and I simply can't thank them
+enough.
 
 <ul class="sponsor diamond">
 <li><a href="https://www.eventbrite.com/" rel="nofollow" style="background-image:url(../../img/sponsors/0-eventbrite.png);">Eventbrite</a></li>
@@ -65,7 +78,9 @@ Our platinum sponsors have each made a hugely substantial contribution to the fu
 
 ### Gold sponsors
 
-Our gold sponsors include companies large and small. Many thanks for their significant funding of the project and their commitment to sustainable open-source development.
+Our gold sponsors include companies large and small. Many thanks for their
+significant funding of the project and their commitment to sustainable
+open-source development.
 
 <ul class="sponsor gold">
 <li><a href="https://laterpay.net/" rel="nofollow" style="background-image:url(../../img/sponsors/2-laterpay.png);">LaterPay</a></li>
@@ -102,7 +117,9 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 
 ### Silver sponsors
 
-The serious financial contribution that our silver sponsors have made is very much appreciated. I'd like to say a particular thank&nbsp;you to individuals who have choosen to privately support the project at this level.
+The serious financial contribution that our silver sponsors have made is very
+much appreciated. I'd like to say a particular thank&nbsp;you to individuals
+who have choosen to privately support the project at this level.
 
 <ul class="sponsor silver">
 <li><a href="http://www.imtapps.com/" rel="nofollow" style="background-image:url(../../img/sponsors/3-imt_computer_services.png);">IMT Computer Services</a></li>
@@ -150,14 +167,31 @@ The serious financial contribution that our silver sponsors have made is very mu
 
 ### Advocates
 
-The following individuals made a significant financial contribution to the development of Django REST framework 3, for which I can only offer a huge, warm and sincere thank you!
+The following individuals made a significant financial contribution to the
+development of Django REST framework 3, for which I can only offer a huge, warm
+and sincere thank you!
 
-**Individual backers**: Jure Cuhalev, Kevin Brolly, Ferenc Szalai, Dougal Matthews, Stefan Foulis, Carlos Hernando, Alen Mujezinovic, Ross Crawford-d'Heureuse, George Kappel, Alasdair Nicol, John Carr, Steve Winton, Trey, Manuel Miranda, David Horn, Vince Mi, Daniel Sears, Jamie Matthews, Ryan Currah, Marty Kemka, Scott Nixon, Moshin Elahi, Kevin Campbell, Jose Antonio Leiva Izquierdo, Kevin Stone, Andrew Godwin, Tijs Teulings, Roger Boardman, Xavier Antoviaque, Darian Moody, Lujeni, Jon Dugan, Wiley Kestner, Daniel C. Silverstein, Daniel Hahler, Subodh Nijsure, Philipp Weidenhiller, Yusuke Muraoka, Danny Roa, Reto Aebersold, Kyle Getrost, Décébal Hormuz, James Dacosta, Matt Long, Mauro Rocco, Tyrel Souza, Ryan Campbell, Ville Jyrkkä, Charalampos Papaloizou, Nikolai Røed Kristiansen, Antoni Aloy López, Celia Oakley, Michał Krawczak, Ivan VenOsdel, Tim Watts, Martin Warne, Nicola Jordan, Ryan Kaskel.
+**Individual backers**: Jure Cuhalev, Kevin Brolly, Ferenc Szalai, Dougal
+Matthews, Stefan Foulis, Carlos Hernando, Alen Mujezinovic, Ross
+Crawford-d'Heureuse, George Kappel, Alasdair Nicol, John Carr, Steve Winton,
+Trey, Manuel Miranda, David Horn, Vince Mi, Daniel Sears, Jamie Matthews, Ryan
+Currah, Marty Kemka, Scott Nixon, Moshin Elahi, Kevin Campbell, Jose Antonio
+Leiva Izquierdo, Kevin Stone, Andrew Godwin, Tijs Teulings, Roger Boardman,
+Xavier Antoviaque, Darian Moody, Lujeni, Jon Dugan, Wiley Kestner, Daniel C.
+Silverstein, Daniel Hahler, Subodh Nijsure, Philipp Weidenhiller, Yusuke
+Muraoka, Danny Roa, Reto Aebersold, Kyle Getrost, Décébal Hormuz, James
+Dacosta, Matt Long, Mauro Rocco, Tyrel Souza, Ryan Campbell, Ville Jyrkkä,
+Charalampos Papaloizou, Nikolai Røed Kristiansen, Antoni Aloy López, Celia
+Oakley, Michał Krawczak, Ivan VenOsdel, Tim Watts, Martin Warne, Nicola Jordan,
+Ryan Kaskel.
 
-**Corporate backers**: Savannah Informatics, Prism Skylabs, Musical Operating Devices.
+**Corporate backers**: Savannah Informatics, Prism Skylabs, Musical Operating
+Devices.
 
 ---
 
 ### Supporters
 
-There were also almost 300 further individuals choosing to help fund the project at other levels or choosing to give anonymously. Again, thank you, thank you, thank you!
+There were also almost 300 further individuals choosing to help fund the
+project at other levels or choosing to give anonymously. Again, thank you,
+thank you, thank you!

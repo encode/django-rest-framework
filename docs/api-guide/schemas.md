@@ -2,7 +2,9 @@ source: schemas.py
 
 # Schemas
 
-> A machine-readable [schema] describes what resources are available via the API, what their URLs are, how they are represented and what operations they support.
+> A machine-readable [schema] describes what resources are available via the
+> API, what their URLs are, how they are represented and what operations they
+> support.
 >
 > &mdash; Heroku, [JSON Schema for the Heroku Platform API][cite]
 
@@ -281,9 +283,12 @@ Typically you'll instantiate `SchemaGenerator` with a single argument, like so:
 Arguments:
 
 * `title` - The name of the API. **required**
-* `url` - The root URL of the API schema. This option is not required unless the schema is included under path prefix.
-* `patterns` - A list of URLs to inspect when generating the schema. Defaults to the project's URL conf.
-* `urlconf` - A URL conf module name to use when generating the schema. Defaults to `settings.ROOT_URLCONF`.
+* `url` - The root URL of the API schema. This option is not required unless
+  the schema is included under path prefix.
+* `patterns` - A list of URLs to inspect when generating the schema. Defaults
+  to the project's URL conf.
+* `urlconf` - A URL conf module name to use when generating the schema.
+  Defaults to `settings.ROOT_URLCONF`.
 
 ### get_schema()
 
@@ -382,27 +387,37 @@ the following strings:
 
 **"path"**
 
-Included in a templated URI. For example a `url` value of `/products/{product_code}/` could be used together with a `"path"` field, to handle API inputs in a URL path such as `/products/slim-fit-jeans/`.
+Included in a templated URI. For example a `url` value of
+`/products/{product_code}/` could be used together with a `"path"` field, to
+handle API inputs in a URL path such as `/products/slim-fit-jeans/`.
 
-These fields will normally correspond with [named arguments in the project URL conf][named-arguments].
+These fields will normally correspond with [named arguments in the project URL
+conf][named-arguments].
 
 **"query"**
 
-Included as a URL query parameter. For example `?search=sale`. Typically for `GET` requests.
+Included as a URL query parameter. For example `?search=sale`. Typically for
+`GET` requests.
 
-These fields will normally correspond with pagination and filtering controls on a view.
+These fields will normally correspond with pagination and filtering controls on
+a view.
 
 **"form"**
 
-Included in the request body, as a single item of a JSON object or HTML form. For example `{"colour": "blue", ...}`. Typically for `POST`, `PUT` and `PATCH` requests. Multiple `"form"` fields may be included on a single link.
+Included in the request body, as a single item of a JSON object or HTML form.
+For example `{"colour": "blue", ...}`. Typically for `POST`, `PUT` and `PATCH`
+requests. Multiple `"form"` fields may be included on a single link.
 
 These fields will normally correspond with serializer fields on a view.
 
 **"body"**
 
-Included as the complete request body. Typically for `POST`, `PUT` and `PATCH` requests. No more than one `"body"` field may exist on a link. May not be used together with `"form"` fields.
+Included as the complete request body. Typically for `POST`, `PUT` and `PATCH`
+requests. No more than one `"body"` field may exist on a link. May not be used
+together with `"form"` fields.
 
-These fields will normally correspond with views that use `ListSerializer` to validate the request input, or with file upload views.
+These fields will normally correspond with views that use `ListSerializer` to
+validate the request input, or with file upload views.
 
 #### `encoding`
 

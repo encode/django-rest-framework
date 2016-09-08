@@ -2,13 +2,15 @@ source: exceptions.py
 
 # Exceptions
 
-> Exceptions… allow error handling to be organized cleanly in a central or high-level place within the program structure.
+> Exceptions… allow error handling to be organized cleanly in a central or
+> high-level place within the program structure.
 >
 > &mdash; Doug Hellmann, [Python Exception Handling Techniques][cite]
 
 ## Exception handling in REST framework views
 
-REST framework's views handle various exceptions, and deal with returning appropriate error responses.
+REST framework's views handle various exceptions, and deal with returning
+appropriate error responses.
 
 The handled exceptions are:
 
@@ -16,7 +18,9 @@ The handled exceptions are:
 * Django's `Http404` exception.
 * Django's `PermissionDenied` exception.
 
-In each case, REST framework will return a response with an appropriate status code and content-type.  The body of the response will include any additional details regarding the nature of the error.
+In each case, REST framework will return a response with an appropriate status
+code and content-type.  The body of the response will include any additional
+details regarding the nature of the error.
 
 Most error responses will include a key `detail` in the body of the response.
 
@@ -25,7 +29,8 @@ For example, the following request:
     DELETE http://api.example.com/foo/bar HTTP/1.1
     Accept: application/json
 
-Might receive an error response indicating that the `DELETE` method is not allowed on that resource:
+Might receive an error response indicating that the `DELETE` method is not
+allowed on that resource:
 
     HTTP/1.1 405 Method Not Allowed
     Content-Type: application/json
@@ -33,7 +38,10 @@ Might receive an error response indicating that the `DELETE` method is not allow
 
     {"detail": "Method 'DELETE' not allowed."}
 
-Validation errors are handled slightly differently, and will include the field names as the keys in the response. If the validation error was not specific to a particular field then it will use the "non_field_errors" key, or whatever string value has been set for the `NON_FIELD_ERRORS_KEY` setting.
+Validation errors are handled slightly differently, and will include the field
+names as the keys in the response. If the validation error was not specific to
+a particular field then it will use the "non_field_errors" key, or whatever
+string value has been set for the `NON_FIELD_ERRORS_KEY` setting.
 
 Any example validation error might look like this:
 
@@ -45,11 +53,19 @@ Any example validation error might look like this:
 
 ## Custom exception handling
 
-You can implement custom exception handling by creating a handler function that converts exceptions raised in your API views into response objects.  This allows you to control the style of error responses used by your API.
+You can implement custom exception handling by creating a handler function that
+converts exceptions raised in your API views into response objects.  This
+allows you to control the style of error responses used by your API.
 
-The function must take a pair of arguments, this first is the exception to be handled, and the second is a dictionary containing any extra context such as the view currently being handled. The exception handler function should either return a `Response` object, or return `None` if the exception cannot be handled.  If the handler returns `None` then the exception will be re-raised and Django will return a standard HTTP 500 'server error' response.
+The function must take a pair of arguments, this first is the exception to be
+handled, and the second is a dictionary containing any extra context such as
+the view currently being handled. The exception handler function should either
+return a `Response` object, or return `None` if the exception cannot be
+handled.  If the handler returns `None` then the exception will be re-raised
+and Django will return a standard HTTP 500 'server error' response.
 
-For example, you might want to ensure that all error responses include the HTTP status code in the body of the response, like so:
+For example, you might want to ensure that all error responses include the HTTP
+status code in the body of the response, like so:
 
     HTTP/1.1 405 Method Not Allowed
     Content-Type: application/json
@@ -57,7 +73,8 @@ For example, you might want to ensure that all error responses include the HTTP 
 
     {"status_code": 405, "detail": "Method 'DELETE' not allowed."}
 
-In order to alter the style of the response, you could write the following custom exception handler:
+In order to alter the style of the response, you could write the following
+custom exception handler:
 
     from rest_framework.views import exception_handler
 
@@ -72,21 +89,28 @@ In order to alter the style of the response, you could write the following custo
 
         return response
 
-The context argument is not used by the default handler, but can be useful if the exception handler needs further information such as the view currently being handled, which can be accessed as `context['view']`.
+The context argument is not used by the default handler, but can be useful if
+the exception handler needs further information such as the view currently
+being handled, which can be accessed as `context['view']`.
 
-The exception handler must also be configured in your settings, using the `EXCEPTION_HANDLER` setting key. For example:
+The exception handler must also be configured in your settings, using the
+`EXCEPTION_HANDLER` setting key. For example:
 
     REST_FRAMEWORK = {
         'EXCEPTION_HANDLER': 'my_project.my_app.utils.custom_exception_handler'
     }
 
-If not specified, the `'EXCEPTION_HANDLER'` setting defaults to the standard exception handler provided by REST framework:
+If not specified, the `'EXCEPTION_HANDLER'` setting defaults to the standard
+exception handler provided by REST framework:
 
     REST_FRAMEWORK = {
         'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler'
     }
 
-Note that the exception handler will only be called for responses generated by raised exceptions.  It will not be used for any responses returned directly by the view, such as the `HTTP_400_BAD_REQUEST` responses that are returned by the generic views when serializer validation fails.
+Note that the exception handler will only be called for responses generated by
+raised exceptions.  It will not be used for any responses returned directly by
+the view, such as the `HTTP_400_BAD_REQUEST` responses that are returned by the
+generic views when serializer validation fails.
 
 ---
 
@@ -96,11 +120,15 @@ Note that the exception handler will only be called for responses generated by r
 
 **Signature:** `APIException()`
 
-The **base class** for all exceptions raised inside an `APIView` class or `@api_view`.
+The **base class** for all exceptions raised inside an `APIView` class or
+`@api_view`.
 
-To provide a custom exception, subclass `APIException` and set the `.status_code` and `.default_detail` properties on the class.
+To provide a custom exception, subclass `APIException` and set the
+`.status_code` and `.default_detail` properties on the class.
 
-For example, if your API relies on a third party service that may sometimes be unreachable, you might want to implement an exception for the "503 Service Unavailable" HTTP response code.  You could do this like so:
+For example, if your API relies on a third party service that may sometimes be
+unreachable, you might want to implement an exception for the "503 Service
+Unavailable" HTTP response code.  You could do this like so:
 
     from rest_framework.exceptions import APIException
 
@@ -114,7 +142,8 @@ For example, if your API relies on a third party service that may sometimes be u
 
 Raised if the request contains malformed data when accessing `request.data`.
 
-By default this exception results in a response with the HTTP status code "400 Bad Request".
+By default this exception results in a response with the HTTP status code "400
+Bad Request".
 
 ## AuthenticationFailed
 
@@ -122,7 +151,10 @@ By default this exception results in a response with the HTTP status code "400 B
 
 Raised when an incoming request includes incorrect authentication.
 
-By default this exception results in a response with the HTTP status code "401 Unauthenticated", but it may also result in a "403 Forbidden" response, depending on the authentication scheme in use.  See the [authentication documentation][authentication] for more details.
+By default this exception results in a response with the HTTP status code "401
+Unauthenticated", but it may also result in a "403 Forbidden" response,
+depending on the authentication scheme in use.  See the [authentication
+documentation][authentication] for more details.
 
 ## NotAuthenticated
 
@@ -130,7 +162,10 @@ By default this exception results in a response with the HTTP status code "401 U
 
 Raised when an unauthenticated request fails the permission checks.
 
-By default this exception results in a response with the HTTP status code "401 Unauthenticated", but it may also result in a "403 Forbidden" response, depending on the authentication scheme in use.  See the [authentication documentation][authentication] for more details.
+By default this exception results in a response with the HTTP status code "401
+Unauthenticated", but it may also result in a "403 Forbidden" response,
+depending on the authentication scheme in use.  See the [authentication
+documentation][authentication] for more details.
 
 ## PermissionDenied
 
@@ -138,15 +173,18 @@ By default this exception results in a response with the HTTP status code "401 U
 
 Raised when an authenticated request fails the permission checks.
 
-By default this exception results in a response with the HTTP status code "403 Forbidden".
+By default this exception results in a response with the HTTP status code "403
+Forbidden".
 
 ## NotFound
 
 **Signature:** `NotFound(detail=None)`
 
-Raised when a resource does not exists at the given URL. This exception is equivalent to the standard `Http404` Django exception.
+Raised when a resource does not exists at the given URL. This exception is
+equivalent to the standard `Http404` Django exception.
 
-By default this exception results in a response with the HTTP status code "404 Not Found".
+By default this exception results in a response with the HTTP status code "404
+Not Found".
 
 ## MethodNotAllowed
 
@@ -160,17 +198,21 @@ By default this exception results in a response with the HTTP status code "405 M
 
 **Signature:** `NotAcceptable(detail=None)`
 
-Raised when an incoming request occurs with an `Accept` header that cannot be satisfied by any of the available renderers.
+Raised when an incoming request occurs with an `Accept` header that cannot be
+satisfied by any of the available renderers.
 
-By default this exception results in a response with the HTTP status code "406 Not Acceptable".
+By default this exception results in a response with the HTTP status code "406
+Not Acceptable".
 
 ## UnsupportedMediaType
 
 **Signature:** `UnsupportedMediaType(media_type, detail=None)`
 
-Raised if there are no parsers that can handle the content type of the request data when accessing `request.data`.
+Raised if there are no parsers that can handle the content type of the request
+data when accessing `request.data`.
 
-By default this exception results in a response with the HTTP status code "415 Unsupported Media Type".
+By default this exception results in a response with the HTTP status code "415
+Unsupported Media Type".
 
 ## Throttled
 
@@ -178,7 +220,8 @@ By default this exception results in a response with the HTTP status code "415 U
 
 Raised when an incoming request fails the throttling checks.
 
-By default this exception results in a response with the HTTP status code "429 Too Many Requests".
+By default this exception results in a response with the HTTP status code "429
+Too Many Requests".
 
 ## ValidationError
 
@@ -187,16 +230,25 @@ By default this exception results in a response with the HTTP status code "429 T
 The `ValidationError` exception is slightly different from the other `APIException` classes:
 
 * The `detail` argument is mandatory, not optional.
-* The `detail` argument may be a list or dictionary of error details, and may also be a nested data structure.
-* By convention you should import the serializers module and use a fully qualified `ValidationError` style, in order to differentiate it from Django's built-in validation error. For example. `raise serializers.ValidationError('This field must be an integer value.')`
+* The `detail` argument may be a list or dictionary of error details, and may
+  also be a nested data structure.
+* By convention you should import the serializers module and use a fully
+  qualified `ValidationError` style, in order to differentiate it from Django's
+  built-in validation error. For example. `raise
+  serializers.ValidationError('This field must be an integer value.')`
 
-The `ValidationError` class should be used for serializer and field validation, and by validator classes. It is also raised when calling `serializer.is_valid` with the `raise_exception` keyword argument:
+The `ValidationError` class should be used for serializer and field validation,
+and by validator classes. It is also raised when calling `serializer.is_valid`
+with the `raise_exception` keyword argument:
 
     serializer.is_valid(raise_exception=True)
 
-The generic views use the `raise_exception=True` flag, which means that you can override the style of validation error responses globally in your API. To do so, use a custom exception handler, as described above.
+The generic views use the `raise_exception=True` flag, which means that you can
+override the style of validation error responses globally in your API. To do
+so, use a custom exception handler, as described above.
 
-By default this exception results in a response with the HTTP status code "400 Bad Request".
+By default this exception results in a response with the HTTP status code "400
+Bad Request".
 
 [cite]: http://www.doughellmann.com/articles/how-tos/python-exception-handling/index.html
 [authentication]: authentication.md
