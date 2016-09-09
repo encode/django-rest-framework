@@ -5,6 +5,7 @@ import tempfile
 import unittest
 
 from django.conf.urls import url
+from django.http import HttpResponse
 from django.test import override_settings
 
 from rest_framework.compat import coreapi
@@ -39,15 +40,63 @@ def get_schema():
                 'multipart': coreapi.Link('/example/', action='post', encoding='multipart/form-data', fields=[
                     coreapi.Field(name='example')
                 ]),
+                'multipart-body': coreapi.Link('/example/', action='post', encoding='multipart/form-data', fields=[
+                    coreapi.Field(name='example', location='body')
+                ]),
                 'urlencoded': coreapi.Link('/example/', action='post', encoding='application/x-www-form-urlencoded', fields=[
                     coreapi.Field(name='example')
+                ]),
+                'urlencoded-body': coreapi.Link('/example/', action='post', encoding='application/x-www-form-urlencoded', fields=[
+                    coreapi.Field(name='example', location='body')
                 ]),
                 'raw_upload': coreapi.Link('/upload/', action='post', encoding='application/octet-stream', fields=[
                     coreapi.Field(name='example', location='body')
                 ]),
+            },
+            'response': {
+                'download': coreapi.Link('/download/'),
+                'text': coreapi.Link('/text/')
             }
         }
     )
+
+
+def _get_query_params(request):
+    # Return query params in a plain dict, using a list value if more
+    # than one item is present for a given key.
+    return {
+        key: (value[0] if len(value) == 1 else value)
+        for key, value in
+        request.query_params.iterlists()
+    }
+
+
+def _get_data(request):
+    if not isinstance(request.data, dict):
+        return request.data
+    # Coerce multidict into regular dict, and remove files to
+    # make assertions simpler.
+    if hasattr(request.data, 'iterlists'):
+        # Use a list value if a QueryDict contains multiple items for a key.
+        return {
+            key: value[0] if len(value) == 1 else value
+            for key, value in request.data.iterlists()
+            if key not in request.FILES
+        }
+    return {
+        key: value
+        for key, value in request.data.items()
+        if key not in request.FILES
+    }
+
+
+def _get_files(request):
+    if not request.FILES:
+        return {}
+    return {
+        key: {'name': value.name, 'content': value.read()}
+        for key, value in request.FILES.items()
+    }
 
 
 class SchemaView(APIView):
@@ -62,7 +111,7 @@ class ListView(APIView):
     def get(self, request):
         return Response({
             'method': request.method,
-            'query_params': request.query_params
+            'query_params': _get_query_params(request)
         })
 
     def post(self, request):
@@ -71,29 +120,11 @@ class ListView(APIView):
         else:
             content_type = None
 
-        if isinstance(request.data, dict):
-            # Coerce multidict into regular dict, and remove files to
-            # make assertions simpler.
-            data = {
-                key: value for key, value in request.data.items()
-                if key not in request.FILES
-            }
-        else:
-            data = request.data
-
-        if request.FILES:
-            files = {
-                key: {'name': value.name, 'contents': value.read()}
-                for key, value in request.FILES.items()
-            }
-        else:
-            files = None
-
         return Response({
             'method': request.method,
-            'query_params': request.query_params,
-            'data': data,
-            'files': files,
+            'query_params': _get_query_params(request),
+            'data': _get_data(request),
+            'files': _get_files(request),
             'content_type': content_type
         })
 
@@ -103,7 +134,7 @@ class DetailView(APIView):
         return Response({
             'id': id,
             'method': request.method,
-            'query_params': request.query_params
+            'query_params': _get_query_params(request)
         })
 
 
@@ -111,12 +142,21 @@ class UploadView(APIView):
     parser_classes = [FileUploadParser]
 
     def post(self, request):
-        upload = request.data['file']
-        contents = upload.read()
         return Response({
             'method': request.method,
-            'files': {'name': upload.name, 'contents': contents}
+            'files': _get_files(request),
+            'content_type': request.content_type
         })
+
+
+class DownloadView(APIView):
+    def get(self, request):
+        return HttpResponse('some file content', content_type='image/png')
+
+
+class TextView(APIView):
+    def get(self, request):
+        return HttpResponse('123', content_type='text/plain')
 
 
 urlpatterns = [
@@ -124,6 +164,8 @@ urlpatterns = [
     url(r'^example/$', ListView.as_view()),
     url(r'^example/(?P<id>[0-9]+)/$', DetailView.as_view()),
     url(r'^upload/$', UploadView.as_view()),
+    url(r'^download/$', DownloadView.as_view()),
+    url(r'^text/$', TextView.as_view()),
 ]
 
 
@@ -154,6 +196,16 @@ class APIClientTests(APITestCase):
         }
         assert data == expected
 
+    def test_query_params_with_multiple_values(self):
+        client = get_api_client()
+        schema = client.get('http://api.example.com/')
+        data = client.action(schema, ['location', 'query'], params={'example': [1, 2, 3]})
+        expected = {
+            'method': 'GET',
+            'query_params': {'example': ['1', '2', '3']}
+        }
+        assert data == expected
+
     def test_form_params(self):
         client = get_api_client()
         schema = client.get('http://api.example.com/')
@@ -163,7 +215,7 @@ class APIClientTests(APITestCase):
             'content_type': 'application/json',
             'query_params': {},
             'data': {'example': 123},
-            'files': None
+            'files': {}
         }
         assert data == expected
 
@@ -176,7 +228,7 @@ class APIClientTests(APITestCase):
             'content_type': 'application/json',
             'query_params': {},
             'data': 123,
-            'files': None
+            'files': {}
         }
         assert data == expected
 
@@ -196,7 +248,7 @@ class APIClientTests(APITestCase):
         schema = client.get('http://api.example.com/')
 
         temp = tempfile.NamedTemporaryFile()
-        temp.write(b'example file contents')
+        temp.write(b'example file content')
         temp.flush()
 
         with open(temp.name, 'rb') as upload:
@@ -208,9 +260,79 @@ class APIClientTests(APITestCase):
             'content_type': 'multipart/form-data',
             'query_params': {},
             'data': {},
-            'files': {'example': {'name': name, 'contents': 'example file contents'}}
+            'files': {'example': {'name': name, 'content': 'example file content'}}
         }
         assert data == expected
+
+    def test_multipart_encoding_no_file(self):
+        # When no file is included, multipart encoding should still be used.
+        client = get_api_client()
+        schema = client.get('http://api.example.com/')
+
+        data = client.action(schema, ['encoding', 'multipart'], params={'example': 123})
+
+        expected = {
+            'method': 'POST',
+            'content_type': 'multipart/form-data',
+            'query_params': {},
+            'data': {'example': '123'},
+            'files': {}
+        }
+        assert data == expected
+
+    def test_multipart_encoding_multiple_values(self):
+        client = get_api_client()
+        schema = client.get('http://api.example.com/')
+
+        data = client.action(schema, ['encoding', 'multipart'], params={'example': [1, 2, 3]})
+
+        expected = {
+            'method': 'POST',
+            'content_type': 'multipart/form-data',
+            'query_params': {},
+            'data': {'example': ['1', '2', '3']},
+            'files': {}
+        }
+        assert data == expected
+
+    def test_multipart_encoding_string_file_content(self):
+        # Test for `coreapi.utils.File` support.
+        from coreapi.utils import File
+
+        client = get_api_client()
+        schema = client.get('http://api.example.com/')
+
+        example = File(name='example.txt', content='123')
+        data = client.action(schema, ['encoding', 'multipart'], params={'example': example})
+
+        expected = {
+            'method': 'POST',
+            'content_type': 'multipart/form-data',
+            'query_params': {},
+            'data': {},
+            'files': {'example': {'name': 'example.txt', 'content': '123'}}
+        }
+        assert data == expected
+
+    def test_multipart_encoding_in_body(self):
+        from coreapi.utils import File
+
+        client = get_api_client()
+        schema = client.get('http://api.example.com/')
+
+        example = {'foo': File(name='example.txt', content='123'), 'bar': 'abc'}
+        data = client.action(schema, ['encoding', 'multipart-body'], params={'example': example})
+
+        expected = {
+            'method': 'POST',
+            'content_type': 'multipart/form-data',
+            'query_params': {},
+            'data': {'bar': 'abc'},
+            'files': {'foo': {'name': 'example.txt', 'content': '123'}}
+        }
+        assert data == expected
+
+    # URLencoded
 
     def test_urlencoded_encoding(self):
         client = get_api_client()
@@ -221,16 +343,44 @@ class APIClientTests(APITestCase):
             'content_type': 'application/x-www-form-urlencoded',
             'query_params': {},
             'data': {'example': '123'},
-            'files': None
+            'files': {}
         }
         assert data == expected
+
+    def test_urlencoded_encoding_multiple_values(self):
+        client = get_api_client()
+        schema = client.get('http://api.example.com/')
+        data = client.action(schema, ['encoding', 'urlencoded'], params={'example': [1, 2, 3]})
+        expected = {
+            'method': 'POST',
+            'content_type': 'application/x-www-form-urlencoded',
+            'query_params': {},
+            'data': {'example': ['1', '2', '3']},
+            'files': {}
+        }
+        assert data == expected
+
+    def test_urlencoded_encoding_in_body(self):
+        client = get_api_client()
+        schema = client.get('http://api.example.com/')
+        data = client.action(schema, ['encoding', 'urlencoded-body'], params={'example': {'foo': 123, 'bar': True}})
+        expected = {
+            'method': 'POST',
+            'content_type': 'application/x-www-form-urlencoded',
+            'query_params': {},
+            'data': {'foo': '123', 'bar': 'true'},
+            'files': {}
+        }
+        assert data == expected
+
+    # Raw uploads
 
     def test_raw_upload(self):
         client = get_api_client()
         schema = client.get('http://api.example.com/')
 
         temp = tempfile.NamedTemporaryFile()
-        temp.write(b'example file contents')
+        temp.write(b'example file content')
         temp.flush()
 
         with open(temp.name, 'rb') as upload:
@@ -239,6 +389,58 @@ class APIClientTests(APITestCase):
 
         expected = {
             'method': 'POST',
-            'files': {'name': name, 'contents': 'example file contents'}
+            'files': {'file': {'name': name, 'content': 'example file content'}},
+            'content_type': 'application/octet-stream'
         }
         assert data == expected
+
+    def test_raw_upload_string_file_content(self):
+        from coreapi.utils import File
+
+        client = get_api_client()
+        schema = client.get('http://api.example.com/')
+
+        example = File('example.txt', '123')
+        data = client.action(schema, ['encoding', 'raw_upload'], params={'example': example})
+
+        expected = {
+            'method': 'POST',
+            'files': {'file': {'name': 'example.txt', 'content': '123'}},
+            'content_type': 'text/plain'
+        }
+        assert data == expected
+
+    def test_raw_upload_explicit_content_type(self):
+        from coreapi.utils import File
+
+        client = get_api_client()
+        schema = client.get('http://api.example.com/')
+
+        example = File('example.txt', '123', 'text/html')
+        data = client.action(schema, ['encoding', 'raw_upload'], params={'example': example})
+
+        expected = {
+            'method': 'POST',
+            'files': {'file': {'name': 'example.txt', 'content': '123'}},
+            'content_type': 'text/html'
+        }
+        assert data == expected
+
+    # Responses
+
+    def test_text_response(self):
+        client = get_api_client()
+        schema = client.get('http://api.example.com/')
+
+        data = client.action(schema, ['response', 'text'])
+
+        expected = '123'
+        assert data == expected
+
+    def test_download_response(self):
+        client = get_api_client()
+        schema = client.get('http://api.example.com/')
+
+        data = client.action(schema, ['response', 'download'])
+        assert data.basename == 'download.png'
+        assert data.read() == b'some file content'
