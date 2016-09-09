@@ -61,13 +61,19 @@ def get_schema():
     )
 
 
+def _iterlists(querydict):
+    if hasattr(querydict, 'iterlists'):
+        return querydict.iterlists()
+    return querydict.lists()
+
+
 def _get_query_params(request):
     # Return query params in a plain dict, using a list value if more
     # than one item is present for a given key.
     return {
         key: (value[0] if len(value) == 1 else value)
         for key, value in
-        request.query_params.iterlists()
+        _iterlists(request.query_params)
     }
 
 
@@ -76,11 +82,11 @@ def _get_data(request):
         return request.data
     # Coerce multidict into regular dict, and remove files to
     # make assertions simpler.
-    if hasattr(request.data, 'iterlists'):
+    if hasattr(request.data, 'iterlists') or hasattr(request.data, 'lists'):
         # Use a list value if a QueryDict contains multiple items for a key.
         return {
             key: value[0] if len(value) == 1 else value
-            for key, value in request.data.iterlists()
+            for key, value in _iterlists(request.data)
             if key not in request.FILES
         }
     return {
