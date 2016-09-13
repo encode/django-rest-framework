@@ -330,7 +330,8 @@ For example, if you need to lookup objects based on multiple fields in the URL c
             queryset = self.filter_queryset(queryset)  # Apply any filter backends
             filter = {}
             for field in self.lookup_fields:
-                filter[field] = self.kwargs[field]
+                if self.kwargs[field]: # Ignore empty fields.
+                    filter[field] = self.kwargs[field]
             return get_object_or_404(queryset, **filter)  # Lookup the object
 
 You can then simply apply this mixin to a view or viewset anytime you need to apply the custom behavior.
