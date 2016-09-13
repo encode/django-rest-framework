@@ -442,7 +442,7 @@ Declaring a `ModelSerializer` looks like this:
 
 By default, all the model fields on the class will be mapped to a corresponding serializer fields.
 
-Any relationships such as foreign keys on the model will be mapped to `PrimaryKeyRelatedField`. Reverse relationships are not included by default unless explicitly included as described below.
+Any relationships such as foreign keys on the model will be mapped to `PrimaryKeyRelatedField`. Reverse relationships are not included by default unless explicitly included as specified in the [serializer relations][relations] documentation.
 
 #### Inspecting a `ModelSerializer`
 
