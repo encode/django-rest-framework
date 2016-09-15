@@ -277,3 +277,11 @@ def template_render(template, context=None, request=None):
     # backends template, e.g. django.template.backends.django.Template
     else:
         return template.render(context, request=request)
+
+
+def set_many(instance, field, value):
+    if django.VERSION < (1, 10):
+        setattr(instance, field, value)
+    else:
+        field = getattr(instance, field)
+        field.set(value)
