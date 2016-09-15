@@ -76,6 +76,7 @@ if django_filters:
 
         class Meta:
             model = BaseFilterableItem
+            fields = '__all__'
 
     class BaseFilterableItemFilterRootView(generics.ListCreateAPIView):
         queryset = FilterableItem.objects.all()
