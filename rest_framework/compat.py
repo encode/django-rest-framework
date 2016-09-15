@@ -216,8 +216,13 @@ try:
 
     if markdown.version <= '2.2':
         HEADERID_EXT_PATH = 'headerid'
-    else:
+        LEVEL_PARAM = 'level'
+    elif markdown.version < '2.6':
         HEADERID_EXT_PATH = 'markdown.extensions.headerid'
+        LEVEL_PARAM = 'level'
+    else:
+        HEADERID_EXT_PATH = 'markdown.extensions.toc'
+        LEVEL_PARAM = 'baselevel'
 
     def apply_markdown(text):
         """
@@ -227,7 +232,7 @@ try:
         extensions = [HEADERID_EXT_PATH]
         extension_configs = {
             HEADERID_EXT_PATH: {
-                'level': '2'
+                LEVEL_PARAM: '2'
             }
         }
         md = markdown.Markdown(
