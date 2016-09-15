@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import pickle
+import re
 
 import pytest
 
@@ -336,4 +337,17 @@ class TestDefaultInclusions:
         serializer = self.Serializer(instance, data={'integer': 456}, partial=True)
         assert serializer.is_valid()
         assert serializer.validated_data == {'integer': 456}
+        assert serializer.errors == {}
+
+
+class TestSerializerValidationWithCompiledRegexField:
+    def setup(self):
+        class ExampleSerializer(serializers.Serializer):
+            name = serializers.RegexField(re.compile(r'\d'), required=True)
+        self.Serializer = ExampleSerializer
+
+    def test_validation_success(self):
+        serializer = self.Serializer(data={'name': '2'})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'name': '2'}
         assert serializer.errors == {}
