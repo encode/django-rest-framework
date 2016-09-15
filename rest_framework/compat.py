@@ -24,6 +24,16 @@ except ImportError:
 
 
 try:
+    from django.urls import (
+        NoReverseMatch, RegexURLPattern, RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+    )
+except ImportError:
+    from django.core.urlresolvers import (  # Will be removed in Django 2.0
+        NoReverseMatch, RegexURLPattern, RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+    )
+
+
+try:
     import urlparse  # Python 2.x
 except ImportError:
     import urllib.parse as urlparse
