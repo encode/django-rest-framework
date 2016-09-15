@@ -456,7 +456,7 @@ class AttributeModel(models.Model):
 
 class SearchFilterModelFk(models.Model):
     title = models.CharField(max_length=20)
-    attribute = models.ForeignKey(AttributeModel)
+    attribute = models.ForeignKey(AttributeModel, on_delete=models.CASCADE)
 
 
 class SearchFilterFkSerializer(serializers.ModelSerializer):

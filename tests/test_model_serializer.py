@@ -962,7 +962,7 @@ class OneToOneTargetTestModel(models.Model):
 
 
 class OneToOneSourceTestModel(models.Model):
-    target = models.OneToOneField(OneToOneTargetTestModel, primary_key=True)
+    target = models.OneToOneField(OneToOneTargetTestModel, primary_key=True, on_delete=models.CASCADE)
 
 
 class TestModelFieldValues(TestCase):
@@ -990,6 +990,7 @@ class TestUniquenessOverride(TestCase):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = TestModel
+                fields = '__all__'
                 extra_kwargs = {'field_1': {'required': False}}
 
         fields = TestSerializer().fields

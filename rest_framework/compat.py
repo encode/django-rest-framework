@@ -138,6 +138,12 @@ def is_authenticated(user):
     return user.is_authenticated
 
 
+def is_anonymous(user):
+    if django.VERSION < (1, 10):
+        return user.is_anonymous()
+    return user.is_anonymous
+
+
 def get_related_model(field):
     if django.VERSION < (1, 9):
         return _resolve_model(field.rel.to)
