@@ -53,6 +53,18 @@ def is_simple_callable(obj):
     """
     True if the object is a callable that takes no arguments.
     """
+    if not hasattr(inspect, 'signature'):
+        return py2k_is_simple_callable(obj)
+
+    if not callable(obj):
+        return False
+
+    sig = inspect.signature(obj)
+    params = sig.parameters.values()
+    return all(param.default != param.empty for param in params)
+
+
+def py2k_is_simple_callable(obj):
     function = inspect.isfunction(obj)
     method = inspect.ismethod(obj)
 
