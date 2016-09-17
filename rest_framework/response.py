@@ -56,7 +56,7 @@ class Response(SimpleTemplateResponse):
 
         assert renderer, ".accepted_renderer not set on Response"
         assert accepted_media_type, ".accepted_media_type not set on Response"
-        assert context, ".renderer_context not set on Response"
+        assert context is not None, ".renderer_context not set on Response"
         context['response'] = self
 
         media_type = renderer.media_type
