@@ -148,7 +148,7 @@ For clients to authenticate, the token key should be included in the `Authorizat
 If successfully authenticated, `TokenAuthentication` provides the following credentials.
 
 * `request.user` will be a Django `User` instance.
-* `request.auth` will be a `rest_framework.authtoken.models.BasicToken` instance.
+* `request.auth` will be a `rest_framework.authtoken.models.Token` instance.
 
 Unauthenticated responses that are denied permission will result in an `HTTP 401 Unauthorized` response with an appropriate WWW-Authenticate header.  For example:
 
