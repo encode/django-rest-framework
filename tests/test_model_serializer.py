@@ -42,6 +42,10 @@ class OneFieldModel(models.Model):
     char_field = models.CharField(max_length=100)
 
 
+class CustomPrimaryKeyModel(models.Model):
+    char_field = models.CharField(primary_key=True, max_length=100)
+
+
 class RegularFieldsModel(models.Model):
     """
     A model class for testing regular flat fields.
@@ -151,6 +155,34 @@ class TestModelSerializer(TestCase):
             serializer.is_valid()
         msginitial = 'Cannot use ModelSerializer with Abstract Models.'
         assert str(excinfo.exception).startswith(msginitial)
+
+
+class TestCustomPrimaryKeyModelSerializer(TestCase):
+    class TestSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = CustomPrimaryKeyModel
+            fields = ('char_field',)
+
+    def test_create_method(self):
+        serializer = self.TestSerializer(data={
+            'char_field': 'foo'
+        })
+        assert serializer.is_valid()
+        instance = serializer.save()
+        assert 'foo' == instance.pk
+
+    def test_pk_read_only_on_update(self):
+        instance = CustomPrimaryKeyModel.objects.create(
+            char_field='foo'
+        )
+        instance.save()
+
+        serializer = self.TestSerializer(instance=instance, data={
+            'char_field': 'bar'
+        })
+        assert serializer.is_valid()
+        updated_instance = serializer.save()
+        assert 'bar' != updated_instance.pk
 
 
 class TestRegularFieldMappings(TestCase):

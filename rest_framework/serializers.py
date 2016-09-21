@@ -994,7 +994,7 @@ class ModelSerializer(Serializer):
 
         # Determine any extra field arguments and hidden fields that
         # should be included
-        extra_kwargs = self.get_extra_kwargs()
+        extra_kwargs = self.get_extra_kwargs(info)
         extra_kwargs, hidden_fields = self.get_uniqueness_extra_kwargs(
             field_names, declared_fields, extra_kwargs
         )
@@ -1289,7 +1289,7 @@ class ModelSerializer(Serializer):
 
     # Methods for determining additional keyword arguments to apply...
 
-    def get_extra_kwargs(self):
+    def get_extra_kwargs(self, model_info):
         """
         Return a dictionary mapping field names to a dictionary of
         additional keyword arguments.
@@ -1317,6 +1317,8 @@ class ModelSerializer(Serializer):
                 (self.__class__.__module__, self.__class__.__name__)
             )
 
+        if not model_info.pk.auto_created and self.instance:
+            extra_kwargs.setdefault(model_info.pk.name, {})['read_only'] = True
         return extra_kwargs
 
     def get_uniqueness_extra_kwargs(self, field_names, declared_fields, extra_kwargs):
