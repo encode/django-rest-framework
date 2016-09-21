@@ -589,7 +589,7 @@ print token.key
 <p>If successfully authenticated, <code>TokenAuthentication</code> provides the following credentials.</p>
 <ul>
 <li><code>request.user</code> will be a Django <code>User</code> instance.</li>
-<li><code>request.auth</code> will be a <code>rest_framework.authtoken.models.BasicToken</code> instance.</li>
+<li><code>request.auth</code> will be a <code>rest_framework.authtoken.models.Token</code> instance.</li>
 </ul>
 <p>Unauthenticated responses that are denied permission will result in an <code>HTTP 401 Unauthorized</code> response with an appropriate WWW-Authenticate header.  For example:</p>
 <pre><code>WWW-Authenticate: Token

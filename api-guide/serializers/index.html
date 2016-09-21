@@ -928,7 +928,7 @@ serializer.data
         fields = ('id', 'account_name', 'users', 'created')
 </code></pre>
 <p>By default, all the model fields on the class will be mapped to a corresponding serializer fields.</p>
-<p>Any relationships such as foreign keys on the model will be mapped to <code>PrimaryKeyRelatedField</code>. Reverse relationships are not included by default unless explicitly included as described below.</p>
+<p>Any relationships such as foreign keys on the model will be mapped to <code>PrimaryKeyRelatedField</code>. Reverse relationships are not included by default unless explicitly included as specified in the <a href="../relations/">serializer relations</a> documentation.</p>
 <h4 id="inspecting-a-modelserializer"><a class="toclink" href="#inspecting-a-modelserializer">Inspecting a <code>ModelSerializer</code></a></h4>
 <p>Serializer classes generate helpful verbose representation strings, that allow you to fully inspect the state of their fields. This is particularly useful when working with <code>ModelSerializers</code> where you want to determine what set of fields and validators are being automatically created for you.</p>
 <p>To do so, open the Django shell, using <code>python manage.py shell</code>, then import the serializer class, instantiate it, and print the object representation…</p>
