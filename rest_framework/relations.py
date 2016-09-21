@@ -7,7 +7,7 @@ from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.urlresolvers import (
     NoReverseMatch, Resolver404, get_script_prefix, resolve
 )
-from django.db.models import Manager
+from django.db.models import Manager, Model
 from django.db.models.query import QuerySet
 from django.utils import six
 from django.utils.encoding import python_2_unicode_compatible, smart_text
@@ -226,6 +226,8 @@ class PrimaryKeyRelatedField(RelatedField):
         return True
 
     def to_internal_value(self, data):
+        if isinstance(data, Model):
+            return data
         if self.pk_field is not None:
             data = self.pk_field.to_internal_value(data)
         try:
