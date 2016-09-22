@@ -59,7 +59,11 @@ def is_simple_callable(obj):
     if not (function or method):
         return False
 
-    args, _, _, defaults = inspect.getargspec(obj)
+    if six.PY2:
+        args, _, _, defaults = inspect.getargspec(obj)
+    else:
+        args, _, _, defaults = inspect.getfullargspec(obj)[:4]
+
     len_args = len(args) if function else len(args) - 1
     len_defaults = len(defaults) if defaults else 0
     return len_args <= len_defaults
