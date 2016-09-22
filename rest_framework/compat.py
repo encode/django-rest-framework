@@ -141,7 +141,7 @@ def value_from_object(field, obj):
 
 
 def getargspec(obj):  # type: tuple
-    if six.PY2:
+    if not hasattr(inspect, 'signature'):
         parameters, _, _, defaults = inspect.getargspec(obj)
     else:
         signature = inspect.signature(obj)
