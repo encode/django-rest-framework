@@ -32,7 +32,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    get_remote_field, unicode_repr, unicode_to_repr, value_from_object
+    get_remote_field, getargspec, unicode_repr, unicode_to_repr,
+    value_from_object
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
@@ -59,12 +60,9 @@ def is_simple_callable(obj):
     if not (function or method):
         return False
 
-    if six.PY2:
-        args, _, _, defaults = inspect.getargspec(obj)
-    else:
-        args, _, _, defaults = inspect.getfullargspec(obj)[:4]
+    parameters, defaults = getargspec(obj)
 
-    len_args = len(args) if function else len(args) - 1
+    len_args = len(parameters) if function else len(parameters) - 1
     len_defaults = len(defaults) if defaults else 0
     return len_args <= len_defaults
 
