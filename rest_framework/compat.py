@@ -140,10 +140,10 @@ def value_from_object(field, obj):
     return field.value_from_object(obj)
 
 
-def getargspec(obj):  # type: tuple
-    if not hasattr(inspect, 'signature'):
+def getargspec(obj):
+    if not hasattr(inspect, 'signature'):  # Python 2.7 - 3.2
         parameters, _, _, defaults = inspect.getargspec(obj)
-    else:
+    else:  # Python +3.3
         signature = inspect.signature(obj)
         parameters = signature.parameters
         defaults = [i for i in parameters if i.default != inspect._empty]
