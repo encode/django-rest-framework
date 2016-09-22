@@ -140,6 +140,16 @@ def value_from_object(field, obj):
     return field.value_from_object(obj)
 
 
+def getargspec(obj):  # type: tuple
+    if six.PY2:
+        parameters, _, _, defaults = inspect.getargspec(obj)
+    else:
+        signature = inspect.signature(obj)
+        parameters = signature.parameters
+        defaults = [i for i in parameters if i.default != inspect._empty]
+
+    return parameters, defaults
+
 # contrib.postgres only supported from 1.8 onwards.
 try:
     from django.contrib.postgres import fields as postgres_fields
