@@ -178,6 +178,13 @@ except (ImportError, SyntaxError):
     uritemplate = None
 
 
+# requests is optional
+try:
+    import requests
+except ImportError:
+    requests = None
+
+
 # Django-guardian is optional. Import only if guardian is in INSTALLED_APPS
 # Fixes (#1712). We keep the try/except for the test suite.
 guardian = None
