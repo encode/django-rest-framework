@@ -88,9 +88,7 @@ class SchemaGenerator(object):
 
             if request is not None:
                 view.request = clone_request(request, method)
-                try:
-                    view.check_permissions(view.request)
-                except exceptions.APIException:
+                if not self.check_view_permission(view):
                     continue
             else:
                 view.request = None
@@ -163,6 +161,13 @@ class SchemaGenerator(object):
         if path == '/':
             return False  # Ignore the root endpoint.
 
+        return True
+
+    def check_view_permission(self, view):
+        try:
+            view.check_permissions(view.request)
+        except exceptions.APIException:
+            return False
         return True
 
     def get_allowed_methods(self, callback):
