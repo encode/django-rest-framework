@@ -49,20 +49,34 @@ class empty:
     pass
 
 
-def is_simple_callable(obj):
-    """
-    True if the object is a callable that takes no arguments.
-    """
-    function = inspect.isfunction(obj)
-    method = inspect.ismethod(obj)
+if six.PY3:
+    def is_simple_callable(obj):
+        """
+        True if the object is a callable that takes no arguments.
+        """
+        if not callable(obj):
+            return False
 
-    if not (function or method):
-        return False
+        sig = inspect.signature(obj)
+        params = sig.parameters.values()
+        return all(param.default != param.empty for param in params)
 
-    args, _, _, defaults = inspect.getargspec(obj)
-    len_args = len(args) if function else len(args) - 1
-    len_defaults = len(defaults) if defaults else 0
-    return len_args <= len_defaults
+else:
+    def is_simple_callable(obj):
+        function = inspect.isfunction(obj)
+        method = inspect.ismethod(obj)
+
+        if not (function or method):
+            return False
+
+        if method:
+            is_unbound = obj.im_self is None
+
+        args, _, _, defaults = inspect.getargspec(obj)
+
+        len_args = len(args) if function or is_unbound else len(args) - 1
+        len_defaults = len(defaults) if defaults else 0
+        return len_args <= len_defaults
 
 
 def get_attribute(instance, attrs):
