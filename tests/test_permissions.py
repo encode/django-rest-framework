@@ -4,7 +4,6 @@ import base64
 import unittest
 
 from django.contrib.auth.models import Group, Permission, User
-from django.core.urlresolvers import ResolverMatch
 from django.db import models
 from django.test import TestCase
 
@@ -12,7 +11,7 @@ from rest_framework import (
     HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
     status
 )
-from rest_framework.compat import guardian
+from rest_framework.compat import ResolverMatch, guardian, set_many
 from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
@@ -74,15 +73,15 @@ class ModelPermissionsIntegrationTests(TestCase):
     def setUp(self):
         User.objects.create_user('disallowed', 'disallowed@example.com', 'password')
         user = User.objects.create_user('permitted', 'permitted@example.com', 'password')
-        user.user_permissions = [
+        set_many(user, 'user_permissions', [
             Permission.objects.get(codename='add_basicmodel'),
             Permission.objects.get(codename='change_basicmodel'),
             Permission.objects.get(codename='delete_basicmodel')
-        ]
+        ])
         user = User.objects.create_user('updateonly', 'updateonly@example.com', 'password')
-        user.user_permissions = [
+        set_many(user, 'user_permissions', [
             Permission.objects.get(codename='change_basicmodel'),
-        ]
+        ])
 
         self.permitted_credentials = basic_auth_header('permitted', 'password')
         self.disallowed_credentials = basic_auth_header('disallowed', 'password')

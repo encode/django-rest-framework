@@ -197,7 +197,7 @@ REST framework includes the following test case classes, that mirror the existin
 
 You can use any of REST framework's test case classes as you would for the regular Django test case classes.  The `self.client` attribute will be an `APIClient` instance.
 
-    from django.core.urlresolvers import reverse
+    from django.urls import reverse
     from rest_framework import status
     from rest_framework.test import APITestCase
     from myproject.apps.core.models import Account

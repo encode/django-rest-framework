@@ -1,8 +1,8 @@
 from __future__ import unicode_literals
 
 from django.conf.urls import include, url
-from django.core.urlresolvers import RegexURLResolver
 
+from rest_framework.compat import RegexURLResolver
 from rest_framework.settings import api_settings
 
 
