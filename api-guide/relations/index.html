@@ -406,11 +406,9 @@
                       <a href="#example">Example</a>
                     </li>
                   
-                
-                  <li class="main">
-                    <a href="#writable-nested-serializers">Writable nested serializers</a>
-                  </li>
-
+                    <li>
+                      <a href="#writable-nested-serializers">Writable nested serializers</a>
+                    </li>
                   
                 
                   <li class="main">
@@ -734,7 +732,7 @@ class AlbumSerializer(serializers.ModelSerializer):
     ],
 }
 </code></pre>
-<h1 id="writable-nested-serializers"><a class="toclink" href="#writable-nested-serializers">Writable nested serializers</a></h1>
+<h2 id="writable-nested-serializers"><a class="toclink" href="#writable-nested-serializers">Writable nested serializers</a></h2>
 <p>By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create <code>create()</code> and/or <code>update()</code> methods in order to explicitly specify how the child relationships should be saved.</p>
 <pre><code>class TrackSerializer(serializers.ModelSerializer):
     class Meta:
@@ -770,7 +768,11 @@ True
 &gt;&gt;&gt; serializer.save()
 &lt;Album: Album object&gt;
 </code></pre>
+<hr />
 <h1 id="custom-relational-fields"><a class="toclink" href="#custom-relational-fields">Custom relational fields</a></h1>
+<p>In rare cases where none of the existing relational styles fit the representation you need,
+you can implement a completely custom relational field, that describes exactly how the
+output representation should be generated from the model instance.</p>
 <p>To implement a custom relational field, you should override <code>RelatedField</code>, and implement the <code>.to_representation(self, value)</code> method. This method takes the target of the field as the <code>value</code> argument, and should return the representation that should be used to serialize the target. The <code>value</code> argument will typically be a model instance.</p>
 <p>If you want to implement a read-write relational field, you must also implement the <code>.to_internal_value(self, data)</code> method.</p>
 <p>To provide a dynamic queryset based on the <code>context</code>, you can also override <code>.get_queryset(self)</code> instead of specifying <code>.queryset</code> on the class or when initializing the field.</p>
