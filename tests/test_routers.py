@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import json
 from collections import namedtuple
 
 from django.conf.urls import include, url
@@ -47,6 +48,21 @@ class MockViewSet(viewsets.ModelViewSet):
     serializer_class = None
 
 
+class EmptyPrefixSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = RouterTestModel
+        fields = ('uuid', 'text')
+
+
+class EmptyPrefixViewSet(viewsets.ModelViewSet):
+    queryset = [RouterTestModel(id=1, uuid='111', text='First'), RouterTestModel(id=2, uuid='222', text='Second')]
+    serializer_class = EmptyPrefixSerializer
+
+    def get_object(self, *args, **kwargs):
+        index = int(self.kwargs['pk']) - 1
+        return self.queryset[index]
+
+
 notes_router = SimpleRouter()
 notes_router.register(r'notes', NoteViewSet)
 
@@ -56,11 +72,19 @@ kwarged_notes_router.register(r'notes', KWargedNoteViewSet)
 namespaced_router = DefaultRouter()
 namespaced_router.register(r'example', MockViewSet, base_name='example')
 
+empty_prefix_router = SimpleRouter()
+empty_prefix_router.register(r'', EmptyPrefixViewSet, base_name='empty_prefix')
+empty_prefix_urls = [
+    url(r'^', include(empty_prefix_router.urls)),
+]
+
 urlpatterns = [
     url(r'^non-namespaced/', include(namespaced_router.urls)),
     url(r'^namespaced/', include(namespaced_router.urls, namespace='example')),
     url(r'^example/', include(notes_router.urls)),
     url(r'^example2/', include(kwarged_notes_router.urls)),
+
+    url(r'^empty-prefix/', include(empty_prefix_urls)),
 ]
 
 
@@ -384,3 +408,28 @@ class TestDynamicListAndDetailRouter(TestCase):
 
     def test_inherited_list_and_detail_route_decorators(self):
         self._test_list_and_detail_route_decorators(SubDynamicListAndDetailViewSet)
+
+
+@override_settings(ROOT_URLCONF='tests.test_routers')
+class TestEmptyPrefix(TestCase):
+    def test_empty_prefix_list(self):
+        response = self.client.get('/empty-prefix/')
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(
+            json.loads(response.content.decode('utf-8')),
+            [
+                {'uuid': '111', 'text': 'First'},
+                {'uuid': '222', 'text': 'Second'}
+            ]
+        )
+
+    def test_empty_prefix_detail(self):
+        response = self.client.get('/empty-prefix/1/')
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(
+            json.loads(response.content.decode('utf-8')),
+            {
+                'uuid': '111',
+                'text': 'First'
+            }
+        )
