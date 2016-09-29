@@ -594,11 +594,8 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.4.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.3+Release%22
 [3.4.4-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.4+Release%22
 [3.4.5-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.5+Release%22
-<<<<<<< HEAD
-=======
 [3.4.6-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.6+Release%22
 [3.4.7-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.7+Release%22
->>>>>>> master
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
