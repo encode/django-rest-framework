@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.test import TestCase
 
+from rest_framework.relations import Hyperlink
 from rest_framework.templatetags.rest_framework import (
     add_nested_class, add_query_param, format_value, urlize_quoted_links
 )
@@ -29,6 +30,12 @@ class TemplateTagTests(TestCase):
         self.assertEqual(format_value(True), '<code>true</code>')
         self.assertEqual(format_value(False), '<code>false</code>')
         self.assertEqual(format_value(None), '<code>null</code>')
+
+    def test_format_value_hyperlink(self):
+        url = 'http://url.com'
+        name = 'name_of_url'
+        hyperlink = Hyperlink(url, name)
+        self.assertEqual(format_value(hyperlink), '<a href=%s>%s</a>' % (url, name))
 
     def test_format_value_list(self):
         """
