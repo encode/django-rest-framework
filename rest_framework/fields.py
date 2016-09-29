@@ -252,6 +252,8 @@ class SkipField(Exception):
     pass
 
 
+REGEX_TYPE = type(re.compile(''))
+
 NOT_READ_ONLY_WRITE_ONLY = 'May not set both `read_only` and `write_only`'
 NOT_READ_ONLY_REQUIRED = 'May not set both `read_only` and `required`'
 NOT_REQUIRED_DEFAULT = 'May not set both `required` and `default`'
@@ -581,16 +583,17 @@ class Field(object):
         When cloning fields we instantiate using the arguments it was
         originally created with, rather than copying the complete state.
         """
-        args = copy.deepcopy(self._args)
-        kwargs = dict(self._kwargs)
-        # Bit ugly, but we need to special case 'validators' as Django's
-        # RegexValidator does not support deepcopy.
-        # We treat validator callables as immutable objects.
+        # Treat regexes and validators as immutable.
         # See https://github.com/tomchristie/django-rest-framework/issues/1954
-        validators = kwargs.pop('validators', None)
-        kwargs = copy.deepcopy(kwargs)
-        if validators is not None:
-            kwargs['validators'] = validators
+        # and https://github.com/tomchristie/django-rest-framework/pull/4489
+        args = [
+            copy.deepcopy(item) if not isinstance(item, REGEX_TYPE) else item
+            for item in self._args
+        ]
+        kwargs = {
+            key: (copy.deepcopy(value) if (key not in ('validators', 'regex')) else value)
+            for key, value in self._kwargs.items()
+        }
         return self.__class__(*args, **kwargs)
 
     def __repr__(self):

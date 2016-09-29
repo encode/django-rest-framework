@@ -40,6 +40,27 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.4.x series
 
+### 3.4.7
+
+**Date**: [21st September 2016][3.4.7-milestone]
+
+* Fallback behavior for request parsing when request.POST already accessed. ([#3951][gh3951], [#4500][gh4500])
+* Fix regression of `RegexField`. ([#4489][gh4489], [#4490][gh4490], [#2617][gh2617])
+* Missing comma in `admin.html` causing CSRF error. ([#4472][gh4472], [#4473][gh4473])
+* Fix response rendering with empty context. ([#4495][gh4495])
+* Fix indentation regression in API listing. ([#4493][gh4493])
+* Fixed an issue where the incorrect value is set to `ResolverMatch.func_name` of api_view decorated view. ([#4465][gh4465], [#4462][gh4462])
+* Fix `APIClient.get()` when path contains unicode arguments ([#4458][gh4458])
+
+### 3.4.6
+
+**Date**: [23rd August 2016][3.4.6-milestone]
+
+* Fix malformed Javascript in browsable API. ([#4435][gh4435])
+* Skip HiddenField from Schema fields. ([#4425][gh4425], [#4429][gh4429])
+* Improve Create to show the original exception traceback. ([#3508][gh3508])
+* Fix `AdminRenderer` display of PK only related fields. ([#4419][gh4419], [#4423][gh4423])
+
 ### 3.4.5
 
 **Date**: [19th August 2016][3.4.5-milestone]
@@ -573,6 +594,11 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.4.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.3+Release%22
 [3.4.4-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.4+Release%22
 [3.4.5-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.5+Release%22
+<<<<<<< HEAD
+=======
+[3.4.6-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.6+Release%22
+[3.4.7-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.7+Release%22
+>>>>>>> master
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -1090,3 +1116,27 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh4403]: https://github.com/tomchristie/django-rest-framework/issues/4403
 [gh4404]: https://github.com/tomchristie/django-rest-framework/issues/4404
 [gh4412]: https://github.com/tomchristie/django-rest-framework/issues/4412
+
+<!-- 3.4.6 -->
+
+[gh4435]: https://github.com/tomchristie/django-rest-framework/issues/4435
+[gh4425]: https://github.com/tomchristie/django-rest-framework/issues/4425
+[gh4429]: https://github.com/tomchristie/django-rest-framework/issues/4429
+[gh3508]: https://github.com/tomchristie/django-rest-framework/issues/3508
+[gh4419]: https://github.com/tomchristie/django-rest-framework/issues/4419
+[gh4423]: https://github.com/tomchristie/django-rest-framework/issues/4423
+
+<!-- 3.4.7 -->
+
+[gh3951]: https://github.com/tomchristie/django-rest-framework/issues/3951
+[gh4500]: https://github.com/tomchristie/django-rest-framework/issues/4500
+[gh4489]: https://github.com/tomchristie/django-rest-framework/issues/4489
+[gh4490]: https://github.com/tomchristie/django-rest-framework/issues/4490
+[gh2617]: https://github.com/tomchristie/django-rest-framework/issues/2617
+[gh4472]: https://github.com/tomchristie/django-rest-framework/issues/4472
+[gh4473]: https://github.com/tomchristie/django-rest-framework/issues/4473
+[gh4495]: https://github.com/tomchristie/django-rest-framework/issues/4495
+[gh4493]: https://github.com/tomchristie/django-rest-framework/issues/4493
+[gh4465]: https://github.com/tomchristie/django-rest-framework/issues/4465
+[gh4462]: https://github.com/tomchristie/django-rest-framework/issues/4462
+[gh4458]: https://github.com/tomchristie/django-rest-framework/issues/4458

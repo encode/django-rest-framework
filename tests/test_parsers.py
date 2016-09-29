@@ -7,11 +7,16 @@ from django import forms
 from django.core.files.uploadhandler import (
     MemoryFileUploadHandler, TemporaryFileUploadHandler
 )
+from django.http.request import RawPostDataException
 from django.test import TestCase
 from django.utils.six.moves import StringIO
 
 from rest_framework.exceptions import ParseError
-from rest_framework.parsers import FileUploadParser, FormParser
+from rest_framework.parsers import (
+    FileUploadParser, FormParser, JSONParser, MultiPartParser
+)
+from rest_framework.request import Request
+from rest_framework.test import APIRequestFactory
 
 
 class Form(forms.Form):
@@ -122,3 +127,39 @@ class TestFileUploadParser(TestCase):
 
     def __replace_content_disposition(self, disposition):
         self.parser_context['request'].META['HTTP_CONTENT_DISPOSITION'] = disposition
+
+
+class TestPOSTAccessed(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+
+    def test_post_accessed_in_post_method(self):
+        django_request = self.factory.post('/', {'foo': 'bar'})
+        request = Request(django_request, parsers=[FormParser(), MultiPartParser()])
+        django_request.POST
+        assert request.POST == {'foo': ['bar']}
+        assert request.data == {'foo': ['bar']}
+
+    def test_post_accessed_in_post_method_with_json_parser(self):
+        django_request = self.factory.post('/', {'foo': 'bar'})
+        request = Request(django_request, parsers=[JSONParser()])
+        django_request.POST
+        assert request.POST == {}
+        assert request.data == {}
+
+    def test_post_accessed_in_put_method(self):
+        django_request = self.factory.put('/', {'foo': 'bar'})
+        request = Request(django_request, parsers=[FormParser(), MultiPartParser()])
+        django_request.POST
+        assert request.POST == {'foo': ['bar']}
+        assert request.data == {'foo': ['bar']}
+
+    def test_request_read_before_parsing(self):
+        django_request = self.factory.put('/', {'foo': 'bar'})
+        request = Request(django_request, parsers=[FormParser(), MultiPartParser()])
+        django_request.read()
+        with pytest.raises(RawPostDataException):
+            request.POST
+        with pytest.raises(RawPostDataException):
+            request.POST
+            request.data

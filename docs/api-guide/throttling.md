@@ -188,7 +188,7 @@ The following is an example of a rate throttle, that will randomly throttle 1 in
 
     class RandomRateThrottle(throttling.BaseThrottle):
         def allow_request(self, request, view):
-            return random.randint(1, 10) == 1
+            return random.randint(1, 10) != 1
 
 [cite]: https://dev.twitter.com/docs/error-codes-responses
 [permissions]: permissions.md
