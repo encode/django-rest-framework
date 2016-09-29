@@ -111,6 +111,10 @@ DEFAULTS = {
     'COMPACT_JSON': True,
     'COERCE_DECIMAL_TO_STRING': True,
     'UPLOADED_FILES_USE_URL': True,
+
+    # Browseable API
+    'HTML_SELECT_CUTOFF': 1000,
+    'HTML_SELECT_CUTOFF_TEXT': "More than {count} items...",
 }
 
 
