@@ -1,6 +1,13 @@
 def pytest_configure():
     from django.conf import settings
 
+    MIDDLEWARE = (
+        'django.middleware.common.CommonMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+    )
+
     settings.configure(
         DEBUG_PROPAGATE_EXCEPTIONS=True,
         DATABASES={
@@ -21,12 +28,8 @@ def pytest_configure():
                 'APP_DIRS': True,
             },
         ],
-        MIDDLEWARE_CLASSES=(
-            'django.middleware.common.CommonMiddleware',
-            'django.contrib.sessions.middleware.SessionMiddleware',
-            'django.contrib.auth.middleware.AuthenticationMiddleware',
-            'django.contrib.messages.middleware.MessageMiddleware',
-        ),
+        MIDDLEWARE=MIDDLEWARE,
+        MIDDLEWARE_CLASSES=MIDDLEWARE,
         INSTALLED_APPS=(
             'django.contrib.auth',
             'django.contrib.contenttypes',

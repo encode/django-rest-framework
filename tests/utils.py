@@ -1,5 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import NoReverseMatch
+from rest_framework.compat import NoReverseMatch
 
 
 class MockObject(object):

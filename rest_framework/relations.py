@@ -4,9 +4,6 @@ from __future__ import unicode_literals
 from collections import OrderedDict
 
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
-from django.core.urlresolvers import (
-    NoReverseMatch, Resolver404, get_script_prefix, resolve
-)
 from django.db.models import Manager
 from django.db.models.query import QuerySet
 from django.utils import six
@@ -14,6 +11,9 @@ from django.utils.encoding import python_2_unicode_compatible, smart_text
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
+from rest_framework.compat import (
+    NoReverseMatch, Resolver404, get_script_prefix, resolve
+)
 from rest_framework.fields import (
     Field, empty, get_attribute, is_simple_callable, iter_options
 )
