@@ -286,7 +286,7 @@ Would serialize to a nested representation like this:
         ],
     }
 
-# Writable nested serializers
+## Writable nested serializers
 
 By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create `create()` and/or `update()` methods in order to explicitly specify how the child relationships should be saved.
 
@@ -324,7 +324,13 @@ By default nested serializers are read-only. If you want to support write-operat
     >>> serializer.save()
     <Album: Album object>
 
+---
+
 # Custom relational fields
+
+In rare cases where none of the existing relational styles fit the representation you need,
+you can implement a completely custom relational field, that describes exactly how the
+output representation should be generated from the model instance.
 
 To implement a custom relational field, you should override `RelatedField`, and implement the `.to_representation(self, value)` method. This method takes the target of the field as the `value` argument, and should return the representation that should be used to serialize the target. The `value` argument will typically be a model instance.
 
