@@ -391,3 +391,8 @@ class Request(object):
             '`request.QUERY_PARAMS` has been deprecated in favor of `request.query_params` '
             'since version 3.0, and has been fully removed as of version 3.2.'
         )
+
+    def force_plaintext_errors(self, value):
+        # Hack to allow our exception handler to force choice of
+        # plaintext or html error responses.
+        self._request.is_ajax = lambda: value

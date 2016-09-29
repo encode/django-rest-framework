@@ -49,6 +49,7 @@ class ExampleViewSet(ModelViewSet):
 
     def get_serializer(self, *args, **kwargs):
         assert self.request
+        assert self.action
         return super(ExampleViewSet, self).get_serializer(*args, **kwargs)
 
 

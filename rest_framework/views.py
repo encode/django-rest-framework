@@ -3,17 +3,14 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
 
-import sys
-
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.http import Http404
-from django.http.response import HttpResponse, HttpResponseBase
+from django.http.response import HttpResponseBase
 from django.utils import six
 from django.utils.encoding import smart_text
 from django.utils.translation import ugettext_lazy as _
-from django.views import debug
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
@@ -94,11 +91,6 @@ def exception_handler(exc, context):
 
         set_rollback()
         return Response(data, status=status.HTTP_403_FORBIDDEN)
-
-    # throw django's error page if debug is True
-    if settings.DEBUG:
-        exception_reporter = debug.ExceptionReporter(context.get('request'), *sys.exc_info())
-        return HttpResponse(exception_reporter.get_traceback_html(), status=500)
 
     return None
 
@@ -439,10 +431,18 @@ class APIView(View):
         response = exception_handler(exc, context)
 
         if response is None:
-            raise
+            self.raise_uncaught_exception(exc)
 
         response.exception = True
         return response
+
+    def raise_uncaught_exception(self, exc):
+        if settings.DEBUG:
+            request = self.request
+            renderer_format = getattr(request.accepted_renderer, 'format')
+            use_plaintext_traceback = renderer_format not in ('html', 'api', 'admin')
+            request.force_plaintext_errors(use_plaintext_traceback)
+        raise
 
     # Note: Views are made CSRF exempt from within `as_view` as to prevent
     # accidental removal of this exemption in cases where `dispatch` needs to
