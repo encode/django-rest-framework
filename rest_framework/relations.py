@@ -18,6 +18,7 @@ from rest_framework.fields import (
     Field, empty, get_attribute, is_simple_callable, iter_options
 )
 from rest_framework.reverse import reverse
+from rest_framework.settings import api_settings
 from rest_framework.utils import html
 
 
@@ -71,14 +72,19 @@ MANY_RELATION_KWARGS = (
 
 class RelatedField(Field):
     queryset = None
-    html_cutoff = 1000
-    html_cutoff_text = _('More than {count} items...')
+    html_cutoff = None
+    html_cutoff_text = None
 
     def __init__(self, **kwargs):
         self.queryset = kwargs.pop('queryset', self.queryset)
-        self.html_cutoff = kwargs.pop('html_cutoff', self.html_cutoff)
-        self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
-
+        self.html_cutoff = kwargs.pop(
+            'html_cutoff',
+            self.html_cutoff or int(api_settings.HTML_SELECT_CUTOFF)
+        )
+        self.html_cutoff_text = kwargs.pop(
+            'html_cutoff_text',
+            self.html_cutoff_text or _(api_settings.HTML_SELECT_CUTOFF_TEXT)
+        )
         if not method_overridden('get_queryset', RelatedField, self):
             assert self.queryset is not None or kwargs.get('read_only', None), (
                 'Relational field must provide a `queryset` argument, '
@@ -447,15 +453,20 @@ class ManyRelatedField(Field):
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
         'empty': _('This list may not be empty.')
     }
-    html_cutoff = 1000
-    html_cutoff_text = _('More than {count} items...')
+    html_cutoff = None
+    html_cutoff_text = None
 
     def __init__(self, child_relation=None, *args, **kwargs):
         self.child_relation = child_relation
         self.allow_empty = kwargs.pop('allow_empty', True)
-        self.html_cutoff = kwargs.pop('html_cutoff', self.html_cutoff)
-        self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
-
+        self.html_cutoff = kwargs.pop(
+            'html_cutoff',
+            self.html_cutoff or int(api_settings.HTML_SELECT_CUTOFF)
+        )
+        self.html_cutoff_text = kwargs.pop(
+            'html_cutoff_text',
+            self.html_cutoff_text or _(api_settings.HTML_SELECT_CUTOFF_TEXT)
+        )
         assert child_relation is not None, '`child_relation` is a required argument.'
         super(ManyRelatedField, self).__init__(*args, **kwargs)
         self.child_relation.bind(field_name='', parent=self)
