@@ -216,3 +216,36 @@ class TestSchemaGenerator(TestCase):
             }
         )
         self.assertEquals(schema, expected)
+
+
+class SnippetListView(APIView):
+    def get(self, *args, **kwargs):
+        pass
+
+
+class SnippetDetailView(APIView):
+    def get(self, *args, **kwargs):
+        pass
+
+
+@unittest.skipUnless(coreapi, 'coreapi is not installed')
+class TestDocumentLinksOnExplicitlyDefinedPatterns(TestCase):
+    """
+    Given a "list" and "detail" view with explicitly defined urlpatterns,
+    and that the views support common HTTP methods, Document Link objects
+    should be created for both the "list" and "detail" endpoints.
+    """
+    def setUp(self):
+        self.patterns = [
+            url('^snippets/?$', SnippetListView.as_view()),
+            url('^snippets/(?P<pk>\d+)/?$', SnippetDetailView.as_view()),
+        ]
+        self.generator = SchemaGenerator(title='Test View', patterns=self.patterns)
+        self.document = self.generator.get_schema()
+
+    def test_there_should_be_a_link_to_the_snippets_list_view(self):
+        expected = '/snippets/'
+        snippets = self.document._data['snippets']
+        urls = [link.url for link in snippets._data.values()]
+
+        self.assertIn(expected, urls)
