@@ -6,7 +6,6 @@ from django.test import TestCase, override_settings
 from rest_framework import filters, pagination, permissions, serializers
 from rest_framework.compat import coreapi
 from rest_framework.decorators import detail_route, list_route
-from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 from rest_framework.schemas import SchemaGenerator
 from rest_framework.test import APIClient
@@ -55,23 +54,10 @@ class ExampleViewSet(ModelViewSet):
         return super(ExampleViewSet, self).get_serializer(*args, **kwargs)
 
 
-class ExampleView(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def get(self, request, *args, **kwargs):
-        return Response()
-
-    def post(self, request, *args, **kwargs):
-        return Response()
-
-
 router = DefaultRouter(schema_title='Example API' if coreapi else None)
 router.register('example', ExampleViewSet, base_name='example')
 urlpatterns = [
     url(r'^', include(router.urls))
-]
-urlpatterns2 = [
-    url(r'^example-view/$', ExampleView.as_view(), name='example-view')
 ]
 
 
@@ -99,7 +85,7 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/custom_list_action/',
                         action='get'
                     ),
-                    'retrieve': coreapi.Link(
+                    'read': coreapi.Link(
                         url='/example/{pk}/',
                         action='get',
                         fields=[
@@ -138,7 +124,7 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('b', required=False, location='form')
                         ]
                     ),
-                    'retrieve': coreapi.Link(
+                    'read': coreapi.Link(
                         url='/example/{pk}/',
                         action='get',
                         fields=[
@@ -179,7 +165,7 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('b', required=False, location='form')
                         ]
                     ),
-                    'destroy': coreapi.Link(
+                    'delete': coreapi.Link(
                         url='/example/{pk}/',
                         action='delete',
                         fields=[
@@ -192,25 +178,58 @@ class TestRouterGeneratedSchema(TestCase):
         self.assertEqual(response.data, expected)
 
 
+class ExampleListView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get(self, *args, **kwargs):
+        pass
+
+    def post(self, request, *args, **kwargs):
+        pass
+
+
+class ExampleDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get(self, *args, **kwargs):
+        pass
+
+
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
 class TestSchemaGenerator(TestCase):
-    def test_view(self):
-        schema_generator = SchemaGenerator(title='Test View', patterns=urlpatterns2)
-        schema = schema_generator.get_schema()
+    def setUp(self):
+        self.patterns = [
+            url('^example/?$', ExampleListView.as_view()),
+            url('^example/(?P<pk>\d+)/?$', ExampleDetailView.as_view()),
+        ]
+
+    def test_schema_for_regular_views(self):
+        """
+        Ensure that schema generation works for APIView classes.
+        """
+        generator = SchemaGenerator(title='Example API', patterns=self.patterns)
+        schema = generator.get_schema()
         expected = coreapi.Document(
             url='',
-            title='Test View',
+            title='Example API',
             content={
-                'example-view': {
+                'example': {
                     'create': coreapi.Link(
-                        url='/example-view/',
+                        url='/example/',
                         action='post',
                         fields=[]
                     ),
-                    'read': coreapi.Link(
-                        url='/example-view/',
+                    'list': coreapi.Link(
+                        url='/example/',
                         action='get',
                         fields=[]
+                    ),
+                    'read': coreapi.Link(
+                        url='/example/{pk}/',
+                        action='get',
+                        fields=[
+                            coreapi.Field('pk', required=True, location='path')
+                        ]
                     )
                 }
             }
