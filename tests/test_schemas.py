@@ -45,7 +45,7 @@ class ExampleViewSet(ModelViewSet):
     def custom_action(self, request, pk):
         return super(ExampleSerializer, self).retrieve(self, request)
 
-    @list_route()
+    @list_route(methods=['get', 'post'])
     def custom_list_action(self, request):
         return super(ExampleViewSet, self).list(self, request)
 
@@ -98,6 +98,10 @@ class TestRouterGeneratedSchema(TestCase):
                     'custom_list_action': coreapi.Link(
                         url='/example/custom_list_action/',
                         action='get'
+                    ),
+                    'custom_list_action': coreapi.Link(
+                        url='/example/custom_list_action/',
+                        action='post'
                     ),
                     'retrieve': coreapi.Link(
                         url='/example/{pk}/',
