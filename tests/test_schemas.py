@@ -22,6 +22,10 @@ class ExamplePagination(pagination.PageNumberPagination):
     page_size = 100
 
 
+class EmptySerializer(serializers.Serializer):
+    pass
+
+
 class ExampleSerializer(serializers.Serializer):
     a = serializers.CharField(required=True, help_text='A field description')
     b = serializers.CharField(required=False)
@@ -46,6 +50,10 @@ class ExampleViewSet(ModelViewSet):
 
     @list_route()
     def custom_list_action(self, request):
+        return super(ExampleViewSet, self).list(self, request)
+
+    @list_route(methods=['post', 'get'], serializer_class=EmptySerializer)
+    def custom_list_action_multiple_methods(self, request):
         return super(ExampleViewSet, self).list(self, request)
 
     def get_serializer(self, *args, **kwargs):
@@ -85,6 +93,12 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/custom_list_action/',
                         action='get'
                     ),
+                    'custom_list_action_multiple_methods': {
+                        'read': coreapi.Link(
+                            url='/example/custom_list_action_multiple_methods/',
+                            action='get'
+                        )
+                    },
                     'read': coreapi.Link(
                         url='/example/{pk}/',
                         action='get',
@@ -145,6 +159,16 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/custom_list_action/',
                         action='get'
                     ),
+                    'custom_list_action_multiple_methods': {
+                        'read': coreapi.Link(
+                            url='/example/custom_list_action_multiple_methods/',
+                            action='get'
+                        ),
+                        'create': coreapi.Link(
+                            url='/example/custom_list_action_multiple_methods/',
+                            action='post'
+                        )
+                    },
                     'update': coreapi.Link(
                         url='/example/{pk}/',
                         action='put',
@@ -201,6 +225,7 @@ class TestSchemaGenerator(TestCase):
         self.patterns = [
             url('^example/?$', ExampleListView.as_view()),
             url('^example/(?P<pk>\d+)/?$', ExampleDetailView.as_view()),
+            url('^example/(?P<pk>\d+)/sub/?$', ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -230,7 +255,16 @@ class TestSchemaGenerator(TestCase):
                         fields=[
                             coreapi.Field('pk', required=True, location='path')
                         ]
-                    )
+                    ),
+                    'sub': {
+                        'list': coreapi.Link(
+                            url='/example/{pk}/sub/',
+                            action='get',
+                            fields=[
+                                coreapi.Field('pk', required=True, location='path')
+                            ]
+                        )
+                    }
                 }
             }
         )
