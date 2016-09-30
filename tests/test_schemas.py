@@ -99,7 +99,7 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/custom_list_action/',
                         action='get'
                     ),
-                    'retrieve': coreapi.Link(
+                    'read': coreapi.Link(
                         url='/example/{pk}/',
                         action='get',
                         fields=[
@@ -138,7 +138,7 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('b', required=False, location='form')
                         ]
                     ),
-                    'retrieve': coreapi.Link(
+                    'read': coreapi.Link(
                         url='/example/{pk}/',
                         action='get',
                         fields=[
@@ -179,7 +179,7 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('b', required=False, location='form')
                         ]
                     ),
-                    'destroy': coreapi.Link(
+                    'delete': coreapi.Link(
                         url='/example/{pk}/',
                         action='delete',
                         fields=[
@@ -207,7 +207,7 @@ class TestSchemaGenerator(TestCase):
                         action='post',
                         fields=[]
                     ),
-                    'read': coreapi.Link(
+                    'list': coreapi.Link(
                         url='/example-view/',
                         action='get',
                         fields=[]
