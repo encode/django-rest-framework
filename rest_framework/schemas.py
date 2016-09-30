@@ -173,6 +173,16 @@ class SchemaGenerator(object):
         if self.endpoints is None:
             self.endpoints = self.endpoint_inspector.get_api_endpoints()
 
+        links = self.get_links(request)
+        if not links:
+            return None
+        return coreapi.Document(title=self.title, url=self.url, content=links)
+
+    def get_links(self, request=None):
+        """
+        Return a dictionary containing all the links that should be
+        included in the API schema.
+        """
         links = {}
         for path, method, callback in self.endpoints:
             view = self.create_view(callback, method, request)
@@ -181,11 +191,7 @@ class SchemaGenerator(object):
             link = self.get_link(path, method, view)
             keys = self.get_keys(path, method, view)
             insert_into(links, keys, link)
-
-        if not links:
-            return None
-
-        return coreapi.Document(title=self.title, url=self.url, content=links)
+        return links
 
     # Methods used when we generate a view instance from the raw callback...
 
@@ -200,6 +206,7 @@ class SchemaGenerator(object):
         view.kwargs = {}
         view.format_kwarg = None
         view.request = None
+        view.action_map = getattr(callback, 'actions', None)
 
         actions = getattr(callback, 'actions', None)
         if actions is not None:
@@ -393,7 +400,11 @@ class SchemaGenerator(object):
 
         if is_custom_action(action):
             # Custom action, eg "/users/{pk}/activate/", "/users/active/"
-            return named_path_components[:-1] + [action]
+            if len(view.action_map) > 1:
+                action = self.default_mapping[method.lower()]
+                return named_path_components + [action]
+            else:
+                return named_path_components[:-1] + [action]
 
         # Default action, eg "/users/", "/users/{pk}/"
         return named_path_components + [action]
