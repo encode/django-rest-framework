@@ -2,12 +2,13 @@ from importlib import import_module
 
 from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
-from django.core.urlresolvers import RegexURLPattern, RegexURLResolver
 from django.utils import six
 from django.utils.encoding import force_text
 
 from rest_framework import exceptions, serializers
-from rest_framework.compat import coreapi, uritemplate, urlparse
+from rest_framework.compat import (
+    RegexURLPattern, RegexURLResolver, coreapi, uritemplate, urlparse
+)
 from rest_framework.request import clone_request
 from rest_framework.views import APIView
 
@@ -329,7 +330,7 @@ class SchemaGenerator(object):
             fields += as_query_fields(filter_backend().get_fields(view))
         return fields
 
-    # Methods for generating the keys which are used to layout each link.
+    # Methods for generating the link layout....
 
     default_mapping = {
         'get': 'read',

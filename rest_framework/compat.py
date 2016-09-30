@@ -24,6 +24,16 @@ except ImportError:
 
 
 try:
+    from django.urls import (
+        NoReverseMatch, RegexURLPattern, RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+    )
+except ImportError:
+    from django.core.urlresolvers import (  # Will be removed in Django 2.0
+        NoReverseMatch, RegexURLPattern, RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+    )
+
+
+try:
     import urlparse  # Python 2.x
 except ImportError:
     import urllib.parse as urlparse
@@ -128,6 +138,12 @@ def is_authenticated(user):
     return user.is_authenticated
 
 
+def is_anonymous(user):
+    if django.VERSION < (1, 10):
+        return user.is_anonymous()
+    return user.is_anonymous
+
+
 def get_related_model(field):
     if django.VERSION < (1, 9):
         return _resolve_model(field.rel.to)
@@ -178,6 +194,13 @@ except (ImportError, SyntaxError):
     uritemplate = None
 
 
+# requests is optional
+try:
+    import requests
+except ImportError:
+    requests = None
+
+
 # Django-guardian is optional. Import only if guardian is in INSTALLED_APPS
 # Fixes (#1712). We keep the try/except for the test suite.
 guardian = None
@@ -200,8 +223,13 @@ try:
 
     if markdown.version <= '2.2':
         HEADERID_EXT_PATH = 'headerid'
-    else:
+        LEVEL_PARAM = 'level'
+    elif markdown.version < '2.6':
         HEADERID_EXT_PATH = 'markdown.extensions.headerid'
+        LEVEL_PARAM = 'level'
+    else:
+        HEADERID_EXT_PATH = 'markdown.extensions.toc'
+        LEVEL_PARAM = 'baselevel'
 
     def apply_markdown(text):
         """
@@ -211,7 +239,7 @@ try:
         extensions = [HEADERID_EXT_PATH]
         extension_configs = {
             HEADERID_EXT_PATH: {
-                'level': '2'
+                LEVEL_PARAM: '2'
             }
         }
         md = markdown.Markdown(
@@ -277,3 +305,11 @@ def template_render(template, context=None, request=None):
     # backends template, e.g. django.template.backends.django.Template
     else:
         return template.render(context, request=request)
+
+
+def set_many(instance, field, value):
+    if django.VERSION < (1, 10):
+        setattr(instance, field, value)
+    else:
+        field = getattr(instance, field)
+        field.set(value)

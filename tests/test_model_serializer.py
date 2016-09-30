@@ -20,7 +20,7 @@ from django.test import TestCase
 from django.utils import six
 
 from rest_framework import serializers
-from rest_framework.compat import unicode_repr
+from rest_framework.compat import set_many, unicode_repr
 
 
 def dedent(blocktext):
@@ -651,7 +651,7 @@ class TestIntegration(TestCase):
             foreign_key=self.foreign_key_target,
             one_to_one=self.one_to_one_target,
         )
-        self.instance.many_to_many = self.many_to_many_targets
+        set_many(self.instance, 'many_to_many', self.many_to_many_targets)
         self.instance.save()
 
     def test_pk_retrival(self):
@@ -962,7 +962,7 @@ class OneToOneTargetTestModel(models.Model):
 
 
 class OneToOneSourceTestModel(models.Model):
-    target = models.OneToOneField(OneToOneTargetTestModel, primary_key=True)
+    target = models.OneToOneField(OneToOneTargetTestModel, primary_key=True, on_delete=models.CASCADE)
 
 
 class TestModelFieldValues(TestCase):
@@ -990,6 +990,7 @@ class TestUniquenessOverride(TestCase):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = TestModel
+                fields = '__all__'
                 extra_kwargs = {'field_1': {'required': False}}
 
         fields = TestSerializer().fields

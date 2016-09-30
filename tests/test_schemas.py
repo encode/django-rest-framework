@@ -215,7 +215,7 @@ class TestSchemaGenerator(TestCase):
                 }
             }
         )
-        self.assertEquals(schema, expected)
+        self.assertEqual(schema, expected)
 
 
 class SnippetListView(APIView):
