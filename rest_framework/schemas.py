@@ -48,6 +48,13 @@ def insert_into(target, keys, value):
     target[keys[-1]] = value
 
 
+def is_custom_action(action):
+    return action not in set([
+        'read', 'retrieve', 'list',
+        'create', 'update', 'partial_update', 'delete', 'destroy'
+    ])
+
+
 class EndpointInspector(object):
     """
     A class to determine the available API endpoints that a project exposes.
@@ -133,6 +140,19 @@ class EndpointInspector(object):
 
 
 class SchemaGenerator(object):
+    # Map methods onto 'actions' that are the names used in the link layout.
+    default_mapping = {
+        'get': 'read',
+        'post': 'create',
+        'put': 'update',
+        'patch': 'partial_update',
+        'delete': 'destroy',
+    }
+    # Coerce the following viewset actions into different names.
+    coerce_actions = {
+        'retrieve': 'read',
+        'destroy': 'delete'
+    }
     endpoint_inspector_cls = EndpointInspector
 
     def __init__(self, title=None, url=None, patterns=None, urlconf=None):
@@ -203,6 +223,20 @@ class SchemaGenerator(object):
         try:
             view.check_permissions(view.request)
         except exceptions.APIException:
+            return False
+        return True
+
+    def is_list_endpoint(self, path, method, view):
+        """
+        Return True if the given path/method appears to represent a list endpoint.
+        """
+        if hasattr(view, 'action'):
+            return view.action == 'list'
+
+        if method.lower() != 'get':
+            return False
+        path_components = path.strip('/').split('/')
+        if path_components and '{' in path_components[-1]:
             return False
         return True
 
@@ -303,10 +337,7 @@ class SchemaGenerator(object):
         return fields
 
     def get_pagination_fields(self, path, method, view):
-        if method != 'GET':
-            return []
-
-        if getattr(view, 'action', 'list') != 'list':
+        if not self.is_list_endpoint(path, method, view):
             return []
 
         if not getattr(view, 'pagination_class', None):
@@ -316,10 +347,7 @@ class SchemaGenerator(object):
         return as_query_fields(paginator.get_fields(view))
 
     def get_filter_fields(self, path, method, view):
-        if method != 'GET':
-            return []
-
-        if getattr(view, 'action', 'list') != 'list':
+        if not self.is_list_endpoint(path, method, view):
             return []
 
         if not hasattr(view, 'filter_backends'):
@@ -330,22 +358,7 @@ class SchemaGenerator(object):
             fields += as_query_fields(filter_backend().get_fields(view))
         return fields
 
-    # Methods for generating the link layout....
-
-    default_mapping = {
-        'get': 'read',
-        'post': 'create',
-        'put': 'update',
-        'patch': 'partial_update',
-        'delete': 'destroy',
-    }
-    coerce_actions = {
-        'retrieve': 'read',
-        'destroy': 'delete'
-    }
-    known_actions = set([
-        'create', 'read', 'list', 'update', 'partial_update', 'delete'
-    ])
+    # Method for generating the link layout....
 
     def get_keys(self, path, method, view):
         """
@@ -359,35 +372,30 @@ class SchemaGenerator(object):
         /users/{pk}/groups/       ("groups", "list"), ("groups", "create")
         /users/{pk}/groups/{pk}/  ("groups", "read"), ("groups", "update"), ("groups", "delete")
         """
-        path_components = path.strip('/').split('/')
-        named_path_components = [
-            component for component in path_components
-            if '{' not in component
-        ]
-
         if hasattr(view, 'action'):
             # Viewsets have explicitly named actions.
-            action = view.action
-            # The default views use some naming that isn't well suited to what
-            # we'd actually like for the schema representation.
-            if action in self.coerce_actions:
-                action = self.coerce_actions[action]
+            if view.action in self.coerce_actions:
+                action = self.coerce_actions[view.action]
+            else:
+                action = view.action
         else:
             # Views have no associated action, so we determine one from the method.
-            method = method.lower()
-            if method == 'get':
-                is_detail = path_components and ('{' in path_components[-1])
-                action = 'read' if is_detail else 'list'
+            if self.is_list_endpoint(path, method, view):
+                action = 'list'
             else:
-                action = self.default_mapping[method]
+                action = self.default_mapping[method.lower()]
 
-        if action in self.known_actions:
-            # Default action, eg "/users/", "/users/{pk}/"
-            idx = -1
-        else:
+        if is_custom_action(action):
             # Custom action, eg "/users/{pk}/activate/", "/users/active/"
             idx = -2
+        else:
+            # Default action, eg "/users/", "/users/{pk}/"
+            idx = -1
 
+        path_components = path.strip('/').split('/')
+        named_path_components = [
+            component for component in path_components if '{' not in component
+        ]
         try:
             return (named_path_components[idx], action)
         except IndexError:
