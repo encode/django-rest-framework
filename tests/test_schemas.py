@@ -234,6 +234,4 @@ class TestSchemaGenerator(TestCase):
                 }
             }
         )
-        print schema
-        print expected
         self.assertEqual(schema, expected)
