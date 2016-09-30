@@ -432,6 +432,10 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 
 [django-url-filter][django-url-filter] provides a safe way to filter data via human-friendly URLs. It works very similar to DRF serializers and fields in a sense that they can be nested except they are called filtersets and filters. That provides easy way to filter related data. Also this library is generic-purpose so it can be used to filter other sources of data and not only Django `QuerySet`s.
 
+## drf-url-filters
+
+[drf-url-filter][drf-url-filter] is a simple Django app to apply filters on drf `ModelViewSet`'s `Queryset` in a clean, simple and configurable way. It also supports validations on incoming query params and their values. A beautiful python package `Voluptouos` is being used for validations on the incoming query parameters. The best part about voluptouos is you can define your own validations as per your query params requirements.
+
 [cite]: https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter]: https://github.com/alex/django-filter
 [django-filter-docs]: https://django-filter.readthedocs.io/en/latest/index.html
@@ -443,3 +447,5 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [django-rest-framework-filters]: https://github.com/philipn/django-rest-framework-filters
 [django-rest-framework-word-search-filter]: https://github.com/trollknurr/django-rest-framework-word-search-filter
 [django-url-filter]: https://github.com/miki725/django-url-filter
+[drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
+
