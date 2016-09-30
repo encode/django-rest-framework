@@ -109,7 +109,6 @@ class TestRouterGeneratedSchema(TestCase):
                 }
             }
         )
-        print response.data
         self.assertEqual(response.data, expected)
 
     def test_authenticated_request(self):
