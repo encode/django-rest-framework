@@ -350,7 +350,7 @@ class SchemaGenerator(object):
         if not self.is_list_endpoint(path, method, view):
             return []
 
-        if not hasattr(view, 'filter_backends'):
+        if not getattr(view, 'filter_backends', None):
             return []
 
         fields = []
@@ -368,9 +368,9 @@ class SchemaGenerator(object):
         /users/                   ("users", "list"), ("users", "create")
         /users/{pk}/              ("users", "read"), ("users", "update"), ("users", "delete")
         /users/enabled/           ("users", "enabled")  # custom viewset list action
-        /users/{pk}/star/         ("users", "enabled")  # custom viewset detail action
-        /users/{pk}/groups/       ("groups", "list"), ("groups", "create")
-        /users/{pk}/groups/{pk}/  ("groups", "read"), ("groups", "update"), ("groups", "delete")
+        /users/{pk}/star/         ("users", "star")     # custom viewset detail action
+        /users/{pk}/groups/       ("users", "groups", "list"), ("users", "groups", "create")
+        /users/{pk}/groups/{pk}/  ("users", "groups", "read"), ("users", "groups", "update"), ("users", "groups", "delete")
         """
         if hasattr(view, 'action'):
             # Viewsets have explicitly named actions.
@@ -385,18 +385,15 @@ class SchemaGenerator(object):
             else:
                 action = self.default_mapping[method.lower()]
 
+        named_path_components = [
+            component for component
+            in path.strip('/').split('/')
+            if '{' not in component
+        ]
+
         if is_custom_action(action):
             # Custom action, eg "/users/{pk}/activate/", "/users/active/"
-            idx = -2
-        else:
-            # Default action, eg "/users/", "/users/{pk}/"
-            idx = -1
+            return named_path_components[:-1] + [action]
 
-        path_components = path.strip('/').split('/')
-        named_path_components = [
-            component for component in path_components if '{' not in component
-        ]
-        try:
-            return (named_path_components[idx], action)
-        except IndexError:
-            return (action,)
+        # Default action, eg "/users/", "/users/{pk}/"
+        return named_path_components + [action]
