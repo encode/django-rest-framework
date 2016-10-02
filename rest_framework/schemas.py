@@ -101,16 +101,26 @@ class SchemaGenerator(object):
         if not links:
             return None
 
+        # looks for overlapped actions for multiple http methods per action case
+        overlapped = {}
+        for category, action, link in links:
+            key = (category, action)
+            overlapped[key] = key in overlapped
+
         # Generate the schema content structure, eg:
         # {'users': {'list': Link()}}
         content = {}
         for category, action, link in links:
+            # add suffix for overlapped actions
+            if overlapped[(category, action)]:
+                action = '%s_%s' % (action, link.action)
             if category is None:
                 content[action] = link
-            elif category in content:
-                content[category][action] = link
             else:
-                content[category] = {action: link}
+                if category not in content:
+                    content[category] = {}
+
+                content[category][action] = link
 
         # Return the schema document.
         return coreapi.Document(title=self.title, content=content, url=self.url)
