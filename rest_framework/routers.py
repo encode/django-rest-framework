@@ -23,6 +23,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
 
 from rest_framework import exceptions, renderers, views
+from rest_framework.compat import six
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.schemas import SchemaGenerator
@@ -51,6 +52,52 @@ def flatten(list_of_lists):
     Takes an iterable of iterables, returns a single iterable containing all items
     """
     return itertools.chain(*list_of_lists)
+
+
+class RouteTree:
+    """
+    Stores a tree structure of routes.
+    """
+    Node = namedtuple('Node', ['routes', 'value'])
+
+    def __init__(self):
+        self.routes = {}
+
+    def set(self, value, path, name):
+        """
+        Set a value on a given path. Raises a KeyError if the value has already
+        been set or if the path doesn't exist.
+        """
+        routes = self.routes
+        parent_path = []
+
+        for part in path:
+            if part not in routes:
+                on_path = (' on path %s' % parent_path) if len(parent_path) > 0 else ''
+                raise KeyError('Parent route "%s"%s was not registred' % (part, on_path))
+            parent_path.append(part)
+            routes = routes[part].routes
+
+        if name in routes:
+            on_path = (' on path %s' % path) if len(path) > 0 else ''
+            raise KeyError('Route "%s" already set%s' % (name, on_path))
+
+        routes[name] = self.Node({}, value)
+
+    def get(self, path, name):
+        """
+        Get a vector of (name, value) for each entry on the path and name.
+        Raises KeyError if path or name is invalid.
+        """
+        routes = self.routes
+        vect = []
+
+        for part in path + [name]:
+            node = routes[part]
+            vect.append((part, node.value))
+            routes = node.routes
+
+        return vect
 
 
 class BaseRouter(object):
@@ -126,6 +173,32 @@ class SimpleRouter(BaseRouter):
     def __init__(self, trailing_slash=True):
         self.trailing_slash = trailing_slash and '/' or ''
         super(SimpleRouter, self).__init__()
+
+    def route(self, *full_path, **kwargs):
+        """
+        ViewSet class decorator for automatically registering a route:
+
+            router = SimpleRouter()
+
+            @router.route('parent')
+            class ParentViewSet(ViewSet):
+                pass
+
+            @router.route('parent', 'child', base_name='children)
+            class ChildViewSet(ViewSet):
+                pass
+        """
+        full_path = list(full_path)
+        assert len(full_path) > 0, 'Must provide a route prefix'
+        base_name = kwargs.pop('base_name', '-'.join(full_path))
+
+        def wrapper(viewset_cls):
+            self.register(wrapper._full_path, viewset_cls, wrapper._base_name)
+            return viewset_cls
+
+        wrapper._full_path = full_path
+        wrapper._base_name = base_name
+        return wrapper
 
     def get_default_base_name(self, viewset):
         """
@@ -234,13 +307,70 @@ class SimpleRouter(BaseRouter):
             lookup_value=lookup_value
         )
 
+    def get_route_nodes_path(self, route_nodes):
+        """
+        Given a vector of (prefix, viewset) tuples, get the resulting URL
+        regex. The URL kwarg name and lookup is determined by the prefix
+        and settings for each view.
+
+        Duplicate prefixes on the path will be appended with a number. For
+        example, the path:
+            [('users', UserView), ('users', UserView), ('friends', UserView)]
+        would result in:
+            /users/(?P<users_pk>[^\]+)/users/(?P<users_2_pk>[^/]+)/friends
+        """
+        encountered = {}
+        parts = []
+
+        for i, node in enumerate(route_nodes):
+            prefix, viewset = node
+            if i == len(route_nodes) - 1:
+                parts.append(prefix)
+
+            else:
+                lookup_prefix = '%s_' % prefix
+                if prefix in encountered:
+                    encountered[prefix] += 1
+                    lookup_prefix = '%s_%s_' % (prefix, encountered[prefix])
+                else:
+                    encountered[prefix] = 1
+                parts.append('%s/%s' % (prefix, self.get_lookup_regex(viewset, lookup_prefix)))
+
+        return '/'.join(parts)
+
+    def _process_registry(self):
+        """
+        New-style routes use a list of strings for the prefix. Normalize old-
+        style string prefixes and then sort based on path length and prefix.
+
+        If a viewset was registered for all nodes that have nested nodes then
+        the result should construct a valid RouteTree when inserted in order.
+        """
+        def normalize(entry):
+            prefix, viewset, base_name = entry
+            if isinstance(prefix, six.string_types):
+                prefix = [prefix]
+            return prefix, viewset, base_name
+
+        def sort(entry):
+            full_path = entry[0]
+            prefix, path = full_path[-1], full_path[:-1]
+            return len(path), prefix
+
+        return sorted(map(normalize, self.registry), key=sort)
+
     def get_urls(self):
         """
         Use the registered viewsets to generate a list of URL patterns.
         """
-        ret = []
+        urls = []
+        route_tree = RouteTree()
 
-        for prefix, viewset, basename in self.registry:
+        for full_path, viewset, basename in self._process_registry():
+            prefix, path = full_path[-1], full_path[:-1]
+            route_tree.set(viewset, path, prefix)
+            route_nodes = route_tree.get(path, prefix)
+            prefix = self.get_route_nodes_path(route_nodes)
             lookup = self.get_lookup_regex(viewset)
             routes = self.get_routes(viewset)
 
@@ -260,9 +390,9 @@ class SimpleRouter(BaseRouter):
 
                 view = viewset.as_view(mapping, **route.initkwargs)
                 name = route.name.format(basename=basename)
-                ret.append(url(regex, view, name=name))
+                urls.append(url(regex, view, name=name))
 
-        return ret
+        return urls
 
 
 class DefaultRouter(SimpleRouter):
