@@ -50,17 +50,16 @@ class TemplateTagTests(TestCase):
         Tests format_value with a list of lists/dicts
         """
         list_of_lists = [['list1'], ['list2'], ['list3']]
-        self.assertEqual(format_value(list_of_lists), '\n<table class="table table-striped">\n  <tbody>\n    \n      <tr>\n        <th>0</th>\n        <td>\n list1\n</td>\n      </tr>\n    \n      <tr>\n        <th>1</th>\n        <td>\n list2\n</td>\n      </tr>\n    \n      <tr>\n        <th>2</th>\n        <td>\n list3\n</td>\n      </tr>\n    \n  </tbody>\n</table>\n')
+        self.assertEqual(
+            format_value(list_of_lists).replace(' ', ''),
+            '\n<tableclass="tabletable-striped">\n<tbody>\n\n<tr>\n<th>0</th>\n<td>\nlist1\n</td>\n</tr>\n\n<tr>\n<th>1</th>\n<td>\nlist2\n</td>\n</tr>\n\n<tr>\n<th>2</th>\n<td>\nlist3\n</td>\n</tr>\n\n</tbody>\n</table>\n'
+        )
 
         list_of_dicts = [{'item1': 'value1'}, {'item2': 'value2'}, {'item3': 'value3'}]
-        self.assertEqual(format_value(list_of_dicts), '\n<table class="table table-striped">\n  <tbody>\n    \n      <tr>\n        <th>0</th>\n        <td></td>\n      </tr>\n    \n      <tr>\n        <th>1</th>\n        <td></td>\n      </tr>\n    \n      <tr>\n        <th>2</th>\n        <td></td>\n      </tr>\n    \n  </tbody>\n</table>\n')
-
-    def test_format_value_dict(self):
-        """
-        Tests format_value with a dict of strings
-        """
-        dict_items = {'item1': 'value1', 'item2': 'value2', 'item3': 'value3'}
-        self.assertEqual(format_value(dict_items), '')
+        self.assertEqual(
+            format_value(list_of_dicts).replace(' ', ''),
+            '\n<tableclass="tabletable-striped">\n<tbody>\n\n<tr>\n<th>0</th>\n<td></td>\n</tr>\n\n<tr>\n<th>1</th>\n<td></td>\n</tr>\n\n<tr>\n<th>2</th>\n<td></td>\n</tr>\n\n</tbody>\n</table>\n'
+        )
 
     def test_format_value_simple_string(self):
         """
