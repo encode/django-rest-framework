@@ -12,6 +12,15 @@ from rest_framework.test import APIRequestFactory
 factory = APIRequestFactory()
 
 
+def format_html(html):
+    """
+    Helper function that formats HTML in order for easier comparison
+    :param html: raw HTML text to be formatted
+    :return: Cleaned HTML with no newlines or spaces
+    """
+    return html.replace('\n', '').replace(' ', '')
+
+
 class TemplateTagTests(TestCase):
 
     def test_add_query_param_with_non_latin_character(self):
@@ -50,15 +59,50 @@ class TemplateTagTests(TestCase):
         Tests format_value with a list of lists/dicts
         """
         list_of_lists = [['list1'], ['list2'], ['list3']]
+        expected_list_format = """
+        <tableclass="tabletable-striped">
+            <tbody>
+               <tr>
+                  <th>0</th>
+                  <td>list1</td>
+               </tr>
+               <tr>
+                  <th>1</th>
+                  <td>list2</td>
+               </tr>
+               <tr>
+                  <th>2</th>
+                  <td>list3</td>
+               </tr>
+            </tbody>
+            </table>"""
         self.assertEqual(
-            format_value(list_of_lists).replace(' ', ''),
-            '\n<tableclass="tabletable-striped">\n<tbody>\n\n<tr>\n<th>0</th>\n<td>\nlist1\n</td>\n</tr>\n\n<tr>\n<th>1</th>\n<td>\nlist2\n</td>\n</tr>\n\n<tr>\n<th>2</th>\n<td>\nlist3\n</td>\n</tr>\n\n</tbody>\n</table>\n'
+            format_html(format_value(list_of_lists)),
+            format_html(expected_list_format)
         )
+
+        expected_dict_format = """
+        <tableclass="tabletable-striped">
+            <tbody>
+               <tr>
+                  <th>0</th>
+                  <td></td>
+               </tr>
+               <tr>
+                  <th>1</th>
+                  <td></td>
+               </tr>
+               <tr>
+                  <th>2</th>
+                  <td></td>
+               </tr>
+            </tbody>
+            </table>"""
 
         list_of_dicts = [{'item1': 'value1'}, {'item2': 'value2'}, {'item3': 'value3'}]
         self.assertEqual(
-            format_value(list_of_dicts).replace(' ', ''),
-            '\n<tableclass="tabletable-striped">\n<tbody>\n\n<tr>\n<th>0</th>\n<td></td>\n</tr>\n\n<tr>\n<th>1</th>\n<td></td>\n</tr>\n\n<tr>\n<th>2</th>\n<td></td>\n</tr>\n\n</tbody>\n</table>\n'
+            format_html(format_value(list_of_dicts)),
+            format_html(expected_dict_format)
         )
 
     def test_format_value_simple_string(self):
