@@ -42,10 +42,11 @@ class UniqueValidator(object):
     """
     message = _('This field must be unique.')
 
-    def __init__(self, queryset, message=None):
+    def __init__(self, queryset, message=None, lookup='exact'):
         self.queryset = queryset
         self.serializer_field = None
         self.message = message or self.message
+        self.lookup = lookup
 
     def set_context(self, serializer_field):
         """
@@ -62,7 +63,7 @@ class UniqueValidator(object):
         """
         Filter the queryset to all instances matching the given attribute.
         """
-        filter_kwargs = {self.field_name: value}
+        filter_kwargs = {'%s__%s' % (self.field_name, self.lookup): value}
         return qs_filter(queryset, **filter_kwargs)
 
     def exclude_current_instance(self, queryset):
