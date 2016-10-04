@@ -42,11 +42,11 @@ class UniqueValidator(object):
     """
     message = _('This field must be unique.')
 
-    def __init__(self, queryset, ignore_case=True, message=None):
+    def __init__(self, queryset, message=None, ignore_case=True):
         self.queryset = queryset
         self.serializer_field = None
-        self.ignore_case = ignore_case
         self.message = message or self.message
+        self.ignore_case = ignore_case
 
     def set_context(self, serializer_field):
         """
