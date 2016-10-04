@@ -61,6 +61,7 @@ It takes a single required argument, and an optional `messages` argument:
 
 * `queryset` *required* - This is the queryset against which uniqueness should be enforced.
 * `message` - The error message that should be used when validation fails.
+* `lookup` - The lookup used to find an existing instance with the value being validated. Defaults to `'exact'`.
 
 This validator should be applied to *serializer fields*, like so:
 
