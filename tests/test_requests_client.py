@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 
 from rest_framework.compat import is_authenticated, requests
 from rest_framework.response import Response
-from rest_framework.test import APITestCase, get_requests_client
+from rest_framework.test import APITestCase, RequestsClient
 from rest_framework.views import APIView
 
 
@@ -92,10 +92,10 @@ class AuthView(APIView):
 
 
 urlpatterns = [
-    url(r'^$', Root.as_view()),
-    url(r'^headers/$', HeadersView.as_view()),
-    url(r'^session/$', SessionView.as_view()),
-    url(r'^auth/$', AuthView.as_view()),
+    url(r'^$', Root.as_view(), name='root'),
+    url(r'^headers/$', HeadersView.as_view(), name='headers'),
+    url(r'^session/$', SessionView.as_view(), name='session'),
+    url(r'^auth/$', AuthView.as_view(), name='auth'),
 ]
 
 
@@ -103,8 +103,8 @@ urlpatterns = [
 @override_settings(ROOT_URLCONF='tests.test_requests_client')
 class RequestsClientTests(APITestCase):
     def test_get_request(self):
-        client = get_requests_client()
-        response = client.get('/')
+        client = RequestsClient()
+        response = client.get('http://testserver/')
         assert response.status_code == 200
         assert response.headers['Content-Type'] == 'application/json'
         expected = {
@@ -114,8 +114,8 @@ class RequestsClientTests(APITestCase):
         assert response.json() == expected
 
     def test_get_request_query_params_in_url(self):
-        client = get_requests_client()
-        response = client.get('/?key=value')
+        client = RequestsClient()
+        response = client.get('http://testserver/?key=value')
         assert response.status_code == 200
         assert response.headers['Content-Type'] == 'application/json'
         expected = {
@@ -125,8 +125,8 @@ class RequestsClientTests(APITestCase):
         assert response.json() == expected
 
     def test_get_request_query_params_by_kwarg(self):
-        client = get_requests_client()
-        response = client.get('/', params={'key': 'value'})
+        client = RequestsClient()
+        response = client.get('http://testserver/', params={'key': 'value'})
         assert response.status_code == 200
         assert response.headers['Content-Type'] == 'application/json'
         expected = {
@@ -136,16 +136,25 @@ class RequestsClientTests(APITestCase):
         assert response.json() == expected
 
     def test_get_with_headers(self):
-        client = get_requests_client()
-        response = client.get('/headers/', headers={'User-Agent': 'example'})
+        client = RequestsClient()
+        response = client.get('http://testserver/headers/', headers={'User-Agent': 'example'})
+        assert response.status_code == 200
+        assert response.headers['Content-Type'] == 'application/json'
+        headers = response.json()['headers']
+        assert headers['USER-AGENT'] == 'example'
+
+    def test_get_with_session_headers(self):
+        client = RequestsClient()
+        client.headers.update({'User-Agent': 'example'})
+        response = client.get('http://testserver/headers/')
         assert response.status_code == 200
         assert response.headers['Content-Type'] == 'application/json'
         headers = response.json()['headers']
         assert headers['USER-AGENT'] == 'example'
 
     def test_post_form_request(self):
-        client = get_requests_client()
-        response = client.post('/', data={'key': 'value'})
+        client = RequestsClient()
+        response = client.post('http://testserver/', data={'key': 'value'})
         assert response.status_code == 200
         assert response.headers['Content-Type'] == 'application/json'
         expected = {
@@ -158,8 +167,8 @@ class RequestsClientTests(APITestCase):
         assert response.json() == expected
 
     def test_post_json_request(self):
-        client = get_requests_client()
-        response = client.post('/', json={'key': 'value'})
+        client = RequestsClient()
+        response = client.post('http://testserver/', json={'key': 'value'})
         assert response.status_code == 200
         assert response.headers['Content-Type'] == 'application/json'
         expected = {
@@ -172,11 +181,11 @@ class RequestsClientTests(APITestCase):
         assert response.json() == expected
 
     def test_post_multipart_request(self):
-        client = get_requests_client()
+        client = RequestsClient()
         files = {
             'file': ('report.csv', 'some,data,to,send\nanother,row,to,send\n')
         }
-        response = client.post('/', files=files)
+        response = client.post('http://testserver/', files=files)
         assert response.status_code == 200
         assert response.headers['Content-Type'] == 'application/json'
         expected = {
@@ -189,20 +198,20 @@ class RequestsClientTests(APITestCase):
         assert response.json() == expected
 
     def test_session(self):
-        client = get_requests_client()
-        response = client.get('/session/')
+        client = RequestsClient()
+        response = client.get('http://testserver/session/')
         assert response.status_code == 200
         assert response.headers['Content-Type'] == 'application/json'
         expected = {}
         assert response.json() == expected
 
-        response = client.post('/session/', json={'example': 'abc'})
+        response = client.post('http://testserver/session/', json={'example': 'abc'})
         assert response.status_code == 200
         assert response.headers['Content-Type'] == 'application/json'
         expected = {'example': 'abc'}
         assert response.json() == expected
 
-        response = client.get('/session/')
+        response = client.get('http://testserver/session/')
         assert response.status_code == 200
         assert response.headers['Content-Type'] == 'application/json'
         expected = {'example': 'abc'}
@@ -210,8 +219,8 @@ class RequestsClientTests(APITestCase):
 
     def test_auth(self):
         # Confirm session is not authenticated
-        client = get_requests_client()
-        response = client.get('/auth/')
+        client = RequestsClient()
+        response = client.get('http://testserver/auth/')
         assert response.status_code == 200
         assert response.headers['Content-Type'] == 'application/json'
         expected = {
@@ -226,7 +235,7 @@ class RequestsClientTests(APITestCase):
         user.save()
 
         # Perform a login
-        response = client.post('/auth/', json={
+        response = client.post('http://testserver/auth/', json={
             'username': 'tom',
             'password': 'password'
         }, headers={'X-CSRFToken': csrftoken})
@@ -238,7 +247,7 @@ class RequestsClientTests(APITestCase):
         assert response.json() == expected
 
         # Confirm session is authenticated
-        response = client.get('/auth/')
+        response = client.get('http://testserver/auth/')
         assert response.status_code == 200
         assert response.headers['Content-Type'] == 'application/json'
         expected = {

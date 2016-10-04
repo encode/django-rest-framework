@@ -23,6 +23,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from rest_framework import exceptions, renderers, views
 from rest_framework.compat import NoReverseMatch
+from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.schemas import SchemaGenerator
@@ -281,7 +282,7 @@ class DefaultRouter(SimpleRouter):
     include_root_view = True
     include_format_suffixes = True
     root_view_name = 'api-root'
-    default_schema_renderers = [renderers.CoreJSONRenderer]
+    default_schema_renderers = [renderers.CoreJSONRenderer, BrowsableAPIRenderer]
 
     def __init__(self, *args, **kwargs):
         if 'schema_renderers' in kwargs:

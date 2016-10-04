@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from importlib import import_module
 
 from django.conf import settings
@@ -55,6 +56,18 @@ def is_custom_action(action):
     ])
 
 
+def endpoint_ordering(endpoint):
+    path, method, callback = endpoint
+    method_priority = {
+        'GET': 0,
+        'POST': 1,
+        'PUT': 2,
+        'PATCH': 3,
+        'DELETE': 4
+    }.get(method, 5)
+    return (path, method_priority)
+
+
 class EndpointInspector(object):
     """
     A class to determine the available API endpoints that a project exposes.
@@ -100,6 +113,8 @@ class EndpointInspector(object):
                     prefix=path_regex
                 )
                 api_endpoints.extend(nested_endpoints)
+
+        api_endpoints = sorted(api_endpoints, key=endpoint_ordering)
 
         return api_endpoints
 
@@ -183,7 +198,7 @@ class SchemaGenerator(object):
         Return a dictionary containing all the links that should be
         included in the API schema.
         """
-        links = {}
+        links = OrderedDict()
         for path, method, callback in self.endpoints:
             view = self.create_view(callback, method, request)
             if not self.has_view_permissions(view):

@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import io
 
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.core.handlers.wsgi import WSGIHandler
 from django.test import testcases
 from django.test.client import Client as DjangoClient
@@ -105,36 +106,46 @@ if requests is not None:
         def close(self):
             pass
 
-    class DjangoTestSession(requests.Session):
+    class NoExternalRequestsAdapter(requests.adapters.HTTPAdapter):
+        def send(self, request, *args, **kwargs):
+            msg = (
+                'RequestsClient refusing to make an outgoing network request '
+                'to "%s". Only "testserver" or hostnames in your ALLOWED_HOSTS '
+                'setting are valid.' % request.url
+            )
+            raise RuntimeError(msg)
+
+    class RequestsClient(requests.Session):
         def __init__(self, *args, **kwargs):
-            super(DjangoTestSession, self).__init__(*args, **kwargs)
-
+            super(RequestsClient, self).__init__(*args, **kwargs)
             adapter = DjangoTestAdapter()
-            hostnames = list(settings.ALLOWED_HOSTS) + ['testserver']
-
-            for hostname in hostnames:
-                if hostname == '*':
-                    hostname = ''
-                self.mount('http://%s' % hostname, adapter)
-                self.mount('https://%s' % hostname, adapter)
+            self.mount('http://', adapter)
+            self.mount('https://', adapter)
 
         def request(self, method, url, *args, **kwargs):
             if ':' not in url:
-                url = 'http://testserver/' + url.lstrip('/')
-            return super(DjangoTestSession, self).request(method, url, *args, **kwargs)
+                raise ValueError('Missing "http:" or "https:". Use a fully qualified URL, eg "http://testserver%s"' % url)
+            return super(RequestsClient, self).request(method, url, *args, **kwargs)
+
+else:
+    def RequestsClient(*args, **kwargs):
+        raise ImproperlyConfigured('requests must be installed in order to use RequestsClient.')
 
 
-def get_requests_client():
-    assert requests is not None, 'requests must be installed'
-    return DjangoTestSession()
+if coreapi is not None:
+    class CoreAPIClient(coreapi.Client):
+        def __init__(self, *args, **kwargs):
+            self._session = RequestsClient()
+            kwargs['transports'] = [coreapi.transports.HTTPTransport(session=self.session)]
+            return super(CoreAPIClient, self).__init__(*args, **kwargs)
 
+        @property
+        def session(self):
+            return self._session
 
-def get_api_client():
-    assert coreapi is not None, 'coreapi must be installed'
-    session = get_requests_client()
-    return coreapi.Client(transports=[
-        coreapi.transports.HTTPTransport(session=session)
-    ])
+else:
+    def CoreAPIClient(*args, **kwargs):
+        raise ImproperlyConfigured('coreapi must be installed in order to use CoreAPIClient.')
 
 
 class APIRequestFactory(DjangoRequestFactory):

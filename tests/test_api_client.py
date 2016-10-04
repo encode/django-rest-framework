@@ -12,7 +12,7 @@ from rest_framework.compat import coreapi
 from rest_framework.parsers import FileUploadParser
 from rest_framework.renderers import CoreJSONRenderer
 from rest_framework.response import Response
-from rest_framework.test import APITestCase, get_api_client
+from rest_framework.test import APITestCase, CoreAPIClient
 from rest_framework.views import APIView
 
 
@@ -22,6 +22,7 @@ def get_schema():
         title='Example API',
         content={
             'simple_link': coreapi.Link('/example/', description='example link'),
+            'headers': coreapi.Link('/headers/'),
             'location': {
                 'query': coreapi.Link('/example/', fields=[
                     coreapi.Field(name='example', description='example field')
@@ -165,6 +166,19 @@ class TextView(APIView):
         return HttpResponse('123', content_type='text/plain')
 
 
+class HeadersView(APIView):
+    def get(self, request):
+        headers = {
+            key[5:].replace('_', '-'): value
+            for key, value in request.META.items()
+            if key.startswith('HTTP_')
+        }
+        return Response({
+            'method': request.method,
+            'headers': headers
+        })
+
+
 urlpatterns = [
     url(r'^$', SchemaView.as_view()),
     url(r'^example/$', ListView.as_view()),
@@ -172,6 +186,7 @@ urlpatterns = [
     url(r'^upload/$', UploadView.as_view()),
     url(r'^download/$', DownloadView.as_view()),
     url(r'^text/$', TextView.as_view()),
+    url(r'^headers/$', HeadersView.as_view()),
 ]
 
 
@@ -179,7 +194,7 @@ urlpatterns = [
 @override_settings(ROOT_URLCONF='tests.test_api_client')
 class APIClientTests(APITestCase):
     def test_api_client(self):
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
         assert schema.title == 'Example API'
         assert schema.url == 'https://api.example.com/'
@@ -193,7 +208,7 @@ class APIClientTests(APITestCase):
         assert data == expected
 
     def test_query_params(self):
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
         data = client.action(schema, ['location', 'query'], params={'example': 123})
         expected = {
@@ -202,8 +217,15 @@ class APIClientTests(APITestCase):
         }
         assert data == expected
 
+    def test_session_headers(self):
+        client = CoreAPIClient()
+        client.session.headers.update({'X-Custom-Header': 'foo'})
+        schema = client.get('http://api.example.com/')
+        data = client.action(schema, ['headers'])
+        assert data['headers']['X-CUSTOM-HEADER'] == 'foo'
+
     def test_query_params_with_multiple_values(self):
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
         data = client.action(schema, ['location', 'query'], params={'example': [1, 2, 3]})
         expected = {
@@ -213,7 +235,7 @@ class APIClientTests(APITestCase):
         assert data == expected
 
     def test_form_params(self):
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
         data = client.action(schema, ['location', 'form'], params={'example': 123})
         expected = {
@@ -226,7 +248,7 @@ class APIClientTests(APITestCase):
         assert data == expected
 
     def test_body_params(self):
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
         data = client.action(schema, ['location', 'body'], params={'example': 123})
         expected = {
@@ -239,7 +261,7 @@ class APIClientTests(APITestCase):
         assert data == expected
 
     def test_path_params(self):
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
         data = client.action(schema, ['location', 'path'], params={'id': 123})
         expected = {
@@ -250,7 +272,7 @@ class APIClientTests(APITestCase):
         assert data == expected
 
     def test_multipart_encoding(self):
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
 
         temp = tempfile.NamedTemporaryFile()
@@ -272,7 +294,7 @@ class APIClientTests(APITestCase):
 
     def test_multipart_encoding_no_file(self):
         # When no file is included, multipart encoding should still be used.
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
 
         data = client.action(schema, ['encoding', 'multipart'], params={'example': 123})
@@ -287,7 +309,7 @@ class APIClientTests(APITestCase):
         assert data == expected
 
     def test_multipart_encoding_multiple_values(self):
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
 
         data = client.action(schema, ['encoding', 'multipart'], params={'example': [1, 2, 3]})
@@ -305,7 +327,7 @@ class APIClientTests(APITestCase):
         # Test for `coreapi.utils.File` support.
         from coreapi.utils import File
 
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
 
         example = File(name='example.txt', content='123')
@@ -323,7 +345,7 @@ class APIClientTests(APITestCase):
     def test_multipart_encoding_in_body(self):
         from coreapi.utils import File
 
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
 
         example = {'foo': File(name='example.txt', content='123'), 'bar': 'abc'}
@@ -341,7 +363,7 @@ class APIClientTests(APITestCase):
     # URLencoded
 
     def test_urlencoded_encoding(self):
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
         data = client.action(schema, ['encoding', 'urlencoded'], params={'example': 123})
         expected = {
@@ -354,7 +376,7 @@ class APIClientTests(APITestCase):
         assert data == expected
 
     def test_urlencoded_encoding_multiple_values(self):
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
         data = client.action(schema, ['encoding', 'urlencoded'], params={'example': [1, 2, 3]})
         expected = {
@@ -367,7 +389,7 @@ class APIClientTests(APITestCase):
         assert data == expected
 
     def test_urlencoded_encoding_in_body(self):
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
         data = client.action(schema, ['encoding', 'urlencoded-body'], params={'example': {'foo': 123, 'bar': True}})
         expected = {
@@ -382,7 +404,7 @@ class APIClientTests(APITestCase):
     # Raw uploads
 
     def test_raw_upload(self):
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
 
         temp = tempfile.NamedTemporaryFile()
@@ -403,7 +425,7 @@ class APIClientTests(APITestCase):
     def test_raw_upload_string_file_content(self):
         from coreapi.utils import File
 
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
 
         example = File('example.txt', '123')
@@ -419,7 +441,7 @@ class APIClientTests(APITestCase):
     def test_raw_upload_explicit_content_type(self):
         from coreapi.utils import File
 
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
 
         example = File('example.txt', '123', 'text/html')
@@ -435,7 +457,7 @@ class APIClientTests(APITestCase):
     # Responses
 
     def test_text_response(self):
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
 
         data = client.action(schema, ['response', 'text'])
@@ -444,7 +466,7 @@ class APIClientTests(APITestCase):
         assert data == expected
 
     def test_download_response(self):
-        client = get_api_client()
+        client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
 
         data = client.action(schema, ['response', 'download'])
