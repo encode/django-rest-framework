@@ -127,7 +127,7 @@ REST framework also allows you to work with regular function based views.  It pr
 
 ## @api_view()
 
-**Signature:** `@api_view(http_method_names=['GET'])`
+**Signature:** `@api_view(http_method_names=['GET'], exclude_from_schema=False)`
 
 The core of this functionality is the `api_view` decorator, which takes a list of HTTP methods that your view should respond to. For example, this is how you would write a very simple view that just manually returns some data:
 
@@ -139,13 +139,20 @@ The core of this functionality is the `api_view` decorator, which takes a list o
 
 This view will use the default renderers, parsers, authentication classes etc specified in the [settings].
 
-By default only `GET` methods will be accepted. Other methods will respond with "405 Method Not Allowed". To alter this behavior, specify which methods the view allows, like so:
+By default only `GET` methods will be accepted. Other methods will respond with "405 Method Not Allowed". To alter this behaviour, specify which methods the view allows, like so:
 
     @api_view(['GET', 'POST'])
     def hello_world(request):
         if request.method == 'POST':
             return Response({"message": "Got some data!", "data": request.data})
         return Response({"message": "Hello, world!"})
+
+You can also mark an API view as being omitted from any [auto-generated schema][schemas],
+using the `exclude_from_schema` argument.:
+
+    @api_view(['GET'], exclude_from_schema=True)
+    def api_docs(request):
+        ...
 
 ## API policy decorators
 
@@ -178,3 +185,4 @@ Each of these decorators takes a single argument which must be a list or tuple o
 [cite2]: http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html
 [settings]: settings.md
 [throttling]: throttling.md
+[schemas]: schemas.md

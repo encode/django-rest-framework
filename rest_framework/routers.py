@@ -311,6 +311,7 @@ class DefaultRouter(SimpleRouter):
 
         class APISchemaView(views.APIView):
             _ignore_model_permissions = True
+            exclude_from_schema = True
             renderer_classes = schema_renderers
 
             def get(self, request, *args, **kwargs):
@@ -332,6 +333,7 @@ class DefaultRouter(SimpleRouter):
 
         class APIRootView(views.APIView):
             _ignore_model_permissions = True
+            exclude_from_schema = True
 
             def get(self, request, *args, **kwargs):
                 # Return a plain {"name": "hyperlink"} response.

@@ -56,6 +56,22 @@ def is_custom_action(action):
     ])
 
 
+def is_list_view(path, method, view):
+    """
+    Return True if the given path/method appears to represent a list view.
+    """
+    if hasattr(view, 'action'):
+        # Viewsets have an explicitly defined action, which we can inspect.
+        return view.action == 'list'
+
+    if method.lower() != 'get':
+        return False
+    path_components = path.strip('/').split('/')
+    if path_components and '{' in path_components[-1]:
+        return False
+    return True
+
+
 def endpoint_ordering(endpoint):
     path, method, callback = endpoint
     method_priority = {
@@ -136,9 +152,6 @@ class EndpointInspector(object):
         if path.endswith('.{format}') or path.endswith('.{format}/'):
             return False  # Ignore .json style URLs.
 
-        if path == '/':
-            return False  # Ignore the root endpoint.
-
         return True
 
     def get_allowed_methods(self, callback):
@@ -201,7 +214,7 @@ class SchemaGenerator(object):
         links = OrderedDict()
         for path, method, callback in self.endpoints:
             view = self.create_view(callback, method, request)
-            if not self.has_view_permissions(view):
+            if not self.should_include_view(path, method, view):
                 continue
             link = self.get_link(path, method, view)
             keys = self.get_keys(path, method, view)
@@ -235,30 +248,19 @@ class SchemaGenerator(object):
 
         return view
 
-    def has_view_permissions(self, view):
+    def should_include_view(self, path, method, view):
         """
         Return `True` if the incoming request has the correct view permissions.
         """
+        if getattr(view, 'exclude_from_schema', False):
+            return False
+
         if view.request is None:
             return True
 
         try:
             view.check_permissions(view.request)
         except exceptions.APIException:
-            return False
-        return True
-
-    def is_list_endpoint(self, path, method, view):
-        """
-        Return True if the given path/method appears to represent a list endpoint.
-        """
-        if hasattr(view, 'action'):
-            return view.action == 'list'
-
-        if method.lower() != 'get':
-            return False
-        path_components = path.strip('/').split('/')
-        if path_components and '{' in path_components[-1]:
             return False
         return True
 
@@ -359,7 +361,7 @@ class SchemaGenerator(object):
         return fields
 
     def get_pagination_fields(self, path, method, view):
-        if not self.is_list_endpoint(path, method, view):
+        if not is_list_view(path, method, view):
             return []
 
         if not getattr(view, 'pagination_class', None):
@@ -369,7 +371,7 @@ class SchemaGenerator(object):
         return as_query_fields(paginator.get_fields(view))
 
     def get_filter_fields(self, path, method, view):
-        if not self.is_list_endpoint(path, method, view):
+        if not is_list_view(path, method, view):
             return []
 
         if not getattr(view, 'filter_backends', None):
@@ -402,7 +404,7 @@ class SchemaGenerator(object):
                 action = view.action
         else:
             # Views have no associated action, so we determine one from the method.
-            if self.is_list_endpoint(path, method, view):
+            if is_list_view(path, method, view):
                 action = 'list'
             else:
                 action = self.default_mapping[method.lower()]
