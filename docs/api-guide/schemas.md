@@ -247,6 +247,61 @@ You could then either:
 One common usage of API schemas is to use them to build documentation pages.
 
 The schema generation in REST framework uses docstrings to automatically
+populate descriptions in the schema document.
+
+These descriptions will be based on:
+
+* The corresponding method docstring if one exists.
+* A named section within the class docstring, which can be either single line or multi-line.
+* The class docstring.
+
+## Examples
+
+An `APIView`, with an explicit method docstring.
+
+    class ListUsernames(APIView):
+        def get(self, request):
+            """
+            Return a list of all user names in the system.
+            """
+            usernames = [user.username for user in User.objects.all()]
+            return Response(usernames)
+
+A `ViewSet`, with an explict action docstring.
+
+    class ListUsernames(ViewSet):
+        def list(self, request):
+            """
+            Return a list of all user names in the system.
+            """
+            usernames = [user.username for user in User.objects.all()]
+            return Response(usernames)
+
+A generic view with sections in the class docstring, using single-line style.
+
+    class UserList(generics.ListCreateAPIView):
+        """
+        get: Create a new user.
+        post: List all the users.
+        """
+        queryset = User.objects.all()
+        serializer_class = UserSerializer
+        permission_classes = (IsAdminUser,)
+
+A generic viewset with sections in the class docstring, using multi-line style.
+
+    class UserViewSet(viewsets.ModelViewSet):
+        """
+        API endpoint that allows users to be viewed or edited.
+
+        retrieve:
+        Return a user instance.
+
+        list:
+        Return all users, ordered by most recently joined.
+        """
+        queryset = User.objects.all().order_by('-date_joined')
+        serializer_class = UserSerializer
 
 ---
 

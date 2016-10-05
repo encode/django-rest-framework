@@ -46,6 +46,9 @@ class ExampleViewSet(ModelViewSet):
 
     @detail_route(methods=['post'], serializer_class=AnotherSerializer)
     def custom_action(self, request, pk):
+        """
+        A description of custom action.
+        """
         return super(ExampleSerializer, self).retrieve(self, request)
 
     @list_route()
@@ -149,6 +152,7 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/{pk}/custom_action/',
                         action='post',
                         encoding='application/json',
+                        description='A description of custom action.',
                         fields=[
                             coreapi.Field('pk', required=True, location='path'),
                             coreapi.Field('c', required=True, location='form'),

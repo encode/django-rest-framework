@@ -5,7 +5,7 @@ from importlib import import_module
 from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
 from django.utils import six
-from django.utils.encoding import force_text
+from django.utils.encoding import force_text, smart_text
 
 from rest_framework import exceptions, renderers, serializers
 from rest_framework.compat import (
@@ -14,6 +14,7 @@ from rest_framework.compat import (
 from rest_framework.request import clone_request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
+from rest_framework.utils import formatting
 from rest_framework.views import APIView
 
 header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
@@ -297,15 +298,17 @@ class SchemaGenerator(object):
         """
         Determine a link description.
 
-        This with either be the class docstring, or a specific section for it.
-
-        For views, use method names, eg `get:` to introduce a section.
-        For viewsets, use action names, eg `retrieve:` to introduce a section.
-
-        The section names will correspond to the methods on the class.
+        This will be based on the method docstring if one exists,
+        or else the class docstring.
         """
-        view_description = view.get_view_description()
-        lines = [line.strip() for line in view_description.splitlines()]
+        method_name = getattr(view, 'action', method.lower())
+        method_docstring = getattr(view, method_name, None).__doc__
+        if method_docstring:
+            # An explicit docstring on the method or action.
+            return formatting.dedent(smart_text(method_docstring))
+
+        description = view.get_view_description()
+        lines = [line.strip() for line in description.splitlines()]
         current_section = ''
         sections = {'': ''}
 
