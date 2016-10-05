@@ -298,7 +298,7 @@ class Request(object):
                 return (self._request.POST, self._request.FILES)
             stream = None
 
-        if stream is None or media_type is None:
+        if stream is None and not media_type:
             empty_data = QueryDict('', encoding=self._request._encoding)
             empty_files = MultiValueDict()
             return (empty_data, empty_files)
