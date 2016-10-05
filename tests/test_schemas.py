@@ -94,12 +94,12 @@ class TestRouterGeneratedSchema(TestCase):
                         action='get'
                     ),
                     'custom_list_action_multiple_methods': {
-                        'read': coreapi.Link(
+                        'retrieve': coreapi.Link(
                             url='/example/custom_list_action_multiple_methods/',
                             action='get'
                         )
                     },
-                    'read': coreapi.Link(
+                    'retrieve': coreapi.Link(
                         url='/example/{pk}/',
                         action='get',
                         fields=[
@@ -138,7 +138,7 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('b', required=False, location='form')
                         ]
                     ),
-                    'read': coreapi.Link(
+                    'retrieve': coreapi.Link(
                         url='/example/{pk}/',
                         action='get',
                         fields=[
@@ -160,7 +160,7 @@ class TestRouterGeneratedSchema(TestCase):
                         action='get'
                     ),
                     'custom_list_action_multiple_methods': {
-                        'read': coreapi.Link(
+                        'retrieve': coreapi.Link(
                             url='/example/custom_list_action_multiple_methods/',
                             action='get'
                         ),
@@ -189,7 +189,7 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('b', required=False, location='form')
                         ]
                     ),
-                    'delete': coreapi.Link(
+                    'destroy': coreapi.Link(
                         url='/example/{pk}/',
                         action='delete',
                         fields=[
@@ -249,7 +249,7 @@ class TestSchemaGenerator(TestCase):
                         action='get',
                         fields=[]
                     ),
-                    'read': coreapi.Link(
+                    'retrieve': coreapi.Link(
                         url='/example/{pk}/',
                         action='get',
                         fields=[

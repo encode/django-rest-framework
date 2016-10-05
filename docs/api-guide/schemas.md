@@ -242,6 +242,14 @@ You could then either:
 
 ---
 
+# Schemas as documentation
+
+One common usage of API schemas is to use them to build documentation pages.
+
+The schema generation in REST framework uses docstrings to automatically
+
+---
+
 # Alternate schema formats
 
 In order to support an alternate schema format, you need to implement a custom renderer

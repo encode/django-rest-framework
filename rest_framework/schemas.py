@@ -1,3 +1,4 @@
+import re
 from collections import OrderedDict
 from importlib import import_module
 
@@ -14,6 +15,8 @@ from rest_framework.request import clone_request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
+
+header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
 
 
 def as_query_fields(items):
@@ -53,8 +56,7 @@ def insert_into(target, keys, value):
 
 def is_custom_action(action):
     return action not in set([
-        'read', 'retrieve', 'list',
-        'create', 'update', 'partial_update', 'delete', 'destroy'
+        'retrieve', 'list', 'create', 'update', 'partial_update', 'destroy'
     ])
 
 
@@ -171,16 +173,11 @@ class EndpointInspector(object):
 class SchemaGenerator(object):
     # Map methods onto 'actions' that are the names used in the link layout.
     default_mapping = {
-        'get': 'read',
+        'get': 'retrieve',
         'post': 'create',
         'put': 'update',
         'patch': 'partial_update',
         'delete': 'destroy',
-    }
-    # Coerce the following viewset actions into different names.
-    coerce_actions = {
-        'retrieve': 'read',
-        'destroy': 'delete'
     }
     endpoint_inspector_cls = EndpointInspector
 
@@ -283,6 +280,8 @@ class SchemaGenerator(object):
         else:
             encoding = None
 
+        description = self.get_description(path, method, view)
+
         if self.url and path.startswith('/'):
             path = path[1:]
 
@@ -290,8 +289,37 @@ class SchemaGenerator(object):
             url=urlparse.urljoin(self.url, path),
             action=method.lower(),
             encoding=encoding,
-            fields=fields
+            fields=fields,
+            description=description
         )
+
+    def get_description(self, path, method, view):
+        """
+        Determine a link description.
+
+        This with either be the class docstring, or a specific section for it.
+
+        For views, use method names, eg `get:` to introduce a section.
+        For viewsets, use action names, eg `retrieve:` to introduce a section.
+
+        The section names will correspond to the methods on the class.
+        """
+        view_description = view.get_view_description()
+        lines = [line.strip() for line in view_description.splitlines()]
+        current_section = ''
+        sections = {'': ''}
+
+        for line in lines:
+            if header_regex.match(line):
+                current_section, seperator, lead = line.partition(':')
+                sections[current_section] = lead.strip()
+            else:
+                sections[current_section] += line + '\n'
+
+        header = getattr(view, 'action', method.lower())
+        if header in sections:
+            return sections[header].strip()
+        return sections[''].strip()
 
     def get_encoding(self, path, method, view):
         """
@@ -401,10 +429,7 @@ class SchemaGenerator(object):
         """
         if hasattr(view, 'action'):
             # Viewsets have explicitly named actions.
-            if view.action in self.coerce_actions:
-                action = self.coerce_actions[view.action]
-            else:
-                action = view.action
+            action = view.action
         else:
             # Views have no associated action, so we determine one from the method.
             if is_list_view(path, method, view):
