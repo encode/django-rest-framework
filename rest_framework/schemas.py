@@ -6,11 +6,13 @@ from django.contrib.admindocs.views import simplify_regex
 from django.utils import six
 from django.utils.encoding import force_text
 
-from rest_framework import exceptions, serializers
+from rest_framework import exceptions, renderers, serializers
 from rest_framework.compat import (
     RegexURLPattern, RegexURLResolver, coreapi, uritemplate, urlparse
 )
 from rest_framework.request import clone_request
+from rest_framework.response import Response
+from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
 
@@ -92,15 +94,14 @@ class EndpointInspector(object):
         if patterns is None:
             if urlconf is None:
                 # Use the default Django URL conf
-                urls = import_module(settings.ROOT_URLCONF)
-                patterns = urls.urlpatterns
+                urlconf = settings.ROOT_URLCONF
+
+            # Load the given URLconf module
+            if isinstance(urlconf, six.string_types):
+                urls = import_module(urlconf)
             else:
-                # Load the given URLconf module
-                if isinstance(urlconf, six.string_types):
-                    urls = import_module(urlconf)
-                else:
-                    urls = urlconf
-                patterns = urls.urlpatterns
+                urls = urlconf
+            patterns = urls.urlpatterns
 
         self.patterns = patterns
 
@@ -189,7 +190,8 @@ class SchemaGenerator(object):
         if url and not url.endswith('/'):
             url += '/'
 
-        self.endpoint_inspector = self.endpoint_inspector_cls(patterns, urlconf)
+        self.patterns = patterns
+        self.urlconf = urlconf
         self.title = title
         self.url = url
         self.endpoints = None
@@ -199,7 +201,8 @@ class SchemaGenerator(object):
         Generate a `coreapi.Document` representing the API schema.
         """
         if self.endpoints is None:
-            self.endpoints = self.endpoint_inspector.get_api_endpoints()
+            inspector = self.endpoint_inspector_cls(self.patterns, self.urlconf)
+            self.endpoints = inspector.get_api_endpoints()
 
         links = self.get_links(request)
         if not links:
@@ -425,3 +428,30 @@ class SchemaGenerator(object):
 
         # Default action, eg "/users/", "/users/{pk}/"
         return named_path_components + [action]
+
+
+def get_schema_view(title=None, url=None, renderer_classes=None):
+    """
+    Return a schema view.
+    """
+    generator = SchemaGenerator(title=title, url=url)
+    if renderer_classes is None:
+        if renderers.BrowsableAPIRenderer in api_settings.DEFAULT_RENDERER_CLASSES:
+            rclasses = [renderers.CoreJSONRenderer, renderers.BrowsableAPIRenderer]
+        else:
+            rclasses = [renderers.CoreJSONRenderer]
+    else:
+        rclasses = renderer_classes
+
+    class SchemaView(APIView):
+        _ignore_model_permissions = True
+        exclude_from_schema = True
+        renderer_classes = rclasses
+
+        def get(self, request, *args, **kwargs):
+            schema = generator.get_schema(request)
+            if schema is None:
+                raise exceptions.PermissionDenied()
+            return Response(schema)
+
+    return SchemaView.as_view()
