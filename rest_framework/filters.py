@@ -5,9 +5,9 @@ returned by list views.
 from __future__ import unicode_literals
 
 import operator
+import warnings
 from functools import reduce
 
-from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.db.models.constants import LOOKUP_SEP
@@ -16,49 +16,9 @@ from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import (
-    crispy_forms, distinct, django_filters, guardian, template_render
+    distinct, django_filters, guardian, template_render
 )
 from rest_framework.settings import api_settings
-
-if 'crispy_forms' in settings.INSTALLED_APPS and crispy_forms and django_filters:
-    # If django-crispy-forms is installed, use it to get a bootstrap3 rendering
-    # of the DjangoFilterBackend controls when displayed as HTML.
-    from crispy_forms.helper import FormHelper
-    from crispy_forms.layout import Layout, Submit
-
-    class FilterSet(django_filters.FilterSet):
-        def __init__(self, *args, **kwargs):
-            super(FilterSet, self).__init__(*args, **kwargs)
-            for field in self.form.fields.values():
-                field.help_text = None
-
-            layout_components = list(self.form.fields.keys()) + [
-                Submit('', _('Submit'), css_class='btn-default'),
-            ]
-
-            helper = FormHelper()
-            helper.form_method = 'GET'
-            helper.template_pack = 'bootstrap3'
-            helper.layout = Layout(*layout_components)
-
-            self.form.helper = helper
-
-    filter_template = 'rest_framework/filters/django_filter_crispyforms.html'
-
-elif django_filters:
-    # If django-crispy-forms is not installed, use the standard
-    # 'form.as_p' rendering when DjangoFilterBackend is displayed as HTML.
-    class FilterSet(django_filters.FilterSet):
-        def __init__(self, *args, **kwargs):
-            super(FilterSet, self).__init__(*args, **kwargs)
-            for field in self.form.fields.values():
-                field.help_text = None
-
-    filter_template = 'rest_framework/filters/django_filter.html'
-
-else:
-    FilterSet = None
-    filter_template = None
 
 
 class BaseFilterBackend(object):
@@ -80,67 +40,33 @@ class DjangoFilterBackend(BaseFilterBackend):
     """
     A filter backend that uses django-filter.
     """
-    default_filter_set = FilterSet
-    template = filter_template
-
-    def __init__(self):
+    def __new__(cls, *args, **kwargs):
         assert django_filters, 'Using DjangoFilterBackend, but django-filter is not installed'
+        assert django_filters.VERSION >= (0, 15, 0), 'django-filter 0.15.0 and above is required'
 
-    def get_filter_class(self, view, queryset=None):
-        """
-        Return the django-filters `FilterSet` used to filter the queryset.
-        """
-        filter_class = getattr(view, 'filter_class', None)
-        filter_fields = getattr(view, 'filter_fields', None)
+        warnings.warn(
+            "'rest_framework.filters.DjangoFilterBackend' has been deprecated "
+            "in favor of 'django_filters.rest_framework.DjangoFilterBackend'",
+            DeprecationWarning
+        )
 
-        if filter_class:
-            filter_model = filter_class.Meta.model
+        from django_filters.rest_framework import DjangoFilterBackend as DFBackend
 
-            assert issubclass(queryset.model, filter_model), \
-                'FilterSet model %s does not match queryset model %s' % \
-                (filter_model, queryset.model)
+        class DjangoFilterDeprecationBackend(DFBackend):
 
-            return filter_class
+            # get_fields was introduced after the move to django-filter
+            def get_fields(self, view):
+                filter_class = getattr(view, 'filter_class', None)
+                if filter_class:
+                    return list(filter_class().filters.keys())
 
-        if filter_fields:
-            class AutoFilterSet(self.default_filter_set):
-                class Meta:
-                    model = queryset.model
-                    fields = filter_fields
+                filter_fields = getattr(view, 'filter_fields', None)
+                if filter_fields:
+                    return filter_fields
 
-            return AutoFilterSet
+                return []
 
-        return None
-
-    def filter_queryset(self, request, queryset, view):
-        filter_class = self.get_filter_class(view, queryset)
-
-        if filter_class:
-            return filter_class(request.query_params, queryset=queryset).qs
-
-        return queryset
-
-    def to_html(self, request, queryset, view):
-        filter_class = self.get_filter_class(view, queryset)
-        if not filter_class:
-            return None
-        filter_instance = filter_class(request.query_params, queryset=queryset)
-        context = {
-            'filter': filter_instance
-        }
-        template = loader.get_template(self.template)
-        return template_render(template, context)
-
-    def get_fields(self, view):
-        filter_class = getattr(view, 'filter_class', None)
-        if filter_class:
-            return list(filter_class().filters.keys())
-
-        filter_fields = getattr(view, 'filter_fields', None)
-        if filter_fields:
-            return filter_fields
-
-        return []
+        return DjangoFilterDeprecationBackend(*args, **kwargs)
 
 
 class SearchFilter(BaseFilterBackend):
