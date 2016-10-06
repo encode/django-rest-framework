@@ -103,10 +103,10 @@ class TestRouterGeneratedSchema(TestCase):
                         )
                     },
                     'retrieve': coreapi.Link(
-                        url='/example/{pk}/',
+                        url='/example/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('pk', required=True, location='path')
+                            coreapi.Field('id', required=True, location='path')
                         ]
                     )
                 }
@@ -142,19 +142,19 @@ class TestRouterGeneratedSchema(TestCase):
                         ]
                     ),
                     'retrieve': coreapi.Link(
-                        url='/example/{pk}/',
+                        url='/example/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('pk', required=True, location='path')
+                            coreapi.Field('id', required=True, location='path')
                         ]
                     ),
                     'custom_action': coreapi.Link(
-                        url='/example/{pk}/custom_action/',
+                        url='/example/{id}/custom_action/',
                         action='post',
                         encoding='application/json',
                         description='A description of custom action.',
                         fields=[
-                            coreapi.Field('pk', required=True, location='path'),
+                            coreapi.Field('id', required=True, location='path'),
                             coreapi.Field('c', required=True, location='form', type='string'),
                             coreapi.Field('d', required=False, location='form', type='string'),
                         ]
@@ -174,30 +174,30 @@ class TestRouterGeneratedSchema(TestCase):
                         )
                     },
                     'update': coreapi.Link(
-                        url='/example/{pk}/',
+                        url='/example/{id}/',
                         action='put',
                         encoding='application/json',
                         fields=[
-                            coreapi.Field('pk', required=True, location='path'),
+                            coreapi.Field('id', required=True, location='path'),
                             coreapi.Field('a', required=True, location='form', type='string', description='A field description'),
                             coreapi.Field('b', required=False, location='form', type='string')
                         ]
                     ),
                     'partial_update': coreapi.Link(
-                        url='/example/{pk}/',
+                        url='/example/{id}/',
                         action='patch',
                         encoding='application/json',
                         fields=[
-                            coreapi.Field('pk', required=True, location='path'),
+                            coreapi.Field('id', required=True, location='path'),
                             coreapi.Field('a', required=False, location='form', type='string', description='A field description'),
                             coreapi.Field('b', required=False, location='form', type='string')
                         ]
                     ),
                     'destroy': coreapi.Link(
-                        url='/example/{pk}/',
+                        url='/example/{id}/',
                         action='delete',
                         fields=[
-                            coreapi.Field('pk', required=True, location='path')
+                            coreapi.Field('id', required=True, location='path')
                         ]
                     )
                 }
@@ -254,18 +254,18 @@ class TestSchemaGenerator(TestCase):
                         fields=[]
                     ),
                     'retrieve': coreapi.Link(
-                        url='/example/{pk}/',
+                        url='/example/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('pk', required=True, location='path')
+                            coreapi.Field('id', required=True, location='path')
                         ]
                     ),
                     'sub': {
                         'list': coreapi.Link(
-                            url='/example/{pk}/sub/',
+                            url='/example/{id}/sub/',
                             action='get',
                             fields=[
-                                coreapi.Field('pk', required=True, location='path')
+                                coreapi.Field('id', required=True, location='path')
                             ]
                         )
                     }

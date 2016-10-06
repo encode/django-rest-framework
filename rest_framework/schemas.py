@@ -16,6 +16,7 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 from rest_framework.utils.field_mapping import ClassLookupDict
+from rest_framework.utils.model_meta import _get_pk
 from rest_framework.views import APIView
 
 
@@ -33,6 +34,11 @@ types_lookup = ClassLookupDict({
     serializers.Serializer: 'object',
     serializers.ListSerializer: 'array'
 })
+
+
+def get_pk_name(model):
+    meta = model._meta.concrete_model._meta
+    return _get_pk(meta).name
 
 
 def as_query_fields(items):
@@ -196,6 +202,9 @@ class SchemaGenerator(object):
         'delete': 'destroy',
     }
     endpoint_inspector_cls = EndpointInspector
+    # 'pk' isn't great as an externally exposed name for an identifier,
+    # so by default we prefer to use the actual model field name for schemas.
+    coerce_pk = True
 
     def __init__(self, title=None, url=None, patterns=None, urlconf=None):
         assert coreapi, '`coreapi` must be installed for schema support.'
@@ -230,6 +239,7 @@ class SchemaGenerator(object):
         links = OrderedDict()
         for path, method, callback in self.endpoints:
             view = self.create_view(callback, method, request)
+            path = self.coerce_path(path, method, view)
             if not self.should_include_view(path, method, view):
                 continue
             link = self.get_link(path, method, view)
@@ -279,6 +289,16 @@ class SchemaGenerator(object):
         except exceptions.APIException:
             return False
         return True
+
+    def coerce_path(self, path, method, view):
+        if not self.coerce_pk or '{pk}' not in path:
+            return path
+        model = getattr(getattr(view, 'queryset', None), 'model', None)
+        if model:
+            field_name = get_pk_name(model)
+        else:
+            field_name = 'id'
+        return path.replace('{pk}', '{%s}' % field_name)
 
     # Methods for generating each individual `Link` instance...
 
