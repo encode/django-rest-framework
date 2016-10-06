@@ -292,6 +292,7 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
+
 def paginated_response(request, queryset, serializer_class, pagination_class=None, **kwargs):
     if pagination_class is None:
         pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
@@ -307,4 +308,3 @@ def paginated_response(request, queryset, serializer_class, pagination_class=Non
 
     serializer = serializer_class(page, many=True)
     return paginator.get_paginated_response(serializer.data)
-
