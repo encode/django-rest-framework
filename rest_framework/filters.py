@@ -252,7 +252,7 @@ class OrderingFilter(BaseFilterBackend):
         params = request.query_params.get(self.ordering_param)
         if params:
             fields = [param.strip() for param in params.split(',')]
-            ordering = self.remove_invalid_fields(queryset, fields, view)
+            ordering = self.remove_invalid_fields(queryset, fields, view, request)
             if ordering:
                 return ordering
 
@@ -316,8 +316,8 @@ class OrderingFilter(BaseFilterBackend):
 
         return valid_fields
 
-    def remove_invalid_fields(self, queryset, fields, view):
-        valid_fields = [item[0] for item in self.get_valid_fields(queryset, view)]
+    def remove_invalid_fields(self, queryset, fields, view, request):
+        valid_fields = [item[0] for item in self.get_valid_fields(queryset, view, {'request': request})]
         return [term for term in fields if term.lstrip('-') in valid_fields]
 
     def filter_queryset(self, request, queryset, view):
