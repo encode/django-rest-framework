@@ -13,7 +13,6 @@ response content is handled by parsers and renderers.
 from __future__ import unicode_literals
 
 import traceback
-import warnings
 
 from django.db import models
 from django.db.models import DurationField as ModelDurationField
@@ -1016,16 +1015,14 @@ class ModelSerializer(Serializer):
             )
         )
 
-        if fields is None and exclude is None:
-            warnings.warn(
-                "Creating a ModelSerializer without either the 'fields' "
-                "attribute or the 'exclude' attribute is deprecated "
-                "since 3.3.0. Add an explicit fields = '__all__' to the "
-                "{serializer_class} serializer.".format(
-                    serializer_class=self.__class__.__name__
-                ),
-                DeprecationWarning
-            )
+        assert not (fields is None and exclude is None), (
+            "Creating a ModelSerializer without either the 'fields' attribute "
+            "or the 'exclude' attribute has been deprecated since 3.3.0, "
+            "and is now disallowed. Add an explicit fields = '__all__' to the "
+            "{serializer_class} serializer.".format(
+                serializer_class=self.__class__.__name__
+            ),
+        )
 
         if fields == ALL_FIELDS:
             fields = None
