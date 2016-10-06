@@ -754,3 +754,22 @@ def test_get_displayed_page_numbers():
     assert displayed_page_numbers(7, 9) == [1, None, 6, 7, 8, 9]
     assert displayed_page_numbers(8, 9) == [1, None, 7, 8, 9]
     assert displayed_page_numbers(9, 9) == [1, None, 7, 8, 9]
+
+
+class TestCombinedPaginationPageNumber(TestPageNumberPagination):
+    def setup(self):
+        class ExamplePagination(pagination.HybridPagination):
+            page_size = 5
+
+        self.pagination = ExamplePagination()
+        self.queryset = range(1, 101)
+
+
+class TestCombinedPaginationLimitOffset(TestLimitOffset):
+    def setup(self):
+        class ExamplePagination(pagination.HybridPagination):
+            default_limit = 10
+            max_limit = 15
+
+        self.pagination = ExamplePagination()
+        self.queryset = range(1, 101)
