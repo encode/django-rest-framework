@@ -137,8 +137,8 @@ class TestRouterGeneratedSchema(TestCase):
                         action='post',
                         encoding='application/json',
                         fields=[
-                            coreapi.Field('a', required=True, location='form', description='A field description'),
-                            coreapi.Field('b', required=False, location='form')
+                            coreapi.Field('a', required=True, location='form', type='string', description='A field description'),
+                            coreapi.Field('b', required=False, location='form', type='string')
                         ]
                     ),
                     'retrieve': coreapi.Link(
@@ -155,8 +155,8 @@ class TestRouterGeneratedSchema(TestCase):
                         description='A description of custom action.',
                         fields=[
                             coreapi.Field('pk', required=True, location='path'),
-                            coreapi.Field('c', required=True, location='form'),
-                            coreapi.Field('d', required=False, location='form'),
+                            coreapi.Field('c', required=True, location='form', type='string'),
+                            coreapi.Field('d', required=False, location='form', type='string'),
                         ]
                     ),
                     'custom_list_action': coreapi.Link(
@@ -179,8 +179,8 @@ class TestRouterGeneratedSchema(TestCase):
                         encoding='application/json',
                         fields=[
                             coreapi.Field('pk', required=True, location='path'),
-                            coreapi.Field('a', required=True, location='form', description='A field description'),
-                            coreapi.Field('b', required=False, location='form')
+                            coreapi.Field('a', required=True, location='form', type='string', description='A field description'),
+                            coreapi.Field('b', required=False, location='form', type='string')
                         ]
                     ),
                     'partial_update': coreapi.Link(
@@ -189,8 +189,8 @@ class TestRouterGeneratedSchema(TestCase):
                         encoding='application/json',
                         fields=[
                             coreapi.Field('pk', required=True, location='path'),
-                            coreapi.Field('a', required=False, location='form', description='A field description'),
-                            coreapi.Field('b', required=False, location='form')
+                            coreapi.Field('a', required=False, location='form', type='string', description='A field description'),
+                            coreapi.Field('b', required=False, location='form', type='string')
                         ]
                     ),
                     'destroy': coreapi.Link(

@@ -276,6 +276,10 @@ class HTMLFormRenderer(BaseRenderer):
             'base_template': 'input.html',
             'input_type': 'number'
         },
+        serializers.FloatField: {
+            'base_template': 'input.html',
+            'input_type': 'number'
+        },
         serializers.DateTimeField: {
             'base_template': 'input.html',
             'input_type': 'datetime-local'

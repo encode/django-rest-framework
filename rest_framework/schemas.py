@@ -15,9 +15,24 @@ from rest_framework.request import clone_request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
+from rest_framework.utils.field_mapping import ClassLookupDict
 from rest_framework.views import APIView
 
+
 header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
+
+types_lookup = ClassLookupDict({
+    serializers.Field: 'string',
+    serializers.IntegerField: 'integer',
+    serializers.FloatField: 'number',
+    serializers.DecimalField: 'number',
+    serializers.BooleanField: 'boolean',
+    serializers.FileField: 'file',
+    serializers.MultipleChoiceField: 'array',
+    serializers.ManyRelatedField: 'array',
+    serializers.Serializer: 'object',
+    serializers.ListSerializer: 'array'
+})
 
 
 def as_query_fields(items):
@@ -372,7 +387,14 @@ class SchemaGenerator(object):
         serializer = view.get_serializer()
 
         if isinstance(serializer, serializers.ListSerializer):
-            return [coreapi.Field(name='data', location='body', required=True)]
+            return [
+                coreapi.Field(
+                    name='data',
+                    location='body',
+                    required=True,
+                    type='array'
+                )
+            ]
 
         if not isinstance(serializer, serializers.Serializer):
             return []
@@ -388,7 +410,8 @@ class SchemaGenerator(object):
                 name=field.source,
                 location='form',
                 required=required,
-                description=description
+                description=description,
+                type=types_lookup[field]
             )
             fields.append(field)
 
