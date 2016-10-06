@@ -3,3 +3,4 @@ markdown==2.6.4
 django-guardian==1.4.3
 django-filter==0.13.0
 coreapi==1.32.0
+psycopg2==2.6.2
