@@ -307,3 +307,4 @@ def paginated_response(request, queryset, serializer_class, pagination_class=Non
 
     serializer = serializer_class(page, many=True)
     return paginator.get_paginated_response(serializer.data)
+
