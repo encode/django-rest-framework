@@ -7,7 +7,7 @@ from rest_framework import filters, pagination, permissions, serializers
 from rest_framework.compat import coreapi
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.routers import DefaultRouter
-from rest_framework.schemas import SchemaGenerator
+from rest_framework.schemas import SchemaGenerator, get_schema_view
 from rest_framework.test import APIClient
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -65,9 +65,16 @@ class ExampleViewSet(ModelViewSet):
         return super(ExampleViewSet, self).get_serializer(*args, **kwargs)
 
 
-router = DefaultRouter(schema_title='Example API' if coreapi else None)
+if coreapi:
+    schema_view = get_schema_view(title='Example API')
+else:
+    def schema_view(request):
+        pass
+
+router = DefaultRouter()
 router.register('example', ExampleViewSet, base_name='example')
 urlpatterns = [
+    url(r'^$', schema_view),
     url(r'^', include(router.urls))
 ]
 
