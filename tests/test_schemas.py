@@ -280,3 +280,56 @@ class TestSchemaGenerator(TestCase):
             }
         )
         self.assertEqual(schema, expected)
+
+
+@unittest.skipUnless(coreapi, 'coreapi is not installed')
+class TestSchemaGeneratorNotAtRoot(TestCase):
+    def setUp(self):
+        self.patterns = [
+            url('^api/v1/example/?$', ExampleListView.as_view()),
+            url('^api/v1/example/(?P<pk>\d+)/?$', ExampleDetailView.as_view()),
+            url('^api/v1/example/(?P<pk>\d+)/sub/?$', ExampleDetailView.as_view()),
+        ]
+
+    def test_schema_for_regular_views(self):
+        """
+        Ensure that schema generation with an API that is not at the URL
+        root continues to use correct structure for link keys.
+        """
+        generator = SchemaGenerator(title='Example API', patterns=self.patterns)
+        schema = generator.get_schema()
+        expected = coreapi.Document(
+            url='',
+            title='Example API',
+            content={
+                'example': {
+                    'create': coreapi.Link(
+                        url='/api/v1/example/',
+                        action='post',
+                        fields=[]
+                    ),
+                    'list': coreapi.Link(
+                        url='/api/v1/example/',
+                        action='get',
+                        fields=[]
+                    ),
+                    'retrieve': coreapi.Link(
+                        url='/api/v1/example/{id}/',
+                        action='get',
+                        fields=[
+                            coreapi.Field('id', required=True, location='path')
+                        ]
+                    ),
+                    'sub': {
+                        'list': coreapi.Link(
+                            url='/api/v1/example/{id}/sub/',
+                            action='get',
+                            fields=[
+                                coreapi.Field('id', required=True, location='path')
+                            ]
+                        )
+                    }
+                }
+            }
+        )
+        self.assertEqual(schema, expected)
