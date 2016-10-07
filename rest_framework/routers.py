@@ -16,6 +16,7 @@ For example, you might have a `urls.py` that looks something like this:
 from __future__ import unicode_literals
 
 import itertools
+import warnings
 from collections import OrderedDict, namedtuple
 
 from django.conf.urls import url
@@ -285,6 +286,12 @@ class DefaultRouter(SimpleRouter):
     default_schema_renderers = [renderers.CoreJSONRenderer, BrowsableAPIRenderer]
 
     def __init__(self, *args, **kwargs):
+        if 'schema_title' in kwargs:
+            warnings.warn(
+                "Including a schema directly via a router is now pending "
+                "deprecation. Use `get_schema_view()` instead.",
+                PendingDeprecationWarning
+            )
         if 'schema_renderers' in kwargs:
             assert 'schema_title' in kwargs, 'Missing "schema_title" argument.'
         if 'schema_url' in kwargs:
