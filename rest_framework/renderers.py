@@ -813,7 +813,7 @@ class MultiPartRenderer(BaseRenderer):
 
 
 class CoreJSONRenderer(BaseRenderer):
-    media_type = 'application/vnd.coreapi+json'
+    media_type = 'application/coreapi+json'
     charset = None
     format = 'corejson'
 

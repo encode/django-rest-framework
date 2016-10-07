@@ -84,7 +84,7 @@ urlpatterns = [
 class TestRouterGeneratedSchema(TestCase):
     def test_anonymous_request(self):
         client = APIClient()
-        response = client.get('/', HTTP_ACCEPT='application/vnd.coreapi+json')
+        response = client.get('/', HTTP_ACCEPT='application/coreapi+json')
         self.assertEqual(response.status_code, 200)
         expected = coreapi.Document(
             url='',
@@ -124,7 +124,7 @@ class TestRouterGeneratedSchema(TestCase):
     def test_authenticated_request(self):
         client = APIClient()
         client.force_authenticate(MockUser())
-        response = client.get('/', HTTP_ACCEPT='application/vnd.coreapi+json')
+        response = client.get('/', HTTP_ACCEPT='application/coreapi+json')
         self.assertEqual(response.status_code, 200)
         expected = coreapi.Document(
             url='',
