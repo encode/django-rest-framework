@@ -182,7 +182,7 @@ By default this exception results in a response with the HTTP status code "429 T
 
 ## ValidationError
 
-**Signature:** `ValidationError(detail)`
+**Signature:** `ValidationError(detail, code=None)`
 
 The `ValidationError` exception is slightly different from the other `APIException` classes:
 

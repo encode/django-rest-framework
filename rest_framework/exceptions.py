@@ -119,9 +119,19 @@ class ValidationError(APIException):
         return six.text_type(self.detail)
 
     def get_codes(self):
+        """
+        Return only the code part of the error details.
+
+        Eg. {"name": ["required"]}
+        """
         return _get_codes(self.detail)
 
     def get_full_details(self):
+        """
+        Return both the message & code parts of the error details.
+
+        Eg. {"name": [{"message": "This field is required.", "code": "required"}]}
+        """
         return _get_full_details(self.detail)
 
 
