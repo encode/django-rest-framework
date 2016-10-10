@@ -20,7 +20,7 @@ from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 def _get_error_details(data, default_code=None):
     """
     Descend into a nested data structure, forcing any
-    lazy translation strings or strings into `ErrorMessage`.
+    lazy translation strings or strings into `ErrorDetail`.
     """
     if isinstance(data, list):
         ret = [
@@ -41,6 +41,25 @@ def _get_error_details(data, default_code=None):
     text = force_text(data)
     code = getattr(data, 'code', default_code)
     return ErrorDetail(text, code)
+
+
+def _get_codes(detail):
+    if isinstance(detail, list):
+        return [_get_codes(item) for item in detail]
+    elif isinstance(detail, dict):
+        return {key: _get_codes(value) for key, value in detail.items()}
+    return detail.code
+
+
+def _get_full_details(detail):
+    if isinstance(detail, list):
+        return [_get_full_details(item) for item in detail]
+    elif isinstance(detail, dict):
+        return {key: _get_full_details(value) for key, value in detail.items()}
+    return {
+        'message': detail,
+        'code': detail.code
+    }
 
 
 class ErrorDetail(six.text_type):
@@ -98,6 +117,12 @@ class ValidationError(APIException):
 
     def __str__(self):
         return six.text_type(self.detail)
+
+    def get_codes(self):
+        return _get_codes(self.detail)
+
+    def get_full_details(self):
+        return _get_full_details(self.detail)
 
 
 class ParseError(APIException):

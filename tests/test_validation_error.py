@@ -30,16 +30,8 @@ class TestValidationErrorWithCode(TestCase):
         self.DEFAULT_HANDLER = api_settings.EXCEPTION_HANDLER
 
         def exception_handler(exc, request):
-            return_errors = {}
-            for field_name, errors in exc.detail.items():
-                return_errors[field_name] = []
-                for error in errors:
-                    return_errors[field_name].append({
-                        'code': error.code,
-                        'message': error
-                    })
-
-            return Response(return_errors, status=status.HTTP_400_BAD_REQUEST)
+            data = exc.get_full_details()
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
         api_settings.EXCEPTION_HANDLER = exception_handler
 
