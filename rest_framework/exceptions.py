@@ -17,21 +17,21 @@ from rest_framework import status
 from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 
 
-def _force_text_recursive(data, code=None):
+def _get_error_details(data, default_code=None):
     """
     Descend into a nested data structure, forcing any
     lazy translation strings or strings into `ErrorMessage`.
     """
     if isinstance(data, list):
         ret = [
-            _force_text_recursive(item, code) for item in data
+            _get_error_details(item, default_code) for item in data
         ]
         if isinstance(data, ReturnList):
             return ReturnList(ret, serializer=data.serializer)
         return ret
     elif isinstance(data, dict):
         ret = {
-            key: _force_text_recursive(value, code)
+            key: _get_error_details(value, default_code)
             for key, value in data.items()
         }
         if isinstance(data, ReturnDict):
@@ -39,15 +39,18 @@ def _force_text_recursive(data, code=None):
         return ret
 
     text = force_text(data)
-    code = getattr(data, 'code', code or 'invalid')
-    return ErrorMessage(text, code)
+    code = getattr(data, 'code', default_code)
+    return ErrorDetail(text, code)
 
 
-class ErrorMessage(six.text_type):
+class ErrorDetail(six.text_type):
+    """
+    A string-like object that can additionally
+    """
     code = None
 
     def __new__(cls, string, code=None):
-        self = super(ErrorMessage, cls).__new__(cls, string)
+        self = super(ErrorDetail, cls).__new__(cls, string)
         self.code = code
         return self
 
@@ -85,7 +88,13 @@ class ValidationError(APIException):
         # The details should always be coerced to a list if not already.
         if not isinstance(detail, dict) and not isinstance(detail, list):
             detail = [detail]
-        self.detail = _force_text_recursive(detail, code=code)
+
+        if code is None:
+            default_code = 'invalid'
+        else:
+            default_code = code
+
+        self.detail = _get_error_details(detail, default_code)
 
     def __str__(self):
         return six.text_type(self.detail)
