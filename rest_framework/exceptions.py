@@ -10,7 +10,6 @@ import math
 
 from django.utils import six
 from django.utils.encoding import force_text
-from django.utils.functional import Promise
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ungettext
 
@@ -18,21 +17,21 @@ from rest_framework import status
 from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 
 
-def _force_text_recursive(data):
+def _force_text_recursive(data, code=None):
     """
     Descend into a nested data structure, forcing any
-    lazy translation strings into plain text.
+    lazy translation strings or strings into `ErrorMessage`.
     """
     if isinstance(data, list):
         ret = [
-            _force_text_recursive(item) for item in data
+            _force_text_recursive(item, code) for item in data
         ]
         if isinstance(data, ReturnList):
             return ReturnList(ret, serializer=data.serializer)
         return ret
     elif isinstance(data, dict):
         ret = {
-            key: _force_text_recursive(value)
+            key: _force_text_recursive(value, code)
             for key, value in data.items()
         }
         if isinstance(data, ReturnDict):
@@ -40,7 +39,7 @@ def _force_text_recursive(data):
         return ret
 
     text = force_text(data)
-    code = getattr(data, 'code', 'invalid')
+    code = getattr(data, 'code', code or 'invalid')
     return ErrorMessage(text, code)
 
 
@@ -82,18 +81,11 @@ class ValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
 
     def __init__(self, detail, code=None):
-        if code is not None:
-            assert isinstance(detail, six.string_types + (Promise,)), (
-                "When providing a 'code', the detail must be a string argument. "
-                "Use 'ErrorMessage' to set the code for a composite ValidationError"
-            )
-            detail = ErrorMessage(detail, code)
-
         # For validation errors the 'detail' key is always required.
         # The details should always be coerced to a list if not already.
         if not isinstance(detail, dict) and not isinstance(detail, list):
             detail = [detail]
-        self.detail = _force_text_recursive(detail)
+        self.detail = _force_text_recursive(detail, code=code)
 
     def __str__(self):
         return six.text_type(self.detail)

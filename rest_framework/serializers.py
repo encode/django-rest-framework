@@ -423,8 +423,8 @@ class Serializer(BaseSerializer):
                 datatype=type(data).__name__
             )
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [ErrorMessage(message, code='invalid')]
-            })
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
+            }, code='invalid')
 
         ret = OrderedDict()
         errors = OrderedDict()
@@ -440,7 +440,7 @@ class Serializer(BaseSerializer):
             except ValidationError as exc:
                 errors[field.field_name] = exc.detail
             except DjangoValidationError as exc:
-                errors[field.field_name] = list(exc.messages)
+                errors[field.field_name] = get_validation_error_detail(exc)
             except SkipField:
                 pass
             else:
@@ -580,14 +580,14 @@ class ListSerializer(BaseSerializer):
                 input_type=type(data).__name__
             )
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [ErrorMessage(message, code='not_a_list')]
-            })
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
+            }, code='not_a_list')
 
         if not self.allow_empty and len(data) == 0:
             message = self.error_messages['empty']
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [ErrorMessage(message, code='empty')]
-            })
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
+            }, code='empty')
 
         ret = []
         errors = []
