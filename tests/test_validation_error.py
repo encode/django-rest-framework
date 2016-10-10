@@ -25,7 +25,7 @@ def error_view(request):
     ExampleSerializer(data={}).is_valid(raise_exception=True)
 
 
-class TestValidationErrorWithCode(TestCase):
+class TestValidationErrorWithFullDetails(TestCase):
     def setUp(self):
         self.DEFAULT_HANDLER = api_settings.EXCEPTION_HANDLER
 
@@ -44,6 +44,41 @@ class TestValidationErrorWithCode(TestCase):
                 'message': 'This field is required.',
                 'code': 'required'
             }],
+        }
+
+    def tearDown(self):
+        api_settings.EXCEPTION_HANDLER = self.DEFAULT_HANDLER
+
+    def test_class_based_view_exception_handler(self):
+        view = ErrorView.as_view()
+
+        request = factory.get('/', content_type='application/json')
+        response = view(request)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, self.expected_response_data)
+
+    def test_function_based_view_exception_handler(self):
+        view = error_view
+
+        request = factory.get('/', content_type='application/json')
+        response = view(request)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, self.expected_response_data)
+
+
+class TestValidationErrorWithCodes(TestCase):
+    def setUp(self):
+        self.DEFAULT_HANDLER = api_settings.EXCEPTION_HANDLER
+
+        def exception_handler(exc, request):
+            data = exc.get_codes()
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
+        api_settings.EXCEPTION_HANDLER = exception_handler
+
+        self.expected_response_data = {
+            'char': ['required'],
+            'integer': ['required'],
         }
 
     def tearDown(self):
