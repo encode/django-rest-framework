@@ -434,7 +434,7 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 
 ## drf-url-filters
 
-[drf-url-filter][drf-url-filter] is a simple Django app to apply filters on drf `ModelViewSet`'s `Queryset` in a clean, simple and configurable way. It also supports validations on incoming query params and their values. A beautiful python package `Voluptouos` is being used for validations on the incoming query parameters. The best part about voluptouos is you can define your own validations as per your query params requirements.
+[drf-url-filter][drf-url-filter] is a simple Django app to apply filters on drf `ModelViewSet`'s `Queryset` in a clean, simple and configurable way. It also supports validations on incoming query params and their values. A beautiful python package `Voluptuous` is being used for validations on the incoming query parameters. The best part about voluptuous is you can define your own validations as per your query params requirements.
 
 [cite]: https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter]: https://github.com/alex/django-filter
