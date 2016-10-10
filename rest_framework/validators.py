@@ -12,7 +12,7 @@ from django.db import DataError
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import unicode_to_repr
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ErrorMessage, ValidationError
 from rest_framework.utils.representation import smart_repr
 
 
@@ -80,7 +80,7 @@ class UniqueValidator(object):
         queryset = self.filter_queryset(value, queryset)
         queryset = self.exclude_current_instance(queryset)
         if qs_exists(queryset):
-            raise ValidationError(self.message)
+            raise ValidationError(self.message, code='unique')
 
     def __repr__(self):
         return unicode_to_repr('<%s(queryset=%s)>' % (
@@ -120,13 +120,13 @@ class UniqueTogetherValidator(object):
         if self.instance is not None:
             return
 
-        missing = {
-            field_name: self.missing_message
+        missing_items = {
+            field_name: ErrorMessage(self.missing_message, code='required')
             for field_name in self.fields
             if field_name not in attrs
         }
-        if missing:
-            raise ValidationError(missing)
+        if missing_items:
+            raise ValidationError(missing_items)
 
     def filter_queryset(self, attrs, queryset):
         """
@@ -167,7 +167,8 @@ class UniqueTogetherValidator(object):
         ]
         if None not in checked_values and qs_exists(queryset):
             field_names = ', '.join(self.fields)
-            raise ValidationError(self.message.format(field_names=field_names))
+            message = self.message.format(field_names=field_names)
+            raise ValidationError(message, code='unique')
 
     def __repr__(self):
         return unicode_to_repr('<%s(queryset=%s, fields=%s)>' % (
@@ -204,13 +205,13 @@ class BaseUniqueForValidator(object):
         The `UniqueFor<Range>Validator` classes always force an implied
         'required' state on the fields they are applied to.
         """
-        missing = {
-            field_name: self.missing_message
+        missing_items = {
+            field_name: ErrorMessage(self.missing_message, code='required')
             for field_name in [self.field, self.date_field]
             if field_name not in attrs
         }
-        if missing:
-            raise ValidationError(missing)
+        if missing_items:
+            raise ValidationError(missing_items)
 
     def filter_queryset(self, attrs, queryset):
         raise NotImplementedError('`filter_queryset` must be implemented.')
@@ -231,7 +232,9 @@ class BaseUniqueForValidator(object):
         queryset = self.exclude_current_instance(attrs, queryset)
         if qs_exists(queryset):
             message = self.message.format(date_field=self.date_field)
-            raise ValidationError({self.field: message})
+            raise ValidationError({
+                self.field: ErrorMessage(message, code='unique')
+            })
 
     def __repr__(self):
         return unicode_to_repr('<%s(queryset=%s, field=%s, date_field=%s)>' % (

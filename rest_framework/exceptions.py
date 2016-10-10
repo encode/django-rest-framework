@@ -10,6 +10,7 @@ import math
 
 from django.utils import six
 from django.utils.encoding import force_text
+from django.utils.functional import Promise
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ungettext
 
@@ -37,7 +38,19 @@ def _force_text_recursive(data):
         if isinstance(data, ReturnDict):
             return ReturnDict(ret, serializer=data.serializer)
         return ret
-    return force_text(data)
+
+    text = force_text(data)
+    code = getattr(data, 'code', 'invalid')
+    return ErrorMessage(text, code)
+
+
+class ErrorMessage(six.text_type):
+    code = None
+
+    def __new__(cls, string, code=None):
+        self = super(ErrorMessage, cls).__new__(cls, string)
+        self.code = code
+        return self
 
 
 class APIException(Exception):
@@ -68,7 +81,14 @@ class APIException(Exception):
 class ValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
 
-    def __init__(self, detail):
+    def __init__(self, detail, code=None):
+        if code is not None:
+            assert isinstance(detail, six.string_types + (Promise,)), (
+                "When providing a 'code', the detail must be a string argument. "
+                "Use 'ErrorMessage' to set the code for a composite ValidationError"
+            )
+            detail = ErrorMessage(detail, code)
+
         # For validation errors the 'detail' key is always required.
         # The details should always be coerced to a list if not already.
         if not isinstance(detail, dict) and not isinstance(detail, list):

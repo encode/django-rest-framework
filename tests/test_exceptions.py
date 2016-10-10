@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.test import TestCase
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.exceptions import _force_text_recursive
+from rest_framework.exceptions import ErrorMessage, _force_text_recursive
 
 
 class ExceptionTestCase(TestCase):
@@ -12,10 +12,10 @@ class ExceptionTestCase(TestCase):
 
         s = "sfdsfggiuytraetfdlklj"
         self.assertEqual(_force_text_recursive(_(s)), s)
-        self.assertEqual(type(_force_text_recursive(_(s))), type(s))
+        assert isinstance(_force_text_recursive(_(s)), ErrorMessage)
 
         self.assertEqual(_force_text_recursive({'a': _(s)})['a'], s)
-        self.assertEqual(type(_force_text_recursive({'a': _(s)})['a']), type(s))
+        assert isinstance(_force_text_recursive({'a': _(s)})['a'], ErrorMessage)
 
         self.assertEqual(_force_text_recursive([[_(s)]])[0][0], s)
-        self.assertEqual(type(_force_text_recursive([[_(s)]])[0][0]), type(s))
+        assert isinstance(_force_text_recursive([[_(s)]])[0][0], ErrorMessage)

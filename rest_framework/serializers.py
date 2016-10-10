@@ -300,7 +300,7 @@ def get_validation_error_detail(exc):
         # exception class as well for simpler compat.
         # Eg. Calling Model.clean() explicitly inside Serializer.validate()
         return {
-            api_settings.NON_FIELD_ERRORS_KEY: list(exc.messages)
+            api_settings.NON_FIELD_ERRORS_KEY: get_error_messages(exc)
         }
     elif isinstance(exc.detail, dict):
         # If errors may be a dict we use the standard {key: list of values}.
@@ -423,7 +423,7 @@ class Serializer(BaseSerializer):
                 datatype=type(data).__name__
             )
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
+                api_settings.NON_FIELD_ERRORS_KEY: [ErrorMessage(message, code='invalid')]
             })
 
         ret = OrderedDict()
@@ -580,13 +580,13 @@ class ListSerializer(BaseSerializer):
                 input_type=type(data).__name__
             )
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
+                api_settings.NON_FIELD_ERRORS_KEY: [ErrorMessage(message, code='not_a_list')]
             })
 
         if not self.allow_empty and len(data) == 0:
             message = self.error_messages['empty']
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
+                api_settings.NON_FIELD_ERRORS_KEY: [ErrorMessage(message, code='empty')]
             })
 
         ret = []
