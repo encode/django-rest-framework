@@ -42,17 +42,6 @@ def get_pk_name(model):
     return _get_pk(meta).name
 
 
-def as_query_fields(items):
-    """
-    Take a list of Fields and plain strings.
-    Convert any pain strings into `location='query'` Field instances.
-    """
-    return [
-        item if isinstance(item, coreapi.Field) else coreapi.Field(name=item, required=False, location='query')
-        for item in items
-    ]
-
-
 def is_api_view(callback):
     """
     Return `True` if the given view callback is a REST framework view/viewset.
@@ -506,7 +495,7 @@ class SchemaGenerator(object):
             return []
 
         paginator = view.pagination_class()
-        return as_query_fields(paginator.get_fields(view))
+        return paginator.get_schema_fields(view)
 
     def get_filter_fields(self, path, method, view):
         if not is_list_view(path, method, view):
@@ -517,7 +506,7 @@ class SchemaGenerator(object):
 
         fields = []
         for filter_backend in view.filter_backends:
-            fields += as_query_fields(filter_backend().get_fields(view))
+            fields += filter_backend().get_schema_fields(view)
         return fields
 
     # Method for generating the link layout....
