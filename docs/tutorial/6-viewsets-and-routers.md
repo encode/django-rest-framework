@@ -92,10 +92,10 @@ Now that we've bound our resources into concrete views, we can register the view
     urlpatterns = format_suffix_patterns([
         url(r'^$', api_root),
         url(r'^snippets/$', snippet_list, name='snippet-list'),
-        url(r'^snippets/(?P<pk>[0-9]+)/$', snippet_detail, name='snippet-detail'),
-        url(r'^snippets/(?P<pk>[0-9]+)/highlight/$', snippet_highlight, name='snippet-highlight'),
+        url(r'^snippets/(?P<id>[0-9]+)/$', snippet_detail, name='snippet-detail'),
+        url(r'^snippets/(?P<id>[0-9]+)/highlight/$', snippet_highlight, name='snippet-highlight'),
         url(r'^users/$', user_list, name='user-list'),
-        url(r'^users/(?P<pk>[0-9]+)/$', user_detail, name='user-detail')
+        url(r'^users/(?P<id>[0-9]+)/$', user_detail, name='user-detail')
     ])
 
 ## Using Routers

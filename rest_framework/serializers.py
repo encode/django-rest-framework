@@ -13,7 +13,6 @@ response content is handled by parsers and renderers.
 from __future__ import unicode_literals
 
 import traceback
-import warnings
 
 from django.db import models
 from django.db.models import DurationField as ModelDurationField
@@ -23,7 +22,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import JSONField as ModelJSONField
-from rest_framework.compat import postgres_fields, unicode_to_repr
+from rest_framework.compat import postgres_fields, set_many, unicode_to_repr
 from rest_framework.utils import model_meta
 from rest_framework.utils.field_mapping import (
     ClassLookupDict, get_field_kwargs, get_nested_relation_kwargs,
@@ -892,19 +891,23 @@ class ModelSerializer(Serializer):
         # Save many-to-many relationships after the instance is created.
         if many_to_many:
             for field_name, value in many_to_many.items():
-                setattr(instance, field_name, value)
+                set_many(instance, field_name, value)
 
         return instance
 
     def update(self, instance, validated_data):
         raise_errors_on_nested_writes('update', self, validated_data)
+        info = model_meta.get_field_info(instance)
 
         # Simply set each attribute on the instance, and then save it.
         # Note that unlike `.create()` we don't need to treat many-to-many
         # relationships as being a special case. During updates we already
         # have an instance pk for the relationships to be associated with.
         for attr, value in validated_data.items():
-            setattr(instance, attr, value)
+            if attr in info.relations and info.relations[attr].to_many:
+                set_many(instance, attr, value)
+            else:
+                setattr(instance, attr, value)
         instance.save()
 
         return instance
@@ -1012,16 +1015,14 @@ class ModelSerializer(Serializer):
             )
         )
 
-        if fields is None and exclude is None:
-            warnings.warn(
-                "Creating a ModelSerializer without either the 'fields' "
-                "attribute or the 'exclude' attribute is deprecated "
-                "since 3.3.0. Add an explicit fields = '__all__' to the "
-                "{serializer_class} serializer.".format(
-                    serializer_class=self.__class__.__name__
-                ),
-                DeprecationWarning
-            )
+        assert not (fields is None and exclude is None), (
+            "Creating a ModelSerializer without either the 'fields' attribute "
+            "or the 'exclude' attribute has been deprecated since 3.3.0, "
+            "and is now disallowed. Add an explicit fields = '__all__' to the "
+            "{serializer_class} serializer.".format(
+                serializer_class=self.__class__.__name__
+            ),
+        )
 
         if fields == ALL_FIELDS:
             fields = None

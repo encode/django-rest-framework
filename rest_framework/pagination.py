@@ -15,7 +15,7 @@ from django.utils import six
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import template_render
+from rest_framework.compat import coreapi, template_render
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -157,7 +157,8 @@ class BasePagination(object):
     def get_results(self, data):
         return data['results']
 
-    def get_fields(self, view):
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         return []
 
 
@@ -283,10 +284,16 @@ class PageNumberPagination(BasePagination):
         context = self.get_html_context()
         return template_render(template, context)
 
-    def get_fields(self, view):
-        if self.page_size_query_param is None:
-            return [self.page_query_param]
-        return [self.page_query_param, self.page_size_query_param]
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        fields = [
+            coreapi.Field(name=self.page_query_param, required=False, location='query')
+        ]
+        if self.page_size_query_param is not None:
+            fields.append([
+                coreapi.Field(name=self.page_size_query_param, required=False, location='query')
+            ])
+        return fields
 
 
 class LimitOffsetPagination(BasePagination):
@@ -415,8 +422,12 @@ class LimitOffsetPagination(BasePagination):
         context = self.get_html_context()
         return template_render(template, context)
 
-    def get_fields(self, view):
-        return [self.limit_query_param, self.offset_query_param]
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        return [
+            coreapi.Field(name=self.limit_query_param, required=False, location='query'),
+            coreapi.Field(name=self.offset_query_param, required=False, location='query')
+        ]
 
 
 class CursorPagination(BasePagination):
@@ -721,5 +732,8 @@ class CursorPagination(BasePagination):
         context = self.get_html_context()
         return template_render(template, context)
 
-    def get_fields(self, view):
-        return [self.cursor_query_param]
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        return [
+            coreapi.Field(name=self.cursor_query_param, required=False, location='query')
+        ]

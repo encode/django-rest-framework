@@ -276,6 +276,10 @@ class HTMLFormRenderer(BaseRenderer):
             'base_template': 'input.html',
             'input_type': 'number'
         },
+        serializers.FloatField: {
+            'base_template': 'input.html',
+            'input_type': 'number'
+        },
         serializers.DateTimeField: {
             'base_template': 'input.html',
             'input_type': 'datetime-local'
@@ -809,7 +813,7 @@ class MultiPartRenderer(BaseRenderer):
 
 
 class CoreJSONRenderer(BaseRenderer):
-    media_type = 'application/vnd.coreapi+json'
+    media_type = 'application/coreapi+json'
     charset = None
     format = 'corejson'
 

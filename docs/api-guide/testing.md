@@ -184,6 +184,99 @@ As usual CSRF validation will only apply to any session authenticated views.  Th
 
 ---
 
+# RequestsClient
+
+REST framework also includes a client for interacting with your application
+using the popular Python library, `requests`.
+
+This exposes exactly the same interface as if you were using a requests session
+directly.
+
+    client = RequestsClient()
+    response = client.get('http://testserver/users/')
+
+Note that the requests client requires you to pass fully qualified URLs.
+
+## Headers & Authentication
+
+Custom headers and authentication credentials can be provided in the same way
+as [when using a standard `requests.Session` instance](http://docs.python-requests.org/en/master/user/advanced/#session-objects).
+
+    from requests.auth import HTTPBasicAuth
+
+    client.auth = HTTPBasicAuth('user', 'pass')
+    client.headers.update({'x-test': 'true'})
+
+## CSRF
+
+If you're using `SessionAuthentication` then you'll need to include a CSRF token
+for any `POST`, `PUT`, `PATCH` or `DELETE` requests.
+
+You can do so by following the same flow that a JavaScript based client would use.
+First make a `GET` request in order to obtain a CRSF token, then present that
+token in the following request.
+
+For example...
+
+    client = RequestsClient()
+
+    # Obtain a CSRF token.
+    response = client.get('/homepage/')
+    assert response.status_code == 200
+    csrftoken = response.cookies['csrftoken']
+
+    # Interact with the API.
+    response = client.post('/organisations/', json={
+        'name': 'MegaCorp',
+        'status': 'active'
+    }, headers={'X-CSRFToken': csrftoken})
+    assert response.status_code == 200
+
+## Live tests
+
+With careful usage both the `RequestsClient` and the `CoreAPIClient` provide
+the ability to write test cases that can run either in development, or be run
+directly against your staging server or production environment.
+
+Using this style to create basic tests of a few core piece of functionality is
+a powerful way to validate your live service. Doing so may require some careful
+attention to setup and teardown to ensure that the tests run in a way that they
+do not directly affect customer data.
+
+---
+
+# CoreAPIClient
+
+The CoreAPIClient allows you to interact with your API using the Python
+`coreapi` client library.
+
+    # Fetch the API schema
+    url = reverse('schema')
+    client = CoreAPIClient()
+    schema = client.get(url)
+
+    # Create a new organisation
+    params = {'name': 'MegaCorp', 'status': 'active'}
+    client.action(schema, ['organisations', 'create'], params)
+
+    # Ensure that the organisation exists in the listing
+    data = client.action(schema, ['organisations', 'list'])
+    assert(len(data) == 1)
+    assert(data == [{'name': 'MegaCorp', 'status': 'active'}])
+
+## Headers & Authentication
+
+Custom headers and authentication may be used with `CoreAPIClient` in a
+similar way as with `RequestsClient`.
+
+    from requests.auth import HTTPBasicAuth
+
+    client = CoreAPIClient()
+    client.session.auth = HTTPBasicAuth('user', 'pass')
+    client.session.headers.update({'x-test': 'true'})
+
+---
+
 # Test cases
 
 REST framework includes the following test case classes, that mirror the existing Django test case classes, but use `APIClient` instead of Django's default `Client`.
@@ -197,7 +290,7 @@ REST framework includes the following test case classes, that mirror the existin
 
 You can use any of REST framework's test case classes as you would for the regular Django test case classes.  The `self.client` attribute will be an `APIClient` instance.
 
-    from django.core.urlresolvers import reverse
+    from django.urls import reverse
     from rest_framework import status
     from rest_framework.test import APITestCase
     from myproject.apps.core.models import Account

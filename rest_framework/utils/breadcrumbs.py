@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from django.core.urlresolvers import get_script_prefix, resolve
+from rest_framework.compat import get_script_prefix, resolve
 
 
 def get_breadcrumbs(url, request=None):

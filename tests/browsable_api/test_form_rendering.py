@@ -11,6 +11,7 @@ factory = APIRequestFactory()
 class BasicSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasicModel
+        fields = '__all__'
 
 
 class ManyPostView(generics.GenericAPIView):

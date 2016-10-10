@@ -110,6 +110,9 @@ class APIView(View):
     # Allow dependency injection of other settings to make testing easier.
     settings = api_settings
 
+    # Mark the view as being included or excluded from schema generation.
+    exclude_from_schema = False
+
     @classmethod
     def as_view(cls, **initkwargs):
         """
@@ -129,6 +132,7 @@ class APIView(View):
 
         view = super(APIView, cls).as_view(**initkwargs)
         view.cls = cls
+        view.initkwargs = initkwargs
 
         # Note: session based authentication is explicitly CSRF validated,
         # all other authentication is CSRF exempt.

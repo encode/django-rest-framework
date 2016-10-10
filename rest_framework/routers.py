@@ -16,13 +16,15 @@ For example, you might have a `urls.py` that looks something like this:
 from __future__ import unicode_literals
 
 import itertools
+import warnings
 from collections import OrderedDict, namedtuple
 
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
-from django.core.urlresolvers import NoReverseMatch
 
 from rest_framework import exceptions, renderers, views
+from rest_framework.compat import NoReverseMatch
+from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.schemas import SchemaGenerator
@@ -83,6 +85,7 @@ class BaseRouter(object):
 
 
 class SimpleRouter(BaseRouter):
+
     routes = [
         # List route.
         Route(
@@ -258,6 +261,13 @@ class SimpleRouter(BaseRouter):
                     trailing_slash=self.trailing_slash
                 )
 
+                # If there is no prefix, the first part of the url is probably
+                #   controlled by project's urls.py and the router is in an app,
+                #   so a slash in the beginning will (A) cause Django to give
+                #   warnings and (B) generate URLS that will require using '//'.
+                if not prefix and regex[:2] == '^/':
+                    regex = '^' + regex[2:]
+
                 view = viewset.as_view(mapping, **route.initkwargs)
                 name = route.name.format(basename=basename)
                 ret.append(url(regex, view, name=name))
@@ -273,9 +283,15 @@ class DefaultRouter(SimpleRouter):
     include_root_view = True
     include_format_suffixes = True
     root_view_name = 'api-root'
-    default_schema_renderers = [renderers.CoreJSONRenderer]
+    default_schema_renderers = [renderers.CoreJSONRenderer, BrowsableAPIRenderer]
 
     def __init__(self, *args, **kwargs):
+        if 'schema_title' in kwargs:
+            warnings.warn(
+                "Including a schema directly via a router is now pending "
+                "deprecation. Use `get_schema_view()` instead.",
+                PendingDeprecationWarning
+            )
         if 'schema_renderers' in kwargs:
             assert 'schema_title' in kwargs, 'Missing "schema_title" argument.'
         if 'schema_url' in kwargs:
@@ -289,42 +305,44 @@ class DefaultRouter(SimpleRouter):
             self.root_renderers = list(api_settings.DEFAULT_RENDERER_CLASSES)
         super(DefaultRouter, self).__init__(*args, **kwargs)
 
+    def get_schema_root_view(self, api_urls=None):
+        """
+        Return a schema root view.
+        """
+        schema_renderers = self.schema_renderers
+        schema_generator = SchemaGenerator(
+            title=self.schema_title,
+            url=self.schema_url,
+            patterns=api_urls
+        )
+
+        class APISchemaView(views.APIView):
+            _ignore_model_permissions = True
+            exclude_from_schema = True
+            renderer_classes = schema_renderers
+
+            def get(self, request, *args, **kwargs):
+                schema = schema_generator.get_schema(request)
+                if schema is None:
+                    raise exceptions.PermissionDenied()
+                return Response(schema)
+
+        return APISchemaView.as_view()
+
     def get_api_root_view(self, api_urls=None):
         """
-        Return a view to use as the API root.
+        Return a basic root view.
         """
         api_root_dict = OrderedDict()
         list_name = self.routes[0].name
         for prefix, viewset, basename in self.registry:
             api_root_dict[prefix] = list_name.format(basename=basename)
 
-        view_renderers = list(self.root_renderers)
-        schema_media_types = []
-
-        if api_urls and self.schema_title:
-            view_renderers += list(self.schema_renderers)
-            schema_generator = SchemaGenerator(
-                title=self.schema_title,
-                url=self.schema_url,
-                patterns=api_urls
-            )
-            schema_media_types = [
-                renderer.media_type
-                for renderer in self.schema_renderers
-            ]
-
-        class APIRoot(views.APIView):
+        class APIRootView(views.APIView):
             _ignore_model_permissions = True
-            renderer_classes = view_renderers
+            exclude_from_schema = True
 
             def get(self, request, *args, **kwargs):
-                if request.accepted_renderer.media_type in schema_media_types:
-                    # Return a schema response.
-                    schema = schema_generator.get_schema(request)
-                    if schema is None:
-                        raise exceptions.PermissionDenied()
-                    return Response(schema)
-
                 # Return a plain {"name": "hyperlink"} response.
                 ret = OrderedDict()
                 namespace = request.resolver_match.namespace
@@ -345,7 +363,7 @@ class DefaultRouter(SimpleRouter):
 
                 return Response(ret)
 
-        return APIRoot.as_view()
+        return APIRootView.as_view()
 
     def get_urls(self):
         """
@@ -355,7 +373,10 @@ class DefaultRouter(SimpleRouter):
         urls = super(DefaultRouter, self).get_urls()
 
         if self.include_root_view:
-            view = self.get_api_root_view(api_urls=urls)
+            if self.schema_title:
+                view = self.get_schema_root_view(api_urls=urls)
+            else:
+                view = self.get_api_root_view(api_urls=urls)
             root_url = url(r'^$', view, name=self.root_view_name)
             urls.append(root_url)
 

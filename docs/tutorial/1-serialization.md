@@ -88,7 +88,7 @@ The first thing we need to get started on our Web API is to provide a way of ser
 
 
     class SnippetSerializer(serializers.Serializer):
-        pk = serializers.IntegerField(read_only=True)
+        id = serializers.IntegerField(read_only=True)
         title = serializers.CharField(required=False, allow_blank=True, max_length=100)
         code = serializers.CharField(style={'base_template': 'textarea.html'})
         linenos = serializers.BooleanField(required=False)
@@ -144,13 +144,13 @@ We've now got a few snippet instances to play with.  Let's take a look at serial
 
     serializer = SnippetSerializer(snippet)
     serializer.data
-    # {'pk': 2, 'title': u'', 'code': u'print "hello, world"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}
+    # {'id': 2, 'title': u'', 'code': u'print "hello, world"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}
 
 At this point we've translated the model instance into Python native datatypes.  To finalize the serialization process we render the data into `json`.
 
     content = JSONRenderer().render(serializer.data)
     content
-    # '{"pk": 2, "title": "", "code": "print \\"hello, world\\"\\n", "linenos": false, "language": "python", "style": "friendly"}'
+    # '{"id": 2, "title": "", "code": "print \\"hello, world\\"\\n", "linenos": false, "language": "python", "style": "friendly"}'
 
 Deserialization is similar.  First we parse a stream into Python native datatypes...
 
@@ -175,7 +175,7 @@ We can also serialize querysets instead of model instances.  To do so we simply 
 
     serializer = SnippetSerializer(Snippet.objects.all(), many=True)
     serializer.data
-    # [OrderedDict([('pk', 1), ('title', u''), ('code', u'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('pk', 2), ('title', u''), ('code', u'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('pk', 3), ('title', u''), ('code', u'print "hello, world"'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
+    # [OrderedDict([('id', 1), ('title', u''), ('code', u'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', u''), ('code', u'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', u''), ('code', u'print "hello, world"'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
 
 ## Using ModelSerializers
 
@@ -259,12 +259,12 @@ Note that because we want to be able to POST to this view from clients that won'
 We'll also need a view which corresponds to an individual snippet, and can be used to retrieve, update or delete the snippet.
 
     @csrf_exempt
-    def snippet_detail(request, pk):
+    def snippet_detail(request, id):
         """
         Retrieve, update or delete a code snippet.
         """
         try:
-            snippet = Snippet.objects.get(pk=pk)
+            snippet = Snippet.objects.get(id=id)
         except Snippet.DoesNotExist:
             return HttpResponse(status=404)
 
@@ -291,7 +291,7 @@ Finally we need to wire these views up.  Create the `snippets/urls.py` file:
 
     urlpatterns = [
         url(r'^snippets/$', views.snippet_list),
-        url(r'^snippets/(?P<pk>[0-9]+)/$', views.snippet_detail),
+        url(r'^snippets/(?P<id>[0-9]+)/$', views.snippet_detail),
     ]
 
 We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to include our snippet app's URLs.

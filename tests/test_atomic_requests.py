@@ -5,7 +5,7 @@ import unittest
 from django.conf.urls import url
 from django.db import connection, connections, transaction
 from django.http import Http404
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.utils.decorators import method_decorator
 
 from rest_framework import status
@@ -34,6 +34,20 @@ class APIExceptionView(APIView):
     def post(self, request, *args, **kwargs):
         BasicModel.objects.create()
         raise APIException
+
+
+class NonAtomicAPIExceptionView(APIView):
+    @method_decorator(transaction.non_atomic_requests)
+    def dispatch(self, *args, **kwargs):
+        return super(NonAtomicAPIExceptionView, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        BasicModel.objects.all()
+        raise Http404
+
+urlpatterns = (
+    url(r'^$', NonAtomicAPIExceptionView.as_view()),
+)
 
 
 @unittest.skipUnless(
@@ -124,22 +138,8 @@ class DBTransactionAPIExceptionTests(TestCase):
     connection.features.uses_savepoints,
     "'atomic' requires transactions and savepoints."
 )
+@override_settings(ROOT_URLCONF='tests.test_atomic_requests')
 class NonAtomicDBTransactionAPIExceptionTests(TransactionTestCase):
-    @property
-    def urls(self):
-        class NonAtomicAPIExceptionView(APIView):
-            @method_decorator(transaction.non_atomic_requests)
-            def dispatch(self, *args, **kwargs):
-                return super(NonAtomicAPIExceptionView, self).dispatch(*args, **kwargs)
-
-            def get(self, request, *args, **kwargs):
-                BasicModel.objects.all()
-                raise Http404
-
-        return (
-            url(r'^$', NonAtomicAPIExceptionView.as_view()),
-        )
-
     def setUp(self):
         connections.databases['default']['ATOMIC_REQUESTS'] = True
 

@@ -102,15 +102,20 @@ REST framework includes functionality for auto-generating a schema,
 or allows you to specify one explicitly. There are a few different ways to
 add a schema to your API, depending on exactly what you need.
 
-## Using DefaultRouter
+## The get_schema_view shortcut
 
-If you're using `DefaultRouter` then you can include an auto-generated schema,
-simply by adding a `schema_title` argument to the router.
+The simplest way to include a schema in your project is to use the
+`get_schema_view()` function.
 
-    router = DefaultRouter(schema_title='Server Monitoring API')
+    schema_view = get_schema_view(title="Server Monitoring API")
 
-The schema will be included at the root URL, `/`, and presented to clients
-that include the Core JSON media type in their `Accept` header.
+    urlpatterns = [
+        url('^$', schema_view),
+        ...
+    ]
+
+Once the view has been added, you'll be able to make API requests to retrieve
+the auto-generated schema definition.
 
     $ http http://127.0.0.1:8000/ Accept:application/vnd.coreapi+json
     HTTP/1.0 200 OK
@@ -125,48 +130,43 @@ that include the Core JSON media type in their `Accept` header.
         ...
     }
 
-This is a great zero-configuration option for when you want to get up and
-running really quickly.
+The arguments to `get_schema_view()` are:
 
-The other available options to `DefaultRouter` are:
+#### `title`
 
-#### schema_renderers
+May be used to provide a descriptive title for the schema definition.
 
-May be used to pass the set of renderer classes that can be used to render schema output.
+#### `url`
+
+May be used to pass a canonical URL for the schema.
+
+    schema_view = get_schema_view(
+        title='Server Monitoring API',
+        url='https://www.example.org/api/'
+    )
+
+#### `renderer_classes`
+
+May be used to pass the set of renderer classes that can be used to render the API root endpoint.
 
     from rest_framework.renderers import CoreJSONRenderer
     from my_custom_package import APIBlueprintRenderer
 
-    router = DefaultRouter(schema_title='Server Monitoring API', schema_renderers=[
-        CoreJSONRenderer, APIBlueprintRenderer
-    ])
-
-#### schema_url
-
-May be used to pass the root URL for the schema. This can either be used to ensure that
-the schema URLs include a canonical hostname and schema, or to ensure that all the
-schema URLs include a path prefix.
-
-    router = DefaultRouter(
-        schema_title='Server Monitoring API',
-        schema_url='https://www.example.org/api/'
+    schema_view = get_schema_view(
+        title='Server Monitoring API',
+        url='https://www.example.org/api/',
+        renderer_classes=[CoreJSONRenderer, APIBlueprintRenderer]
     )
 
-If you want more flexibility over the schema output then you'll need to consider
-using `SchemaGenerator` instead.
+## Using an explicit schema view
 
-#### root_renderers
-
-May be used to pass the set of renderer classes that can be used to render the API root endpoint.
-
-## Using SchemaGenerator
-
-The most common way to add a schema to your API is to use the `SchemaGenerator`
-class to auto-generate the `Document` instance, and to return that from a view.
+If you need a little more control than the `get_schema_view()` shortcut gives you,
+then you can use the `SchemaGenerator` class directly to auto-generate the
+`Document` instance, and to return that from a view.
 
 This option gives you the flexibility of setting up the schema endpoint
-with whatever behavior you want. For example, you can apply different
-permission, throttling or authentication policies to the schema endpoint.
+with whatever behaviour you want. For example, you can apply different
+permission, throttling, or authentication policies to the schema endpoint.
 
 Here's an example of using `SchemaGenerator` together with a view to
 return the schema.
@@ -176,12 +176,13 @@ return the schema.
     from rest_framework.decorators import api_view, renderer_classes
     from rest_framework import renderers, response, schemas
 
+    generator = schemas.SchemaGenerator(title='Bookings API')
 
     @api_view()
     @renderer_classes([renderers.CoreJSONRenderer])
     def schema_view(request):
-        generator = schemas.SchemaGenerator(title='Bookings API')
-        return response.Response(generator.get_schema())
+        schema = generator.get_schema(request)
+        return response.Response(schema)
 
 **urls.py:**
 
@@ -238,6 +239,69 @@ You could then either:
 * Write a schema definition as a static file, and [serve the static file directly][static-files].
 * Write a schema definition that is loaded using `Core API`, and then
   rendered to one of many available formats, depending on the client request.
+
+---
+
+# Schemas as documentation
+
+One common usage of API schemas is to use them to build documentation pages.
+
+The schema generation in REST framework uses docstrings to automatically
+populate descriptions in the schema document.
+
+These descriptions will be based on:
+
+* The corresponding method docstring if one exists.
+* A named section within the class docstring, which can be either single line or multi-line.
+* The class docstring.
+
+## Examples
+
+An `APIView`, with an explicit method docstring.
+
+    class ListUsernames(APIView):
+        def get(self, request):
+            """
+            Return a list of all user names in the system.
+            """
+            usernames = [user.username for user in User.objects.all()]
+            return Response(usernames)
+
+A `ViewSet`, with an explict action docstring.
+
+    class ListUsernames(ViewSet):
+        def list(self, request):
+            """
+            Return a list of all user names in the system.
+            """
+            usernames = [user.username for user in User.objects.all()]
+            return Response(usernames)
+
+A generic view with sections in the class docstring, using single-line style.
+
+    class UserList(generics.ListCreateAPIView):
+        """
+        get: Create a new user.
+        post: List all the users.
+        """
+        queryset = User.objects.all()
+        serializer_class = UserSerializer
+        permission_classes = (IsAdminUser,)
+
+A generic viewset with sections in the class docstring, using multi-line style.
+
+    class UserViewSet(viewsets.ModelViewSet):
+        """
+        API endpoint that allows users to be viewed or edited.
+
+        retrieve:
+        Return a user instance.
+
+        list:
+        Return all users, ordered by most recently joined.
+        """
+        queryset = User.objects.all().order_by('-date_joined')
+        serializer_class = UserSerializer
 
 ---
 

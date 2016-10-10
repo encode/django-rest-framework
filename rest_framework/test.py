@@ -4,7 +4,11 @@
 # to make it harder for the user to import the wrong thing without realizing.
 from __future__ import unicode_literals
 
+import io
+
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
+from django.core.handlers.wsgi import WSGIHandler
 from django.test import testcases
 from django.test.client import Client as DjangoClient
 from django.test.client import RequestFactory as DjangoRequestFactory
@@ -13,12 +17,135 @@ from django.utils import six
 from django.utils.encoding import force_bytes
 from django.utils.http import urlencode
 
+from rest_framework.compat import coreapi, requests
 from rest_framework.settings import api_settings
 
 
 def force_authenticate(request, user=None, token=None):
     request._force_auth_user = user
     request._force_auth_token = token
+
+
+if requests is not None:
+    class HeaderDict(requests.packages.urllib3._collections.HTTPHeaderDict):
+        def get_all(self, key, default):
+            return self.getheaders(key)
+
+    class MockOriginalResponse(object):
+        def __init__(self, headers):
+            self.msg = HeaderDict(headers)
+            self.closed = False
+
+        def isclosed(self):
+            return self.closed
+
+        def close(self):
+            self.closed = True
+
+    class DjangoTestAdapter(requests.adapters.HTTPAdapter):
+        """
+        A transport adapter for `requests`, that makes requests via the
+        Django WSGI app, rather than making actual HTTP requests over the network.
+        """
+        def __init__(self):
+            self.app = WSGIHandler()
+            self.factory = DjangoRequestFactory()
+
+        def get_environ(self, request):
+            """
+            Given a `requests.PreparedRequest` instance, return a WSGI environ dict.
+            """
+            method = request.method
+            url = request.url
+            kwargs = {}
+
+            # Set request content, if any exists.
+            if request.body is not None:
+                if hasattr(request.body, 'read'):
+                    kwargs['data'] = request.body.read()
+                else:
+                    kwargs['data'] = request.body
+            if 'content-type' in request.headers:
+                kwargs['content_type'] = request.headers['content-type']
+
+            # Set request headers.
+            for key, value in request.headers.items():
+                key = key.upper()
+                if key in ('CONNECTION', 'CONTENT-LENGTH', 'CONTENT-TYPE'):
+                    continue
+                kwargs['HTTP_%s' % key.replace('-', '_')] = value
+
+            return self.factory.generic(method, url, **kwargs).environ
+
+        def send(self, request, *args, **kwargs):
+            """
+            Make an outgoing request to the Django WSGI application.
+            """
+            raw_kwargs = {}
+
+            def start_response(wsgi_status, wsgi_headers):
+                status, _, reason = wsgi_status.partition(' ')
+                raw_kwargs['status'] = int(status)
+                raw_kwargs['reason'] = reason
+                raw_kwargs['headers'] = wsgi_headers
+                raw_kwargs['version'] = 11
+                raw_kwargs['preload_content'] = False
+                raw_kwargs['original_response'] = MockOriginalResponse(wsgi_headers)
+
+            # Make the outgoing request via WSGI.
+            environ = self.get_environ(request)
+            wsgi_response = self.app(environ, start_response)
+
+            # Build the underlying urllib3.HTTPResponse
+            raw_kwargs['body'] = io.BytesIO(b''.join(wsgi_response))
+            raw = requests.packages.urllib3.HTTPResponse(**raw_kwargs)
+
+            # Build the requests.Response
+            return self.build_response(request, raw)
+
+        def close(self):
+            pass
+
+    class NoExternalRequestsAdapter(requests.adapters.HTTPAdapter):
+        def send(self, request, *args, **kwargs):
+            msg = (
+                'RequestsClient refusing to make an outgoing network request '
+                'to "%s". Only "testserver" or hostnames in your ALLOWED_HOSTS '
+                'setting are valid.' % request.url
+            )
+            raise RuntimeError(msg)
+
+    class RequestsClient(requests.Session):
+        def __init__(self, *args, **kwargs):
+            super(RequestsClient, self).__init__(*args, **kwargs)
+            adapter = DjangoTestAdapter()
+            self.mount('http://', adapter)
+            self.mount('https://', adapter)
+
+        def request(self, method, url, *args, **kwargs):
+            if ':' not in url:
+                raise ValueError('Missing "http:" or "https:". Use a fully qualified URL, eg "http://testserver%s"' % url)
+            return super(RequestsClient, self).request(method, url, *args, **kwargs)
+
+else:
+    def RequestsClient(*args, **kwargs):
+        raise ImproperlyConfigured('requests must be installed in order to use RequestsClient.')
+
+
+if coreapi is not None:
+    class CoreAPIClient(coreapi.Client):
+        def __init__(self, *args, **kwargs):
+            self._session = RequestsClient()
+            kwargs['transports'] = [coreapi.transports.HTTPTransport(session=self.session)]
+            return super(CoreAPIClient, self).__init__(*args, **kwargs)
+
+        @property
+        def session(self):
+            return self._session
+
+else:
+    def CoreAPIClient(*args, **kwargs):
+        raise ImproperlyConfigured('coreapi must be installed in order to use CoreAPIClient.')
 
 
 class APIRequestFactory(DjangoRequestFactory):

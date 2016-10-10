@@ -16,7 +16,7 @@ from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import (
-    crispy_forms, distinct, django_filters, guardian, template_render
+    coreapi, crispy_forms, distinct, django_filters, guardian, template_render
 )
 from rest_framework.settings import api_settings
 
@@ -72,7 +72,8 @@ class BaseFilterBackend(object):
         """
         raise NotImplementedError(".filter_queryset() must be overridden.")
 
-    def get_fields(self, view):
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         return []
 
 
@@ -131,14 +132,21 @@ class DjangoFilterBackend(BaseFilterBackend):
         template = loader.get_template(self.template)
         return template_render(template, context)
 
-    def get_fields(self, view):
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         filter_class = getattr(view, 'filter_class', None)
         if filter_class:
-            return list(filter_class().filters.keys())
+            return [
+                coreapi.Field(name=field_name, required=False, location='query')
+                for field_name in filter_class().filters.keys()
+            ]
 
         filter_fields = getattr(view, 'filter_fields', None)
         if filter_fields:
-            return filter_fields
+            return [
+                coreapi.Field(name=field_name, required=False, location='query')
+                for field_name in filter_fields
+            ]
 
         return []
 
@@ -231,8 +239,9 @@ class SearchFilter(BaseFilterBackend):
         template = loader.get_template(self.template)
         return template_render(template, context)
 
-    def get_fields(self, view):
-        return [self.search_param]
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        return [coreapi.Field(name=self.search_param, required=False, location='query')]
 
 
 class OrderingFilter(BaseFilterBackend):
@@ -348,8 +357,9 @@ class OrderingFilter(BaseFilterBackend):
         context = self.get_template_context(request, queryset, view)
         return template_render(template, context)
 
-    def get_fields(self, view):
-        return [self.ordering_param]
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        return [coreapi.Field(name=self.ordering_param, required=False, location='query')]
 
 
 class DjangoObjectPermissionsFilter(BaseFilterBackend):
