@@ -36,27 +36,27 @@ So far, so good.  It looks pretty similar to the previous case, but we've got be
         """
         Retrieve, update or delete a snippet instance.
         """
-        def get_object(self, pk):
+        def get_object(self, id):
             try:
-                return Snippet.objects.get(pk=pk)
+                return Snippet.objects.get(id=id)
             except Snippet.DoesNotExist:
                 raise Http404
 
-        def get(self, request, pk, format=None):
-            snippet = self.get_object(pk)
+        def get(self, request, id, format=None):
+            snippet = self.get_object(id)
             serializer = SnippetSerializer(snippet)
             return Response(serializer.data)
 
-        def put(self, request, pk, format=None):
-            snippet = self.get_object(pk)
+        def put(self, request, id, format=None):
+            snippet = self.get_object(id)
             serializer = SnippetSerializer(snippet, data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        def delete(self, request, pk, format=None):
-            snippet = self.get_object(pk)
+        def delete(self, request, id, format=None):
+            snippet = self.get_object(id)
             snippet.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -70,7 +70,7 @@ We'll also need to refactor our `urls.py` slightly now we're using class-based v
 
     urlpatterns = [
         url(r'^snippets/$', views.SnippetList.as_view()),
-        url(r'^snippets/(?P<pk>[0-9]+)/$', views.SnippetDetail.as_view()),
+        url(r'^snippets/(?P<id>[0-9]+)/$', views.SnippetDetail.as_view()),
     ]
 
     urlpatterns = format_suffix_patterns(urlpatterns)

@@ -115,6 +115,13 @@ DEFAULTS = {
     # Browseable API
     'HTML_SELECT_CUTOFF': 1000,
     'HTML_SELECT_CUTOFF_TEXT': "More than {count} items...",
+
+    # Schemas
+    'SCHEMA_COERCE_PATH_PK': True,
+    'SCHEMA_COERCE_METHOD_NAMES': {
+        'retrieve': 'read',
+        'destroy': 'delete'
+    },
 }
 
 

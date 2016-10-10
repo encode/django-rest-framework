@@ -104,12 +104,12 @@ class TestRouterGeneratedSchema(TestCase):
                         action='get'
                     ),
                     'custom_list_action_multiple_methods': {
-                        'retrieve': coreapi.Link(
+                        'read': coreapi.Link(
                             url='/example/custom_list_action_multiple_methods/',
                             action='get'
                         )
                     },
-                    'retrieve': coreapi.Link(
+                    'read': coreapi.Link(
                         url='/example/{id}/',
                         action='get',
                         fields=[
@@ -148,7 +148,7 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('b', required=False, location='form', type='string')
                         ]
                     ),
-                    'retrieve': coreapi.Link(
+                    'read': coreapi.Link(
                         url='/example/{id}/',
                         action='get',
                         fields=[
@@ -171,7 +171,7 @@ class TestRouterGeneratedSchema(TestCase):
                         action='get'
                     ),
                     'custom_list_action_multiple_methods': {
-                        'retrieve': coreapi.Link(
+                        'read': coreapi.Link(
                             url='/example/custom_list_action_multiple_methods/',
                             action='get'
                         ),
@@ -200,7 +200,7 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('b', required=False, location='form', type='string')
                         ]
                     ),
-                    'destroy': coreapi.Link(
+                    'delete': coreapi.Link(
                         url='/example/{id}/',
                         action='delete',
                         fields=[
@@ -260,7 +260,7 @@ class TestSchemaGenerator(TestCase):
                         action='get',
                         fields=[]
                     ),
-                    'retrieve': coreapi.Link(
+                    'read': coreapi.Link(
                         url='/example/{id}/',
                         action='get',
                         fields=[
@@ -313,7 +313,7 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
                         action='get',
                         fields=[]
                     ),
-                    'retrieve': coreapi.Link(
+                    'read': coreapi.Link(
                         url='/api/v1/example/{id}/',
                         action='get',
                         fields=[

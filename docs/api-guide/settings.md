@@ -234,6 +234,28 @@ Default:
 
 ---
 
+## Schema generation controls
+
+#### SCHEMA_COERCE_PATH_PK
+
+If set, this maps the `'pk'` identifier in the URL conf onto the actual field
+name when generating a schema path parameter. Typically this will be `'id'`.
+This gives a more suitable representation as "primary key" is an implementation
+detail, wheras "identifier" is a more general concept.
+
+Default: `True`
+
+#### SCHEMA_COERCE_METHOD_NAMES
+
+If set, this is used to map internal viewset method names onto external action
+names used in the schema generation. This allows us to generate names that
+are more suitable for an external representation than those that are used
+internally in the codebase.
+
+Default: `{'retrieve': 'read', 'destroy': 'delete'}`
+
+---
+
 ## Content type controls
 
 #### URL_FORMAT_OVERRIDE

@@ -194,7 +194,7 @@ class EndpointInspector(object):
 
 
 class SchemaGenerator(object):
-    # Map methods onto 'actions' that are the names used in the link layout.
+    # Map HTTP methods onto actions.
     default_mapping = {
         'get': 'retrieve',
         'post': 'create',
@@ -203,15 +203,25 @@ class SchemaGenerator(object):
         'delete': 'destroy',
     }
     endpoint_inspector_cls = EndpointInspector
+
+    # Map the method names we use for viewset actions onto external schema names.
+    # These give us names that are more suitable for the external representation.
+    # Set by 'SCHEMA_COERCE_METHOD_NAMES'.
+    coerce_method_names = None
+
     # 'pk' isn't great as an externally exposed name for an identifier,
     # so by default we prefer to use the actual model field name for schemas.
-    coerce_pk = True
+    # Set by 'SCHEMA_COERCE_PATH_PK'.
+    coerce_path_pk = None
 
     def __init__(self, title=None, url=None, patterns=None, urlconf=None):
         assert coreapi, '`coreapi` must be installed for schema support.'
 
         if url and not url.endswith('/'):
             url += '/'
+
+        self.coerce_method_names = api_settings.SCHEMA_COERCE_METHOD_NAMES
+        self.coerce_path_pk = api_settings.SCHEMA_COERCE_PATH_PK
 
         self.patterns = patterns
         self.urlconf = urlconf
@@ -339,7 +349,7 @@ class SchemaGenerator(object):
         where possible. This is cleaner for an external representation.
         (Ie. "this is an identifier", not "this is a database primary key")
         """
-        if not self.coerce_pk or '{pk}' not in path:
+        if not self.coerce_path_pk or '{pk}' not in path:
             return path
         model = getattr(getattr(view, 'queryset', None), 'model', None)
         if model:
@@ -405,6 +415,9 @@ class SchemaGenerator(object):
         header = getattr(view, 'action', method.lower())
         if header in sections:
             return sections[header].strip()
+        if header in self.coerce_method_names:
+            if self.coerce_method_names[header] in sections:
+                return sections[self.coerce_method_names[header]].strip()
         return sections[''].strip()
 
     def get_encoding(self, path, method, view):
@@ -541,9 +554,14 @@ class SchemaGenerator(object):
             # Custom action, eg "/users/{pk}/activate/", "/users/active/"
             if len(view.action_map) > 1:
                 action = self.default_mapping[method.lower()]
+                if action in self.coerce_method_names:
+                    action = self.coerce_method_names[action]
                 return named_path_components + [action]
             else:
                 return named_path_components[:-1] + [action]
+
+        if action in self.coerce_method_names:
+            action = self.coerce_method_names[action]
 
         # Default action, eg "/users/", "/users/{pk}/"
         return named_path_components + [action]

@@ -66,12 +66,12 @@ Our instance view is an improvement over the previous example.  It's a little mo
 Here is the view for an individual snippet, in the `views.py` module.
 
     @api_view(['GET', 'PUT', 'DELETE'])
-    def snippet_detail(request, pk):
+    def snippet_detail(request, id):
         """
         Retrieve, update or delete a snippet instance.
         """
         try:
-            snippet = Snippet.objects.get(pk=pk)
+            snippet = Snippet.objects.get(id=id)
         except Snippet.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -104,7 +104,7 @@ Start by adding a `format` keyword argument to both of the views, like so.
 
 and
 
-    def snippet_detail(request, pk, format=None):
+    def snippet_detail(request, id, format=None):
 
 Now update the `urls.py` file slightly, to append a set of `format_suffix_patterns` in addition to the existing URLs.
 
@@ -114,7 +114,7 @@ Now update the `urls.py` file slightly, to append a set of `format_suffix_patter
 
     urlpatterns = [
         url(r'^snippets/$', views.snippet_list),
-        url(r'^snippets/(?P<pk>[0-9]+)$', views.snippet_detail),
+        url(r'^snippets/(?P<id>[0-9]+)$', views.snippet_detail),
     ]
 
     urlpatterns = format_suffix_patterns(urlpatterns)

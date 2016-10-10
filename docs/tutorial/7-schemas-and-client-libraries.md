@@ -101,13 +101,13 @@ First we'll load the API schema using the command line client.
     $ coreapi get http://127.0.0.1:8000/schema/
     <Pastebin API "http://127.0.0.1:8000/schema/">
         snippets: {
-            highlight(pk)
+            highlight(id)
             list()
-            retrieve(pk)
+            read(id)
         }
         users: {
             list()
-            retrieve(pk)
+            read(id)
         }
 
 We haven't authenticated yet, so right now we're only able to see the read only
@@ -119,7 +119,7 @@ Let's try listing the existing snippets, using the command line client:
     [
         {
             "url": "http://127.0.0.1:8000/snippets/1/",
-            "pk": 1,
+            "id": 1,
             "highlight": "http://127.0.0.1:8000/snippets/1/highlight/",
             "owner": "lucy",
             "title": "Example",
@@ -133,7 +133,7 @@ Let's try listing the existing snippets, using the command line client:
 Some of the API endpoints require named parameters. For example, to get back
 the highlight HTML for a particular snippet we need to provide an id.
 
-    $ coreapi action snippets highlight --param pk=1
+    $ coreapi action snippets highlight --param id=1
     <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 
     <html>
@@ -160,16 +160,16 @@ set of available interactions.
     Pastebin API "http://127.0.0.1:8000/schema/">
         snippets: {
             create(code, [title], [linenos], [language], [style])
-            destroy(pk)
-            highlight(pk)
+            delete(id)
+            highlight(id)
             list()
-            partial_update(pk, [title], [code], [linenos], [language], [style])
-            retrieve(pk)
-            update(pk, code, [title], [linenos], [language], [style])
+            partial_update(id, [title], [code], [linenos], [language], [style])
+            read(id)
+            update(id, code, [title], [linenos], [language], [style])
         }
         users: {
             list()
-            retrieve(pk)
+            read(id)
         }
 
 We're now able to interact with these endpoints. For example, to create a new
@@ -178,7 +178,7 @@ snippet:
     $ coreapi action snippets create --param title="Example" --param code="print('hello, world')"
     {
         "url": "http://127.0.0.1:8000/snippets/7/",
-        "pk": 7,
+        "id": 7,
         "highlight": "http://127.0.0.1:8000/snippets/7/highlight/",
         "owner": "lucy",
         "title": "Example",
@@ -190,7 +190,7 @@ snippet:
 
 And to delete a snippet:
 
-    $ coreapi action snippets destroy --param pk=7
+    $ coreapi action snippets delete --param id=7
 
 As well as the command line client, developers can also interact with your
 API using client libraries. The Python client library is the first of these

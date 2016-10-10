@@ -88,7 +88,7 @@ Make sure to also import the `UserSerializer` class
 Finally we need to add those views into the API, by referencing them from the URL conf. Add the following to the patterns in `urls.py`.
 
     url(r'^users/$', views.UserList.as_view()),
-    url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
+    url(r'^users/(?P<id>[0-9]+)/$', views.UserDetail.as_view()),
 
 ## Associating Snippets with Users
 
@@ -150,7 +150,7 @@ The `r'^api-auth/'` part of pattern can actually be whatever URL you want to use
 
 Now if you open up the browser again and refresh the page you'll see a 'Login' link in the top right of the page.  If you log in as one of the users you created earlier, you'll be able to create code snippets again.
 
-Once you've created a few code snippets, navigate to the '/users/' endpoint, and notice that the representation includes a list of the snippet pks that are associated with each user, in each user's 'snippets' field.
+Once you've created a few code snippets, navigate to the '/users/' endpoint, and notice that the representation includes a list of the snippet ids that are associated with each user, in each user's 'snippets' field.
 
 ## Object level permissions
 
