@@ -34,7 +34,7 @@ from rest_framework import ISO_8601
 from rest_framework.compat import (
     get_remote_field, unicode_repr, unicode_to_repr, value_from_object
 )
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, representation
 
@@ -222,6 +222,18 @@ def iter_options(grouped_choices, cutoff=None, cutoff_text=None):
     if cutoff and count >= cutoff and cutoff_text:
         cutoff_text = cutoff_text.format(count=cutoff)
         yield Option(value='n/a', display_text=cutoff_text, disabled=True)
+
+
+def get_error_detail(exc_info):
+    """
+    Given a Django ValidationError, return a list of ErrorDetail,
+    with the `code` populated.
+    """
+    code = getattr(exc_info, 'code', None) or 'invalid'
+    return [
+        ErrorDetail(msg, code=code)
+        for msg in exc_info.messages
+    ]
 
 
 class CreateOnlyDefault(object):
@@ -525,7 +537,7 @@ class Field(object):
                     raise
                 errors.extend(exc.detail)
             except DjangoValidationError as exc:
-                errors.extend(exc.messages)
+                errors.extend(get_error_detail(exc))
         if errors:
             raise ValidationError(errors)
 
@@ -563,7 +575,7 @@ class Field(object):
             msg = MISSING_ERROR_MESSAGE.format(class_name=class_name, key=key)
             raise AssertionError(msg)
         message_string = msg.format(**kwargs)
-        raise ValidationError(message_string)
+        raise ValidationError(message_string, code=key)
 
     @cached_property
     def root(self):

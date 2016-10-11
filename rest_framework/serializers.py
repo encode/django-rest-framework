@@ -291,32 +291,29 @@ class SerializerMetaclass(type):
         return super(SerializerMetaclass, cls).__new__(cls, name, bases, attrs)
 
 
-def get_validation_error_detail(exc):
+def as_serializer_error(exc):
     assert isinstance(exc, (ValidationError, DjangoValidationError))
 
     if isinstance(exc, DjangoValidationError):
-        # Normally you should raise `serializers.ValidationError`
-        # inside your codebase, but we handle Django's validation
-        # exception class as well for simpler compat.
-        # Eg. Calling Model.clean() explicitly inside Serializer.validate()
-        return {
-            api_settings.NON_FIELD_ERRORS_KEY: list(exc.messages)
-        }
-    elif isinstance(exc.detail, dict):
+        detail = get_error_detail(exc)
+    else:
+        detail = exc.detail
+
+    if isinstance(detail, dict):
         # If errors may be a dict we use the standard {key: list of values}.
         # Here we ensure that all the values are *lists* of errors.
         return {
             key: value if isinstance(value, (list, dict)) else [value]
-            for key, value in exc.detail.items()
+            for key, value in detail.items()
         }
-    elif isinstance(exc.detail, list):
+    elif isinstance(detail, list):
         # Errors raised as a list are non-field errors.
         return {
-            api_settings.NON_FIELD_ERRORS_KEY: exc.detail
+            api_settings.NON_FIELD_ERRORS_KEY: detail
         }
     # Errors raised as a string are non-field errors.
     return {
-        api_settings.NON_FIELD_ERRORS_KEY: [exc.detail]
+        api_settings.NON_FIELD_ERRORS_KEY: [detail]
     }
 
 
@@ -410,7 +407,7 @@ class Serializer(BaseSerializer):
             value = self.validate(value)
             assert value is not None, '.validate() should return the validated data'
         except (ValidationError, DjangoValidationError) as exc:
-            raise ValidationError(detail=get_validation_error_detail(exc))
+            raise ValidationError(detail=as_serializer_error(exc))
 
         return value
 
@@ -424,7 +421,7 @@ class Serializer(BaseSerializer):
             )
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
-            })
+            }, code='invalid')
 
         ret = OrderedDict()
         errors = OrderedDict()
@@ -440,7 +437,7 @@ class Serializer(BaseSerializer):
             except ValidationError as exc:
                 errors[field.field_name] = exc.detail
             except DjangoValidationError as exc:
-                errors[field.field_name] = list(exc.messages)
+                errors[field.field_name] = get_error_detail(exc)
             except SkipField:
                 pass
             else:
@@ -564,7 +561,7 @@ class ListSerializer(BaseSerializer):
             value = self.validate(value)
             assert value is not None, '.validate() should return the validated data'
         except (ValidationError, DjangoValidationError) as exc:
-            raise ValidationError(detail=get_validation_error_detail(exc))
+            raise ValidationError(detail=as_serializer_error(exc))
 
         return value
 
@@ -581,13 +578,13 @@ class ListSerializer(BaseSerializer):
             )
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
-            })
+            }, code='not_a_list')
 
         if not self.allow_empty and len(data) == 0:
             message = self.error_messages['empty']
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
-            })
+            }, code='empty')
 
         ret = []
         errors = []
