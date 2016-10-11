@@ -37,13 +37,20 @@ class Hyperlink(six.text_type):
     We use this for hyperlinked URLs that may render as a named link
     in some contexts, or render as a plain URL in others.
     """
-    def __new__(self, url, name):
+    def __new__(self, url, obj):
         ret = six.text_type.__new__(self, url)
-        ret.name = name
+        ret.obj = obj
         return ret
 
     def __getnewargs__(self):
         return(str(self), self.name,)
+
+    @property
+    def name(self):
+        # This ensures that we only called `__str__` lazily,
+        # as in some cases calling __str__ on a model instances *might*
+        # involve a database lookup.
+        return six.text_type(self.obj)
 
     is_hyperlink = True
 
@@ -303,9 +310,6 @@ class HyperlinkedRelatedField(RelatedField):
         kwargs = {self.lookup_url_kwarg: lookup_value}
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
 
-    def get_name(self, obj):
-        return six.text_type(obj)
-
     def to_internal_value(self, data):
         request = self.context.get('request', None)
         try:
@@ -384,8 +388,7 @@ class HyperlinkedRelatedField(RelatedField):
         if url is None:
             return None
 
-        name = self.get_name(value)
-        return Hyperlink(url, name)
+        return Hyperlink(url, value)
 
 
 class HyperlinkedIdentityField(HyperlinkedRelatedField):

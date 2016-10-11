@@ -135,7 +135,8 @@ def add_class(value, css_class):
 @register.filter
 def format_value(value):
     if getattr(value, 'is_hyperlink', False):
-        return mark_safe('<a href=%s>%s</a>' % (value, escape(value.name)))
+        name = six.text_type(value.obj)
+        return mark_safe('<a href=%s>%s</a>' % (value, escape(name)))
     if value is None or isinstance(value, bool):
         return mark_safe('<code>%s</code>' % {True: 'true', False: 'false', None: 'null'}[value])
     elif isinstance(value, list):
