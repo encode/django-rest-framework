@@ -119,7 +119,7 @@ The available attributes and methods are:
 
 * `.detail` - Return the textual description of the error.
 * `.get_codes()` - Return the code identifier of the error.
-* `.full_details()` - Retrun both the textual description and the code identifier.
+* `.full_details()` - Return both the textual description and the code identifier.
 
 In most cases the error detail will be a simple item:
 
