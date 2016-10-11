@@ -99,8 +99,8 @@ For example, the following serializer:
 Would serialize to a representation like this:
 
     {
-        'album_name': 'The Roots',
-        'artist': 'Undun',
+        'album_name': 'Undun',
+        'artist': 'The Roots',
         'tracks': [
             89,
             90,
