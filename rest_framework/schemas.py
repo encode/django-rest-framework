@@ -477,7 +477,7 @@ class SchemaGenerator(object):
             required = field.required and method != 'PATCH'
             description = force_text(field.help_text) if field.help_text else ''
             field = coreapi.Field(
-                name=field.source,
+                name=field.field_name,
                 location='form',
                 required=required,
                 description=description,
