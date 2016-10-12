@@ -290,9 +290,9 @@ class PageNumberPagination(BasePagination):
             coreapi.Field(name=self.page_query_param, required=False, location='query')
         ]
         if self.page_size_query_param is not None:
-            fields.append([
+            fields.append(
                 coreapi.Field(name=self.page_size_query_param, required=False, location='query')
-            ])
+            )
         return fields
 
 

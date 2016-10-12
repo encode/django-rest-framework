@@ -20,6 +20,7 @@ class MockUser(object):
 
 class ExamplePagination(pagination.PageNumberPagination):
     page_size = 100
+    page_size_query_param = 'page_size'
 
 
 class EmptySerializer(serializers.Serializer):
@@ -64,7 +65,6 @@ class ExampleViewSet(ModelViewSet):
         assert self.action
         return super(ExampleViewSet, self).get_serializer(*args, **kwargs)
 
-
 if coreapi:
     schema_view = get_schema_view(title='Example API')
 else:
@@ -96,6 +96,7 @@ class TestRouterGeneratedSchema(TestCase):
                         action='get',
                         fields=[
                             coreapi.Field('page', required=False, location='query'),
+                            coreapi.Field('page_size', required=False, location='query'),
                             coreapi.Field('ordering', required=False, location='query')
                         ]
                     ),
@@ -136,6 +137,7 @@ class TestRouterGeneratedSchema(TestCase):
                         action='get',
                         fields=[
                             coreapi.Field('page', required=False, location='query'),
+                            coreapi.Field('page_size', required=False, location='query'),
                             coreapi.Field('ordering', required=False, location='query')
                         ]
                     ),
