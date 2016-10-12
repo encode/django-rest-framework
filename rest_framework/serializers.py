@@ -507,6 +507,11 @@ class Serializer(BaseSerializer):
     @property
     def errors(self):
         ret = super(Serializer, self).errors
+        if isinstance(ret, list) and len(ret) == 1 and ret[0].code == 'null':
+            # Edge case. Provide a more descriptive error than
+            # "this field may not be null", when no data is passed.
+            detail = ErrorDetail('No data provided', code='null')
+            ret = {api_settings.NON_FIELD_ERRORS_KEY: [detail]}
         return ReturnDict(ret, serializer=self)
 
 
@@ -700,6 +705,11 @@ class ListSerializer(BaseSerializer):
     @property
     def errors(self):
         ret = super(ListSerializer, self).errors
+        if isinstance(ret, list) and len(ret) == 1 and ret[0].code == 'null':
+            # Edge case. Provide a more descriptive error than
+            # "this field may not be null", when no data is passed.
+            detail = ErrorDetail('No data provided', code='null')
+            ret = {api_settings.NON_FIELD_ERRORS_KEY: [detail]}
         if isinstance(ret, dict):
             return ReturnDict(ret, serializer=self)
         return ReturnList(ret, serializer=self)
