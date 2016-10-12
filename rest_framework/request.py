@@ -300,7 +300,7 @@ class Request(object):
 
         if stream is None or media_type is None:
             if media_type and not is_form_media_type(media_type):
-                empty_data = MultiValueDict()
+                empty_data = QueryDict('', encoding=self._request._encoding)
             else:
                 empty_data = {}
             empty_files = MultiValueDict()
