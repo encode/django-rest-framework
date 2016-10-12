@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.test import TestCase, override_settings
 
+from rest_framework import fields, serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.test import (
@@ -37,10 +38,22 @@ def redirect_view(request):
     return redirect('/view/')
 
 
+class BasicSerializer(serializers.Serializer):
+    flag = fields.BooleanField(default=lambda: True)
+
+
+@api_view(['POST'])
+def post_view(request):
+    serializer = BasicSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    return Response(serializer.validated_data)
+
+
 urlpatterns = [
     url(r'^view/$', view),
     url(r'^session-view/$', session_view),
     url(r'^redirect-view/$', redirect_view),
+    url(r'^post-view/$', post_view)
 ]
 
 
@@ -180,6 +193,15 @@ class TestAPITestClient(TestCase):
             AssertionError, self.client.post,
             path='/view/', data={'valid': 123, 'invalid': {'a': 123}}
         )
+
+    def test_empty_post_uses_default_boolean_value(self):
+        response = self.client.post(
+            '/post-view/',
+            data=None,
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(response.data, {"flag": True})
 
 
 class TestAPIRequestFactory(TestCase):
