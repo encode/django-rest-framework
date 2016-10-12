@@ -201,7 +201,7 @@ class TestAPITestClient(TestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200, response.content)
-        self.assertEqual('{"flag":true}', response.content)
+        self.assertEqual(response.data, {"flag": True})
 
 
 class TestAPIRequestFactory(TestCase):
