@@ -89,6 +89,15 @@ class ChoicesModel(models.Model):
     choices_field_with_nonstandard_args = models.DecimalField(max_digits=3, decimal_places=1, choices=DECIMAL_CHOICES, verbose_name='A label')
 
 
+class Issue3674ParentModel(models.Model):
+    title = models.CharField(max_length=64)
+
+
+class Issue3674ChildModel(models.Model):
+    parent = models.ForeignKey(Issue3674ParentModel, related_name='children')
+    value = models.CharField(primary_key=True, max_length=64)
+
+
 class TestModelSerializer(TestCase):
     def test_create_method(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -996,3 +1005,62 @@ class TestUniquenessOverride(TestCase):
         fields = TestSerializer().fields
         self.assertFalse(fields['field_1'].required)
         self.assertTrue(fields['field_2'].required)
+
+
+class Issue3674Test(TestCase):
+    def test_nonPK_foreignkey_model_serializer(self):
+        class TestParentModel(models.Model):
+            title = models.CharField(max_length=64)
+
+        class TestChildModel(models.Model):
+            parent = models.ForeignKey(TestParentModel, related_name='children')
+            value = models.CharField(primary_key=True, max_length=64)
+
+        class TestChildModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = TestChildModel
+                fields = ('value', 'parent')
+
+        class TestParentModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = TestParentModel
+                fields = ('id', 'title', 'children')
+
+        parent_expected = dedent("""
+            TestParentModelSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                title = CharField(max_length=64)
+                children = PrimaryKeyRelatedField(many=True, queryset=TestChildModel.objects.all())
+        """)
+        self.assertEqual(unicode_repr(TestParentModelSerializer()), parent_expected)
+
+        child_expected = dedent("""
+            TestChildModelSerializer():
+                value = CharField(max_length=64, validators=[<UniqueValidator(queryset=TestChildModel.objects.all())>])
+                parent = PrimaryKeyRelatedField(queryset=TestParentModel.objects.all())
+        """)
+        self.assertEqual(unicode_repr(TestChildModelSerializer()), child_expected)
+
+    def test_nonID_PK_foreignkey_model_serializer(self):
+
+        class TestChildModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Issue3674ChildModel
+                fields = ('value', 'parent')
+
+        class TestParentModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Issue3674ParentModel
+                fields = ('id', 'title', 'children')
+
+        parent = Issue3674ParentModel.objects.create(title='abc')
+        child = Issue3674ChildModel.objects.create(value='def', parent=parent)
+
+        parent_serializer = TestParentModelSerializer(parent)
+        child_serializer = TestChildModelSerializer(child)
+
+        parent_expected = {'children': ['def'], 'id': 1, 'title': 'abc'}
+        self.assertEqual(parent_serializer.data, parent_expected)
+
+        child_expected = {'parent': 1, 'value': 'def'}
+        self.assertEqual(child_serializer.data, child_expected)
