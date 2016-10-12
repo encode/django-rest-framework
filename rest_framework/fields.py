@@ -1594,9 +1594,21 @@ class JSONField(Field):
         self.binary = kwargs.pop('binary', False)
         super(JSONField, self).__init__(*args, **kwargs)
 
+    def get_value(self, dictionary):
+        if html.is_html_input(dictionary) and self.field_name in dictionary:
+            # When HTML form input is used, mark up the input
+            # as being a JSON string, rather than a JSON primative.
+            class JSONString(six.text_type):
+                def __new__(self, value):
+                    ret = six.text_type.__new__(self, value)
+                    ret.is_json_string = True
+                    return ret
+            return JSONString(dictionary[self.field_name])
+        return dictionary.get(self.field_name, empty)
+
     def to_internal_value(self, data):
         try:
-            if self.binary:
+            if self.binary or getattr(data, 'is_json_string', False):
                 if isinstance(data, six.binary_type):
                     data = data.decode('utf-8')
                 return json.loads(data)
