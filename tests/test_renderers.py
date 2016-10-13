@@ -360,6 +360,10 @@ class JSONRendererTests(TestCase):
         content = renderer.render(obj, 'application/json; indent=2')
         self.assertEqual(strip_trailing_whitespace(content.decode('utf-8')), _indented_repr)
 
+    def test_none(self):
+        ret = JSONRenderer().render(None)
+        self.assertEqual(None, json.loads(ret))
+
 
 class UnicodeJSONRendererTests(TestCase):
     """
