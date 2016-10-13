@@ -6,7 +6,6 @@
 # only included the relevent sets when running tox, and ensures
 # we are only ever declaring our dependencies in one place.
 
--r requirements/requirements-necessary.txt
 -r requirements/requirements-optionals.txt
 -r requirements/requirements-testing.txt
 -r requirements/requirements-documentation.txt
