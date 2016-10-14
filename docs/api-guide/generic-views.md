@@ -220,8 +220,6 @@ Also provides a `.partial_update(request, *args, **kwargs)` method, which is sim
 
 If an object is updated this returns a `200 OK` response, with a serialized representation of the object as the body of the response.
 
-If an object is created, for example when making a `DELETE` request followed by a `PUT` request to the same URL, this returns a `201 Created` response, with a serialized representation of the object as the body of the response.
-
 If the request data provided for updating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
 
 ## DestroyModelMixin
