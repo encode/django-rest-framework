@@ -61,6 +61,7 @@ To run the tests, clone the repository, and then:
     # Setup the virtual environment
     virtualenv env
     source env/bin/activate
+    pip install django
     pip install -r requirements.txt
 
     # Run the tests
