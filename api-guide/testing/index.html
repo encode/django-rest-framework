@@ -404,6 +404,34 @@
                   
                 
                   <li class="main">
+                    <a href="#requestsclient">RequestsClient</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#headers-authentication">Headers &amp; Authentication</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#csrf">CSRF</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#live-tests">Live tests</a>
+                    </li>
+                  
+                
+                  <li class="main">
+                    <a href="#coreapiclient">CoreAPIClient</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#headers-authentication_1">Headers &amp; Authentication</a>
+                    </li>
+                  
+                
+                  <li class="main">
                     <a href="#test-cases">Test cases</a>
                   </li>
 
@@ -593,6 +621,80 @@ client.force_authenticate(user=user)
 </code></pre>
 <p>As usual CSRF validation will only apply to any session authenticated views.  This means CSRF validation will only occur if the client has been logged in by calling <code>login()</code>.</p>
 <hr />
+<h1 id="requestsclient"><a class="toclink" href="#requestsclient">RequestsClient</a></h1>
+<p>REST framework also includes a client for interacting with your application
+using the popular Python library, <code>requests</code>.</p>
+<p>This exposes exactly the same interface as if you were using a requests session
+directly.</p>
+<pre><code>client = RequestsClient()
+response = client.get('http://testserver/users/')
+</code></pre>
+<p>Note that the requests client requires you to pass fully qualified URLs.</p>
+<h2 id="headers-authentication"><a class="toclink" href="#headers-authentication">Headers &amp; Authentication</a></h2>
+<p>Custom headers and authentication credentials can be provided in the same way
+as <a href="http://docs.python-requests.org/en/master/user/advanced/#session-objects">when using a standard <code>requests.Session</code> instance</a>.</p>
+<pre><code>from requests.auth import HTTPBasicAuth
+
+client.auth = HTTPBasicAuth('user', 'pass')
+client.headers.update({'x-test': 'true'})
+</code></pre>
+<h2 id="csrf"><a class="toclink" href="#csrf">CSRF</a></h2>
+<p>If you're using <code>SessionAuthentication</code> then you'll need to include a CSRF token
+for any <code>POST</code>, <code>PUT</code>, <code>PATCH</code> or <code>DELETE</code> requests.</p>
+<p>You can do so by following the same flow that a JavaScript based client would use.
+First make a <code>GET</code> request in order to obtain a CRSF token, then present that
+token in the following request.</p>
+<p>For example...</p>
+<pre><code>client = RequestsClient()
+
+# Obtain a CSRF token.
+response = client.get('/homepage/')
+assert response.status_code == 200
+csrftoken = response.cookies['csrftoken']
+
+# Interact with the API.
+response = client.post('/organisations/', json={
+    'name': 'MegaCorp',
+    'status': 'active'
+}, headers={'X-CSRFToken': csrftoken})
+assert response.status_code == 200
+</code></pre>
+<h2 id="live-tests"><a class="toclink" href="#live-tests">Live tests</a></h2>
+<p>With careful usage both the <code>RequestsClient</code> and the <code>CoreAPIClient</code> provide
+the ability to write test cases that can run either in development, or be run
+directly against your staging server or production environment.</p>
+<p>Using this style to create basic tests of a few core piece of functionality is
+a powerful way to validate your live service. Doing so may require some careful
+attention to setup and teardown to ensure that the tests run in a way that they
+do not directly affect customer data.</p>
+<hr />
+<h1 id="coreapiclient"><a class="toclink" href="#coreapiclient">CoreAPIClient</a></h1>
+<p>The CoreAPIClient allows you to interact with your API using the Python
+<code>coreapi</code> client library.</p>
+<pre><code># Fetch the API schema
+url = reverse('schema')
+client = CoreAPIClient()
+schema = client.get(url)
+
+# Create a new organisation
+params = {'name': 'MegaCorp', 'status': 'active'}
+client.action(schema, ['organisations', 'create'], params)
+
+# Ensure that the organisation exists in the listing
+data = client.action(schema, ['organisations', 'list'])
+assert(len(data) == 1)
+assert(data == [{'name': 'MegaCorp', 'status': 'active'}])
+</code></pre>
+<h2 id="headers-authentication_1"><a class="toclink" href="#headers-authentication_1">Headers &amp; Authentication</a></h2>
+<p>Custom headers and authentication may be used with <code>CoreAPIClient</code> in a
+similar way as with <code>RequestsClient</code>.</p>
+<pre><code>from requests.auth import HTTPBasicAuth
+
+client = CoreAPIClient()
+client.session.auth = HTTPBasicAuth('user', 'pass')
+client.session.headers.update({'x-test': 'true'})
+</code></pre>
+<hr />
 <h1 id="test-cases"><a class="toclink" href="#test-cases">Test cases</a></h1>
 <p>REST framework includes the following test case classes, that mirror the existing Django test case classes, but use <code>APIClient</code> instead of Django's default <code>Client</code>.</p>
 <ul>
@@ -603,7 +705,7 @@ client.force_authenticate(user=user)
 </ul>
 <h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>You can use any of REST framework's test case classes as you would for the regular Django test case classes.  The <code>self.client</code> attribute will be an <code>APIClient</code> instance.</p>
-<pre><code>from django.core.urlresolvers import reverse
+<pre><code>from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from myproject.apps.core.models import Account

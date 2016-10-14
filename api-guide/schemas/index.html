@@ -385,11 +385,11 @@
 
                   
                     <li>
-                      <a href="#using-defaultrouter">Using DefaultRouter</a>
+                      <a href="#the-get_schema_view-shortcut">The get_schema_view shortcut</a>
                     </li>
                   
                     <li>
-                      <a href="#using-schemagenerator">Using SchemaGenerator</a>
+                      <a href="#using-an-explicit-schema-view">Using an explicit schema view</a>
                     </li>
                   
                     <li>
@@ -398,6 +398,16 @@
                   
                     <li>
                       <a href="#static-schema-file">Static schema file</a>
+                    </li>
+                  
+                
+                  <li class="main">
+                    <a href="#schemas-as-documentation">Schemas as documentation</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#examples">Examples</a>
                     </li>
                   
                 
@@ -528,13 +538,18 @@ for REST framework.</p>
 <p>REST framework includes functionality for auto-generating a schema,
 or allows you to specify one explicitly. There are a few different ways to
 add a schema to your API, depending on exactly what you need.</p>
-<h2 id="using-defaultrouter"><a class="toclink" href="#using-defaultrouter">Using DefaultRouter</a></h2>
-<p>If you're using <code>DefaultRouter</code> then you can include an auto-generated schema,
-simply by adding a <code>schema_title</code> argument to the router.</p>
-<pre><code>router = DefaultRouter(schema_title='Server Monitoring API')
+<h2 id="the-get_schema_view-shortcut"><a class="toclink" href="#the-get_schema_view-shortcut">The get_schema_view shortcut</a></h2>
+<p>The simplest way to include a schema in your project is to use the
+<code>get_schema_view()</code> function.</p>
+<pre><code>schema_view = get_schema_view(title="Server Monitoring API")
+
+urlpatterns = [
+    url('^$', schema_view),
+    ...
+]
 </code></pre>
-<p>The schema will be included at the root URL, <code>/</code>, and presented to clients
-that include the Core JSON media type in their <code>Accept</code> header.</p>
+<p>Once the view has been added, you'll be able to make API requests to retrieve
+the auto-generated schema definition.</p>
 <pre><code>$ http http://127.0.0.1:8000/ Accept:application/vnd.coreapi+json
 HTTP/1.0 200 OK
 Allow: GET, HEAD, OPTIONS
@@ -548,49 +563,47 @@ Content-Type: application/vnd.coreapi+json
     ...
 }
 </code></pre>
-<p>This is a great zero-configuration option for when you want to get up and
-running really quickly.</p>
-<p>The other available options to <code>DefaultRouter</code> are:</p>
-<h4 id="schema_renderers"><a class="toclink" href="#schema_renderers">schema_renderers</a></h4>
-<p>May be used to pass the set of renderer classes that can be used to render schema output.</p>
+<p>The arguments to <code>get_schema_view()</code> are:</p>
+<h4 id="title"><a class="toclink" href="#title"><code>title</code></a></h4>
+<p>May be used to provide a descriptive title for the schema definition.</p>
+<h4 id="url"><a class="toclink" href="#url"><code>url</code></a></h4>
+<p>May be used to pass a canonical URL for the schema.</p>
+<pre><code>schema_view = get_schema_view(
+    title='Server Monitoring API',
+    url='https://www.example.org/api/'
+)
+</code></pre>
+<h4 id="renderer_classes"><a class="toclink" href="#renderer_classes"><code>renderer_classes</code></a></h4>
+<p>May be used to pass the set of renderer classes that can be used to render the API root endpoint.</p>
 <pre><code>from rest_framework.renderers import CoreJSONRenderer
 from my_custom_package import APIBlueprintRenderer
 
-router = DefaultRouter(schema_title='Server Monitoring API', schema_renderers=[
-    CoreJSONRenderer, APIBlueprintRenderer
-])
-</code></pre>
-<h4 id="schema_url"><a class="toclink" href="#schema_url">schema_url</a></h4>
-<p>May be used to pass the root URL for the schema. This can either be used to ensure that
-the schema URLs include a canonical hostname and schema, or to ensure that all the
-schema URLs include a path prefix.</p>
-<pre><code>router = DefaultRouter(
-    schema_title='Server Monitoring API',
-    schema_url='https://www.example.org/api/'
+schema_view = get_schema_view(
+    title='Server Monitoring API',
+    url='https://www.example.org/api/',
+    renderer_classes=[CoreJSONRenderer, APIBlueprintRenderer]
 )
 </code></pre>
-<p>If you want more flexibility over the schema output then you'll need to consider
-using <code>SchemaGenerator</code> instead.</p>
-<h4 id="root_renderers"><a class="toclink" href="#root_renderers">root_renderers</a></h4>
-<p>May be used to pass the set of renderer classes that can be used to render the API root endpoint.</p>
-<h2 id="using-schemagenerator"><a class="toclink" href="#using-schemagenerator">Using SchemaGenerator</a></h2>
-<p>The most common way to add a schema to your API is to use the <code>SchemaGenerator</code>
-class to auto-generate the <code>Document</code> instance, and to return that from a view.</p>
+<h2 id="using-an-explicit-schema-view"><a class="toclink" href="#using-an-explicit-schema-view">Using an explicit schema view</a></h2>
+<p>If you need a little more control than the <code>get_schema_view()</code> shortcut gives you,
+then you can use the <code>SchemaGenerator</code> class directly to auto-generate the
+<code>Document</code> instance, and to return that from a view.</p>
 <p>This option gives you the flexibility of setting up the schema endpoint
-with whatever behavior you want. For example, you can apply different
-permission, throttling or authentication policies to the schema endpoint.</p>
+with whatever behaviour you want. For example, you can apply different
+permission, throttling, or authentication policies to the schema endpoint.</p>
 <p>Here's an example of using <code>SchemaGenerator</code> together with a view to
 return the schema.</p>
 <p><strong>views.py:</strong></p>
 <pre><code>from rest_framework.decorators import api_view, renderer_classes
 from rest_framework import renderers, response, schemas
 
+generator = schemas.SchemaGenerator(title='Bookings API')
 
 @api_view()
 @renderer_classes([renderers.CoreJSONRenderer])
 def schema_view(request):
-    generator = schemas.SchemaGenerator(title='Bookings API')
-    return response.Response(generator.get_schema())
+    schema = generator.get_schema(request)
+    return response.Response(schema)
 </code></pre>
 <p><strong>urls.py:</strong></p>
 <pre><code>urlpatterns = [
@@ -641,6 +654,60 @@ of the available formats, such as Core JSON or Open API.</p>
 <li>Write a schema definition that is loaded using <code>Core API</code>, and then
   rendered to one of many available formats, depending on the client request.</li>
 </ul>
+<hr />
+<h1 id="schemas-as-documentation"><a class="toclink" href="#schemas-as-documentation">Schemas as documentation</a></h1>
+<p>One common usage of API schemas is to use them to build documentation pages.</p>
+<p>The schema generation in REST framework uses docstrings to automatically
+populate descriptions in the schema document.</p>
+<p>These descriptions will be based on:</p>
+<ul>
+<li>The corresponding method docstring if one exists.</li>
+<li>A named section within the class docstring, which can be either single line or multi-line.</li>
+<li>The class docstring.</li>
+</ul>
+<h2 id="examples"><a class="toclink" href="#examples">Examples</a></h2>
+<p>An <code>APIView</code>, with an explicit method docstring.</p>
+<pre><code>class ListUsernames(APIView):
+    def get(self, request):
+        """
+        Return a list of all user names in the system.
+        """
+        usernames = [user.username for user in User.objects.all()]
+        return Response(usernames)
+</code></pre>
+<p>A <code>ViewSet</code>, with an explict action docstring.</p>
+<pre><code>class ListUsernames(ViewSet):
+    def list(self, request):
+        """
+        Return a list of all user names in the system.
+        """
+        usernames = [user.username for user in User.objects.all()]
+        return Response(usernames)
+</code></pre>
+<p>A generic view with sections in the class docstring, using single-line style.</p>
+<pre><code>class UserList(generics.ListCreateAPIView):
+    """
+    get: Create a new user.
+    post: List all the users.
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (IsAdminUser,)
+</code></pre>
+<p>A generic viewset with sections in the class docstring, using multi-line style.</p>
+<pre><code>class UserViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+
+    retrieve:
+    Return a user instance.
+
+    list:
+    Return all users, ordered by most recently joined.
+    """
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserSerializer
+</code></pre>
 <hr />
 <h1 id="alternate-schema-formats"><a class="toclink" href="#alternate-schema-formats">Alternate schema formats</a></h1>
 <p>In order to support an alternate schema format, you need to implement a custom renderer
@@ -696,9 +763,9 @@ package that are used to represent an API schema.</p>
 from the <code>rest_framework</code> package.</p>
 <h3 id="document"><a class="toclink" href="#document">Document</a></h3>
 <p>Represents a container for the API schema.</p>
-<h4 id="title"><a class="toclink" href="#title"><code>title</code></a></h4>
+<h4 id="title_1"><a class="toclink" href="#title_1"><code>title</code></a></h4>
 <p>A name for the API.</p>
-<h4 id="url"><a class="toclink" href="#url"><code>url</code></a></h4>
+<h4 id="url_1"><a class="toclink" href="#url_1"><code>url</code></a></h4>
 <p>A canonical URL for the API.</p>
 <h4 id="content"><a class="toclink" href="#content"><code>content</code></a></h4>
 <p>A dictionary, containing the <code>Link</code> objects that the schema contains.</p>
@@ -719,7 +786,7 @@ may be nested, typically to a second level. For example:</p>
 </code></pre>
 <h3 id="link"><a class="toclink" href="#link">Link</a></h3>
 <p>Represents an individual API endpoint.</p>
-<h4 id="url_1"><a class="toclink" href="#url_1"><code>url</code></a></h4>
+<h4 id="url_2"><a class="toclink" href="#url_2"><code>url</code></a></h4>
 <p>The URL of the endpoint. May be a URI template, such as <code>/users/{username}/</code>.</p>
 <h4 id="action"><a class="toclink" href="#action"><code>action</code></a></h4>
 <p>The HTTP method associated with the endpoint. Note that URLs that support

@@ -397,6 +397,10 @@
                     </li>
                   
                     <li>
+                      <a href="#schema-generation-controls">Schema generation controls</a>
+                    </li>
+                  
+                    <li>
                       <a href="#content-type-controls">Content type controls</a>
                     </li>
                   
@@ -410,6 +414,10 @@
                   
                     <li>
                       <a href="#view-names-and-descriptions">View names and descriptions</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#html-select-field-cutoffs">HTML Select Field cutoffs</a>
                     </li>
                   
                     <li>
@@ -577,6 +585,20 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 )
 </code></pre>
 <hr />
+<h2 id="schema-generation-controls"><a class="toclink" href="#schema-generation-controls">Schema generation controls</a></h2>
+<h4 id="schema_coerce_path_pk"><a class="toclink" href="#schema_coerce_path_pk">SCHEMA_COERCE_PATH_PK</a></h4>
+<p>If set, this maps the <code>'pk'</code> identifier in the URL conf onto the actual field
+name when generating a schema path parameter. Typically this will be <code>'id'</code>.
+This gives a more suitable representation as "primary key" is an implementation
+detail, wheras "identifier" is a more general concept.</p>
+<p>Default: <code>True</code></p>
+<h4 id="schema_coerce_method_names"><a class="toclink" href="#schema_coerce_method_names">SCHEMA_COERCE_METHOD_NAMES</a></h4>
+<p>If set, this is used to map internal viewset method names onto external action
+names used in the schema generation. This allows us to generate names that
+are more suitable for an external representation than those that are used
+internally in the codebase.</p>
+<p>Default: <code>{'retrieve': 'read', 'destroy': 'delete'}</code></p>
+<hr />
 <h2 id="content-type-controls"><a class="toclink" href="#content-type-controls">Content type controls</a></h2>
 <h4 id="url_format_override"><a class="toclink" href="#url_format_override">URL_FORMAT_OVERRIDE</a></h4>
 <p>The name of a URL parameter that may be used to override the default content negotiation <code>Accept</code> header behavior, by using a <code>format=…</code> query parameter in the request URL.</p>
@@ -662,6 +684,14 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 <li><code>html</code>: A boolean indicating if HTML output is required.  <code>True</code> when used in the browsable API, and <code>False</code> when used in generating <code>OPTIONS</code> responses.</li>
 </ul>
 <p>Default: <code>'rest_framework.views.get_view_description'</code></p>
+<h2 id="html-select-field-cutoffs"><a class="toclink" href="#html-select-field-cutoffs">HTML Select Field cutoffs</a></h2>
+<p>Global settings for <a href="../relations/#select-field-cutoffs">select field cutoffs for rendering relational fields</a> in the browsable API.</p>
+<h4 id="html_select_cutoff"><a class="toclink" href="#html_select_cutoff">HTML_SELECT_CUTOFF</a></h4>
+<p>Global setting for the <code>html_cutoff</code> value.  Must be an integer.</p>
+<p>Default: 1000</p>
+<h4 id="html_select_cutoff_text"><a class="toclink" href="#html_select_cutoff_text">HTML_SELECT_CUTOFF_TEXT</a></h4>
+<p>A string representing a global setting for <code>html_cutoff_text</code>.</p>
+<p>Default: <code>"More than {count} items..."</code></p>
 <hr />
 <h2 id="miscellaneous-settings"><a class="toclink" href="#miscellaneous-settings">Miscellaneous settings</a></h2>
 <h4 id="exception_handler"><a class="toclink" href="#exception_handler">EXCEPTION_HANDLER</a></h4>

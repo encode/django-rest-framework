@@ -410,6 +410,10 @@
                       <a href="#using-your-custom-pagination-class">Using your custom pagination class</a>
                     </li>
                   
+                    <li>
+                      <a href="#pagination-schemas">Pagination &amp; schemas</a>
+                    </li>
+                  
                 
                   <li class="main">
                     <a href="#html-pagination-controls">HTML pagination controls</a>
@@ -666,6 +670,10 @@ class StandardResultsSetPagination(PageNumberPagination):
 }
 </code></pre>
 <p>API responses for list endpoints will now include a <code>Link</code> header, instead of including the pagination links as part of the body of the response, for example:</p>
+<h2 id="pagination-schemas"><a class="toclink" href="#pagination-schemas">Pagination &amp; schemas</a></h2>
+<p>You can also make the pagination controls available to the schema autogeneration
+that REST framework provides, by implementing a <code>get_schema_fields()</code> method,
+which should return a list of <code>coreapi.Field</code> instances.</p>
 <hr />
 <p><img alt="Link Header" src="../../img/link-header-pagination.png" /></p>
 <p><em>A custom pagination style, using the 'Link' header'</em></p>

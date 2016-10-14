@@ -574,8 +574,8 @@ class Track(models.Model):
 </code></pre>
 <p>Would serialize to a representation like this:</p>
 <pre><code>{
-    'album_name': 'The Roots',
-    'artist': 'Undun',
+    'album_name': 'Undun',
+    'artist': 'The Roots',
     'tracks': [
         89,
         90,
@@ -868,6 +868,7 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
 <li><code>html_cutoff</code> - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Set to <code>None</code> to disable any limiting. Defaults to <code>1000</code>.</li>
 <li><code>html_cutoff_text</code> - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to <code>"More than {count} items…"</code></li>
 </ul>
+<p>You can also control these globally using the settings <code>HTML_SELECT_CUTOFF</code> and <code>HTML_SELECT_CUTOFF_TEXT</code>.</p>
 <p>In cases where the cutoff is being enforced you may want to instead use a plain input field in the HTML form. You can do so using the <code>style</code> keyword argument. For example:</p>
 <pre><code>assigned_to = serializers.SlugRelatedField(
    queryset=User.objects.all(),

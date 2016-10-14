@@ -492,7 +492,7 @@ class UserDetail(generics.RetrieveAPIView):
 </code></pre>
 <p>Finally we need to add those views into the API, by referencing them from the URL conf. Add the following to the patterns in <code>urls.py</code>.</p>
 <pre><code>url(r'^users/$', views.UserList.as_view()),
-url(r'^users/(?P&lt;pk&gt;[0-9]+)/$', views.UserDetail.as_view()),
+url(r'^users/(?P&lt;id&gt;[0-9]+)/$', views.UserDetail.as_view()),
 </code></pre>
 <h2 id="associating-snippets-with-users"><a class="toclink" href="#associating-snippets-with-users">Associating Snippets with Users</a></h2>
 <p>Right now, if we created a code snippet, there'd be no way of associating the user that created the snippet, with the snippet instance.  The user isn't sent as part of the serialized representation, but is instead a property of the incoming request.</p>
@@ -532,7 +532,7 @@ url(r'^users/(?P&lt;pk&gt;[0-9]+)/$', views.UserDetail.as_view()),
 </code></pre>
 <p>The <code>r'^api-auth/'</code> part of pattern can actually be whatever URL you want to use.  The only restriction is that the included urls must use the <code>'rest_framework'</code> namespace. In Django 1.9+, REST framework will set the namespace, so you may leave it out.</p>
 <p>Now if you open up the browser again and refresh the page you'll see a 'Login' link in the top right of the page.  If you log in as one of the users you created earlier, you'll be able to create code snippets again.</p>
-<p>Once you've created a few code snippets, navigate to the '/users/' endpoint, and notice that the representation includes a list of the snippet pks that are associated with each user, in each user's 'snippets' field.</p>
+<p>Once you've created a few code snippets, navigate to the '/users/' endpoint, and notice that the representation includes a list of the snippet ids that are associated with each user, in each user's 'snippets' field.</p>
 <h2 id="object-level-permissions"><a class="toclink" href="#object-level-permissions">Object level permissions</a></h2>
 <p>Really we'd like all code snippets to be visible to anyone, but also make sure that only the user that created a code snippet is able to update or delete it.</p>
 <p>To do that we're going to need to create a custom permission.</p>

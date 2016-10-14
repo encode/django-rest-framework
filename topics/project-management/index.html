@@ -407,7 +407,7 @@
 <p>&mdash; Halford E. Luccock</p>
 </blockquote>
 <p>This document outlines our project management processes for REST framework.</p>
-<p>The aim is to ensure that the project has a high 
+<p>The aim is to ensure that the project has a high
 <a href="http://en.wikipedia.org/wiki/Bus_factor">"bus factor"</a>, and can continue to remain well supported for the foreseeable future. Suggestions for improvements to our process are welcome.</p>
 <hr />
 <h2 id="maintenance-team"><a class="toclink" href="#maintenance-team">Maintenance team</a></h2>
@@ -540,7 +540,7 @@ tx push -s
 <h3 id="download-translations"><a class="toclink" href="#download-translations">Download translations</a></h3>
 <p>When a translator has finished translating their work needs to be downloaded from Transifex into the REST framework repository. To do this, run:</p>
 <pre><code># 3. Pull the translated django.po files from Transifex.
-tx pull -a
+tx pull -a --minimum-perc 10
 cd rest_framework
 # 4. Compile the binary .mo files for all supported languages.
 django-admin.py compilemessages

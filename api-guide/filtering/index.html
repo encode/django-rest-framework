@@ -432,6 +432,10 @@
                       <a href="#customizing-the-interface">Customizing the interface</a>
                     </li>
                   
+                    <li>
+                      <a href="#pagination-schemas">Pagination &amp; schemas</a>
+                    </li>
+                  
                 
                   <li class="main">
                     <a href="#third-party-packages">Third party packages</a>
@@ -448,6 +452,10 @@
                   
                     <li>
                       <a href="#django-url-filter">Django URL Filter</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#drf-url-filters">drf-url-filters</a>
                     </li>
                   
                 
@@ -788,6 +796,10 @@ class ProductFilter(filters.FilterSet):
 <p>Generic filters may also present an interface in the browsable API. To do so you should implement a <code>to_html()</code> method which returns a rendered HTML representation of the filter. This method should have the following signature:</p>
 <p><code>to_html(self, request, queryset, view)</code></p>
 <p>The method should return a rendered HTML string.</p>
+<h2 id="pagination-schemas"><a class="toclink" href="#pagination-schemas">Pagination &amp; schemas</a></h2>
+<p>You can also make the filter controls available to the schema autogeneration
+that REST framework provides, by implementing a <code>get_schema_fields()</code> method,
+which should return a list of <code>coreapi.Field</code> instances.</p>
 <h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages provide additional filter implementations.</p>
 <h2 id="django-rest-framework-filters-package"><a class="toclink" href="#django-rest-framework-filters-package">Django REST framework filters package</a></h2>
@@ -796,6 +808,8 @@ class ProductFilter(filters.FilterSet):
 <p>The <a href="https://github.com/trollknurr/django-rest-framework-word-search-filter">djangorestframework-word-filter</a> developed as alternative to <code>filters.SearchFilter</code> which will search full word in text, or exact match.</p>
 <h2 id="django-url-filter"><a class="toclink" href="#django-url-filter">Django URL Filter</a></h2>
 <p><a href="https://github.com/miki725/django-url-filter">django-url-filter</a> provides a safe way to filter data via human-friendly URLs. It works very similar to DRF serializers and fields in a sense that they can be nested except they are called filtersets and filters. That provides easy way to filter related data. Also this library is generic-purpose so it can be used to filter other sources of data and not only Django <code>QuerySet</code>s.</p>
+<h2 id="drf-url-filters"><a class="toclink" href="#drf-url-filters">drf-url-filters</a></h2>
+<p><a href="https://github.com/manjitkumar/drf-url-filters">drf-url-filter</a> is a simple Django app to apply filters on drf <code>ModelViewSet</code>'s <code>Queryset</code> in a clean, simple and configurable way. It also supports validations on incoming query params and their values. A beautiful python package <code>Voluptuous</code> is being used for validations on the incoming query parameters. The best part about voluptuous is you can define your own validations as per your query params requirements.</p>
             
 
           </div> <!--/span-->

@@ -465,12 +465,12 @@ def snippet_list(request):
 <p>Our instance view is an improvement over the previous example.  It's a little more concise, and the code now feels very similar to if we were working with the Forms API.  We're also using named status codes, which makes the response meanings more obvious.</p>
 <p>Here is the view for an individual snippet, in the <code>views.py</code> module.</p>
 <pre><code>@api_view(['GET', 'PUT', 'DELETE'])
-def snippet_detail(request, pk):
+def snippet_detail(request, id):
     """
     Retrieve, update or delete a snippet instance.
     """
     try:
-        snippet = Snippet.objects.get(pk=pk)
+        snippet = Snippet.objects.get(id=id)
     except Snippet.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -497,7 +497,7 @@ def snippet_detail(request, pk):
 <pre><code>def snippet_list(request, format=None):
 </code></pre>
 <p>and</p>
-<pre><code>def snippet_detail(request, pk, format=None):
+<pre><code>def snippet_detail(request, id, format=None):
 </code></pre>
 <p>Now update the <code>urls.py</code> file slightly, to append a set of <code>format_suffix_patterns</code> in addition to the existing URLs.</p>
 <pre><code>from django.conf.urls import url
@@ -506,7 +506,7 @@ from snippets import views
 
 urlpatterns = [
     url(r'^snippets/$', views.snippet_list),
-    url(r'^snippets/(?P&lt;pk&gt;[0-9]+)$', views.snippet_detail),
+    url(r'^snippets/(?P&lt;id&gt;[0-9]+)$', views.snippet_detail),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

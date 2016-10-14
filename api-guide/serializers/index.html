@@ -551,6 +551,10 @@
                     </li>
                   
                     <li>
+                      <a href="#dynamic-fields-mixin">Dynamic Fields Mixin</a>
+                    </li>
+                  
+                    <li>
                       <a href="#html-json-forms">HTML JSON Forms</a>
                     </li>
                   
@@ -1418,6 +1422,8 @@ def all_high_scores(request):
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-hstore">django-rest-framework-hstore</a> package provides an <code>HStoreSerializer</code> to support <a href="https://github.com/djangonauts/django-hstore">django-hstore</a> <code>DictionaryField</code> model field and its <code>schema-mode</code> feature.</p>
 <h2 id="dynamic-rest"><a class="toclink" href="#dynamic-rest">Dynamic REST</a></h2>
 <p>The <a href="https://github.com/AltSchool/dynamic-rest">dynamic-rest</a> package extends the ModelSerializer and ModelViewSet interfaces, adding API query parameters for filtering, sorting, and including / excluding all fields and relationships defined by your serializers.</p>
+<h2 id="dynamic-fields-mixin"><a class="toclink" href="#dynamic-fields-mixin">Dynamic Fields Mixin</a></h2>
+<p>The <a href="https://github.com/dbrgn/drf-dynamic-fields">drf-dynamic-fields</a> package provides a mixin to dynamically limit the fields per serializer to a subset specified by an URL parameter.</p>
 <h2 id="html-json-forms"><a class="toclink" href="#html-json-forms">HTML JSON Forms</a></h2>
 <p>The <a href="https://github.com/wq/html-json-forms">html-json-forms</a> package provides an algorithm and serializer for processing <code>&lt;form&gt;</code> submissions per the (inactive) <a href="https://www.w3.org/TR/html-json-forms/">HTML JSON Form specification</a>.  The serializer facilitates processing of arbitrarily nested JSON structures within HTML.  For example, <code>&lt;input name="items[0][id]" value="5"&gt;</code> will be interpreted as <code>{"items": [{"id": "5"}]}</code>.</p>
             

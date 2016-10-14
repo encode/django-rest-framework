@@ -473,10 +473,10 @@ user_detail = UserViewSet.as_view({
 <pre><code>urlpatterns = format_suffix_patterns([
     url(r'^$', api_root),
     url(r'^snippets/$', snippet_list, name='snippet-list'),
-    url(r'^snippets/(?P&lt;pk&gt;[0-9]+)/$', snippet_detail, name='snippet-detail'),
-    url(r'^snippets/(?P&lt;pk&gt;[0-9]+)/highlight/$', snippet_highlight, name='snippet-highlight'),
+    url(r'^snippets/(?P&lt;id&gt;[0-9]+)/$', snippet_detail, name='snippet-detail'),
+    url(r'^snippets/(?P&lt;id&gt;[0-9]+)/highlight/$', snippet_highlight, name='snippet-highlight'),
     url(r'^users/$', user_list, name='user-list'),
-    url(r'^users/(?P&lt;pk&gt;[0-9]+)/$', user_detail, name='user-detail')
+    url(r'^users/(?P&lt;id&gt;[0-9]+)/$', user_detail, name='user-detail')
 ])
 </code></pre>
 <h2 id="using-routers"><a class="toclink" href="#using-routers">Using Routers</a></h2>

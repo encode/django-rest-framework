@@ -667,7 +667,6 @@ class UserList(generics.ListCreateAPIView):
 <p>Provides a <code>.update(request, *args, **kwargs)</code> method, that implements updating and saving an existing model instance.</p>
 <p>Also provides a <code>.partial_update(request, *args, **kwargs)</code> method, which is similar to the <code>update</code> method, except that all fields for the update will be optional.  This allows support for HTTP <code>PATCH</code> requests.</p>
 <p>If an object is updated this returns a <code>200 OK</code> response, with a serialized representation of the object as the body of the response.</p>
-<p>If an object is created, for example when making a <code>DELETE</code> request followed by a <code>PUT</code> request to the same URL, this returns a <code>201 Created</code> response, with a serialized representation of the object as the body of the response.</p>
 <p>If the request data provided for updating the object was invalid, a <code>400 Bad Request</code> response will be returned, with the error details as the body of the response.</p>
 <h2 id="destroymodelmixin"><a class="toclink" href="#destroymodelmixin">DestroyModelMixin</a></h2>
 <p>Provides a <code>.destroy(request, *args, **kwargs)</code> method, that implements deletion of an existing model instance.</p>
