@@ -14,6 +14,7 @@ from __future__ import unicode_literals
 
 import traceback
 
+import six
 from django.db import models
 from django.db.models import DurationField as ModelDurationField
 from django.db.models.fields import Field as DjangoModelField
@@ -358,7 +359,7 @@ class Serializer(BaseSerializer):
         # Every new serializer is created with a clone of the field instances.
         # This allows users to dynamically modify the fields on a serializer
         # instance without affecting every other serializer class.
-        return copy.deepcopy(self._declared_fields)
+        return OrderedDict((k, copy.copy(v)) for k, v in six.iteritems(self._declared_fields))
 
     def get_validators(self):
         """
