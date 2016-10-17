@@ -135,11 +135,7 @@ class SimpleRouter(BaseRouter):
         If `base_name` is not specified, attempt to automatically determine
         it from the viewset.
         """
-        queryset = getattr(viewset, 'queryset', None)
-
-        assert queryset is not None, '`base_name` argument not specified, and could ' \
-            'not automatically determine the name from the viewset, as ' \
-            'it does not have a `.queryset` attribute.'
+        queryset = viewset().get_queryset()
 
         return queryset.model._meta.object_name.lower()
 
