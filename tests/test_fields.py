@@ -850,6 +850,37 @@ class TestMinMaxIntegerField(FieldValues):
     field = serializers.IntegerField(min_value=1, max_value=3)
 
 
+class TestCoerceToStringIntegerField(FieldValues):
+    valid_inputs = {}
+    invalid_inputs = {}
+    outputs = {
+        '1': '1',
+        '0': '0',
+        1: '1',
+        0: '0',
+        1.0: '1',
+        0.0: '0',
+    }
+    field = serializers.IntegerField(coerce_to_string=True)
+
+
+class TestLocalizedIntegerField(TestCase):
+    @override_settings(USE_L10N=True, LANGUAGE_CODE='it')
+    def test_to_internal_value(self):
+        field = serializers.IntegerField(localize=True)
+        self.assertEqual(field.to_internal_value('1,0'), 1)
+
+    @override_settings(USE_L10N=True, LANGUAGE_CODE=None, DECIMAL_SEPARATOR=',', THOUSAND_SEPARATOR='\'',
+                       NUMBER_GROUPING=3, USE_THOUSAND_SEPARATOR=True)
+    def test_to_representation(self):
+        field = serializers.IntegerField(localize=True)
+        self.assertEqual(field.to_representation(1000), '1\'000')
+
+    def test_localize_forces_coerce_to_string(self):
+        field = serializers.IntegerField(localize=True)
+        self.assertTrue(isinstance(field.to_representation(3), six.string_types))
+
+
 class TestFloatField(FieldValues):
     """
     Valid and invalid values for `FloatField`.
@@ -896,6 +927,36 @@ class TestMinMaxFloatField(FieldValues):
     }
     outputs = {}
     field = serializers.FloatField(min_value=1, max_value=3)
+
+
+class TestCoerceToStringFloatField(FieldValues):
+    valid_inputs = {}
+    invalid_inputs = {}
+    outputs = {
+        '1': str(1.0),
+        '0': str(0.0),
+        1: str(1.0),
+        0: str(0.0),
+        1.5: str(1.5),
+    }
+    field = serializers.FloatField(coerce_to_string=True)
+
+
+class TestLocalizedFloatField(TestCase):
+    @override_settings(USE_L10N=True, LANGUAGE_CODE='it')
+    def test_to_internal_value(self):
+        field = serializers.FloatField(localize=True)
+        self.assertEqual(field.to_internal_value('1,5'), 1.5)
+
+    @override_settings(USE_L10N=True, LANGUAGE_CODE=None, DECIMAL_SEPARATOR=',', THOUSAND_SEPARATOR='\'',
+                       NUMBER_GROUPING=3, USE_THOUSAND_SEPARATOR=True)
+    def test_to_representation(self):
+        field = serializers.FloatField(localize=True)
+        self.assertEqual(field.to_representation(1000.75), '1\'000,75')
+
+    def test_localize_forces_coerce_to_string(self):
+        field = serializers.FloatField(localize=True)
+        self.assertTrue(isinstance(field.to_representation(3), six.string_types))
 
 
 class TestDecimalField(FieldValues):

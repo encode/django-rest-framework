@@ -930,7 +930,7 @@ class IntegerField(NumberField):
         if self.localize:
             return number_format(value)
         if self.coerce_to_string:
-            return str(value)
+            return str(int(value))
         return int(value)
 
 
@@ -953,7 +953,7 @@ class FloatField(NumberField):
         if self.localize:
             return number_format(value)
         if self.coerce_to_string:
-            return str(value)
+            return str(float(value))
         return float(value)
 
 
