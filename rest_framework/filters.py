@@ -222,7 +222,7 @@ class SearchFilter(BaseFilterBackend):
             # Filtering against a many-to-many field requires us to
             # call queryset.distinct() in order to avoid duplicate items
             # in the resulting queryset.
-            # We try to avoid this is possible, for performance reasons.
+            # We try to avoid this if possible, for performance reasons.
             queryset = distinct(queryset, base)
         return queryset
 
