@@ -303,6 +303,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.5-announcement/">3.5 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -492,7 +496,7 @@ class UserDetail(generics.RetrieveAPIView):
 </code></pre>
 <p>Finally we need to add those views into the API, by referencing them from the URL conf. Add the following to the patterns in <code>urls.py</code>.</p>
 <pre><code>url(r'^users/$', views.UserList.as_view()),
-url(r'^users/(?P&lt;id&gt;[0-9]+)/$', views.UserDetail.as_view()),
+url(r'^users/(?P&lt;pk&gt;[0-9]+)/$', views.UserDetail.as_view()),
 </code></pre>
 <h2 id="associating-snippets-with-users"><a class="toclink" href="#associating-snippets-with-users">Associating Snippets with Users</a></h2>
 <p>Right now, if we created a code snippet, there'd be no way of associating the user that created the snippet, with the snippet instance.  The user isn't sent as part of the serialized representation, but is instead a property of the incoming request.</p>

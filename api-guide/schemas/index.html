@@ -303,6 +303,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.5-announcement/">3.5 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -738,12 +742,12 @@ generate a schema.</p>
 </code></pre>
 <p>Arguments:</p>
 <ul>
-<li><code>title</code> - The name of the API. <strong>required</strong></li>
+<li><code>title</code> <strong>required</strong> - The name of the API.</li>
 <li><code>url</code> - The root URL of the API schema. This option is not required unless the schema is included under path prefix.</li>
 <li><code>patterns</code> - A list of URLs to inspect when generating the schema. Defaults to the project's URL conf.</li>
 <li><code>urlconf</code> - A URL conf module name to use when generating the schema. Defaults to <code>settings.ROOT_URLCONF</code>.</li>
 </ul>
-<h3 id="get_schema"><a class="toclink" href="#get_schema">get_schema()</a></h3>
+<h3 id="get_schemaself-request"><a class="toclink" href="#get_schemaself-request">get_schema(self, request)</a></h3>
 <p>Returns a <code>coreapi.Document</code> instance that represents the API schema.</p>
 <pre><code>@api_view
 @renderer_classes([renderers.CoreJSONRenderer])
@@ -751,10 +755,30 @@ def schema_view(request):
     generator = schemas.SchemaGenerator(title='Bookings API')
     return Response(generator.get_schema())
 </code></pre>
-<p>Arguments:</p>
-<ul>
-<li><code>request</code> - The incoming request. Optionally used if you want to apply per-user permissions to the schema-generation.</li>
-</ul>
+<p>The <code>request</code> argument is optional, and may be used if you want to apply per-user
+permissions to the resulting schema generation.</p>
+<h3 id="get_linksself-request"><a class="toclink" href="#get_linksself-request">get_links(self, request)</a></h3>
+<p>Return a nested dictionary containing all the links that should be included in the API schema.</p>
+<p>This is a good point to override if you want to modify the resulting structure of the generated schema,
+as you can build a new dictionary with a different layout.</p>
+<h3 id="get_linkself-path-method-view"><a class="toclink" href="#get_linkself-path-method-view">get_link(self, path, method, view)</a></h3>
+<p>Returns a <code>coreapi.Link</code> instance corresponding to the given view.</p>
+<p>You can override this if you need to provide custom behaviors for particular views.</p>
+<h3 id="get_descriptionself-path-method-view"><a class="toclink" href="#get_descriptionself-path-method-view">get_description(self, path, method, view)</a></h3>
+<p>Returns a string to use as the link description. By default this is based on the
+view docstring as described in the "Schemas as Documentation" section above.</p>
+<h3 id="get_encodingself-path-method-view"><a class="toclink" href="#get_encodingself-path-method-view">get_encoding(self, path, method, view)</a></h3>
+<p>Returns a string to indicate the encoding for any request body, when interacting
+with the given view. Eg. <code>'application/json'</code>. May return a blank string for views
+that do not expect a request body.</p>
+<h3 id="get_path_fieldsself-path-method-view"><a class="toclink" href="#get_path_fieldsself-path-method-view">get_path_fields(self, path, method, view):</a></h3>
+<p>Return a list of <code>coreapi.Link()</code> instances. One for each path parameter in the URL.</p>
+<h3 id="get_serializer_fieldsself-path-method-view"><a class="toclink" href="#get_serializer_fieldsself-path-method-view">get_serializer_fields(self, path, method, view)</a></h3>
+<p>Return a list of <code>coreapi.Link()</code> instances. One for each field in the serializer class used by the view.</p>
+<h3 id="get_pagination_fieldsself-path-method-view"><a class="toclink" href="#get_pagination_fieldsself-path-method-view">get_pagination_fields(self, path, method, view</a></h3>
+<p>Return a list of <code>coreapi.Link()</code> instances, as returned by the <code>get_schema_fields()</code> method on any pagination class used by the view.</p>
+<h3 id="get_filter_fieldsself-path-method-view"><a class="toclink" href="#get_filter_fieldsself-path-method-view">get_filter_fields(self, path, method, view)</a></h3>
+<p>Return a list of <code>coreapi.Link()</code> instances, as returned by the <code>get_schema_fields()</code> method of any filter classes used by the view.</p>
 <hr />
 <h2 id="core-api"><a class="toclink" href="#core-api">Core API</a></h2>
 <p>This documentation gives a brief overview of the components within the <code>coreapi</code>

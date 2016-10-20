@@ -303,6 +303,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.5-announcement/">3.5 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -628,6 +632,7 @@ using the popular Python library, <code>requests</code>.</p>
 directly.</p>
 <pre><code>client = RequestsClient()
 response = client.get('http://testserver/users/')
+assert response.status_code == 200
 </code></pre>
 <p>Note that the requests client requires you to pass fully qualified URLs.</p>
 <h2 id="headers-authentication"><a class="toclink" href="#headers-authentication">Headers &amp; Authentication</a></h2>
@@ -672,9 +677,8 @@ do not directly affect customer data.</p>
 <p>The CoreAPIClient allows you to interact with your API using the Python
 <code>coreapi</code> client library.</p>
 <pre><code># Fetch the API schema
-url = reverse('schema')
 client = CoreAPIClient()
-schema = client.get(url)
+schema = client.get('http://testserver/schema/')
 
 # Create a new organisation
 params = {'name': 'MegaCorp', 'status': 'active'}

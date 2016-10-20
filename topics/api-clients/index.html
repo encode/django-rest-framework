@@ -303,6 +303,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.5-announcement/">3.5 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -627,7 +631,7 @@ the internal representation of the interface that we are interacting with.</p>
 <p>Codecs are responsible for encoding or decoding Documents.</p>
 <p>The decoding process is used by a client to take a bytestring of an API schema
 definition, and returning the Core API <code>Document</code> that represents that interface.</p>
-<p>A codec should be associated with a particular media type, such as <strong>TODO</strong>.</p>
+<p>A codec should be associated with a particular media type, such as <code>'application/coreapi+json'</code>.</p>
 <p>This media type is used by the server in the response <code>Content-Type</code> header,
 in order to indicate what kind of data is being returned in the response.</p>
 <h4 id="configuring-codecs"><a class="toclink" href="#configuring-codecs">Configuring codecs</a></h4>

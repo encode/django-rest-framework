@@ -303,6 +303,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.5-announcement/">3.5 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -443,7 +447,7 @@ We'll add a url pattern for our new API root in <code>snippets/urls.py</code>:</
 <pre><code>url(r'^$', views.api_root),
 </code></pre>
 <p>And then add a url pattern for the snippet highlights:</p>
-<pre><code>url(r'^snippets/(?P&lt;id&gt;[0-9]+)/highlight/$', views.SnippetHighlight.as_view()),
+<pre><code>url(r'^snippets/(?P&lt;pk&gt;[0-9]+)/highlight/$', views.SnippetHighlight.as_view()),
 </code></pre>
 <h2 id="hyperlinking-our-api"><a class="toclink" href="#hyperlinking-our-api">Hyperlinking our API</a></h2>
 <p>Dealing with relationships between entities is one of the more challenging aspects of Web API design.  There are a number of different ways that we might choose to represent a relationship:</p>
@@ -503,16 +507,16 @@ urlpatterns = format_suffix_patterns([
     url(r'^snippets/$',
         views.SnippetList.as_view(),
         name='snippet-list'),
-    url(r'^snippets/(?P&lt;id&gt;[0-9]+)/$',
+    url(r'^snippets/(?P&lt;pk&gt;[0-9]+)/$',
         views.SnippetDetail.as_view(),
         name='snippet-detail'),
-    url(r'^snippets/(?P&lt;id&gt;[0-9]+)/highlight/$',
+    url(r'^snippets/(?P&lt;pk&gt;[0-9]+)/highlight/$',
         views.SnippetHighlight.as_view(),
         name='snippet-highlight'),
     url(r'^users/$',
         views.UserList.as_view(),
         name='user-list'),
-    url(r'^users/(?P&lt;id&gt;[0-9]+)/$',
+    url(r'^users/(?P&lt;pk&gt;[0-9]+)/$',
         views.UserDetail.as_view(),
         name='user-detail')
 ])
