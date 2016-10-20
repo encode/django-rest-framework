@@ -194,6 +194,7 @@ directly.
 
     client = RequestsClient()
     response = client.get('http://testserver/users/')
+    assert response.status_code == 200
 
 Note that the requests client requires you to pass fully qualified URLs.
 
@@ -251,9 +252,8 @@ The CoreAPIClient allows you to interact with your API using the Python
 `coreapi` client library.
 
     # Fetch the API schema
-    url = reverse('schema')
     client = CoreAPIClient()
-    schema = client.get(url)
+    schema = client.get('http://testserver/schema/')
 
     # Create a new organisation
     params = {'name': 'MegaCorp', 'status': 'active'}

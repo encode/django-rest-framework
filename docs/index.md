@@ -244,6 +244,7 @@ General guides to using REST framework.
 * [3.2 Announcement][3.2-announcement]
 * [3.3 Announcement][3.3-announcement]
 * [3.4 Announcement][3.4-announcement]
+* [3.5 Announcement][3.5-announcement]
 * [Kickstarter Announcement][kickstarter-announcement]
 * [Mozilla Grant][mozilla-grant]
 * [Funding][funding]
@@ -370,6 +371,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [3.2-announcement]: topics/3.2-announcement.md
 [3.3-announcement]: topics/3.3-announcement.md
 [3.4-announcement]: topics/3.4-announcement.md
+[3.5-announcement]: topics/3.5-announcement.md
 [kickstarter-announcement]: topics/kickstarter-announcement.md
 [mozilla-grant]: topics/mozilla-grant.md
 [funding]: topics/funding.md
