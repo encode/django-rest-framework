@@ -38,6 +38,14 @@ You can determine your currently installed version using `pip freeze`:
 
 ---
 
+## 3.5.x series
+
+### 3.5.0
+
+**Date**: [20th October 2016][3.5.0-milestone]
+
+---
+
 ## 3.4.x series
 
 ### 3.4.7
@@ -596,6 +604,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.4.5-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.5+Release%22
 [3.4.6-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.6+Release%22
 [3.4.7-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.7+Release%22
+[3.5.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.0+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013

@@ -257,7 +257,7 @@ Codecs are responsible for encoding or decoding Documents.
 The decoding process is used by a client to take a bytestring of an API schema
 definition, and returning the Core API `Document` that represents that interface.
 
-A codec should be associated with a particular media type, such as **TODO**.
+A codec should be associated with a particular media type, such as `'application/coreapi+json'`.
 
 This media type is used by the server in the response `Content-Type` header,
 in order to indicate what kind of data is being returned in the response.
