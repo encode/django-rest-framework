@@ -617,7 +617,7 @@ other custom media types, such as those used by Swagger and RAML.</p>
 be deprecated at a later date.</p>
 <h3 id="modelserializer-fields-and-exclude"><a class="toclink" href="#modelserializer-fields-and-exclude">ModelSerializer 'fields' and 'exclude'</a></h3>
 <p>ModelSerializer and HyperlinkedModelSerializer must include either a fields
-option, or an exclude option. The fields = '<strong>all</strong>' shortcut may be used to
+option, or an exclude option. The <code>fields = '__all__'</code> shortcut may be used to
 explicitly include all fields.</p>
 <p>Failing to set either <code>fields</code> or <code>exclude</code> raised a pending deprecation warning
 in version 3.3 and raised a deprecation warning in 3.4. Its usage is now mandatory.</p>
