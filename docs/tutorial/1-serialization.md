@@ -259,12 +259,12 @@ Note that because we want to be able to POST to this view from clients that won'
 We'll also need a view which corresponds to an individual snippet, and can be used to retrieve, update or delete the snippet.
 
     @csrf_exempt
-    def snippet_detail(request, id):
+    def snippet_detail(request, pk):
         """
         Retrieve, update or delete a code snippet.
         """
         try:
-            snippet = Snippet.objects.get(id=id)
+            snippet = Snippet.objects.get(pk=pk)
         except Snippet.DoesNotExist:
             return HttpResponse(status=404)
 
@@ -291,7 +291,7 @@ Finally we need to wire these views up.  Create the `snippets/urls.py` file:
 
     urlpatterns = [
         url(r'^snippets/$', views.snippet_list),
-        url(r'^snippets/(?P<id>[0-9]+)/$', views.snippet_detail),
+        url(r'^snippets/(?P<pk>[0-9]+)/$', views.snippet_detail),
     ]
 
 We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to include our snippet app's URLs.

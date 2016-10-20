@@ -88,7 +88,7 @@ Make sure to also import the `UserSerializer` class
 Finally we need to add those views into the API, by referencing them from the URL conf. Add the following to the patterns in `urls.py`.
 
     url(r'^users/$', views.UserList.as_view()),
-    url(r'^users/(?P<id>[0-9]+)/$', views.UserDetail.as_view()),
+    url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
 
 ## Associating Snippets with Users
 
