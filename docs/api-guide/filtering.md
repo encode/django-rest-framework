@@ -89,24 +89,24 @@ Generic filters can also present themselves as HTML controls in the browsable AP
 
 ## Setting filter backends
 
-The default filter backends may be set globally, using the `DEFAULT_FILTER_BACKENDS` setting.  For example.
+The default filter backends may be set globally, using the `DEFAULT_FILTER_BACKENDS` setting. For example.
 
     REST_FRAMEWORK = {
-        'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
+        'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
     }
 
 You can also set the filter backends on a per-view, or per-viewset basis,
 using the `GenericAPIView` class-based views.
 
+    import django_filters
     from django.contrib.auth.models import User
     from myapp.serializers import UserSerializer
-    from rest_framework import filters
     from rest_framework import generics
 
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
-        filter_backends = (filters.DjangoFilterBackend,)
+        filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
 ## Filtering and object lookups
 
@@ -139,11 +139,26 @@ Note that you can use both an overridden `.get_queryset()` and generic filtering
 
 ## DjangoFilterBackend
 
-The `DjangoFilterBackend` class supports highly customizable field filtering, using the [django-filter package][django-filter].
+The `django-filter` library includes a `DjangoFilterBackend` class which
+supports highly customizable field filtering for REST framework.
 
-To use REST framework's `DjangoFilterBackend`, first install `django-filter`.
+To use `DjangoFilterBackend`, first install `django-filter`.
 
     pip install django-filter
+
+You should now either add the filter backend to your settings:
+
+    REST_FRAMEWORK = {
+        'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+    }
+
+Or add the filter backend to an individual View or ViewSet.
+
+    from django_filters.rest_framework import DjangoFilterBackend
+
+    class UserListView(generics.ListAPIView):
+        ...
+        filter_backends = (DjangoFilterBackend,)
 
 If you are using the browsable API or admin API you may also want to install `django-crispy-forms`, which will enhance the presentation of the filter forms in HTML views, by allowing them to render Bootstrap 3 HTML.
 
@@ -174,10 +189,9 @@ For more advanced filtering requirements you can specify a `FilterSet` class tha
     import django_filters
     from myapp.models import Product
     from myapp.serializers import ProductSerializer
-    from rest_framework import filters
     from rest_framework import generics
 
-    class ProductFilter(filters.FilterSet):
+    class ProductFilter(django_filters.rest_framework.FilterSet):
         min_price = django_filters.NumberFilter(name="price", lookup_expr='gte')
         max_price = django_filters.NumberFilter(name="price", lookup_expr='lte')
         class Meta:
@@ -187,7 +201,7 @@ For more advanced filtering requirements you can specify a `FilterSet` class tha
     class ProductList(generics.ListAPIView):
         queryset = Product.objects.all()
         serializer_class = ProductSerializer
-        filter_backends = (filters.DjangoFilterBackend,)
+        filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
         filter_class = ProductFilter
 
 
@@ -199,12 +213,12 @@ You can also span relationships using `django-filter`, let's assume that each
 product has foreign key to `Manufacturer` model, so we create filter that
 filters using `Manufacturer` name. For example:
 
+    import django_filters
     from myapp.models import Product
     from myapp.serializers import ProductSerializer
-    from rest_framework import filters
     from rest_framework import generics
 
-    class ProductFilter(filters.FilterSet):
+    class ProductFilter(django_filters.rest_framework.FilterSet):
         class Meta:
             model = Product
             fields = ['category', 'in_stock', 'manufacturer__name']
@@ -218,10 +232,9 @@ This is nice, but it exposes the Django's double underscore convention as part o
     import django_filters
     from myapp.models import Product
     from myapp.serializers import ProductSerializer
-    from rest_framework import filters
     from rest_framework import generics
 
-    class ProductFilter(filters.FilterSet):
+    class ProductFilter(django_filters.rest_framework.FilterSet):
         manufacturer = django_filters.CharFilter(name="manufacturer__name")
 
         class Meta:
@@ -454,4 +467,3 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [django-rest-framework-word-search-filter]: https://github.com/trollknurr/django-rest-framework-word-search-filter
 [django-url-filter]: https://github.com/miki725/django-url-filter
 [drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
-

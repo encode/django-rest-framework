@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import datetime
 import unittest
+import warnings
 from decimal import Decimal
 
 from django.conf.urls import url
@@ -133,6 +134,39 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
     """
     Integration tests for filtered list views.
     """
+
+    @unittest.skipUnless(django_filters, 'django-filter not installed')
+    def test_backend_deprecation(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            view = FilterFieldsRootView.as_view()
+            request = factory.get('/')
+            response = view(request).render()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, self.data)
+
+        self.assertTrue(issubclass(w[-1].category, PendingDeprecationWarning))
+        self.assertIn("'rest_framework.filters.DjangoFilterBackend' is pending deprecation.", str(w[-1].message))
+
+    @unittest.skipUnless(django_filters, 'django-filter not installed')
+    def test_no_df_deprecation(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            import django_filters.rest_framework
+
+            class DFFilterFieldsRootView(FilterFieldsRootView):
+                filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+
+            view = DFFilterFieldsRootView.as_view()
+            request = factory.get('/')
+            response = view(request).render()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, self.data)
+        self.assertEqual(len(w), 0)
 
     @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_get_filtered_fields_root_view(self):
