@@ -46,9 +46,9 @@ class DjangoFilterBackend(BaseFilterBackend):
         assert django_filters.VERSION >= (0, 15, 0), 'django-filter 0.15.0 and above is required'
 
         warnings.warn(
-            "'rest_framework.filters.DjangoFilterBackend' has been deprecated "
-            "in favor of 'django_filters.rest_framework.DjangoFilterBackend'",
-            DeprecationWarning
+            "The built in 'rest_framework.filters.DjangoFilterBackend' is pending deprecation. "
+            "You should now use 'django_filters.rest_framework.DjangoFilterBackend' instead.",
+            PendingDeprecationWarning
         )
 
         from django_filters.rest_framework import DjangoFilterBackend
