@@ -54,7 +54,7 @@ class DjangoFilterBackend(BaseFilterBackend):
     """
     def __new__(cls, *args, **kwargs):
         assert django_filters, 'Using DjangoFilterBackend, but django-filter is not installed'
-        assert django_filters.VERSION >= (0, 15, 0), 'django-filter 0.15.0 and above is required'
+        assert django_filters.VERSION >= (0, 15, 3), 'django-filter 0.15.3 and above is required'
 
         warnings.warn(
             "The built in 'rest_framework.filters.DjangoFilterBackend' is pending deprecation. "
