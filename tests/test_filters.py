@@ -147,8 +147,8 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, self.data)
 
-        self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
-        self.assertIn("'rest_framework.filters.DjangoFilterBackend' has been deprecated", str(w[-1].message))
+        self.assertTrue(issubclass(w[-1].category, PendingDeprecationWarning))
+        self.assertIn("'rest_framework.filters.DjangoFilterBackend' is pending deprecation.", str(w[-1].message))
 
     @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_no_df_deprecation(self):

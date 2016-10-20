@@ -98,15 +98,15 @@ The default filter backends may be set globally, using the `DEFAULT_FILTER_BACKE
 You can also set the filter backends on a per-view, or per-viewset basis,
 using the `GenericAPIView` class-based views.
 
+    import django_filters
     from django.contrib.auth.models import User
-    from django_filters.rest_framework import DjangoFilterBackend
     from myapp.serializers import UserSerializer
     from rest_framework import generics
 
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
-        filter_backends = (DjangoFilterBackend,)
+        filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
 ## Filtering and object lookups
 
@@ -191,7 +191,7 @@ For more advanced filtering requirements you can specify a `FilterSet` class tha
     from myapp.serializers import ProductSerializer
     from rest_framework import generics
 
-    class ProductFilter(django_filters.FilterSet):
+    class ProductFilter(django_filters.rest_framework.FilterSet):
         min_price = django_filters.NumberFilter(name="price", lookup_expr='gte')
         max_price = django_filters.NumberFilter(name="price", lookup_expr='lte')
         class Meta:
@@ -218,7 +218,7 @@ filters using `Manufacturer` name. For example:
     from myapp.serializers import ProductSerializer
     from rest_framework import generics
 
-    class ProductFilter(django_filters.FilterSet):
+    class ProductFilter(django_filters.rest_framework.FilterSet):
         class Meta:
             model = Product
             fields = ['category', 'in_stock', 'manufacturer__name']
@@ -234,7 +234,7 @@ This is nice, but it exposes the Django's double underscore convention as part o
     from myapp.serializers import ProductSerializer
     from rest_framework import generics
 
-    class ProductFilter(django_filters.FilterSet):
+    class ProductFilter(django_filters.rest_framework.FilterSet):
         manufacturer = django_filters.CharFilter(name="manufacturer__name")
 
         class Meta:

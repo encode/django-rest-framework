@@ -37,6 +37,17 @@ class BaseFilterBackend(object):
         return []
 
 
+class FilterSet(object):
+    def __new__(cls, *args, **kwargs):
+        warnings.warn(
+            "The built in 'rest_framework.filters.FilterSet' is pending deprecation. "
+            "You should use 'django_filters.rest_framework.FilterSet' instead.",
+            PendingDeprecationWarning
+        )
+        from django_filters.rest_framework import FilterSet
+        return FilterSet(*args, **kwargs)
+
+
 class DjangoFilterBackend(BaseFilterBackend):
     """
     A filter backend that uses django-filter.
@@ -47,7 +58,7 @@ class DjangoFilterBackend(BaseFilterBackend):
 
         warnings.warn(
             "The built in 'rest_framework.filters.DjangoFilterBackend' is pending deprecation. "
-            "You should now use 'django_filters.rest_framework.DjangoFilterBackend' instead.",
+            "You should use 'django_filters.rest_framework.DjangoFilterBackend' instead.",
             PendingDeprecationWarning
         )
 
