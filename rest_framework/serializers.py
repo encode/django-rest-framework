@@ -134,6 +134,14 @@ class BaseSerializer(Field):
         list_serializer_class = getattr(meta, 'list_serializer_class', ListSerializer)
         return list_serializer_class(*args, **list_kwargs)
 
+    '''
+    HACK to pass context down to child serializers in rippling.
+    The right way might be to remove @cached_property from fields.py
+    and set self._context here
+    '''
+    def set_context(self, context):
+        self.context = context;
+
     def to_internal_value(self, data):
         raise NotImplementedError('`to_internal_value()` must be implemented.')
 
