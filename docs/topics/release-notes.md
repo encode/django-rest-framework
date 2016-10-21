@@ -40,6 +40,15 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.5.x series
 
+### 3.5.1
+
+**Date**: [21st October 2016][3.5.1-milestone]
+
+* Make `rest_framework/compat.py` imports. ([#4612][gh4612], [#4608][gh4608], [#4601][gh4601])
+* Fix bug in schema base path generation. ([#4611][gh4611], [#4605][gh4605])
+* Fix broken case of ListSerializer with single item. ([#4609][gh4609], [#4606][gh4606])
+* Remove bare `raise` for Python 3.5 compat. ([#4600][gh4600])
+
 ### 3.5.0
 
 **Date**: [20th October 2016][3.5.0-milestone]
@@ -605,6 +614,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.4.6-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.6+Release%22
 [3.4.7-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.7+Release%22
 [3.5.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.0+Release%22
+[3.5.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.1+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -1146,3 +1156,14 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh4465]: https://github.com/tomchristie/django-rest-framework/issues/4465
 [gh4462]: https://github.com/tomchristie/django-rest-framework/issues/4462
 [gh4458]: https://github.com/tomchristie/django-rest-framework/issues/4458
+
+<!-- 3.5.1 -->
+
+[gh4612]: https://github.com/tomchristie/django-rest-framework/issues/4612
+[gh4608]: https://github.com/tomchristie/django-rest-framework/issues/4608
+[gh4601]: https://github.com/tomchristie/django-rest-framework/issues/4601
+[gh4611]: https://github.com/tomchristie/django-rest-framework/issues/4611
+[gh4605]: https://github.com/tomchristie/django-rest-framework/issues/4605
+[gh4609]: https://github.com/tomchristie/django-rest-framework/issues/4609
+[gh4606]: https://github.com/tomchristie/django-rest-framework/issues/4606
+[gh4600]: https://github.com/tomchristie/django-rest-framework/issues/4600
