@@ -357,3 +357,16 @@ class TestSerializerValidationWithCompiledRegexField:
         assert serializer.is_valid()
         assert serializer.validated_data == {'name': '2'}
         assert serializer.errors == {}
+
+
+class Test4606Regression:
+    def setup(self):
+        class ExampleSerializer(serializers.Serializer):
+            name = serializers.CharField(required=True)
+            choices = serializers.CharField(required=True)
+        self.Serializer = ExampleSerializer
+
+    def test_4606_regression(self):
+        serializer = self.Serializer(data=[{"name": "liz"}], many=True)
+        with pytest.raises(serializers.ValidationError):
+            serializer.is_valid(raise_exception=True)
