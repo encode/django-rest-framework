@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import json
 import re
-from collections import MutableMapping, OrderedDict
+from collections import MutableMapping
 
 from django.conf.urls import include, url
 from django.core.cache import cache
@@ -13,11 +13,15 @@ from django.utils import six
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework import permissions, serializers, status
+from rest_framework import permissions, status
+from rest_framework.fields import (
+    CharField, ChoiceField, HiddenField, MultipleChoiceField, OrderedDict
+)
 from rest_framework.renderers import (
     BaseRenderer, BrowsableAPIRenderer, HTMLFormRenderer, JSONRenderer
 )
 from rest_framework.response import Response
+from rest_framework.serializers import Serializer
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView
@@ -92,7 +96,7 @@ class EmptyGETView(APIView):
 
 
 class HTMLView(APIView):
-    renderer_classes = (BrowsableAPIRenderer, )
+    renderer_classes = (BrowsableAPIRenderer,)
 
     def get(self, request, **kwargs):
         return Response('text')
@@ -104,11 +108,14 @@ class HTMLView1(APIView):
     def get(self, request, **kwargs):
         return Response('text')
 
+
 urlpatterns = [
-    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
+    url(r'^.*\.(?P<format>.+)$',
+        MockView.as_view(renderer_classes=[RendererA, RendererB])),
     url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
     url(r'^cache$', MockGETView.as_view()),
-    url(r'^parseerror$', MockPOSTView.as_view(renderer_classes=[JSONRenderer, BrowsableAPIRenderer])),
+    url(r'^parseerror$', MockPOSTView.as_view(
+        renderer_classes=[JSONRenderer, BrowsableAPIRenderer])),
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
     url(r'^empty$', EmptyGETView.as_view()),
@@ -153,10 +160,13 @@ class RendererEndToEndTests(TestCase):
     """
     End-to-end testing of renderers using an RendererMixin on a generic view.
     """
+
     def test_default_renderer_serializes_content(self):
-        """If the Accept header is not set the default renderer should serialize the response."""
+        """If the Accept header is not set the default renderer should
+        serialize the response."""
         resp = self.client.get('/')
-        self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
+        self.assertEqual(resp['Content-Type'],
+                         RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -164,34 +174,42 @@ class RendererEndToEndTests(TestCase):
         """No response must be included in HEAD requests."""
         resp = self.client.head('/')
         self.assertEqual(resp.status_code, DUMMYSTATUS)
-        self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
+        self.assertEqual(resp['Content-Type'],
+                         RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, six.b(''))
 
     def test_default_renderer_serializes_content_on_accept_any(self):
-        """If the Accept header is set to */* the default renderer should serialize the response."""
+        """If the Accept header is set to */* the default renderer should
+        serialize the response."""
         resp = self.client.get('/', HTTP_ACCEPT='*/*')
-        self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
+        self.assertEqual(resp['Content-Type'],
+                         RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_specified_renderer_serializes_content_default_case(self):
-        """If the Accept header is set the specified renderer should serialize the response.
-        (In this case we check that works for the default renderer)"""
+        """If the Accept header is set the specified renderer should serialize
+        the response. (In this case we check that works for the default
+        renderer)"""
         resp = self.client.get('/', HTTP_ACCEPT=RendererA.media_type)
-        self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
+        self.assertEqual(resp['Content-Type'],
+                         RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_specified_renderer_serializes_content_non_default_case(self):
-        """If the Accept header is set the specified renderer should serialize the response.
-        (In this case we check that works for a non-default renderer)"""
+        """If the Accept header is set the specified renderer should serialize
+        the response. (In this case we check that works for a non-default
+        renderer)"""
         resp = self.client.get('/', HTTP_ACCEPT=RendererB.media_type)
-        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
+        self.assertEqual(resp['Content-Type'],
+                         RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_unsatisfiable_accept_header_on_request_returns_406_status(self):
-        """If the Accept header is unsatisfiable we should return a 406 Not Acceptable response."""
+        """If the Accept header is unsatisfiable we should return a
+        406 Not Acceptable response."""
         resp = self.client.get('/', HTTP_ACCEPT='foo/bar')
         self.assertEqual(resp.status_code, status.HTTP_406_NOT_ACCEPTABLE)
 
@@ -203,34 +221,41 @@ class RendererEndToEndTests(TestCase):
             RendererB.format
         )
         resp = self.client.get('/' + param)
-        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
+        self.assertEqual(resp['Content-Type'],
+                         RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_specified_renderer_serializes_content_on_format_kwargs(self):
-        """If a 'format' keyword arg is specified, the renderer with the matching
-        format attribute should serialize the response."""
+        """If a 'format' keyword arg is specified, the renderer with the
+        matching format attribute should serialize the response."""
         resp = self.client.get('/something.formatb')
-        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
+        self.assertEqual(resp['Content-Type'],
+                         RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
-    def test_specified_renderer_is_used_on_format_query_with_matching_accept(self):
+    def test_specified_renderer_is_used_on_format_query_with_matching_accept(
+            self):
         """If both a 'format' query and a matching Accept header specified,
-        the renderer with the matching format attribute should serialize the response."""
+        the renderer with the matching format attribute should serialize the
+        response."""
         param = '?%s=%s' % (
             api_settings.URL_FORMAT_OVERRIDE,
             RendererB.format
         )
         resp = self.client.get('/' + param,
                                HTTP_ACCEPT=RendererB.media_type)
-        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
+        self.assertEqual(resp['Content-Type'],
+                         RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_parse_error_renderers_browsable_api(self):
         """Invalid data should still render the browsable API correctly."""
-        resp = self.client.post('/parseerror', data='foobar', content_type='application/json', HTTP_ACCEPT='text/html')
+        resp = self.client.post('/parseerror', data='foobar',
+                                content_type='application/json',
+                                HTTP_ACCEPT='text/html')
         self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -358,18 +383,22 @@ class JSONRendererTests(TestCase):
         obj = {'foo': ['bar', 'baz']}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json; indent=2')
-        self.assertEqual(strip_trailing_whitespace(content.decode('utf-8')), _indented_repr)
+        self.assertEqual(strip_trailing_whitespace(content.decode('utf-8')),
+                         _indented_repr)
 
 
 class UnicodeJSONRendererTests(TestCase):
     """
     Tests specific for the Unicode JSON Renderer
     """
+
     def test_proper_encoding(self):
         obj = {'countries': ['United Kingdom', 'France', 'España']}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"countries":["United Kingdom","France","España"]}'.encode('utf-8'))
+        self.assertEqual(content,
+                         '{"countries":["United Kingdom","France","España"]}'.
+                         encode('utf-8'))
 
     def test_u2028_u2029(self):
         # The \u2028 and \u2029 characters should be escaped,
@@ -378,20 +407,26 @@ class UnicodeJSONRendererTests(TestCase):
         obj = {'should_escape': '\u2028\u2029'}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"should_escape":"\\u2028\\u2029"}'.encode('utf-8'))
+        self.assertEqual(content,
+                         '{"should_escape":"\\u2028\\u2029"}'.encode('utf-8'))
 
 
 class AsciiJSONRendererTests(TestCase):
     """
     Tests specific for the Unicode JSON Renderer
     """
+
     def test_proper_encoding(self):
         class AsciiJSONRenderer(JSONRenderer):
             ensure_ascii = True
+
         obj = {'countries': ['United Kingdom', 'France', 'España']}
         renderer = AsciiJSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"countries":["United Kingdom","France","Espa\\u00f1a"]}'.encode('utf-8'))
+        self.assertEqual(content,
+                         '{"countries":["United Kingdom","France",'
+                         '"Espa\\u00f1a"]}'.encode(
+                             'utf-8'))
 
 
 # Tests for caching issue, #346
@@ -400,6 +435,7 @@ class CacheRenderTest(TestCase):
     """
     Tests specific to caching responses
     """
+
     def test_head_caching(self):
         """
         Test caching of HEAD requests
@@ -447,8 +483,8 @@ class TestJSONIndentationStyles:
 
 class TestHiddenFieldHTMLFormRenderer(TestCase):
     def test_hidden_field_rendering(self):
-        class TestSerializer(serializers.Serializer):
-            published = serializers.HiddenField(default=True)
+        class TestSerializer(Serializer):
+            published = HiddenField(default=True)
 
         serializer = TestSerializer(data={})
         serializer.is_valid()
@@ -460,8 +496,8 @@ class TestHiddenFieldHTMLFormRenderer(TestCase):
 
 class TestHTMLFormRenderer(TestCase):
     def setUp(self):
-        class TestSerializer(serializers.Serializer):
-            test_field = serializers.CharField()
+        class TestSerializer(Serializer):
+            test_field = CharField()
 
         self.renderer = HTMLFormRenderer()
         self.serializer = TestSerializer(data={})
@@ -491,9 +527,9 @@ class TestChoiceFieldHTMLFormRenderer(TestCase):
     def setUp(self):
         choices = ((1, 'Option1'), (2, 'Option2'), (12, 'Option12'))
 
-        class TestSerializer(serializers.Serializer):
-            test_field = serializers.ChoiceField(choices=choices,
-                                                 initial=2)
+        class TestSerializer(Serializer):
+            test_field = ChoiceField(choices=choices,
+                                     initial=2)
 
         self.TestSerializer = TestSerializer
         self.renderer = HTMLFormRenderer()
@@ -535,8 +571,8 @@ class TestMultipleChoiceFieldHTMLFormRenderer(TestCase):
         choices = (('1', 'Option1'), ('2', 'Option2'), ('12', 'Option12'),
                    ('}', 'OptionBrace'))
 
-        class TestSerializer(serializers.Serializer):
-            test_field = serializers.MultipleChoiceField(choices=choices)
+        class TestSerializer(Serializer):
+            test_field = MultipleChoiceField(choices=choices)
 
         serializer = TestSerializer(data={'test_field': ['12']})
         serializer.is_valid()
@@ -554,8 +590,8 @@ class TestMultipleChoiceFieldHTMLFormRenderer(TestCase):
     def test_render_selected_option_with_integer_option_ids(self):
         choices = ((1, 'Option1'), (2, 'Option2'), (12, 'Option12'))
 
-        class TestSerializer(serializers.Serializer):
-            test_field = serializers.MultipleChoiceField(choices=choices)
+        class TestSerializer(Serializer):
+            test_field = MultipleChoiceField(choices=choices)
 
         serializer = TestSerializer(data={'test_field': ['12']})
         serializer.is_valid()

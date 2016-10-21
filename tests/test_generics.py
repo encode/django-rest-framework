@@ -85,10 +85,8 @@ class TestRootView(TestCase):
         for item in items:
             BasicModel(text=item).save()
         self.objects = BasicModel.objects
-        self.data = [
-            {'id': obj.id, 'text': obj.text}
-            for obj in self.objects.all()
-        ]
+        self.data = [{'id': obj.id, 'text': obj.text}
+                     for obj in self.objects.all()]
         self.view = RootView.as_view()
 
     def test_get_root_view(self):
@@ -122,8 +120,10 @@ class TestRootView(TestCase):
         request = factory.put('/', data, format='json')
         with self.assertNumQueries(0):
             response = self.view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEqual(response.data, {"detail": 'Method "PUT" not allowed.'})
+        self.assertEqual(response.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(response.data,
+                         {"detail": 'Method "PUT" not allowed.'})
 
     def test_delete_root_view(self):
         """
@@ -132,8 +132,10 @@ class TestRootView(TestCase):
         request = factory.delete('/')
         with self.assertNumQueries(0):
             response = self.view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEqual(response.data, {"detail": 'Method "DELETE" not allowed.'})
+        self.assertEqual(response.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(response.data,
+                         {"detail": 'Method "DELETE" not allowed.'})
 
     def test_post_cannot_set_id(self):
         """
@@ -156,7 +158,8 @@ class TestRootView(TestCase):
         request = factory.post('/', data, HTTP_ACCEPT='text/html')
         response = self.view(request).render()
         expected_error = '<span class="help-block">Ensure this field has no more than 100 characters.</span>'
-        self.assertIn(expected_error, response.rendered_content.decode('utf-8'))
+        self.assertIn(expected_error,
+                      response.rendered_content.decode('utf-8'))
 
 
 EXPECTED_QUERIES_FOR_PUT = 2
@@ -171,10 +174,8 @@ class TestInstanceView(TestCase):
         for item in items:
             BasicModel(text=item).save()
         self.objects = BasicModel.objects.exclude(text='filtered out')
-        self.data = [
-            {'id': obj.id, 'text': obj.text}
-            for obj in self.objects.all()
-        ]
+        self.data = [{'id': obj.id, 'text': obj.text}
+                     for obj in self.objects.all()]
         self.view = InstanceView.as_view()
         self.slug_based_view = SlugBasedInstanceView.as_view()
 
@@ -196,8 +197,10 @@ class TestInstanceView(TestCase):
         request = factory.post('/', data, format='json')
         with self.assertNumQueries(0):
             response = self.view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEqual(response.data, {"detail": 'Method "POST" not allowed.'})
+        self.assertEqual(response.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(response.data,
+                         {"detail": 'Method "POST" not allowed.'})
 
     def test_put_instance_view(self):
         """
@@ -280,7 +283,8 @@ class TestInstanceView(TestCase):
         """
         data = {'text': 'foo'}
         filtered_out_pk = BasicModel.objects.filter(text='filtered out')[0].pk
-        request = factory.put('/{0}'.format(filtered_out_pk), data, format='json')
+        request = factory.put('/{0}'.format(filtered_out_pk), data,
+                              format='json')
         response = self.view(request, pk=filtered_out_pk).render()
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -303,7 +307,8 @@ class TestInstanceView(TestCase):
         request = factory.put('/', data, HTTP_ACCEPT='text/html')
         response = self.view(request, pk=1).render()
         expected_error = '<span class="help-block">Ensure this field has no more than 100 characters.</span>'
-        self.assertIn(expected_error, response.rendered_content.decode('utf-8'))
+        self.assertIn(expected_error,
+                      response.rendered_content.decode('utf-8'))
 
 
 class TestFKInstanceView(TestCase):
@@ -318,10 +323,8 @@ class TestFKInstanceView(TestCase):
             ForeignKeySource(name='source_' + item, target=t).save()
 
         self.objects = ForeignKeySource.objects
-        self.data = [
-            {'id': obj.id, 'name': obj.name}
-            for obj in self.objects.all()
-        ]
+        self.data = [{'id': obj.id, 'name': obj.name}
+                     for obj in self.objects.all()]
         self.view = FKInstanceView.as_view()
 
 
@@ -339,10 +342,8 @@ class TestOverriddenGetObject(TestCase):
         for item in items:
             BasicModel(text=item).save()
         self.objects = BasicModel.objects
-        self.data = [
-            {'id': obj.id, 'text': obj.text}
-            for obj in self.objects.all()
-        ]
+        self.data = [{'id': obj.id, 'text': obj.text}
+                     for obj in self.objects.all()]
 
         class OverriddenGetObjectView(generics.RetrieveUpdateDestroyAPIView):
             """
@@ -477,10 +478,8 @@ class TestFilterBackendAppliedToViews(TestCase):
         for item in items:
             BasicModel(text=item).save()
         self.objects = BasicModel.objects
-        self.data = [
-            {'id': obj.id, 'text': obj.text}
-            for obj in self.objects.all()
-        ]
+        self.data = [{'id': obj.id, 'text': obj.text}
+                     for obj in self.objects.all()]
 
     def test_get_root_view_filters_by_name_with_filter_backend(self):
         """
@@ -493,7 +492,8 @@ class TestFilterBackendAppliedToViews(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data, [{'id': 1, 'text': 'foo'}])
 
-    def test_get_root_view_filters_out_all_models_with_exclusive_filter_backend(self):
+    def test_get_root_view_filters_out_all_models_with_exclusive_filter_backend(
+            self):
         """
         GET requests to ListCreateAPIView should return empty list when all models are filtered out.
         """
@@ -507,17 +507,20 @@ class TestFilterBackendAppliedToViews(TestCase):
         """
         GET requests to RetrieveUpdateDestroyAPIView should raise 404 when model filtered out.
         """
-        instance_view = InstanceView.as_view(filter_backends=(ExclusiveFilterBackend,))
+        instance_view = InstanceView.as_view(
+            filter_backends=(ExclusiveFilterBackend,))
         request = factory.get('/1')
         response = instance_view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data, {'detail': 'Not found.'})
 
-    def test_get_instance_view_will_return_single_object_when_filter_does_not_exclude_it(self):
+    def test_get_instance_view_will_return_single_object_when_filter_does_not_exclude_it(
+            self):
         """
         GET requests to RetrieveUpdateDestroyAPIView should return a single object when not excluded
         """
-        instance_view = InstanceView.as_view(filter_backends=(InclusiveFilterBackend,))
+        instance_view = InstanceView.as_view(
+            filter_backends=(InclusiveFilterBackend,))
         request = factory.get('/1')
         response = instance_view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)

@@ -4,11 +4,14 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.test import TestCase
 
-from rest_framework import (
-    exceptions, metadata, serializers, status, versioning, views
+from rest_framework import exceptions, metadata, status, versioning, views
+from rest_framework.fields import (
+    CharField, ChoiceField, IntegerField, ListField, NullBooleanField
 )
+from rest_framework.relations import PrimaryKeyRelatedField, RelatedField
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.request import Request
+from rest_framework.serializers import ModelSerializer, Serializer
 from rest_framework.test import APIRequestFactory
 
 from .models import BasicModel
@@ -21,6 +24,7 @@ class TestMetadata:
         """
         OPTIONS requests to views should return a valid 200 response.
         """
+
         class ExampleView(views.APIView):
             """Example view."""
             pass
@@ -46,8 +50,9 @@ class TestMetadata:
     def test_none_metadata(self):
         """
         OPTIONS requests to views where `metadata_class = None` should raise
-        a MethodNotAllowed exception, which will result in an HTTP 405 response.
+        a MethodNotAllowed exception, which will result in an HTTP 405 response
         """
+
         class ExampleView(views.APIView):
             metadata_class = None
 
@@ -61,27 +66,29 @@ class TestMetadata:
         On generic views OPTIONS should return an 'actions' key with metadata
         on the fields that may be supplied to PUT and POST requests.
         """
-        class NestedField(serializers.Serializer):
-            a = serializers.IntegerField()
-            b = serializers.IntegerField()
 
-        class ExampleSerializer(serializers.Serializer):
-            choice_field = serializers.ChoiceField(['red', 'green', 'blue'])
-            integer_field = serializers.IntegerField(
+        class NestedField(Serializer):
+            a = IntegerField()
+            b = IntegerField()
+
+        class ExampleSerializer(Serializer):
+            choice_field = ChoiceField(['red', 'green', 'blue'])
+            integer_field = IntegerField(
                 min_value=1, max_value=1000
             )
-            char_field = serializers.CharField(
+            char_field = CharField(
                 required=False, min_length=3, max_length=40
             )
-            list_field = serializers.ListField(
-                child=serializers.ListField(
-                    child=serializers.IntegerField()
+            list_field = ListField(
+                child=ListField(
+                    child=IntegerField()
                 )
             )
             nested_field = NestedField()
 
         class ExampleView(views.APIView):
             """Example view."""
+
             def post(self, request):
                 pass
 
@@ -179,13 +186,15 @@ class TestMetadata:
         If a user does not have global permissions on an action, then any
         metadata associated with it should not be included in OPTION responses.
         """
-        class ExampleSerializer(serializers.Serializer):
-            choice_field = serializers.ChoiceField(['red', 'green', 'blue'])
-            integer_field = serializers.IntegerField(max_value=10)
-            char_field = serializers.CharField(required=False)
+
+        class ExampleSerializer(Serializer):
+            choice_field = ChoiceField(['red', 'green', 'blue'])
+            integer_field = IntegerField(max_value=10)
+            char_field = CharField(required=False)
 
         class ExampleView(views.APIView):
             """Example view."""
+
             def post(self, request):
                 pass
 
@@ -209,13 +218,15 @@ class TestMetadata:
         If a user does not have object permissions on an action, then any
         metadata associated with it should not be included in OPTION responses.
         """
-        class ExampleSerializer(serializers.Serializer):
-            choice_field = serializers.ChoiceField(['red', 'green', 'blue'])
-            integer_field = serializers.IntegerField(max_value=10)
-            char_field = serializers.CharField(required=False)
+
+        class ExampleSerializer(Serializer):
+            choice_field = ChoiceField(['red', 'green', 'blue'])
+            integer_field = IntegerField(max_value=10)
+            char_field = CharField(required=False)
 
         class ExampleView(views.APIView):
             """Example view."""
+
             def post(self, request):
                 pass
 
@@ -243,7 +254,7 @@ class TestMetadata:
 
             def get_serializer(self):
                 assert hasattr(self.request, 'version')
-                return serializers.Serializer()
+                return Serializer()
 
         view = ExampleView.as_view()
         view(request=request)
@@ -257,7 +268,7 @@ class TestMetadata:
 
             def get_serializer(self):
                 assert hasattr(self.request, 'versioning_scheme')
-                return serializers.Serializer()
+                return Serializer()
 
         scheme = versioning.QueryParameterVersioning
         view = ExampleView.as_view(versioning_class=scheme)
@@ -267,7 +278,7 @@ class TestMetadata:
 class TestSimpleMetadataFieldInfo(TestCase):
     def test_null_boolean_field_info_type(self):
         options = metadata.SimpleMetadata()
-        field_info = options.get_field_info(serializers.NullBooleanField())
+        field_info = options.get_field_info(NullBooleanField())
         self.assertEqual(field_info['type'], 'boolean')
 
     def test_related_field_choices(self):
@@ -275,7 +286,7 @@ class TestSimpleMetadataFieldInfo(TestCase):
         BasicModel.objects.create()
         with self.assertNumQueries(0):
             field_info = options.get_field_info(
-                serializers.RelatedField(queryset=BasicModel.objects.all())
+                RelatedField(queryset=BasicModel.objects.all())
             )
         self.assertNotIn('choices', field_info)
 
@@ -287,16 +298,18 @@ class TestModelSerializerMetadata(TestCase):
         on the fields that may be supplied to PUT and POST requests. It should
         not fail when a read_only PrimaryKeyRelatedField is present
         """
+
         class Parent(models.Model):
-            integer_field = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(1000)])
+            integer_field = models.IntegerField(
+                validators=[MinValueValidator(1), MaxValueValidator(1000)])
             children = models.ManyToManyField('Child')
             name = models.CharField(max_length=100, blank=True, null=True)
 
         class Child(models.Model):
             name = models.CharField(max_length=100)
 
-        class ExampleSerializer(serializers.ModelSerializer):
-            children = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
+        class ExampleSerializer(ModelSerializer):
+            children = PrimaryKeyRelatedField(read_only=True, many=True)
 
             class Meta:
                 model = Parent
@@ -304,6 +317,7 @@ class TestModelSerializerMetadata(TestCase):
 
         class ExampleView(views.APIView):
             """Example view."""
+
             def post(self, request):
                 pass
 

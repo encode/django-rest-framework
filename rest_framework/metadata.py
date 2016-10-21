@@ -8,14 +8,20 @@ to return this information in a more standardized way.
 """
 from __future__ import unicode_literals
 
-from collections import OrderedDict
-
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.encoding import force_text
 
-from rest_framework import exceptions, serializers
+from rest_framework import exceptions
+from rest_framework.fields import (
+    BooleanField, CharField, ChoiceField, DateField, DateTimeField,
+    DecimalField, DictField, EmailField, Field, FileField, FloatField,
+    ImageField, IntegerField, ListField, MultipleChoiceField, NullBooleanField,
+    OrderedDict, RegexField, SlugField, TimeField, URLField
+)
+from rest_framework.relations import ManyRelatedField, RelatedField
 from rest_framework.request import clone_request
+from rest_framework.serializers import Serializer
 from rest_framework.utils.field_mapping import ClassLookupDict
 
 
@@ -36,35 +42,37 @@ class SimpleMetadata(BaseMetadata):
     for us to base this on.
     """
     label_lookup = ClassLookupDict({
-        serializers.Field: 'field',
-        serializers.BooleanField: 'boolean',
-        serializers.NullBooleanField: 'boolean',
-        serializers.CharField: 'string',
-        serializers.URLField: 'url',
-        serializers.EmailField: 'email',
-        serializers.RegexField: 'regex',
-        serializers.SlugField: 'slug',
-        serializers.IntegerField: 'integer',
-        serializers.FloatField: 'float',
-        serializers.DecimalField: 'decimal',
-        serializers.DateField: 'date',
-        serializers.DateTimeField: 'datetime',
-        serializers.TimeField: 'time',
-        serializers.ChoiceField: 'choice',
-        serializers.MultipleChoiceField: 'multiple choice',
-        serializers.FileField: 'file upload',
-        serializers.ImageField: 'image upload',
-        serializers.ListField: 'list',
-        serializers.DictField: 'nested object',
-        serializers.Serializer: 'nested object',
+        Field: 'field',
+        BooleanField: 'boolean',
+        NullBooleanField: 'boolean',
+        CharField: 'string',
+        URLField: 'url',
+        EmailField: 'email',
+        RegexField: 'regex',
+        SlugField: 'slug',
+        IntegerField: 'integer',
+        FloatField: 'float',
+        DecimalField: 'decimal',
+        DateField: 'date',
+        DateTimeField: 'datetime',
+        TimeField: 'time',
+        ChoiceField: 'choice',
+        MultipleChoiceField: 'multiple choice',
+        FileField: 'file upload',
+        ImageField: 'image upload',
+        ListField: 'list',
+        DictField: 'nested object',
+        Serializer: 'nested object',
     })
 
     def determine_metadata(self, request, view):
         metadata = OrderedDict()
         metadata['name'] = view.get_view_name()
         metadata['description'] = view.get_view_description()
-        metadata['renders'] = [renderer.media_type for renderer in view.renderer_classes]
-        metadata['parses'] = [parser.media_type for parser in view.parser_classes]
+        metadata['renders'] = [renderer.media_type for renderer in
+                               view.renderer_classes]
+        metadata['parses'] = [parser.media_type for parser in
+                              view.parser_classes]
         if hasattr(view, 'get_serializer'):
             actions = self.determine_actions(request, view)
             if actions:
@@ -90,7 +98,7 @@ class SimpleMetadata(BaseMetadata):
                 pass
             else:
                 # If user has appropriate permissions for the view, include
-                # appropriate metadata about the fields that should be supplied.
+                # appropriate metadata about the fields that should be supplied
                 serializer = view.get_serializer()
                 actions[method] = self.get_serializer_info(serializer)
             finally:
@@ -107,10 +115,9 @@ class SimpleMetadata(BaseMetadata):
             # If this is a `ListSerializer` then we want to examine the
             # underlying child serializer instance instead.
             serializer = serializer.child
-        return OrderedDict([
-            (field_name, self.get_field_info(field))
-            for field_name, field in serializer.fields.items()
-        ])
+        return OrderedDict([(field_name, self.get_field_info(field))
+                            for field_name, field in
+                            serializer.fields.items()])
 
     def get_field_info(self, field):
         """
@@ -138,14 +145,12 @@ class SimpleMetadata(BaseMetadata):
             field_info['children'] = self.get_serializer_info(field)
 
         if (not field_info.get('read_only') and
-            not isinstance(field, (serializers.RelatedField, serializers.ManyRelatedField)) and
+                not isinstance(field, (RelatedField, ManyRelatedField)) and
                 hasattr(field, 'choices')):
-            field_info['choices'] = [
-                {
-                    'value': choice_value,
-                    'display_name': force_text(choice_name, strings_only=True)
-                }
-                for choice_value, choice_name in field.choices.items()
-            ]
+            field_info['choices'] = [{'value': choice_value,
+                                      'display_name': force_text(
+                                          choice_name, strings_only=True)}
+                                     for choice_value, choice_name in
+                                     field.choices.items()]
 
         return field_info
