@@ -53,10 +53,10 @@ representation become available as an option.
 We can also request the schema from the command line, by specifying the desired
 content type in the `Accept` header.
 
-    $ http http://127.0.0.1:8000/schema/ Accept:application/vnd.coreapi+json
+    $ http http://127.0.0.1:8000/schema/ Accept:application/coreapi+json
     HTTP/1.0 200 OK
     Allow: GET, HEAD, OPTIONS
-    Content-Type: application/vnd.coreapi+json
+    Content-Type: application/coreapi+json
 
     {
         "_meta": {
