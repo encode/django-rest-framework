@@ -207,7 +207,6 @@ guardian = None
 try:
     if 'guardian' in settings.INSTALLED_APPS:
         import guardian
-        import guardian.shortcuts  # Fixes #1624
 except ImportError:
     pass
 
