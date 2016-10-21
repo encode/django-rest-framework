@@ -335,3 +335,14 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
             }
         )
         self.assertEqual(schema, expected)
+
+
+@unittest.skipUnless(coreapi, 'coreapi is not installed')
+class Test4605Regression(TestCase):
+    def test_4605_regression(self):
+        generator = SchemaGenerator()
+        prefix = generator.determine_path_prefix([
+            '/api/v1/items/',
+            '/auth/convert-token/'
+        ])
+        assert prefix == '/'
