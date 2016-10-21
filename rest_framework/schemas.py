@@ -1,4 +1,3 @@
-import os
 import re
 from collections import OrderedDict
 from importlib import import_module
@@ -35,6 +34,18 @@ types_lookup = ClassLookupDict({
     serializers.Serializer: 'object',
     serializers.ListSerializer: 'array'
 })
+
+
+def common_path(paths):
+    split_paths = [path.strip('/').split('/') for path in paths]
+    s1 = min(split_paths)
+    s2 = max(split_paths)
+    common = s1
+    for i, c in enumerate(s1):
+        if c != s2[i]:
+            common = s1[:i]
+            break
+    return '/' + '/'.join(common)
 
 
 def get_pk_name(model):
@@ -292,7 +303,7 @@ class SchemaGenerator(object):
                 # one URL that doesn't have a path prefix.
                 return '/'
             prefixes.append('/' + prefix + '/')
-        return os.path.commonprefix(prefixes)
+        return common_path(prefixes)
 
     def create_view(self, callback, method, request=None):
         """
