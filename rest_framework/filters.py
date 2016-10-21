@@ -289,6 +289,11 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
     perm_format = '%(app_label)s.view_%(model_name)s'
 
     def filter_queryset(self, request, queryset, view):
+        # We want to defer this import until run-time, rather than import-time.
+        # See https://github.com/tomchristie/django-rest-framework/issues/4608
+        # (Also see #1624 for why we need to make this import explicitly)
+        from guardian.shortcuts import get_objects_for_user
+
         extra = {}
         user = request.user
         model_cls = queryset.model
@@ -302,4 +307,4 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
             extra = {'accept_global_perms': False}
         else:
             extra = {}
-        return guardian.shortcuts.get_objects_for_user(user, permission, queryset, **extra)
+        return get_objects_for_user(user, permission, queryset, **extra)
