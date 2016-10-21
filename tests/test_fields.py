@@ -11,6 +11,7 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 import rest_framework
+from rest_framework import serializers
 from rest_framework.fields import (
     BooleanField, CharField, ChoiceField, DateField, DateTimeField,
     DecimalField, DictField, DurationField, EmailField, Field, FileField,
@@ -20,7 +21,6 @@ from rest_framework.fields import (
     SkipField, SlugField, TimeField, URLField, UUIDField, ValidationError,
     is_simple_callable, six
 )
-from rest_framework.serializers import CreateOnlyDefault, Serializer
 
 try:
     import typings
@@ -152,7 +152,7 @@ class TestEmpty:
 
 class TestSource:
     def test_source(self):
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             example_field = CharField(source='other')
 
         serializer = ExampleSerializer(data={'example_field': 'abc'})
@@ -160,7 +160,7 @@ class TestSource:
         assert serializer.validated_data == {'other': 'abc'}
 
     def test_redundant_source(self):
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             example_field = CharField(source='example_field')
 
         with pytest.raises(AssertionError) as exc_info:
@@ -172,7 +172,7 @@ class TestSource:
         )
 
     def test_callable_source(self):
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             example_field = CharField(source='example_callable')
 
         class ExampleInstance(object):
@@ -183,7 +183,7 @@ class TestSource:
         assert serializer.data['example_field'] == 'example callable value'
 
     def test_callable_source_raises(self):
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             example_field = CharField(source='example_callable',
                                       read_only=True)
 
@@ -200,7 +200,7 @@ class TestSource:
 
 class TestReadOnly:
     def setup(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             read_only = ReadOnlyField()
             writable = IntegerField()
 
@@ -226,7 +226,7 @@ class TestReadOnly:
 
 class TestWriteOnly:
     def setup(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             write_only = IntegerField(write_only=True)
             readable = IntegerField()
 
@@ -253,7 +253,7 @@ class TestWriteOnly:
 
 class TestInitial:
     def setup(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             initial_field = IntegerField(initial=123)
             blank_field = IntegerField()
 
@@ -274,7 +274,7 @@ class TestInitialWithCallable:
         def initial_value():
             return 123
 
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             initial_field = IntegerField(initial=initial_value)
 
         self.serializer = TestSerializer()
@@ -290,7 +290,7 @@ class TestInitialWithCallable:
 
 class TestLabel:
     def setup(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             labeled = IntegerField(label='My label')
 
         self.serializer = TestSerializer()
@@ -332,7 +332,7 @@ class TestBooleanHTMLInput:
         as `False` by BooleanField.
         """
 
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             archived = BooleanField()
 
         serializer = TestSerializer(data=QueryDict(''))
@@ -345,7 +345,7 @@ class TestBooleanHTMLInput:
         as `False` by BooleanField, even if the field is required=False.
         """
 
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             archived = BooleanField(required=False)
 
         serializer = TestSerializer(data=QueryDict(''))
@@ -355,7 +355,7 @@ class TestBooleanHTMLInput:
 
 class TestHTMLInput:
     def test_empty_html_charfield_with_default(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             message = CharField(default='happy')
 
         serializer = TestSerializer(data=QueryDict(''))
@@ -363,7 +363,7 @@ class TestHTMLInput:
         assert serializer.validated_data == {'message': 'happy'}
 
     def test_empty_html_charfield_without_default(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             message = CharField(allow_blank=True)
 
         serializer = TestSerializer(data=QueryDict('message='))
@@ -371,7 +371,7 @@ class TestHTMLInput:
         assert serializer.validated_data == {'message': ''}
 
     def test_empty_html_charfield_without_default_not_required(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             message = CharField(allow_blank=True, required=False)
 
         serializer = TestSerializer(data=QueryDict('message='))
@@ -379,7 +379,7 @@ class TestHTMLInput:
         assert serializer.validated_data == {'message': ''}
 
     def test_empty_html_integerfield(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             message = IntegerField(default=123)
 
         serializer = TestSerializer(data=QueryDict('message='))
@@ -387,7 +387,7 @@ class TestHTMLInput:
         assert serializer.validated_data == {'message': 123}
 
     def test_empty_html_uuidfield_with_default(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             message = UUIDField(default=uuid.uuid4)
 
         serializer = TestSerializer(data=QueryDict('message='))
@@ -395,7 +395,7 @@ class TestHTMLInput:
         assert list(serializer.validated_data.keys()) == ['message']
 
     def test_empty_html_uuidfield_with_optional(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             message = UUIDField(required=False)
 
         serializer = TestSerializer(data=QueryDict('message='))
@@ -403,7 +403,7 @@ class TestHTMLInput:
         assert list(serializer.validated_data.keys()) == []
 
     def test_empty_html_charfield_allow_null(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             message = CharField(allow_null=True)
 
         serializer = TestSerializer(data=QueryDict('message='))
@@ -411,7 +411,7 @@ class TestHTMLInput:
         assert serializer.validated_data == {'message': None}
 
     def test_empty_html_datefield_allow_null(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             expiry = DateField(allow_null=True)
 
         serializer = TestSerializer(data=QueryDict('expiry='))
@@ -419,7 +419,7 @@ class TestHTMLInput:
         assert serializer.validated_data == {'expiry': None}
 
     def test_empty_html_charfield_allow_null_allow_blank(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             message = CharField(allow_null=True, allow_blank=True)
 
         serializer = TestSerializer(data=QueryDict('message='))
@@ -427,7 +427,7 @@ class TestHTMLInput:
         assert serializer.validated_data == {'message': ''}
 
     def test_empty_html_charfield_required_false(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             message = CharField(required=False)
 
         serializer = TestSerializer(data=QueryDict(''))
@@ -435,7 +435,7 @@ class TestHTMLInput:
         assert serializer.validated_data == {}
 
     def test_querydict_list_input(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             scores = ListField(child=IntegerField())
 
         serializer = TestSerializer(data=QueryDict('scores=1&scores=3'))
@@ -443,7 +443,7 @@ class TestHTMLInput:
         assert serializer.validated_data == {'scores': [1, 3]}
 
     def test_querydict_list_input_only_one_input(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             scores = ListField(child=IntegerField())
 
         serializer = TestSerializer(data=QueryDict('scores=1&'))
@@ -453,9 +453,9 @@ class TestHTMLInput:
 
 class TestCreateOnlyDefault:
     def setup(self):
-        default = CreateOnlyDefault('2001-01-01')
+        default = serializers.CreateOnlyDefault('2001-01-01')
 
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             published = HiddenField(default=default)
             text = CharField()
 
@@ -491,9 +491,9 @@ class TestCreateOnlyDefault:
             def __call__(self):
                 return "success" if hasattr(self, 'field') else "failure"
 
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             context_set = CharField(
-                default=CreateOnlyDefault(TestCallableDefault()))
+                default=serializers.CreateOnlyDefault(TestCallableDefault()))
 
         serializer = TestSerializer(data={})
         assert serializer.is_valid()
@@ -1855,7 +1855,7 @@ class TestJSONField(FieldValues):
         HTML inputs should be treated as a serialized JSON string.
         """
 
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             config = JSONField()
 
         data = QueryDict(mutable=True)
@@ -1907,7 +1907,7 @@ class TestFileFieldContext:
 
 class TestSerializerMethodField:
     def test_serializer_method_field(self):
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             example_field = SerializerMethodField()
 
             def get_example_field(self, obj):
@@ -1919,7 +1919,7 @@ class TestSerializerMethodField:
         }
 
     def test_redundant_method_name(self):
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             example_field = SerializerMethodField('get_example_field')
 
         with pytest.raises(AssertionError) as exc_info:

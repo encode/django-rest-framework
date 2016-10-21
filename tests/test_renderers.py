@@ -13,7 +13,7 @@ from django.utils import six
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework import permissions, status
+from rest_framework import permissions, serializers, status
 from rest_framework.fields import (
     CharField, ChoiceField, HiddenField, MultipleChoiceField, OrderedDict
 )
@@ -21,7 +21,6 @@ from rest_framework.renderers import (
     BaseRenderer, BrowsableAPIRenderer, HTMLFormRenderer, JSONRenderer
 )
 from rest_framework.response import Response
-from rest_framework.serializers import Serializer
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView
@@ -483,7 +482,7 @@ class TestJSONIndentationStyles:
 
 class TestHiddenFieldHTMLFormRenderer(TestCase):
     def test_hidden_field_rendering(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             published = HiddenField(default=True)
 
         serializer = TestSerializer(data={})
@@ -496,7 +495,7 @@ class TestHiddenFieldHTMLFormRenderer(TestCase):
 
 class TestHTMLFormRenderer(TestCase):
     def setUp(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             test_field = CharField()
 
         self.renderer = HTMLFormRenderer()
@@ -527,7 +526,7 @@ class TestChoiceFieldHTMLFormRenderer(TestCase):
     def setUp(self):
         choices = ((1, 'Option1'), (2, 'Option2'), (12, 'Option12'))
 
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             test_field = ChoiceField(choices=choices,
                                      initial=2)
 
@@ -571,7 +570,7 @@ class TestMultipleChoiceFieldHTMLFormRenderer(TestCase):
         choices = (('1', 'Option1'), ('2', 'Option2'), ('12', 'Option12'),
                    ('}', 'OptionBrace'))
 
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             test_field = MultipleChoiceField(choices=choices)
 
         serializer = TestSerializer(data={'test_field': ['12']})
@@ -590,7 +589,7 @@ class TestMultipleChoiceFieldHTMLFormRenderer(TestCase):
     def test_render_selected_option_with_integer_option_ids(self):
         choices = ((1, 'Option1'), (2, 'Option2'), (12, 'Option12'))
 
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             test_field = MultipleChoiceField(choices=choices)
 
         serializer = TestSerializer(data={'test_field': ['12']})

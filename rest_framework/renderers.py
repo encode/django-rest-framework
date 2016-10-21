@@ -17,7 +17,7 @@ from django.http.multipartparser import parse_header
 from django.template import Template, loader
 from django.test.client import encode_multipart
 
-from rest_framework import VERSION, exceptions, status
+from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
     INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi,
     template_render
@@ -32,7 +32,6 @@ from rest_framework.relations import (
     ImproperlyConfigured, ManyRelatedField, RelatedField
 )
 from rest_framework.request import is_form_media_type, override_method
-from rest_framework.serializers import ListSerializer, Serializer
 from rest_framework.settings import api_settings
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
@@ -322,10 +321,10 @@ class HTMLFormRenderer(BaseRenderer):
             'base_template': 'select_multiple.html',
             # Also valid: 'checkbox_multiple.html'
         },
-        Serializer: {
+        serializers.Serializer: {
             'base_template': 'fieldset.html'
         },
-        ListSerializer: {
+        serializers.ListSerializer: {
             'base_template': 'list_fieldset.html'
         },
         FilePathField: {

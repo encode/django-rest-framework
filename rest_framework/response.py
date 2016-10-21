@@ -10,7 +10,7 @@ from django.template.response import SimpleTemplateResponse
 from django.utils import six
 from django.utils.six.moves.http_client import responses
 
-from rest_framework.serializers import Serializer
+from rest_framework import serializers
 
 
 class Response(SimpleTemplateResponse):
@@ -31,7 +31,7 @@ class Response(SimpleTemplateResponse):
         """
         super(Response, self).__init__(None, status=status)
 
-        if isinstance(data, Serializer):
+        if isinstance(data, serializers.Serializer):
             msg = (
                 'You passed a Serializer instance as data, but '
                 'probably meant to pass serialized `.data` or '
@@ -98,8 +98,8 @@ class Response(SimpleTemplateResponse):
         """
         state = super(Response, self).__getstate__()
         for key in (
-            'accepted_renderer', 'renderer_context', 'resolver_match',
-            'client', 'request', 'json', 'wsgi_request'
+                'accepted_renderer', 'renderer_context', 'resolver_match',
+                'client', 'request', 'json', 'wsgi_request'
         ):
             if key in state:
                 del state[key]

@@ -4,14 +4,15 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.test import TestCase
 
-from rest_framework import exceptions, metadata, status, versioning, views
+from rest_framework import (
+    exceptions, metadata, serializers, status, versioning, views
+)
 from rest_framework.fields import (
     CharField, ChoiceField, IntegerField, ListField, NullBooleanField
 )
 from rest_framework.relations import PrimaryKeyRelatedField, RelatedField
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.request import Request
-from rest_framework.serializers import ModelSerializer, Serializer
 from rest_framework.test import APIRequestFactory
 
 from .models import BasicModel
@@ -67,11 +68,11 @@ class TestMetadata:
         on the fields that may be supplied to PUT and POST requests.
         """
 
-        class NestedField(Serializer):
+        class NestedField(serializers.Serializer):
             a = IntegerField()
             b = IntegerField()
 
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             choice_field = ChoiceField(['red', 'green', 'blue'])
             integer_field = IntegerField(
                 min_value=1, max_value=1000
@@ -187,7 +188,7 @@ class TestMetadata:
         metadata associated with it should not be included in OPTION responses.
         """
 
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             choice_field = ChoiceField(['red', 'green', 'blue'])
             integer_field = IntegerField(max_value=10)
             char_field = CharField(required=False)
@@ -219,7 +220,7 @@ class TestMetadata:
         metadata associated with it should not be included in OPTION responses.
         """
 
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             choice_field = ChoiceField(['red', 'green', 'blue'])
             integer_field = IntegerField(max_value=10)
             char_field = CharField(required=False)
@@ -254,7 +255,7 @@ class TestMetadata:
 
             def get_serializer(self):
                 assert hasattr(self.request, 'version')
-                return Serializer()
+                return serializers.Serializer()
 
         view = ExampleView.as_view()
         view(request=request)
@@ -268,7 +269,7 @@ class TestMetadata:
 
             def get_serializer(self):
                 assert hasattr(self.request, 'versioning_scheme')
-                return Serializer()
+                return serializers.Serializer()
 
         scheme = versioning.QueryParameterVersioning
         view = ExampleView.as_view(versioning_class=scheme)
@@ -308,7 +309,7 @@ class TestModelSerializerMetadata(TestCase):
         class Child(models.Model):
             name = models.CharField(max_length=100)
 
-        class ExampleSerializer(ModelSerializer):
+        class ExampleSerializer(serializers.ModelSerializer):
             children = PrimaryKeyRelatedField(read_only=True, many=True)
 
             class Meta:

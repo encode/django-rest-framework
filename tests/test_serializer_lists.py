@@ -1,10 +1,10 @@
 from django.utils.datastructures import MultiValueDict
 
+from rest_framework import serializers
 from rest_framework.fields import (
     BooleanField, IntegerField, ListField, MultipleChoiceField,
     ValidationError
 )
-from rest_framework.serializers import ListSerializer, Serializer
 
 
 class BasicObject:
@@ -33,7 +33,7 @@ class TestListSerializer:
     """
 
     def setup(self):
-        class IntegerListSerializer(ListSerializer):
+        class IntegerListSerializer(serializers.ListSerializer):
             child = IntegerField()
 
         self.Serializer = IntegerListSerializer
@@ -65,14 +65,14 @@ class TestListSerializerContainingNestedSerializer:
     """
 
     def setup(self):
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             integer = IntegerField()
             boolean = BooleanField()
 
             def create(self, validated_data):
                 return BasicObject(**validated_data)
 
-        class ObjectListSerializer(ListSerializer):
+        class ObjectListSerializer(serializers.ListSerializer):
             child = TestSerializer()
 
         self.Serializer = ObjectListSerializer
@@ -151,9 +151,9 @@ class TestNestedListSerializer:
     """
 
     def setup(self):
-        class TestSerializer(Serializer):
-            integers = ListSerializer(child=IntegerField())
-            booleans = ListSerializer(child=BooleanField())
+        class TestSerializer(serializers.Serializer):
+            integers = serializers.ListSerializer(child=IntegerField())
+            booleans = serializers.ListSerializer(child=BooleanField())
 
             def create(self, validated_data):
                 return BasicObject(**validated_data)
@@ -230,14 +230,14 @@ class TestNestedListSerializer:
 
 class TestNestedListOfListsSerializer:
     def setup(self):
-        class TestSerializer(Serializer):
-            integers = ListSerializer(
-                child=ListSerializer(
+        class TestSerializer(serializers.Serializer):
+            integers = serializers.ListSerializer(
+                child=serializers.ListSerializer(
                     child=IntegerField()
                 )
             )
-            booleans = ListSerializer(
-                child=ListSerializer(
+            booleans = serializers.ListSerializer(
+                child=serializers.ListSerializer(
                     child=BooleanField()
                 )
             )
@@ -285,11 +285,11 @@ class TestListSerializerClass:
     """Tests for a custom list_serializer_class."""
 
     def test_list_serializer_class_validate(self):
-        class CustomListSerializer(ListSerializer):
+        class CustomListSerializer(serializers.ListSerializer):
             def validate(self, attrs):
                 raise ValidationError('Non field error')
 
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             class Meta:
                 list_serializer_class = CustomListSerializer
 
@@ -308,7 +308,7 @@ class TestSerializerPartialUsage:
     """
 
     def test_partial_listfield(self):
-        class ListSerializer(Serializer):
+        class ListSerializer(serializers.Serializer):
             listdata = ListField()
 
         serializer = ListSerializer(data=MultiValueDict(), partial=True)
@@ -319,7 +319,7 @@ class TestSerializerPartialUsage:
         assert serializer.errors == {}
 
     def test_partial_multiplechoice(self):
-        class MultipleChoiceSerializer(Serializer):
+        class MultipleChoiceSerializer(serializers.Serializer):
             multiplechoice = MultipleChoiceField(choices=[1, 2, 3])
 
         serializer = MultipleChoiceSerializer(data=MultiValueDict(),

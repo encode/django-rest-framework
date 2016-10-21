@@ -6,11 +6,11 @@ import re
 
 import pytest
 
+from rest_framework import serializers
 from rest_framework.compat import unicode_repr
 from rest_framework.fields import (
     CharField, IntegerField, RegexField, ValidationError
 )
-from rest_framework.serializers import BaseSerializer, Serializer
 
 from .utils import MockObject
 
@@ -20,7 +20,7 @@ from .utils import MockObject
 
 class TestSerializer:
     def setup(self):
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             char = CharField()
             integer = IntegerField()
 
@@ -77,7 +77,7 @@ class TestSerializer:
 
 class TestValidateMethod:
     def test_non_field_error_validate_method(self):
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             char = CharField()
             integer = IntegerField()
 
@@ -89,7 +89,7 @@ class TestValidateMethod:
         assert serializer.errors == {'non_field_errors': ['Non field error']}
 
     def test_field_error_validate_method(self):
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             char = CharField()
             integer = IntegerField()
 
@@ -103,7 +103,7 @@ class TestValidateMethod:
 
 class TestBaseSerializer:
     def setup(self):
-        class ExampleSerializer(BaseSerializer):
+        class ExampleSerializer(serializers.BaseSerializer):
             def to_representation(self, obj):
                 return {
                     'id': obj['id'],
@@ -173,15 +173,15 @@ class TestStarredSource:
     }
 
     def setup(self):
-        class NestedSerializer1(Serializer):
+        class NestedSerializer1(serializers.Serializer):
             a = IntegerField()
             b = IntegerField()
 
-        class NestedSerializer2(Serializer):
+        class NestedSerializer2(serializers.Serializer):
             c = IntegerField()
             d = IntegerField()
 
-        class TestSerializer(Serializer):
+        class TestSerializer(serializers.Serializer):
             nested1 = NestedSerializer1(source='*')
             nested2 = NestedSerializer2(source='*')
 
@@ -211,7 +211,7 @@ class TestStarredSource:
 
 class TestIncorrectlyConfigured:
     def test_incorrect_field_name(self):
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             incorrect_name = IntegerField()
 
         class ExampleObject:
@@ -232,7 +232,7 @@ class TestIncorrectlyConfigured:
 
 class TestUnicodeRepr:
     def test_unicode_repr(self):
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             example = CharField()
 
         class ExampleObject:
@@ -253,7 +253,7 @@ class TestNotRequiredOutput:
         'required=False' should allow a dictionary key to be missing in output.
         """
 
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             omitted = CharField(required=False)
             included = CharField()
 
@@ -266,7 +266,7 @@ class TestNotRequiredOutput:
         'required=False' should allow an object attribute to be missing in output.
         """
 
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             omitted = CharField(required=False)
             included = CharField()
 
@@ -286,7 +286,7 @@ class TestNotRequiredOutput:
         'required=False', but it should still have a value.
         """
 
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             omitted = CharField(default='abc')
             included = CharField()
 
@@ -302,7 +302,7 @@ class TestNotRequiredOutput:
         'required=False', but it should still have a value.
         """
 
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             omitted = CharField(default='abc')
             included = CharField()
 
@@ -319,7 +319,7 @@ class TestCacheSerializerData:
         but does preserve the data itself.
         """
 
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             field1 = CharField()
             field2 = CharField()
 
@@ -331,7 +331,7 @@ class TestCacheSerializerData:
 
 class TestDefaultInclusions:
     def setup(self):
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             char = CharField(read_only=True, default='abc')
             integer = IntegerField()
 
@@ -361,7 +361,7 @@ class TestDefaultInclusions:
 
 class TestSerializerValidationWithCompiledRegexField:
     def setup(self):
-        class ExampleSerializer(Serializer):
+        class ExampleSerializer(serializers.Serializer):
             name = RegexField(re.compile(r'\d'), required=True)
 
         self.Serializer = ExampleSerializer

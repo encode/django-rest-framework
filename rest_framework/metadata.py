@@ -12,7 +12,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.encoding import force_text
 
-from rest_framework import exceptions
+from rest_framework import exceptions, serializers
 from rest_framework.fields import (
     BooleanField, CharField, ChoiceField, DateField, DateTimeField,
     DecimalField, DictField, EmailField, Field, FileField, FloatField,
@@ -21,7 +21,6 @@ from rest_framework.fields import (
 )
 from rest_framework.relations import ManyRelatedField, RelatedField
 from rest_framework.request import clone_request
-from rest_framework.serializers import Serializer
 from rest_framework.utils.field_mapping import ClassLookupDict
 
 
@@ -62,7 +61,7 @@ class SimpleMetadata(BaseMetadata):
         ImageField: 'image upload',
         ListField: 'list',
         DictField: 'nested object',
-        Serializer: 'nested object',
+        serializers.Serializer: 'nested object',
     })
 
     def determine_metadata(self, request, view):

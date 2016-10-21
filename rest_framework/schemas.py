@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
 from django.utils.encoding import force_text, smart_text
 
-from rest_framework import exceptions, renderers
+from rest_framework import exceptions, renderers, serializers
 from rest_framework.compat import (
     RegexURLPattern, RegexURLResolver, coreapi, uritemplate, urlparse
 )
@@ -18,7 +18,6 @@ from rest_framework.fields import (
 from rest_framework.relations import ManyRelatedField
 from rest_framework.request import clone_request
 from rest_framework.response import Response
-from rest_framework.serializers import ListSerializer, Serializer
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 from rest_framework.utils.field_mapping import ClassLookupDict
@@ -36,8 +35,8 @@ types_lookup = ClassLookupDict({
     FileField: 'file',
     MultipleChoiceField: 'array',
     ManyRelatedField: 'array',
-    Serializer: 'object',
-    ListSerializer: 'array'
+    serializers.Serializer: 'object',
+    serializers.ListSerializer: 'array'
 })
 
 
@@ -463,7 +462,7 @@ class SchemaGenerator(object):
 
         serializer = view.get_serializer()
 
-        if isinstance(serializer, ListSerializer):
+        if isinstance(serializer, serializers.ListSerializer):
             return [
                 coreapi.Field(
                     name='data',
@@ -473,7 +472,7 @@ class SchemaGenerator(object):
                 )
             ]
 
-        if not isinstance(serializer, Serializer):
+        if not isinstance(serializer, serializers.Serializer):
             return []
 
         fields = []
