@@ -5,9 +5,6 @@ from django.test import TestCase
 
 from rest_framework import serializers
 from tests.models import RESTFrameworkModel
-
-
-# Models
 from tests.test_multitable_inheritance import ChildModel
 
 
@@ -26,7 +23,6 @@ class DerivedModelSerializer(serializers.ModelSerializer):
 
 
 class ChildAssociatedModelSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = ChildAssociatedModel
         fields = ['id', 'child_name']
@@ -34,7 +30,6 @@ class ChildAssociatedModelSerializer(serializers.ModelSerializer):
 
 # Tests
 class InheritedModelSerializationTests(TestCase):
-
     def test_multitable_inherited_model_fields_as_expected(self):
         """
         Assert that the parent pointer field is not included in the fields

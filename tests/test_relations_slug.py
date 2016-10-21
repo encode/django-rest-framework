@@ -73,7 +73,8 @@ class SlugForeignKeyTests(TestCase):
         queryset = ForeignKeyTarget.objects.all()
         serializer = ForeignKeyTargetSerializer(queryset, many=True)
         expected = [
-            {'id': 1, 'name': 'target-1', 'sources': ['source-1', 'source-2', 'source-3']},
+            {'id': 1, 'name': 'target-1',
+             'sources': ['source-1', 'source-2', 'source-3']},
             {'id': 2, 'name': 'target-2', 'sources': []},
         ]
         self.assertEqual(serializer.data, expected)
@@ -107,10 +108,12 @@ class SlugForeignKeyTests(TestCase):
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEqual(serializer.errors, {'target': ['Object with name=123 does not exist.']})
+        self.assertEqual(serializer.errors,
+                         {'target': ['Object with name=123 does not exist.']})
 
     def test_reverse_foreign_key_update(self):
-        data = {'id': 2, 'name': 'target-2', 'sources': ['source-1', 'source-3']}
+        data = {'id': 2, 'name': 'target-2',
+                'sources': ['source-1', 'source-3']}
         instance = ForeignKeyTarget.objects.get(pk=2)
         serializer = ForeignKeyTargetSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
@@ -119,7 +122,8 @@ class SlugForeignKeyTests(TestCase):
         queryset = ForeignKeyTarget.objects.all()
         new_serializer = ForeignKeyTargetSerializer(queryset, many=True)
         expected = [
-            {'id': 1, 'name': 'target-1', 'sources': ['source-1', 'source-2', 'source-3']},
+            {'id': 1, 'name': 'target-1',
+             'sources': ['source-1', 'source-2', 'source-3']},
             {'id': 2, 'name': 'target-2', 'sources': []},
         ]
         self.assertEqual(new_serializer.data, expected)
@@ -157,7 +161,8 @@ class SlugForeignKeyTests(TestCase):
         self.assertEqual(serializer.data, expected)
 
     def test_reverse_foreign_key_create(self):
-        data = {'id': 3, 'name': 'target-3', 'sources': ['source-1', 'source-3']}
+        data = {'id': 3, 'name': 'target-3',
+                'sources': ['source-1', 'source-3']}
         serializer = ForeignKeyTargetSerializer(data=data)
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
@@ -179,7 +184,8 @@ class SlugForeignKeyTests(TestCase):
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEqual(serializer.errors, {'target': ['This field may not be null.']})
+        self.assertEqual(serializer.errors,
+                         {'target': ['This field may not be null.']})
 
 
 class SlugNullableForeignKeyTests(TestCase):
@@ -189,7 +195,8 @@ class SlugNullableForeignKeyTests(TestCase):
         for idx in range(1, 4):
             if idx == 3:
                 target = None
-            source = NullableForeignKeySource(name='source-%d' % idx, target=target)
+            source = NullableForeignKeySource(name='source-%d' % idx,
+                                              target=target)
             source.save()
 
     def test_foreign_key_retrieve_with_null(self):

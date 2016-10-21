@@ -45,6 +45,7 @@ class NonAtomicAPIExceptionView(APIView):
         BasicModel.objects.all()
         raise Http404
 
+
 urlpatterns = (
     url(r'^$', NonAtomicAPIExceptionView.as_view()),
 )
@@ -89,7 +90,8 @@ class DBTransactionErrorTests(TestCase):
         Transaction is eventually managed by outer-most transaction atomic
         block. DRF do not try to interfere here.
 
-        We let django deal with the transaction when it will catch the Exception.
+        We let django deal with the transaction when it will catch the
+        Exception.
         """
         request = factory.post('/')
         with self.assertNumQueries(3):
