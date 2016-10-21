@@ -507,7 +507,7 @@ class Serializer(BaseSerializer):
     @property
     def errors(self):
         ret = super(Serializer, self).errors
-        if isinstance(ret, list) and len(ret) == 1 and ret[0].code == 'null':
+        if isinstance(ret, list) and len(ret) == 1 and getattr(ret[0], 'code', None) == 'null':
             # Edge case. Provide a more descriptive error than
             # "this field may not be null", when no data is passed.
             detail = ErrorDetail('No data provided', code='null')
@@ -705,7 +705,7 @@ class ListSerializer(BaseSerializer):
     @property
     def errors(self):
         ret = super(ListSerializer, self).errors
-        if isinstance(ret, list) and len(ret) == 1 and ret[0].code == 'null':
+        if isinstance(ret, list) and len(ret) == 1 and getattr(ret[0], 'code', None) == 'null':
             # Edge case. Provide a more descriptive error than
             # "this field may not be null", when no data is passed.
             detail = ErrorDetail('No data provided', code='null')
