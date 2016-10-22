@@ -240,6 +240,10 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-url-filter][django-url-filter] - Allows a safe way to filter data via human-friendly URLs. It is a generic library which is not tied to DRF but it provides easy integration with DRF.
 * [drf-url-filter][drf-url-filter] is a simple Django app to apply filters on drf `ModelViewSet`'s `Queryset` in a clean, simple and configurable way. It also supports validations on incoming query params and their values.
 
+### Pagination
+
+* [drf-proxy-pagination][drf-proxy-pagination] - Allows to choose pagination class with a query parameter.
+
 ### Misc
 
 * [cookiecutter-django-rest][cookiecutter-django-rest] - A cookiecutter template that takes care of the setup and configuration so you can focus on making your REST apis awesome.
@@ -363,3 +367,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-messaging-js]: https://github.com/raphaelgyory/django-rest-messaging-js
 [medium-django-rest-framework]: https://medium.com/django-rest-framework
 [django-rest-framework-course]: https://teamtreehouse.com/library/django-rest-framework
+[drf-proxy-pagination]: https://github.com/tuffnatty/drf-proxy-pagination
