@@ -33,10 +33,8 @@ class TestManyPostView(TestCase):
         for item in items:
             BasicModel(text=item).save()
         self.objects = BasicModel.objects
-        self.data = [
-            {'id': obj.id, 'text': obj.text}
-            for obj in self.objects.all()
-        ]
+        self.data = [{'id': obj.id, 'text': obj.text}
+                     for obj in self.objects.all()]
         self.view = ManyPostView.as_view()
 
     def test_post_many_post_view(self):
@@ -44,7 +42,8 @@ class TestManyPostView(TestCase):
         POST request to a view that returns a list of objects should
         still successfully return the browsable API with a rendered form.
 
-        Regression test for https://github.com/tomchristie/django-rest-framework/pull/3164
+        Regression test for
+        https://github.com/tomchristie/django-rest-framework/pull/3164
         """
         data = {}
         request = factory.post('/', data, format='json')

@@ -1,13 +1,14 @@
 from django.http import QueryDict
 
 from rest_framework import serializers
+from rest_framework.fields import IntegerField, MultipleChoiceField
 
 
 class TestNestedSerializer:
     def setup(self):
         class NestedSerializer(serializers.Serializer):
-            one = serializers.IntegerField(max_value=10)
-            two = serializers.IntegerField(max_value=10)
+            one = IntegerField(max_value=10)
+            two = IntegerField(max_value=10)
 
         class TestSerializer(serializers.Serializer):
             nested = NestedSerializer()
@@ -51,7 +52,7 @@ class TestNestedSerializer:
 class TestNotRequiredNestedSerializer:
     def setup(self):
         class NestedSerializer(serializers.Serializer):
-            one = serializers.IntegerField(max_value=10)
+            one = IntegerField(max_value=10)
 
         class TestSerializer(serializers.Serializer):
             nested = NestedSerializer(required=False)
@@ -80,7 +81,7 @@ class TestNotRequiredNestedSerializer:
 class TestNestedSerializerWithMany:
     def setup(self):
         class NestedSerializer(serializers.Serializer):
-            example = serializers.IntegerField(max_value=10)
+            example = IntegerField(max_value=10)
 
         class TestSerializer(serializers.Serializer):
             allow_null = NestedSerializer(many=True, allow_null=True)
@@ -119,7 +120,8 @@ class TestNestedSerializerWithMany:
 
         assert not serializer.is_valid()
 
-        expected_errors = {'not_allow_null': [serializer.error_messages['null']]}
+        expected_errors = {
+            'not_allow_null': [serializer.error_messages['null']]}
         assert serializer.errors == expected_errors
 
     def test_run_the_field_validation_even_if_the_field_is_null(self):
@@ -171,14 +173,15 @@ class TestNestedSerializerWithMany:
 
         assert not serializer.is_valid()
 
-        expected_errors = {'not_allow_empty': {'non_field_errors': [serializers.ListSerializer.default_error_messages['empty']]}}
+        expected_errors = {'not_allow_empty': {'non_field_errors': [
+            serializers.ListSerializer.default_error_messages['empty']]}}
         assert serializer.errors == expected_errors
 
 
 class TestNestedSerializerWithList:
     def setup(self):
         class NestedSerializer(serializers.Serializer):
-            example = serializers.MultipleChoiceField(choices=[1, 2, 3])
+            example = MultipleChoiceField(choices=[1, 2, 3])
 
         class TestSerializer(serializers.Serializer):
             nested = NestedSerializer()

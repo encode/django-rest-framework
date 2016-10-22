@@ -43,7 +43,8 @@ urlpatterns = [
     url(r'^resource/customname$', CustomNameResourceInstance.as_view()),
     url(r'^resource/(?P<key>[0-9]+)$', ResourceInstance.as_view()),
     url(r'^resource/(?P<key>[0-9]+)/$', NestedResourceRoot.as_view()),
-    url(r'^resource/(?P<key>[0-9]+)/(?P<other>[A-Za-z]+)$', NestedResourceInstance.as_view()),
+    url(r'^resource/(?P<key>[0-9]+)/(?P<other>[A-Za-z]+)$',
+        NestedResourceInstance.as_view()),
 ]
 
 
@@ -52,6 +53,7 @@ class BreadcrumbTests(TestCase):
     """
     Tests the breadcrumb functionality used by the HTML renderer.
     """
+
     def test_root_breadcrumbs(self):
         url = '/'
         self.assertEqual(
@@ -130,6 +132,7 @@ class ResolveModelTests(TestCase):
     provided argument is a Django model class itself, or a properly
     formatted string representation of one.
     """
+
     def test_resolve_django_model(self):
         resolved_model = _resolve_model(BasicModel)
         self.assertEqual(resolved_model, BasicModel)

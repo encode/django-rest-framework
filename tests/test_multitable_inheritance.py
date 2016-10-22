@@ -17,7 +17,8 @@ class ChildModel(ParentModel):
 
 
 class AssociatedModel(RESTFrameworkModel):
-    ref = models.OneToOneField(ParentModel, primary_key=True, on_delete=models.CASCADE)
+    ref = models.OneToOneField(ParentModel, primary_key=True,
+                               on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
 
 
@@ -36,7 +37,6 @@ class AssociatedModelSerializer(serializers.ModelSerializer):
 
 # Tests
 class InheritedModelSerializationTests(TestCase):
-
     def test_multitable_inherited_model_fields_as_expected(self):
         """
         Assert that the parent pointer field is not included in the fields

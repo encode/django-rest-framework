@@ -9,6 +9,7 @@ from django.test import TestCase
 from django.utils.encoding import python_2_unicode_compatible
 
 from rest_framework import serializers
+from rest_framework.relations import StringRelatedField
 
 
 @python_2_unicode_compatible
@@ -51,7 +52,8 @@ class Note(models.Model):
 
 class TestGenericRelations(TestCase):
     def setUp(self):
-        self.bookmark = Bookmark.objects.create(url='https://www.djangoproject.com/')
+        self.bookmark = Bookmark.objects.create(
+            url='https://www.djangoproject.com/')
         Tag.objects.create(tagged_item=self.bookmark, tag='django')
         Tag.objects.create(tagged_item=self.bookmark, tag='python')
         self.note = Note.objects.create(text='Remember the milk')
@@ -64,7 +66,7 @@ class TestGenericRelations(TestCase):
         """
 
         class BookmarkSerializer(serializers.ModelSerializer):
-            tags = serializers.StringRelatedField(many=True)
+            tags = StringRelatedField(many=True)
 
             class Meta:
                 model = Bookmark
@@ -84,7 +86,7 @@ class TestGenericRelations(TestCase):
         """
 
         class TagSerializer(serializers.ModelSerializer):
-            tagged_item = serializers.StringRelatedField()
+            tagged_item = StringRelatedField()
 
             class Meta:
                 model = Tag

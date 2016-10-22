@@ -4,13 +4,17 @@ from importlib import import_module
 
 from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
-from django.utils import six
 from django.utils.encoding import force_text, smart_text
 
 from rest_framework import exceptions, renderers, serializers
 from rest_framework.compat import (
     RegexURLPattern, RegexURLResolver, coreapi, uritemplate, urlparse
 )
+from rest_framework.fields import (
+    BooleanField, DecimalField, Field, FileField, FloatField, HiddenField,
+    IntegerField, MultipleChoiceField, six
+)
+from rest_framework.relations import ManyRelatedField
 from rest_framework.request import clone_request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -19,18 +23,17 @@ from rest_framework.utils.field_mapping import ClassLookupDict
 from rest_framework.utils.model_meta import _get_pk
 from rest_framework.views import APIView
 
-
 header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
 
 types_lookup = ClassLookupDict({
-    serializers.Field: 'string',
-    serializers.IntegerField: 'integer',
-    serializers.FloatField: 'number',
-    serializers.DecimalField: 'number',
-    serializers.BooleanField: 'boolean',
-    serializers.FileField: 'file',
-    serializers.MultipleChoiceField: 'array',
-    serializers.ManyRelatedField: 'array',
+    Field: 'string',
+    IntegerField: 'integer',
+    FloatField: 'number',
+    DecimalField: 'number',
+    BooleanField: 'boolean',
+    FileField: 'file',
+    MultipleChoiceField: 'array',
+    ManyRelatedField: 'array',
     serializers.Serializer: 'object',
     serializers.ListSerializer: 'array'
 })
@@ -115,6 +118,7 @@ class EndpointInspector(object):
     """
     A class to determine the available API endpoints that a project exposes.
     """
+
     def __init__(self, patterns=None, urlconf=None):
         if patterns is None:
             if urlconf is None:
@@ -187,10 +191,8 @@ class EndpointInspector(object):
         if hasattr(callback, 'actions'):
             return [method.upper() for method in callback.actions.keys()]
 
-        return [
-            method for method in
-            callback.cls().allowed_methods if method not in ('OPTIONS', 'HEAD')
-        ]
+        return [method for method in callback.cls().allowed_methods
+                if method not in ('OPTIONS', 'HEAD')]
 
 
 class SchemaGenerator(object):
@@ -204,8 +206,9 @@ class SchemaGenerator(object):
     }
     endpoint_inspector_cls = EndpointInspector
 
-    # Map the method names we use for viewset actions onto external schema names.
-    # These give us names that are more suitable for the external representation.
+    # Map the method names we use for viewset actions onto external schema
+    # names. These give us names that are more suitable for the external
+    # representation.
     # Set by 'SCHEMA_COERCE_METHOD_NAMES'.
     coerce_method_names = None
 
@@ -234,7 +237,8 @@ class SchemaGenerator(object):
         Generate a `coreapi.Document` representing the API schema.
         """
         if self.endpoints is None:
-            inspector = self.endpoint_inspector_cls(self.patterns, self.urlconf)
+            inspector = self.endpoint_inspector_cls(self.patterns,
+                                                    self.urlconf)
             self.endpoints = inspector.get_api_endpoints()
 
         links = self.get_links(request)
@@ -369,7 +373,8 @@ class SchemaGenerator(object):
         fields += self.get_pagination_fields(path, method, view)
         fields += self.get_filter_fields(path, method, view)
 
-        if fields and any([field.location in ('form', 'body') for field in fields]):
+        if fields and any(
+                [field.location in ('form', 'body') for field in fields]):
             encoding = self.get_encoding(path, method, view)
         else:
             encoding = None
@@ -449,7 +454,8 @@ class SchemaGenerator(object):
         fields = []
 
         for variable in uritemplate.variables(path):
-            field = coreapi.Field(name=variable, location='path', required=True)
+            field = coreapi.Field(name=variable, location='path',
+                                  required=True)
             fields.append(field)
 
         return fields
@@ -482,11 +488,12 @@ class SchemaGenerator(object):
 
         fields = []
         for field in serializer.fields.values():
-            if field.read_only or isinstance(field, serializers.HiddenField):
+            if field.read_only or isinstance(field, HiddenField):
                 continue
 
             required = field.required and method != 'PATCH'
-            description = force_text(field.help_text) if field.help_text else ''
+            description = force_text(
+                field.help_text) if field.help_text else ''
             field = coreapi.Field(
                 name=field.field_name,
                 location='form',
@@ -528,27 +535,30 @@ class SchemaGenerator(object):
         the schema document.
 
         /users/                   ("users", "list"), ("users", "create")
-        /users/{pk}/              ("users", "read"), ("users", "update"), ("users", "delete")
-        /users/enabled/           ("users", "enabled")  # custom viewset list action
-        /users/{pk}/star/         ("users", "star")     # custom viewset detail action
-        /users/{pk}/groups/       ("users", "groups", "list"), ("users", "groups", "create")
-        /users/{pk}/groups/{pk}/  ("users", "groups", "read"), ("users", "groups", "update"), ("users", "groups", "delete")
+        /users/{pk}/              ("users", "read"), ("users", "update"),
+                                    ("users", "delete")
+        /users/enabled/           ("users", "enabled")  # custom viewset list
+        /users/{pk}/star/         ("users", "star")     # custom viewset detail
+        /users/{pk}/groups/       ("users", "groups", "list"),
+                                    ("users", "groups", "create")
+        /users/{pk}/groups/{pk}/  ("users", "groups", "read"),
+                                    ("users", "groups", "update"),
+                                    ("users", "groups", "delete")
         """
         if hasattr(view, 'action'):
             # Viewsets have explicitly named actions.
             action = view.action
         else:
-            # Views have no associated action, so we determine one from the method.
+            # Views have no associated action, so we determine one from the
+            # method.
             if is_list_view(subpath, method, view):
                 action = 'list'
             else:
                 action = self.default_mapping[method.lower()]
 
-        named_path_components = [
-            component for component
-            in subpath.strip('/').split('/')
-            if '{' not in component
-        ]
+        named_path_components = [component for component
+                                 in subpath.strip('/').split('/')
+                                 if '{' not in component]
 
         if is_custom_action(action):
             # Custom action, eg "/users/{pk}/activate/", "/users/active/"
@@ -573,8 +583,10 @@ def get_schema_view(title=None, url=None, renderer_classes=None):
     """
     generator = SchemaGenerator(title=title, url=url)
     if renderer_classes is None:
-        if renderers.BrowsableAPIRenderer in api_settings.DEFAULT_RENDERER_CLASSES:
-            rclasses = [renderers.CoreJSONRenderer, renderers.BrowsableAPIRenderer]
+        if renderers.BrowsableAPIRenderer in \
+                api_settings.DEFAULT_RENDERER_CLASSES:
+            rclasses = [renderers.CoreJSONRenderer,
+                        renderers.BrowsableAPIRenderer]
         else:
             rclasses = [renderers.CoreJSONRenderer]
     else:
