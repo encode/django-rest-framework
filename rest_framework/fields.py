@@ -54,12 +54,17 @@ if six.PY3:
         """
         True if the object is a callable that takes no arguments.
         """
-        if not callable(obj):
+        if not (inspect.isfunction(obj) or inspect.ismethod(obj)):
             return False
 
         sig = inspect.signature(obj)
         params = sig.parameters.values()
-        return all(param.default != param.empty for param in params)
+        return all(
+            param.kind == param.VAR_POSITIONAL or
+            param.kind == param.VAR_KEYWORD or
+            param.default != param.empty
+            for param in params
+        )
 
 else:
     def is_simple_callable(obj):
