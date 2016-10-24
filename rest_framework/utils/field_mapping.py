@@ -16,7 +16,7 @@ NUMERIC_FIELD_TYPES = (
     models.DecimalField,
     models.FloatField,
     models.IntegerField,
-    models.PositiveInteger,
+    models.PositiveIntegerField,
     models.PositiveSmallIntegerField,
     models.SmallIntegerField,
 )
