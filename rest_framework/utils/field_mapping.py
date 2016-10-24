@@ -12,13 +12,7 @@ from rest_framework.compat import DecimalValidator
 from rest_framework.validators import UniqueValidator
 
 NUMERIC_FIELD_TYPES = (
-    models.BigIntegerField,
-    models.DecimalField,
-    models.FloatField,
-    models.IntegerField,
-    models.PositiveIntegerField,
-    models.PositiveSmallIntegerField,
-    models.SmallIntegerField,
+    models.IntegerField, models.FloatField, models.DecimalField
 )
 
 
