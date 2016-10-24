@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import uuid
 
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -88,3 +89,9 @@ class NullableOneToOneSource(RESTFrameworkModel):
     target = models.OneToOneField(
         OneToOneTarget, null=True, blank=True,
         related_name='nullable_source', on_delete=models.CASCADE)
+
+
+# min_value with PositiveIntegerField
+class MinValueItem(RESTFrameworkModel):
+    integer = models.IntegerField(validators=[MinValueValidator(0)])
+    positive_integer = models.PositiveIntegerField()

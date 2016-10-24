@@ -9,6 +9,7 @@ import pytest
 from rest_framework import serializers
 from rest_framework.compat import unicode_repr
 
+from .models import MinValueItem
 from .utils import MockObject
 
 
@@ -67,6 +68,21 @@ class TestSerializer:
         serializer = self.Serializer(data=data)
         assert not serializer.is_valid()
         assert serializer.errors == {'non_field_errors': ['No data provided']}
+
+
+class TestMinValueSerializer:
+    def setup(self):
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = MinValueItem
+                fields = ('integer', 'positive_integer')
+        self.serializer = ExampleSerializer()
+
+    def test_min_value_for_integer_field(self):
+        assert self.serializer['integer'].min_value == 0
+
+    def test_min_value_for_positive_integer_field(self):
+        assert self.serializer['positive_integer'].min_value == 0
 
 
 class TestValidateMethod:
