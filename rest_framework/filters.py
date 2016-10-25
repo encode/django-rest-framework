@@ -49,9 +49,20 @@ if django_filters:
                 PendingDeprecationWarning
             )
             return super(FilterSetMetaclass, cls).__new__(cls, name, bases, attrs)
+    _BaseFilterSet = DFFilterSet
+else:
+    # Dummy metaclass just so we can give a user-friendly error message.
+    class FilterSetMetaclass(type):
+        def __init__(self, name, bases, attrs):
+            # Assert only on subclasses, so we can define FilterSet below.
+            if bases != (object,):
+                assert False, 'django-filter must be installed to use the `FilterSet` class'
+            super(FilterSetMetaclass, self).__init__(name, bases, attrs)
+    _BaseFilterSet = object
 
-    class FilterSet(six.with_metaclass(FilterSetMetaclass, DFFilterSet)):
-        pass
+
+class FilterSet(six.with_metaclass(FilterSetMetaclass, _BaseFilterSet)):
+    pass
 
 
 class DjangoFilterBackend(BaseFilterBackend):
