@@ -210,14 +210,14 @@ class Throttled(APIException):
     default_code = 'throttled'
 
     def __init__(self, wait=None, detail=None, code=None):
+        if detail is None:
+            detail = force_text(self.default_detail)
+        if wait is not None:
+            wait = math.ceil(wait)
+            detail = ' '.join((
+                detail,
+                force_text(ungettext(self.extra_detail_singular.format(wait=wait),
+                                     self.extra_detail_plural.format(wait=wait),
+                                     wait))))
+        self.wait = wait
         super(Throttled, self).__init__(detail, code)
-
-        if wait is None:
-            self.wait = None
-        else:
-            self.wait = math.ceil(wait)
-            self.detail += ' ' + force_text(ungettext(
-                self.extra_detail_singular.format(wait=self.wait),
-                self.extra_detail_plural.format(wait=self.wait),
-                self.wait
-            ))
