@@ -73,7 +73,7 @@ class NullableForeignKeySource(RESTFrameworkModel):
 class NullableUUIDForeignKeySource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
     target = models.ForeignKey(ForeignKeyTarget, null=True, blank=True,
-                               related_name='nullable_sources',
+                               related_name='nullable_uuid_sources',
                                verbose_name='Optional target object',
                                on_delete=models.CASCADE)
 
