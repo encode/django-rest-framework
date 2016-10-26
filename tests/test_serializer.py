@@ -1,15 +1,58 @@
 # coding: utf-8
 from __future__ import unicode_literals
 
+import inspect
 import pickle
 import re
 
 import pytest
 
-from rest_framework import serializers
+from rest_framework import fields, relations, serializers
 from rest_framework.compat import unicode_repr
+from rest_framework.fields import Field
 
 from .utils import MockObject
+
+
+# Test serializer fields imports.
+# -------------------------------
+
+class TestFieldImports:
+    def is_field(self, name, value):
+        return (
+            isinstance(value, type) and
+            issubclass(value, Field) and
+            not name.startswith('_')
+        )
+
+    def test_fields(self):
+        msg = "Expected `fields.%s` to be imported in `serializers`"
+        field_classes = [
+            key for key, value
+            in inspect.getmembers(fields)
+            if self.is_field(key, value)
+        ]
+
+        # sanity check
+        assert 'Field' in field_classes
+        assert 'BooleanField' in field_classes
+
+        for field in field_classes:
+            assert hasattr(serializers, field), msg % field
+
+    def test_relations(self):
+        msg = "Expected `relations.%s` to be imported in `serializers`"
+        field_classes = [
+            key for key, value
+            in inspect.getmembers(relations)
+            if self.is_field(key, value)
+        ]
+
+        # sanity check
+        assert 'RelatedField' in field_classes
+
+        for field in field_classes:
+            assert hasattr(serializers, field), msg % field
 
 
 # Tests for core functionality.
