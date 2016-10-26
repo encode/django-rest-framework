@@ -30,10 +30,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework.compat import JSONField as ModelJSONField
 from rest_framework.compat import postgres_fields, set_many, unicode_to_repr
 from rest_framework.exceptions import ErrorDetail, ValidationError
-from rest_framework.fields import (
-    CreateOnlyDefault, SkipField, empty, get_error_detail, set_value
-)
-from rest_framework.relations import PKOnlyObject
+from rest_framework.fields import get_error_detail, set_value
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, model_meta, representation
 from rest_framework.utils.field_mapping import (
@@ -62,10 +59,15 @@ from rest_framework.fields import (  # NOQA # isort:skip
     SerializerMethodField, SlugField, TimeField, URLField, UUIDField,
 )
 from rest_framework.relations import (  # NOQA # isort:skip
-    Hyperlink, HyperlinkedIdentityField, HyperlinkedRelatedField, ManyRelatedField,
+    HyperlinkedIdentityField, HyperlinkedRelatedField, ManyRelatedField,
     PrimaryKeyRelatedField, RelatedField, SlugRelatedField, StringRelatedField,
 )
 
+# Non-field imports, but public API
+from rest_framework.fields import (  # NOQA # isort:skip
+    CreateOnlyDefault, CurrentUserDefault, SkipField, empty
+)
+from rest_framework.relations import Hyperlink, PKOnlyObject  # NOQA # isort:skip
 
 # We assume that 'validators' are intended for the child serializer,
 # rather than the parent serializer.
