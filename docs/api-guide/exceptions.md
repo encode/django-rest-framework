@@ -119,7 +119,7 @@ The available attributes and methods are:
 
 * `.detail` - Return the textual description of the error.
 * `.get_codes()` - Return the code identifier of the error.
-* `.full_details()` - Return both the textual description and the code identifier.
+* `.get_full_details()` - Return both the textual description and the code identifier.
 
 In most cases the error detail will be a simple item:
 
@@ -127,7 +127,7 @@ In most cases the error detail will be a simple item:
     You do not have permission to perform this action.
     >>> print(exc.get_codes())
     permission_denied
-    >>> print(exc.full_details())
+    >>> print(exc.get_full_details())
     {'message':'You do not have permission to perform this action.','code':'permission_denied'}
 
 In the case of validation errors the error detail will be either a list or
