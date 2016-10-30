@@ -1,12 +1,7 @@
 from rest_framework import serializers
 
 from ..base import FieldValues
-from .helpers import MockFile
-
-
-class MockRequest:
-    def build_absolute_uri(self, value):
-        return 'http://example.com' + value
+from .helpers import MockFile, MockRequest
 
 
 class TestFileField(FieldValues):

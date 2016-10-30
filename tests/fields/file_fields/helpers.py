@@ -1,3 +1,8 @@
+class MockRequest:
+    def build_absolute_uri(self, value):
+        return 'http://example.com' + value
+
+
 class MockFile:
     def __init__(self, name='', size=0, url=''):
         self.name = name
