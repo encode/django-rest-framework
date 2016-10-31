@@ -41,6 +41,9 @@ class TemplateTagTests(TestCase):
         self.assertEqual(format_value(None), '<code>null</code>')
 
     def test_format_value_hyperlink(self):
+        """
+        Tests format_value with a URL
+        """
         url = 'http://url.com'
         name = 'name_of_url'
         hyperlink = Hyperlink(url, name)
@@ -53,6 +56,25 @@ class TemplateTagTests(TestCase):
         list_items = ['item1', 'item2', 'item3']
         self.assertEqual(format_value(list_items), '\n item1, item2, item3\n')
         self.assertEqual(format_value([]), '\n\n')
+
+    def test_format_value_dict(self):
+        """
+        Tests format_value with a dict
+        """
+        test_dict = {'a': 'b'}
+        expected_dict_format = """
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <th>a</th>
+                    <td>b</td>
+                </tr>
+            </tbody>
+        </table>"""
+        self.assertEqual(
+            format_html(format_value(test_dict)),
+            format_html(expected_dict_format)
+        )
 
     def test_format_value_table(self):
         """
@@ -84,20 +106,47 @@ class TemplateTagTests(TestCase):
         expected_dict_format = """
         <tableclass="tabletable-striped">
             <tbody>
-               <tr>
-                  <th>0</th>
-                  <td></td>
-               </tr>
-               <tr>
-                  <th>1</th>
-                  <td></td>
-               </tr>
-               <tr>
-                  <th>2</th>
-                  <td></td>
-               </tr>
+                <tr>
+                    <th>0</th>
+                    <td>
+                        <tableclass="tabletable-striped">
+                            <tbody>
+                                <tr>
+                                    <th>item1</th>
+                                    <td>value1</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <th>1</th>
+                    <td>
+                        <tableclass="tabletable-striped">
+                            <tbody>
+                                <tr>
+                                    <th>item2</th>
+                                    <td>value2</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <th>2</th>
+                    <td>
+                        <tableclass="tabletable-striped">
+                            <tbody>
+                                <tr>
+                                    <th>item3</th>
+                                    <td>value3</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
             </tbody>
-            </table>"""
+        </table>"""
 
         list_of_dicts = [{'item1': 'value1'}, {'item2': 'value2'}, {'item3': 'value3'}]
         self.assertEqual(
