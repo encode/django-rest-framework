@@ -541,14 +541,14 @@ for your project.</p>
 <ul>
 <li><code>.detail</code> - Return the textual description of the error.</li>
 <li><code>.get_codes()</code> - Return the code identifier of the error.</li>
-<li><code>.full_details()</code> - Return both the textual description and the code identifier.</li>
+<li><code>.get_full_details()</code> - Return both the textual description and the code identifier.</li>
 </ul>
 <p>In most cases the error detail will be a simple item:</p>
 <pre><code>&gt;&gt;&gt; print(exc.detail)
 You do not have permission to perform this action.
 &gt;&gt;&gt; print(exc.get_codes())
 permission_denied
-&gt;&gt;&gt; print(exc.full_details())
+&gt;&gt;&gt; print(exc.get_full_details())
 {'message':'You do not have permission to perform this action.','code':'permission_denied'}
 </code></pre>
 <p>In the case of validation errors the error detail will be either a list or

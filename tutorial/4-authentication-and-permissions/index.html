@@ -433,7 +433,7 @@
 <p>We're going to make a couple of changes to our <code>Snippet</code> model class.
 First, let's add a couple of fields.  One of those fields will be used to represent the user who created the code snippet.  The other field will be used to store the highlighted HTML representation of the code.</p>
 <p>Add the following two fields to the <code>Snippet</code> model in <code>models.py</code>.</p>
-<pre><code>owner = models.ForeignKey('auth.User', related_name='snippets')
+<pre><code>owner = models.ForeignKey('auth.User', related_name='snippets', on_delete=models.CASCADE)
 highlighted = models.TextField()
 </code></pre>
 <p>We'd also need to make sure that when the model is saved, that we populate the highlighted field, using the <code>pygments</code> code highlighting library.</p>
