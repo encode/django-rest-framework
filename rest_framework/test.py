@@ -106,15 +106,6 @@ if requests is not None:
         def close(self):
             pass
 
-    class NoExternalRequestsAdapter(requests.adapters.HTTPAdapter):
-        def send(self, request, *args, **kwargs):
-            msg = (
-                'RequestsClient refusing to make an outgoing network request '
-                'to "%s". Only "testserver" or hostnames in your ALLOWED_HOSTS '
-                'setting are valid.' % request.url
-            )
-            raise RuntimeError(msg)
-
     class RequestsClient(requests.Session):
         def __init__(self, *args, **kwargs):
             super(RequestsClient, self).__init__(*args, **kwargs)
