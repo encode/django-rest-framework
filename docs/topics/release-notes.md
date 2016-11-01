@@ -40,6 +40,20 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.5.x series
 
+### 3.5.2
+
+**Date**: [1st November 2016][3.5.2-milestone]
+
+* Restore exception tracebacks in Python 2.7. ([#4631][gh4631], [#4638][gh4638])
+* Properly display dicts in the admin console. ([#4532][gh4532], [#4636][gh4636])
+* Fix is_simple_callable with variable args, kwargs. ([#4622][gh4622], [#4602][gh4602])
+* Support 'on'/'off' literals with BooleanField. ([#4640][gh4640], [#4624][gh4624])
+* Enable cursor pagination of value querysets. ([#4569][gh4569])
+* Fix support of get_full_details() for Throttled exceptions. ([#4627][gh4627])
+* Fix FilterSet proxy. ([#4620][gh4620])
+* Make serializer fields import explicit. ([#4628][gh4628])
+* Drop redundant requests adapter. ([#4639][gh4639])
+
 ### 3.5.1
 
 **Date**: [21st October 2016][3.5.1-milestone]
@@ -615,6 +629,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.4.7-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.4.7+Release%22
 [3.5.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.0+Release%22
 [3.5.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.1+Release%22
+[3.5.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.2+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -1167,3 +1182,19 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh4609]: https://github.com/tomchristie/django-rest-framework/issues/4609
 [gh4606]: https://github.com/tomchristie/django-rest-framework/issues/4606
 [gh4600]: https://github.com/tomchristie/django-rest-framework/issues/4600
+
+<!-- 3.5.2 -->
+
+[gh4631]: https://github.com/tomchristie/django-rest-framework/issues/4631
+[gh4638]: https://github.com/tomchristie/django-rest-framework/issues/4638
+[gh4532]: https://github.com/tomchristie/django-rest-framework/issues/4532
+[gh4636]: https://github.com/tomchristie/django-rest-framework/issues/4636
+[gh4622]: https://github.com/tomchristie/django-rest-framework/issues/4622
+[gh4602]: https://github.com/tomchristie/django-rest-framework/issues/4602
+[gh4640]: https://github.com/tomchristie/django-rest-framework/issues/4640
+[gh4624]: https://github.com/tomchristie/django-rest-framework/issues/4624
+[gh4569]: https://github.com/tomchristie/django-rest-framework/issues/4569
+[gh4627]: https://github.com/tomchristie/django-rest-framework/issues/4627
+[gh4620]: https://github.com/tomchristie/django-rest-framework/issues/4620
+[gh4628]: https://github.com/tomchristie/django-rest-framework/issues/4628
+[gh4639]: https://github.com/tomchristie/django-rest-framework/issues/4639
