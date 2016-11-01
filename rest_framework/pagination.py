@@ -711,7 +711,11 @@ class CursorPagination(BasePagination):
         return replace_query_param(self.base_url, self.cursor_query_param, encoded)
 
     def _get_position_from_instance(self, instance, ordering):
-        attr = getattr(instance, ordering[0].lstrip('-'))
+        field_name = ordering[0].lstrip('-')
+        if isinstance(instance, dict):
+            attr = instance[field_name]
+        else:
+            attr = getattr(instance, field_name)
         return six.text_type(attr)
 
     def get_paginated_response(self, data):
