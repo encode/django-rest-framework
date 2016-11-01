@@ -79,11 +79,22 @@ if django_filters:
             model = BaseFilterableItem
             fields = '__all__'
 
+    # Test the same filter using the deprecated internal FilterSet class.
+    class BaseFilterableItemFilterWithProxy(filters.FilterSet):
+        text = django_filters.CharFilter()
+
+        class Meta:
+            model = BaseFilterableItem
+            fields = '__all__'
+
     class BaseFilterableItemFilterRootView(generics.ListCreateAPIView):
         queryset = FilterableItem.objects.all()
         serializer_class = FilterableItemSerializer
         filter_class = BaseFilterableItemFilter
         filter_backends = (filters.DjangoFilterBackend,)
+
+    class BaseFilterableItemFilterWithProxyRootView(BaseFilterableItemFilterRootView):
+        filter_class = BaseFilterableItemFilterWithProxy
 
     # Regression test for #814
     class FilterFieldsQuerysetView(generics.ListCreateAPIView):
@@ -290,6 +301,18 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         The `get_filter_class` model checks should allow base model filters.
         """
         view = BaseFilterableItemFilterRootView.as_view()
+
+        request = factory.get('/?text=aaa')
+        response = view(request).render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    @unittest.skipUnless(django_filters, 'django-filter not installed')
+    def test_base_model_filter_with_proxy(self):
+        """
+        The `get_filter_class` model checks should allow base model filters.
+        """
+        view = BaseFilterableItemFilterWithProxyRootView.as_view()
 
         request = factory.get('/?text=aaa')
         response = view(request).render()

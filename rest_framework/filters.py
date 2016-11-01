@@ -37,15 +37,32 @@ class BaseFilterBackend(object):
         return []
 
 
-class FilterSet(object):
-    def __new__(cls, *args, **kwargs):
-        warnings.warn(
-            "The built in 'rest_framework.filters.FilterSet' is pending deprecation. "
-            "You should use 'django_filters.rest_framework.FilterSet' instead.",
-            PendingDeprecationWarning
-        )
-        from django_filters.rest_framework import FilterSet
-        return FilterSet(*args, **kwargs)
+if django_filters:
+    from django_filters.filterset import FilterSetMetaclass as DFFilterSetMetaclass
+    from django_filters.rest_framework.filterset import FilterSet as DFFilterSet
+
+    class FilterSetMetaclass(DFFilterSetMetaclass):
+        def __new__(cls, name, bases, attrs):
+            warnings.warn(
+                "The built in 'rest_framework.filters.FilterSet' is pending deprecation. "
+                "You should use 'django_filters.rest_framework.FilterSet' instead.",
+                PendingDeprecationWarning
+            )
+            return super(FilterSetMetaclass, cls).__new__(cls, name, bases, attrs)
+    _BaseFilterSet = DFFilterSet
+else:
+    # Dummy metaclass just so we can give a user-friendly error message.
+    class FilterSetMetaclass(type):
+        def __init__(self, name, bases, attrs):
+            # Assert only on subclasses, so we can define FilterSet below.
+            if bases != (object,):
+                assert False, 'django-filter must be installed to use the `FilterSet` class'
+            super(FilterSetMetaclass, self).__init__(name, bases, attrs)
+    _BaseFilterSet = object
+
+
+class FilterSet(six.with_metaclass(FilterSetMetaclass, _BaseFilterSet)):
+    pass
 
 
 class DjangoFilterBackend(BaseFilterBackend):
