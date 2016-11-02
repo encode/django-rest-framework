@@ -4,6 +4,8 @@ from importlib import import_module
 
 from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
+from django.core.exceptions import PermissionDenied
+from django.http import Http404
 from django.utils import six
 from django.utils.encoding import force_text, smart_text
 
@@ -339,7 +341,7 @@ class SchemaGenerator(object):
 
         try:
             view.check_permissions(view.request)
-        except exceptions.APIException:
+        except (exceptions.APIException, Http404, PermissionDenied):
             return False
         return True
 

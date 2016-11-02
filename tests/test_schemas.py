@@ -1,16 +1,21 @@
 import unittest
 
 from django.conf.urls import include, url
+from django.core.exceptions import PermissionDenied
+from django.http import Http404
 from django.test import TestCase, override_settings
 
 from rest_framework import filters, pagination, permissions, serializers
 from rest_framework.compat import coreapi
 from rest_framework.decorators import detail_route, list_route
+from rest_framework.request import Request
 from rest_framework.routers import DefaultRouter
 from rest_framework.schemas import SchemaGenerator, get_schema_view
-from rest_framework.test import APIClient
+from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
+
+factory = APIRequestFactory()
 
 
 class MockUser(object):
@@ -215,6 +220,32 @@ class TestRouterGeneratedSchema(TestCase):
         self.assertEqual(response.data, expected)
 
 
+class DenyAllUsingHttp404(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        raise Http404()
+
+    def has_object_permission(self, request, view, obj):
+        raise Http404()
+
+
+class DenyAllUsingPermissionDenied(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        raise PermissionDenied()
+
+    def has_object_permission(self, request, view, obj):
+        raise PermissionDenied()
+
+
+class Http404ExampleViewSet(ExampleViewSet):
+    permission_classes = [DenyAllUsingHttp404]
+
+
+class PermissionDeniedExampleViewSet(ExampleViewSet):
+    permission_classes = [DenyAllUsingPermissionDenied]
+
+
 class ExampleListView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -332,6 +363,41 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
                         )
                     }
                 }
+            }
+        )
+        self.assertEqual(schema, expected)
+
+
+@unittest.skipUnless(coreapi, 'coreapi is not installed')
+class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
+    def setUp(self):
+        router = DefaultRouter()
+        router.register('example1', Http404ExampleViewSet, base_name='example1')
+        router.register('example2', PermissionDeniedExampleViewSet, base_name='example2')
+        self.patterns = [
+            url('^example/?$', ExampleListView.as_view()),
+            url(r'^', include(router.urls))
+        ]
+
+    def test_schema_for_regular_views(self):
+        """
+        Ensure that schema generation works for ViewSet classes
+        with permission classes raising exceptions.
+        """
+        generator = SchemaGenerator(title='Example API', patterns=self.patterns)
+        request = factory.get('/')
+        schema = generator.get_schema(Request(request))
+        expected = coreapi.Document(
+            url='',
+            title='Example API',
+            content={
+                'example': {
+                    'list': coreapi.Link(
+                        url='/example/',
+                        action='get',
+                        fields=[]
+                    ),
+                },
             }
         )
         self.assertEqual(schema, expected)
