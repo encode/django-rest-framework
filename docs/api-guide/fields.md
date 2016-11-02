@@ -626,7 +626,6 @@ The `.fail()` method is a shortcut for raising `ValidationError` that takes a me
 
     def to_internal_value(self, data):
         if not isinstance(data, six.text_type):
-            msg = 'Incorrect type. Expected a string, but got %s'
             self.fail('incorrect_type', input_type=type(data).__name__)
 
         if not re.match(r'^rgb\([0-9]+,[0-9]+,[0-9]+\)$', data):
