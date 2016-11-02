@@ -263,6 +263,8 @@ class SchemaGenerator(object):
             view_endpoints.append((path, method, view))
 
         # Only generate the path prefix for paths that will be included
+        if not paths:
+            return None
         prefix = self.determine_path_prefix(paths)
 
         for path, method, view in view_endpoints:
