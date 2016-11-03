@@ -226,7 +226,7 @@ msgstr "Убедитесь что в числе не больше {max_decimal_p
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
-msgstr "Убедитесь что в цисле не больше {max_whole_digits} знаков в целой части."
+msgstr "Убедитесь что в числе не больше {max_whole_digits} знаков в целой части."
 
 #: fields.py:1025
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
