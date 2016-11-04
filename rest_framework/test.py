@@ -86,13 +86,18 @@ if requests is not None:
             # Make the outgoing request via WSGI.
             raw_response = self.get_raw_response(request)
 
+            # Gather all response headers
+            response_headers = [(str(k), str(v)) for k, v in raw_response.items()]
+            for c in raw_response.cookies.values():
+                response_headers.append((str('Set-Cookie'), str(c.output(header=''))))
+
             # Build the underlying urllib3.HTTPResponse
             raw_kwargs['status'] = raw_response.status_code
-            raw_kwargs['reason'] = raw_response.status_text
-            raw_kwargs['headers'] = raw_response.items()
+            raw_kwargs['reason'] = raw_response.reason_phrase
+            raw_kwargs['headers'] = response_headers
             raw_kwargs['version'] = 11
             raw_kwargs['preload_content'] = False
-            raw_kwargs['original_response'] = MockOriginalResponse(raw_response.items())
+            raw_kwargs['original_response'] = MockOriginalResponse(response_headers)
             raw_kwargs['body'] = io.BytesIO(raw_response.content)
             raw = requests.packages.urllib3.HTTPResponse(**raw_kwargs)
 
