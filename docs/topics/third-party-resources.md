@@ -251,6 +251,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [ember-django-adapter][ember-django-adapter] - An adapter for working with Ember.js
 * [django-versatileimagefield][django-versatileimagefield] - Provides a drop-in replacement for Django's stock `ImageField` that makes it easy to serve images in multiple sizes/renditions from a single field. For DRF-specific implementation docs, [click here][django-versatileimagefield-drf-docs].
 * [drf-tracking][drf-tracking] - Utilities to track requests to DRF API views.
+* [drf_tweaks][drf_tweaks] - Serializers with one-step validation (and more), pagination without counts and other tweaks.
 * [django-rest-framework-braces][django-rest-framework-braces] - Collection of utilities for working with Django Rest Framework. The most notable ones are [FormSerializer](https://django-rest-framework-braces.readthedocs.io/en/latest/overview.html#formserializer) and [SerializerForm](https://django-rest-framework-braces.readthedocs.io/en/latest/overview.html#serializerform), which are adapters between DRF serializers and Django forms.
 * [drf-haystack][drf-haystack] - Haystack search for Django Rest Framework
 * [django-rest-framework-version-transforms][django-rest-framework-version-transforms] - Enables the use of delta transformations for versioning of DRF resource representations.
@@ -363,3 +364,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-messaging-js]: https://github.com/raphaelgyory/django-rest-messaging-js
 [medium-django-rest-framework]: https://medium.com/django-rest-framework
 [django-rest-framework-course]: https://teamtreehouse.com/library/django-rest-framework
+[drf_tweaks]: https://github.com/ArabellaTech/drf_tweaks
