@@ -68,17 +68,17 @@ REST framework commercially we strongly encourage you to invest in its
 continued development by **[signing up for a paid plan][funding]**.
 
 The initial aim is to provide a single full-time position on REST framework.
-Right now we're a little over 43% of the way towards achieving that.
-*Every single sign-up makes a significant impact.* Taking out a
-[basic tier sponsorship](https://fund.django-rest-framework.org/topics/funding/#corporate-plans) moves us about 1% closer to our funding target.
+*Every single sign-up makes a significant impact towards making that possible.*
 
 <ul class="premium-promo promo">
     <li><a href="http://jobs.rover.com/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rover_130x130.png)">Rover.com</a></li>
     <li><a href="https://getsentry.com/welcome/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/sentry130.png)">Sentry</a></li>
+    <li><a href="https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/stream-130.png)">Stream</a></li>
+    <li><a href="http://www.machinalis.com/#services" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/Machinalis130.png)">Machinalis</a></li>
 </ul>
 <div style="clear: both; padding-bottom: 20px;"></div>
 
-*Many thanks to all our [awesome sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/) and [Sentry](https://getsentry.com/welcome/).*
+*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/), [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), and [Machinalis](http://www.machinalis.com/#services).*
 
 ---
 
@@ -87,11 +87,11 @@ Right now we're a little over 43% of the way towards achieving that.
 REST framework requires the following:
 
 * Python (2.7, 3.2, 3.3, 3.4, 3.5)
-* Django (1.7+, 1.8, 1.9)
+* Django (1.8, 1.9, 1.10)
 
 The following packages are optional:
 
-* [coreapi][coreapi] (1.21.0+) - Schema generation support.
+* [coreapi][coreapi] (1.32.0+) - Schema generation support.
 * [Markdown][markdown] (2.1.0+) - Markdown support for the browsable API.
 * [django-filter][django-filter] (0.9.2+) - Filtering support.
 * [django-crispy-forms][django-crispy-forms] - Improved HTML display for filtering.
@@ -184,10 +184,11 @@ The tutorial will walk you through the building blocks that make up REST framewo
 
 * [1 - Serialization][tut-1]
 * [2 - Requests & Responses][tut-2]
-* [3 - Class based views][tut-3]
+* [3 - Class-based views][tut-3]
 * [4 - Authentication & permissions][tut-4]
 * [5 - Relationships & hyperlinked APIs][tut-5]
 * [6 - Viewsets & routers][tut-6]
+* [7 - Schemas & client libraries][tut-7]
 
 There is a live example API of the finished tutorial API for testing purposes, [available here][sandbox].
 
@@ -242,6 +243,8 @@ General guides to using REST framework.
 * [3.1 Announcement][3.1-announcement]
 * [3.2 Announcement][3.2-announcement]
 * [3.3 Announcement][3.3-announcement]
+* [3.4 Announcement][3.4-announcement]
+* [3.5 Announcement][3.5-announcement]
 * [Kickstarter Announcement][kickstarter-announcement]
 * [Mozilla Grant][mozilla-grant]
 * [Funding][funding]
@@ -344,7 +347,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [versioning]: api-guide/versioning.md
 [contentnegotiation]: api-guide/content-negotiation.md
 [metadata]: api-guide/metadata.md
-[schemas]: 'api-guide/schemas.md'
+[schemas]: api-guide/schemas.md
 [formatsuffixes]: api-guide/format-suffixes.md
 [reverse]: api-guide/reverse.md
 [exceptions]: api-guide/exceptions.md
@@ -367,6 +370,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [3.1-announcement]: topics/3.1-announcement.md
 [3.2-announcement]: topics/3.2-announcement.md
 [3.3-announcement]: topics/3.3-announcement.md
+[3.4-announcement]: topics/3.4-announcement.md
+[3.5-announcement]: topics/3.5-announcement.md
 [kickstarter-announcement]: topics/kickstarter-announcement.md
 [mozilla-grant]: topics/mozilla-grant.md
 [funding]: topics/funding.md

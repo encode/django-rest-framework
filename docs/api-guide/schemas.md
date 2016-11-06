@@ -68,7 +68,7 @@ has to be rendered into the actual bytes that are used in the response.
 REST framework includes a renderer class for handling this media type, which
 is available as `renderers.CoreJSONRenderer`.
 
-Other schema formats such as [Open API][open-api] (Formerly "Swagger"),
+Other schema formats such as [Open API][open-api] ("Swagger"),
 [JSON HyperSchema][json-hyperschema], or [API Blueprint][api-blueprint] can
 also be supported by implementing a custom renderer class.
 
@@ -102,15 +102,20 @@ REST framework includes functionality for auto-generating a schema,
 or allows you to specify one explicitly. There are a few different ways to
 add a schema to your API, depending on exactly what you need.
 
-## Using DefaultRouter
+## The get_schema_view shortcut
 
-If you're using `DefaultRouter` then you can include an auto-generated schema,
-simply by adding a `schema_title` argument to the router.
+The simplest way to include a schema in your project is to use the
+`get_schema_view()` function.
 
-    router = DefaultRouter(schema_title='Server Monitoring API')
+    schema_view = get_schema_view(title="Server Monitoring API")
 
-The schema will be included at the root URL, `/`, and presented to clients
-that include the Core JSON media type in their `Accept` header.
+    urlpatterns = [
+        url('^$', schema_view),
+        ...
+    ]
+
+Once the view has been added, you'll be able to make API requests to retrieve
+the auto-generated schema definition.
 
     $ http http://127.0.0.1:8000/ Accept:application/vnd.coreapi+json
     HTTP/1.0 200 OK
@@ -125,18 +130,43 @@ that include the Core JSON media type in their `Accept` header.
         ...
     }
 
-This is a great zero-configuration option for when you want to get up and
-running really quickly. If you want a little more flexibility over the
-schema output then you'll need to consider using `SchemaGenerator` instead.
+The arguments to `get_schema_view()` are:
 
-## Using SchemaGenerator
+#### `title`
 
-The most common way to add a schema to your API is to use the `SchemaGenerator`
-class to auto-generate the `Document` instance, and to return that from a view.
+May be used to provide a descriptive title for the schema definition.
+
+#### `url`
+
+May be used to pass a canonical URL for the schema.
+
+    schema_view = get_schema_view(
+        title='Server Monitoring API',
+        url='https://www.example.org/api/'
+    )
+
+#### `renderer_classes`
+
+May be used to pass the set of renderer classes that can be used to render the API root endpoint.
+
+    from rest_framework.renderers import CoreJSONRenderer
+    from my_custom_package import APIBlueprintRenderer
+
+    schema_view = get_schema_view(
+        title='Server Monitoring API',
+        url='https://www.example.org/api/',
+        renderer_classes=[CoreJSONRenderer, APIBlueprintRenderer]
+    )
+
+## Using an explicit schema view
+
+If you need a little more control than the `get_schema_view()` shortcut gives you,
+then you can use the `SchemaGenerator` class directly to auto-generate the
+`Document` instance, and to return that from a view.
 
 This option gives you the flexibility of setting up the schema endpoint
 with whatever behaviour you want. For example, you can apply different
-permission, throttling or authentication policies to the schema endpoint.
+permission, throttling, or authentication policies to the schema endpoint.
 
 Here's an example of using `SchemaGenerator` together with a view to
 return the schema.
@@ -144,14 +174,15 @@ return the schema.
 **views.py:**
 
     from rest_framework.decorators import api_view, renderer_classes
-    from rest_framework import renderers, schemas
+    from rest_framework import renderers, response, schemas
 
     generator = schemas.SchemaGenerator(title='Bookings API')
 
     @api_view()
     @renderer_classes([renderers.CoreJSONRenderer])
     def schema_view(request):
-        return generator.get_schema()
+        schema = generator.get_schema(request)
+        return response.Response(schema)
 
 **urls.py:**
 
@@ -172,7 +203,8 @@ you need to pass the `request` argument to the `get_schema()` method, like so:
     @api_view()
     @renderer_classes([renderers.CoreJSONRenderer])
     def schema_view(request):
-        return generator.get_schema(request=request)
+        generator = schemas.SchemaGenerator(title='Bookings API')
+        return response.Response(generator.get_schema(request=request))
 
 ## Explicit schema definition
 
@@ -183,7 +215,7 @@ representation.
 
     import coreapi
     from rest_framework.decorators import api_view, renderer_classes
-    from rest_framework import renderers
+    from rest_framework import renderers, response
 
     schema = coreapi.Document(
         title='Bookings API',
@@ -195,7 +227,7 @@ representation.
     @api_view()
     @renderer_classes([renderers.CoreJSONRenderer])
     def schema_view(request):
-        return schema
+        return response.Response(schema)
 
 ## Static schema file
 
@@ -207,6 +239,95 @@ You could then either:
 * Write a schema definition as a static file, and [serve the static file directly][static-files].
 * Write a schema definition that is loaded using `Core API`, and then
   rendered to one of many available formats, depending on the client request.
+
+---
+
+# Schemas as documentation
+
+One common usage of API schemas is to use them to build documentation pages.
+
+The schema generation in REST framework uses docstrings to automatically
+populate descriptions in the schema document.
+
+These descriptions will be based on:
+
+* The corresponding method docstring if one exists.
+* A named section within the class docstring, which can be either single line or multi-line.
+* The class docstring.
+
+## Examples
+
+An `APIView`, with an explicit method docstring.
+
+    class ListUsernames(APIView):
+        def get(self, request):
+            """
+            Return a list of all user names in the system.
+            """
+            usernames = [user.username for user in User.objects.all()]
+            return Response(usernames)
+
+A `ViewSet`, with an explict action docstring.
+
+    class ListUsernames(ViewSet):
+        def list(self, request):
+            """
+            Return a list of all user names in the system.
+            """
+            usernames = [user.username for user in User.objects.all()]
+            return Response(usernames)
+
+A generic view with sections in the class docstring, using single-line style.
+
+    class UserList(generics.ListCreateAPIView):
+        """
+        get: Create a new user.
+        post: List all the users.
+        """
+        queryset = User.objects.all()
+        serializer_class = UserSerializer
+        permission_classes = (IsAdminUser,)
+
+A generic viewset with sections in the class docstring, using multi-line style.
+
+    class UserViewSet(viewsets.ModelViewSet):
+        """
+        API endpoint that allows users to be viewed or edited.
+
+        retrieve:
+        Return a user instance.
+
+        list:
+        Return all users, ordered by most recently joined.
+        """
+        queryset = User.objects.all().order_by('-date_joined')
+        serializer_class = UserSerializer
+
+---
+
+# Alternate schema formats
+
+In order to support an alternate schema format, you need to implement a custom renderer
+class that handles converting a `Document` instance into a bytestring representation.
+
+If there is a Core API codec package that supports encoding into the format you
+want to use then implementing the renderer class can be done by using the codec.
+
+## Example
+
+For example, the `openapi_codec` package provides support for encoding or decoding
+to the Open API ("Swagger") format:
+
+    from rest_framework import renderers
+    from openapi_codec import OpenAPICodec
+
+    class SwaggerRenderer(renderers.BaseRenderer):
+        media_type = 'application/openapi+json'
+        format = 'swagger'
+
+        def render(self, data, media_type=None, renderer_context=None):
+            codec = OpenAPICodec()
+            return codec.dump(data)
 
 ---
 
@@ -223,22 +344,63 @@ Typically you'll instantiate `SchemaGenerator` with a single argument, like so:
 
 Arguments:
 
-* `title` - The name of the API. **required**
+* `title` **required** - The name of the API.
+* `url` - The root URL of the API schema. This option is not required unless the schema is included under path prefix.
 * `patterns` - A list of URLs to inspect when generating the schema. Defaults to the project's URL conf.
 * `urlconf` - A URL conf module name to use when generating the schema. Defaults to `settings.ROOT_URLCONF`.
 
-### get_schema()
+### get_schema(self, request)
 
 Returns a `coreapi.Document` instance that represents the API schema.
 
     @api_view
     @renderer_classes([renderers.CoreJSONRenderer])
     def schema_view(request):
-        return generator.get_schema()
+        generator = schemas.SchemaGenerator(title='Bookings API')
+        return Response(generator.get_schema())
 
-Arguments:
+The `request` argument is optional, and may be used if you want to apply per-user
+permissions to the resulting schema generation.
 
-* `request` - The incoming request. Optionally used if you want to apply per-user permissions to the schema-generation.
+### get_links(self, request)
+
+Return a nested dictionary containing all the links that should be included in the API schema.
+
+This is a good point to override if you want to modify the resulting structure of the generated schema,
+as you can build a new dictionary with a different layout.
+
+### get_link(self, path, method, view)
+
+Returns a `coreapi.Link` instance corresponding to the given view.
+
+You can override this if you need to provide custom behaviors for particular views.
+
+### get_description(self, path, method, view)
+
+Returns a string to use as the link description. By default this is based on the
+view docstring as described in the "Schemas as Documentation" section above.
+
+### get_encoding(self, path, method, view)
+
+Returns a string to indicate the encoding for any request body, when interacting
+with the given view. Eg. `'application/json'`. May return a blank string for views
+that do not expect a request body.
+
+### get_path_fields(self, path, method, view):
+
+Return a list of `coreapi.Link()` instances. One for each path parameter in the URL.
+
+### get_serializer_fields(self, path, method, view)
+
+Return a list of `coreapi.Link()` instances. One for each field in the serializer class used by the view.
+
+### get_pagination_fields(self, path, method, view
+
+Return a list of `coreapi.Link()` instances, as returned by the `get_schema_fields()` method on any pagination class used by the view.
+
+### get_filter_fields(self, path, method, view)
+
+Return a list of `coreapi.Link()` instances, as returned by the `get_schema_fields()` method of any filter classes used by the view.
 
 ---
 

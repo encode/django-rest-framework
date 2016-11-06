@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-01 18:38+0100\n"
-"PO-Revision-Date: 2016-03-01 17:38+0000\n"
-"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
+"POT-Creation-Date: 2016-07-12 16:13+0100\n"
+"PO-Revision-Date: 2016-07-12 15:14+0000\n"
+"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
 "Language-Team: Persian (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/fa/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,40 +17,40 @@ msgstr ""
 "Language: fa\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: authentication.py:71
+#: authentication.py:73
 msgid "Invalid basic header. No credentials provided."
 msgstr ""
 
-#: authentication.py:74
+#: authentication.py:76
 msgid "Invalid basic header. Credentials string should not contain spaces."
 msgstr ""
 
-#: authentication.py:80
+#: authentication.py:82
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
 msgstr ""
 
-#: authentication.py:97
+#: authentication.py:99
 msgid "Invalid username/password."
 msgstr ""
 
-#: authentication.py:100 authentication.py:195
+#: authentication.py:102 authentication.py:198
 msgid "User inactive or deleted."
 msgstr ""
 
-#: authentication.py:173
+#: authentication.py:176
 msgid "Invalid token header. No credentials provided."
 msgstr ""
 
-#: authentication.py:176
+#: authentication.py:179
 msgid "Invalid token header. Token string should not contain spaces."
 msgstr ""
 
-#: authentication.py:182
+#: authentication.py:185
 msgid ""
 "Invalid token header. Token string should not contain invalid characters."
 msgstr ""
 
-#: authentication.py:192
+#: authentication.py:195
 msgid "Invalid token."
 msgstr ""
 
@@ -58,23 +58,23 @@ msgstr ""
 msgid "Auth Token"
 msgstr ""
 
-#: authtoken/models.py:21
+#: authtoken/models.py:15
 msgid "Key"
 msgstr ""
 
-#: authtoken/models.py:23
+#: authtoken/models.py:18
 msgid "User"
 msgstr ""
 
-#: authtoken/models.py:24
+#: authtoken/models.py:20
 msgid "Created"
 msgstr ""
 
-#: authtoken/models.py:33
+#: authtoken/models.py:29
 msgid "Token"
 msgstr ""
 
-#: authtoken/models.py:34
+#: authtoken/models.py:30
 msgid "Tokens"
 msgstr ""
 
@@ -123,7 +123,6 @@ msgid "Not found."
 msgstr ""
 
 #: exceptions.py:109
-#, python-brace-format
 msgid "Method \"{method}\" not allowed."
 msgstr ""
 
@@ -132,7 +131,6 @@ msgid "Could not satisfy the request Accept header."
 msgstr ""
 
 #: exceptions.py:132
-#, python-brace-format
 msgid "Unsupported media type \"{media_type}\" in request."
 msgstr ""
 
@@ -140,214 +138,201 @@ msgstr ""
 msgid "Request was throttled."
 msgstr ""
 
-#: fields.py:266 relations.py:206 relations.py:239 validators.py:79
-#: validators.py:162
+#: fields.py:269 relations.py:206 relations.py:239 validators.py:98
+#: validators.py:181
 msgid "This field is required."
 msgstr ""
 
-#: fields.py:267
+#: fields.py:270
 msgid "This field may not be null."
 msgstr ""
 
-#: fields.py:603 fields.py:634
-#, python-brace-format
+#: fields.py:608 fields.py:639
 msgid "\"{input}\" is not a valid boolean."
 msgstr ""
 
-#: fields.py:669
+#: fields.py:674
 msgid "This field may not be blank."
 msgstr ""
 
-#: fields.py:670 fields.py:1664
-#, python-brace-format
+#: fields.py:675 fields.py:1675
 msgid "Ensure this field has no more than {max_length} characters."
 msgstr ""
 
-#: fields.py:671
-#, python-brace-format
+#: fields.py:676
 msgid "Ensure this field has at least {min_length} characters."
 msgstr ""
 
-#: fields.py:708
+#: fields.py:713
 msgid "Enter a valid email address."
 msgstr ""
 
-#: fields.py:719
+#: fields.py:724
 msgid "This value does not match the required pattern."
 msgstr ""
 
-#: fields.py:730
+#: fields.py:735
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
 msgstr ""
 
-#: fields.py:742
+#: fields.py:747
 msgid "Enter a valid URL."
 msgstr ""
 
-#: fields.py:755
-#, python-brace-format
+#: fields.py:760
 msgid "\"{value}\" is not a valid UUID."
 msgstr ""
 
-#: fields.py:791
+#: fields.py:796
 msgid "Enter a valid IPv4 or IPv6 address."
 msgstr ""
 
-#: fields.py:816
+#: fields.py:821
 msgid "A valid integer is required."
 msgstr ""
 
-#: fields.py:817 fields.py:852 fields.py:885
-#, python-brace-format
+#: fields.py:822 fields.py:857 fields.py:891
 msgid "Ensure this value is less than or equal to {max_value}."
 msgstr ""
 
-#: fields.py:818 fields.py:853 fields.py:886
-#, python-brace-format
+#: fields.py:823 fields.py:858 fields.py:892
 msgid "Ensure this value is greater than or equal to {min_value}."
 msgstr ""
 
-#: fields.py:819 fields.py:854 fields.py:890
+#: fields.py:824 fields.py:859 fields.py:896
 msgid "String value too large."
 msgstr ""
 
-#: fields.py:851 fields.py:884
+#: fields.py:856 fields.py:890
 msgid "A valid number is required."
 msgstr ""
 
-#: fields.py:887
-#, python-brace-format
+#: fields.py:893
 msgid "Ensure that there are no more than {max_digits} digits in total."
 msgstr ""
 
-#: fields.py:888
-#, python-brace-format
+#: fields.py:894
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr ""
 
-#: fields.py:889
-#, python-brace-format
+#: fields.py:895
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
 msgstr ""
 
-#: fields.py:1004
-#, python-brace-format
+#: fields.py:1025
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
-#: fields.py:1005
+#: fields.py:1026
 msgid "Expected a datetime but got a date."
 msgstr ""
 
-#: fields.py:1082
-#, python-brace-format
+#: fields.py:1103
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
-#: fields.py:1083
+#: fields.py:1104
 msgid "Expected a date but got a datetime."
 msgstr ""
 
-#: fields.py:1151
-#, python-brace-format
+#: fields.py:1170
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
-#: fields.py:1215
-#, python-brace-format
+#: fields.py:1232
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
 msgstr ""
 
-#: fields.py:1240 fields.py:1289
-#, python-brace-format
+#: fields.py:1251 fields.py:1300
 msgid "\"{input}\" is not a valid choice."
 msgstr ""
 
-#: fields.py:1243 relations.py:71 relations.py:442
-#, python-brace-format
+#: fields.py:1254 relations.py:71 relations.py:441
 msgid "More than {count} items..."
 msgstr ""
 
-#: fields.py:1290 fields.py:1437 relations.py:438 serializers.py:520
-#, python-brace-format
+#: fields.py:1301 fields.py:1448 relations.py:437 serializers.py:524
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr ""
 
-#: fields.py:1291
+#: fields.py:1302
 msgid "This selection may not be empty."
 msgstr ""
 
-#: fields.py:1328
-#, python-brace-format
+#: fields.py:1339
 msgid "\"{input}\" is not a valid path choice."
 msgstr ""
 
-#: fields.py:1347
+#: fields.py:1358
 msgid "No file was submitted."
 msgstr ""
 
-#: fields.py:1348
+#: fields.py:1359
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
 msgstr ""
 
-#: fields.py:1349
+#: fields.py:1360
 msgid "No filename could be determined."
 msgstr ""
 
-#: fields.py:1350
+#: fields.py:1361
 msgid "The submitted file is empty."
 msgstr ""
 
-#: fields.py:1351
-#, python-brace-format
+#: fields.py:1362
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr ""
 
-#: fields.py:1399
+#: fields.py:1410
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr ""
 
-#: fields.py:1438 relations.py:439 serializers.py:521
+#: fields.py:1449 relations.py:438 serializers.py:525
 msgid "This list may not be empty."
 msgstr ""
 
-#: fields.py:1491
-#, python-brace-format
+#: fields.py:1502
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
 msgstr ""
 
-#: fields.py:1538
+#: fields.py:1549
 msgid "Value must be valid JSON."
 msgstr ""
 
-#: filters.py:35 templates/rest_framework/filters/django_filter.html.py:5
+#: filters.py:36 templates/rest_framework/filters/django_filter.html:5
 msgid "Submit"
 msgstr ""
 
-#: pagination.py:189
+#: filters.py:336
+msgid "ascending"
+msgstr ""
+
+#: filters.py:337
+msgid "descending"
+msgstr ""
+
+#: pagination.py:193
 msgid "Invalid page."
 msgstr ""
 
-#: pagination.py:407
+#: pagination.py:427
 msgid "Invalid cursor"
 msgstr ""
 
 #: relations.py:207
-#, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
 msgstr ""
 
 #: relations.py:208
-#, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
 msgstr ""
 
@@ -364,25 +349,22 @@ msgid "Invalid hyperlink - Object does not exist."
 msgstr ""
 
 #: relations.py:243
-#, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
 msgstr ""
 
-#: relations.py:402
-#, python-brace-format
+#: relations.py:401
 msgid "Object with {slug_name}={value} does not exist."
 msgstr ""
 
-#: relations.py:403
+#: relations.py:402
 msgid "Invalid value."
 msgstr ""
 
 #: serializers.py:326
-#, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
 msgstr ""
 
-#: templates/rest_framework/admin.html:118
+#: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:128
 msgid "Filters"
 msgstr ""
@@ -412,27 +394,23 @@ msgstr ""
 msgid "No items to select."
 msgstr ""
 
-#: validators.py:24
+#: validators.py:43
 msgid "This field must be unique."
 msgstr ""
 
-#: validators.py:78
-#, python-brace-format
+#: validators.py:97
 msgid "The fields {field_names} must make a unique set."
 msgstr ""
 
-#: validators.py:226
-#, python-brace-format
+#: validators.py:245
 msgid "This field must be unique for the \"{date_field}\" date."
 msgstr ""
 
-#: validators.py:241
-#, python-brace-format
+#: validators.py:260
 msgid "This field must be unique for the \"{date_field}\" month."
 msgstr ""
 
-#: validators.py:254
-#, python-brace-format
+#: validators.py:273
 msgid "This field must be unique for the \"{date_field}\" year."
 msgstr ""
 
@@ -440,15 +418,19 @@ msgstr ""
 msgid "Invalid version in \"Accept\" header."
 msgstr ""
 
-#: versioning.py:73 versioning.py:115
+#: versioning.py:73
 msgid "Invalid version in URL path."
 msgstr ""
 
-#: versioning.py:144
+#: versioning.py:115
+msgid "Invalid version in URL path. Does not match any version namespace."
+msgstr ""
+
+#: versioning.py:147
 msgid "Invalid version in hostname."
 msgstr ""
 
-#: versioning.py:166
+#: versioning.py:169
 msgid "Invalid version in query parameter."
 msgstr ""
 

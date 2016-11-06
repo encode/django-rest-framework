@@ -61,8 +61,11 @@ It takes a single required argument, and an optional `messages` argument:
 
 * `queryset` *required* - This is the queryset against which uniqueness should be enforced.
 * `message` - The error message that should be used when validation fails.
+* `lookup` - The lookup used to find an existing instance with the value being validated. Defaults to `'exact'`.
 
 This validator should be applied to *serializer fields*, like so:
+
+    from rest_framework.validators import UniqueValidator
 
     slug = SlugField(
         max_length=100,
@@ -80,6 +83,8 @@ It has two required arguments, and a single optional `messages` argument:
 
 The validator should be applied to *serializer classes*, like so:
 
+    from rest_framework.validators import UniqueTogetherValidator
+    
     class ExampleSerializer(serializers.Serializer):
         # ...
         class Meta:
@@ -113,6 +118,8 @@ These validators can be used to enforce the `unique_for_date`, `unique_for_month
 * `message` - The error message that should be used when validation fails.
 
 The validator should be applied to *serializer classes*, like so:
+
+    from rest_framework.validators import UniqueForYearValidator
 
     class ExampleSerializer(serializers.Serializer):
         # ...
@@ -183,7 +190,7 @@ It takes a single argument, which is the default value or callable that should b
 
     created_at = serializers.DateTimeField(
         read_only=True,
-        default=CreateOnlyDefault(timezone.now)
+        default=serializers.CreateOnlyDefault(timezone.now)
     )
 
 ---
@@ -265,9 +272,9 @@ A validator may be any callable that raises a `serializers.ValidationError` on f
         if value % 2 != 0:
             raise serializers.ValidationError('This field must be an even number.')
 
-## Class based
+## Class-based
 
-To write a class based validator, use the `__call__` method. Class based validators are useful as they allow you to parameterize and reuse behavior.
+To write a class-based validator, use the `__call__` method. Class-based validators are useful as they allow you to parameterize and reuse behavior.
 
     class MultipleOf(object):
         def __init__(self, base):
@@ -280,7 +287,7 @@ To write a class based validator, use the `__call__` method. Class based validat
 
 #### Using `set_context()`
 
-In some advanced cases you might want a validator to be passed the serializer field it is being used with as additional context. You can do so by declaring a `set_context` method on a class based validator.
+In some advanced cases you might want a validator to be passed the serializer field it is being used with as additional context. You can do so by declaring a `set_context` method on a class-based validator.
 
     def set_context(self, serializer_field):
         # Determine if this is an update or a create operation.

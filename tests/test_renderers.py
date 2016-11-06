@@ -286,14 +286,14 @@ class JSONRendererTests(TestCase):
         qs = DummyTestModel.objects.values('id', 'name')
         ret = JSONRenderer().render(qs)
         data = json.loads(ret.decode('utf-8'))
-        self.assertEquals(data, [{'id': o.id, 'name': o.name}])
+        self.assertEqual(data, [{'id': o.id, 'name': o.name}])
 
     def test_render_queryset_values_list(self):
         o = DummyTestModel.objects.create(name='dummy')
         qs = DummyTestModel.objects.values_list('id', 'name')
         ret = JSONRenderer().render(qs)
         data = json.loads(ret.decode('utf-8'))
-        self.assertEquals(data, [[o.id, o.name]])
+        self.assertEqual(data, [[o.id, o.name]])
 
     def test_render_dict_abc_obj(self):
         class Dict(MutableMapping):
@@ -323,7 +323,7 @@ class JSONRendererTests(TestCase):
         x[2] = 3
         ret = JSONRenderer().render(x)
         data = json.loads(ret.decode('utf-8'))
-        self.assertEquals(data, {'key': 'string value', '2': 3})
+        self.assertEqual(data, {'key': 'string value', '2': 3})
 
     def test_render_obj_with_getitem(self):
         class DictLike(object):
@@ -481,3 +481,90 @@ class TestHTMLFormRenderer(TestCase):
         result = renderer.render(self.serializer.data, None, {})
 
         self.assertIsInstance(result, SafeText)
+
+
+class TestChoiceFieldHTMLFormRenderer(TestCase):
+    """
+    Test rendering ChoiceField with HTMLFormRenderer.
+    """
+
+    def setUp(self):
+        choices = ((1, 'Option1'), (2, 'Option2'), (12, 'Option12'))
+
+        class TestSerializer(serializers.Serializer):
+            test_field = serializers.ChoiceField(choices=choices,
+                                                 initial=2)
+
+        self.TestSerializer = TestSerializer
+        self.renderer = HTMLFormRenderer()
+
+    def test_render_initial_option(self):
+        serializer = self.TestSerializer()
+        result = self.renderer.render(serializer.data)
+
+        self.assertIsInstance(result, SafeText)
+
+        self.assertInHTML('<option value="2" selected>Option2</option>',
+                          result)
+        self.assertInHTML('<option value="1">Option1</option>', result)
+        self.assertInHTML('<option value="12">Option12</option>', result)
+
+    def test_render_selected_option(self):
+        serializer = self.TestSerializer(data={'test_field': '12'})
+
+        serializer.is_valid()
+        result = self.renderer.render(serializer.data)
+
+        self.assertIsInstance(result, SafeText)
+
+        self.assertInHTML('<option value="12" selected>Option12</option>',
+                          result)
+        self.assertInHTML('<option value="1">Option1</option>', result)
+        self.assertInHTML('<option value="2">Option2</option>', result)
+
+
+class TestMultipleChoiceFieldHTMLFormRenderer(TestCase):
+    """
+    Test rendering MultipleChoiceField with HTMLFormRenderer.
+    """
+
+    def setUp(self):
+        self.renderer = HTMLFormRenderer()
+
+    def test_render_selected_option_with_string_option_ids(self):
+        choices = (('1', 'Option1'), ('2', 'Option2'), ('12', 'Option12'),
+                   ('}', 'OptionBrace'))
+
+        class TestSerializer(serializers.Serializer):
+            test_field = serializers.MultipleChoiceField(choices=choices)
+
+        serializer = TestSerializer(data={'test_field': ['12']})
+        serializer.is_valid()
+
+        result = self.renderer.render(serializer.data)
+
+        self.assertIsInstance(result, SafeText)
+
+        self.assertInHTML('<option value="12" selected>Option12</option>',
+                          result)
+        self.assertInHTML('<option value="1">Option1</option>', result)
+        self.assertInHTML('<option value="2">Option2</option>', result)
+        self.assertInHTML('<option value="}">OptionBrace</option>', result)
+
+    def test_render_selected_option_with_integer_option_ids(self):
+        choices = ((1, 'Option1'), (2, 'Option2'), (12, 'Option12'))
+
+        class TestSerializer(serializers.Serializer):
+            test_field = serializers.MultipleChoiceField(choices=choices)
+
+        serializer = TestSerializer(data={'test_field': ['12']})
+        serializer.is_valid()
+
+        result = self.renderer.render(serializer.data)
+
+        self.assertIsInstance(result, SafeText)
+
+        self.assertInHTML('<option value="12" selected>Option12</option>',
+                          result)
+        self.assertInHTML('<option value="1">Option1</option>', result)
+        self.assertInHTML('<option value="2">Option2</option>', result)

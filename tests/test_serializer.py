@@ -1,14 +1,58 @@
 # coding: utf-8
 from __future__ import unicode_literals
 
+import inspect
 import pickle
+import re
 
 import pytest
 
-from rest_framework import serializers
+from rest_framework import fields, relations, serializers
 from rest_framework.compat import unicode_repr
+from rest_framework.fields import Field
 
 from .utils import MockObject
+
+
+# Test serializer fields imports.
+# -------------------------------
+
+class TestFieldImports:
+    def is_field(self, name, value):
+        return (
+            isinstance(value, type) and
+            issubclass(value, Field) and
+            not name.startswith('_')
+        )
+
+    def test_fields(self):
+        msg = "Expected `fields.%s` to be imported in `serializers`"
+        field_classes = [
+            key for key, value
+            in inspect.getmembers(fields)
+            if self.is_field(key, value)
+        ]
+
+        # sanity check
+        assert 'Field' in field_classes
+        assert 'BooleanField' in field_classes
+
+        for field in field_classes:
+            assert hasattr(serializers, field), msg % field
+
+    def test_relations(self):
+        msg = "Expected `relations.%s` to be imported in `serializers`"
+        field_classes = [
+            key for key, value
+            in inspect.getmembers(relations)
+            if self.is_field(key, value)
+        ]
+
+        # sanity check
+        assert 'RelatedField' in field_classes
+
+        for field in field_classes:
+            assert hasattr(serializers, field), msg % field
 
 
 # Tests for core functionality.
@@ -60,6 +104,12 @@ class TestSerializer:
         assert serializer.data == {'char': 'abc', 'integer': 123}
         with pytest.raises(AssertionError):
             serializer.save()
+
+    def test_validate_none_data(self):
+        data = None
+        serializer = self.Serializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {'non_field_errors': ['No data provided']}
 
 
 class TestValidateMethod:
@@ -309,3 +359,57 @@ class TestCacheSerializerData:
         pickled = pickle.dumps(serializer.data)
         data = pickle.loads(pickled)
         assert data == {'field1': 'a', 'field2': 'b'}
+
+
+class TestDefaultInclusions:
+    def setup(self):
+        class ExampleSerializer(serializers.Serializer):
+            char = serializers.CharField(read_only=True, default='abc')
+            integer = serializers.IntegerField()
+        self.Serializer = ExampleSerializer
+
+    def test_default_should_included_on_create(self):
+        serializer = self.Serializer(data={'integer': 456})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'char': 'abc', 'integer': 456}
+        assert serializer.errors == {}
+
+    def test_default_should_be_included_on_update(self):
+        instance = MockObject(char='def', integer=123)
+        serializer = self.Serializer(instance, data={'integer': 456})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'char': 'abc', 'integer': 456}
+        assert serializer.errors == {}
+
+    def test_default_should_not_be_included_on_partial_update(self):
+        instance = MockObject(char='def', integer=123)
+        serializer = self.Serializer(instance, data={'integer': 456}, partial=True)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'integer': 456}
+        assert serializer.errors == {}
+
+
+class TestSerializerValidationWithCompiledRegexField:
+    def setup(self):
+        class ExampleSerializer(serializers.Serializer):
+            name = serializers.RegexField(re.compile(r'\d'), required=True)
+        self.Serializer = ExampleSerializer
+
+    def test_validation_success(self):
+        serializer = self.Serializer(data={'name': '2'})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'name': '2'}
+        assert serializer.errors == {}
+
+
+class Test4606Regression:
+    def setup(self):
+        class ExampleSerializer(serializers.Serializer):
+            name = serializers.CharField(required=True)
+            choices = serializers.CharField(required=True)
+        self.Serializer = ExampleSerializer
+
+    def test_4606_regression(self):
+        serializer = self.Serializer(data=[{"name": "liz"}], many=True)
+        with pytest.raises(serializers.ValidationError):
+            serializer.is_valid(raise_exception=True)

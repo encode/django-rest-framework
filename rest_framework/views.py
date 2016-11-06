@@ -3,6 +3,7 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.http import Http404
@@ -91,7 +92,6 @@ def exception_handler(exc, context):
         set_rollback()
         return Response(data, status=status.HTTP_403_FORBIDDEN)
 
-    # Note: Unhandled exceptions will raise a 500 error.
     return None
 
 
@@ -110,6 +110,9 @@ class APIView(View):
     # Allow dependency injection of other settings to make testing easier.
     settings = api_settings
 
+    # Mark the view as being included or excluded from schema generation.
+    exclude_from_schema = False
+
     @classmethod
     def as_view(cls, **initkwargs):
         """
@@ -126,10 +129,10 @@ class APIView(View):
                     'Use `.all()` or call `.get_queryset()` instead.'
                 )
             cls.queryset._fetch_all = force_evaluation
-            cls.queryset._result_iter = force_evaluation  # Django <= 1.5
 
         view = super(APIView, cls).as_view(**initkwargs)
         view.cls = cls
+        view.initkwargs = initkwargs
 
         # Note: session based authentication is explicitly CSRF validated,
         # all other authentication is CSRF exempt.
@@ -431,10 +434,18 @@ class APIView(View):
         response = exception_handler(exc, context)
 
         if response is None:
-            raise
+            self.raise_uncaught_exception(exc)
 
         response.exception = True
         return response
+
+    def raise_uncaught_exception(self, exc):
+        if settings.DEBUG:
+            request = self.request
+            renderer_format = getattr(request.accepted_renderer, 'format')
+            use_plaintext_traceback = renderer_format not in ('html', 'api', 'admin')
+            request.force_plaintext_errors(use_plaintext_traceback)
+        raise
 
     # Note: Views are made CSRF exempt from within `as_view` as to prevent
     # accidental removal of this exemption in cases where `dispatch` needs to

@@ -10,6 +10,11 @@ from rest_framework.test import APIRequestFactory
 factory = APIRequestFactory()
 
 
+class MockOpenAPIRenderer(BaseRenderer):
+    media_type = 'application/openapi+json;version=2.0'
+    format = 'swagger'
+
+
 class MockJSONRenderer(BaseRenderer):
     media_type = 'application/json'
 
@@ -24,7 +29,7 @@ class NoCharsetSpecifiedRenderer(BaseRenderer):
 
 class TestAcceptedMediaType(TestCase):
     def setUp(self):
-        self.renderers = [MockJSONRenderer(), MockHTMLRenderer()]
+        self.renderers = [MockJSONRenderer(), MockHTMLRenderer(), MockOpenAPIRenderer()]
         self.negotiator = DefaultContentNegotiation()
 
     def select_renderer(self, request):
@@ -44,3 +49,9 @@ class TestAcceptedMediaType(TestCase):
         request = Request(factory.get('/', HTTP_ACCEPT='application/json; indent=8'))
         accepted_renderer, accepted_media_type = self.select_renderer(request)
         self.assertEqual(accepted_media_type, 'application/json; indent=8')
+
+    def test_client_specifies_parameter(self):
+        request = Request(factory.get('/', HTTP_ACCEPT='application/openapi+json;version=2.0'))
+        accepted_renderer, accepted_media_type = self.select_renderer(request)
+        self.assertEqual(accepted_media_type, 'application/openapi+json;version=2.0')
+        self.assertEqual(accepted_renderer.format, 'swagger')

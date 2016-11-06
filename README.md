@@ -18,16 +18,16 @@ REST framework commercially we strongly encourage you to invest in its
 continued development by **[signing up for a paid plan][funding]**.
 
 The initial aim is to provide a single full-time position on REST framework.
-Right now we're a little over 45% of the way towards achieving that.
-*Every single sign-up makes a significant impact.* Taking out a
-[basic tier sponsorship](https://fund.django-rest-framework.org/topics/funding/#corporate-plans) moves us about 1% closer to our funding target.
+*Every single sign-up makes a significant impact towards making that possible.*
 
 <p align="center">
   <a href="http://jobs.rover.com/"><img src="https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/premium/rover-readme.png"/></a>
   <a href="https://getsentry.com/welcome/"><img src="https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/premium/sentry-readme.png"/></a>
+  <a href="https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf"><img src="https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/premium/stream-readme.png"/></a>
+  <a href="http://www.machinalis.com/#services"><img src="https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/premium/machinalis-readme.png"/></a>
 </p>
 
-*Many thanks to all our [awesome sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/) and [Sentry](https://getsentry.com/welcome/).*
+*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/), [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), and [Machinalis](http://www.machinalis.com/#services).*
 
 ---
 
@@ -52,7 +52,7 @@ There is a live example API for testing purposes, [available here][sandbox].
 # Requirements
 
 * Python (2.7, 3.2, 3.3, 3.4, 3.5)
-* Django (1.8, 1.9)
+* Django (1.8, 1.9, 1.10)
 
 # Installation
 
@@ -170,7 +170,7 @@ You may also want to [follow the author on Twitter][twitter].
 
 # Security
 
-If you believe you’ve found something in Django REST framework which has security implications, please **do not raise the issue in a public forum**.
+If you believe you've found something in Django REST framework which has security implications, please **do not raise the issue in a public forum**.
 
 Send a description of the issue via email to [rest-framework-security@googlegroups.com][security-mail].  The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
 

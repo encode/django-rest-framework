@@ -49,7 +49,9 @@ Defaults to `False`
 
 ### `default`
 
-If set, this gives the default value that will be used for the field if no input value is supplied.  If not set the default behavior is to not populate the attribute at all.
+If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behaviour is to not populate the attribute at all.
+
+The `default` is not applied during partial update operations. In the partial update case only fields that are provided in the incoming data will have a validated value returned.
 
 May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a `set_context` method, that will be called each time before getting the value with the field instance as only argument. This works the same way as for [validators](validators.md#using-set_context).
 
@@ -261,9 +263,10 @@ Corresponds to `django.db.models.fields.DecimalField`.
 
 - `max_digits` The maximum number of digits allowed in the number. Note that this number must be greater than or equal to decimal_places.
 - `decimal_places` The number of decimal places to store with the number.
-- `coerce_to_string` Set to `True` if string values should be returned for the representation, or `False` if `Decimal` objects should be returned. Defaults to the same value as the `COERCE_DECIMAL_TO_STRING` settings key, which will be `True` unless overridden. If `Decimal` objects are returned by the serializer, then the final output format will be determined by the renderer.
+- `coerce_to_string` Set to `True` if string values should be returned for the representation, or `False` if `Decimal` objects should be returned. Defaults to the same value as the `COERCE_DECIMAL_TO_STRING` settings key, which will be `True` unless overridden. If `Decimal` objects are returned by the serializer, then the final output format will be determined by the renderer. Note that setting `localize` will force the value to `True`.
 - `max_value` Validate that the number provided is no greater than this value.
 - `min_value` Validate that the number provided is no less than this value.
+- `localize` Set to `True` to enable localization of input and output based on the current locale. This will also force `coerce_to_string` to `True`. Defaults to `False`. Note that data formatting is enabled if you have set `USE_L10N=True` in your settings file.
 
 #### Example usage
 
@@ -289,9 +292,9 @@ A date and time representation.
 
 Corresponds to `django.db.models.fields.DateTimeField`.
 
-**Signature:** `DateTimeField(format=None, input_formats=None)`
+**Signature:** `DateTimeField(format=api_settings.DATETIME_FORMAT, input_formats=None)`
 
-* `format` - A string representing the output format.  If not specified, this defaults to the same value as the `DATETIME_FORMAT` settings key, which will be `'iso-8601'` unless set. Setting to a format string indicates that `to_representation` return values should be coerced to string output. Format strings are described below. Setting this value to `None` indicates that Python `datetime` objects should be returned by `to_representation`. In this case the datetime encoding will be determined by the renderer.
+* `format` - A string representing the output format. If not specified, this defaults to the same value as the `DATETIME_FORMAT` settings key, which will be `'iso-8601'` unless set. Setting to a format string indicates that `to_representation` return values should be coerced to string output. Format strings are described below. Setting this value to `None` indicates that Python `datetime` objects should be returned by `to_representation`. In this case the datetime encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
 
 #### `DateTimeField` format strings.
@@ -320,7 +323,7 @@ A date representation.
 
 Corresponds to `django.db.models.fields.DateField`
 
-**Signature:** `DateField(format=None, input_formats=None)`
+**Signature:** `DateField(format=api_settings.DATE_FORMAT, input_formats=None)`
 
 * `format` - A string representing the output format.  If not specified, this defaults to the same value as the `DATE_FORMAT` settings key, which will be `'iso-8601'` unless set. Setting to a format string indicates that `to_representation` return values should be coerced to string output. Format strings are described below. Setting this value to `None` indicates that Python `date` objects should be returned by `to_representation`. In this case the date encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `DATE_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
@@ -335,7 +338,7 @@ A time representation.
 
 Corresponds to `django.db.models.fields.TimeField`
 
-**Signature:** `TimeField(format=None, input_formats=None)`
+**Signature:** `TimeField(format=api_settings.TIME_FORMAT, input_formats=None)`
 
 * `format` - A string representing the output format.  If not specified, this defaults to the same value as the `TIME_FORMAT` settings key, which will be `'iso-8601'` unless set. Setting to a format string indicates that `to_representation` return values should be coerced to string output. Format strings are described below. Setting this value to `None` indicates that Python `time` objects should be returned by `to_representation`. In this case the time encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `TIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
@@ -485,7 +488,7 @@ This field is used by default with `ModelSerializer` when including field names 
 
 **Signature**: `ReadOnlyField()`
 
-For example, is `has_expired` was a property on the `Account` model, then the following serializer would automatically generate it as a `ReadOnlyField`:
+For example, if `has_expired` was a property on the `Account` model, then the following serializer would automatically generate it as a `ReadOnlyField`:
 
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
@@ -623,7 +626,6 @@ The `.fail()` method is a shortcut for raising `ValidationError` that takes a me
 
     def to_internal_value(self, data):
         if not isinstance(data, six.text_type):
-            msg = 'Incorrect type. Expected a string, but got %s'
             self.fail('incorrect_type', input_type=type(data).__name__)
 
         if not re.match(r'^rgb\([0-9]+,[0-9]+,[0-9]+\)$', data):

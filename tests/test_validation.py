@@ -60,7 +60,7 @@ class TestNestedValidationError(TestCase):
             }
         })
 
-        self.assertEqual(serializers.get_validation_error_detail(e), {
+        self.assertEqual(serializers.as_serializer_error(e), {
             'nested': {
                 'field': ['error'],
             }

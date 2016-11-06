@@ -6,6 +6,7 @@ from django.test import TestCase
 from django.utils.encoding import python_2_unicode_compatible
 
 from rest_framework.compat import apply_markdown
+from rest_framework.utils.formatting import dedent
 from rest_framework.views import APIView
 
 
@@ -120,3 +121,7 @@ class TestViewNamesAndDescriptions(TestCase):
             gte_21_match = apply_markdown(DESCRIPTION) == MARKED_DOWN_gte_21
             lt_21_match = apply_markdown(DESCRIPTION) == MARKED_DOWN_lt_21
             self.assertTrue(gte_21_match or lt_21_match)
+
+
+def test_dedent_tabs():
+    assert dedent("\tfirst string\n\n\tsecond string") == 'first string\n\n\tsecond string'

@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load rest_framework %}
 {% trans "No items to select." as no_items %}
 
 <div class="form-group {% if field.errors %}has-error{% endif %}">
@@ -15,7 +16,7 @@
         {% elif select.end_option_group %}
           </optgroup>
         {% else %}
-          <option value="{{ select.value }}" {% if select.value in field.value %}selected{% endif %} {% if select.disabled %}disabled{% endif %}>{{ select.display_text }}</option>
+          <option value="{{ select.value }}" {% if select.value|as_string in field.value|as_list_of_strings %}selected{% endif %} {% if select.disabled %}disabled{% endif %}>{{ select.display_text }}</option>
         {% endif %}
     {% empty %}
         <option>{{ no_items }}</option>

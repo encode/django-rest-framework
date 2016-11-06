@@ -44,7 +44,7 @@ The default authentication schemes may be set globally, using the `DEFAULT_AUTHE
     }
 
 You can also set the authentication scheme on a per-view or per-viewset basis,
-using the `APIView` class based views.
+using the `APIView` class-based views.
 
     from rest_framework.authentication import SessionAuthentication, BasicAuthentication
     from rest_framework.permissions import IsAuthenticated
@@ -148,7 +148,7 @@ For clients to authenticate, the token key should be included in the `Authorizat
 If successfully authenticated, `TokenAuthentication` provides the following credentials.
 
 * `request.user` will be a Django `User` instance.
-* `request.auth` will be a `rest_framework.authtoken.models.BasicToken` instance.
+* `request.auth` will be a `rest_framework.authtoken.models.Token` instance.
 
 Unauthenticated responses that are denied permission will result in an `HTTP 401 Unauthorized` response with an appropriate WWW-Authenticate header.  For example:
 

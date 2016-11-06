@@ -28,8 +28,6 @@ class JSONEncoder(json.JSONEncoder):
             return force_text(obj)
         elif isinstance(obj, datetime.datetime):
             representation = obj.isoformat()
-            if obj.microsecond:
-                representation = representation[:23] + representation[26:]
             if representation.endswith('+00:00'):
                 representation = representation[:-6] + 'Z'
             return representation

@@ -39,7 +39,7 @@ In order to explain the various types of relational fields, we'll use a couple o
         artist = models.CharField(max_length=100)
 
     class Track(models.Model):
-        album = models.ForeignKey(Album, related_name='tracks')
+        album = models.ForeignKey(Album, related_name='tracks', on_delete=models.CASCADE)
         order = models.IntegerField()
         title = models.CharField(max_length=100)
         duration = models.IntegerField()
@@ -99,8 +99,8 @@ For example, the following serializer:
 Would serialize to a representation like this:
 
     {
-        'album_name': 'The Roots',
-        'artist': 'Undun',
+        'album_name': 'Undun',
+        'artist': 'The Roots',
         'tracks': [
             89,
             90,
@@ -286,7 +286,7 @@ Would serialize to a nested representation like this:
         ],
     }
 
-# Writable nested serializers
+## Writable nested serializers
 
 By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create `create()` and/or `update()` methods in order to explicitly specify how the child relationships should be saved.
 
@@ -324,7 +324,13 @@ By default nested serializers are read-only. If you want to support write-operat
     >>> serializer.save()
     <Album: Album object>
 
+---
+
 # Custom relational fields
+
+In rare cases where none of the existing relational styles fit the representation you need,
+you can implement a completely custom relational field, that describes exactly how the
+output representation should be generated from the model instance.
 
 To implement a custom relational field, you should override `RelatedField`, and implement the `.to_representation(self, value)` method. This method takes the target of the field as the `value` argument, and should return the representation that should be used to serialize the target. The `value` argument will typically be a model instance.
 
@@ -457,6 +463,8 @@ There are two keyword arguments you can use to control this behavior:
 - `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Set to `None` to disable any limiting. Defaults to `1000`.
 - `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
 
+You can also control these globally using the settings `HTML_SELECT_CUTOFF` and `HTML_SELECT_CUTOFF_TEXT`.
+
 In cases where the cutoff is being enforced you may want to instead use a plain input field in the HTML form. You can do so using the `style` keyword argument. For example:
 
     assigned_to = serializers.SlugRelatedField(
@@ -476,7 +484,7 @@ Note that reverse relationships are not automatically included by the `ModelSeri
 You'll normally want to ensure that you've set an appropriate `related_name` argument on the relationship, that you can use as the field name.  For example:
 
     class Track(models.Model):
-        album = models.ForeignKey(Album, related_name='tracks')
+        album = models.ForeignKey(Album, related_name='tracks', on_delete=models.CASCADE)
         ...
 
 If you have not set a related name for the reverse relationship, you'll need to use the automatically generated related name in the `fields` argument.  For example:
@@ -500,7 +508,7 @@ For example, given the following model for a tag, which has a generic relationsh
         See: https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/
         """
         tag_name = models.SlugField()
-        content_type = models.ForeignKey(ContentType)
+        content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
         object_id = models.PositiveIntegerField()
         tagged_object = GenericForeignKey('content_type', 'object_id')
 

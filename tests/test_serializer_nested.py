@@ -41,6 +41,12 @@ class TestNestedSerializer:
         serializer = self.Serializer()
         assert serializer.data == expected_data
 
+    def test_nested_serialize_no_data(self):
+        data = None
+        serializer = self.Serializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {'non_field_errors': ['No data provided']}
+
 
 class TestNotRequiredNestedSerializer:
     def setup(self):

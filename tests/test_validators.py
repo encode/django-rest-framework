@@ -31,7 +31,7 @@ class RelatedModel(models.Model):
 
 class RelatedModelSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username',
-        validators=[UniqueValidator(queryset=UniquenessModel.objects.all())])  # NOQA
+        validators=[UniqueValidator(queryset=UniquenessModel.objects.all(), lookup='iexact')])  # NOQA
 
     class Meta:
         model = RelatedModel
@@ -77,7 +77,7 @@ class TestUniquenessValidation(TestCase):
         data = {'username': 'existing'}
         serializer = UniquenessSerializer(data=data)
         assert not serializer.is_valid()
-        assert serializer.errors == {'username': ['UniquenessModel with this username already exists.']}
+        assert serializer.errors == {'username': ['uniqueness model with this username already exists.']}
 
     def test_is_unique(self):
         data = {'username': 'other'}
@@ -103,7 +103,7 @@ class TestUniquenessValidation(TestCase):
             AnotherUniquenessModel._meta.get_field('code').validators, [])
 
     def test_related_model_is_unique(self):
-        data = {'username': 'existing', 'email': 'new-email@example.com'}
+        data = {'username': 'Existing', 'email': 'new-email@example.com'}
         rs = RelatedModelSerializer(data=data)
         self.assertFalse(rs.is_valid())
         self.assertEqual(rs.errors,

@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load rest_framework %}
 {% trans "None" as none_choice %}
 
 <div class="form-group {% if field.errors %}has-error{% endif %}">
@@ -19,7 +20,7 @@
 
         {% for key, text in field.choices.items %}
           <label class="radio-inline">
-            <input type="radio" name="{{ field.name }}" value="{{ key }}" {% if key == field.value %}checked{% endif %}>
+            <input type="radio" name="{{ field.name }}" value="{{ key }}" {% if key|as_string == field.value|as_string %}checked{% endif %}>
             {{ text }}
           </label>
         {% endfor %}
@@ -37,7 +38,7 @@
       {% for key, text in field.choices.items %}
         <div class="radio">
           <label>
-            <input type="radio" name="{{ field.name }}" value="{{ key }}" {% if key == field.value %}checked{% endif %}>
+            <input type="radio" name="{{ field.name }}" value="{{ key }}" {% if key|as_string == field.value|as_string %}checked{% endif %}>
             {{ text }}
           </label>
         </div>

@@ -23,7 +23,8 @@ RelationInfo = namedtuple('RelationInfo', [
     'related_model',
     'to_many',
     'to_field',
-    'has_through_model'
+    'has_through_model',
+    'reverse'
 ])
 
 
@@ -81,7 +82,8 @@ def _get_forward_relationships(opts):
             related_model=get_related_model(field),
             to_many=False,
             to_field=_get_to_field(field),
-            has_through_model=False
+            has_through_model=False,
+            reverse=False
         )
 
     # Deal with forward many-to-many relationships.
@@ -94,7 +96,8 @@ def _get_forward_relationships(opts):
             to_field=None,
             has_through_model=(
                 not get_remote_field(field).through._meta.auto_created
-            )
+            ),
+            reverse=False
         )
 
     return forward_relations
@@ -118,7 +121,8 @@ def _get_reverse_relationships(opts):
             related_model=related,
             to_many=get_remote_field(relation.field).multiple,
             to_field=_get_to_field(relation.field),
-            has_through_model=False
+            has_through_model=False,
+            reverse=True
         )
 
     # Deal with reverse many-to-many relationships.
@@ -135,7 +139,8 @@ def _get_reverse_relationships(opts):
             has_through_model=(
                 (getattr(get_remote_field(relation.field), 'through', None) is not None) and
                 not get_remote_field(relation.field).through._meta.auto_created
-            )
+            ),
+            reverse=True
         )
 
     return reverse_relations

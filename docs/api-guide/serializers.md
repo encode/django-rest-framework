@@ -442,7 +442,7 @@ Declaring a `ModelSerializer` looks like this:
 
 By default, all the model fields on the class will be mapped to a corresponding serializer fields.
 
-Any relationships such as foreign keys on the model will be mapped to `PrimaryKeyRelatedField`. Reverse relationships are not included by default unless explicitly included as described below.
+Any relationships such as foreign keys on the model will be mapped to `PrimaryKeyRelatedField`. Reverse relationships are not included by default unless explicitly included as specified in the [serializer relations][relations] documentation.
 
 #### Inspecting a `ModelSerializer`
 
@@ -876,7 +876,7 @@ There are four methods that can be overridden, depending on what functionality y
 * `.to_internal_value()` - Override this to support deserialization, for write operations.
 * `.create()` and `.update()` - Override either or both of these to support saving instances.
 
-Because this class provides the same interface as the `Serializer` class, you can use it with the existing generic class based views exactly as you would for a regular `Serializer` or `ModelSerializer`.
+Because this class provides the same interface as the `Serializer` class, you can use it with the existing generic class-based views exactly as you would for a regular `Serializer` or `ModelSerializer`.
 
 The only difference you'll notice when doing so is the `BaseSerializer` classes will not generate HTML forms in the browsable API. This is because the data they return does not include all the field information that would allow each field to be rendered into a suitable HTML input.
 
@@ -1089,6 +1089,7 @@ The following third party packages are also available.
 The [django-rest-marshmallow][django-rest-marshmallow] package provides an alternative implementation for serializers, using the python [marshmallow][marshmallow] library. It exposes the same API as the REST framework serializers, and can be used as a drop-in replacement in some use-cases.
 
 ## Serpy
+
 The [serpy][serpy] package is an alternative implementation for serializers that is built for speed. [Serpy][serpy] serializes complex datatypes to simple native types. The native types can be easily converted to JSON or any other format needed.
 
 ## MongoengineModelSerializer
@@ -1107,7 +1108,12 @@ The [django-rest-framework-hstore][django-rest-framework-hstore] package provide
 
 The [dynamic-rest][dynamic-rest] package extends the ModelSerializer and ModelViewSet interfaces, adding API query parameters for filtering, sorting, and including / excluding all fields and relationships defined by your serializers.
 
+## Dynamic Fields Mixin
+
+The [drf-dynamic-fields][drf-dynamic-fields] package provides a mixin to dynamically limit the fields per serializer to a subset specified by an URL parameter.
+
 ## HTML JSON Forms
+
 The [html-json-forms][html-json-forms] package provides an algorithm and serializer for processing `<form>` submissions per the (inactive) [HTML JSON Form specification][json-form-spec].  The serializer facilitates processing of arbitrarily nested JSON structures within HTML.  For example, `<input name="items[0][id]" value="5">` will be interpreted as `{"items": [{"id": "5"}]}`.
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
@@ -1124,3 +1130,4 @@ The [html-json-forms][html-json-forms] package provides an algorithm and seriali
 [dynamic-rest]: https://github.com/AltSchool/dynamic-rest
 [html-json-forms]: https://github.com/wq/html-json-forms
 [json-form-spec]: https://www.w3.org/TR/html-json-forms/
+[drf-dynamic-fields]: https://github.com/dbrgn/drf-dynamic-fields

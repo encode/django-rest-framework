@@ -14,7 +14,7 @@ First, let's add a couple of fields.  One of those fields will be used to repres
 
 Add the following two fields to the `Snippet` model in `models.py`.
 
-    owner = models.ForeignKey('auth.User', related_name='snippets')
+    owner = models.ForeignKey('auth.User', related_name='snippets', on_delete=models.CASCADE)
     highlighted = models.TextField()
 
 We'd also need to make sure that when the model is saved, that we populate the highlighted field, using the `pygments` code highlighting library.
@@ -67,7 +67,7 @@ Now that we've got some users to work with, we'd better add representations of t
 
 Because `'snippets'` is a *reverse* relationship on the User model, it will not be included by default when using the `ModelSerializer` class, so we needed to add an explicit field for it.
 
-We'll also add a couple of views to `views.py`.  We'd like to just use read-only views for the user representations, so we'll use the `ListAPIView` and `RetrieveAPIView` generic class based views.
+We'll also add a couple of views to `views.py`.  We'd like to just use read-only views for the user representations, so we'll use the `ListAPIView` and `RetrieveAPIView` generic class-based views.
 
     from django.contrib.auth.models import User
 
@@ -150,7 +150,7 @@ The `r'^api-auth/'` part of pattern can actually be whatever URL you want to use
 
 Now if you open up the browser again and refresh the page you'll see a 'Login' link in the top right of the page.  If you log in as one of the users you created earlier, you'll be able to create code snippets again.
 
-Once you've created a few code snippets, navigate to the '/users/' endpoint, and notice that the representation includes a list of the snippet pks that are associated with each user, in each user's 'snippets' field.
+Once you've created a few code snippets, navigate to the '/users/' endpoint, and notice that the representation includes a list of the snippet ids that are associated with each user, in each user's 'snippets' field.
 
 ## Object level permissions
 

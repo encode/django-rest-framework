@@ -19,8 +19,6 @@ back to the defaults.
 """
 from __future__ import unicode_literals
 
-import warnings
-
 from django.conf import settings
 from django.test.signals import setting_changed
 from django.utils import six
@@ -113,6 +111,17 @@ DEFAULTS = {
     'COMPACT_JSON': True,
     'COERCE_DECIMAL_TO_STRING': True,
     'UPLOADED_FILES_USE_URL': True,
+
+    # Browseable API
+    'HTML_SELECT_CUTOFF': 1000,
+    'HTML_SELECT_CUTOFF_TEXT': "More than {count} items...",
+
+    # Schemas
+    'SCHEMA_COERCE_PATH_PK': True,
+    'SCHEMA_COERCE_METHOD_NAMES': {
+        'retrieve': 'read',
+        'destroy': 'delete'
+    },
 }
 
 
@@ -218,7 +227,7 @@ class APISettings(object):
         SETTINGS_DOC = "http://www.django-rest-framework.org/api-guide/settings/"
         for setting in REMOVED_SETTINGS:
             if setting in user_settings:
-                warnings.warn("The '%s' setting has been removed. Please refer to '%s' for available settings." % (setting, SETTINGS_DOC), DeprecationWarning)
+                raise RuntimeError("The '%s' setting has been removed. Please refer to '%s' for available settings." % (setting, SETTINGS_DOC))
         return user_settings
 
 

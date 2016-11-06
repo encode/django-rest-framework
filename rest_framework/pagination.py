@@ -15,7 +15,7 @@ from django.utils import six
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import template_render
+from rest_framework.compat import coreapi, template_render
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -64,10 +64,10 @@ def _get_displayed_page_numbers(current, final):
 
     This implementation gives one page to each side of the cursor,
     or two pages to the side when the cursor is at the edge, then
-    ensures that any breaks between non-continous page numbers never
+    ensures that any breaks between non-continuous page numbers never
     remove only a single page.
 
-    For an alernativative implementation which gives two pages to each side of
+    For an alternative implementation which gives two pages to each side of
     the cursor, eg. as in GitHub issue list pagination, see:
 
     https://gist.github.com/tomchristie/321140cebb1c4a558b15
@@ -157,7 +157,8 @@ class BasePagination(object):
     def get_results(self, data):
         return data['results']
 
-    def get_fields(self, view):
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         return []
 
 
@@ -283,10 +284,16 @@ class PageNumberPagination(BasePagination):
         context = self.get_html_context()
         return template_render(template, context)
 
-    def get_fields(self, view):
-        if self.page_size_query_param is None:
-            return [self.page_query_param]
-        return [self.page_query_param, self.page_size_query_param]
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        fields = [
+            coreapi.Field(name=self.page_query_param, required=False, location='query')
+        ]
+        if self.page_size_query_param is not None:
+            fields.append(
+                coreapi.Field(name=self.page_size_query_param, required=False, location='query')
+            )
+        return fields
 
 
 class LimitOffsetPagination(BasePagination):
@@ -312,6 +319,9 @@ class LimitOffsetPagination(BasePagination):
         self.request = request
         if self.count > self.limit and self.template is not None:
             self.display_page_controls = True
+
+        if self.count == 0 or self.offset > self.count:
+            return []
         return list(queryset[self.offset:self.offset + self.limit])
 
     def get_paginated_response(self, data):
@@ -412,8 +422,12 @@ class LimitOffsetPagination(BasePagination):
         context = self.get_html_context()
         return template_render(template, context)
 
-    def get_fields(self, view):
-        return [self.limit_query_param, self.offset_query_param]
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        return [
+            coreapi.Field(name=self.limit_query_param, required=False, location='query'),
+            coreapi.Field(name=self.offset_query_param, required=False, location='query')
+        ]
 
 
 class CursorPagination(BasePagination):
@@ -476,10 +490,10 @@ class CursorPagination(BasePagination):
 
         # Determine the position of the final item following the page.
         if len(results) > len(self.page):
-            has_following_postion = True
+            has_following_position = True
             following_position = self._get_position_from_instance(results[-1], self.ordering)
         else:
-            has_following_postion = False
+            has_following_position = False
             following_position = None
 
         # If we have a reverse queryset, then the query ordering was in reverse
@@ -490,14 +504,14 @@ class CursorPagination(BasePagination):
         if reverse:
             # Determine next and previous positions for reverse cursors.
             self.has_next = (current_position is not None) or (offset > 0)
-            self.has_previous = has_following_postion
+            self.has_previous = has_following_position
             if self.has_next:
                 self.next_position = current_position
             if self.has_previous:
                 self.previous_position = following_position
         else:
             # Determine next and previous positions for forward cursors.
-            self.has_next = has_following_postion
+            self.has_next = has_following_position
             self.has_previous = (current_position is not None) or (offset > 0)
             if self.has_next:
                 self.next_position = following_position
@@ -534,7 +548,7 @@ class CursorPagination(BasePagination):
                 # our marker.
                 break
 
-            # The item in this postion has the same position as the item
+            # The item in this position has the same position as the item
             # following it, we can't use it as a marker position, so increment
             # the offset and keep seeking to the previous item.
             compare = position
@@ -582,7 +596,7 @@ class CursorPagination(BasePagination):
                 # our marker.
                 break
 
-            # The item in this postion has the same position as the item
+            # The item in this position has the same position as the item
             # following it, we can't use it as a marker position, so increment
             # the offset and keep seeking to the previous item.
             compare = position
@@ -697,7 +711,11 @@ class CursorPagination(BasePagination):
         return replace_query_param(self.base_url, self.cursor_query_param, encoded)
 
     def _get_position_from_instance(self, instance, ordering):
-        attr = getattr(instance, ordering[0].lstrip('-'))
+        field_name = ordering[0].lstrip('-')
+        if isinstance(instance, dict):
+            attr = instance[field_name]
+        else:
+            attr = getattr(instance, field_name)
         return six.text_type(attr)
 
     def get_paginated_response(self, data):
@@ -718,5 +736,8 @@ class CursorPagination(BasePagination):
         context = self.get_html_context()
         return template_render(template, context)
 
-    def get_fields(self, view):
-        return [self.cursor_query_param]
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        return [
+            coreapi.Field(name=self.cursor_query_param, required=False, location='query')
+        ]

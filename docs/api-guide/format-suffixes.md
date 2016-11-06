@@ -42,7 +42,7 @@ When using `format_suffix_patterns`, you must make sure to add the `'format'` ke
     def comment_list(request, format=None):
         # do stuff...
 
-Or with class based views:
+Or with class-based views:
 
     class CommentList(APIView):
         def get(self, request, format=None):

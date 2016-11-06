@@ -14,7 +14,7 @@ def is_html_input(dictionary):
 
 def parse_html_list(dictionary, prefix=''):
     """
-    Used to suport list values in HTML forms.
+    Used to support list values in HTML forms.
     Supports lists of primitives and/or dictionaries.
 
     * List of primitives.

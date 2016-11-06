@@ -20,6 +20,7 @@ from rest_framework.authentication import (
 )
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework.compat import is_authenticated
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
@@ -408,7 +409,7 @@ class FailingAuthAccessedInRenderer(TestCase):
 
             def render(self, data, media_type=None, renderer_context=None):
                 request = renderer_context['request']
-                if request.user.is_authenticated():
+                if is_authenticated(request.user):
                     return b'authenticated'
                 return b'not authenticated'
 
@@ -440,7 +441,7 @@ class FailingAuthAccessedInRenderer(TestCase):
 class NoAuthenticationClassesTests(TestCase):
     def test_permission_message_with_no_authentication_classes(self):
         """
-        An unauthenticated request made against a view that containes no
+        An unauthenticated request made against a view that contains no
         `authentication_classes` but do contain `permissions_classes` the error
         code returned should be 403 with the exception's message.
         """

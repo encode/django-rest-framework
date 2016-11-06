@@ -42,10 +42,11 @@ class UniqueValidator(object):
     """
     message = _('This field must be unique.')
 
-    def __init__(self, queryset, message=None):
+    def __init__(self, queryset, message=None, lookup='exact'):
         self.queryset = queryset
         self.serializer_field = None
         self.message = message or self.message
+        self.lookup = lookup
 
     def set_context(self, serializer_field):
         """
@@ -62,7 +63,7 @@ class UniqueValidator(object):
         """
         Filter the queryset to all instances matching the given attribute.
         """
-        filter_kwargs = {self.field_name: value}
+        filter_kwargs = {'%s__%s' % (self.field_name, self.lookup): value}
         return qs_filter(queryset, **filter_kwargs)
 
     def exclude_current_instance(self, queryset):
@@ -79,7 +80,7 @@ class UniqueValidator(object):
         queryset = self.filter_queryset(value, queryset)
         queryset = self.exclude_current_instance(queryset)
         if qs_exists(queryset):
-            raise ValidationError(self.message)
+            raise ValidationError(self.message, code='unique')
 
     def __repr__(self):
         return unicode_to_repr('<%s(queryset=%s)>' % (
@@ -119,13 +120,13 @@ class UniqueTogetherValidator(object):
         if self.instance is not None:
             return
 
-        missing = {
+        missing_items = {
             field_name: self.missing_message
             for field_name in self.fields
             if field_name not in attrs
         }
-        if missing:
-            raise ValidationError(missing)
+        if missing_items:
+            raise ValidationError(missing_items, code='required')
 
     def filter_queryset(self, attrs, queryset):
         """
@@ -166,7 +167,8 @@ class UniqueTogetherValidator(object):
         ]
         if None not in checked_values and qs_exists(queryset):
             field_names = ', '.join(self.fields)
-            raise ValidationError(self.message.format(field_names=field_names))
+            message = self.message.format(field_names=field_names)
+            raise ValidationError(message, code='unique')
 
     def __repr__(self):
         return unicode_to_repr('<%s(queryset=%s, fields=%s)>' % (
@@ -203,13 +205,13 @@ class BaseUniqueForValidator(object):
         The `UniqueFor<Range>Validator` classes always force an implied
         'required' state on the fields they are applied to.
         """
-        missing = {
+        missing_items = {
             field_name: self.missing_message
             for field_name in [self.field, self.date_field]
             if field_name not in attrs
         }
-        if missing:
-            raise ValidationError(missing)
+        if missing_items:
+            raise ValidationError(missing_items, code='required')
 
     def filter_queryset(self, attrs, queryset):
         raise NotImplementedError('`filter_queryset` must be implemented.')
@@ -230,7 +232,9 @@ class BaseUniqueForValidator(object):
         queryset = self.exclude_current_instance(attrs, queryset)
         if qs_exists(queryset):
             message = self.message.format(date_field=self.date_field)
-            raise ValidationError({self.field: message})
+            raise ValidationError({
+                self.field: message
+            }, code='unique')
 
     def __repr__(self):
         return unicode_to_repr('<%s(queryset=%s, field=%s, date_field=%s)>' % (

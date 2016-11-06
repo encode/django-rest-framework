@@ -1,6 +1,6 @@
 """
 Helper functions for mapping model fields to a dictionary of default
-keyword arguments that should be used for their equivelent serializer fields.
+keyword arguments that should be used for their equivalent serializer fields.
 """
 import inspect
 
@@ -220,7 +220,7 @@ def get_field_kwargs(field_name, model_field):
         unique_error_message = model_field.error_messages.get('unique', None)
         if unique_error_message:
             unique_error_message = unique_error_message % {
-                'model_name': model_field.model._meta.object_name,
+                'model_name': model_field.model._meta.verbose_name,
                 'field_label': model_field.verbose_name
             }
         validator = UniqueValidator(
@@ -238,7 +238,7 @@ def get_relation_kwargs(field_name, relation_info):
     """
     Creates a default instance of a flat relational field.
     """
-    model_field, related_model, to_many, to_field, has_through_model = relation_info
+    model_field, related_model, to_many, to_field, has_through_model, reverse = relation_info
     kwargs = {
         'queryset': related_model._default_manager,
         'view_name': get_detail_view_name(related_model)
