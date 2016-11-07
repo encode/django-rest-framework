@@ -486,7 +486,7 @@ class ProfileDetail(APIView):
 <pre><code>class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField(
         max_length=100,
-        style={'placeholder': 'Email'}
+        style={'placeholder': 'Email', 'autofocus': True}
     )
     password = serializers.CharField(
         max_length=100,
@@ -576,7 +576,7 @@ class ProfileDetail(APIView):
 <tr>
 <td>input.html</td>
 <td>Any string, numeric or date/time field</td>
-<td>input_type, placeholder, hide_label</td>
+<td>input_type, placeholder, hide_label, autofocus</td>
 </tr>
 <tr>
 <td>textarea.html</td>

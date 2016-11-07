@@ -669,6 +669,10 @@ that the resulting behavior is more transparent.</p>
     if value % 2 != 0:
         raise serializers.ValidationError('This field must be an even number.')
 </code></pre>
+<h4 id="field-level-validation"><a class="toclink" href="#field-level-validation">Field-level validation</a></h4>
+<p>You can specify custom field-level validation by adding <code>.validate_&lt;field_name&gt;</code> methods
+to your <code>Serializer</code> subclass. This is documented in the
+<a href="http://www.django-rest-framework.org/api-guide/serializers/#field-level-validation">Serializer docs</a></p>
 <h2 id="class-based"><a class="toclink" href="#class-based">Class-based</a></h2>
 <p>To write a class-based validator, use the <code>__call__</code> method. Class-based validators are useful as they allow you to parameterize and reuse behavior.</p>
 <pre><code>class MultipleOf(object):
