@@ -108,7 +108,7 @@ Let's take a look at how to render each of the three available template packs. F
     class LoginSerializer(serializers.Serializer):
         email = serializers.EmailField(
             max_length=100,
-            style={'placeholder': 'Email'}
+            style={'placeholder': 'Email', 'autofocus': True}
         )
         password = serializers.CharField(
             max_length=100,
@@ -207,9 +207,9 @@ Field templates can also use additional style properties, depending on their typ
 
 The complete list of `base_template` options and their associated style options is listed below.
 
-base_template  | Valid field types  | Additional style options     
+base_template  | Valid field types  | Additional style options
 ----|----|----
-input.html     | Any string, numeric or date/time field | input_type, placeholder, hide_label
+input.html     | Any string, numeric or date/time field | input_type, placeholder, hide_label, autofocus
 textarea.html |  `CharField` | rows, placeholder, hide_label
 select.html | `ChoiceField` or relational field types | hide_label
 radio.html | `ChoiceField` or relational field types | inline, hide_label
