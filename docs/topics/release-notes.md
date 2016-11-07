@@ -40,6 +40,14 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.5.x series
 
+### 3.5.3
+
+**Date**: [7th November 2016][3.5.3-milestone]
+
+* Don't raise incorrect FilterSet deprecation warnings. ([#4660][gh4660], [#4643][gh4643], [#4644][gh4644])
+* Schema generation should not raise 404 when a view permission class does. ([#4645][gh4645], [#4646][gh4646])
+* Add `autofocus` support for input controls. ([#4650][gh4650])
+
 ### 3.5.2
 
 **Date**: [1st November 2016][3.5.2-milestone]
@@ -630,6 +638,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.5.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.0+Release%22
 [3.5.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.1+Release%22
 [3.5.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.2+Release%22
+[3.5.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.3+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -1198,3 +1207,12 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh4620]: https://github.com/tomchristie/django-rest-framework/issues/4620
 [gh4628]: https://github.com/tomchristie/django-rest-framework/issues/4628
 [gh4639]: https://github.com/tomchristie/django-rest-framework/issues/4639
+
+<!-- 3.5.3 -->
+
+[gh4660]: https://github.com/tomchristie/django-rest-framework/issues/4660
+[gh4643]: https://github.com/tomchristie/django-rest-framework/issues/4643
+[gh4644]: https://github.com/tomchristie/django-rest-framework/issues/4644
+[gh4645]: https://github.com/tomchristie/django-rest-framework/issues/4645
+[gh4646]: https://github.com/tomchristie/django-rest-framework/issues/4646
+[gh4650]: https://github.com/tomchristie/django-rest-framework/issues/4650
