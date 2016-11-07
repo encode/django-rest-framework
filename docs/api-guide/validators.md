@@ -272,6 +272,12 @@ A validator may be any callable that raises a `serializers.ValidationError` on f
         if value % 2 != 0:
             raise serializers.ValidationError('This field must be an even number.')
 
+#### Field-level validation
+
+You can specify custom field-level validation by adding `.validate_<field_name>` methods
+to your `Serializer` subclass. This is documented in the
+[Serializer docs](http://www.django-rest-framework.org/api-guide/serializers/#field-level-validation)
+
 ## Class-based
 
 To write a class-based validator, use the `__call__` method. Class-based validators are useful as they allow you to parameterize and reuse behavior.
