@@ -452,6 +452,9 @@ class SchemaGenerator(object):
         """
         fields = []
 
+        if not hasattr(uritemplate, 'variables'):
+            return fields
+
         for variable in uritemplate.variables(path):
             field = coreapi.Field(name=variable, location='path', required=True)
             fields.append(field)
