@@ -291,7 +291,7 @@ Finally we need to wire these views up.  Create the `snippets/urls.py` file:
 
     urlpatterns = [
         url(r'^snippets/$', views.snippet_list),
-        url(r'^snippets/(?P<pk>[0-9]+)/$', views.snippet_detail),
+        url(r'^snippets/(?P<pk>[0-9]+)/$', views.snippet_details),
     ]
 
 We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to include our snippet app's URLs.
