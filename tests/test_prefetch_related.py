@@ -14,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserUpdate(generics.UpdateAPIView):
-    queryset = User.objects.all().prefetch_related('groups')
+    queryset = User.objects.exclude(username='exclude').prefetch_related('groups')
     serializer_class = UserSerializer
 
 
@@ -35,6 +35,24 @@ class TestPrefetchRelatedUpdates(TestCase):
         expected = {
             'id': pk,
             'username': 'new',
+            'groups': [1],
+            'email': 'tom@example.com'
+        }
+        assert response.data == expected
+
+    def test_prefetch_related_excluding_instance_from_original_queryset(self):
+        """
+        Regression test for https://github.com/tomchristie/django-rest-framework/issues/4661
+        """
+        view = UserUpdate.as_view()
+        pk = self.user.pk
+        groups_pk = self.groups[0].pk
+        request = factory.put('/', {'username': 'exclude', 'groups': [groups_pk]}, format='json')
+        response = view(request, pk=pk)
+        assert User.objects.get(pk=pk).groups.count() == 1
+        expected = {
+            'id': pk,
+            'username': 'exclude',
             'groups': [1],
             'email': 'tom@example.com'
         }

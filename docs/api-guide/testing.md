@@ -187,7 +187,12 @@ As usual CSRF validation will only apply to any session authenticated views.  Th
 # RequestsClient
 
 REST framework also includes a client for interacting with your application
-using the popular Python library, `requests`.
+using the popular Python library, `requests`. This may be useful if:
+
+* You are expecting to interface with the API primarily from another Python service,
+and want to test the service at the same level as the client will see.
+* You want to write tests in such a way that they can also be run against a staging or
+live environment. (See "Live tests" below.)
 
 This exposes exactly the same interface as if you were using a requests session
 directly.
@@ -197,6 +202,10 @@ directly.
     assert response.status_code == 200
 
 Note that the requests client requires you to pass fully qualified URLs.
+
+## `RequestsClient` and working with the database
+
+The `RequestsClient` class is useful if
 
 ## Headers & Authentication
 
