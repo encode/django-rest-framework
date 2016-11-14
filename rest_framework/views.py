@@ -182,7 +182,11 @@ class APIView(View):
         """
         authenticators = self.get_authenticators()
         if authenticators:
-            return authenticators[0].authenticate_header(request)
+            for authenticator in authenticators:
+                authenticate_header = authenticator.authenticate_header(request)
+                    if authenticate_header:
+                        return authenticate_header
+        return None
 
     def get_parser_context(self, http_request):
         """
