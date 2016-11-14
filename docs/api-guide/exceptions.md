@@ -47,7 +47,7 @@ Any example validation error might look like this:
 
 You can implement custom exception handling by creating a handler function that converts exceptions raised in your API views into response objects.  This allows you to control the style of error responses used by your API.
 
-The function must take a pair of arguments, this first is the exception to be handled, and the second is a dictionary containing any extra context such as the view currently being handled. The exception handler function should either return a `Response` object, or return `None` if the exception cannot be handled.  If the handler returns `None` then the exception will be re-raised and Django will return a standard HTTP 500 'server error' response.
+The function must take a pair of arguments, the first is the exception to be handled, and the second is a dictionary containing any extra context such as the view currently being handled. The exception handler function should either return a `Response` object, or return `None` if the exception cannot be handled.  If the handler returns `None` then the exception will be re-raised and Django will return a standard HTTP 500 'server error' response.
 
 For example, you might want to ensure that all error responses include the HTTP status code in the body of the response, like so:
 
