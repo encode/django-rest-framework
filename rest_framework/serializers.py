@@ -995,13 +995,15 @@ class ModelSerializer(Serializer):
                 fields[field_name] = declared_fields[field_name]
                 continue
 
+            extra_field_kwargs = extra_kwargs.get(field_name, {})
+            source = extra_field_kwargs.get('source') or field_name
+
             # Determine the serializer field class and keyword arguments.
             field_class, field_kwargs = self.build_field(
-                field_name, info, model, depth
+                source, info, model, depth
             )
 
             # Include any kwargs defined in `Meta.extra_kwargs`
-            extra_field_kwargs = extra_kwargs.get(field_name, {})
             field_kwargs = self.include_extra_kwargs(
                 field_kwargs, extra_field_kwargs
             )
