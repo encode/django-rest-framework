@@ -7,6 +7,7 @@ from django.test import TestCase
 
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
@@ -42,12 +43,12 @@ def basic_view(request):
 
 class ErrorView(APIView):
     def get(self, request, *args, **kwargs):
-        raise Exception
+        raise APIException('Error!')
 
 
 @api_view(['GET'])
 def error_view(request):
-    raise Exception
+    raise APIException('Error!')
 
 
 def sanitise_json_error(error_dict):
@@ -117,4 +118,33 @@ class TestCustomExceptionHandler(TestCase):
         response = view(request)
         expected = 'Error!'
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, expected)
+
+
+class TestCustomExceptionHandlerErrorKey(TestCase):
+    def setUp(self):
+        self.DEFAULT_ERROR_KEY = api_settings.EXCEPTION_HANDLER_ERROR_KEY
+        api_settings.EXCEPTION_HANDLER_ERROR_KEY = 'my_error'
+
+    def tearDown(self):
+        api_settings.EXCEPTION_HANDLER_ERROR_KEY = self.DEFAULT_ERROR_KEY
+
+    def test_class_based_view_exception_handler_error_key(self):
+        view = ErrorView.as_view()
+
+        request = factory.get('/', content_type='application/json')
+        response = view(request)
+        expected = {'my_error': 'Error!'}
+        self.assertEqual(response.status_code,
+                         status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertEqual(response.data, expected)
+
+    def test_function_based_view_exception_handler_error_key(self):
+        view = error_view
+
+        request = factory.get('/', content_type='application/json')
+        response = view(request)
+        expected = {'my_error': 'Error!'}
+        self.assertEqual(response.status_code,
+                         status.HTTP_500_INTERNAL_SERVER_ERROR)
         self.assertEqual(response.data, expected)
