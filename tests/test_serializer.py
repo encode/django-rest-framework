@@ -313,6 +313,7 @@ class TestNotRequiredOutput:
         serializer.save()
         assert serializer.data == {'included': 'abc'}
 
+    @pytest.mark.skipif(True, reason='Disabling pending removal')
     def test_default_required_output_for_dict(self):
         """
         'default="something"' should require dictionary key.
@@ -328,6 +329,7 @@ class TestNotRequiredOutput:
         with pytest.raises(KeyError):
             serializer.data
 
+    @pytest.mark.skipif(True, reason='Disabling pending removal')
     def test_default_required_output_for_object(self):
         """
         'default="something"' should require object attribute.
@@ -343,6 +345,44 @@ class TestNotRequiredOutput:
         serializer = ExampleSerializer(instance)
         with pytest.raises(AttributeError):
             serializer.data
+
+
+class TestDefaultOutput:
+    def setup(self):
+        class ExampleSerializer(serializers.Serializer):
+            has_default = serializers.CharField(default='abc')
+            no_default = serializers.CharField()
+        self.Serializer = ExampleSerializer
+
+    def test_default_used_for_dict(self):
+        """
+        'default="something"' should be used if dictionary key is missing from input.
+        """
+        serializer = self.Serializer({'no_default': 'def'})
+        assert serializer.data == {'has_default': 'abc', 'no_default': 'def'}
+
+    def test_default_used_for_object(self):
+        """
+        'default="something"' should be used if object attribute is missing from input.
+        """
+        instance = MockObject(no_default='def')
+        serializer = self.Serializer(instance)
+        assert serializer.data == {'has_default': 'abc', 'no_default': 'def'}
+
+    def test_default_not_used_when_in_dict(self):
+        """
+        'default="something"' should not be used if dictionary key is present in input.
+        """
+        serializer = self.Serializer({'has_default': 'ghi', 'no_default': 'def'})
+        assert serializer.data == {'has_default': 'ghi', 'no_default': 'def'}
+
+    def test_default_not_used_when_in_object(self):
+        """
+        'default="something"' should not be used if object attribute is present in input.
+        """
+        instance = MockObject(has_default='ghi', no_default='def')
+        serializer = self.Serializer(instance)
+        assert serializer.data == {'has_default': 'ghi', 'no_default': 'def'}
 
 
 class TestCacheSerializerData:
