@@ -443,7 +443,7 @@ class Field(object):
             return get_attribute(instance, self.source_attrs)
         except (KeyError, AttributeError) as exc:
             if self.default is not empty:
-                return self.default
+                return self.get_default()
             if not self.required:
                 raise SkipField()
             msg = (
