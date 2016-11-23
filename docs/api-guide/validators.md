@@ -153,7 +153,7 @@ The field will not be writable to the user, but the default value will still be 
 
 #### Using with a hidden date field.
 
-If you want the date field to be entirely hidden from the user, then use `HiddenField`. This field type does not accept user input, but instead always returns it's default value to the `validated_data` in the serializer.
+If you want the date field to be entirely hidden from the user, then use `HiddenField`. This field type does not accept user input, but instead always returns its default value to the `validated_data` in the serializer.
 
     published = serializers.HiddenField(default=timezone.now)
 
