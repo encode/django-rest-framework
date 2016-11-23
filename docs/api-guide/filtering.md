@@ -98,7 +98,7 @@ The default filter backends may be set globally, using the `DEFAULT_FILTER_BACKE
 You can also set the filter backends on a per-view, or per-viewset basis,
 using the `GenericAPIView` class-based views.
 
-    import django_filters
+    import django_filters.rest_framework
     from django.contrib.auth.models import User
     from myapp.serializers import UserSerializer
     from rest_framework import generics
