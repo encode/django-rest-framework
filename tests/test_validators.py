@@ -69,9 +69,7 @@ class TestUniquenessValidation(TestCase):
         expected = dedent("""
             UniquenessSerializer():
                 id = IntegerField(label='ID', read_only=True)
-                username = CharField(
-                    max_length=100,
-                    validators=[<UniqueValidator(queryset=UniquenessModel.objects.all())>])
+                username = CharField(max_length=100, validators=[<UniqueValidator(queryset=UniquenessModel.objects.all())>])
         """)
         assert repr(serializer) == expected
 
