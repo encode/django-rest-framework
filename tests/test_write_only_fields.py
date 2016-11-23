@@ -20,7 +20,7 @@ class WriteOnlyFieldTests(TestCase):
             'password': '123'
         }
         serializer = self.Serializer(data=data)
-        assert serializer.is_valid() is True
+        assert serializer.is_valid()
         assert serializer.validated_data == data
 
     def write_only_fields_are_not_present_on_output(self):
