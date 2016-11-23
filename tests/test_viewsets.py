@@ -28,8 +28,8 @@ class InitializeViewSetsTestCase(TestCase):
         try:
             BasicViewSet.as_view()
         except TypeError as e:
-            assert str(e) == "The `actions` argument must be provided "
-            "when calling `.as_view()` on a ViewSet. "
-            "For example `.as_view({'get': 'list'})`"
+            assert str(e) == ("The `actions` argument must be provided "
+                              "when calling `.as_view()` on a ViewSet. "
+                              "For example `.as_view({'get': 'list'})`")
         else:
             self.fail("actions must not be empty.")
