@@ -94,23 +94,20 @@ class TestUniquenessValidation(TestCase):
     def test_doesnt_pollute_model(self):
         instance = AnotherUniquenessModel.objects.create(code='100')
         serializer = AnotherUniquenessSerializer(instance)
-        self.assertEqual(
-            AnotherUniquenessModel._meta.get_field('code').validators, [])
+        assert AnotherUniquenessModel._meta.get_field('code').validators == []
 
         # Accessing data shouldn't effect validators on the model
         serializer.data
-        self.assertEqual(
-            AnotherUniquenessModel._meta.get_field('code').validators, [])
+        assert AnotherUniquenessModel._meta.get_field('code').validators == []
 
     def test_related_model_is_unique(self):
         data = {'username': 'Existing', 'email': 'new-email@example.com'}
         rs = RelatedModelSerializer(data=data)
-        self.assertFalse(rs.is_valid())
-        self.assertEqual(rs.errors,
-                         {'username': ['This field must be unique.']})
+        assert not rs.is_valid()
+        assert rs.errors == {'username': ['This field must be unique.']}
         data = {'username': 'new-username', 'email': 'new-email@example.com'}
         rs = RelatedModelSerializer(data=data)
-        self.assertTrue(rs.is_valid())
+        assert rs.is_valid()
 
     def test_value_error_treated_as_not_unique(self):
         serializer = UniquenessIntegerSerializer(data={'integer': 'abc'})
