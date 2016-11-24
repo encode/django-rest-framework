@@ -20,7 +20,7 @@ With `ModelForm` the validation is performed partially on the form, and partiall
 * It is easy to switch between using shortcut `ModelSerializer` classes and using  explicit `Serializer` classes. Any validation behavior being used for `ModelSerializer` is simple to replicate.
 * Printing the `repr` of a serializer instance will show you exactly what validation rules it applies. There's no extra hidden validation behavior being called on the model instance.
 
-When you're using `ModelSerializer` all of this is handled automatically for you. If you want to drop down to using a `Serializer` classes instead, then you need to define the validation rules explicitly.
+When you're using `ModelSerializer` all of this is handled automatically for you. If you want to drop down to using `Serializer` classes instead, then you need to define the validation rules explicitly.
 
 #### Example
 
