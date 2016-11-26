@@ -275,6 +275,64 @@ class SimpleRouter(BaseRouter):
         return ret
 
 
+class APIRootView(views.APIView):
+    """
+    The default basic root view for DefaultRouter
+    """
+    _ignore_model_permissions = True
+    exclude_from_schema = True
+
+    @classmethod
+    def as_view(cls, **initkwargs):
+        cls.api_root_dict = initkwargs.pop('api_root_dict', {})
+        return super(APIRootView, cls).as_view(**initkwargs)
+
+    def get(self, request, *args, **kwargs):
+        # Return a plain {"name": "hyperlink"} response.
+        ret = OrderedDict()
+        namespace = request.resolver_match.namespace
+        for key, url_name in self.api_root_dict.items():
+            if namespace:
+                url_name = namespace + ':' + url_name
+            try:
+                ret[key] = reverse(
+                    url_name,
+                    args=args,
+                    kwargs=kwargs,
+                    request=request,
+                    format=kwargs.get('format', None)
+                )
+            except NoReverseMatch:
+                # Don't bail out if eg. no list routes exist, only detail routes.
+                continue
+
+        return Response(ret)
+
+
+class APISchemaView(views.APIView):
+    """
+    The default basic schema view for DefaultRouter
+    """
+    _ignore_model_permissions = True
+    exclude_from_schema = True
+    renderer_classes = None
+
+    @classmethod
+    def as_view(cls, **initkwargs):
+        cls.renderer_classes = initkwargs.pop(
+            'renderer_classes', cls.renderer_classes
+        )
+        cls.schema_generator = initkwargs.pop('schema_generator')
+        cls.api_root_dict = initkwargs.pop('api_root_dict')
+        return super(APIRootView, cls).as_view(**initkwargs)
+
+    def get(self, request, *args, **kwargs):
+        schema = self.schema_generator.get_schema(request)
+        if schema is None:
+            raise exceptions.PermissionDenied()
+        return Response(schema)
+
+
 class DefaultRouter(SimpleRouter):
     """
     The default router extends the SimpleRouter, but also adds in a default
@@ -284,6 +342,8 @@ class DefaultRouter(SimpleRouter):
     include_format_suffixes = True
     root_view_name = 'api-root'
     default_schema_renderers = [renderers.CoreJSONRenderer, BrowsableAPIRenderer]
+    APIRootView = APIRootView
+    APISchemaView = APISchemaView
 
     def __init__(self, *args, **kwargs):
         if 'schema_title' in kwargs:
@@ -316,18 +376,10 @@ class DefaultRouter(SimpleRouter):
             patterns=api_urls
         )
 
-        class APISchemaView(views.APIView):
-            _ignore_model_permissions = True
-            exclude_from_schema = True
-            renderer_classes = schema_renderers
-
-            def get(self, request, *args, **kwargs):
-                schema = schema_generator.get_schema(request)
-                if schema is None:
-                    raise exceptions.PermissionDenied()
-                return Response(schema)
-
-        return APISchemaView.as_view()
+        return self.APISchemaView.as_view(
+            renderer_classes=schema_renderers,
+            schema_generator=schema_generator,
+        )
 
     def get_api_root_view(self, api_urls=None):
         """
@@ -338,32 +390,7 @@ class DefaultRouter(SimpleRouter):
         for prefix, viewset, basename in self.registry:
             api_root_dict[prefix] = list_name.format(basename=basename)
 
-        class APIRootView(views.APIView):
-            _ignore_model_permissions = True
-            exclude_from_schema = True
-
-            def get(self, request, *args, **kwargs):
-                # Return a plain {"name": "hyperlink"} response.
-                ret = OrderedDict()
-                namespace = request.resolver_match.namespace
-                for key, url_name in api_root_dict.items():
-                    if namespace:
-                        url_name = namespace + ':' + url_name
-                    try:
-                        ret[key] = reverse(
-                            url_name,
-                            args=args,
-                            kwargs=kwargs,
-                            request=request,
-                            format=kwargs.get('format', None)
-                        )
-                    except NoReverseMatch:
-                        # Don't bail out if eg. no list routes exist, only detail routes.
-                        continue
-
-                return Response(ret)
-
-        return APIRootView.as_view()
+        return self.APIRootView.as_view(api_root_dict=api_root_dict)
 
     def get_urls(self):
         """
