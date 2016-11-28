@@ -489,7 +489,7 @@ class SearchFilterTests(TestCase):
                 {'id': 2, 'title': 'zz', 'text': 'bcd'}
             ]
 
-    reload_module(filters)
+        reload_module(filters)
 
 
 class AttributeModel(models.Model):
@@ -857,7 +857,7 @@ class OrderingFilterTests(TestCase):
 
         view = OrderingListView.as_view()
         request = factory.get('/', {'ordering': 'text'})
-        with assertRaises(ImproperlyConfigured):
+        with self.assertRaises(ImproperlyConfigured):
             view(request)
 
 
@@ -921,14 +921,11 @@ class SensitiveOrderingFilterTests(TestCase):
                 username_field = 'username'
 
             # Note: Inverse username ordering correctly applied.
-            self.assertEqual(
-                response.data,
-                [
-                    {'id': 3, username_field: 'userC'},
-                    {'id': 2, username_field: 'userB'},
-                    {'id': 1, username_field: 'userA'},
-                ]
-            )
+            assert response.data == [
+                {'id': 3, username_field: 'userC'},
+                {'id': 2, username_field: 'userB'},
+                {'id': 1, username_field: 'userA'},
+            ]
 
     def test_cannot_order_by_non_serializer_fields(self):
         for serializer_cls in [
