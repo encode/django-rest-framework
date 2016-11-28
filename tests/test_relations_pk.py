@@ -318,7 +318,7 @@ class PKForeignKeyTests(TestCase):
         data = {'id': 1, 'name': 'source-1', 'target': None}
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
-        assert serializer.is_valid()
+        assert not serializer.is_valid()
         assert serializer.errors == {'target': ['This field may not be null.']}
 
     def test_foreign_key_with_unsaved(self):
