@@ -350,7 +350,7 @@ class PKForeignKeyTests(TestCase):
                 extra_kwargs = {'target': {'required': False}}
         serializer = ModelSerializer(data={'name': 'test'})
         serializer.is_valid(raise_exception=True)
-        self.assertNotIn('target', serializer.validated_data)
+        assert 'target' not in serializer.validated_data
 
 
 class PKNullableForeignKeyTests(TestCase):
@@ -466,7 +466,7 @@ class PKNullableForeignKeyTests(TestCase):
     def test_nullable_uuid_foreign_key_is_valid_when_none(self):
         data = {"name": "Source", "target": None}
         serializer = NullableUUIDForeignKeySourceSerializer(data=data)
-        self.assertTrue(serializer.is_valid(), serializer.errors)
+        assert serializer.is_valid(), serializer.errors
 
 
 class PKNullableOneToOneTests(TestCase):
