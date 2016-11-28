@@ -338,7 +338,7 @@ class PKForeignKeyTests(TestCase):
         https://github.com/tomchristie/django-rest-framework/issues/1072
         """
         serializer = NullableForeignKeySourceSerializer()
-        assert serializer.data['target'] == None
+        assert serializer.data['target'] is None
 
     def test_foreign_key_not_required(self):
         """
@@ -461,7 +461,7 @@ class PKNullableForeignKeyTests(TestCase):
         source = NullableUUIDForeignKeySource(name='Source')
         serializer = NullableUUIDForeignKeySourceSerializer(source)
         data = serializer.data
-        assert data["target"] == None
+        assert data["target"] is None
 
     def test_nullable_uuid_foreign_key_is_valid_when_none(self):
         data = {"name": "Source", "target": None}
