@@ -155,8 +155,8 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
             request = factory.get('/')
             response = view(request).render()
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, self.data)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == self.data
 
         self.assertTrue(issubclass(w[-1].category, PendingDeprecationWarning))
         self.assertIn("'rest_framework.filters.DjangoFilterBackend' is pending deprecation.", str(w[-1].message))
@@ -175,9 +175,9 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
             request = factory.get('/')
             response = view(request).render()
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, self.data)
-        self.assertEqual(len(w), 0)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == self.data
+        assert len(w) == 0
 
     @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_get_filtered_fields_root_view(self):
@@ -189,24 +189,24 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         # Basic test with no filter.
         request = factory.get('/')
         response = view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, self.data)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == self.data
 
         # Tests that the decimal filter works.
         search_decimal = Decimal('2.25')
         request = factory.get('/', {'decimal': '%s' % search_decimal})
         response = view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert response.status_code == status.HTTP_200_OK
         expected_data = [f for f in self.data if Decimal(f['decimal']) == search_decimal]
-        self.assertEqual(response.data, expected_data)
+        assert response.data == expected_data
 
         # Tests that the date filter works.
         search_date = datetime.date(2012, 9, 22)
         request = factory.get('/', {'date': '%s' % search_date})  # search_date str: '2012-09-22'
         response = view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert response.status_code == status.HTTP_200_OK
         expected_data = [f for f in self.data if parse_date(f['date']) == search_date]
-        self.assertEqual(response.data, expected_data)
+        assert response.data == expected_data
 
     @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_filter_with_queryset(self):
@@ -219,9 +219,9 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         search_decimal = Decimal('2.25')
         request = factory.get('/', {'decimal': '%s' % search_decimal})
         response = view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert response.status_code == status.HTTP_200_OK
         expected_data = [f for f in self.data if Decimal(f['decimal']) == search_decimal]
-        self.assertEqual(response.data, expected_data)
+        assert response.data == expected_data
 
     @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_filter_with_get_queryset_only(self):
@@ -245,32 +245,32 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         # Basic test with no filter.
         request = factory.get('/')
         response = view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, self.data)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == self.data
 
         # Tests that the decimal filter set with 'lt' in the filter class works.
         search_decimal = Decimal('4.25')
         request = factory.get('/', {'decimal': '%s' % search_decimal})
         response = view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert response.status_code == status.HTTP_200_OK
         expected_data = [f for f in self.data if Decimal(f['decimal']) < search_decimal]
-        self.assertEqual(response.data, expected_data)
+        assert response.data == expected_data
 
         # Tests that the date filter set with 'gt' in the filter class works.
         search_date = datetime.date(2012, 10, 2)
         request = factory.get('/', {'date': '%s' % search_date})  # search_date str: '2012-10-02'
         response = view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert response.status_code == status.HTTP_200_OK
         expected_data = [f for f in self.data if parse_date(f['date']) > search_date]
-        self.assertEqual(response.data, expected_data)
+        assert response.data == expected_data
 
         # Tests that the text filter set with 'icontains' in the filter class works.
         search_text = 'ff'
         request = factory.get('/', {'text': '%s' % search_text})
         response = view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert response.status_code == status.HTTP_200_OK
         expected_data = [f for f in self.data if search_text in f['text'].lower()]
-        self.assertEqual(response.data, expected_data)
+        assert response.data == expected_data
 
         # Tests that multiple filters works.
         search_decimal = Decimal('5.25')
@@ -280,10 +280,10 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
             'date': '%s' % (search_date,)
         })
         response = view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert response.status_code == status.HTTP_200_OK
         expected_data = [f for f in self.data if parse_date(f['date']) > search_date and
                          Decimal(f['decimal']) < search_decimal]
-        self.assertEqual(response.data, expected_data)
+        assert response.data == expected_data
 
     @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_incorrectly_configured_filter(self):
@@ -304,8 +304,8 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
 
         request = factory.get('/?text=aaa')
         response = view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data) == 1
 
     @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_base_model_filter_with_proxy(self):
@@ -316,8 +316,8 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
 
         request = factory.get('/?text=aaa')
         response = view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data) == 1
 
     @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_unknown_filter(self):
@@ -329,7 +329,7 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         search_integer = 10
         request = factory.get('/', {'integer': '%s' % search_integer})
         response = view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert response.status_code == status.HTTP_200_OK
 
 
 @override_settings(ROOT_URLCONF='tests.test_filters')
@@ -351,8 +351,8 @@ class IntegrationTestDetailFiltering(CommonFilteringTestCase):
 
         # Basic test with no filter.
         response = self.client.get(self._get_url(item))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, data)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == data
 
         # Tests that the decimal filter set that should fail.
         search_decimal = Decimal('4.25')
@@ -360,7 +360,7 @@ class IntegrationTestDetailFiltering(CommonFilteringTestCase):
         response = self.client.get(
             '{url}'.format(url=self._get_url(high_item)),
             {'decimal': '{param}'.format(param=search_decimal)})
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
         # Tests that the decimal filter set that should succeed.
         search_decimal = Decimal('4.25')
@@ -369,8 +369,8 @@ class IntegrationTestDetailFiltering(CommonFilteringTestCase):
         response = self.client.get(
             '{url}'.format(url=self._get_url(low_item)),
             {'decimal': '{param}'.format(param=search_decimal)})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, low_item_data)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == low_item_data
 
         # Tests that multiple filters works.
         search_decimal = Decimal('5.25')
@@ -382,8 +382,8 @@ class IntegrationTestDetailFiltering(CommonFilteringTestCase):
                 'decimal': '{decimal}'.format(decimal=search_decimal),
                 'date': '{date}'.format(date=search_date)
             })
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, valid_item_data)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == valid_item_data
 
 
 class SearchFilterModel(models.Model):
@@ -424,13 +424,10 @@ class SearchFilterTests(TestCase):
         view = SearchListView.as_view()
         request = factory.get('/', {'search': 'b'})
         response = view(request)
-        self.assertEqual(
-            response.data,
-            [
-                {'id': 1, 'title': 'z', 'text': 'abc'},
-                {'id': 2, 'title': 'zz', 'text': 'bcd'}
-            ]
-        )
+        assert response.data == [
+            {'id': 1, 'title': 'z', 'text': 'abc'},
+            {'id': 2, 'title': 'zz', 'text': 'bcd'}
+        ]
 
     def test_exact_search(self):
         class SearchListView(generics.ListAPIView):
@@ -442,12 +439,9 @@ class SearchFilterTests(TestCase):
         view = SearchListView.as_view()
         request = factory.get('/', {'search': 'zzz'})
         response = view(request)
-        self.assertEqual(
-            response.data,
-            [
-                {'id': 3, 'title': 'zzz', 'text': 'cde'}
-            ]
-        )
+        assert response.data == [
+            {'id': 3, 'title': 'zzz', 'text': 'cde'}
+        ]
 
     def test_startswith_search(self):
         class SearchListView(generics.ListAPIView):
@@ -459,12 +453,9 @@ class SearchFilterTests(TestCase):
         view = SearchListView.as_view()
         request = factory.get('/', {'search': 'b'})
         response = view(request)
-        self.assertEqual(
-            response.data,
-            [
-                {'id': 2, 'title': 'zz', 'text': 'bcd'}
-            ]
-        )
+        assert response.data == [
+            {'id': 2, 'title': 'zz', 'text': 'bcd'}
+        ]
 
     def test_regexp_search(self):
         class SearchListView(generics.ListAPIView):
@@ -476,12 +467,9 @@ class SearchFilterTests(TestCase):
         view = SearchListView.as_view()
         request = factory.get('/', {'search': 'z{2} ^b'})
         response = view(request)
-        self.assertEqual(
-            response.data,
-            [
-                {'id': 2, 'title': 'zz', 'text': 'bcd'}
-            ]
-        )
+        assert response.data == [
+            {'id': 2, 'title': 'zz', 'text': 'bcd'}
+        ]
 
     def test_search_with_nonstandard_search_param(self):
         with override_settings(REST_FRAMEWORK={'SEARCH_PARAM': 'query'}):
@@ -496,13 +484,10 @@ class SearchFilterTests(TestCase):
             view = SearchListView.as_view()
             request = factory.get('/', {'query': 'b'})
             response = view(request)
-            self.assertEqual(
-                response.data,
-                [
-                    {'id': 1, 'title': 'z', 'text': 'abc'},
-                    {'id': 2, 'title': 'zz', 'text': 'bcd'}
-                ]
-            )
+            assert response.data == [
+                {'id': 1, 'title': 'z', 'text': 'abc'},
+                {'id': 2, 'title': 'zz', 'text': 'bcd'}
+            ]
 
         reload_module(filters)
 
@@ -528,15 +513,13 @@ class SearchFilterFkTests(TestCase):
         filter_ = filters.SearchFilter()
         prefixes = [''] + list(filter_.lookup_prefixes)
         for prefix in prefixes:
-            self.assertFalse(
-                filter_.must_call_distinct(
-                    SearchFilterModelFk._meta, ["%stitle" % prefix]
-                )
+            assert not filter_.must_call_distinct(
+                SearchFilterModelFk._meta,
+                ["%stitle" % prefix]
             )
-            self.assertFalse(
-                filter_.must_call_distinct(
-                    SearchFilterModelFk._meta, ["%stitle" % prefix, "%sattribute__label" % prefix]
-                )
+            assert not filter_.must_call_distinct(
+                SearchFilterModelFk._meta,
+                ["%stitle" % prefix, "%sattribute__label" % prefix]
             )
 
     def test_must_call_distinct_restores_meta_for_each_field(self):
@@ -545,10 +528,9 @@ class SearchFilterFkTests(TestCase):
         filter_ = filters.SearchFilter()
         prefixes = [''] + list(filter_.lookup_prefixes)
         for prefix in prefixes:
-            self.assertFalse(
-                filter_.must_call_distinct(
-                    SearchFilterModelFk._meta, ["%sattribute__label" % prefix, "%stitle" % prefix]
-                )
+            assert not filter_.must_call_distinct(
+                SearchFilterModelFk._meta,
+                ["%sattribute__label" % prefix, "%stitle" % prefix]
             )
 
 
@@ -596,21 +578,20 @@ class SearchFilterM2MTests(TestCase):
         view = SearchListView.as_view()
         request = factory.get('/', {'search': 'zz'})
         response = view(request)
-        self.assertEqual(len(response.data), 1)
+        assert len(response.data) == 1
 
     def test_must_call_distinct(self):
         filter_ = filters.SearchFilter()
         prefixes = [''] + list(filter_.lookup_prefixes)
         for prefix in prefixes:
-            self.assertFalse(
-                filter_.must_call_distinct(
-                    SearchFilterModelM2M._meta, ["%stitle" % prefix]
-                )
+            assert not filter_.must_call_distinct(
+                SearchFilterModelM2M._meta,
+                ["%stitle" % prefix]
             )
-            self.assertTrue(
-                filter_.must_call_distinct(
-                    SearchFilterModelM2M._meta, ["%stitle" % prefix, "%sattributes__label" % prefix]
-                )
+
+            assert filter_.must_call_distinct(
+                SearchFilterModelM2M._meta,
+                ["%stitle" % prefix, "%sattributes__label" % prefix]
             )
 
 
@@ -672,14 +653,11 @@ class DjangoFilterOrderingTests(TestCase):
         request = factory.get('/')
         response = view(request)
 
-        self.assertEqual(
-            response.data,
-            [
-                {'id': 3, 'date': '2014-10-08', 'text': 'cde'},
-                {'id': 2, 'date': '2013-10-08', 'text': 'bcd'},
-                {'id': 1, 'date': '2012-10-08', 'text': 'abc'}
-            ]
-        )
+        assert response.data == [
+            {'id': 3, 'date': '2014-10-08', 'text': 'cde'},
+            {'id': 2, 'date': '2013-10-08', 'text': 'bcd'},
+            {'id': 1, 'date': '2012-10-08', 'text': 'abc'}
+        ]
 
 
 class OrderingFilterTests(TestCase):
@@ -713,14 +691,11 @@ class OrderingFilterTests(TestCase):
         view = OrderingListView.as_view()
         request = factory.get('/', {'ordering': 'text'})
         response = view(request)
-        self.assertEqual(
-            response.data,
-            [
-                {'id': 1, 'title': 'zyx', 'text': 'abc'},
-                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-                {'id': 3, 'title': 'xwv', 'text': 'cde'},
-            ]
-        )
+        assert response.data == [
+            {'id': 1, 'title': 'zyx', 'text': 'abc'},
+            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+            {'id': 3, 'title': 'xwv', 'text': 'cde'},
+        ]
 
     def test_reverse_ordering(self):
         class OrderingListView(generics.ListAPIView):
@@ -733,14 +708,11 @@ class OrderingFilterTests(TestCase):
         view = OrderingListView.as_view()
         request = factory.get('/', {'ordering': '-text'})
         response = view(request)
-        self.assertEqual(
-            response.data,
-            [
-                {'id': 3, 'title': 'xwv', 'text': 'cde'},
-                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-                {'id': 1, 'title': 'zyx', 'text': 'abc'},
-            ]
-        )
+        assert response.data == [
+            {'id': 3, 'title': 'xwv', 'text': 'cde'},
+            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+            {'id': 1, 'title': 'zyx', 'text': 'abc'},
+        ]
 
     def test_incorrectfield_ordering(self):
         class OrderingListView(generics.ListAPIView):
@@ -753,14 +725,11 @@ class OrderingFilterTests(TestCase):
         view = OrderingListView.as_view()
         request = factory.get('/', {'ordering': 'foobar'})
         response = view(request)
-        self.assertEqual(
-            response.data,
-            [
-                {'id': 3, 'title': 'xwv', 'text': 'cde'},
-                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-                {'id': 1, 'title': 'zyx', 'text': 'abc'},
-            ]
-        )
+        assert response.data == [
+            {'id': 3, 'title': 'xwv', 'text': 'cde'},
+            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+            {'id': 1, 'title': 'zyx', 'text': 'abc'},
+        ]
 
     def test_default_ordering(self):
         class OrderingListView(generics.ListAPIView):
@@ -773,14 +742,11 @@ class OrderingFilterTests(TestCase):
         view = OrderingListView.as_view()
         request = factory.get('')
         response = view(request)
-        self.assertEqual(
-            response.data,
-            [
-                {'id': 3, 'title': 'xwv', 'text': 'cde'},
-                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-                {'id': 1, 'title': 'zyx', 'text': 'abc'},
-            ]
-        )
+        assert response.data == [
+            {'id': 3, 'title': 'xwv', 'text': 'cde'},
+            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+            {'id': 1, 'title': 'zyx', 'text': 'abc'},
+        ]
 
     def test_default_ordering_using_string(self):
         class OrderingListView(generics.ListAPIView):
@@ -793,14 +759,11 @@ class OrderingFilterTests(TestCase):
         view = OrderingListView.as_view()
         request = factory.get('')
         response = view(request)
-        self.assertEqual(
-            response.data,
-            [
-                {'id': 3, 'title': 'xwv', 'text': 'cde'},
-                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-                {'id': 1, 'title': 'zyx', 'text': 'abc'},
-            ]
-        )
+        assert response.data == [
+            {'id': 3, 'title': 'xwv', 'text': 'cde'},
+            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+            {'id': 1, 'title': 'zyx', 'text': 'abc'},
+        ]
 
     def test_ordering_by_aggregate_field(self):
         # create some related models to aggregate order by
@@ -824,14 +787,11 @@ class OrderingFilterTests(TestCase):
         view = OrderingListView.as_view()
         request = factory.get('/', {'ordering': 'relateds__count'})
         response = view(request)
-        self.assertEqual(
-            response.data,
-            [
-                {'id': 1, 'title': 'zyx', 'text': 'abc'},
-                {'id': 3, 'title': 'xwv', 'text': 'cde'},
-                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-            ]
-        )
+        assert response.data == [
+            {'id': 1, 'title': 'zyx', 'text': 'abc'},
+            {'id': 3, 'title': 'xwv', 'text': 'cde'},
+            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+        ]
 
     def test_ordering_with_nonstandard_ordering_param(self):
         with override_settings(REST_FRAMEWORK={'ORDERING_PARAM': 'order'}):
@@ -847,14 +807,11 @@ class OrderingFilterTests(TestCase):
             view = OrderingListView.as_view()
             request = factory.get('/', {'order': 'text'})
             response = view(request)
-            self.assertEqual(
-                response.data,
-                [
-                    {'id': 1, 'title': 'zyx', 'text': 'abc'},
-                    {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-                    {'id': 3, 'title': 'xwv', 'text': 'cde'},
-                ]
-            )
+            assert response.data == [
+                {'id': 1, 'title': 'zyx', 'text': 'abc'},
+                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+                {'id': 3, 'title': 'xwv', 'text': 'cde'},
+            ]
 
         reload_module(filters)
 
@@ -884,14 +841,11 @@ class OrderingFilterTests(TestCase):
         view = OrderingListView.as_view()
         request = factory.get('/', {'ordering': 'text'})
         response = view(request)
-        self.assertEqual(
-            response.data,
-            [
-                {'id': 1, 'title': 'zyx', 'text': 'abc'},
-                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-                {'id': 3, 'title': 'xwv', 'text': 'cde'},
-            ]
-        )
+        assert response.data == [
+            {'id': 1, 'title': 'zyx', 'text': 'abc'},
+            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+            {'id': 3, 'title': 'xwv', 'text': 'cde'},
+        ]
 
     def test_ordering_with_improper_configuration(self):
         class OrderingListView(generics.ListAPIView):
@@ -967,14 +921,11 @@ class SensitiveOrderingFilterTests(TestCase):
                 username_field = 'username'
 
             # Note: Inverse username ordering correctly applied.
-            self.assertEqual(
-                response.data,
-                [
-                    {'id': 3, username_field: 'userC'},
-                    {'id': 2, username_field: 'userB'},
-                    {'id': 1, username_field: 'userA'},
-                ]
-            )
+            assert response.data == [
+                {'id': 3, username_field: 'userC'},
+                {'id': 2, username_field: 'userB'},
+                {'id': 1, username_field: 'userA'},
+            ]
 
     def test_cannot_order_by_non_serializer_fields(self):
         for serializer_cls in [
@@ -997,11 +948,8 @@ class SensitiveOrderingFilterTests(TestCase):
                 username_field = 'username'
 
             # Note: The passwords are not in order.  Default ordering is used.
-            self.assertEqual(
-                response.data,
-                [
-                    {'id': 1, username_field: 'userA'},  # PassB
-                    {'id': 2, username_field: 'userB'},  # PassC
-                    {'id': 3, username_field: 'userC'},  # PassA
-                ]
-            )
+            assert response.data == [
+                {'id': 1, username_field: 'userA'},  # PassB
+                {'id': 2, username_field: 'userB'},  # PassC
+                {'id': 3, username_field: 'userC'},  # PassA
+            ]
