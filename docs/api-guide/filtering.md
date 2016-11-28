@@ -187,6 +187,7 @@ This will automatically create a `FilterSet` class for the given fields, and wil
 For more advanced filtering requirements you can specify a `FilterSet` class that should be used by the view.  For example:
 
     import django_filters
+    import django_filters.rest_framework
     from myapp.models import Product
     from myapp.serializers import ProductSerializer
     from rest_framework import generics
@@ -213,7 +214,7 @@ You can also span relationships using `django-filter`, let's assume that each
 product has foreign key to `Manufacturer` model, so we create filter that
 filters using `Manufacturer` name. For example:
 
-    import django_filters
+    import django_filters.rest_framework
     from myapp.models import Product
     from myapp.serializers import ProductSerializer
     from rest_framework import generics
@@ -230,6 +231,7 @@ This enables us to make queries like:
 This is nice, but it exposes the Django's double underscore convention as part of the API.  If you instead want to explicitly name the filter argument you can instead explicitly include it on the `FilterSet` class:
 
     import django_filters
+    import django_filters.rest_framework
     from myapp.models import Product
     from myapp.serializers import ProductSerializer
     from rest_framework import generics
