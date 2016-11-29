@@ -669,7 +669,7 @@ The [django-rest-framework-hstore][django-rest-framework-hstore] package provide
 [html-and-forms]: ../topics/html-and-forms.md
 [FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS
 [ecma262]: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
-[strftime]: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
+[strftime]: https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
 [django-widgets]: https://docs.djangoproject.com/en/dev/ref/forms/widgets/
 [iso8601]: http://www.w3.org/TR/NOTE-datetime
 [drf-compound-fields]: https://drf-compound-fields.readthedocs.io
