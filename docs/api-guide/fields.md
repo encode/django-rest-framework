@@ -261,7 +261,7 @@ Corresponds to `django.db.models.fields.DecimalField`.
 
 **Signature**: `DecimalField(max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None)`
 
-- `max_digits` The maximum number of digits allowed in the number. Note that this number must be greater than or equal to decimal_places.
+- `max_digits` The maximum number of digits allowed in the number. It must be either `None` or an integer greater than or equal to `decimal_places`.
 - `decimal_places` The number of decimal places to store with the number.
 - `coerce_to_string` Set to `True` if string values should be returned for the representation, or `False` if `Decimal` objects should be returned. Defaults to the same value as the `COERCE_DECIMAL_TO_STRING` settings key, which will be `True` unless overridden. If `Decimal` objects are returned by the serializer, then the final output format will be determined by the renderer. Note that setting `localize` will force the value to `True`.
 - `max_value` Validate that the number provided is no greater than this value.
