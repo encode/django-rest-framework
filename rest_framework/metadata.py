@@ -66,11 +66,11 @@ class SimpleMetadata(BaseMetadata):
         renders = OrderedDict()
         for renderer in view.renderer_classes:
             renders[renderer.media_type] = True
-        metadata['renders'] = renders.keys()
+        metadata['renders'] = list(renders.keys())
         parses = OrderedDict()
         for parser in view.parser_classes:
             parses[parser.media_type] = True
-        metadata['parses'] = parses.keys()
+        metadata['parses'] = list(parses.keys())
         if hasattr(view, 'get_serializer'):
             actions = self.determine_actions(request, view)
             if actions:
