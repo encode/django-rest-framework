@@ -224,7 +224,7 @@ Modify your REST framework settings.
 
 [jquery-ajax]: http://api.jquery.com/jQuery.ajax/
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion
-[upload-handlers]: https://docs.djangoproject.com/en/dev/topics/http/file-uploads/#upload-handlers
+[upload-handlers]: https://docs.djangoproject.com/en/stable/topics/http/file-uploads/#upload-handlers
 [rest-framework-yaml]: http://jpadilla.github.io/django-rest-framework-yaml/
 [rest-framework-xml]: http://jpadilla.github.io/django-rest-framework-xml/
 [yaml]: http://www.yaml.org/

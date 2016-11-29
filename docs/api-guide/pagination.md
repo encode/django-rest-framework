@@ -325,7 +325,7 @@ The [`DRF-extensions` package][drf-extensions] includes a [`PaginateByMaxMixin` 
 
 The [`drf-proxy-pagination` package][drf-proxy-pagination] includes a `ProxyPagination` class which allows to choose pagination class with a query parameter.
 
-[cite]: https://docs.djangoproject.com/en/dev/topics/pagination/
+[cite]: https://docs.djangoproject.com/en/stable/topics/pagination/
 [github-link-pagination]: https://developer.github.com/guides/traversing-with-pagination/
 [link-header]: ../img/link-header-pagination.png
 [drf-extensions]: http://chibisov.github.io/drf-extensions/docs/

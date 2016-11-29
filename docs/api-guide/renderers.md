@@ -476,7 +476,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [Rest Framework Latex] provides a renderer that outputs PDFs using Laulatex. It is maintained by [Pebble (S/F Software)][mypebble].
 
 
-[cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
+[cite]: https://docs.djangoproject.com/en/stable/stable/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [html-and-forms]: ../topics/html-and-forms.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
@@ -485,7 +485,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [quote]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [application/vnd.github+json]: http://developer.github.com/v3/media/
 [application/vnd.collection+json]: http://www.amundsen.com/media-types/collection/
-[django-error-views]: https://docs.djangoproject.com/en/dev/topics/http/views/#customizing-error-views
+[django-error-views]: https://docs.djangoproject.com/en/stable/topics/http/views/#customizing-error-views
 [rest-framework-jsonp]: http://jpadilla.github.io/django-rest-framework-jsonp/
 [cors]: http://www.w3.org/TR/cors/
 [cors-docs]: http://www.django-rest-framework.org/topics/ajax-csrf-cors/

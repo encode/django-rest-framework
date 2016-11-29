@@ -193,5 +193,5 @@ The following is an example of a rate throttle, that will randomly throttle 1 in
 [cite]: https://dev.twitter.com/docs/error-codes-responses
 [permissions]: permissions.md
 [identifing-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster
-[cache-setting]: https://docs.djangoproject.com/en/dev/ref/settings/#caches
-[cache-docs]: https://docs.djangoproject.com/en/dev/topics/cache/#setting-up-the-cache
+[cache-setting]: https://docs.djangoproject.com/en/stable/stable/settings/#caches
+[cache-docs]: https://docs.djangoproject.com/en/stable/topics/cache/#setting-up-the-cache

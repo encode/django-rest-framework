@@ -300,4 +300,4 @@ In some advanced cases you might want a validator to be passed the serializer fi
         # In `__call__` we can then use that information to modify the validation behavior.
         self.is_update = serializer_field.parent.instance is not None
 
-[cite]: https://docs.djangoproject.com/en/dev/ref/validators/
+[cite]: https://docs.djangoproject.com/en/stable/ref/validators/
