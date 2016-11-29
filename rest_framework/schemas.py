@@ -571,28 +571,36 @@ class SchemaGenerator(object):
         return named_path_components + [action]
 
 
-def get_schema_view(title=None, url=None, renderer_classes=None):
+class SchemaView(APIView):
+    _ignore_model_permissions = True
+    exclude_from_schema = True
+    renderer_classes = None
+    schema_generator = None
+
+    def __init__(self, *args, **kwargs):
+        super(SchemaView, self).__init__(*args, **kwargs)
+        if self.renderer_classes is None:
+            if renderers.BrowsableAPIRenderer in api_settings.DEFAULT_RENDERER_CLASSES:
+                self.renderer_classes = [
+                    renderers.CoreJSONRenderer,
+                    renderers.BrowsableAPIRenderer,
+                ]
+            else:
+                self.renderer_classes = [renderers.CoreJSONRenderer]
+
+    def get(self, request, *args, **kwargs):
+        schema = self.schema_generator.get_schema(request)
+        if schema is None:
+            raise exceptions.PermissionDenied()
+        return Response(schema)
+
+
+def get_schema_view(title=None, url=None, patterns=None, renderer_classes=None):
     """
     Return a schema view.
     """
-    generator = SchemaGenerator(title=title, url=url)
-    if renderer_classes is None:
-        if renderers.BrowsableAPIRenderer in api_settings.DEFAULT_RENDERER_CLASSES:
-            rclasses = [renderers.CoreJSONRenderer, renderers.BrowsableAPIRenderer]
-        else:
-            rclasses = [renderers.CoreJSONRenderer]
-    else:
-        rclasses = renderer_classes
-
-    class SchemaView(APIView):
-        _ignore_model_permissions = True
-        exclude_from_schema = True
-        renderer_classes = rclasses
-
-        def get(self, request, *args, **kwargs):
-            schema = generator.get_schema(request)
-            if schema is None:
-                raise exceptions.PermissionDenied()
-            return Response(schema)
-
-    return SchemaView.as_view()
+    generator = SchemaGenerator(title=title, url=url, patterns=patterns)
+    return SchemaView.as_view(
+        renderer_classes=renderer_classes,
+        schema_generator=generator,
+    )
