@@ -27,7 +27,7 @@ from rest_framework.compat import NoReverseMatch
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.schemas import SchemaGenerator
+from rest_framework.schemas import SchemaGenerator, SchemaView
 from rest_framework.settings import api_settings
 from rest_framework.urlpatterns import format_suffix_patterns
 
@@ -305,30 +305,6 @@ class APIRootView(views.APIView):
         return Response(ret)
 
 
-class APISchemaView(views.APIView):
-    """
-    The default basic schema view for DefaultRouter
-    """
-    _ignore_model_permissions = True
-    exclude_from_schema = True
-    renderer_classes = None
-
-    @classmethod
-    def as_view(cls, **initkwargs):
-        cls.renderer_classes = initkwargs.pop(
-            'renderer_classes', cls.renderer_classes
-        )
-        cls.schema_generator = initkwargs.pop('schema_generator')
-        cls.api_root_dict = initkwargs.pop('api_root_dict')
-        return super(APIRootView, cls).as_view(**initkwargs)
-
-    def get(self, request, *args, **kwargs):
-        schema = self.schema_generator.get_schema(request)
-        if schema is None:
-            raise exceptions.PermissionDenied()
-        return Response(schema)
-
-
 class DefaultRouter(SimpleRouter):
     """
     The default router extends the SimpleRouter, but also adds in a default
@@ -339,7 +315,7 @@ class DefaultRouter(SimpleRouter):
     root_view_name = 'api-root'
     default_schema_renderers = [renderers.CoreJSONRenderer, BrowsableAPIRenderer]
     APIRootView = APIRootView
-    APISchemaView = APISchemaView
+    APISchemaView = SchemaView
 
     def __init__(self, *args, **kwargs):
         if 'schema_title' in kwargs:
