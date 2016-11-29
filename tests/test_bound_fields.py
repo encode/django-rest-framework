@@ -39,7 +39,7 @@ class TestSimpleBoundField:
         serializer.is_valid()
 
         assert serializer['text'].value == 'x' * 1000
-        assert serializer['text'].errors == ['Ensure this field has no more than 100 characters.']
+        assert serializer['text'].errors == ['Ensure this value has at most 100 characters (it has 1000).']
         assert serializer['text'].name == 'text'
         assert serializer['amount'].value is 123
         assert serializer['amount'].errors is None
