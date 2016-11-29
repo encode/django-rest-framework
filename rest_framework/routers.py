@@ -313,7 +313,7 @@ class DefaultRouter(SimpleRouter):
     include_root_view = True
     include_format_suffixes = True
     root_view_name = 'api-root'
-    default_schema_renderers = [renderers.CoreJSONRenderer, BrowsableAPIRenderer]
+    default_schema_renderers = None
     APIRootView = APIRootView
     APISchemaView = SchemaView
 
@@ -331,6 +331,14 @@ class DefaultRouter(SimpleRouter):
         self.schema_title = kwargs.pop('schema_title', None)
         self.schema_url = kwargs.pop('schema_url', None)
         self.schema_renderers = kwargs.pop('schema_renderers', self.default_schema_renderers)
+        if self.default_schema_renderers:
+            warnings.warn(
+                "The 'DefaultRouter.default_schema_renderers' is pending "
+                "deprecation. You should override "
+                "'DefaultRouter.APISchemaView' instead.",
+                PendingDeprecationWarning
+            )
+
         if 'root_renderers' in kwargs:
             self.root_renderers = kwargs.pop('root_renderers')
         else:
