@@ -281,11 +281,7 @@ class APIRootView(views.APIView):
     """
     _ignore_model_permissions = True
     exclude_from_schema = True
-
-    @classmethod
-    def as_view(cls, **initkwargs):
-        cls.api_root_dict = initkwargs.pop('api_root_dict', {})
-        return super(APIRootView, cls).as_view(**initkwargs)
+    api_root_dict = None
 
     def get(self, request, *args, **kwargs):
         # Return a plain {"name": "hyperlink"} response.
