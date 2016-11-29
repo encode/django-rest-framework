@@ -369,7 +369,6 @@ class DefaultRouter(SimpleRouter):
         """
         Return a schema root view.
         """
-        schema_renderers = self.schema_renderers
         schema_generator = SchemaGenerator(
             title=self.schema_title,
             url=self.schema_url,
@@ -377,7 +376,7 @@ class DefaultRouter(SimpleRouter):
         )
 
         return self.APISchemaView.as_view(
-            renderer_classes=schema_renderers,
+            renderer_classes=self.schema_renderers,
             schema_generator=schema_generator,
         )
 
