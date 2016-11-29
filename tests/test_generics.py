@@ -530,7 +530,7 @@ class TestFilterBackendAppliedToViews(TestCase):
         view = DynamicSerializerView.as_view()
         request = factory.get('/')
         response = view(request).render()
-        assert 'field_b' in response
+        assert response is 'field_b'
         assert 'field_a' not in response
 
 
