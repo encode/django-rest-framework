@@ -60,7 +60,7 @@ class TestViewNamesAndDescriptions(TestCase):
         """
         class MockView(APIView):
             pass
-        self.assertEqual(MockView().get_view_name(), 'Mock')
+        assert MockView().get_view_name() == 'Mock'
 
     def test_view_description_uses_docstring(self):
         """Ensure view descriptions are based on the docstring."""
@@ -80,7 +80,7 @@ class TestViewNamesAndDescriptions(TestCase):
 
             # hash style header #"""
 
-        self.assertEqual(MockView().get_view_description(), DESCRIPTION)
+        assert MockView().get_view_description() == DESCRIPTION
 
     def test_view_description_can_be_empty(self):
         """
@@ -89,7 +89,7 @@ class TestViewNamesAndDescriptions(TestCase):
         """
         class MockView(APIView):
             pass
-        self.assertEqual(MockView().get_view_description(), '')
+        assert MockView().get_view_description() == ''
 
     def test_view_description_can_be_promise(self):
         """
@@ -111,7 +111,7 @@ class TestViewNamesAndDescriptions(TestCase):
         class MockView(APIView):
             __doc__ = MockLazyStr("a gettext string")
 
-        self.assertEqual(MockView().get_view_description(), 'a gettext string')
+        assert MockView().get_view_description() == 'a gettext string'
 
     def test_markdown(self):
         """
@@ -120,7 +120,7 @@ class TestViewNamesAndDescriptions(TestCase):
         if apply_markdown:
             gte_21_match = apply_markdown(DESCRIPTION) == MARKED_DOWN_gte_21
             lt_21_match = apply_markdown(DESCRIPTION) == MARKED_DOWN_lt_21
-            self.assertTrue(gte_21_match or lt_21_match)
+            assert gte_21_match or lt_21_match
 
 
 def test_dedent_tabs():
