@@ -35,8 +35,8 @@ class DropdownWithAuthTests(TestCase):
     @override_settings(ROOT_URLCONF='tests.browsable_api.test_browsable_nested_api')
     def test_login(self):
         response = self.client.get('/api/')
-        self.assertEqual(200, response.status_code)
+        assert 200 == response.status_code
         content = response.content.decode('utf-8')
-        self.assertIn('form action="/api/"', content)
-        self.assertIn('input name="nested.one"', content)
-        self.assertIn('input name="nested.two"', content)
+        assert 'form action="/api/"' in content
+        assert 'input name="nested.one"' in content
+        assert 'input name="nested.two"' in content
