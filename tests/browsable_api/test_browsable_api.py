@@ -26,16 +26,16 @@ class DropdownWithAuthTests(TestCase):
     def test_name_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
-        self.assertContains(response, 'john')
+        assert 'john' in response
 
     def test_logout_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
-        self.assertContains(response, '>Log out<')
+        assert '>Log out<' in response
 
     def test_login_shown_when_logged_out(self):
         response = self.client.get('/')
-        self.assertContains(response, '>Log in<')
+        assert '>Log in<' in response
 
 
 @override_settings(ROOT_URLCONF='tests.browsable_api.no_auth_urls')
@@ -58,13 +58,13 @@ class NoDropdownWithoutAuthTests(TestCase):
     def test_name_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
-        self.assertContains(response, 'john')
+        assert 'john' in response
 
     def test_dropdown_not_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
-        self.assertNotContains(response, '<li class="dropdown">')
+        assert '<li class="dropdown">' not in response
 
     def test_dropdown_not_shown_when_logged_out(self):
         response = self.client.get('/')
-        self.assertNotContains(response, '<li class="dropdown">')
+        assert '<li class="dropdown">' not in response
