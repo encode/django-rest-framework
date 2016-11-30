@@ -1014,16 +1014,16 @@ class TestLocalizedDecimalField(TestCase):
     @override_settings(USE_L10N=True, LANGUAGE_CODE='pl')
     def test_to_internal_value(self):
         field = serializers.DecimalField(max_digits=2, decimal_places=1, localize=True)
-        self.assertEqual(field.to_internal_value('1,1'), Decimal('1.1'))
+        assert field.to_internal_value('1,1') == Decimal('1.1')
 
     @override_settings(USE_L10N=True, LANGUAGE_CODE='pl')
     def test_to_representation(self):
         field = serializers.DecimalField(max_digits=2, decimal_places=1, localize=True)
-        self.assertEqual(field.to_representation(Decimal('1.1')), '1,1')
+        assert field.to_representation(Decimal('1.1')) == '1,1'
 
     def test_localize_forces_coerce_to_string(self):
         field = serializers.DecimalField(max_digits=2, decimal_places=1, coerce_to_string=False, localize=True)
-        self.assertTrue(isinstance(field.to_representation(Decimal('1.1')), six.string_types))
+        assert isinstance(field.to_representation(Decimal('1.1')), six.string_types)
 
 
 class TestQuantizedValueForDecimal(TestCase):
@@ -1031,19 +1031,19 @@ class TestQuantizedValueForDecimal(TestCase):
         field = serializers.DecimalField(max_digits=4, decimal_places=2)
         value = field.to_internal_value(12).as_tuple()
         expected_digit_tuple = (0, (1, 2, 0, 0), -2)
-        self.assertEqual(value, expected_digit_tuple)
+        assert value == expected_digit_tuple
 
     def test_string_quantized_value_for_decimal(self):
         field = serializers.DecimalField(max_digits=4, decimal_places=2)
         value = field.to_internal_value('12').as_tuple()
         expected_digit_tuple = (0, (1, 2, 0, 0), -2)
-        self.assertEqual(value, expected_digit_tuple)
+        assert value == expected_digit_tuple
 
     def test_part_precision_string_quantized_value_for_decimal(self):
         field = serializers.DecimalField(max_digits=4, decimal_places=2)
         value = field.to_internal_value('12.0').as_tuple()
         expected_digit_tuple = (0, (1, 2, 0, 0), -2)
-        self.assertEqual(value, expected_digit_tuple)
+        assert value == expected_digit_tuple
 
 
 class TestNoDecimalPlaces(FieldValues):
