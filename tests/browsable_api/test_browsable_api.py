@@ -26,16 +26,19 @@ class DropdownWithAuthTests(TestCase):
     def test_name_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
-        assert 'john' in response
+        content = response.content.decode('utf8')
+        assert 'john' in content
 
     def test_logout_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
-        assert '>Log out<' in response
+        content = response.content.decode('utf8')
+        assert '>Log out<' in content
 
     def test_login_shown_when_logged_out(self):
         response = self.client.get('/')
-        assert '>Log in<' in response
+        content = response.content.decode('utf8')
+        assert '>Log in<' in content
 
 
 @override_settings(ROOT_URLCONF='tests.browsable_api.no_auth_urls')
