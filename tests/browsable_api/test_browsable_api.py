@@ -58,13 +58,16 @@ class NoDropdownWithoutAuthTests(TestCase):
     def test_name_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
-        assert 'john' in response
+        content = response.content.decode('utf8')
+        assert 'john' in content
 
     def test_dropdown_not_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
-        assert '<li class="dropdown">' not in response
+        content = response.content.decode('utf8')
+        assert '<li class="dropdown">' not in content
 
     def test_dropdown_not_shown_when_logged_out(self):
         response = self.client.get('/')
-        assert '<li class="dropdown">' not in response
+        content = response.content.decode('utf8')
+        assert '<li class="dropdown">' not in content
