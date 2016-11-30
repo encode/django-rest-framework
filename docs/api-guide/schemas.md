@@ -541,5 +541,5 @@ A short description of the meaning and intended usage of the input field.
 [open-api]: https://openapis.org/
 [json-hyperschema]: http://json-schema.org/latest/json-schema-hypermedia.html
 [api-blueprint]: https://apiblueprint.org/
-[static-files]: https://docs.djangoproject.com/en/dev/howto/static-files/
-[named-arguments]: https://docs.djangoproject.com/en/dev/topics/http/urls/#named-groups
+[static-files]: https://docs.djangoproject.com/en/stable/howto/static-files/
+[named-arguments]: https://docs.djangoproject.com/en/stable/topics/http/urls/#named-groups

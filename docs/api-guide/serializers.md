@@ -1118,7 +1118,7 @@ The [html-json-forms][html-json-forms] package provides an algorithm and seriali
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
-[model-managers]: https://docs.djangoproject.com/en/dev/topics/db/managers/
+[model-managers]: https://docs.djangoproject.com/en/stable/topics/db/managers/
 [encapsulation-blogpost]: http://www.dabapps.com/blog/django-models-and-encapsulation/
 [django-rest-marshmallow]: http://tomchristie.github.io/django-rest-marshmallow/
 [marshmallow]: https://marshmallow.readthedocs.io/en/latest/
