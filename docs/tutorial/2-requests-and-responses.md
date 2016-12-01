@@ -47,7 +47,7 @@ We don't need our `JSONResponse` class in `views.py` anymore, so go ahead and de
     @api_view(['GET', 'POST'])
     def snippet_list(request):
         """
-        List all snippets, or create a new snippet.
+        List all snippets or create a new snippet.
         """
         if request.method == 'GET':
             snippets = Snippet.objects.all()
@@ -59,7 +59,8 @@ We don't need our `JSONResponse` class in `views.py` anymore, so go ahead and de
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 Our instance view is an improvement over the previous example.  It's a little more concise, and the code now feels very similar to if we were working with the Forms API.  We're also using named status codes, which makes the response meanings more obvious.
 
@@ -68,7 +69,7 @@ Here is the view for an individual snippet, in the `views.py` module.
     @api_view(['GET', 'PUT', 'DELETE'])
     def snippet_detail(request, pk):
         """
-        Retrieve, update or delete a snippet instance.
+        Retrieve, update, or delete a snippet instance.
         """
         try:
             snippet = Snippet.objects.get(pk=pk)
@@ -84,7 +85,8 @@ Here is the view for an individual snippet, in the `views.py` module.
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         elif request.method == 'DELETE':
             snippet.delete()
