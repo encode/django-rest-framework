@@ -123,6 +123,8 @@ You can use `TemplateHTMLRenderer` either to return regular HTML pages using RES
 
 If you're building websites that use `TemplateHTMLRenderer` along with other renderer classes, you should consider listing `TemplateHTMLRenderer` as the first class in the `renderer_classes` list, so that it will be prioritised first even for browsers that send poorly formed `ACCEPT:` headers.
 
+See the [_HTML & Forms_ Topic Page][html-and-forms] for further examples of `TemplateHTMLRenderer` usage.
+
 **.media_type**: `text/html`
 
 **.format**: `'.html'`
