@@ -2,6 +2,12 @@
 
 We're going to create a simple API to allow admin users to view and edit the users and groups in the system.
 
+## Requirements
+
+* [Python][python]
+* [pip][pip] - a tool for installing Python packages
+* [virtualenv][virtualenv] - a tool to create isolated Python environments
+
 ## Project setup
 
 Create a new Django project named `tutorial`, then start a new app called `quickstart`.
@@ -197,3 +203,6 @@ If you want to get a more in depth understanding of how REST framework fits toge
 [tutorial]: 1-serialization.md
 [guide]: ../#api-guide
 [httpie]: https://github.com/jakubroztocil/httpie#installation
+[python]: https://www.python.org/downloads/
+[pip]: https://pip.pypa.io/en/stable/
+[virtualenv]: https://virtualenv.pypa.io/en/stable/
