@@ -168,7 +168,9 @@ INSTALLED_APPS = (
 )
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAdminUser',  # Note the trailing ',' character, this needs to be a tuple
+    ),
     'PAGE_SIZE': 10
 }
 ```
