@@ -10,33 +10,54 @@ We're going to create a simple API to allow admin users to view and edit the use
 
 ## Project setup
 
-Create a new Django project named `tutorial`, then start a new app called `quickstart`.
+### Create a new Django project named `tutorial`, then start a new app called `quickstart`.
 
-    # Create the project directory
-    mkdir tutorial
-    cd tutorial
+Create the project directory
 
-    # Create a virtualenv to isolate our package dependencies locally
-    virtualenv env
-    source env/bin/activate  # On Windows use `env\Scripts\activate`
+```text
+mkdir tutorial
+cd tutorial
+```
 
-    # Install Django and Django REST framework into the virtualenv
-    pip install django
-    pip install djangorestframework
+Create a virtualenv to isolate our package dependencies locally
 
-    # Set up a new project with a single application
-    django-admin.py startproject tutorial .  # Note the trailing '.' character
-    cd tutorial
-    django-admin.py startapp quickstart
-    cd ..
+```text
+virtualenv env
+source env/bin/activate      # On Linux or OS X
+source env\Scripts\activate  # On Windows
+```
+
+Install Django and Django REST framework into the virtualenv
+
+```text
+pip install django
+pip install djangorestframework
+```
+
+Set up a new project with a single application
+
+```text
+django-admin.py startproject tutorial .  # Note the trailing '.' character
+
+cd tutorial
+django-admin.py startapp quickstart
+
+cd ..
+```
+
+### Database
 
 Now sync your database for the first time:
 
-    python manage.py migrate
+```text
+python manage.py migrate
+```
 
 We'll also create an initial user named `admin` with a password of `password123`. We'll authenticate as that user later in our example.
 
-    python manage.py createsuperuser
+```text
+python manage.py createsuperuser
+```
 
 Once you've set up a database and initial user created and ready to go, open up the app's directory and we'll get coding...
 
