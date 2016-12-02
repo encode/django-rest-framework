@@ -350,6 +350,25 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
             format='json'
         )
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['non_field_errors'],
+                         [u'Unable to log in with provided credentials.', ])
+
+    def test_token_login_json_inactive_user(self):
+        """
+        Ensure token login view using JSON POST fails if
+        an inactive user is given.
+        """
+        self.user.is_active = False
+        self.user.save()
+        client = APIClient(enforce_csrf_checks=True)
+        response = client.post(
+            '/auth-token/',
+            {'username': self.username, 'password': self.password},
+            format='json'
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['non_field_errors'],
+                         [u'User account is disabled.', ])
 
     def test_token_login_json_missing_fields(self):
         """Ensure token login view using JSON POST fails if missing fields."""
