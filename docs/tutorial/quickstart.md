@@ -169,53 +169,64 @@ We're now ready to test the API we've built.  Let's fire up the server from the 
 
 We can now access our API, both from the command-line, using tools like `curl`...
 
-    bash: curl -H 'Accept: application/json; indent=4' -u admin:password123 http://127.0.0.1:8000/users/
-    {
-        "count": 2,
-        "next": null,
-        "previous": null,
-        "results": [
-            {
-                "email": "admin@example.com",
-                "groups": [],
-                "url": "http://127.0.0.1:8000/users/1/",
-                "username": "admin"
-            },
-            {
-                "email": "tom@example.com",
-                "groups": [                ],
-                "url": "http://127.0.0.1:8000/users/2/",
-                "username": "tom"
-            }
-        ]
-    }
+```bash
+curl -H 'Accept: application/json; indent=4' -u admin:password123 http://127.0.0.1:8000/users/
+```
+
+```json
+{
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "email": "admin@example.com",
+            "groups": [],
+            "url": "http://127.0.0.1:8000/users/1/",
+            "username": "admin"
+        },
+        {
+            "email": "tom@example.com",
+            "groups": [                ],
+            "url": "http://127.0.0.1:8000/users/2/",
+            "username": "tom"
+        }
+    ]
+}
+```
 
 Or using the [httpie][httpie], command line tool...
 
-    bash: http -a admin:password123 http://127.0.0.1:8000/users/
+```bash
+http -a admin:password123 http://127.0.0.1:8000/users/
+```
 
-    HTTP/1.1 200 OK
-    ...
-    {
-        "count": 2,
-        "next": null,
-        "previous": null,
-        "results": [
-            {
-                "email": "admin@example.com",
-                "groups": [],
-                "url": "http://localhost:8000/users/1/",
-                "username": "paul"
-            },
-            {
-                "email": "tom@example.com",
-                "groups": [                ],
-                "url": "http://127.0.0.1:8000/users/2/",
-                "username": "tom"
-            }
-        ]
-    }
+```text
+HTTP/1.1 200 OK
+...
+```
 
+```json
+{
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "email": "admin@example.com",
+            "groups": [],
+            "url": "http://localhost:8000/users/1/",
+            "username": "paul"
+        },
+        {
+            "email": "tom@example.com",
+            "groups": [                ],
+            "url": "http://127.0.0.1:8000/users/2/",
+            "username": "tom"
+        }
+    ]
+}
+```
 
 Or directly through the browser, by going to the URL `http://127.0.0.1:8000/users/`...
 
