@@ -11,9 +11,10 @@ python primitives.
 response content is handled by parsers and renderers.
 """
 from __future__ import unicode_literals
-import re
+
 import copy
 import inspect
+import re
 import traceback
 from collections import OrderedDict
 
@@ -458,6 +459,8 @@ class Serializer(BaseSerializer):
             validate_method = getattr(self, 'validate_' + field.field_name, None)
             primitive_value = field.get_value(data)
             validated_list = []
+            if not isinstance(primitive_value, list):
+                primitive_value = [primitive_value, ]
             for inner_data in primitive_value:
                 try:
                     validated_value = field.run_validation(inner_data)
@@ -471,10 +474,12 @@ class Serializer(BaseSerializer):
                 except SkipField:
                     pass
             else:
-                if len(validated_list) > 1:
+                if isinstance(validated_list[-1], str):
+                    set_value(ret, field.source_attrs, validated_list[-1])
+                elif len(validated_list) > 1:
                     set_value(ret, field.source_attrs, validated_list)
                 else:
-                    set_value(ret, field.source_attrs, validated_list[0])
+                    set_value(ret, field.source_attrs, validated_list[-1])
         if errors:
             raise ValidationError(errors)
         return ret
