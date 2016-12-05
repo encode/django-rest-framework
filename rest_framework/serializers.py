@@ -439,7 +439,7 @@ class Serializer(BaseSerializer):
             raise ValidationError(detail=as_serializer_error(exc))
 
         return value
-
+    
     def to_internal_value(self, data):
         """
         Dict of native values <- Dict of primitive datatypes.
@@ -455,33 +455,26 @@ class Serializer(BaseSerializer):
         ret = OrderedDict()
         errors = OrderedDict()
         fields = self._writable_fields
+
         for field in fields:
             validate_method = getattr(self, 'validate_' + field.field_name, None)
             primitive_value = field.get_value(data)
-            validated_list = []
-            if not isinstance(primitive_value, list):
-                primitive_value = [primitive_value, ]
-            for inner_data in primitive_value:
-                try:
-                    validated_value = field.run_validation(inner_data)
-                    validated_list.append(validated_value)
-                    if validate_method is not None:
-                        validated_list.append(validate_method(validated_value))
-                except ValidationError as exc:
-                    errors[field.field_name] = exc.detail
-                except DjangoValidationError as exc:
-                    errors[field.field_name] = get_error_detail(exc)
-                except SkipField:
-                    pass
+            try:
+                validated_value = field.run_validation(primitive_value)
+                if validate_method is not None:
+                    validated_value = validate_method(validated_value)
+            except ValidationError as exc:
+                errors[field.field_name] = exc.detail
+            except DjangoValidationError as exc:
+                errors[field.field_name] = get_error_detail(exc)
+            except SkipField:
+                pass
             else:
-                if isinstance(validated_list[-1], str):
-                    set_value(ret, field.source_attrs, validated_list[-1])
-                elif len(validated_list) > 1:
-                    set_value(ret, field.source_attrs, validated_list)
-                else:
-                    set_value(ret, field.source_attrs, validated_list[-1])
+                set_value(ret, field.source_attrs, validated_value)
+
         if errors:
             raise ValidationError(errors)
+
         return ret
 
     def to_representation(self, instance):
