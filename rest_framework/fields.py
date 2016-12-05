@@ -422,7 +422,10 @@ class Field(object):
                 if getattr(self.root, 'partial', False):
                     return empty
                 return self.default_empty_html
-            ret = dictionary.getlist(self.field_name)
+            if len(dictionary.getlist(self.field_name)) > 1:
+                ret = dictionary.getlist(self.field_name)
+            else:
+                ret = dictionary.get(self.field_name)
             if ret == '' and self.allow_null:
                 # If the field is blank, and null is a valid value then
                 # determine if we should use null instead.
