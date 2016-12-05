@@ -11,7 +11,7 @@ python primitives.
 response content is handled by parsers and renderers.
 """
 from __future__ import unicode_literals
-
+import re
 import copy
 import inspect
 import traceback
