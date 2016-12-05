@@ -1,11 +1,14 @@
 """
 Helper functions that convert strftime formats into more readable representations.
 """
-from rest_framework import ISO_8601
+from rest_framework import ISO_8601, ISO_8601_STRICT
 
 
 def datetime_formats(formats):
     format = ', '.join(formats).replace(
+        ISO_8601_STRICT,
+        'YYYY-MM-DDThh:mm[:ss][+HH:MM|-HH:MM|Z]'
+    ).replace(
         ISO_8601,
         'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]'
     )
@@ -18,7 +21,8 @@ def date_formats(formats):
 
 
 def time_formats(formats):
-    format = ', '.join(formats).replace(ISO_8601, 'hh:mm[:ss[.uuuuuu]]')
+    format = ', '.join(formats).replace(ISO_8601_STRICT, 'hh:mm[:ss]') \
+                               .replace(ISO_8601, 'hh:mm[:ss[.uuuuuu]]')
     return humanize_strptime(format)
 
 

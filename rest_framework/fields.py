@@ -30,7 +30,7 @@ from django.utils.functional import cached_property
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework import ISO_8601
+from rest_framework import ISO_8601, ISO_8601_STRICT
 from rest_framework.compat import (
     get_remote_field, unicode_repr, unicode_to_repr, value_from_object
 )
@@ -1120,13 +1120,15 @@ class DateTimeField(Field):
             return self.enforce_timezone(value)
 
         for input_format in input_formats:
-            if input_format.lower() == ISO_8601:
+            if input_format.lower() in (ISO_8601, ISO_8601_STRICT):
                 try:
                     parsed = parse_datetime(value)
                 except (ValueError, TypeError):
                     pass
                 else:
                     if parsed is not None:
+                        if input_format == ISO_8601_STRICT:
+                            parsed = parsed - datetime.timedelta(microseconds=parsed.microsecond)
                         return self.enforce_timezone(parsed)
             else:
                 try:
@@ -1153,6 +1155,10 @@ class DateTimeField(Field):
             if value.endswith('+00:00'):
                 value = value[:-6] + 'Z'
             return value
+        if output_format.lower() == ISO_8601_STRICT:
+            value = value - datetime.timedelta(microseconds=value.microsecond)
+            return value.isoformat()
+
         return value.strftime(output_format)
 
 
@@ -1243,13 +1249,15 @@ class TimeField(Field):
             return value
 
         for input_format in input_formats:
-            if input_format.lower() == ISO_8601:
+            if input_format.lower() in (ISO_8601, ISO_8601_STRICT):
                 try:
                     parsed = parse_time(value)
                 except (ValueError, TypeError):
                     pass
                 else:
                     if parsed is not None:
+                        if input_format.lower() == ISO_8601_STRICT:
+                            return parsed.replace(microsecond=0)
                         return parsed
             else:
                 try:
@@ -1281,6 +1289,10 @@ class TimeField(Field):
         )
 
         if output_format.lower() == ISO_8601:
+            return value.isoformat()
+        if output_format.lower() == ISO_8601_STRICT:
+            if value.microsecond:
+                value = value.replace(microsecond=0)
             return value.isoformat()
         return value.strftime(output_format)
 
