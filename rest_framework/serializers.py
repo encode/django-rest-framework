@@ -454,26 +454,29 @@ class Serializer(BaseSerializer):
         ret = OrderedDict()
         errors = OrderedDict()
         fields = self._writable_fields
-
         for field in fields:
             validate_method = getattr(self, 'validate_' + field.field_name, None)
             primitive_value = field.get_value(data)
-            try:
-                validated_value = field.run_validation(primitive_value)
-                if validate_method is not None:
-                    validated_value = validate_method(validated_value)
-            except ValidationError as exc:
-                errors[field.field_name] = exc.detail
-            except DjangoValidationError as exc:
-                errors[field.field_name] = get_error_detail(exc)
-            except SkipField:
-                pass
+            validated_list = []
+            for inner_data in primitive_value:
+                try:
+                    validated_value = field.run_validation(inner_data)
+                    validated_list.append(validated_value)
+                    if validate_method is not None:
+                        validated_list.append(validate_method(validated_value))
+                except ValidationError as exc:
+                    errors[field.field_name] = exc.detail
+                except DjangoValidationError as exc:
+                    errors[field.field_name] = get_error_detail(exc)
+                except SkipField:
+                    pass
             else:
-                set_value(ret, field.source_attrs, validated_value)
-
+                if len(validated_list) > 1:
+                    set_value(ret, field.source_attrs, validated_list)
+                else:
+                    set_value(ret, field.source_attrs, validated_list[0])
         if errors:
             raise ValidationError(errors)
-
         return ret
 
     def to_representation(self, instance):
