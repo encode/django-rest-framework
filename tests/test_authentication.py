@@ -175,7 +175,8 @@ class SessionAuthTests(TestCase):
         cf. [#1810](https://github.com/tomchristie/django-rest-framework/pull/1810)
         """
         response = self.csrf_client.get('/auth/login/')
-        assert '<label for="id_username">Username:</label>' in response
+        content = response.content.decode('utf8')
+        assert '<label for="id_username">Username:</label>' in content
 
     def test_post_form_session_auth_failing_csrf(self):
         """
