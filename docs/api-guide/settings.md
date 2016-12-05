@@ -286,7 +286,7 @@ Default: `'format'`
 
 A format string that should be used by default for rendering the output of `DateTimeField` serializer fields.  If `None`, then `DateTimeField` serializer fields will return Python `datetime` objects, and the datetime encoding will be determined by the renderer.
 
-May be any of `None`, `'iso-8601'` or a Python [strftime format][strftime] string.
+May be any of `None`, `'iso-8601'`, `'iso-8601-strict'`, or a Python [strftime format][strftime] string.
 
 Default: `'iso-8601'`
 
@@ -294,7 +294,7 @@ Default: `'iso-8601'`
 
 A list of format strings that should be used by default for parsing inputs to `DateTimeField` serializer fields.
 
-May be a list including the string `'iso-8601'` or Python [strftime format][strftime] strings.
+May be a list including the string `'iso-8601'`, `'iso-8601-strict'` or Python [strftime format][strftime] strings.
 
 Default: `['iso-8601']`
 
@@ -318,7 +318,7 @@ Default: `['iso-8601']`
 
 A format string that should be used by default for rendering the output of `TimeField` serializer fields.  If `None`, then `TimeField` serializer fields will return Python `time` objects, and the time encoding will be determined by the renderer.
 
-May be any of `None`, `'iso-8601'` or a Python [strftime format][strftime] string.
+May be any of `None`, `'iso-8601'`, `'iso-8601-strict'` or a Python [strftime format][strftime] string.
 
 Default: `'iso-8601'`
 
@@ -326,7 +326,7 @@ Default: `'iso-8601'`
 
 A list of format strings that should be used by default for parsing inputs to `TimeField` serializer fields.
 
-May be a list including the string `'iso-8601'` or Python [strftime format][strftime] strings.
+May be a list including the string `'iso-8601'`, `'iso-8601-strict'` or Python [strftime format][strftime] strings.
 
 Default: `['iso-8601']`
 
