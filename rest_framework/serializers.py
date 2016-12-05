@@ -366,8 +366,13 @@ class Serializer(BaseSerializer):
         ret = []
         for field in self.fields.values():
             if re.compile("\_set$").findall(field.source):
-                for field in field.child._writable_fields:
-                    ret.append(field)
+                try:
+                    for field in field.child._writable_fields:
+                        if (not field.read_only) or (field.default is not empty):
+                            ret.append(field)
+                except:
+                    if (not field.read_only) or (field.default is not empty):
+                        ret.append(field)
                 continue
             if (not field.read_only) or (field.default is not empty):
                 ret.append(field)
@@ -439,7 +444,7 @@ class Serializer(BaseSerializer):
             raise ValidationError(detail=as_serializer_error(exc))
 
         return value
-    
+
     def to_internal_value(self, data):
         """
         Dict of native values <- Dict of primitive datatypes.
