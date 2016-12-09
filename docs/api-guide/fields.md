@@ -261,7 +261,7 @@ Corresponds to `django.db.models.fields.DecimalField`.
 
 **Signature**: `DecimalField(max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None)`
 
-- `max_digits` The maximum number of digits allowed in the number. Note that this number must be greater than or equal to decimal_places.
+- `max_digits` The maximum number of digits allowed in the number. It must be either `None` or an integer greater than or equal to `decimal_places`.
 - `decimal_places` The number of decimal places to store with the number.
 - `coerce_to_string` Set to `True` if string values should be returned for the representation, or `False` if `Decimal` objects should be returned. Defaults to the same value as the `COERCE_DECIMAL_TO_STRING` settings key, which will be `True` unless overridden. If `Decimal` objects are returned by the serializer, then the final output format will be determined by the renderer. Note that setting `localize` will force the value to `True`.
 - `max_value` Validate that the number provided is no greater than this value.
@@ -665,12 +665,12 @@ The [django-rest-framework-gis][django-rest-framework-gis] package provides geog
 
 The [django-rest-framework-hstore][django-rest-framework-hstore] package provides an `HStoreField` to support [django-hstore][django-hstore] `DictionaryField` model field.
 
-[cite]: https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data
+[cite]: https://docs.djangoproject.com/en/stable/ref/forms/api/#django.forms.Form.cleaned_data
 [html-and-forms]: ../topics/html-and-forms.md
-[FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS
+[FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS
 [ecma262]: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
-[strftime]: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
-[django-widgets]: https://docs.djangoproject.com/en/dev/ref/forms/widgets/
+[strftime]: https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
+[django-widgets]: https://docs.djangoproject.com/en/stable/ref/forms/widgets/
 [iso8601]: http://www.w3.org/TR/NOTE-datetime
 [drf-compound-fields]: https://drf-compound-fields.readthedocs.io
 [drf-extra-fields]: https://github.com/Hipo/drf-extra-fields
