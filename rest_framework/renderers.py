@@ -794,6 +794,16 @@ class AdminRenderer(BrowsableAPIRenderer):
         return context
 
 
+class DocumentationRenderer(BaseRenderer):
+    media_type = 'text/html'
+    format = 'html'
+    charset = 'utf-8'
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        from coredocs.main import render as render_docs
+        return render_docs(data, theme='cerulean', highlight='emacs', static=lambda path: '/static/rest_framework/docs/' + path)
+
+
 class MultiPartRenderer(BaseRenderer):
     media_type = 'multipart/form-data; boundary=BoUnDaRyStRiNg'
     format = 'multipart'

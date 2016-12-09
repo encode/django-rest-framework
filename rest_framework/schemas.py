@@ -242,7 +242,12 @@ class SchemaGenerator(object):
         links = self.get_links(request)
         if not links:
             return None
-        return coreapi.Document(title=self.title, url=self.url, content=links)
+
+        url = self.url
+        if not url and request is not None:
+            url = request.build_absolute_uri()
+
+        return coreapi.Document(title=self.title, url=url, content=links)
 
     def get_links(self, request=None):
         """
