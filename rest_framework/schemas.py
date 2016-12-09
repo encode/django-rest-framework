@@ -5,9 +5,11 @@ from importlib import import_module
 from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
 from django.core.exceptions import PermissionDenied
+from django.db import models
 from django.http import Http404
 from django.utils import six
 from django.utils.encoding import force_text, smart_text
+from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import exceptions, renderers, serializers
 from rest_framework.compat import (
@@ -112,6 +114,19 @@ def endpoint_ordering(endpoint):
     }.get(method, 5)
     return (path, method_priority)
 
+
+def get_pk_description(model, model_field):
+    if isinstance(model_field, models.AutoField):
+        value_type = _('unique integer value')
+    elif isinstance(model_field, models.UUIDField):
+        value_type = _('UUID string')
+    else:
+        value_type = _('unique value')
+
+    return _('A {value_type} identifying this {name}.').format(
+        value_type=value_type,
+        name=model._meta.verbose_name,
+    )
 
 class EndpointInspector(object):
     """
@@ -455,10 +470,30 @@ class SchemaGenerator(object):
         Return a list of `coreapi.Field` instances corresponding to any
         templated path variables.
         """
+        model = getattr(getattr(view, 'queryset', None), 'model', None)
         fields = []
 
         for variable in uritemplate.variables(path):
-            field = coreapi.Field(name=variable, location='path', required=True)
+            description = None
+            if model is not None:
+                # Attempt to infer a field description if possible.
+                try:
+                    model_field = model._meta.get_field(variable)
+                except:
+                    pass
+
+                if model_field is not None and model_field.help_text:
+                    description = force_text(model_field.help_text)
+                elif model_field is not None and model_field.primary_key:
+                    description = get_pk_description(model, model_field)
+
+
+            field = coreapi.Field(
+                name=variable,
+                location='path',
+                required=True,
+                description='' if (description is None) else description
+            )
             fields.append(field)
 
         return fields
