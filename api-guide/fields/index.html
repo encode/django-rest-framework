@@ -598,7 +598,7 @@
               <h1 id="serializer-fields"><a class="toclink" href="#serializer-fields">Serializer fields</a></h1>
 <blockquote>
 <p>Each field in a Form class is responsible not only for validating data, but also for "cleaning" it &mdash; normalizing it to a consistent format.</p>
-<p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data">Django documentation</a></p>
+<p>&mdash; <a href="https://docs.djangoproject.com/en/stable/ref/forms/api/#django.forms.Form.cleaned_data">Django documentation</a></p>
 </blockquote>
 <p>Serializer fields handle converting between primitive values and internal datatypes.  They also deal with validating input values, as well as retrieving and setting the values from their parent objects.</p>
 <hr />
@@ -760,7 +760,7 @@ color_channel = serializers.ChoiceField(
 <p>Corresponds to <code>django.db.models.fields.DecimalField</code>.</p>
 <p><strong>Signature</strong>: <code>DecimalField(max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None)</code></p>
 <ul>
-<li><code>max_digits</code> The maximum number of digits allowed in the number. Note that this number must be greater than or equal to decimal_places.</li>
+<li><code>max_digits</code> The maximum number of digits allowed in the number. It must be either <code>None</code> or an integer greater than or equal to <code>decimal_places</code>.</li>
 <li><code>decimal_places</code> The number of decimal places to store with the number.</li>
 <li><code>coerce_to_string</code> Set to <code>True</code> if string values should be returned for the representation, or <code>False</code> if <code>Decimal</code> objects should be returned. Defaults to the same value as the <code>COERCE_DECIMAL_TO_STRING</code> settings key, which will be <code>True</code> unless overridden. If <code>Decimal</code> objects are returned by the serializer, then the final output format will be determined by the renderer. Note that setting <code>localize</code> will force the value to <code>True</code>.</li>
 <li><code>max_value</code> Validate that the number provided is no greater than this value.</li>
@@ -787,7 +787,7 @@ color_channel = serializers.ChoiceField(
 <li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>DATETIME_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
 </ul>
 <h4 id="datetimefield-format-strings"><a class="toclink" href="#datetimefield-format-strings"><code>DateTimeField</code> format strings.</a></h4>
-<p>Format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style datetimes should be used. (eg <code>'2013-01-29T12:34:56.000000Z'</code>)</p>
+<p>Format strings may either be <a href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style datetimes should be used. (eg <code>'2013-01-29T12:34:56.000000Z'</code>)</p>
 <p>When a value of <code>None</code> is used for the format <code>datetime</code> objects will be returned by <code>to_representation</code> and the final output representation will determined by the renderer class.</p>
 <p>In the case of JSON this means the default datetime representation uses the <a href="http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15">ECMA 262 date time string specification</a>.  This is a subset of ISO 8601 which uses millisecond precision, and includes the 'Z' suffix for the UTC timezone, for example: <code>2013-01-29T12:34:56.123Z</code>.</p>
 <h4 id="auto_now-and-auto_now_add-model-fields"><code>auto_now_add</code> model fields.<a class="toclink" href="#auto_now-and-auto_now_add-model-fields"><code>auto_now</code> and </a></h4>
@@ -808,7 +808,7 @@ color_channel = serializers.ChoiceField(
 <li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>DATE_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
 </ul>
 <h4 id="datefield-format-strings"><a class="toclink" href="#datefield-format-strings"><code>DateField</code> format strings</a></h4>
-<p>Format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style dates should be used. (eg <code>'2013-01-29'</code>)</p>
+<p>Format strings may either be <a href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style dates should be used. (eg <code>'2013-01-29'</code>)</p>
 <h2 id="timefield"><a class="toclink" href="#timefield">TimeField</a></h2>
 <p>A time representation.</p>
 <p>Corresponds to <code>django.db.models.fields.TimeField</code></p>
@@ -818,7 +818,7 @@ color_channel = serializers.ChoiceField(
 <li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>TIME_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
 </ul>
 <h4 id="timefield-format-strings"><a class="toclink" href="#timefield-format-strings"><code>TimeField</code> format strings</a></h4>
-<p>Format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style times should be used. (eg <code>'12:34:56.000000'</code>)</p>
+<p>Format strings may either be <a href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style times should be used. (eg <code>'12:34:56.000000'</code>)</p>
 <h2 id="durationfield"><a class="toclink" href="#durationfield">DurationField</a></h2>
 <p>A Duration representation.
 Corresponds to <code>django.db.models.fields.DurationField</code></p>
@@ -853,7 +853,7 @@ The representation is a string following this format <code>'[DD] [HH:[MM:]]ss[.u
 <h1 id="file-upload-fields"><a class="toclink" href="#file-upload-fields">File upload fields</a></h1>
 <h4 id="parsers-and-file-uploads"><a class="toclink" href="#parsers-and-file-uploads">Parsers and file uploads.</a></h4>
 <p>The <code>FileField</code> and <code>ImageField</code> classes are only suitable for use with <code>MultiPartParser</code> or <code>FileUploadParser</code>. Most parsers, such as e.g. JSON don't support file uploads.
-Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS">FILE_UPLOAD_HANDLERS</a> are used for handling uploaded files.</p>
+Django's regular <a href="https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS">FILE_UPLOAD_HANDLERS</a> are used for handling uploaded files.</p>
 <h2 id="filefield"><a class="toclink" href="#filefield">FileField</a></h2>
 <p>A file representation.  Performs Django's standard FileField validation.</p>
 <p>Corresponds to <code>django.forms.fields.FileField</code>.</p>

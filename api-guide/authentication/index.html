@@ -654,7 +654,7 @@ TokenAdmin.raw_id_fields = ('user',)
 <li><code>request.auth</code> will be <code>None</code>.</li>
 </ul>
 <p>Unauthenticated responses that are denied permission will result in an <code>HTTP 403 Forbidden</code> response.</p>
-<p>If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as <code>PUT</code>, <code>PATCH</code>, <code>POST</code> or <code>DELETE</code> requests.  See the <a href="https://docs.djangoproject.com/en/dev/ref/csrf/#ajax">Django CSRF documentation</a> for more details.</p>
+<p>If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as <code>PUT</code>, <code>PATCH</code>, <code>POST</code> or <code>DELETE</code> requests.  See the <a href="https://docs.djangoproject.com/en/stable/ref/csrf/#ajax">Django CSRF documentation</a> for more details.</p>
 <p><strong>Warning</strong>: Always use Django's standard login view when creating login pages. This will ensure your login views are properly protected.</p>
 <p>CSRF validation in REST framework works slightly differently to standard Django due to the need to support both session and non-session based authentication to the same views. This means that only authenticated requests require CSRF tokens, and anonymous requests may be sent without CSRF tokens. This behaviour is not suitable for login views, which should always have CSRF validation applied.</p>
 <h1 id="custom-authentication"><a class="toclink" href="#custom-authentication">Custom authentication</a></h1>

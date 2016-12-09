@@ -530,7 +530,7 @@
               <h1 id="renderers"><a class="toclink" href="#renderers">Renderers</a></h1>
 <blockquote>
 <p>Before a TemplateResponse instance can be returned to the client, it must be rendered. The rendering process takes the intermediate representation of template and context, and turns it into the final byte stream that can be served to the client.</p>
-<p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process">Django documentation</a></p>
+<p>&mdash; <a href="https://docs.djangoproject.com/en/stable/stable/template-response/#the-rendering-process">Django documentation</a></p>
 </blockquote>
 <p>REST framework includes a number of built in Renderer classes, that allow you to return responses with various media types.  There is also support for defining your own custom renderers, which gives you the flexibility to design your own media types.</p>
 <h2 id="how-the-renderer-is-determined"><a class="toclink" href="#how-the-renderer-is-determined">How the renderer is determined</a></h2>
@@ -620,6 +620,7 @@ Unlike other renderers, the data passed to the <code>Response</code> does not ne
 </code></pre>
 <p>You can use <code>TemplateHTMLRenderer</code> either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.</p>
 <p>If you're building websites that use <code>TemplateHTMLRenderer</code> along with other renderer classes, you should consider listing <code>TemplateHTMLRenderer</code> as the first class in the <code>renderer_classes</code> list, so that it will be prioritised first even for browsers that send poorly formed <code>ACCEPT:</code> headers.</p>
+<p>See the <a href="../../topics/html-and-forms/"><em>HTML &amp; Forms</em> Topic Page</a> for further examples of <code>TemplateHTMLRenderer</code> usage.</p>
 <p><strong>.media_type</strong>: <code>text/html</code></p>
 <p><strong>.format</strong>: <code>'.html'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
@@ -782,7 +783,7 @@ In this case you can underspecify the media types it should respond to, by using
 <p>For good examples of custom media types, see GitHub's use of a custom <a href="http://developer.github.com/v3/media/">application/vnd.github+json</a> media type, and Mike Amundsen's IANA approved <a href="http://www.amundsen.com/media-types/collection/">application/vnd.collection+json</a> JSON-based hypermedia.</p>
 <h2 id="html-error-views"><a class="toclink" href="#html-error-views">HTML error views</a></h2>
 <p>Typically a renderer will behave the same regardless of if it's dealing with a regular response, or with a response caused by an exception being raised, such as an <code>Http404</code> or <code>PermissionDenied</code> exception, or a subclass of <code>APIException</code>.</p>
-<p>If you're using either the <code>TemplateHTMLRenderer</code> or the <code>StaticHTMLRenderer</code> and an exception is raised, the behavior is slightly different, and mirrors <a href="https://docs.djangoproject.com/en/dev/topics/http/views/#customizing-error-views">Django's default handling of error views</a>.</p>
+<p>If you're using either the <code>TemplateHTMLRenderer</code> or the <code>StaticHTMLRenderer</code> and an exception is raised, the behavior is slightly different, and mirrors <a href="https://docs.djangoproject.com/en/stable/topics/http/views/#customizing-error-views">Django's default handling of error views</a>.</p>
 <p>Exceptions raised and handled by an HTML renderer will attempt to render using one of the following methods, by order of precedence.</p>
 <ul>
 <li>Load and render a template named <code>{status_code}.html</code>.</li>

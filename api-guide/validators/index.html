@@ -464,7 +464,7 @@
               <h1 id="validators"><a class="toclink" href="#validators">Validators</a></h1>
 <blockquote>
 <p>Validators can be useful for re-using validation logic between different types of fields.</p>
-<p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/validators/">Django documentation</a></p>
+<p>&mdash; <a href="https://docs.djangoproject.com/en/stable/ref/validators/">Django documentation</a></p>
 </blockquote>
 <p>Most of the time you're dealing with validation in REST framework you'll simply be relying on the default field validation, or writing explicit validation methods on serializer or field classes.</p>
 <p>However, sometimes you'll want to place your validation logic into reusable components, so that it can easily be reused throughout your codebase. This can be achieved by using validator functions and validator classes.</p>
@@ -476,7 +476,7 @@
 <li>It is easy to switch between using shortcut <code>ModelSerializer</code> classes and using  explicit <code>Serializer</code> classes. Any validation behavior being used for <code>ModelSerializer</code> is simple to replicate.</li>
 <li>Printing the <code>repr</code> of a serializer instance will show you exactly what validation rules it applies. There's no extra hidden validation behavior being called on the model instance.</li>
 </ul>
-<p>When you're using <code>ModelSerializer</code> all of this is handled automatically for you. If you want to drop down to using a <code>Serializer</code> classes instead, then you need to define the validation rules explicitly.</p>
+<p>When you're using <code>ModelSerializer</code> all of this is handled automatically for you. If you want to drop down to using <code>Serializer</code> classes instead, then you need to define the validation rules explicitly.</p>
 <h4 id="example"><a class="toclink" href="#example">Example</a></h4>
 <p>As an example of how REST framework uses explicit validation, we'll take a simple model class that has a field with a uniqueness constraint.</p>
 <pre><code>class CustomerReportRecord(models.Model):
@@ -582,11 +582,11 @@ class ExampleSerializer(serializers.Serializer):
 </code></pre>
 <p>The field will not be writable to the user, but the default value will still be passed through to the <code>validated_data</code>.</p>
 <h4 id="using-with-a-hidden-date-field"><a class="toclink" href="#using-with-a-hidden-date-field">Using with a hidden date field.</a></h4>
-<p>If you want the date field to be entirely hidden from the user, then use <code>HiddenField</code>. This field type does not accept user input, but instead always returns it's default value to the <code>validated_data</code> in the serializer.</p>
+<p>If you want the date field to be entirely hidden from the user, then use <code>HiddenField</code>. This field type does not accept user input, but instead always returns its default value to the <code>validated_data</code> in the serializer.</p>
 <pre><code>published = serializers.HiddenField(default=timezone.now)
 </code></pre>
 <hr />
-<p><strong>Note</strong>: The <code>UniqueFor&lt;Range&gt;Validation</code> classes always imposes an implicit constraint that the fields they are applied to are always treated as required. Fields with <code>default</code> values are an exception to this as they always supply a value even when omitted from user input.</p>
+<p><strong>Note</strong>: The <code>UniqueFor&lt;Range&gt;Validation</code> classes impose an implicit constraint that the fields they are applied to are always treated as required. Fields with <code>default</code> values are an exception to this as they always supply a value even when omitted from user input.</p>
 <hr />
 <h1 id="advanced-field-defaults"><a class="toclink" href="#advanced-field-defaults">Advanced field defaults</a></h1>
 <p>Validators that are applied across multiple fields in the serializer can sometimes require a field input that should not be provided by the API client, but that <em>is</em> available as input to the validator.</p>

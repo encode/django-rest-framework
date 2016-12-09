@@ -414,7 +414,7 @@
 <li>Ensure that any 'unsafe' HTTP operations, such as <code>POST</code>, <code>PUT</code>, <code>PATCH</code> and <code>DELETE</code>, always require a valid CSRF token.</li>
 </ol>
 <p>If you're using <code>SessionAuthentication</code> you'll need to include valid CSRF tokens for any <code>POST</code>, <code>PUT</code>, <code>PATCH</code> or <code>DELETE</code> operations.</p>
-<p>In order to make AJAX requests, you need to include CSRF token in the HTTP header, as <a href="https://docs.djangoproject.com/en/dev/ref/csrf/#ajax">described in the Django documentation</a>.</p>
+<p>In order to make AJAX requests, you need to include CSRF token in the HTTP header, as <a href="https://docs.djangoproject.com/en/stable/ref/csrf/#ajax">described in the Django documentation</a>.</p>
 <h2 id="cors"><a class="toclink" href="#cors">CORS</a></h2>
 <p><a href="http://www.w3.org/TR/cors/">Cross-Origin Resource Sharing</a> is a mechanism for allowing clients to interact with APIs that are hosted on a different domain.  CORS works by requiring the server to include a specific set of headers that allow a browser to determine if and when cross-domain requests should be allowed.</p>
 <p>The best way to deal with CORS in REST framework is to add the required response headers in middleware.  This ensures that CORS is supported transparently, without having to change any behavior in your views.</p>

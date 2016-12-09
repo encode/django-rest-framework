@@ -448,7 +448,7 @@
               <h1 id="responses"><a class="toclink" href="#responses">Responses</a></h1>
 <blockquote>
 <p>Unlike basic HttpResponse objects, TemplateResponse objects retain the details of the context that was provided by the view to compute the response.  The final output of the response is not computed until it is needed, later in the response process.</p>
-<p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/template-response/">Django documentation</a></p>
+<p>&mdash; <a href="https://docs.djangoproject.com/en/stable/stable/template-response/">Django documentation</a></p>
 </blockquote>
 <p>REST framework supports HTTP content negotiation by providing a <code>Response</code> class which allows you to return content that can be rendered into multiple content types, depending on the client request.</p>
 <p>The <code>Response</code> class subclasses Django's <code>SimpleTemplateResponse</code>.  <code>Response</code> objects are initialised with data, which should consist of native Python primitives.  REST framework then uses standard HTTP content negotiation to determine how it should render the final response content.</p>

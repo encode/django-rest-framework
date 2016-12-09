@@ -654,7 +654,7 @@ def schema_view(request):
 of the available formats, such as Core JSON or Open API.</p>
 <p>You could then either:</p>
 <ul>
-<li>Write a schema definition as a static file, and <a href="https://docs.djangoproject.com/en/dev/howto/static-files/">serve the static file directly</a>.</li>
+<li>Write a schema definition as a static file, and <a href="https://docs.djangoproject.com/en/stable/howto/static-files/">serve the static file directly</a>.</li>
 <li>Write a schema definition that is loaded using <code>Core API</code>, and then
   rendered to one of many available formats, depending on the client request.</li>
 </ul>
@@ -831,7 +831,7 @@ the parameter can be omitted.</p>
 the following strings:</p>
 <p><strong>"path"</strong></p>
 <p>Included in a templated URI. For example a <code>url</code> value of <code>/products/{product_code}/</code> could be used together with a <code>"path"</code> field, to handle API inputs in a URL path such as <code>/products/slim-fit-jeans/</code>.</p>
-<p>These fields will normally correspond with <a href="https://docs.djangoproject.com/en/dev/topics/http/urls/#named-groups">named arguments in the project URL conf</a>.</p>
+<p>These fields will normally correspond with <a href="https://docs.djangoproject.com/en/stable/topics/http/urls/#named-groups">named arguments in the project URL conf</a>.</p>
 <p><strong>"query"</strong></p>
 <p>Included as a URL query parameter. For example <code>?search=sale</code>. Typically for <code>GET</code> requests.</p>
 <p>These fields will normally correspond with pagination and filtering controls on a view.</p>

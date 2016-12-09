@@ -896,7 +896,7 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
     class Meta:
         fields = ('track_set', ...)
 </code></pre>
-<p>See the Django documentation on <a href="https://docs.djangoproject.com/en/dev/topics/db/queries/#following-relationships-backward">reverse relationships</a> for more details.</p>
+<p>See the Django documentation on <a href="https://docs.djangoproject.com/en/stable/topics/db/queries/#following-relationships-backward">reverse relationships</a> for more details.</p>
 <h2 id="generic-relationships"><a class="toclink" href="#generic-relationships">Generic relationships</a></h2>
 <p>If you want to serialize a generic foreign key, you need to define a custom field, to determine explicitly how you want to serialize the targets of the relationship.</p>
 <p>For example, given the following model for a tag, which has a generic relationship with other arbitrary models:</p>
@@ -904,7 +904,7 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
     """
     Tags arbitrary model instances using a generic relation.
 
-    See: https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/
+    See: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/
     """
     tag_name = models.SlugField()
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -962,7 +962,7 @@ class Note(models.Model):
         return serializer.data
 </code></pre>
 <p>Note that reverse generic keys, expressed using the <code>GenericRelation</code> field, can be serialized using the regular relational field types, since the type of the target in the relationship is always known.</p>
-<p>For more information see <a href="https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#id1">the Django documentation on generic relations</a>.</p>
+<p>For more information see <a href="https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/#id1">the Django documentation on generic relations</a>.</p>
 <h2 id="manytomanyfields-with-a-through-model"><a class="toclink" href="#manytomanyfields-with-a-through-model">ManyToManyFields with a Through Model</a></h2>
 <p>By default, relational fields that target a <code>ManyToManyField</code> with a
 <code>through</code> model specified are set to read-only.</p>

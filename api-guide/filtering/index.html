@@ -486,7 +486,7 @@
               <h1 id="filtering"><a class="toclink" href="#filtering">Filtering</a></h1>
 <blockquote>
 <p>The root QuerySet provided by the Manager describes all objects in the database table.  Usually, though, you'll need to select only a subset of the complete set of objects.</p>
-<p>&mdash; <a href="https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters">Django documentation</a></p>
+<p>&mdash; <a href="https://docs.djangoproject.com/en/stable/topics/db/queries/#retrieving-specific-objects-with-filters">Django documentation</a></p>
 </blockquote>
 <p>The default behavior of REST framework's generic list views is to return the entire queryset for a model manager.  Often you will want your API to restrict the items that are returned by the queryset.</p>
 <p>The simplest way to filter the queryset of any view that subclasses <code>GenericAPIView</code> is to override the <code>.get_queryset()</code> method.</p>
@@ -557,7 +557,7 @@ class PurchaseList(generics.ListAPIView):
 </code></pre>
 <p>You can also set the filter backends on a per-view, or per-viewset basis,
 using the <code>GenericAPIView</code> class-based views.</p>
-<pre><code>import django_filters
+<pre><code>import django_filters.rest_framework
 from django.contrib.auth.models import User
 from myapp.serializers import UserSerializer
 from rest_framework import generics
@@ -688,7 +688,7 @@ class ProductFilter(django_filters.rest_framework.FilterSet):
 </ul>
 <hr />
 <h2 id="searchfilter"><a class="toclink" href="#searchfilter">SearchFilter</a></h2>
-<p>The <code>SearchFilter</code> class supports simple single query parameter based searching, and is based on the <a href="https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields">Django admin's search functionality</a>.</p>
+<p>The <code>SearchFilter</code> class supports simple single query parameter based searching, and is based on the <a href="https://docs.djangoproject.com/en/stable/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields">Django admin's search functionality</a>.</p>
 <p>When in use, the browsable API will include a <code>SearchFilter</code> control:</p>
 <p><img alt="Search Filter" src="../../img/search-filter.png" /></p>
 <p>The <code>SearchFilter</code> class will only be applied if the view has a <code>search_fields</code> attribute set.  The <code>search_fields</code> attribute should be a list of names of text type fields on the model, such as <code>CharField</code> or <code>TextField</code>.</p>
@@ -716,7 +716,7 @@ class ProductFilter(django_filters.rest_framework.FilterSet):
 <pre><code>search_fields = ('=username', '=email')
 </code></pre>
 <p>By default, the search parameter is named <code>'search</code>', but this may be overridden with the <code>SEARCH_PARAM</code> setting.</p>
-<p>For more details, see the <a href="https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields">Django documentation</a>.</p>
+<p>For more details, see the <a href="https://docs.djangoproject.com/en/stable/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields">Django documentation</a>.</p>
 <hr />
 <h2 id="orderingfilter"><a class="toclink" href="#orderingfilter">OrderingFilter</a></h2>
 <p>The <code>OrderingFilter</code> class supports simple query parameter controlled ordering of results.</p>

@@ -562,7 +562,7 @@ def example_view(request, format=None):
 <p>The <code>IsAuthenticatedOrReadOnly</code> will allow authenticated users to perform any request.  Requests for unauthorised users will only be permitted if the request method is one of the "safe" methods; <code>GET</code>, <code>HEAD</code> or <code>OPTIONS</code>.</p>
 <p>This permission is suitable if you want to your API to allow read permissions to anonymous users, and only allow write permissions to authenticated users.</p>
 <h2 id="djangomodelpermissions"><a class="toclink" href="#djangomodelpermissions">DjangoModelPermissions</a></h2>
-<p>This permission class ties into Django's standard <code>django.contrib.auth</code> <a href="https://docs.djangoproject.com/en/dev/topics/auth/customizing/#custom-permissions">model permissions</a>.  This permission must only be applied to views that have a <code>.queryset</code> property set. Authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant model permissions</em> assigned.</p>
+<p>This permission class ties into Django's standard <code>django.contrib.auth</code> <a href="https://docs.djangoproject.com/en/stable/topics/auth/customizing/#custom-permissions">model permissions</a>.  This permission must only be applied to views that have a <code>.queryset</code> property set. Authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant model permissions</em> assigned.</p>
 <ul>
 <li><code>POST</code> requests require the user to have the <code>add</code> permission on the model.</li>
 <li><code>PUT</code> and <code>PATCH</code> requests require the user to have the <code>change</code> permission on the model.</li>
@@ -577,7 +577,7 @@ def example_view(request, format=None):
 <h2 id="djangomodelpermissionsoranonreadonly"><a class="toclink" href="#djangomodelpermissionsoranonreadonly">DjangoModelPermissionsOrAnonReadOnly</a></h2>
 <p>Similar to <code>DjangoModelPermissions</code>, but also allows unauthenticated users to have read-only access to the API.</p>
 <h2 id="djangoobjectpermissions"><a class="toclink" href="#djangoobjectpermissions">DjangoObjectPermissions</a></h2>
-<p>This permission class ties into Django's standard <a href="https://docs.djangoproject.com/en/dev/topics/auth/customizing/#handling-object-permissions">object permissions framework</a> that allows per-object permissions on models.  In order to use this permission class, you'll also need to add a permission backend that supports object-level permissions, such as <a href="https://github.com/lukaszb/django-guardian">django-guardian</a>.</p>
+<p>This permission class ties into Django's standard <a href="https://docs.djangoproject.com/en/stable/topics/auth/customizing/#handling-object-permissions">object permissions framework</a> that allows per-object permissions on models.  In order to use this permission class, you'll also need to add a permission backend that supports object-level permissions, such as <a href="https://github.com/lukaszb/django-guardian">django-guardian</a>.</p>
 <p>As with <code>DjangoModelPermissions</code>, this permission must only be applied to views that have a <code>.queryset</code> property or <code>.get_queryset()</code> method. Authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant per-object permissions</em> and <em>relevant model permissions</em> assigned.</p>
 <ul>
 <li><code>POST</code> requests require the user to have the <code>add</code> permission on the model instance.</li>
@@ -585,7 +585,7 @@ def example_view(request, format=None):
 <li><code>DELETE</code> requests require the user to have the <code>delete</code> permission on the model instance.</li>
 </ul>
 <p>Note that <code>DjangoObjectPermissions</code> <strong>does not</strong> require the <code>django-guardian</code> package, and should support other object-level backends equally well.</p>
-<p>As with <code>DjangoModelPermissions</code> you can use custom model permissions by overriding <code>DjangoModelPermissions</code> and setting the <code>.perms_map</code> property.  Refer to the source code for details.</p>
+<p>As with <code>DjangoModelPermissions</code> you can use custom model permissions by overriding <code>DjangoObjectPermissions</code> and setting the <code>.perms_map</code> property.  Refer to the source code for details.</p>
 <hr />
 <p><strong>Note</strong>: If you need object level <code>view</code> permissions for <code>GET</code>, <code>HEAD</code> and <code>OPTIONS</code> requests, you'll want to consider also adding the <code>DjangoObjectPermissionsFilter</code> class to ensure that list endpoints only return results including objects for which the user has appropriate view permissions.</p>
 <hr />

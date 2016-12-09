@@ -413,6 +413,10 @@
 
                   
                     <li>
+                      <a href="#requestsclient-and-working-with-the-database">RequestsClient and working with the database</a>
+                    </li>
+                  
+                    <li>
                       <a href="#headers-authentication">Headers &amp; Authentication</a>
                     </li>
                   
@@ -500,7 +504,7 @@
 </blockquote>
 <p>REST framework includes a few helper classes that extend Django's existing test framework, and improve support for making API requests.</p>
 <h1 id="apirequestfactory"><a class="toclink" href="#apirequestfactory">APIRequestFactory</a></h1>
-<p>Extends <a href="https://docs.djangoproject.com/en/dev/topics/testing/advanced/#django.test.client.RequestFactory">Django's existing <code>RequestFactory</code> class</a>.</p>
+<p>Extends <a href="https://docs.djangoproject.com/en/stable/topics/testing/advanced/#django.test.client.RequestFactory">Django's existing <code>RequestFactory</code> class</a>.</p>
 <h2 id="creating-test-requests"><a class="toclink" href="#creating-test-requests">Creating test requests</a></h2>
 <p>The <code>APIRequestFactory</code> class supports an almost identical API to Django's standard <code>RequestFactory</code> class.  This means that the standard <code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.patch()</code>, <code>.delete()</code>, <code>.head()</code> and <code>.options()</code> methods are all available.</p>
 <pre><code>from rest_framework.test import APIRequestFactory
@@ -573,7 +577,7 @@ response = view(request)
 <p><strong>Note</strong>: It's worth noting that Django's standard <code>RequestFactory</code> doesn't need to include this option, because when using regular Django the CSRF validation takes place in middleware, which is not run when testing views directly.  When using REST framework, CSRF validation takes place inside the view, so the request factory needs to disable view-level CSRF checks.</p>
 <hr />
 <h1 id="apiclient"><a class="toclink" href="#apiclient">APIClient</a></h1>
-<p>Extends <a href="https://docs.djangoproject.com/en/dev/topics/testing/tools/#the-test-client">Django's existing <code>Client</code> class</a>.</p>
+<p>Extends <a href="https://docs.djangoproject.com/en/stable/topics/testing/tools/#the-test-client">Django's existing <code>Client</code> class</a>.</p>
 <h2 id="making-requests"><a class="toclink" href="#making-requests">Making requests</a></h2>
 <p>The <code>APIClient</code> class supports the same request interface as Django's standard <code>Client</code> class.  This means the that standard <code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.patch()</code>, <code>.delete()</code>, <code>.head()</code> and <code>.options()</code> methods are all available.  For example:</p>
 <pre><code>from rest_framework.test import APIClient
@@ -627,7 +631,13 @@ client.force_authenticate(user=user)
 <hr />
 <h1 id="requestsclient"><a class="toclink" href="#requestsclient">RequestsClient</a></h1>
 <p>REST framework also includes a client for interacting with your application
-using the popular Python library, <code>requests</code>.</p>
+using the popular Python library, <code>requests</code>. This may be useful if:</p>
+<ul>
+<li>You are expecting to interface with the API primarily from another Python service,
+and want to test the service at the same level as the client will see.</li>
+<li>You want to write tests in such a way that they can also be run against a staging or
+live environment. (See "Live tests" below.)</li>
+</ul>
 <p>This exposes exactly the same interface as if you were using a requests session
 directly.</p>
 <pre><code>client = RequestsClient()
@@ -635,6 +645,8 @@ response = client.get('http://testserver/users/')
 assert response.status_code == 200
 </code></pre>
 <p>Note that the requests client requires you to pass fully qualified URLs.</p>
+<h2 id="requestsclient-and-working-with-the-database"><a class="toclink" href="#requestsclient-and-working-with-the-database"><code>RequestsClient</code> and working with the database</a></h2>
+<p>The <code>RequestsClient</code> class is useful if</p>
 <h2 id="headers-authentication"><a class="toclink" href="#headers-authentication">Headers &amp; Authentication</a></h2>
 <p>Custom headers and authentication credentials can be provided in the same way
 as <a href="http://docs.python-requests.org/en/master/user/advanced/#session-objects">when using a standard <code>requests.Session</code> instance</a>.</p>
