@@ -12,7 +12,7 @@ from django.db import DataError
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import unicode_to_repr
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.utils.representation import smart_repr
 
 
@@ -284,3 +284,19 @@ class UniqueForYearValidator(BaseUniqueForValidator):
         filter_kwargs[self.field_name] = value
         filter_kwargs['%s__year' % self.date_field_name] = date.year
         return qs_filter(queryset, **filter_kwargs)
+
+
+class ValidateSetRelationPermission(object):
+    def __init__(self, permission):
+        self.permission = permission
+        self.request = None
+
+    def set_context(self, field):
+        self.field_name = field.source_attrs[-1]
+        self.request = field.parent.context.get('request', None)
+
+    def __call__(self, value):
+        if not getattr(self.request, 'user', None):
+            return
+        if not self.request.user.has_perm(self.permission, value):
+            raise PermissionDenied(detail='You are not allowed to set a relationship on %s field.' % self.field_name)
