@@ -205,7 +205,9 @@ Note that the requests client requires you to pass fully qualified URLs.
 
 ## `RequestsClient` and working with the database
 
-The `RequestsClient` class is useful if
+The `RequestsClient` class is useful if you want to write tests that solely interact with the service interface. This is a little stricter than using the standard Django test client, as it means that all interactions should be via the API.
+
+If you're using `RequestsClient` you'll want to ensure that test setup, and results assertions are performed as regular API calls, rather than interacting with the database models directly. For example, rather than checking that `Customer.objects.count() == 3` you would list the customers endpoint, and ensure that it contains three records.
 
 ## Headers & Authentication
 
