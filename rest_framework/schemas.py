@@ -128,6 +128,7 @@ def get_pk_description(model, model_field):
         name=model._meta.verbose_name,
     )
 
+
 class EndpointInspector(object):
     """
     A class to determine the available API endpoints that a project exposes.
@@ -486,7 +487,6 @@ class SchemaGenerator(object):
                     description = force_text(model_field.help_text)
                 elif model_field is not None and model_field.primary_key:
                     description = get_pk_description(model, model_field)
-
 
             field = coreapi.Field(
                 name=variable,

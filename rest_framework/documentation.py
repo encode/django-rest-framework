@@ -1,4 +1,4 @@
-from rest_framework.renderers import DocumentationRenderer, CoreJSONRenderer
+from rest_framework.renderers import CoreJSONRenderer, DocumentationRenderer
 from rest_framework.schemas import get_schema_view
 
 
