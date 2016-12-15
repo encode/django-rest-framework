@@ -39,6 +39,24 @@ types_lookup = ClassLookupDict({
     serializers.ListSerializer: 'array'
 })
 
+input_lookup = ClassLookupDict({
+    serializers.Field: 'text',
+    serializers.IntegerField: 'number',
+    serializers.FloatField: 'number',
+    serializers.DecimalField: 'number',
+    serializers.BooleanField: 'checkbox',
+    serializers.FileField: 'file',
+    serializers.ChoiceField: 'select'
+})
+
+
+def determine_input(field):
+    input_type = input_lookup[field]
+    base_template = field.style.get('base_template')
+    if base_template == 'textarea.html':
+        input_type = 'textarea'
+    return input_type
+
 
 def common_path(paths):
     split_paths = [path.strip('/').split('/') for path in paths]
@@ -475,6 +493,7 @@ class SchemaGenerator(object):
         fields = []
 
         for variable in uritemplate.variables(path):
+            title = None
             description = None
             if model is not None:
                 # Attempt to infer a field description if possible.
@@ -482,6 +501,9 @@ class SchemaGenerator(object):
                     model_field = model._meta.get_field(variable)
                 except:
                     pass
+
+                if model_field is not None and model_field.verbose_name:
+                    title = force_text(model_field.verbose_name)
 
                 if model_field is not None and model_field.help_text:
                     description = force_text(model_field.help_text)
@@ -492,6 +514,7 @@ class SchemaGenerator(object):
                 name=variable,
                 location='path',
                 required=True,
+                title='' if (title is None) else title,
                 description='' if (description is None) else description
             )
             fields.append(field)
@@ -530,13 +553,17 @@ class SchemaGenerator(object):
                 continue
 
             required = field.required and method != 'PATCH'
+            title = force_text(field.label) if field.label else ''
             description = force_text(field.help_text) if field.help_text else ''
             field = coreapi.Field(
                 name=field.field_name,
                 location='form',
                 required=required,
+                title=title,
                 description=description,
-                type=types_lookup[field]
+                type=types_lookup[field],
+                input=determine_input(field),
+                choices=getattr(field, 'choices', None)
             )
             fields.append(field)
 
