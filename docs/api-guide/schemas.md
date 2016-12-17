@@ -281,8 +281,8 @@ A generic view with sections in the class docstring, using single-line style.
 
     class UserList(generics.ListCreateAPIView):
         """
-        get: Create a new user.
-        post: List all the users.
+        get: List all the users.
+        post: Create a new user.
         """
         queryset = User.objects.all()
         serializer_class = UserSerializer
