@@ -7,8 +7,11 @@ from django.utils import six
 
 import rest_framework.utils.model_meta
 from rest_framework.compat import _resolve_model
+from rest_framework.routers import SimpleRouter
+from rest_framework.serializers import ModelSerializer
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from tests.models import BasicModel
 
 
@@ -37,6 +40,13 @@ class CustomNameResourceInstance(APIView):
         return "Foo"
 
 
+class ResourceViewSet(ModelViewSet):
+    serializer_class = ModelSerializer
+    queryset = BasicModel.objects.all()
+
+
+router = SimpleRouter()
+router.register(r'resources', ResourceViewSet)
 urlpatterns = [
     url(r'^$', Root.as_view()),
     url(r'^resource/$', ResourceRoot.as_view()),
@@ -45,6 +55,7 @@ urlpatterns = [
     url(r'^resource/(?P<key>[0-9]+)/$', NestedResourceRoot.as_view()),
     url(r'^resource/(?P<key>[0-9]+)/(?P<other>[A-Za-z]+)$', NestedResourceInstance.as_view()),
 ]
+urlpatterns += router.urls
 
 
 @override_settings(ROOT_URLCONF='tests.test_utils')
@@ -121,6 +132,17 @@ class BreadcrumbTests(TestCase):
         self.assertEqual(
             get_breadcrumbs(url),
             [('Root', '/')]
+        )
+
+    def test_modelviewset_resource_instance_breadcrumbs(self):
+        url = '/resources/1/'
+        self.assertEqual(
+            get_breadcrumbs(url),
+            [
+                ('Root', '/'),
+                ('Resource List', '/resources/'),
+                ('Resource Instance', '/resources/1/')
+            ]
         )
 
 
