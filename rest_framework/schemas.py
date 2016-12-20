@@ -414,7 +414,7 @@ class SchemaGenerator(object):
                 current_section, seperator, lead = line.partition(':')
                 sections[current_section] = lead.strip()
             else:
-                sections[current_section] += line + '\n'
+                sections[current_section] += '\n' + line
 
         header = getattr(view, 'action', method.lower())
         if header in sections:
