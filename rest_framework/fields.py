@@ -1652,7 +1652,7 @@ class ReadOnlyField(Field):
     A read-only field that simply returns the field value.
 
     If the field is a method with no parameters, the method will be called
-    and it's return value used as the representation.
+    and its return value used as the representation.
 
     For example, the following would call `get_expiry_date()` on the object:
 
