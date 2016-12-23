@@ -413,3 +413,20 @@ class Test4606Regression:
         serializer = self.Serializer(data=[{"name": "liz"}], many=True)
         with pytest.raises(serializers.ValidationError):
             serializer.is_valid(raise_exception=True)
+
+
+class TestDeclaredFieldInheritance:
+    def test_declared_field_disabling(self):
+        class Parent(serializers.Serializer):
+            f1 = serializers.CharField()
+            f2 = serializers.CharField()
+
+        class Child(Parent):
+            f1 = None
+
+        class Grandchild(Child):
+            pass
+
+        assert len(Parent._declared_fields) == 2
+        assert len(Child._declared_fields) == 1
+        assert len(Grandchild._declared_fields) == 1
