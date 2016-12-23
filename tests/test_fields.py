@@ -462,7 +462,7 @@ class TestHTMLInput:
         assert serializer.is_valid()
         assert serializer.validated_data == {'scores': [1, 3]}
 
-    def test_querydict_indexed_list_only_one_input(self):
+    def test_querydict_indexed_list_input_only_one_input(self):
         class TestSerializer(serializers.Serializer):
             scores = serializers.ListField(child=serializers.IntegerField())
 
