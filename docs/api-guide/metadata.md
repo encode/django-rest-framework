@@ -104,6 +104,18 @@ Then configure your settings to use this custom class:
         'DEFAULT_METADATA_CLASS': 'myproject.apps.core.MinimalMetadata'
     }
 
+# Third party packages
+
+The following third party packages provide additional metadata implementations.
+
+## DRF-schema-adapter
+
+[drf-schema-adapter][drf-schema-adapter] is a set of tools that makes it easier to provide schema information to frontend frameworks and libraries. It provides a metadata mixin as well as 2 metadata classes and several adapters suitable to generate [json-schema][json-schema] as well as schema information readable by various libraries.
+
+You can also write your own adapter to work with your specific frontend.
+If you whish to do so, it also provides an exporter that can export those schema information to json files.
+
 [cite]: http://tools.ietf.org/html/rfc7231#section-4.3.7
 [no-options]: https://www.mnot.net/blog/2012/10/29/NO_OPTIONS
 [json-schema]: http://json-schema.org/
+[drf-schema-adapter]: https://github.com/drf-forms/drf-schema-adapter
