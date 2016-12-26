@@ -11,6 +11,7 @@ from django.utils import six
 from django.utils.six.moves.http_client import responses
 
 from rest_framework.serializers import Serializer
+from rest_framework.settings import api_settings
 
 
 class Response(SimpleTemplateResponse):
@@ -77,7 +78,7 @@ class Response(SimpleTemplateResponse):
             )
             return bytes(ret.encode(charset))
 
-        if not ret:
+        if api_settings.REMOVE_CONTENT_TYPE_ON_HTTP_204 and not ret:
             del self['Content-Type']
 
         return ret
