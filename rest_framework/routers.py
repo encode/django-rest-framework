@@ -178,7 +178,7 @@ class SimpleRouter(BaseRouter):
                 method_kwargs = getattr(viewset, methodname).kwargs
                 initkwargs = route.initkwargs.copy()
                 initkwargs.update(method_kwargs)
-                url_path = initkwargs.pop("url_path", None) or methodname
+                url_path = initkwargs.pop('url_path', None) or methodname
                 ret.append(Route(
                     url=replace_methodname(route.url, url_path),
                     mapping={httpmethod: methodname for httpmethod in httpmethods},
@@ -269,6 +269,11 @@ class SimpleRouter(BaseRouter):
                     regex = '^' + regex[2:]
 
                 view = viewset.as_view(mapping, **route.initkwargs)
+
+                # Allow dynamic routes to set `serializer_class` kwarg
+                if isinstance(route, (DynamicDetailRoute, DynamicListRoute)):
+                    view.serializer_class = route.initkwargs.pop('serializer_class', None)
+
                 name = route.name.format(basename=basename)
                 ret.append(url(regex, view, name=name))
 
