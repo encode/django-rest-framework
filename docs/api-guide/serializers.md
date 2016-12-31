@@ -1116,6 +1116,10 @@ The [drf-dynamic-fields][drf-dynamic-fields] package provides a mixin to dynamic
 
 The [html-json-forms][html-json-forms] package provides an algorithm and serializer for processing `<form>` submissions per the (inactive) [HTML JSON Form specification][json-form-spec].  The serializer facilitates processing of arbitrarily nested JSON structures within HTML.  For example, `<input name="items[0][id]" value="5">` will be interpreted as `{"items": [{"id": "5"}]}`.
 
+## DRF-Base64
+
+[DRF-Base64][drf-base64] provides a set of field and model serializers that handles the upload of base64-encoded files.
+
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
 [model-managers]: https://docs.djangoproject.com/en/stable/topics/db/managers/
@@ -1131,3 +1135,4 @@ The [html-json-forms][html-json-forms] package provides an algorithm and seriali
 [html-json-forms]: https://github.com/wq/html-json-forms
 [json-form-spec]: https://www.w3.org/TR/html-json-forms/
 [drf-dynamic-fields]: https://github.com/dbrgn/drf-dynamic-fields
+[drf-base64]: https://bitbucket.org/levit_scs/drf_base64
