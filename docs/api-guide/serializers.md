@@ -1112,6 +1112,10 @@ The [dynamic-rest][dynamic-rest] package extends the ModelSerializer and ModelVi
 
 The [drf-dynamic-fields][drf-dynamic-fields] package provides a mixin to dynamically limit the fields per serializer to a subset specified by an URL parameter.
 
+## DRF FlexFields
+
+The [drf-flex-fields][drf-flex-fields] package extends the ModelSerializer and ModelViewSet to provide commonly used functionality for dynamically setting fields and expanding primitive fields to nested models, both from URL parameters and your serializer class definitions.
+
 ## HTML JSON Forms
 
 The [html-json-forms][html-json-forms] package provides an algorithm and serializer for processing `<form>` submissions per the (inactive) [HTML JSON Form specification][json-form-spec].  The serializer facilitates processing of arbitrarily nested JSON structures within HTML.  For example, `<input name="items[0][id]" value="5">` will be interpreted as `{"items": [{"id": "5"}]}`.
@@ -1133,6 +1137,7 @@ The [html-json-forms][html-json-forms] package provides an algorithm and seriali
 [django-hstore]: https://github.com/djangonauts/django-hstore
 [dynamic-rest]: https://github.com/AltSchool/dynamic-rest
 [html-json-forms]: https://github.com/wq/html-json-forms
+[drf-flex-fields]: https://github.com/rsinger86/drf-flex-fields
 [json-form-spec]: https://www.w3.org/TR/html-json-forms/
 [drf-dynamic-fields]: https://github.com/dbrgn/drf-dynamic-fields
 [drf-base64]: https://bitbucket.org/levit_scs/drf_base64
