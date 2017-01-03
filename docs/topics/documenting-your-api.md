@@ -38,6 +38,34 @@ Both this package and DRF docs are fully documented, well supported, and come hi
 
 ---
 
+### DRF AutoDocs
+
+Oleksander Mashianovs' [DRF Auto Docs][drfautodocs-repo] automated api renderer.
+
+Collects almost all the code you written into documentation effortlessly.
+
+Supports:
+
+ * functional view docs
+ * tree-like structure
+ * Docstrings:
+  * markdown
+  * preserve space & newlines
+  * formatting with nice syntax
+ * Fields:
+  * choices rendering
+  * help_text (to specify SerializerMethodField output, etc)
+  * smart read_only/required rendering
+ * Endpoint properties:
+  * filter_backends
+  * authentication_classes
+  * permission_classes
+  * extra url params(GET params)
+
+![whole structure](http://joxi.ru/52aBGNI4k3oyA0.jpg)
+
+---
+
 #### Apiary
 
 There are various other online tools and services for providing API documentation.  One notable service is [Apiary][apiary].  With Apiary, you describe your API using a simple markdown-like syntax.  The generated documentation includes API interaction, a mock server for testing & prototyping, and various other tools.
@@ -109,6 +137,7 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [drfdocs-repo]: https://github.com/ekonstantinidis/django-rest-framework-docs
 [drfdocs-website]: http://www.drfdocs.com/
 [drfdocs-demo]: http://demo.drfdocs.com/
+[drfautodocs-repo]: https://github.com/iMakedonsky/drf-autodocs
 [django-rest-swagger]: https://github.com/marcgibbons/django-rest-swagger
 [swagger]: https://developers.helloreverb.com/swagger/
 [rest-framework-docs]: https://github.com/marcgibbons/django-rest-framework-docs
