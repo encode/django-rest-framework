@@ -578,16 +578,6 @@ Alternative representations include serializing using hyperlinks, serializing co
 
 For full details see the [serializer relations][relations] documentation.
 
-## Inheritance of the 'Meta' class
-
-The inner `Meta` class on serializers is not inherited from parent classes by default. This is the same behavior as with Django's `Model` and `ModelForm` classes. If you want the `Meta` class to inherit from a parent class you must do so explicitly. For example:
-
-    class AccountSerializer(MyBaseSerializer):
-        class Meta(MyBaseSerializer.Meta):
-            model = Account
-
-Typically we would recommend *not* using inheritance on inner Meta classes, but instead declaring all options explicitly.
-
 ## Customizing field mappings
 
 The ModelSerializer class also exposes an API that you can override in order to alter how serializer fields are automatically determined when instantiating the serializer.
@@ -1024,6 +1014,40 @@ Takes the unvalidated incoming data as input and should return the validated dat
 If any of the validation fails, then the method should raise a `serializers.ValidationError(errors)`. Typically the `errors` argument here will be a dictionary mapping field names to error messages.
 
 The `data` argument passed to this method will normally be the value of `request.data`, so the datatype it provides will depend on the parser classes you have configured for your API.
+
+## Serializer Inheritance
+
+Similar to Django forms, you can extend and reuse serializers through inheritance. This allows you to declare a common set of fields or methods on a parent class that can then be used in a number of serializers. For example,
+
+    class MyBaseSerializer(Serializer):
+        my_field = serializers.CharField()
+
+        def validate_my_field(self):
+            ...
+
+    class MySerializer(MyBaseSerializer):
+        ...
+
+Like Django's `Model` and `ModelForm` classes, the inner `Meta` class on serializers does not implicitly inherit from it's parents' inner `Meta` classes. If you want the `Meta` class to inherit from a parent class you must do so explicitly. For example:
+
+    class AccountSerializer(MyBaseSerializer):
+        class Meta(MyBaseSerializer.Meta):
+            model = Account
+
+Typically we would recommend *not* using inheritance on inner Meta classes, but instead declaring all options explicitly.
+
+Additionally, the following caveats apply to serializer inheritance:
+
+* Normal Python name resolution rules apply. If you have multiple base classes that declare a `Meta` inner class, only the first one will be used. This means the child’s `Meta`, if it exists, otherwise the `Meta` of the first parent, etc.
+* It’s possible to declaratively remove a `Field` inherited from a parent class by setting the name to be `None` on the subclass.
+
+        class MyBaseSerializer(ModelSerializer):
+            my_field = serializers.CharField()
+
+        class MySerializer(MyBaseSerializer):
+            my_field = None
+
+    However, you can only use this technique to opt out from a field defined declaratively by a parent class; it won’t prevent the `ModelSerializer` from generating a default field. To opt-out from default fields, see [Specifying which fields to include](#specifying-which-fields-to-include).
 
 ## Dynamically modifying fields
 

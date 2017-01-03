@@ -7,6 +7,8 @@ import re
 
 import pytest
 
+from django.db import models
+
 from rest_framework import fields, relations, serializers
 from rest_framework.compat import unicode_repr
 from rest_framework.fields import Field
@@ -413,3 +415,42 @@ class Test4606Regression:
         serializer = self.Serializer(data=[{"name": "liz"}], many=True)
         with pytest.raises(serializers.ValidationError):
             serializer.is_valid(raise_exception=True)
+
+
+class TestDeclaredFieldInheritance:
+    def test_declared_field_disabling(self):
+        class Parent(serializers.Serializer):
+            f1 = serializers.CharField()
+            f2 = serializers.CharField()
+
+        class Child(Parent):
+            f1 = None
+
+        class Grandchild(Child):
+            pass
+
+        assert len(Parent._declared_fields) == 2
+        assert len(Child._declared_fields) == 1
+        assert len(Grandchild._declared_fields) == 1
+
+    def test_meta_field_disabling(self):
+        # Declaratively setting a field on a child class will *not* prevent
+        # the ModelSerializer from generating a default field.
+        class MyModel(models.Model):
+            f1 = models.CharField(max_length=10)
+            f2 = models.CharField(max_length=10)
+
+        class Parent(serializers.ModelSerializer):
+            class Meta:
+                model = MyModel
+                fields = ['f1', 'f2']
+
+        class Child(Parent):
+            f1 = None
+
+        class Grandchild(Child):
+            pass
+
+        assert len(Parent().get_fields()) == 2
+        assert len(Child().get_fields()) == 2
+        assert len(Grandchild().get_fields()) == 2
