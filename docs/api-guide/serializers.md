@@ -1039,7 +1039,15 @@ Typically we would recommend *not* using inheritance on inner Meta classes, but 
 Additionally, the following caveats apply to serializer inheritance:
 
 * Normal Python name resolution rules apply. If you have multiple base classes that declare a `Meta` inner class, only the first one will be used. This means the child’s `Meta`, if it exists, otherwise the `Meta` of the first parent, etc.
-* It’s possible to declaratively remove a `Field` inherited from a parent class by setting the name to be `None` on the subclass. You can only use this technique to opt out from a field defined declaratively by a parent class; it won’t prevent the `ModelSerializer` from generating a default field. To opt-out from default fields, see [Specifying which fields to include](#specifying-which-fields-to-include).
+* It’s possible to declaratively remove a `Field` inherited from a parent class by setting the name to be `None` on the subclass.
+
+        class MyBaseSerializer(ModelSerializer):
+            my_field = serializers.CharField()
+
+        class MySerializer(MyBaseSerializer):
+            my_field = None
+
+    However, you can only use this technique to opt out from a field defined declaratively by a parent class; it won’t prevent the `ModelSerializer` from generating a default field. To opt-out from default fields, see [Specifying which fields to include](#specifying-which-fields-to-include).
 
 ## Dynamically modifying fields
 
