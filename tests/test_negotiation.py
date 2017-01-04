@@ -38,20 +38,20 @@ class TestAcceptedMediaType(TestCase):
     def test_client_without_accept_use_renderer(self):
         request = Request(factory.get('/'))
         accepted_renderer, accepted_media_type = self.select_renderer(request)
-        self.assertEqual(accepted_media_type, 'application/json')
+        assert accepted_media_type == 'application/json'
 
     def test_client_underspecifies_accept_use_renderer(self):
         request = Request(factory.get('/', HTTP_ACCEPT='*/*'))
         accepted_renderer, accepted_media_type = self.select_renderer(request)
-        self.assertEqual(accepted_media_type, 'application/json')
+        assert accepted_media_type == 'application/json'
 
     def test_client_overspecifies_accept_use_client(self):
         request = Request(factory.get('/', HTTP_ACCEPT='application/json; indent=8'))
         accepted_renderer, accepted_media_type = self.select_renderer(request)
-        self.assertEqual(accepted_media_type, 'application/json; indent=8')
+        assert accepted_media_type == 'application/json; indent=8'
 
     def test_client_specifies_parameter(self):
         request = Request(factory.get('/', HTTP_ACCEPT='application/openapi+json;version=2.0'))
         accepted_renderer, accepted_media_type = self.select_renderer(request)
-        self.assertEqual(accepted_media_type, 'application/openapi+json;version=2.0')
-        self.assertEqual(accepted_renderer.format, 'swagger')
+        assert accepted_media_type == 'application/openapi+json;version=2.0'
+        assert accepted_renderer.format == 'swagger'
