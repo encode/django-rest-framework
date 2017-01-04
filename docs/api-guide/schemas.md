@@ -145,6 +145,18 @@ May be used to pass a canonical URL for the schema.
         url='https://www.example.org/api/'
     )
 
+#### `urlconf`
+
+May be used to pass a nondefault url configuration
+useful for `Django multihost snippet`
+https://code.djangoproject.com/wiki/MultiHostMiddleware
+
+    schema_view = get_schema_view(
+        title='Server Monitoring API',
+        url='https://www.example.org/api/',
+        urlconf='myproject.urls'
+    )
+
 #### `renderer_classes`
 
 May be used to pass the set of renderer classes that can be used to render the API root endpoint.
