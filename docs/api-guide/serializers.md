@@ -1140,6 +1140,13 @@ The [drf-dynamic-fields][drf-dynamic-fields] package provides a mixin to dynamic
 
 The [drf-flex-fields][drf-flex-fields] package extends the ModelSerializer and ModelViewSet to provide commonly used functionality for dynamically setting fields and expanding primitive fields to nested models, both from URL parameters and your serializer class definitions.
 
+## Serializer Extensions
+
+The [django-rest-framework-serializer-extensions][drf-serializer-extensions]
+package provides a collection of tools to DRY up your serializers, by allowing
+fields to be defined on a per-view/request basis. Fields can be whitelisted,
+blacklisted and child serializers can be optionally expanded.
+
 ## HTML JSON Forms
 
 The [html-json-forms][html-json-forms] package provides an algorithm and serializer for processing `<form>` submissions per the (inactive) [HTML JSON Form specification][json-form-spec].  The serializer facilitates processing of arbitrarily nested JSON structures within HTML.  For example, `<input name="items[0][id]" value="5">` will be interpreted as `{"items": [{"id": "5"}]}`.
@@ -1165,3 +1172,4 @@ The [html-json-forms][html-json-forms] package provides an algorithm and seriali
 [json-form-spec]: https://www.w3.org/TR/html-json-forms/
 [drf-dynamic-fields]: https://github.com/dbrgn/drf-dynamic-fields
 [drf-base64]: https://bitbucket.org/levit_scs/drf_base64
+[drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions

@@ -204,7 +204,9 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-gis][djangorestframework-gis] - Geographic add-ons
 * [djangorestframework-hstore][djangorestframework-hstore] - Serializer class to support django-hstore DictionaryField model field and its schema-mode feature.
 * [djangorestframework-jsonapi][djangorestframework-jsonapi] - Provides a parser, renderer, serializers, and other tools to help build an API that is compliant with the jsonapi.org spec.
-* [html-json-forms][html-json-forms]: Provides an algorithm and serializer to process HTML JSON Form submissions per the (inactive) spec.
+* [html-json-forms][html-json-forms] - Provides an algorithm and serializer to process HTML JSON Form submissions per the (inactive) spec.
+* [django-rest-framework-serializer-extensions][drf-serializer-extensions] -
+  Enables black/whitelisting fields, and conditionally expanding child serializers on a per-view/request basis.
 
 ### Serializer fields
 
@@ -367,3 +369,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-framework-course]: https://teamtreehouse.com/library/django-rest-framework
 [drf_tweaks]: https://github.com/ArabellaTech/drf_tweaks
 [drf-oidc-auth]: https://github.com/ByteInternet/drf-oidc-auth
+[drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
