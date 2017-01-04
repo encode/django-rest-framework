@@ -67,4 +67,3 @@ class InheritedModelSerializationTests(TestCase):
         }
         serializer = DerivedModelSerializer(data=data)
         assert serializer.is_valid() is True
-
