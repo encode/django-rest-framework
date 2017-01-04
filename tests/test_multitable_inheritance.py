@@ -44,8 +44,7 @@ class InheritedModelSerializationTests(TestCase):
         """
         child = ChildModel(name1='parent name', name2='child name')
         serializer = DerivedModelSerializer(child)
-        self.assertEqual(set(serializer.data.keys()),
-                         set(['name1', 'name2', 'id']))
+        assert set(serializer.data.keys()) == set(['name1', 'name2', 'id'])
 
     def test_onetoone_primary_key_model_fields_as_expected(self):
         """
@@ -55,8 +54,7 @@ class InheritedModelSerializationTests(TestCase):
         parent = ParentModel.objects.create(name1='parent name')
         associate = AssociatedModel.objects.create(name='hello', ref=parent)
         serializer = AssociatedModelSerializer(associate)
-        self.assertEqual(set(serializer.data.keys()),
-                         set(['name', 'ref']))
+        assert set(serializer.data.keys()) == set(['name', 'ref'])
 
     def test_data_is_valid_without_parent_ptr(self):
         """
@@ -68,4 +66,4 @@ class InheritedModelSerializationTests(TestCase):
             'name2': 'child name',
         }
         serializer = DerivedModelSerializer(data=data)
-        self.assertEqual(serializer.is_valid(), True)
+        assert serializer.is_valid() is True
