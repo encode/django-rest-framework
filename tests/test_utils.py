@@ -108,11 +108,9 @@ class BreadcrumbTests(TestCase):
             ('Nested Resource Instance', '/resource/123/abc')
         ]
 
-
     def test_broken_url_breadcrumbs_handled_gracefully(self):
         url = '/foobar'
         assert get_breadcrumbs(url) == [('Root', '/')]
-
 
     def test_modelviewset_resource_instance_breadcrumbs(self):
         url = '/resources/1/'
