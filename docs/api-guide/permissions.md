@@ -164,7 +164,7 @@ As with `DjangoModelPermissions`, this permission must only be applied to views 
 
 Note that `DjangoObjectPermissions` **does not** require the `django-guardian` package, and should support other object-level backends equally well.
 
-As with `DjangoModelPermissions` you can use custom model permissions by overriding `DjangoModelPermissions` and setting the `.perms_map` property.  Refer to the source code for details.
+As with `DjangoModelPermissions` you can use custom model permissions by overriding `DjangoObjectPermissions` and setting the `.perms_map` property.  Refer to the source code for details.
 
 ---
 
@@ -269,8 +269,8 @@ The [Django Rest Framework Roles][django-rest-framework-roles] package makes it 
 [authentication]: authentication.md
 [throttling]: throttling.md
 [filtering]: filtering.md
-[contribauth]: https://docs.djangoproject.com/en/dev/topics/auth/customizing/#custom-permissions
-[objectpermissions]: https://docs.djangoproject.com/en/dev/topics/auth/customizing/#handling-object-permissions
+[contribauth]: https://docs.djangoproject.com/en/stable/topics/auth/customizing/#custom-permissions
+[objectpermissions]: https://docs.djangoproject.com/en/stable/topics/auth/customizing/#handling-object-permissions
 [guardian]: https://github.com/lukaszb/django-guardian
 [get_objects_for_user]: http://pythonhosted.org/django-guardian/api/guardian.shortcuts.html#get-objects-for-user
 [2.2-announcement]: ../topics/2.2-announcement.md

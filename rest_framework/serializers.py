@@ -305,7 +305,11 @@ class SerializerMetaclass(type):
         # in order to maintain the correct order of fields.
         for base in reversed(bases):
             if hasattr(base, '_declared_fields'):
-                fields = list(base._declared_fields.items()) + fields
+                fields = [
+                    (field_name, obj) for field_name, obj
+                    in base._declared_fields.items()
+                    if field_name not in attrs
+                ] + fields
 
         return OrderedDict(fields)
 

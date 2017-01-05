@@ -20,21 +20,21 @@ class JSONEncoderTests(TestCase):
         Tests encoding a decimal
         """
         d = Decimal(3.14)
-        self.assertEqual(d, float(d))
+        assert d == float(d)
 
     def test_encode_datetime(self):
         """
         Tests encoding a datetime object
         """
         current_time = datetime.now()
-        self.assertEqual(self.encoder.default(current_time), current_time.isoformat())
+        assert self.encoder.default(current_time) == current_time.isoformat()
 
     def test_encode_time(self):
         """
         Tests encoding a timezone
         """
         current_time = datetime.now().time()
-        self.assertEqual(self.encoder.default(current_time), current_time.isoformat()[:12])
+        assert self.encoder.default(current_time) == current_time.isoformat()[:12]
 
     def test_encode_time_tz(self):
         """
@@ -64,18 +64,18 @@ class JSONEncoderTests(TestCase):
         Tests encoding a date object
         """
         current_date = date.today()
-        self.assertEqual(self.encoder.default(current_date), current_date.isoformat())
+        assert self.encoder.default(current_date) == current_date.isoformat()
 
     def test_encode_timedelta(self):
         """
         Tests encoding a timedelta object
         """
         delta = timedelta(hours=1)
-        self.assertEqual(self.encoder.default(delta), str(delta.total_seconds()))
+        assert self.encoder.default(delta) == str(delta.total_seconds())
 
     def test_encode_uuid(self):
         """
         Tests encoding a UUID object
         """
         unique_id = uuid4()
-        self.assertEqual(self.encoder.default(unique_id), str(unique_id))
+        assert self.encoder.default(unique_id) == str(unique_id)

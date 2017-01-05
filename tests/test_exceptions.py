@@ -16,28 +16,22 @@ class ExceptionTestCase(TestCase):
         example = "string"
         lazy_example = _(example)
 
-        self.assertEqual(
-            _get_error_details(lazy_example),
-            example
-        )
+        assert _get_error_details(lazy_example) == example
+
         assert isinstance(
             _get_error_details(lazy_example),
             ErrorDetail
         )
 
-        self.assertEqual(
-            _get_error_details({'nested': lazy_example})['nested'],
-            example
-        )
+        assert _get_error_details({'nested': lazy_example})['nested'] == example
+
         assert isinstance(
             _get_error_details({'nested': lazy_example})['nested'],
             ErrorDetail
         )
 
-        self.assertEqual(
-            _get_error_details([[lazy_example]])[0][0],
-            example
-        )
+        assert _get_error_details([[lazy_example]])[0][0] == example
+
         assert isinstance(
             _get_error_details([[lazy_example]])[0][0],
             ErrorDetail

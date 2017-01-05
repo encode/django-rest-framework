@@ -286,6 +286,12 @@ class APIView(View):
             self._negotiator = self.content_negotiation_class()
         return self._negotiator
 
+    def get_exception_handler(self):
+        """
+        Returns the exception handler that this view uses.
+        """
+        return api_settings.EXCEPTION_HANDLER
+
     # API policy implementation methods
 
     def perform_content_negotiation(self, request, force=False):
@@ -428,7 +434,7 @@ class APIView(View):
             else:
                 exc.status_code = status.HTTP_403_FORBIDDEN
 
-        exception_handler = self.settings.EXCEPTION_HANDLER
+        exception_handler = self.get_exception_handler()
 
         context = self.get_exception_handler_context()
         response = exception_handler(exc, context)

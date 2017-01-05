@@ -91,5 +91,5 @@ As with any other `TemplateResponse`, this method is called to render the serial
 
 You won't typically need to call `.render()` yourself, as it's handled by Django's standard response cycle.
 
-[cite]: https://docs.djangoproject.com/en/dev/ref/template-response/
+[cite]: https://docs.djangoproject.com/en/stable/stable/template-response/
 [statuscodes]: status-codes.md
