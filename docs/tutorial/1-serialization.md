@@ -45,8 +45,10 @@ We'll need to add our new `snippets` app and the `rest_framework` app to `INSTAL
     INSTALLED_APPS = (
         ...
         'rest_framework',
-        'snippets',
+        'snippets.apps.SnippetsConfig',
     )
+
+Please note that if you're using Django <1.9, you need to replace `snippets.apps.SnippetsConfig` with `snippets`.
 
 Okay, we're ready to roll.
 
