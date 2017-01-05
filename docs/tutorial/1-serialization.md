@@ -45,7 +45,7 @@ We'll need to add our new `snippets` app and the `rest_framework` app to `INSTAL
     INSTALLED_APPS = (
         ...
         'rest_framework',
-        'snippets.apps.SnippetsConfig',
+        'snippets',
     )
 
 Okay, we're ready to roll.
