@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from django.test import TestCase
 
+from rest_framework.compat import coreapi
 from rest_framework.utils.encoders import JSONEncoder
 
 
@@ -79,3 +80,13 @@ class JSONEncoderTests(TestCase):
         """
         unique_id = uuid4()
         assert self.encoder.default(unique_id) == str(unique_id)
+
+    def test_encode_coreapi_raises_error(self):
+        """
+        Tests encoding a coreapi objects raises proper error
+        """
+        with self.assertRaises(RuntimeError):
+            self.encoder.default(coreapi.Document())
+
+        with self.assertRaises(RuntimeError):
+            self.encoder.default(coreapi.Error())
