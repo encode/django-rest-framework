@@ -147,12 +147,9 @@ May be used to pass a canonical URL for the schema.
 
 #### `urlconf`
 
-String representing import path to the URL conf that you want
+A string representing the import path to the URL conf that you want
 to generate an API schema for. This defaults to the value of Django's
 ROOT_URLCONF setting.
-
-Useful for `Django multihost snippet`
-https://code.djangoproject.com/wiki/MultiHostMiddleware
 
     schema_view = get_schema_view(
         title='Server Monitoring API',
