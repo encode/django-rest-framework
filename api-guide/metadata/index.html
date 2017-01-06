@@ -389,6 +389,16 @@
                     </li>
                   
                 
+                  <li class="main">
+                    <a href="#third-party-packages">Third party packages</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#drf-schema-adapter">DRF-schema-adapter</a>
+                    </li>
+                  
+                
 
                   <div class="promo">
                     <hr/>
@@ -494,6 +504,12 @@ def schema(self, request):
     'DEFAULT_METADATA_CLASS': 'myproject.apps.core.MinimalMetadata'
 }
 </code></pre>
+<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
+<p>The following third party packages provide additional metadata implementations.</p>
+<h2 id="drf-schema-adapter"><a class="toclink" href="#drf-schema-adapter">DRF-schema-adapter</a></h2>
+<p><a href="https://github.com/drf-forms/drf-schema-adapter">drf-schema-adapter</a> is a set of tools that makes it easier to provide schema information to frontend frameworks and libraries. It provides a metadata mixin as well as 2 metadata classes and several adapters suitable to generate <a href="http://json-schema.org/">json-schema</a> as well as schema information readable by various libraries.</p>
+<p>You can also write your own adapter to work with your specific frontend.
+If you whish to do so, it also provides an exporter that can export those schema information to json files.</p>
             
 
           </div> <!--/span-->

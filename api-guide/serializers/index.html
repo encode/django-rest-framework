@@ -449,10 +449,6 @@
                     </li>
                   
                     <li>
-                      <a href="#inheritance-of-the-meta-class">Inheritance of the 'Meta' class</a>
-                    </li>
-                  
-                    <li>
                       <a href="#customizing-field-mappings">Customizing field mappings</a>
                     </li>
                   
@@ -517,6 +513,10 @@
                     </li>
                   
                     <li>
+                      <a href="#serializer-inheritance">Serializer Inheritance</a>
+                    </li>
+                  
+                    <li>
                       <a href="#dynamically-modifying-fields">Dynamically modifying fields</a>
                     </li>
                   
@@ -559,7 +559,23 @@
                     </li>
                   
                     <li>
+                      <a href="#drf-flexfields">DRF FlexFields</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#serializer-extensions">Serializer Extensions</a>
+                    </li>
+                  
+                    <li>
                       <a href="#html-json-forms">HTML JSON Forms</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#drf-base64">DRF-Base64</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#queryfields">QueryFields</a>
                     </li>
                   
                 
@@ -1033,13 +1049,6 @@ AccountSerializer():
 <p>When serializing model instances, there are a number of different ways you might choose to represent relationships.  The default representation for <code>ModelSerializer</code> is to use the primary keys of the related instances.</p>
 <p>Alternative representations include serializing using hyperlinks, serializing complete nested representations, or serializing with a custom representation.</p>
 <p>For full details see the <a href="../relations/">serializer relations</a> documentation.</p>
-<h2 id="inheritance-of-the-meta-class"><a class="toclink" href="#inheritance-of-the-meta-class">Inheritance of the 'Meta' class</a></h2>
-<p>The inner <code>Meta</code> class on serializers is not inherited from parent classes by default. This is the same behavior as with Django's <code>Model</code> and <code>ModelForm</code> classes. If you want the <code>Meta</code> class to inherit from a parent class you must do so explicitly. For example:</p>
-<pre><code>class AccountSerializer(MyBaseSerializer):
-    class Meta(MyBaseSerializer.Meta):
-        model = Account
-</code></pre>
-<p>Typically we would recommend <em>not</em> using inheritance on inner Meta classes, but instead declaring all options explicitly.</p>
 <h2 id="customizing-field-mappings"><a class="toclink" href="#customizing-field-mappings">Customizing field mappings</a></h2>
 <p>The ModelSerializer class also exposes an API that you can override in order to alter how serializer fields are automatically determined when instantiating the serializer.</p>
 <p>Normally if a <code>ModelSerializer</code> does not generate the fields you need by default then you should either add them to the class explicitly, or simply use a regular <code>Serializer</code> class instead. However in some cases you may want to create a new base class that defines how the serializer fields are created for any given model.</p>
@@ -1369,6 +1378,37 @@ def all_high_scores(request):
 <p>Takes the unvalidated incoming data as input and should return the validated data that will be made available as <code>serializer.validated_data</code>. The return value will also be passed to the <code>.create()</code> or <code>.update()</code> methods if <code>.save()</code> is called on the serializer class.</p>
 <p>If any of the validation fails, then the method should raise a <code>serializers.ValidationError(errors)</code>. Typically the <code>errors</code> argument here will be a dictionary mapping field names to error messages.</p>
 <p>The <code>data</code> argument passed to this method will normally be the value of <code>request.data</code>, so the datatype it provides will depend on the parser classes you have configured for your API.</p>
+<h2 id="serializer-inheritance"><a class="toclink" href="#serializer-inheritance">Serializer Inheritance</a></h2>
+<p>Similar to Django forms, you can extend and reuse serializers through inheritance. This allows you to declare a common set of fields or methods on a parent class that can then be used in a number of serializers. For example,</p>
+<pre><code>class MyBaseSerializer(Serializer):
+    my_field = serializers.CharField()
+
+    def validate_my_field(self):
+        ...
+
+class MySerializer(MyBaseSerializer):
+    ...
+</code></pre>
+<p>Like Django's <code>Model</code> and <code>ModelForm</code> classes, the inner <code>Meta</code> class on serializers does not implicitly inherit from it's parents' inner <code>Meta</code> classes. If you want the <code>Meta</code> class to inherit from a parent class you must do so explicitly. For example:</p>
+<pre><code>class AccountSerializer(MyBaseSerializer):
+    class Meta(MyBaseSerializer.Meta):
+        model = Account
+</code></pre>
+<p>Typically we would recommend <em>not</em> using inheritance on inner Meta classes, but instead declaring all options explicitly.</p>
+<p>Additionally, the following caveats apply to serializer inheritance:</p>
+<ul>
+<li>Normal Python name resolution rules apply. If you have multiple base classes that declare a <code>Meta</code> inner class, only the first one will be used. This means the child’s <code>Meta</code>, if it exists, otherwise the <code>Meta</code> of the first parent, etc.</li>
+<li>
+<p>It’s possible to declaratively remove a <code>Field</code> inherited from a parent class by setting the name to be <code>None</code> on the subclass.</p>
+<pre><code>class MyBaseSerializer(ModelSerializer):
+    my_field = serializers.CharField()
+
+class MySerializer(MyBaseSerializer):
+    my_field = None
+</code></pre>
+<p>However, you can only use this technique to opt out from a field defined declaratively by a parent class; it won’t prevent the <code>ModelSerializer</code> from generating a default field. To opt-out from default fields, see <a href="#specifying-which-fields-to-include">Specifying which fields to include</a>.</p>
+</li>
+</ul>
 <h2 id="dynamically-modifying-fields"><a class="toclink" href="#dynamically-modifying-fields">Dynamically modifying fields</a></h2>
 <p>Once a serializer has been initialized, the dictionary of fields that are set on the serializer may be accessed using the <code>.fields</code> attribute.  Accessing and modifying this attribute allows you to dynamically modify the serializer.</p>
 <p>Modifying the <code>fields</code> argument directly allows you to do interesting things such as changing the arguments on serializer fields at runtime, rather than at the point of declaring the serializer.</p>
@@ -1428,8 +1468,19 @@ def all_high_scores(request):
 <p>The <a href="https://github.com/AltSchool/dynamic-rest">dynamic-rest</a> package extends the ModelSerializer and ModelViewSet interfaces, adding API query parameters for filtering, sorting, and including / excluding all fields and relationships defined by your serializers.</p>
 <h2 id="dynamic-fields-mixin"><a class="toclink" href="#dynamic-fields-mixin">Dynamic Fields Mixin</a></h2>
 <p>The <a href="https://github.com/dbrgn/drf-dynamic-fields">drf-dynamic-fields</a> package provides a mixin to dynamically limit the fields per serializer to a subset specified by an URL parameter.</p>
+<h2 id="drf-flexfields"><a class="toclink" href="#drf-flexfields">DRF FlexFields</a></h2>
+<p>The <a href="https://github.com/rsinger86/drf-flex-fields">drf-flex-fields</a> package extends the ModelSerializer and ModelViewSet to provide commonly used functionality for dynamically setting fields and expanding primitive fields to nested models, both from URL parameters and your serializer class definitions.</p>
+<h2 id="serializer-extensions"><a class="toclink" href="#serializer-extensions">Serializer Extensions</a></h2>
+<p>The <a href="https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions">django-rest-framework-serializer-extensions</a>
+package provides a collection of tools to DRY up your serializers, by allowing
+fields to be defined on a per-view/request basis. Fields can be whitelisted,
+blacklisted and child serializers can be optionally expanded.</p>
 <h2 id="html-json-forms"><a class="toclink" href="#html-json-forms">HTML JSON Forms</a></h2>
 <p>The <a href="https://github.com/wq/html-json-forms">html-json-forms</a> package provides an algorithm and serializer for processing <code>&lt;form&gt;</code> submissions per the (inactive) <a href="https://www.w3.org/TR/html-json-forms/">HTML JSON Form specification</a>.  The serializer facilitates processing of arbitrarily nested JSON structures within HTML.  For example, <code>&lt;input name="items[0][id]" value="5"&gt;</code> will be interpreted as <code>{"items": [{"id": "5"}]}</code>.</p>
+<h2 id="drf-base64"><a class="toclink" href="#drf-base64">DRF-Base64</a></h2>
+<p><a href="https://bitbucket.org/levit_scs/drf_base64">DRF-Base64</a> provides a set of field and model serializers that handles the upload of base64-encoded files.</p>
+<h2 id="queryfields"><a class="toclink" href="#queryfields">QueryFields</a></h2>
+<p><a href="http://djangorestframework-queryfields.readthedocs.io/">djangorestframework-queryfields</a> allows API clients to specify which fields will be sent in the response via inclusion or exclusion query paramaters.  </p>
             
 
           </div> <!--/span-->
