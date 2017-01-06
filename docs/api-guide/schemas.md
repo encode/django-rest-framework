@@ -145,6 +145,18 @@ May be used to pass a canonical URL for the schema.
         url='https://www.example.org/api/'
     )
 
+#### `urlconf`
+
+A string representing the import path to the URL conf that you want
+to generate an API schema for. This defaults to the value of Django's
+ROOT_URLCONF setting.
+
+    schema_view = get_schema_view(
+        title='Server Monitoring API',
+        url='https://www.example.org/api/',
+        urlconf='myproject.urls'
+    )
+
 #### `renderer_classes`
 
 May be used to pass the set of renderer classes that can be used to render the API root endpoint.

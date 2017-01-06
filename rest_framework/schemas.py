@@ -571,11 +571,11 @@ class SchemaGenerator(object):
         return named_path_components + [action]
 
 
-def get_schema_view(title=None, url=None, renderer_classes=None):
+def get_schema_view(title=None, url=None, urlconf=None, renderer_classes=None):
     """
     Return a schema view.
     """
-    generator = SchemaGenerator(title=title, url=url)
+    generator = SchemaGenerator(title=title, url=url, urlconf=urlconf)
     if renderer_classes is None:
         if renderers.BrowsableAPIRenderer in api_settings.DEFAULT_RENDERER_CLASSES:
             rclasses = [renderers.CoreJSONRenderer, renderers.BrowsableAPIRenderer]
