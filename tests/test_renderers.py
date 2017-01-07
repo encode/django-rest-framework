@@ -15,7 +15,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import permissions, serializers, status
 from rest_framework.renderers import (
-    BaseRenderer, BrowsableAPIRenderer, HTMLFormRenderer, JSONRenderer
+    BaseRenderer, BrowsableAPIRenderer, HTMLFormRenderer, JSONRenderer,
+    StaticHTMLRenderer
 )
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -580,3 +581,26 @@ class TestMultipleChoiceFieldHTMLFormRenderer(TestCase):
                           result)
         self.assertInHTML('<option value="1">Option1</option>', result)
         self.assertInHTML('<option value="2">Option2</option>', result)
+
+
+class StaticHTMLRendererTests(TestCase):
+    """
+    Tests specific for Static HTML Renderer
+    """
+    def setUp(self):
+        self.renderer = StaticHTMLRenderer()
+
+    def test_static_renderer(self):
+        data = '<html><body>text</body></html>'
+        result = self.renderer.render(data)
+        self.assertEqual(data, result)
+
+    def test_static_renderer_with_exception(self):
+        class MockRequest(object):
+            pass
+        context = {
+            'response': Response(status=500, exception=True),
+            'request': MockRequest()
+        }
+        result = self.renderer.render({}, renderer_context=context)
+        self.assertEqual(result, '500 Internal Server Error')
