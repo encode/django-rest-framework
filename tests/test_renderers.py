@@ -269,6 +269,18 @@ def strip_trailing_whitespace(content):
     return re.sub(' +\n', '\n', content)
 
 
+class BaseRendererTests(TestCase):
+    """
+    Tests BaseRenderer
+    """
+    def test_render_raise_error(self):
+        """
+        BaseRenderer.render should raise NotImplementedError
+        """
+        with self.assertRaises(NotImplementedError):
+            BaseRenderer().render('test')
+
+
 class JSONRendererTests(TestCase):
     """
     Tests specific to the JSON Renderer
