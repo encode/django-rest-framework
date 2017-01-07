@@ -503,7 +503,7 @@ class ManyRelatedField(Field):
             return []
 
         relationship = get_attribute(instance, self.source_attrs)
-        return relationship.all() if (hasattr(relationship, 'all')) else relationship
+        return relationship.all() if hasattr(relationship, 'all') else relationship
 
     def to_representation(self, iterable):
         return [

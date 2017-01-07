@@ -149,7 +149,7 @@ def to_choices_dict(choices):
     # choices = [('Category', ((1, 'First'), (2, 'Second'))), (3, 'Third')]
     ret = OrderedDict()
     for choice in choices:
-        if (not isinstance(choice, (list, tuple))):
+        if not isinstance(choice, (list, tuple)):
             # single choice
             ret[choice] = choice
         else:
