@@ -9,6 +9,7 @@ from types import SimpleNamespace
 from django.conf.urls import include, url
 from django.core.cache import cache
 from django.db import models
+from django.http.request import HttpRequest
 from django.test import TestCase, override_settings
 from django.utils import six
 from django.utils.safestring import SafeText
@@ -16,9 +17,10 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import permissions, serializers, status
 from rest_framework.renderers import (
-    BaseRenderer, BrowsableAPIRenderer, HTMLFormRenderer, JSONRenderer,
-    StaticHTMLRenderer
+    AdminRenderer, BaseRenderer, BrowsableAPIRenderer,
+    HTMLFormRenderer, JSONRenderer, StaticHTMLRenderer
 )
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
@@ -619,3 +621,27 @@ class BrowsableAPIRendererTests(TestCase):
         result = self.renderer.get_filter_form(data='not list',
                                                view=dummy_view, request={})
         self.assertIsNone(result)
+
+
+class AdminRendererTests(TestCase):
+
+    def setUp(self):
+        self.renderer = AdminRenderer()
+
+    def test_render_when_resource_created(self):
+        class DummyView(APIView):
+            renderer_classes = (AdminRenderer, )
+        request = Request(HttpRequest())
+        request.build_absolute_uri = lambda: 'http://example.com'
+        response = Response(status=201, headers={'Location': '/test'})
+        context = {
+            'view': DummyView(),
+            'request': request,
+            'response': response
+        }
+
+        result = self.renderer.render(data={'test': 'test'},
+                                      renderer_context=context)
+        self.assertEqual(result, '')
+        self.assertEqual(response.status_code, status.HTTP_303_SEE_OTHER)
+        self.assertEqual(response['Location'], 'http://example.com')
