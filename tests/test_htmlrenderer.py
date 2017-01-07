@@ -72,20 +72,20 @@ class TemplateHTMLRendererTests(TestCase):
 
     def test_simple_html_view(self):
         response = self.client.get('/')
-        self.assertContains(response, "example: foobar")
-        self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
+        assert "example: foobar" in response
+        assert response['Content-Type'] == 'text/html; charset=utf-8'
 
     def test_not_found_html_view(self):
         response = self.client.get('/not_found')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.content, six.b("404 Not Found"))
-        self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.content == six.b("404 Not Found")
+        assert response['Content-Type'] == 'text/html; charset=utf-8'
 
     def test_permission_denied_html_view(self):
         response = self.client.get('/permission_denied')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.content, six.b("403 Forbidden"))
-        self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.content == six.b("403 Forbidden")
+        assert response['Content-Type'] == 'text/html; charset=utf-8'
 
 
 @override_settings(ROOT_URLCONF='tests.test_htmlrenderer')
@@ -113,14 +113,12 @@ class TemplateHTMLRendererExceptionTests(TestCase):
 
     def test_not_found_html_view_with_template(self):
         response = self.client.get('/not_found')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertTrue(response.content in (
-            six.b("404: Not found"), six.b("404 Not Found")))
-        self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert (six.b("404: Not found"), six.b("404 Not Found")) in response.content
+        assert response['Content-Type'] == 'text/html; charset=utf-8'
 
     def test_permission_denied_html_view_with_template(self):
         response = self.client.get('/permission_denied')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertTrue(response.content in (
-            six.b("403: Permission denied"), six.b("403 Forbidden")))
-        self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert (six.b("403: Permission denied"), six.b("403 Forbidden")) in response.content
+        assert response['Content-Type'] == 'text/html; charset=utf-8'
