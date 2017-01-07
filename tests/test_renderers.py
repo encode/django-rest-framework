@@ -604,3 +604,13 @@ class StaticHTMLRendererTests(TestCase):
         }
         result = self.renderer.render({}, renderer_context=context)
         self.assertEqual(result, '500 Internal Server Error')
+
+
+class BrowsableAPIRendererTests(TestCase):
+
+    def setUp(self):
+        self.renderer = BrowsableAPIRenderer()
+
+    def test_get_description_returns_empty_string_for_401_and_403_statuses(self):
+        self.assertEqual('', self.renderer.get_description({}, status_code=401))
+        self.assertEqual('', self.renderer.get_description({}, status_code=403))
