@@ -6,6 +6,7 @@ import re
 from collections import MutableMapping, OrderedDict
 from types import SimpleNamespace
 
+import pytest
 from django.conf.urls import include, url
 from django.core.cache import cache
 from django.db import models
@@ -281,7 +282,7 @@ class BaseRendererTests(TestCase):
         """
         BaseRenderer.render should raise NotImplementedError
         """
-        with self.assertRaises(NotImplementedError):
+        with pytest.raises(NotImplementedError):
             BaseRenderer().render('test')
 
 
@@ -596,7 +597,7 @@ class StaticHTMLRendererTests(TestCase):
     def test_static_renderer(self):
         data = '<html><body>text</body></html>'
         result = self.renderer.render(data)
-        self.assertEqual(data, result)
+        assert result == data
 
     def test_static_renderer_with_exception(self):
         context = {
@@ -604,7 +605,7 @@ class StaticHTMLRendererTests(TestCase):
             'request': SimpleNamespace()
         }
         result = self.renderer.render({}, renderer_context=context)
-        self.assertEqual(result, '500 Internal Server Error')
+        assert result == '500 Internal Server Error'
 
 
 class BrowsableAPIRendererTests(TestCase):
@@ -613,14 +614,14 @@ class BrowsableAPIRendererTests(TestCase):
         self.renderer = BrowsableAPIRenderer()
 
     def test_get_description_returns_empty_string_for_401_and_403_statuses(self):
-        self.assertEqual('', self.renderer.get_description({}, status_code=401))
-        self.assertEqual('', self.renderer.get_description({}, status_code=403))
+        assert self.renderer.get_description({}, status_code=401) == ''
+        assert self.renderer.get_description({}, status_code=403) == ''
 
     def test_get_filter_form_returns_none_if_data_is_not_list_instance(self):
         dummy_view = SimpleNamespace(get_queryset=None, filter_backends=None)
         result = self.renderer.get_filter_form(data='not list',
                                                view=dummy_view, request={})
-        self.assertIsNone(result)
+        assert result is None
 
 
 class AdminRendererTests(TestCase):
@@ -642,6 +643,6 @@ class AdminRendererTests(TestCase):
 
         result = self.renderer.render(data={'test': 'test'},
                                       renderer_context=context)
-        self.assertEqual(result, '')
-        self.assertEqual(response.status_code, status.HTTP_303_SEE_OTHER)
-        self.assertEqual(response['Location'], 'http://example.com')
+        assert result == ''
+        assert response.status_code == status.HTTP_303_SEE_OTHER
+        assert response['Location'] == 'http://example.com'
