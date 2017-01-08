@@ -2,6 +2,7 @@ from datetime import date, datetime, timedelta, tzinfo
 from decimal import Decimal
 from uuid import uuid4
 
+import pytest
 from django.test import TestCase
 
 from rest_framework.compat import coreapi
@@ -57,7 +58,7 @@ class JSONEncoderTests(TestCase):
 
         current_time = datetime.now().time()
         current_time = current_time.replace(tzinfo=UTC())
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             self.encoder.default(current_time)
 
     def test_encode_date(self):
@@ -85,8 +86,8 @@ class JSONEncoderTests(TestCase):
         """
         Tests encoding a coreapi objects raises proper error
         """
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             self.encoder.default(coreapi.Document())
 
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             self.encoder.default(coreapi.Error())
