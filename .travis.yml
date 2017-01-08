@@ -21,6 +21,7 @@ env:
     - TOX_ENV=py27-djangomaster
     - TOX_ENV=py34-djangomaster
     - TOX_ENV=py35-djangomaster
+    - TOX_ENV=py36-djangomaster
 
 matrix:
     fast_finish: true
@@ -28,10 +29,11 @@ matrix:
       - env: TOX_ENV=py27-djangomaster
       - env: TOX_ENV=py34-djangomaster
       - env: TOX_ENV=py35-djangomaster
+      - env: TOX_ENV=py36-djangomaster
 
 install:
     # Virtualenv < 14 is required to keep the Python 3.2 builds running.
-    - pip install tox "virtualenv<14"
+    - pip install tox virtualenv
 
 script:
     - tox -e $TOX_ENV
