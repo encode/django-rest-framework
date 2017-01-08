@@ -228,7 +228,7 @@ class StaticHTMLRenderer(TemplateHTMLRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         renderer_context = renderer_context or {}
-        response = renderer_context['response']
+        response = renderer_context.get('response')
 
         if response and response.exception:
             request = renderer_context['request']
