@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 import json
 import re
 from collections import MutableMapping, OrderedDict
-from types import SimpleNamespace
 
 import pytest
 from django.conf.urls import include, url
@@ -602,7 +601,7 @@ class StaticHTMLRendererTests(TestCase):
     def test_static_renderer_with_exception(self):
         context = {
             'response': Response(status=500, exception=True),
-            'request': SimpleNamespace()
+            'request': Request(HttpRequest())
         }
         result = self.renderer.render({}, renderer_context=context)
         assert result == '500 Internal Server Error'
@@ -618,9 +617,12 @@ class BrowsableAPIRendererTests(TestCase):
         assert self.renderer.get_description({}, status_code=403) == ''
 
     def test_get_filter_form_returns_none_if_data_is_not_list_instance(self):
-        dummy_view = SimpleNamespace(get_queryset=None, filter_backends=None)
+        class DummyView(object):
+            get_queryset = None
+            filter_backends = None
+
         result = self.renderer.get_filter_form(data='not list',
-                                               view=dummy_view, request={})
+                                               view=DummyView(), request={})
         assert result is None
 
 
