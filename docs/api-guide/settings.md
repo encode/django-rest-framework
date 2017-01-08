@@ -241,7 +241,7 @@ Default:
 If set, this maps the `'pk'` identifier in the URL conf onto the actual field
 name when generating a schema path parameter. Typically this will be `'id'`.
 This gives a more suitable representation as "primary key" is an implementation
-detail, wheras "identifier" is a more general concept.
+detail, whereas "identifier" is a more general concept.
 
 Default: `True`
 

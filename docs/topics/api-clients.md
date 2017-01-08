@@ -217,7 +217,7 @@ credentials, headers and bookmarks:
 
 # Python client library
 
-The `coreapi` Python package allows you to programatically interact with any
+The `coreapi` Python package allows you to programmatically interact with any
 API that exposes a supported schema format.
 
 ## Getting started

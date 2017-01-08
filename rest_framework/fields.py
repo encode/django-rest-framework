@@ -1614,7 +1614,7 @@ class JSONField(Field):
     def get_value(self, dictionary):
         if html.is_html_input(dictionary) and self.field_name in dictionary:
             # When HTML form input is used, mark up the input
-            # as being a JSON string, rather than a JSON primative.
+            # as being a JSON string, rather than a JSON primitive.
             class JSONString(six.text_type):
                 def __new__(self, value):
                     ret = six.text_type.__new__(self, value)
