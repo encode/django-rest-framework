@@ -540,7 +540,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             # If possible, serialize the initial content for the generic form
             default_parser = view.parser_classes[0]
             renderer_class = getattr(default_parser, 'renderer_class', None)
-            if (hasattr(view, 'get_serializer') and renderer_class):
+            if hasattr(view, 'get_serializer') and renderer_class:
                 # View has a serializer defined and parser class has a
                 # corresponding renderer that can be used to render the data.
 
@@ -598,7 +598,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         paginator = getattr(view, 'paginator', None)
         if isinstance(data, list):
             pass
-        elif (paginator is not None and data is not None):
+        elif paginator is not None and data is not None:
             try:
                 paginator.get_results(data)
             except (TypeError, KeyError):
@@ -738,7 +738,7 @@ class AdminRenderer(BrowsableAPIRenderer):
         ret = template_render(template, context, request=renderer_context['request'])
 
         # Creation and deletion should use redirects in the admin style.
-        if (response.status_code == status.HTTP_201_CREATED) and ('Location' in response):
+        if response.status_code == status.HTTP_201_CREATED and 'Location' in response:
             response.status_code = status.HTTP_303_SEE_OTHER
             response['Location'] = request.build_absolute_uri()
             ret = ''
@@ -764,7 +764,7 @@ class AdminRenderer(BrowsableAPIRenderer):
         )
 
         paginator = getattr(context['view'], 'paginator', None)
-        if (paginator is not None and data is not None):
+        if paginator is not None and data is not None:
             try:
                 results = paginator.get_results(data)
             except (TypeError, KeyError):

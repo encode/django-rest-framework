@@ -131,7 +131,7 @@ def _reverse_ordering(ordering_tuple):
     ordering and return a new tuple, eg. `('created', '-uuid')`.
     """
     def invert(x):
-        return x[1:] if (x.startswith('-')) else '-' + x
+        return x[1:] if x.startswith('-') else '-' + x
 
     return tuple([invert(item) for item in ordering_tuple])
 
