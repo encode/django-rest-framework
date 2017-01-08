@@ -1301,7 +1301,7 @@ class ModelSerializer(Serializer):
         ('dict of updated extra kwargs', 'mapping of hidden fields')
         """
         if getattr(self.Meta, 'validators', None) is not None:
-            return (extra_kwargs, {})
+            return extra_kwargs, {}
 
         model = getattr(self.Meta, 'model')
         model_fields = self._get_model_fields(

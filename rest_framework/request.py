@@ -117,7 +117,7 @@ class ForcedAuthentication(object):
         self.force_token = force_token
 
     def authenticate(self, request):
-        return (self.force_user, self.force_token)
+        return self.force_user, self.force_token
 
 
 class Request(object):
@@ -295,7 +295,7 @@ class Request(object):
             # request was made with 'multipart/form-data', then the request stream
             # will already have been exhausted.
             if self._supports_form_parsing():
-                return (self._request.POST, self._request.FILES)
+                return self._request.POST, self._request.FILES
             stream = None
 
         if stream is None or media_type is None:
@@ -304,7 +304,7 @@ class Request(object):
             else:
                 empty_data = {}
             empty_files = MultiValueDict()
-            return (empty_data, empty_files)
+            return empty_data, empty_files
 
         parser = self.negotiator.select_parser(self, self.parsers)
 
@@ -326,10 +326,10 @@ class Request(object):
         # Parser classes may return the raw data, or a
         # DataAndFiles object.  Unpack the result as required.
         try:
-            return (parsed.data, parsed.files)
+            return parsed.data, parsed.files
         except AttributeError:
             empty_files = MultiValueDict()
-            return (parsed, empty_files)
+            return parsed, empty_files
 
     def _authenticate(self):
         """

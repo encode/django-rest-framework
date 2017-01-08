@@ -48,7 +48,7 @@ class AllowedVersionsView(RequestVersionView):
     def determine_version(self, request, *args, **kwargs):
         scheme = self.versioning_class()
         scheme.allowed_versions = ('v1', 'v2')
-        return (scheme.determine_version(request, *args, **kwargs), scheme)
+        return scheme.determine_version(request, *args, **kwargs), scheme
 
 
 class AllowedAndDefaultVersionsView(RequestVersionView):
@@ -56,14 +56,14 @@ class AllowedAndDefaultVersionsView(RequestVersionView):
         scheme = self.versioning_class()
         scheme.allowed_versions = ('v1', 'v2')
         scheme.default_version = 'v2'
-        return (scheme.determine_version(request, *args, **kwargs), scheme)
+        return scheme.determine_version(request, *args, **kwargs), scheme
 
 
 class AllowedWithNoneVersionsView(RequestVersionView):
     def determine_version(self, request, *args, **kwargs):
         scheme = self.versioning_class()
         scheme.allowed_versions = ('v1', 'v2', None)
-        return (scheme.determine_version(request, *args, **kwargs), scheme)
+        return scheme.determine_version(request, *args, **kwargs), scheme
 
 
 class AllowedWithNoneAndDefaultVersionsView(RequestVersionView):
@@ -71,7 +71,7 @@ class AllowedWithNoneAndDefaultVersionsView(RequestVersionView):
         scheme = self.versioning_class()
         scheme.allowed_versions = ('v1', 'v2', None)
         scheme.default_version = 'v2'
-        return (scheme.determine_version(request, *args, **kwargs), scheme)
+        return scheme.determine_version(request, *args, **kwargs), scheme
 
 
 factory = APIRequestFactory()

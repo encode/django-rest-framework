@@ -705,7 +705,7 @@ class TestCursorPagination(CursorPaginationTestsMixin):
         else:
             previous = None
 
-        return (previous, current, next, previous_url, next_url)
+        return previous, current, next, previous_url, next_url
 
 
 class CursorPaginationModel(models.Model):
@@ -763,7 +763,7 @@ class TestCursorPaginationWithValueQueryset(CursorPaginationTestsMixin, TestCase
         else:
             previous = None
 
-        return (previous, current, next, previous_url, next_url)
+        return previous, current, next, previous_url, next_url
 
 
 def test_get_displayed_page_numbers():

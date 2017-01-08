@@ -489,21 +489,21 @@ class Field(object):
           have validation applied as normal.
         """
         if self.read_only:
-            return (True, self.get_default())
+            return True, self.get_default()
 
         if data is empty:
             if getattr(self.root, 'partial', False):
                 raise SkipField()
             if self.required:
                 self.fail('required')
-            return (True, self.get_default())
+            return True, self.get_default()
 
         if data is None:
             if not self.allow_null:
                 self.fail('null')
-            return (True, None)
+            return True, None
 
-        return (False, data)
+        return False, data
 
     def run_validation(self, data=empty):
         """
