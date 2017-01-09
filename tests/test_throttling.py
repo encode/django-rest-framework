@@ -3,15 +3,17 @@ Tests for the throttling implementations in the permissions module.
 """
 from __future__ import unicode_literals
 
+import pytest
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
 
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from rest_framework.throttling import (
-    BaseThrottle, ScopedRateThrottle, UserRateThrottle
+    BaseThrottle, ScopedRateThrottle, SimpleRateThrottle, UserRateThrottle
 )
 from rest_framework.views import APIView
 
@@ -354,3 +356,20 @@ class XffUniqueMachinesTest(XffTestingBase):
         self.view(self.request)
         self.request.META['HTTP_X_FORWARDED_FOR'] = '0.0.0.0, 7.7.7.7, 2.2.2.2'
         assert self.view(self.request).status_code == 200
+
+
+class SimpleRateThrottleTests(TestCase):
+
+    def test_throttle_raises_error_if_scope_is_missing(self):
+        with pytest.raises(ImproperlyConfigured):
+            SimpleRateThrottle()
+
+    def test_throttle_raises_error_if_rate_is_missing(self):
+        SimpleRateThrottle.scope = 'test'
+        with pytest.raises(ImproperlyConfigured):
+            SimpleRateThrottle()
+
+    def test_parse_rate_returns_tuple_with_none_if_rate_not_provided(self):
+        SimpleRateThrottle.scope = 'anon'
+        rate = SimpleRateThrottle().parse_rate(None)
+        assert rate == (None, None)
