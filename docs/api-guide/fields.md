@@ -299,7 +299,7 @@ Corresponds to `django.db.models.fields.DateTimeField`.
 
 #### `DateTimeField` format strings.
 
-Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style datetimes should be used. (eg `'2013-01-29T12:34:56.000000Z'`)
+Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special strings `'iso-8601'`, which indicates that [ISO 8601][iso8601] style datetimes should be used (eg `'2013-01-29T12:34:56.000000Z'`), and `'iso-8601-strict'`, which indicates that [ISO 8601][iso8601] style datetimes without fraction seconds should be used (eg `'2013-01-29T12:34:56Z'`)
 
 When a value of `None` is used for the format `datetime` objects will be returned by `to_representation` and the final output representation will determined by the renderer class.
 
@@ -345,7 +345,7 @@ Corresponds to `django.db.models.fields.TimeField`
 
 #### `TimeField` format strings
 
-Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style times should be used. (eg `'12:34:56.000000'`)
+Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special strings `'iso-8601'`, which indicates that [ISO 8601][iso8601] style times should be used (eg `'12:34:56.000000'`), and `'iso-8601-strict'`, which indicates that [ISO 8601][iso8601] style times without fractional seconds should be used (eg `'12:34:56'`).
 
 ## DurationField
 

@@ -1130,10 +1130,15 @@ class TestDateTimeField(FieldValues):
     """
     valid_inputs = {
         '2001-01-01 13:00': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        '2001-01-01 13:00:00.123456': datetime.datetime(2001, 1, 1, 13, 00, 00, 123456, tzinfo=timezone.UTC()),
         '2001-01-01T13:00': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        '2001-01-01T13:00:00.123456': datetime.datetime(2001, 1, 1, 13, 00, 00, 123456, tzinfo=timezone.UTC()),
         '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        '2001-01-01T13:00:00.123456Z': datetime.datetime(2001, 1, 1, 13, 00, 00, 123456, tzinfo=timezone.UTC()),
         datetime.datetime(2001, 1, 1, 13, 00): datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        datetime.datetime(2001, 1, 1, 13, 00, 00, 123456): datetime.datetime(2001, 1, 1, 13, 00, 00, 123456, tzinfo=timezone.UTC()),
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        datetime.datetime(2001, 1, 1, 13, 00, 00, 123456, tzinfo=timezone.UTC()): datetime.datetime(2001, 1, 1, 13, 00, 00, 123456, tzinfo=timezone.UTC()),
         # Django 1.4 does not support timezone string parsing.
         '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC())
     }
@@ -1144,13 +1149,50 @@ class TestDateTimeField(FieldValues):
     }
     outputs = {
         datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00',
+        datetime.datetime(2001, 1, 1, 13, 00, 00, 123456): '2001-01-01T13:00:00.123456',
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): '2001-01-01T13:00:00Z',
+        datetime.datetime(2001, 1, 1, 13, 00, 00, 123456, tzinfo=timezone.UTC()): '2001-01-01T13:00:00.123456Z',
         '2001-01-01T00:00:00': '2001-01-01T00:00:00',
         six.text_type('2016-01-10T00:00:00'): '2016-01-10T00:00:00',
         None: None,
         '': None,
     }
     field = serializers.DateTimeField(default_timezone=timezone.UTC())
+
+
+class TestIso8601StrictDateTimeField(FieldValues):
+    valid_inputs = {
+        '2001-01-01 13:00': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        '2001-01-01 13:00:00.123456': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        '2001-01-01T13:00': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        '2001-01-01T13:00:00.123456': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        '2001-01-01T13:00:00.123456Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        datetime.datetime(2001, 1, 1, 13, 00): datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        datetime.datetime(2001, 1, 1, 13, 00, 00, 123456): datetime.datetime(2001, 1, 1, 13, 00, 00, 123456, tzinfo=timezone.UTC()),
+        datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()),
+        datetime.datetime(2001, 1, 1, 13, 00, 00, 123456, tzinfo=timezone.UTC()): datetime.datetime(2001, 1, 1, 13, 00, 00, 123456, tzinfo=timezone.UTC()),
+        # Django 1.4 does not support timezone string parsing.
+        '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC())
+    }
+    invalid_inputs = {
+        'abc': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss][+HH:MM|-HH:MM|Z].'],
+        '2001-99-99T99:00': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss][+HH:MM|-HH:MM|Z].'],
+        datetime.date(2001, 1, 1): ['Expected a datetime but got a date.'],
+    }
+    outputs = {
+        datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00',
+        datetime.datetime(2001, 1, 1, 13, 00, 00, 123456): '2001-01-01T13:00:00',
+        datetime.datetime(2001, 1, 1, 13, 00, tzinfo=timezone.UTC()): '2001-01-01T13:00:00+00:00',
+        datetime.datetime(2001, 1, 1, 13, 00, 00, 123456, tzinfo=timezone.UTC()): '2001-01-01T13:00:00+00:00',
+        '2001-01-01T00:00:00': '2001-01-01T00:00:00',
+        six.text_type('2016-01-10T00:00:00'): '2016-01-10T00:00:00',
+        None: None,
+        '': None,
+    }
+
+    field = serializers.DateTimeField(format=rest_framework.ISO_8601_STRICT, input_formats=[rest_framework.ISO_8601_STRICT],
+                                      default_timezone=timezone.UTC())
 
 
 class TestCustomInputFormatDateTimeField(FieldValues):
@@ -1210,7 +1252,9 @@ class TestTimeField(FieldValues):
     """
     valid_inputs = {
         '13:00': datetime.time(13, 00),
+        '13:00:00.123456': datetime.time(13, 00, 00, 123456),
         datetime.time(13, 00): datetime.time(13, 00),
+        datetime.time(13, 00, 00, 123456): datetime.time(13, 00, 00, 123456),
     }
     invalid_inputs = {
         'abc': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss[.uuuuuu]].'],
@@ -1218,12 +1262,42 @@ class TestTimeField(FieldValues):
     }
     outputs = {
         datetime.time(13, 0): '13:00:00',
+        datetime.time(13, 0, 0, 123456): '13:00:00.123456',
         datetime.time(0, 0): '00:00:00',
+        datetime.time(0, 0, 0, 0): '00:00:00',
         '00:00:00': '00:00:00',
+        '00:00:00.000000': '00:00:00.000000',
         None: None,
         '': None,
     }
     field = serializers.TimeField()
+
+
+class TestIso8601StrictTimeField(FieldValues):
+    """
+    Valid and invalid values for `TimeField`.
+    """
+    valid_inputs = {
+        '13:00': datetime.time(13, 00),
+        '13:00:00.123456': datetime.time(13, 00),
+        datetime.time(13, 00): datetime.time(13, 00),
+        datetime.time(13, 00, 00, 123456): datetime.time(13, 00, 00, 123456),
+    }
+    invalid_inputs = {
+        'abc': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss].'],
+        '99:99': ['Time has wrong format. Use one of these formats instead: hh:mm[:ss].'],
+    }
+    outputs = {
+        datetime.time(13, 0): '13:00:00',
+        datetime.time(13, 0, 0, 123456): '13:00:00',
+        datetime.time(0, 0): '00:00:00',
+        datetime.time(0, 0, 0, 0): '00:00:00',
+        '00:00:00': '00:00:00',
+        '00:00:00.000000': '00:00:00.000000',
+        None: None,
+        '': None,
+    }
+    field = serializers.TimeField(format=rest_framework.ISO_8601_STRICT, input_formats=[rest_framework.ISO_8601_STRICT])
 
 
 class TestCustomInputFormatTimeField(FieldValues):
