@@ -358,18 +358,42 @@ class XffUniqueMachinesTest(XffTestingBase):
         assert self.view(self.request).status_code == 200
 
 
+class BaseThrottleTests(TestCase):
+
+    def test_allow_request_raises_not_implemented_error(self):
+        with pytest.raises(NotImplementedError):
+            BaseThrottle().allow_request(request={}, view={})
+
+
 class SimpleRateThrottleTests(TestCase):
 
-    def test_throttle_raises_error_if_scope_is_missing(self):
+    def setUp(self):
+        SimpleRateThrottle.scope = 'anon'
+
+    def test_get_rate_raises_error_if_scope_is_missing(self):
+        throttle = SimpleRateThrottle()
         with pytest.raises(ImproperlyConfigured):
-            SimpleRateThrottle()
+            throttle.scope = None
+            throttle.get_rate()
 
     def test_throttle_raises_error_if_rate_is_missing(self):
-        SimpleRateThrottle.scope = 'test'
+        SimpleRateThrottle.scope = 'invalid scope'
         with pytest.raises(ImproperlyConfigured):
             SimpleRateThrottle()
 
     def test_parse_rate_returns_tuple_with_none_if_rate_not_provided(self):
-        SimpleRateThrottle.scope = 'anon'
         rate = SimpleRateThrottle().parse_rate(None)
         assert rate == (None, None)
+
+    def test_allow_request_returns_true_if_rate_is_none(self):
+        assert SimpleRateThrottle().allow_request(request={}, view={}) is True
+
+    def test_get_cache_key_raises_not_implemented_error(self):
+        with pytest.raises(NotImplementedError):
+            SimpleRateThrottle().get_cache_key({}, {})
+
+    def test_allow_request_returns_true_if_key_is_none(self):
+        throttle = SimpleRateThrottle()
+        throttle.rate = 'some rate'
+        throttle.get_cache_key = lambda *args: None
+        assert throttle.allow_request(request={}, view={}) is True
