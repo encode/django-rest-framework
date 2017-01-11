@@ -397,3 +397,20 @@ class SimpleRateThrottleTests(TestCase):
         throttle.rate = 'some rate'
         throttle.get_cache_key = lambda *args: None
         assert throttle.allow_request(request={}, view={}) is True
+
+    def test_wait_returns_correct_waiting_time_without_history(self):
+        throttle = SimpleRateThrottle()
+        throttle.num_requests = 1
+        throttle.duration = 60
+        throttle.history = []
+        waiting_time = throttle.wait()
+        assert isinstance(waiting_time, float)
+        assert waiting_time == 30.0
+
+    def test_wait_returns_none_if_there_are_no_available_requests(self):
+        throttle = SimpleRateThrottle()
+        throttle.num_requests = 1
+        throttle.duration = 60
+        throttle.now = throttle.timer()
+        throttle.history = [throttle.timer() for _ in range(3)]
+        assert throttle.wait() is None
