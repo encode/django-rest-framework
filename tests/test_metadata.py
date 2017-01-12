@@ -268,7 +268,7 @@ class TestSimpleMetadataFieldInfo(TestCase):
     def test_null_boolean_field_info_type(self):
         options = metadata.SimpleMetadata()
         field_info = options.get_field_info(serializers.NullBooleanField())
-        self.assertEqual(field_info['type'], 'boolean')
+        assert field_info['type'] == 'boolean'
 
     def test_related_field_choices(self):
         options = metadata.SimpleMetadata()
@@ -277,7 +277,7 @@ class TestSimpleMetadataFieldInfo(TestCase):
             field_info = options.get_field_info(
                 serializers.RelatedField(queryset=BasicModel.objects.all())
             )
-        self.assertNotIn('choices', field_info)
+        assert 'choices' not in field_info
 
 
 class TestModelSerializerMetadata(TestCase):
