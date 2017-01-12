@@ -38,18 +38,18 @@ class ReverseTests(TestCase):
     def test_reversed_urls_are_fully_qualified(self):
         request = factory.get('/view')
         url = reverse('view', request=request)
-        self.assertEqual(url, 'http://testserver/view')
+        assert url == 'http://testserver/view'
 
     def test_reverse_with_versioning_scheme(self):
         request = factory.get('/view')
         request.versioning_scheme = MockVersioningScheme()
 
         url = reverse('view', request=request)
-        self.assertEqual(url, 'http://scheme-reversed/view')
+        assert url == 'http://scheme-reversed/view'
 
     def test_reverse_with_versioning_scheme_fallback_to_default_on_error(self):
         request = factory.get('/view')
         request.versioning_scheme = MockVersioningScheme(raise_error=True)
 
         url = reverse('view', request=request)
-        self.assertEqual(url, 'http://testserver/view')
+        assert url == 'http://testserver/view'
