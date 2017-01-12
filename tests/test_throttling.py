@@ -424,9 +424,6 @@ class AnonRateThrottleTests(TestCase):
     def setUp(self):
         self.throttle = AnonRateThrottle()
 
-    def tearDown(self):
-        User.objects.all().delete()
-
     def test_authenticated_user_not_affected(self):
         request = Request(HttpRequest())
         user = User.objects.create(username='test')
@@ -445,13 +442,11 @@ class UserRateThrottleTests(TestCase):
     def setUp(self):
         self.throttle = UserRateThrottle()
 
-    def tearDown(self):
-        User.objects.all().delete()
-
     def test_get_cache_key_returns_correct_key_if_user_is_authenticated(self):
         request = Request(HttpRequest())
         user = User.objects.create(username='test')
         force_authenticate(request, user)
         request.user = user
+
         cache_key = self.throttle.get_cache_key(request, view={})
-        assert cache_key == 'throttle_user_2'  # user_1 is AnonymousUser
+        assert cache_key == 'throttle_user_%s' % user.pk
