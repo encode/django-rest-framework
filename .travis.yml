@@ -1,7 +1,7 @@
 language: python
 
 python:
-    - "3.5"
+    - "3.6"
 
 sudo: false
 
@@ -32,7 +32,6 @@ matrix:
       - env: TOX_ENV=py36-djangomaster
 
 install:
-    # Virtualenv < 14 is required to keep the Python 3.2 builds running.
     - pip install tox virtualenv
 
 script:
