@@ -7,13 +7,16 @@ import pytest
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
+from django.http import HttpRequest
 from django.test import TestCase
 
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.test import APIRequestFactory
+from rest_framework.test import APIRequestFactory, force_authenticate
 from rest_framework.throttling import (
-    BaseThrottle, ScopedRateThrottle, SimpleRateThrottle, UserRateThrottle
+    AnonRateThrottle, BaseThrottle, ScopedRateThrottle, SimpleRateThrottle,
+    UserRateThrottle
 )
 from rest_framework.views import APIView
 
@@ -414,3 +417,36 @@ class SimpleRateThrottleTests(TestCase):
         throttle.now = throttle.timer()
         throttle.history = [throttle.timer() for _ in range(3)]
         assert throttle.wait() is None
+
+
+class AnonRateThrottleTests(TestCase):
+
+    def setUp(self):
+        self.throttle = AnonRateThrottle()
+
+    def test_authenticated_user_not_affected(self):
+        request = Request(HttpRequest())
+        user = User.objects.create(username='test')
+        force_authenticate(request, user)
+        request.user = user
+        assert self.throttle.get_cache_key(request, view={}) is None
+
+    def test_get_cache_key_returns_correct_value(self):
+        request = Request(HttpRequest())
+        cache_key = self.throttle.get_cache_key(request, view={})
+        assert cache_key == 'throttle_anon_None'
+
+
+class UserRateThrottleTests(TestCase):
+
+    def setUp(self):
+        self.throttle = UserRateThrottle()
+
+    def test_get_cache_key_returns_correct_key_if_user_is_authenticated(self):
+        request = Request(HttpRequest())
+        user = User.objects.create(username='test')
+        force_authenticate(request, user)
+        request.user = user
+
+        cache_key = self.throttle.get_cache_key(request, view={})
+        assert cache_key == 'throttle_user_%s' % user.pk
