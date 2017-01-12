@@ -170,9 +170,9 @@ class TestUserSetter(TestCase):
 
     def test_user_can_logout(self):
         self.request.user = self.user
-        assert is_anonymous(self.request.user) is False
+        self.assertFalse(is_anonymous(self.request.user))
         logout(self.request)
-        assert is_anonymous(self.request.user) is True
+        self.assertTrue(is_anonymous(self.request.user))
 
     def test_logged_in_user_is_set_on_wrapped_request(self):
         login(self.request, self.user)
