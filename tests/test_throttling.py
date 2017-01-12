@@ -194,6 +194,8 @@ class ScopedRateThrottleTests(TestCase):
     """
 
     def setUp(self):
+        self.throttle = ScopedRateThrottle()
+
         class XYScopedRateThrottle(ScopedRateThrottle):
             TIMER_SECONDS = 0
             THROTTLE_RATES = {'x': '3/min', 'y': '1/min'}
@@ -292,6 +294,18 @@ class ScopedRateThrottleTests(TestCase):
             self.increment_timer()
             response = self.unscoped_view(request)
             assert response.status_code == 200
+
+    def test_get_cache_key_returns_correct_key_if_user_is_authenticated(self):
+        class DummyView(object):
+            throttle_scope = 'user'
+
+        request = Request(HttpRequest())
+        user = User.objects.create(username='test')
+        force_authenticate(request, user)
+        request.user = user
+        self.throttle.allow_request(request, DummyView())
+        cache_key = self.throttle.get_cache_key(request, view=DummyView())
+        assert cache_key == 'throttle_user_%s' % user.pk
 
 
 class XffTestingBase(TestCase):
@@ -435,18 +449,3 @@ class AnonRateThrottleTests(TestCase):
         request = Request(HttpRequest())
         cache_key = self.throttle.get_cache_key(request, view={})
         assert cache_key == 'throttle_anon_None'
-
-
-class UserRateThrottleTests(TestCase):
-
-    def setUp(self):
-        self.throttle = UserRateThrottle()
-
-    def test_get_cache_key_returns_correct_key_if_user_is_authenticated(self):
-        request = Request(HttpRequest())
-        user = User.objects.create(username='test')
-        force_authenticate(request, user)
-        request.user = user
-
-        cache_key = self.throttle.get_cache_key(request, view={})
-        assert cache_key == 'throttle_user_%s' % user.pk
