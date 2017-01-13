@@ -5,7 +5,8 @@ from django.test import TestCase
 
 from rest_framework.relations import Hyperlink
 from rest_framework.templatetags.rest_framework import (
-    add_nested_class, add_query_param, format_value, urlize_quoted_links
+    add_nested_class, add_query_param, as_string, break_long_headers,
+    format_value, get_pagination_html, urlize_quoted_links
 )
 from rest_framework.test import APIRequestFactory
 
@@ -213,6 +214,27 @@ class TemplateTagTests(TestCase):
 
         for case in negative_cases:
             self.assertEqual(add_nested_class(case), '')
+
+    def test_as_string_with_none(self):
+        result = as_string(None)
+        assert result == ''
+
+    def test_get_pagination_html(self):
+        class MockPager(object):
+            def __init__(self):
+                self.called = False
+
+            def to_html(self):
+                self.called = True
+
+        pager = MockPager()
+        get_pagination_html(pager)
+        assert pager.called is True
+
+    def test_break_long_lines(self):
+        header = 'long test header,' * 20
+        expected_header = '<br> ' + ', <br>'.join(header.split(','))
+        assert break_long_headers(header) == expected_header
 
 
 class Issue1386Tests(TestCase):
