@@ -27,5 +27,3 @@ class AuthTokenTests(TestCase):
     def test_validate_raise_error_if_no_credentials_provided(self):
         with pytest.raises(ValidationError):
             AuthTokenSerializer().validate({})
-
-
