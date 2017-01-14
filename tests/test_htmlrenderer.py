@@ -110,14 +110,14 @@ class TemplateHTMLRendererTests(TestCase):
 
         class MockView(object):
             def get_template_names(self):
-                return 'template from get_template_names method'
+                return ['template from get_template_names method']
 
         class MockView2(object):
             template_name = 'template from template_name attribute'
 
         template_name = renderer.get_template_names(self.mock_response,
                                                     MockView())
-        assert template_name == 'template from get_template_names method'
+        assert template_name == ['template from get_template_names method']
 
         template_name = renderer.get_template_names(self.mock_response,
                                                     MockView2())
