@@ -102,7 +102,7 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 
 ### Silver sponsors
 
-The serious financial contribution that our silver sponsors have made is very much appreciated. I'd like to say a particular thank&nbsp;you to individuals who have choosen to privately support the project at this level.
+The serious financial contribution that our silver sponsors have made is very much appreciated. I'd like to say a particular thank&nbsp;you to individuals who have chosen to privately support the project at this level.
 
 <ul class="sponsor silver">
 <li><a href="http://www.imtapps.com/" rel="nofollow" style="background-image:url(../../img/sponsors/3-imt_computer_services.png);">IMT Computer Services</a></li>

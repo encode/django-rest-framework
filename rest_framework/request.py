@@ -152,7 +152,7 @@ class Request(object):
 
         force_user = getattr(request, '_force_auth_user', None)
         force_token = getattr(request, '_force_auth_token', None)
-        if (force_user is not None or force_token is not None):
+        if force_user is not None or force_token is not None:
             forced_auth = ForcedAuthentication(force_user, force_token)
             self.authenticators = (forced_auth,)
 

@@ -149,7 +149,7 @@ def to_choices_dict(choices):
     # choices = [('Category', ((1, 'First'), (2, 'Second'))), (3, 'Third')]
     ret = OrderedDict()
     for choice in choices:
-        if (not isinstance(choice, (list, tuple))):
+        if not isinstance(choice, (list, tuple)):
             # single choice
             ret[choice] = choice
         else:
@@ -1614,7 +1614,7 @@ class JSONField(Field):
     def get_value(self, dictionary):
         if html.is_html_input(dictionary) and self.field_name in dictionary:
             # When HTML form input is used, mark up the input
-            # as being a JSON string, rather than a JSON primative.
+            # as being a JSON string, rather than a JSON primitive.
             class JSONString(six.text_type):
                 def __new__(self, value):
                     ret = six.text_type.__new__(self, value)
