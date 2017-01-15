@@ -50,7 +50,6 @@ def order_by_precedence(media_type_lst):
 class _MediaType(object):
     def __init__(self, media_type_str):
         self.orig = '' if (media_type_str is None) else media_type_str
-        # import pdb; pdb.set_trace()
         self.full_type, self.params = parse_header(self.orig.encode(HTTP_HEADER_ENCODING))
         self.main_type, sep, self.sub_type = self.full_type.partition('/')
 
@@ -84,5 +83,5 @@ class _MediaType(object):
     def __str__(self):
         ret = "%s/%s" % (self.main_type, self.sub_type)
         for key, val in self.params.items():
-            ret += "; %s=%s" % (key, val.decode(HTTP_HEADER_ENCODING))
+            ret += "; %s=%s" % (key, val)
         return ret
