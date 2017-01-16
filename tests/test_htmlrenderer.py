@@ -54,8 +54,8 @@ class TemplateHTMLRendererTests(TestCase):
 
     def _monkey_patch_get_template(self):
         """
-            Monkeypatch get_template
-            """
+        Monkeypatch get_template
+        """
         self.get_template = django.template.loader.get_template
 
         def get_template(template_name, dirs=None):
