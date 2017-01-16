@@ -1,5 +1,3 @@
-from unittest import TestCase
-
 from rest_framework import serializers
 
 
