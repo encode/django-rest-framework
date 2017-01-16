@@ -73,4 +73,8 @@ class TestAcceptedMediaType(TestCase):
 
     def test_mediatype_string_representation(self):
         mediatype = _MediaType('test/*; foo=bar')
-        assert str(mediatype) == "test/*; foo=b'bar'"
+        params_str = ''
+        for key, val in mediatype.params.items():
+            params_str += '; %s=%s' % (key, val)
+        expected = 'test/*' + params_str
+        assert str(mediatype) == expected
