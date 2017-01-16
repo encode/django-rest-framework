@@ -1,46 +1,47 @@
 language: python
 
 python:
+    - "2.7"
+    - "3.3"
+    - "3.4"
     - "3.5"
 
 sudo: false
 
 env:
-    - TOX_ENV=py27-lint
-    - TOX_ENV=py27-docs
-    - TOX_ENV=py35-django19
-    - TOX_ENV=py34-django19
-    - TOX_ENV=py27-django19
-    - TOX_ENV=py35-django18
-    - TOX_ENV=py34-django18
-    - TOX_ENV=py33-django18
-    - TOX_ENV=py27-django18
-    - TOX_ENV=py27-django110
-    - TOX_ENV=py35-django110
-    - TOX_ENV=py34-django110
-    - TOX_ENV=py27-djangomaster
-    - TOX_ENV=py34-djangomaster
-    - TOX_ENV=py35-djangomaster
-    - TOX_ENV=py36-djangomaster
+    - DJANGO=1.8
+    - DJANGO=1.9
+    - DJANGO=1.10
+    - DJANGO=master
 
 matrix:
     fast_finish: true
+    include:
+      - python: "3.6"
+        env: DJANGO=master
+      - python: "2.7"
+        env: TOXENV="lint"
+      - python: "2.7"
+        env: TOXENV="docs"
+    exclude:
+      - python: "3.3"
+        env: DJANGO=1.9
+      - python: "3.3"
+        env: DJANGO=1.10
+      - python: "3.3"
+        env: DJANGO=master
     allow_failures:
-      - env: TOX_ENV=py27-djangomaster
-      - env: TOX_ENV=py34-djangomaster
-      - env: TOX_ENV=py35-djangomaster
-      - env: TOX_ENV=py36-djangomaster
+      - env: DJANGO=master
 
 install:
-    # Virtualenv < 14 is required to keep the Python 3.2 builds running.
-    - pip install tox virtualenv
+    - pip install tox tox-travis
 
 script:
-    - tox -e $TOX_ENV
+    - tox
 
 after_success:
     - pip install codecov
-    - codecov -e TOX_ENV
+    - codecov -e TOXENV,DJANGO
 
 notifications:
     email: false
