@@ -1,10 +1,10 @@
 import datetime
 
-from django.db import models
+from django.db import DataError, models
 from django.test import TestCase
 
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
+from rest_framework.validators import UniqueValidator, qs_exists
 
 
 def dedent(blocktext):
@@ -429,3 +429,24 @@ class TestHiddenFieldUniquenessForDateValidation(TestCase):
                     validators = [<UniqueForDateValidator(queryset=HiddenFieldUniqueForDateModel.objects.all(), field='slug', date_field='published')>]
         """)
         assert repr(serializer) == expected
+
+
+class ValidatorsTests(TestCase):
+
+    def test_qs_exists_handles_type_error(self):
+        class TypeErrorQueryset(object):
+            def exists(self):
+                raise TypeError
+        assert qs_exists(TypeErrorQueryset()) is False
+
+    def test_qs_exists_handles_value_error(self):
+        class ValueErrorQueryset(object):
+            def exists(self):
+                raise ValueError
+        assert qs_exists(ValueErrorQueryset()) is False
+
+    def test_qs_exists_handles_data_error(self):
+        class DataErrorQueryset(object):
+            def exists(self):
+                raise DataError
+        assert qs_exists(DataErrorQueryset()) is False
