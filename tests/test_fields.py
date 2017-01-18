@@ -8,7 +8,7 @@ from decimal import Decimal
 import pytest
 from django.http import QueryDict
 from django.test import TestCase, override_settings
-from django.utils import six,
+from django.utils import six
 
 import rest_framework
 from rest_framework import serializers
