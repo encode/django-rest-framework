@@ -2,7 +2,6 @@ language: python
 
 python:
     - "2.7"
-    - "3.3"
     - "3.4"
     - "3.5"
 
@@ -22,20 +21,14 @@ matrix:
         env: DJANGO=master
       - python: "3.6"
         env: DJANGO=1.11
+      - python: "3.3"
+        env: DJANGO=1.18
       - python: "2.7"
         env: TOXENV="lint"
       - python: "2.7"
         env: TOXENV="docs"
     exclude:
-      - python: "3.3"
-        env: DJANGO=1.9
-      - python: "3.3"
-        env: DJANGO=1.10
-      - python: "3.3"
-        env: DJANGO=1.11
       - python: "2.7"
-        env: DJANGO=master
-      - python: "3.3"
         env: DJANGO=master
       - python: "3.4"
         env: DJANGO=master
