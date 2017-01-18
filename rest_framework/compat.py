@@ -316,8 +316,8 @@ def set_many(instance, field, value):
 
 try:
     # A `utc` instance is available in Django 1.11+
-    from django.timezone import utc
+    from django.utils.timezone import utc
 except ImportError:
     # A `UTC` class is available in older versions
-    from django.timezone import UTC
+    from django.utils.timezone import UTC
     utc = UTC()
