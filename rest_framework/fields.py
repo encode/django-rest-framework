@@ -32,7 +32,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    get_remote_field, unicode_repr, unicode_to_repr, value_from_object, utc
+    get_remote_field, unicode_repr, unicode_to_repr, utc, value_from_object
 )
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings

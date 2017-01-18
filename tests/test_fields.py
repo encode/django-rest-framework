@@ -12,8 +12,8 @@ from django.utils import six
 
 import rest_framework
 from rest_framework import serializers
-from rest_framework.fields import is_simple_callable
 from rest_framework.compat import utc
+from rest_framework.fields import is_simple_callable
 
 try:
     import typings
