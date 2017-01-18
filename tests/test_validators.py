@@ -1,10 +1,15 @@
 import datetime
 
+import pytest
 from django.db import DataError, models
 from django.test import TestCase
 
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator, qs_exists
+from rest_framework.exceptions import ValidationError
+from rest_framework.validators import (
+    BaseUniqueForValidator, UniqueTogetherValidator, UniqueValidator,
+    qs_exists
+)
 
 
 def dedent(blocktext):
@@ -319,6 +324,23 @@ class TestUniquenessTogetherValidation(TestCase):
         serializer = NullUniquenessTogetherSerializer(data=data)
         assert not serializer.is_valid()
 
+    def test_filter_queryset_do_not_skip_existing_attribute(self):
+        """
+        filter_queryset should add value from existing instance attribute
+        if it is not provided in attributes dict
+        """
+        class MockQueryset(object):
+            def filter(self, **kwargs):
+                self.called_with = kwargs
+
+        data = {'race_name': 'bar'}
+        queryset = MockQueryset()
+        validator = UniqueTogetherValidator(queryset, fields=('race_name',
+                                                              'position'))
+        validator.instance = self.instance
+        validator.filter_queryset(attrs=data, queryset=queryset)
+        assert queryset.called_with == {'race_name': 'bar', 'position': 1}
+
 
 # Tests for `UniqueForDateValidator`
 # ----------------------------------
@@ -389,6 +411,84 @@ class TestUniquenessForDateValidation(TestCase):
             'published': datetime.date(2000, 1, 1)
         }
 
+# Tests for `UniqueForMonthValidator`
+# ----------------------------------
+
+
+class UniqueForMonthModel(models.Model):
+    slug = models.CharField(max_length=100, unique_for_month='published')
+    published = models.DateField()
+
+
+class UniqueForMonthSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UniqueForMonthModel
+        fields = '__all__'
+
+
+class UniqueForMonthTests(TestCase):
+
+    def setUp(self):
+        self.instance = UniqueForMonthModel.objects.create(
+            slug='existing', published='2017-01-01'
+        )
+
+    def test_not_unique_for_month(self):
+        data = {'slug': 'existing', 'published': '2017-01-01'}
+        serializer = UniqueForMonthSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'slug': ['This field must be unique for the "published" month.']
+        }
+
+    def test_unique_for_month(self):
+        data = {'slug': 'existing', 'published': '2017-02-01'}
+        serializer = UniqueForMonthSerializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'slug': 'existing',
+            'published': datetime.date(2017, 2, 1)
+        }
+
+# Tests for `UniqueForYearValidator`
+# ----------------------------------
+
+
+class UniqueForYearModel(models.Model):
+    slug = models.CharField(max_length=100, unique_for_year='published')
+    published = models.DateField()
+
+
+class UniqueForYearSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UniqueForYearModel
+        fields = '__all__'
+
+
+class UniqueForYearTests(TestCase):
+
+    def setUp(self):
+        self.instance = UniqueForYearModel.objects.create(
+            slug='existing', published='2017-01-01'
+        )
+
+    def test_not_unique_for_year(self):
+        data = {'slug': 'existing', 'published': '2017-01-01'}
+        serializer = UniqueForYearSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'slug': ['This field must be unique for the "published" year.']
+        }
+
+    def test_unique_for_year(self):
+        data = {'slug': 'existing', 'published': '2018-01-01'}
+        serializer = UniqueForYearSerializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'slug': 'existing',
+            'published': datetime.date(2018, 1, 1)
+        }
+
 
 class HiddenFieldUniqueForDateModel(models.Model):
     slug = models.CharField(max_length=100, unique_for_date='published')
@@ -450,3 +550,16 @@ class ValidatorsTests(TestCase):
             def exists(self):
                 raise DataError
         assert qs_exists(DataErrorQueryset()) is False
+
+    def test_validator_raises_error_if_not_all_fields_are_provided(self):
+        validator = BaseUniqueForValidator(queryset=object(), field='foo',
+                                           date_field='bar')
+        attrs = {'foo': 'baz'}
+        with pytest.raises(ValidationError):
+            validator.enforce_required_fields(attrs)
+
+    def test_validator_raises_error_when_abstract_method_called(self):
+        validator = BaseUniqueForValidator(queryset=object(), field='foo',
+                                           date_field='bar')
+        with pytest.raises(NotImplementedError):
+            validator.filter_queryset(attrs=None, queryset=None)
