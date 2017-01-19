@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import pytest
+from django.http import Http404
 from django.test import TestCase
 
 from rest_framework.negotiation import DefaultContentNegotiation
@@ -78,3 +80,10 @@ class TestAcceptedMediaType(TestCase):
             params_str += '; %s=%s' % (key, val)
         expected = 'test/*' + params_str
         assert str(mediatype) == expected
+
+    def test_raise_error_if_no_suitable_renderers_found(self):
+        class MockRenderer(object):
+            format = 'xml'
+        renderers = [MockRenderer()]
+        with pytest.raises(Http404):
+            self.negotiator.filter_renderers(renderers, format='json')
