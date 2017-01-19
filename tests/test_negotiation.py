@@ -4,7 +4,9 @@ import pytest
 from django.http import Http404
 from django.test import TestCase
 
-from rest_framework.negotiation import DefaultContentNegotiation
+from rest_framework.negotiation import (
+    BaseContentNegotiation, DefaultContentNegotiation
+)
 from rest_framework.renderers import BaseRenderer
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
@@ -87,3 +89,17 @@ class TestAcceptedMediaType(TestCase):
         renderers = [MockRenderer()]
         with pytest.raises(Http404):
             self.negotiator.filter_renderers(renderers, format='json')
+
+
+class BaseContentNegotiationTests(TestCase):
+
+    def setUp(self):
+        self.negotiator = BaseContentNegotiation()
+
+    def test_raise_error_for_abstract_select_parser_method(self):
+        with pytest.raises(NotImplementedError):
+            self.negotiator.select_parser(None, None)
+
+    def test_raise_error_for_abstract_select_renderer_method(self):
+        with pytest.raises(NotImplementedError):
+            self.negotiator.select_renderer(None, None)
