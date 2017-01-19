@@ -1,8 +1,12 @@
 from __future__ import unicode_literals
 
+import pytest
+from django.http import Http404
 from django.test import TestCase
 
-from rest_framework.negotiation import DefaultContentNegotiation
+from rest_framework.negotiation import (
+    BaseContentNegotiation, DefaultContentNegotiation
+)
 from rest_framework.renderers import BaseRenderer
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
@@ -78,3 +82,24 @@ class TestAcceptedMediaType(TestCase):
             params_str += '; %s=%s' % (key, val)
         expected = 'test/*' + params_str
         assert str(mediatype) == expected
+
+    def test_raise_error_if_no_suitable_renderers_found(self):
+        class MockRenderer(object):
+            format = 'xml'
+        renderers = [MockRenderer()]
+        with pytest.raises(Http404):
+            self.negotiator.filter_renderers(renderers, format='json')
+
+
+class BaseContentNegotiationTests(TestCase):
+
+    def setUp(self):
+        self.negotiator = BaseContentNegotiation()
+
+    def test_raise_error_for_abstract_select_parser_method(self):
+        with pytest.raises(NotImplementedError):
+            self.negotiator.select_parser(None, None)
+
+    def test_raise_error_for_abstract_select_renderer_method(self):
+        with pytest.raises(NotImplementedError):
+            self.negotiator.select_renderer(None, None)
