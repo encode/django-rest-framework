@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.test import TestCase
 
 from rest_framework.relations import Hyperlink
+from rest_framework.templatetags import rest_framework
 from rest_framework.templatetags.rest_framework import (
     add_nested_class, add_query_param, as_string, break_long_headers,
     format_value, get_pagination_html, urlize_quoted_links
@@ -267,6 +268,15 @@ class Issue1386Tests(TestCase):
 
         # example from issue #1386, this shouldn't raise an exception
         urlize_quoted_links("asdf:[/p]zxcv.com")
+
+    def test_smart_urlquote_wrapper_handles_value_error(self):
+        def mock_smart_urlquote(url):
+            raise ValueError
+
+        old = rest_framework.smart_urlquote
+        rest_framework.smart_urlquote = mock_smart_urlquote
+        assert rest_framework.smart_urlquote_wrapper('test') is None
+        rest_framework.smart_urlquote = old
 
 
 class URLizerTests(TestCase):
