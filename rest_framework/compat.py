@@ -312,12 +312,3 @@ def set_many(instance, field, value):
     else:
         field = getattr(instance, field)
         field.set(value)
-
-
-try:
-    # A `utc` instance is available in Django 1.11+
-    from django.utils.timezone import utc
-except ImportError:
-    # A `UTC` class is available in older versions
-    from django.utils.timezone import UTC
-    utc = UTC()
