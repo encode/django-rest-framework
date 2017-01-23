@@ -4,10 +4,11 @@ from __future__ import unicode_literals
 
 import base64
 
+import pytest
 from django.conf.urls import include, url
 from django.contrib.auth.models import User
 from django.db import models
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.test import TestCase, override_settings
 from django.utils import six
 
@@ -461,3 +462,42 @@ class NoAuthenticationClassesTests(TestCase):
         response = view(request)
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.data == {'detail': 'Dummy permission message'}
+
+
+class BasicAuthenticationTests(TestCase):
+
+    def test_base_authentication_abstract_method(self):
+        with pytest.raises(NotImplementedError):
+            BaseAuthentication().authenticate({})
+
+    def test_basic_authentication_raises_error_if_no_credentials_provided(self):
+        auth = BasicAuthentication()
+        request = HttpRequest()
+        request.META['HTTP_AUTHORIZATION'] = 'basic'
+        with pytest.raises(exceptions.AuthenticationFailed):
+            auth.authenticate(request)
+
+    def test_basic_authentication_raises_error_if_credentials_contain_spaces(self):
+        auth = BasicAuthentication()
+        request = HttpRequest()
+        request.META['HTTP_AUTHORIZATION'] = 'basic invalid auth'
+        with pytest.raises(exceptions.AuthenticationFailed):
+            auth.authenticate(request)
+
+    def test_basic_authentication_raises_error_if_user_not_found(self):
+        auth = BasicAuthentication()
+        with pytest.raises(exceptions.AuthenticationFailed):
+            auth.authenticate_credentials('invalid id', 'invalid password')
+
+    def test_basic_authentication_raises_error_if_user_not_active(self):
+        from rest_framework import authentication
+
+        class MockUser(object):
+            is_active = False
+        old_authenticate = authentication.authenticate
+        authentication.authenticate = lambda **kwargs: MockUser()
+        auth = authentication.BasicAuthentication()
+        with pytest.raises(exceptions.AuthenticationFailed) as error:
+            auth.authenticate_credentials('foo', 'bar')
+        assert 'User inactive or deleted.' in str(error)
+        authentication.authenticate = old_authenticate
