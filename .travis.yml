@@ -22,7 +22,7 @@ matrix:
       - python: "3.6"
         env: DJANGO=1.11
       - python: "3.3"
-        env: DJANGO=1.18
+        env: DJANGO=1.8
       - python: "2.7"
         env: TOXENV="lint"
       - python: "2.7"
