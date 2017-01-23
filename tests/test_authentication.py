@@ -263,7 +263,9 @@ class BaseTokenAuthTests(object):
         assert response.status_code == status.HTTP_200_OK
 
     def test_fail_authentication_if_user_is_not_active(self):
-        user = User.objects.create_user('foo', 'bar', 'baz', is_active=False)
+        user = User.objects.create_user('foo', 'bar', 'baz')
+        user.is_active = False
+        user.save()
         self.model.objects.create(key='foobar_token', user=user)
         response = self.csrf_client.post(
             self.path, {'example': 'example'},
