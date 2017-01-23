@@ -8,7 +8,7 @@ import pytest
 from django.conf.urls import include, url
 from django.contrib.auth.models import User
 from django.db import models
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.test import TestCase, override_settings
 from django.utils import six
 
@@ -152,6 +152,18 @@ class BasicAuthTests(TestCase):
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response['WWW-Authenticate'] == 'Basic realm="api"'
 
+    def test_fail_post_if_credentials_are_missing(self):
+        response = self.csrf_client.post(
+            '/basic/', {'example': 'example'}, HTTP_AUTHORIZATION='Basic ')
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_fail_post_if_credentials_contain_spaces(self):
+        response = self.csrf_client.post(
+            '/basic/', {'example': 'example'},
+            HTTP_AUTHORIZATION='Basic foo bar'
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
 
 @override_settings(ROOT_URLCONF='tests.test_authentication')
 class SessionAuthTests(TestCase):
@@ -250,11 +262,33 @@ class BaseTokenAuthTests(object):
         )
         assert response.status_code == status.HTTP_200_OK
 
+    def test_fail_authentication_if_user_is_not_active(self):
+        user = User.objects.create_user('foo', 'bar', 'baz', is_active=False)
+        self.model.objects.create(key='foobar_token', user=user)
+        response = self.csrf_client.post(
+            self.path, {'example': 'example'},
+            HTTP_AUTHORIZATION=self.header_prefix + 'foobar_token'
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
     def test_fail_post_form_passing_nonexistent_token_auth(self):
         # use a nonexistent token key
         auth = self.header_prefix + 'wxyz6789'
         response = self.csrf_client.post(
             self.path, {'example': 'example'}, HTTP_AUTHORIZATION=auth
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_fail_post_if_token_is_missing(self):
+        response = self.csrf_client.post(
+            self.path, {'example': 'example'},
+            HTTP_AUTHORIZATION=self.header_prefix)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_fail_post_if_token_contains_spaces(self):
+        response = self.csrf_client.post(
+            self.path, {'example': 'example'},
+            HTTP_AUTHORIZATION=self.header_prefix + 'foo bar'
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -464,25 +498,11 @@ class NoAuthenticationClassesTests(TestCase):
         assert response.data == {'detail': 'Dummy permission message'}
 
 
-class BasicAuthenticationTests(TestCase):
+class BasicAuthenticationUnitTests(TestCase):
 
     def test_base_authentication_abstract_method(self):
         with pytest.raises(NotImplementedError):
             BaseAuthentication().authenticate({})
-
-    def test_basic_authentication_raises_error_if_no_credentials_provided(self):
-        auth = BasicAuthentication()
-        request = HttpRequest()
-        request.META['HTTP_AUTHORIZATION'] = 'basic'
-        with pytest.raises(exceptions.AuthenticationFailed):
-            auth.authenticate(request)
-
-    def test_basic_authentication_raises_error_if_credentials_contain_spaces(self):
-        auth = BasicAuthentication()
-        request = HttpRequest()
-        request.META['HTTP_AUTHORIZATION'] = 'basic invalid auth'
-        with pytest.raises(exceptions.AuthenticationFailed):
-            auth.authenticate(request)
 
     def test_basic_authentication_raises_error_if_user_not_found(self):
         auth = BasicAuthentication()
