@@ -9,10 +9,10 @@ import pytest
 from django.http import QueryDict
 from django.test import TestCase, override_settings
 from django.utils import six
+from django.utils.timezone import utc
 
 import rest_framework
 from rest_framework import serializers
-from rest_framework.compat import utc
 from rest_framework.fields import is_simple_callable
 
 try:

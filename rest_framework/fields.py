@@ -28,11 +28,12 @@ from django.utils.encoding import is_protected_type, smart_text
 from django.utils.formats import localize_input, sanitize_separators
 from django.utils.functional import cached_property
 from django.utils.ipv6 import clean_ipv6_address
+from django.utils.timezone import utc
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    get_remote_field, unicode_repr, unicode_to_repr, utc, value_from_object
+    get_remote_field, unicode_repr, unicode_to_repr, value_from_object
 )
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
