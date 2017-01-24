@@ -21,7 +21,7 @@
 
               <div id="div_id_username" class="clearfix control-group {% if form.username.errors %}error{% endif %}">
                 <div class="form-group">
-                  <label for="id_username">Username:</label>
+                  <label for="id_username">{{ form.username.label }}:</label>
                   <input type="text" name="username" maxlength="100"
                       autocapitalize="off"
                       autocorrect="off" class="form-control textinput textInput"
@@ -37,7 +37,7 @@
 
               <div id="div_id_password" class="clearfix control-group {% if form.password.errors %}error{% endif %}">
                 <div class="form-group">
-                  <label for="id_password">Password:</label>
+                  <label for="id_password">{{ form.password.label }}:</label>
                   <input type="password" name="password" maxlength="100" autocapitalize="off" autocorrect="off" class="form-control textinput textInput" id="id_password" required>
                   {% if form.password.errors %}
                     <p class="text-error">
