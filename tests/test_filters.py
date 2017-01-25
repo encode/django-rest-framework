@@ -5,6 +5,7 @@ import unittest
 import warnings
 from decimal import Decimal
 
+import pytest
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
@@ -117,6 +118,27 @@ if django_filters:
         url(r'^get-queryset/$', GetQuerysetView.as_view(),
             name='get-queryset-view'),
     ]
+
+
+class BaseFilterTests(TestCase):
+    def setUp(self):
+        self.original_coreapi = filters.coreapi
+        filters.coreapi = True  # mock it, because not None value needed
+        self.filter_backend = filters.BaseFilterBackend()
+
+    def tearDown(self):
+        filters.coreapi = self.original_coreapi
+
+    def test_filter_queryset_raises_error(self):
+        with pytest.raises(NotImplementedError):
+            self.filter_backend.filter_queryset(None, None, None)
+
+    def test_get_schema_fields_checks_for_coreapi(self):
+        filters.coreapi = None
+        with pytest.raises(AssertionError):
+            self.filter_backend.get_schema_fields({})
+        filters.coreapi = True
+        assert self.filter_backend.get_schema_fields({}) == []
 
 
 class CommonFilteringTestCase(TestCase):
@@ -428,6 +450,19 @@ class SearchFilterTests(TestCase):
             {'id': 1, 'title': 'z', 'text': 'abc'},
             {'id': 2, 'title': 'zz', 'text': 'bcd'}
         ]
+
+    def test_search_returns_same_queryset_if_no_search_fields_or_terms_provided(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+
+        view = SearchListView.as_view()
+        request = factory.get('/')
+        response = view(request)
+        expected = SearchFilterSerializer(SearchFilterModel.objects.all(),
+                                          many=True).data
+        assert response.data == expected
 
     def test_exact_search(self):
         class SearchListView(generics.ListAPIView):
