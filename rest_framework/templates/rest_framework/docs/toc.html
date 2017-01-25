@@ -1,0 +1,17 @@
+<div id="toc" class="bs-sidebar hidden-print affix" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="active">
+            <a href="#document-title">{{ document.title }}</a>
+        </li>
+        {% for section_key, section in document.data.items %}
+        <li>
+            <a href="#{{ section_key }}">{{ section_key }}</a>
+            <ul class="nav">
+                {% for link_key, link in section.links.items %}
+                <li><a href="#{{ section_key }}-{{ link_key }}">{{ link.title|default:link_key }}</a></li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+</div>

@@ -294,7 +294,7 @@ class PageNumberPagination(BasePagination):
                 name=self.page_query_param,
                 required=False,
                 location='query',
-                description=force_text(self.page_query_description)
+                #description=force_text(self.page_query_description)
             )
         ]
         if self.page_size_query_param is not None:
@@ -303,7 +303,7 @@ class PageNumberPagination(BasePagination):
                     name=self.page_size_query_param,
                     required=False,
                     location='query',
-                    description=force_text(self.page_size_query_description)
+                    #description=force_text(self.page_size_query_description)
                 )
             )
         return fields
@@ -444,13 +444,13 @@ class LimitOffsetPagination(BasePagination):
                 name=self.limit_query_param,
                 required=False,
                 location='query',
-                description=force_text(self.limit_query_description)
+                #description=force_text(self.limit_query_description)
             ),
             coreapi.Field(
                 name=self.offset_query_param,
                 required=False,
                 location='query',
-                description=force_text(self.offset_query_description)
+                #description=force_text(self.offset_query_description)
             )
         ]
 

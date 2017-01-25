@@ -514,8 +514,8 @@ class SchemaGenerator(object):
                 name=variable,
                 location='path',
                 required=True,
-                title='' if (title is None) else title,
-                description='' if (description is None) else description
+                #title='' if (title is None) else title,
+                #description='' if (description is None) else description
             )
             fields.append(field)
 
@@ -540,7 +540,7 @@ class SchemaGenerator(object):
                     name='data',
                     location='body',
                     required=True,
-                    type='array'
+                    #type='array'
                 )
             ]
 
@@ -559,11 +559,11 @@ class SchemaGenerator(object):
                 name=field.field_name,
                 location='form',
                 required=required,
-                title=title,
-                description=description,
-                type=types_lookup[field],
-                input=determine_input(field),
-                choices=getattr(field, 'choices', None)
+                #title=title,
+                #description=description,
+                #type=types_lookup[field],
+                #input=determine_input(field),
+                #choices=getattr(field, 'choices', None)
             )
             fields.append(field)
 

@@ -798,10 +798,22 @@ class DocumentationRenderer(BaseRenderer):
     media_type = 'text/html'
     format = 'html'
     charset = 'utf-8'
+    template = 'rest_framework/docs/index.html'
+    code_style = 'default'
+
+    def get_context(self, data):
+        from pygments.formatters import HtmlFormatter
+        formatter = HtmlFormatter(style=self.code_style)
+        code_style = formatter.get_style_defs('.highlight')
+        langs = ['shell', 'javascript', 'python']
+        return {'document': data, 'langs': langs, 'code_style': code_style}
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
-        from coredocs.main import render as render_docs
-        return render_docs(data, theme='cerulean', highlight='emacs', static=lambda path: '/static/rest_framework/docs/' + path)
+        #from coredocs.main import render as render_docs
+        #return render_docs(data, theme='cerulean', highlight='emacs', static=lambda path: '/static/rest_framework/docs/' + path)
+        template = loader.get_template(self.template)
+        context = self.get_context(data)
+        return template_render(template, context, request=renderer_context['request'])
 
 
 class MultiPartRenderer(BaseRenderer):
