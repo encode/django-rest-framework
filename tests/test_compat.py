@@ -5,6 +5,14 @@ from rest_framework import compat
 
 class CompatTests(TestCase):
 
+    def setUp(self):
+        self.original_django_version = compat.django.VERSION
+        self.original_transaction = compat.transaction
+
+    def tearDown(self):
+        compat.django.VERSION = self.original_django_version
+        compat.transaction = self.original_transaction
+
     def test_total_seconds(self):
         class MockTimedelta(object):
             days = 1
@@ -17,23 +25,16 @@ class CompatTests(TestCase):
     def test_get_remote_field_with_old_django_version(self):
         class MockField(object):
             rel = 'example_rel'
-        original_django_version = compat.django.VERSION
         compat.django.VERSION = (1, 8)
         assert compat.get_remote_field(MockField(), default='default_value') == 'example_rel'
         assert compat.get_remote_field(object(), default='default_value') == 'default_value'
-        compat.django.VERSION = original_django_version
 
     def test_get_remote_field_with_new_django_version(self):
         class MockField(object):
             remote_field = 'example_remote_field'
-        original_django_version = compat.django.VERSION
         compat.django.VERSION = (1, 10)
         assert compat.get_remote_field(MockField(), default='default_value') == 'example_remote_field'
         assert compat.get_remote_field(object(), default='default_value') == 'default_value'
-        compat.django.VERSION = original_django_version
-
-    def test_patch_in_http_method_names(self):
-        assert 'patch' in compat.View.http_method_names
 
     def test_set_rollback_for_transaction_in_managed_mode(self):
         class MockTransaction(object):
@@ -52,7 +53,6 @@ class CompatTests(TestCase):
             def leave_transaction_management(self):
                 self.called_leave_transaction_management = True
 
-        original_transaction = compat.transaction
         dirty_mock_transaction = MockTransaction()
         compat.transaction = dirty_mock_transaction
         compat.set_rollback()
@@ -65,5 +65,3 @@ class CompatTests(TestCase):
         compat.set_rollback()
         assert clean_mock_transaction.called_rollback is False
         assert clean_mock_transaction.called_leave_transaction_management is True
-
-        compat.transaction = original_transaction
