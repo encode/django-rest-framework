@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import pytest
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.test import TestCase
@@ -17,6 +18,11 @@ request = Request(APIRequestFactory().options('/'))
 
 
 class TestMetadata:
+
+    def test_determine_metadata_abstract_method_raises_proper_error(self):
+        with pytest.raises(NotImplementedError):
+            metadata.BaseMetadata().determine_metadata(None, None)
+
     def test_metadata(self):
         """
         OPTIONS requests to views should return a valid 200 response.
@@ -262,6 +268,19 @@ class TestMetadata:
         scheme = versioning.QueryParameterVersioning
         view = ExampleView.as_view(versioning_class=scheme)
         view(request=request)
+
+    def test_list_serializer_metadata_returns_info_about_fields_of_child_serializer(self):
+        class ExampleSerializer(serializers.Serializer):
+            integer_field = serializers.IntegerField(max_value=10)
+            char_field = serializers.CharField(required=False)
+
+        class ExampleListSerializer(serializers.ListSerializer):
+            pass
+
+        options = metadata.SimpleMetadata()
+        child_serializer = ExampleSerializer()
+        list_serializer = ExampleListSerializer(child=child_serializer)
+        assert options.get_serializer_info(list_serializer) == options.get_serializer_info(child_serializer)
 
 
 class TestSimpleMetadataFieldInfo(TestCase):
