@@ -24,7 +24,7 @@ The initial aim is to provide a single full-time position on REST framework.
   <a href="http://jobs.rover.com/"><img src="https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/premium/rover-readme.png"/></a>
   <a href="https://getsentry.com/welcome/"><img src="https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/premium/sentry-readme.png"/></a>
   <a href="https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf"><img src="https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/premium/stream-readme.png"/></a>
-  <a href="http://www.machinalis.com/#services"><img src="https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/premium/machinalis-readme.png"/></a>
+  <a href="https://hello.machinalis.co.uk/"><img src="https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/docs/img/premium/machinalis-readme.png"/></a>
 </p>
 
 *Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/), [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), and [Machinalis](http://www.machinalis.com/#services).*
