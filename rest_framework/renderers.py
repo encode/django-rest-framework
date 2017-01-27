@@ -799,7 +799,7 @@ class DocumentationRenderer(BaseRenderer):
     format = 'html'
     charset = 'utf-8'
     template = 'rest_framework/docs/index.html'
-    code_style = 'default'
+    code_style = 'emacs'
 
     def get_context(self, data):
         from pygments.formatters import HtmlFormatter

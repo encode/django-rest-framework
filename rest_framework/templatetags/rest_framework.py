@@ -53,7 +53,7 @@ def do_code(parser,token):
 
 
 class CodeNode(template.Node):
-    style = 'default'
+    style = 'emacs'
 
     def __init__(self, lang, code):
         self.lang = lang

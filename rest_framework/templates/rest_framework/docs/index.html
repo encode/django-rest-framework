@@ -57,7 +57,7 @@
 
             const coreapi = window.coreapi
             const codec = new coreapi.codecs.CoreJSONCodec()
-            const schema = {{ schema }}
+            const schema = '{"_type": "document"}' {{ schema }}
             const doc = codec.decode(schema, {preloaded: true})
             const client = new coreapi.Client()
 
