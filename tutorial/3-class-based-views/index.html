@@ -4,7 +4,6 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <meta name="google-site-verification" content="ZJtyq2wZOXvFw0RJ6rdHV_agvxjc5zkm9QgmdvNZB0s" />
   <title>3 - Class based views - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
   <link rel="canonical" href="http://www.django-rest-framework.org/tutorial/3-class-based-views/" />
@@ -456,7 +455,7 @@ class SnippetList(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 </code></pre>
 <p>That's looking good.  Again, it's still pretty similar to the function based view right now.</p>
-<p>We'll also need to refactor our <code>urls.py</code> slightly now we're using class-based views.</p>
+<p>We'll also need to refactor our <code>urls.py</code> slightly now that we're using class-based views.</p>
 <pre><code>from django.conf.urls import url
 from rest_framework.urlpatterns import format_suffix_patterns
 from snippets import views

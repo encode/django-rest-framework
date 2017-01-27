@@ -4,7 +4,6 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <meta name="google-site-verification" content="ZJtyq2wZOXvFw0RJ6rdHV_agvxjc5zkm9QgmdvNZB0s" />
   <title>Schemas - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
   <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/schemas/" />
@@ -576,6 +575,16 @@ Content-Type: application/vnd.coreapi+json
 <pre><code>schema_view = get_schema_view(
     title='Server Monitoring API',
     url='https://www.example.org/api/'
+)
+</code></pre>
+<h4 id="urlconf"><a class="toclink" href="#urlconf"><code>urlconf</code></a></h4>
+<p>A string representing the import path to the URL conf that you want
+to generate an API schema for. This defaults to the value of Django's
+ROOT_URLCONF setting.</p>
+<pre><code>schema_view = get_schema_view(
+    title='Server Monitoring API',
+    url='https://www.example.org/api/',
+    urlconf='myproject.urls'
 )
 </code></pre>
 <h4 id="renderer_classes"><a class="toclink" href="#renderer_classes"><code>renderer_classes</code></a></h4>

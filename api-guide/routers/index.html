@@ -4,7 +4,6 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <meta name="google-site-verification" content="ZJtyq2wZOXvFw0RJ6rdHV_agvxjc5zkm9QgmdvNZB0s" />
   <title>Routers - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
   <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/routers/" />
@@ -544,6 +543,23 @@ class UserViewSet(ModelViewSet):
 <ul>
 <li>URL pattern: <code>^users/{pk}/change-password/$</code>  Name: <code>'user-change-password'</code></li>
 </ul>
+<p>In the case you do not want to use the default name generated for your custom action, you can use the url_name parameter to customize it.</p>
+<p>For example, if you want to change the name of our custom action to <code>'user-change-password'</code>, you could write:</p>
+<pre><code>from myapp.permissions import IsAdminOrIsSelf
+from rest_framework.decorators import detail_route
+
+class UserViewSet(ModelViewSet):
+    ...
+
+    @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf], url_name='change-password')
+    def set_password(self, request, pk=None):
+        ...
+</code></pre>
+<p>The above example would now generate the following URL pattern:</p>
+<ul>
+<li>URL pattern: <code>^users/{pk}/set_password/$</code>  Name: <code>'user-change-password'</code></li>
+</ul>
+<p>You can also use url_path and url_name parameters together to obtain extra control on URL generation for custom views.</p>
 <p>For more information see the viewset documentation on <a href="../viewsets/#marking-extra-actions-for-routing">marking extra actions for routing</a>.</p>
 <h1 id="api-guide"><a class="toclink" href="#api-guide">API Guide</a></h1>
 <h2 id="simplerouter"><a class="toclink" href="#simplerouter">SimpleRouter</a></h2>

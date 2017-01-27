@@ -4,7 +4,6 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <meta name="google-site-verification" content="ZJtyq2wZOXvFw0RJ6rdHV_agvxjc5zkm9QgmdvNZB0s" />
   <title>Documenting your API - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
   <link rel="canonical" href="http://www.django-rest-framework.org/topics/documenting-your-api/" />
@@ -467,7 +466,7 @@
     [ref]: http://example.com/activating-accounts
     """
 </code></pre>
-<p>Note that one constraint of using viewsets is that any documentation be used for all generated views, so for example, you cannot have differing documentation for the generated list view and detail view.</p>
+<p>Note that when using viewsets the basic docstring is used for all generated views.  To provide descriptions for each view, such as for the the list and retrieve views, use docstring sections as described in <a href="../api-guide/schemas/#examples">Schemas as documentation: Examples</a>.</p>
 <h4 id="the-options-method"><a class="toclink" href="#the-options-method">The <code>OPTIONS</code> method</a></h4>
 <p>REST framework APIs also support programmatically accessible descriptions, using the <code>OPTIONS</code> HTTP method.  A view will respond to an <code>OPTIONS</code> request with metadata including the name, description, and the various media types it accepts and responds with.</p>
 <p>When using the generic views, any <code>OPTIONS</code> requests will additionally respond with metadata regarding any <code>POST</code> or <code>PUT</code> actions available, describing which fields are on the serializer.</p>
