@@ -308,7 +308,7 @@ Our professional and premium plans also include **priority support**. At any tim
 
 Once you've signed up I'll contact you via email and arrange your ad placements on the site.
 
-For further enquires please contact <a href=mailto:tom@tomchristie.com>tom@tomchristie.com</a>.
+For further enquires please contact <a href=mailto:funding@django-rest-framework.org>funding@django-rest-framework.org</a>.
 
 ---
 
