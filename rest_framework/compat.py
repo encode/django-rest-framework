@@ -17,11 +17,6 @@ from django.template import Context, RequestContext, Template
 from django.utils import six
 from django.views.generic import View
 
-try:
-    import importlib  # Available in Python 3.1+
-except ImportError:
-    from django.utils import importlib  # Will be removed in Django 1.9
-
 
 try:
     from django.urls import (
