@@ -18,13 +18,13 @@ REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
 from __future__ import unicode_literals
+from importlib import import_module
 
 from django.conf import settings
 from django.test.signals import setting_changed
 from django.utils import six
 
 from rest_framework import ISO_8601
-from rest_framework.compat import importlib
 
 DEFAULTS = {
     # Base API policies
@@ -174,7 +174,7 @@ def import_from_string(val, setting_name):
         # Nod to tastypie's use of importlib.
         parts = val.split('.')
         module_path, class_name = '.'.join(parts[:-1]), parts[-1]
-        module = importlib.import_module(module_path)
+        module = import_module(module_path)
         return getattr(module, class_name)
     except (ImportError, AttributeError) as e:
         msg = "Could not import '%s' for API setting '%s'. %s: %s." % (val, setting_name, e.__class__.__name__, e)
