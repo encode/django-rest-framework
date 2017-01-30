@@ -4,12 +4,13 @@ import json
 from collections import namedtuple
 
 import pytest
-from django.conf.urls import include, url
+from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.test import TestCase, override_settings
 
 from rest_framework import permissions, serializers, viewsets
+from rest_framework.compat import include
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter, SimpleRouter
@@ -81,7 +82,7 @@ empty_prefix_urls = [
 
 urlpatterns = [
     url(r'^non-namespaced/', include(namespaced_router.urls)),
-    url(r'^namespaced/', include(namespaced_router.urls, namespace='example')),
+    url(r'^namespaced/', include(namespaced_router.urls, namespace='example', app_name='example')),
     url(r'^example/', include(notes_router.urls)),
     url(r'^example2/', include(kwarged_notes_router.urls)),
 
