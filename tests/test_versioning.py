@@ -1,8 +1,9 @@
 import pytest
-from django.conf.urls import include, url
+from django.conf.urls import url
 from django.test import override_settings
 
 from rest_framework import serializers, status, versioning
+from rest_framework.compat import include
 from rest_framework.decorators import APIView
 from rest_framework.relations import PKOnlyObject
 from rest_framework.response import Response
@@ -170,7 +171,7 @@ class TestURLReversing(URLPatternsTestCase):
     ]
 
     urlpatterns = [
-        url(r'^v1/', include(included, namespace='v1')),
+        url(r'^v1/', include(included, namespace='v1', app_name='v1')),
         url(r'^another/$', dummy_view, name='another'),
         url(r'^(?P<version>[v1|v2]+)/another/$', dummy_view, name='another'),
     ]
@@ -335,8 +336,8 @@ class TestHyperlinkedRelatedField(URLPatternsTestCase):
     ]
 
     urlpatterns = [
-        url(r'^v1/', include(included, namespace='v1')),
-        url(r'^v2/', include(included, namespace='v2'))
+        url(r'^v1/', include(included, namespace='v1', app_name='v1')),
+        url(r'^v2/', include(included, namespace='v2', app_name='v2'))
     ]
 
     def setUp(self):
@@ -367,7 +368,7 @@ class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(URLPatternsTestCase):
     ]
     included = [
         url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='namespaced'),
-        url(r'^nested/', include(nested, namespace='nested-namespace'))
+        url(r'^nested/', include(nested, namespace='nested-namespace', app_name='nested-namespace'))
     ]
 
     urlpatterns = [
