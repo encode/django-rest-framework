@@ -3,7 +3,7 @@
 
 # Initialize a client & load the schema document
 client = coreapi.Client()
-document = client.get("{{ schema_url }}"{% if schema_format %}, format="{{ schema_format }}"{% endif %})
+document = client.get("{{ document.url }}"{% if schema_format %}, format="{{ schema_format }}"{% endif %})
 
 # Interact with the API endpoint
 action = [{% if section_key %}"{{ section_key }}", {% endif %}"{{ link_key }}"]

@@ -4,7 +4,7 @@
 // Initialize a client & load the schema document
 var client = new coreapi.Client()
 var document = null
-client.get("{{ schema_url }}").then(function(result) {
+client.get("{{ document.url }}").then(function(result) {
     document = result
 })
 

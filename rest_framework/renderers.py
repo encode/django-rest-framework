@@ -803,10 +803,18 @@ class DocumentationRenderer(BaseRenderer):
 
     def get_context(self, data):
         from pygments.formatters import HtmlFormatter
+        from django.utils.html import mark_safe
         formatter = HtmlFormatter(style=self.code_style)
         code_style = formatter.get_style_defs('.highlight')
         langs = ['shell', 'javascript', 'python']
-        return {'document': data, 'langs': langs, 'code_style': code_style}
+        codec = coreapi.codecs.CoreJSONCodec()
+        schema = mark_safe(codec.encode(data))
+        return {
+            'document': data,
+            'langs': langs,
+            'code_style': code_style,
+            'schema': schema
+        }
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         #from coredocs.main import render as render_docs

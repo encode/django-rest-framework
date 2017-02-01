@@ -38,28 +38,28 @@
         <script src="{% static 'rest_framework/docs/js/jquery-1.10.2.min.js' %}"></script>
         <script src="{% static 'rest_framework/docs/js/bootstrap-3.0.3.min.js' %}"></script>
         <script>
-            // function getCookie(name) {
-            //     var cookieValue = null;
-            //     if (document.cookie && document.cookie !== '') {
-            //         var cookies = document.cookie.split(';');
-            //         for (var i = 0; i < cookies.length; i++) {
-            //             var cookie = jQuery.trim(cookies[i]);
-            //             // Does this cookie string begin with the name we want?
-            //             if (cookie.substring(0, name.length + 1) === (name + '=')) {
-            //                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-            //                 break;
-            //             }
-            //         }
-            //     }
-            //     return cookieValue;
-            // }
-            // const csrf = {'X-CSRFToken': getCookie('csrftoken')}
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            const csrf = {'X-CSRFToken': getCookie('csrftoken')}
 
             const coreapi = window.coreapi
             const codec = new coreapi.codecs.CoreJSONCodec()
-            const schema = '{"_type": "document"}' {{ schema }}
+            const schema = {{ schema }}
             const doc = codec.decode(schema, {preloaded: true})
-            const client = new coreapi.Client()
+            const client = new coreapi.Client(null, null, csrf)
 
             $('body').scrollspy({ target: '#toc' })
 
