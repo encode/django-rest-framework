@@ -26,7 +26,7 @@
         <script src="https://unpkg.com/coreapi@0.0.18/dist/coreapi.js"></script>
     </head>
 
-    <body>
+    <body data-spy="scroll" data-target="#sidebar-nav" data-offset="50">
 
         <div id="wrapper">
             {% include "rest_framework/docs/sidebar.html" %}
@@ -75,8 +75,6 @@
             const schema = {{ schema }}
             const doc = codec.decode(schema, {preloaded: true})
             const client = new coreapi.Client(null, null, csrf)
-
-            $('body').scrollspy({ target: '#toc' })
 
             // Language Control
             $('.language-control li a').click(function (event) {
