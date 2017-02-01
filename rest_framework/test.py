@@ -114,7 +114,7 @@ if requests is not None:
             self.mount('https://', adapter)
 
         def request(self, method, url, *args, **kwargs):
-            if ':' not in url:
+            if not url.startswith('http'):
                 raise ValueError('Missing "http:" or "https:". Use a fully qualified URL, eg "http://testserver%s"' % url)
             return super(RequestsClient, self).request(method, url, *args, **kwargs)
 
