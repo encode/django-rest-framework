@@ -22,6 +22,7 @@
 
     z-index: 1000;
     position: fixed;
+    top: 60px;
     left: 250px;
     width: 0;
     height: 100%;
@@ -148,7 +149,6 @@
 }
 
 
-
 .coredocs-section {
     border-top: 2px solid lightgrey;
     margin-top: 20px;
@@ -159,79 +159,3 @@
     border-top: 0;
     margin-top: 0;
 }
-
-
-
-// body {
-//     // padding-top: 70px;
-//     background-color: #f8f8f8;
-// }
-
-// ul.nav li.main {
-//     font-weight: bold;
-// }
-
-// div.source-links {
-//     float: right;
-// }
-
-// h1, h2, h3 {
-//     color: #444;
-// }
-
-// h1 {
-//     font-weight: 400;
-//     font-size: 42px;
-// }
-
-// h2, h3, h4, h5, h6 {
-//     font-weight: 300;
-// }
-
-// hr {
-//     border-top: 1px solid #aaa;
-// }
-
-// pre, .rst-content tt {
-//     max-width: 100%;
-//     background: #fff;
-//     border: solid 1px #e1e4e5;
-//     color: #e74c3c;
-//     overflow-x: auto;
-// }
-
-// code.code-large, .rst-content tt.code-large {
-//     font-size: 90%;
-// }
-
-// code {
-//     padding: 2px 5px;
-//     color: #c7254e;
-//     background-color: #f9f2f4;
-//     font-size: 75%;
-// }
-
-// code, kbd, pre, samp  {
-//     font-family: monospace,serif;
-//     font-size: 12px !important;
-// }
-
-// footer {
-//     margin-top: 30px;
-//     margin-bottom: 10px;
-//     text-align: center;
-//     font-weight: 200;
-// }
-
-// pre.highlight code {
-//     white-space: pre;
-// }
-
-
-// /* @group Code Samples */
-
-// .code-samples {
-//     padding-top: 20px;
-// }
-
-// /* @end Code Samples */
