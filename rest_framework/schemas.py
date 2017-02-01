@@ -1,4 +1,5 @@
 import re
+import coreschema
 from collections import OrderedDict
 from importlib import import_module
 
@@ -26,36 +27,62 @@ from rest_framework.views import APIView
 
 header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
 
-types_lookup = ClassLookupDict({
-    serializers.Field: 'string',
-    serializers.IntegerField: 'integer',
-    serializers.FloatField: 'number',
-    serializers.DecimalField: 'number',
-    serializers.BooleanField: 'boolean',
-    serializers.FileField: 'file',
-    serializers.MultipleChoiceField: 'array',
-    serializers.ManyRelatedField: 'array',
-    serializers.Serializer: 'object',
-    serializers.ListSerializer: 'array'
-})
 
-input_lookup = ClassLookupDict({
-    serializers.Field: 'text',
-    serializers.IntegerField: 'number',
-    serializers.FloatField: 'number',
-    serializers.DecimalField: 'number',
-    serializers.BooleanField: 'checkbox',
-    serializers.FileField: 'file',
-    serializers.ChoiceField: 'select'
-})
+def field_to_schema(field):
+    title = force_text(field.label) if field.label else ''
+    description = force_text(field.help_text) if field.help_text else ''
 
+    if isinstance(field, serializers.ListSerializer):
+        child_schema = serializer_to_schema(field.child)
+        return coreschema.Array(
+            items=child_schema,
+            title=title,
+            description=description
+        )
+    elif isinstance(field, serializers.Serializer):
+        return coreschema.Object(
+            properties={
+                key: serializer_to_schema(value)
+                for key, value
+                in field.fields.items()
+            },
+            title=title,
+            description=description
+        )
+    elif isinstance(field, serializers.ManyRelatedField):
+        return coreschema.Array(
+            items=coreschema.String(),
+            title=title,
+            description=description
+        )
+    elif isinstance(field, serializers.RelatedField):
+        return coreschema.String(title=title, description=description)
+    elif isinstance(field, serializers.MultipleChoiceField):
+        return coreschema.Array(
+            items=coreschema.Enum(enum=list(field.choices.values())),
+            title=title,
+            description=description
+        )
+    elif isinstance(field, serializers.ChoiceField):
+        return coreschema.Enum(
+            enum=list(field.choices.values()),
+            title=title,
+            description=description
+        )
+    elif isinstance(field, serializers.BooleanField):
+        return coreschema.Boolean(title=title, description=description)
+    elif isinstance(field, (serializers.DecimalField, serializers.FloatField)):
+        return coreschema.Number(title=title, description=description)
+    elif isinstance(field, serializers.IntegerField):
+        return coreschema.Integer(title=title, description=description)
 
-def determine_input(field):
-    input_type = input_lookup[field]
-    base_template = field.style.get('base_template')
-    if base_template == 'textarea.html':
-        input_type = 'textarea'
-    return input_type
+    if field.style.get('base_template') == 'textarea.html':
+        return coreschema.String(
+            title=title,
+            description=description,
+            format='textarea'
+        )
+    return coreschema.String(title=title, description=description)
 
 
 def common_path(paths):
@@ -493,8 +520,8 @@ class SchemaGenerator(object):
         fields = []
 
         for variable in uritemplate.variables(path):
-            title = None
-            description = None
+            title = ''
+            description = ''
             if model is not None:
                 # Attempt to infer a field description if possible.
                 try:
@@ -514,8 +541,7 @@ class SchemaGenerator(object):
                 name=variable,
                 location='path',
                 required=True,
-                #title='' if (title is None) else title,
-                #description='' if (description is None) else description
+                schema=coreschema.String(title=title, description=description)
             )
             fields.append(field)
 
@@ -540,7 +566,7 @@ class SchemaGenerator(object):
                     name='data',
                     location='body',
                     required=True,
-                    #type='array'
+                    schema=coreschema.Array()
                 )
             ]
 
@@ -553,17 +579,11 @@ class SchemaGenerator(object):
                 continue
 
             required = field.required and method != 'PATCH'
-            title = force_text(field.label) if field.label else ''
-            description = force_text(field.help_text) if field.help_text else ''
             field = coreapi.Field(
                 name=field.field_name,
                 location='form',
                 required=required,
-                #title=title,
-                #description=description,
-                #type=types_lookup[field],
-                #input=determine_input(field),
-                #choices=getattr(field, 'choices', None)
+                schema=field_to_schema(field)
             )
             fields.append(field)
 
