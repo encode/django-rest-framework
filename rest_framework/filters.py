@@ -16,7 +16,7 @@ from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import (
-    coreapi, distinct, django_filters, guardian, template_render
+    coreapi, coreschema, distinct, django_filters, guardian, template_render
 )
 from rest_framework.settings import api_settings
 
@@ -34,6 +34,7 @@ class BaseFilterBackend(object):
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         return []
 
 
@@ -162,7 +163,18 @@ class SearchFilter(BaseFilterBackend):
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        return [coreapi.Field(name=self.search_param, required=False, location='query')]
+        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
+        return [
+            coreapi.Field(
+                name=self.search_param,
+                required=False,
+                location='query',
+                schema=coreschema.String(
+                    title='Search',
+                    description='...'
+                )
+            )
+        ]
 
 
 class OrderingFilter(BaseFilterBackend):
@@ -280,7 +292,18 @@ class OrderingFilter(BaseFilterBackend):
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        return [coreapi.Field(name=self.ordering_param, required=False, location='query')]
+        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
+        return [
+            coreapi.Field(
+                name=self.ordering_param,
+                required=False,
+                location='query',
+                schema=coreschema.String(
+                    title='Ordering',
+                    description='...'
+                )
+            )
+        ]
 
 
 class DjangoObjectPermissionsFilter(BaseFilterBackend):

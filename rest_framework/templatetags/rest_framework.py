@@ -39,13 +39,8 @@ class FencedCodeExtension(markdown.Extension):
                              ">normalize_whitespace")
 
 
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters import HtmlFormatter
-
-
 @register.tag(name='code')
-def do_code(parser,token):
+def highlight_code(parser,token):
     code = token.split_contents()[-1]
     nodelist = parser.parse(('endcode',))
     parser.delete_first_token()
@@ -60,6 +55,9 @@ class CodeNode(template.Node):
         self.nodelist = code
 
     def render(self, context):
+        from pygments import highlight
+        from pygments.lexers import get_lexer_by_name
+        from pygments.formatters import HtmlFormatter
         body = self.nodelist.render(context)
         lexer = get_lexer_by_name(self.lang, stripall=False)
         formatter = HtmlFormatter(nowrap=True, style=self.style)

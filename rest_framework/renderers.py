@@ -808,7 +808,7 @@ class DocumentationRenderer(BaseRenderer):
         code_style = formatter.get_style_defs('.highlight')
         langs = ['shell', 'javascript', 'python']
         codec = coreapi.codecs.CoreJSONCodec()
-        schema = mark_safe(codec.encode(data))
+        schema = mark_safe(json.dumps(codec.encode(data)))
         return {
             'document': data,
             'langs': langs,
