@@ -92,11 +92,13 @@
 .sidebar-wrapper > .sidebar-brand {
     text-align: center;
     margin-bottom: 20px;
+    width: 250px;
 }
 
 .sidebar-wrapper .language-switcher {
     text-align: center;
     margin-bottom: 20px;
+    width: 250px;
 }
 
 .sidebar-wrapper .language-switcher .dropdown-menu {
