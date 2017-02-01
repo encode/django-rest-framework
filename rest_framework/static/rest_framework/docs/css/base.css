@@ -40,7 +40,7 @@
 #page-content-wrapper {
     width: 100%;
     position: absolute;
-    padding: 15px;
+    top: 80px;
 }
 
 #wrapper.toggled #page-content-wrapper {
@@ -48,11 +48,15 @@
     margin-right: -250px;
 }
 
+.top-navbar {
+    border-radius: 0;
+}
+
 /* Sidebar Styles */
 
 .sidebar-nav {
-    // position: absolute;
-    // top: 0;
+    position: absolute;
+    top: 80px;
     width: 250px;
     margin: 0;
     padding: 0;
@@ -106,6 +110,7 @@
 
 .sidebar-wrapper .language-switcher {
     text-align: center;
+    margin-top: 20px;
     margin-bottom: 20px;
     width: 250px;
 }
@@ -144,6 +149,16 @@
 
 
 
+.coredocs-section {
+    border-top: 2px solid lightgrey;
+    margin-top: 20px;
+    padding-top: 20px
+}
+
+.coredocs-section:first-child {
+    border-top: 0;
+    margin-top: 0;
+}
 
 
 
