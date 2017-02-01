@@ -1,0 +1,30 @@
+<!-- Sidebar -->
+<div id="sidebar-wrapper" class="sidebar-wrapper">
+    <div class="language-switcher">
+        <div class="btn-group">
+          <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span>shell</span> &nbsp;&nbsp;<span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu language-control">
+            <li class="active"><a href="#" data-language="shell">shell</a></li>
+            <li><a href="#" data-language="javascript">javascript</a></li>
+            <li><a href="#" data-language="python">python</a></li>
+          </ul>
+        </div>
+    </div>
+
+    <ul id="sidebar-nav" class="nav nav-pills nav-stacked sidebar-nav">
+        {% for section_key, section in document.data.items %}
+        <li role="navigation">
+            <a href="#{{ section_key }}">{{ section_key }}</a>
+
+            <ul class="nav nav-pills nav-stacked">
+            {% for link_key, link in section.links.items %}
+                <li role="navigation"><a href="#{{ section_key }}-{{ link_key }}">{{ link.title|default:link_key }}</a></li>
+            {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+<!-- /#sidebar-wrapper -->
