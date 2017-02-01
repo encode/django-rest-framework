@@ -1155,6 +1155,11 @@ The [html-json-forms][html-json-forms] package provides an algorithm and seriali
 
 [DRF-Base64][drf-base64] provides a set of field and model serializers that handles the upload of base64-encoded files.
 
+## QueryFields
+
+[djangorestframework-queryfields][djangorestframework-queryfields] allows API clients to specify which fields will be sent in the response via inclusion or exclusion query paramaters.  
+
+
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
 [model-managers]: https://docs.djangoproject.com/en/stable/topics/db/managers/
@@ -1173,3 +1178,4 @@ The [html-json-forms][html-json-forms] package provides an algorithm and seriali
 [drf-dynamic-fields]: https://github.com/dbrgn/drf-dynamic-fields
 [drf-base64]: https://bitbucket.org/levit_scs/drf_base64
 [drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
+[djangorestframework-queryfields]: http://djangorestframework-queryfields.readthedocs.io/

@@ -13,10 +13,87 @@ from rest_framework.compat import NoReverseMatch, reverse, template_render
 from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
 
+from markdown.extensions.fenced_code import FencedBlockPreprocessor
+import markdown
+
+
 register = template.Library()
 
 # Regex for adding classes to html snippets
 class_re = re.compile(r'(?<=class=["\'])(.*)(?=["\'])')
+
+
+class CustomFencedBlockPreprocessor(FencedBlockPreprocessor):
+    CODE_WRAP = '<pre%s><code>%s</code></pre>'
+    LANG_TAG = ' class="highlight %s"'
+
+
+class FencedCodeExtension(markdown.Extension):
+
+    def extendMarkdown(self, md, md_globals):
+        """ Add FencedBlockPreprocessor to the Markdown instance. """
+        md.registerExtension(self)
+
+        md.preprocessors.add('fenced_code_block',
+                             CustomFencedBlockPreprocessor(md),
+                             ">normalize_whitespace")
+
+
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import HtmlFormatter
+
+
+@register.tag(name='code')
+def do_code(parser,token):
+    code = token.split_contents()[-1]
+    nodelist = parser.parse(('endcode',))
+    parser.delete_first_token()
+    return CodeNode(code, nodelist)
+
+
+class CodeNode(template.Node):
+    style = 'emacs'
+
+    def __init__(self, lang, code):
+        self.lang = lang
+        self.nodelist = code
+
+    def render(self, context):
+        body = self.nodelist.render(context)
+        lexer = get_lexer_by_name(self.lang, stripall=False)
+        formatter = HtmlFormatter(nowrap=True, style=self.style)
+        code = highlight(body, lexer, formatter)
+        return code
+
+
+@register.filter()
+def with_location(fields, location):
+    return [
+        field for field in fields
+        if field.location == location
+    ]
+
+
+@register.simple_tag
+def form_for_link(link):
+    import coreschema
+    properties = {
+        field.name: field.schema or coreschema.String()
+        for field in link.fields
+    }
+    required = [
+        field.name
+        for field in link.fields
+        if field.required
+    ]
+    schema = coreschema.Object(properties=properties, required=required)
+    return coreschema.render_to_form(schema)
+
+
+@register.simple_tag
+def render_markdown(markdown_text):
+    return markdown.markdown(markdown_text, extensions=[FencedCodeExtension(), "tables"])
 
 
 @register.simple_tag

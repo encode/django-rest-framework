@@ -1,0 +1,19 @@
+{% load rest_framework %}
+<div class="row">
+    <div class="col-md-6">
+        <h1 id="document-title">{{ document.title }}</h1>
+        <p>{% render_markdown document.description %}</p>
+    </div>
+    <div class="col-md-6"></div>
+</div>
+
+{% for section_key, section in document.data.items %}
+    <h1 id="{{ section_key }}" class="coredocs-section">{{ section_key }}</h1>
+    {% for link_key, link in section.links.items %}
+        {% include "rest_framework/docs/link.html" %}
+    {% endfor %}
+{% endfor %}
+
+{% for link_key, link in document.links.items %}
+    {% include "rest_framework/docs/llink.html" %}
+{% endfor %}

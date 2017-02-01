@@ -1,0 +1,143 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	    <title>{{ document.title }}</title>
+
+        <link href="{% static 'rest_framework/docs/css/bootstrap-custom.min.css' %}" rel="stylesheet">
+        <link href="{% static 'rest_framework/docs/css/font-awesome-4.0.3.css' %}" rel="stylesheet">
+        <link href="{% static 'rest_framework/docs/css/base.css' %}" rel="stylesheet">
+        <style>{{ code_style }}</style>
+        <style>
+        .highlight {background-color: #f7f7f9}
+        .coredocs-link {border-top: 1px solid lightgrey; margin-top: 20px}
+        .coredocs-section {border-top: 2px solid lightgrey; margin-top: 20px; padding-top: 20px}
+        .checkbox label.control-label {font-weight: bold}
+        @media (min-width: 768px) {
+            .navbar-nav.navbar-right:last-child {
+                margin-right: 0 !important;
+            }
+        }
+        </style>
+        <script src="https://unpkg.com/coreapi@0.0.17/dist/coreapi.js"></script>
+    </head>
+
+    <body>
+
+        {% include "rest_framework/docs/nav.html" %}
+
+        <div class="container-fluid">
+                <div class="col-md-2">{% include "rest_framework/docs/toc.html" %}</div>
+                <div class="col-md-10" role="main">{% include "rest_framework/docs/document.html" %}</div>
+        </div>
+
+        <script src="{% static 'rest_framework/docs/js/jquery-1.10.2.min.js' %}"></script>
+        <script src="{% static 'rest_framework/docs/js/bootstrap-3.0.3.min.js' %}"></script>
+        <script>
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            const csrf = {'X-CSRFToken': getCookie('csrftoken')}
+
+            const coreapi = window.coreapi
+            const codec = new coreapi.codecs.CoreJSONCodec()
+            const schema = {{ schema }}
+            const doc = codec.decode(schema, {preloaded: true})
+            const client = new coreapi.Client(null, null, csrf)
+
+            $('body').scrollspy({ target: '#toc' })
+
+            // Language Control
+            $('.language-control li a').click(function (event) {
+                event.preventDefault();
+                var button = $(this)
+                var language = button.data("language")
+
+                var languageControls = $('.language-control li a')
+                languageControls.not('[data-language="' + language +'"]').parent().removeClass("active")
+                languageControls.filter('[data-language="' + language +'"]').parent().addClass("active")
+
+                button.closest("li.dropdown").find('.dropdown-toggle span').text(language)
+
+                var codeBlocks = $('pre.highlight')
+                codeBlocks.not('[data-language="' + language +'"]').addClass("hide")
+                codeBlocks.filter('[data-language="' + language +'"]').removeClass("hide")
+            })
+
+            // API Explorer
+
+            $('form').submit(function(event) {
+                event.preventDefault();
+
+                const form = $(this).closest("form");
+                const key = form.data("key");
+                var params = {};
+
+                const formData = new FormData(form.get()[0]);
+                for (var [paramKey, paramValue] of formData.entries()) {
+                    var elem = form.find("[name=" + paramKey + "]")
+                    var dataType = elem.data('type') || 'string'
+                    var dataLocation = elem.data('location')
+
+                    if (dataType === 'integer' && paramValue) {
+                        paramValue = parseInt(paramValue)
+                    } else if (dataType === 'number' && paramValue) {
+                        paramValue = parseFloat(paramValue)
+                    } else if (dataType === 'boolean' && paramValue) {
+                        paramValue = {
+                            'true': true,
+                            'false': false
+                        }[paramValue.toLowerCase()]
+                    } else if (dataType === 'array' && paramValue) {
+                        paramValue = JSON.parse(paramValue)
+                    }
+
+                    if (dataLocation === 'query' && !paramValue) {
+                        continue
+                    }
+                    params[paramKey] = paramValue
+                }
+
+                form.find(":checkbox").each(function( index ) {
+                    var name = $(this).attr("name");
+                    if (!params.hasOwnProperty(name)) {
+                        params[name] = false
+                    }
+                })
+
+                console.log(params)
+
+                client.action(doc, key, params).then(function (data) {
+                    var response = JSON.stringify(data, null, 2);
+                    form.find(".response-data").text(response)
+                    form.find(".response-data").removeClass("hide")
+                    form.find(".response-error").addClass("hide")
+                }).catch(function (error) {
+                    var response = JSON.stringify(error.content, null, 2);
+                    form.find(".response-error").text(error.message)
+                    form.find(".response-data").text(response)
+                    form.find(".response-error").removeClass("hide")
+                    form.find(".response-data").removeClass("hide")
+
+                    /*form.find(".response-data").addClass("hide")*/
+                })
+            });
+        </script>
+    </body>
+</html>

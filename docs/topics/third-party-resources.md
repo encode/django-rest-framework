@@ -207,6 +207,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [html-json-forms][html-json-forms] - Provides an algorithm and serializer to process HTML JSON Form submissions per the (inactive) spec.
 * [django-rest-framework-serializer-extensions][drf-serializer-extensions] -
   Enables black/whitelisting fields, and conditionally expanding child serializers on a per-view/request basis.
+* [djangorestframework-queryfields][djangorestframework-queryfields] - Serializer mixin allowing clients to control which fields will be sent in the API response.
 
 ### Serializer fields
 
@@ -370,3 +371,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [drf_tweaks]: https://github.com/ArabellaTech/drf_tweaks
 [drf-oidc-auth]: https://github.com/ByteInternet/drf-oidc-auth
 [drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
+[djangorestframework-queryfields]: https://github.com/wimglenn/djangorestframework-queryfields
