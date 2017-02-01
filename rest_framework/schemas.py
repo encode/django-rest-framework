@@ -1,5 +1,4 @@
 import re
-import coreschema
 from collections import OrderedDict
 from importlib import import_module
 
@@ -14,7 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import exceptions, renderers, serializers
 from rest_framework.compat import (
-    RegexURLPattern, RegexURLResolver, coreapi, uritemplate, urlparse
+    RegexURLPattern, RegexURLResolver, coreapi, coreschema, uritemplate, urlparse
 )
 from rest_framework.request import clone_request
 from rest_framework.response import Response
@@ -279,6 +278,7 @@ class SchemaGenerator(object):
 
     def __init__(self, title=None, url=None, patterns=None, urlconf=None):
         assert coreapi, '`coreapi` must be installed for schema support.'
+        assert coreschema, '`coreschema` must be installed for schema support.'
 
         if url and not url.endswith('/'):
             url += '/'
@@ -522,6 +522,7 @@ class SchemaGenerator(object):
         for variable in uritemplate.variables(path):
             title = ''
             description = ''
+            schema_cls = coreschema.String
             if model is not None:
                 # Attempt to infer a field description if possible.
                 try:
@@ -537,11 +538,14 @@ class SchemaGenerator(object):
                 elif model_field is not None and model_field.primary_key:
                     description = get_pk_description(model, model_field)
 
+                if isinstance(model_field, models.AutoField):
+                    schema_cls = coreschema.Integer
+
             field = coreapi.Field(
                 name=variable,
                 location='path',
                 required=True,
-                schema=coreschema.String(title=title, description=description)
+                schema=schema_cls(title=title, description=description)
             )
             fields.append(field)
 

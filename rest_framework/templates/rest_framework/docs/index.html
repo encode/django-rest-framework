@@ -58,7 +58,7 @@
             const coreapi = window.coreapi
             const codec = new coreapi.codecs.CoreJSONCodec()
             const schema = {{ schema }}
-            const doc = codec.decode(schema, {preloaded: true})
+            const doc = codec.decode(schema)
             const client = new coreapi.Client(null, null, csrf)
 
             $('body').scrollspy({ target: '#toc' })
