@@ -1,11 +1,4 @@
 {% load rest_framework %}
-<div class="row">
-    <div class="col-md-6">
-        <h1 id="document-title">{{ document.title }}</h1>
-        <p>{% render_markdown document.description %}</p>
-    </div>
-    <div class="col-md-6"></div>
-</div>
 
 {% for section_key, section in document.data.items %}
     <h1 id="{{ section_key }}" class="coredocs-section">{{ section_key }}</h1>

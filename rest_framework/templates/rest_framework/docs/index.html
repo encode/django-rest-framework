@@ -8,7 +8,8 @@
 
 	    <title>{{ document.title }}</title>
 
-        <link href="{% static 'rest_framework/docs/css/bootstrap-custom.min.css' %}" rel="stylesheet">
+        <link href="{% static 'rest_framework/docs/css/bootstrap.min.css' %}" rel="stylesheet">
+        <link href="{% static 'rest_framework/docs/css/bootstrap-theme.min.css' %}" rel="stylesheet">
         <link href="{% static 'rest_framework/docs/css/font-awesome-4.0.3.css' %}" rel="stylesheet">
         <link href="{% static 'rest_framework/docs/css/base.css' %}" rel="stylesheet">
         <style>{{ code_style }}</style>
@@ -23,21 +24,43 @@
             }
         }
         </style>
-        <script src="https://unpkg.com/coreapi@0.0.17/dist/coreapi.js"></script>
+        <script src="https://unpkg.com/coreapi@0.0.18/dist/coreapi.js"></script>
     </head>
 
     <body>
 
-        {% include "rest_framework/docs/nav.html" %}
+        <div id="wrapper">
 
-        <div class="container-fluid">
-                <div class="col-md-2">{% include "rest_framework/docs/toc.html" %}</div>
-                <div class="col-md-10" role="main">{% include "rest_framework/docs/document.html" %}</div>
+            {% include "rest_framework/docs/sidebar.html" %}
+
+            <!-- Page Content -->
+            <div id="page-content-wrapper">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">Toggle Menu</a>
+                            {% include "rest_framework/docs/document.html" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /#page-content-wrapper -->
+
+<!--             <div class="container-fluid">
+                <div class="col-md-2">include "rest_framework/docs/toc.html" </div>
+                <div class="col-md-10" role="main">include "rest_framework/docs/document.html</div>
+            </div>
+ -->
         </div>
 
         <script src="{% static 'rest_framework/docs/js/jquery-1.10.2.min.js' %}"></script>
-        <script src="{% static 'rest_framework/docs/js/bootstrap-3.0.3.min.js' %}"></script>
+        <script src="{% static 'rest_framework/docs/js/bootstrap.min.js' %}"></script>
         <script>
+            $("#menu-toggle").click(function(e) {
+                e.preventDefault();
+                $("#wrapper").toggleClass("toggled");
+            });
+
             function getCookie(name) {
                 var cookieValue = null;
                 if (document.cookie && document.cookie !== '') {
