@@ -61,11 +61,20 @@
     text-indent: 10px;
 }
 
+.sidebar-nav > li > .nav > li {
+    text-indent: 30px;
+}
+
+
 .sidebar-nav li a {
     display: block;
-    text-decoration: none;
-    color: #999999;
     border: 0;
+    font-size: 12px;
+    font-weight: normal;
+    color: #999999;
+    text-decoration: none;
+    text-transform: none;
+    padding: 8px 15px;
 }
 
 .sidebar-nav li a:hover {
@@ -83,6 +92,15 @@
 .sidebar-wrapper > .sidebar-brand {
     text-align: center;
     margin-bottom: 20px;
+}
+
+.sidebar-wrapper .language-switcher {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar-wrapper .language-switcher .dropdown-menu {
+    min-width: 100px;
 }
 
 @media(min-width:768px) {
@@ -112,7 +130,6 @@
         margin-right: 0;
     }
 }
-
 
 
 

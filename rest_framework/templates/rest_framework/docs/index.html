@@ -30,7 +30,6 @@
     <body>
 
         <div id="wrapper">
-
             {% include "rest_framework/docs/sidebar.html" %}
 
             <!-- Page Content -->
@@ -45,12 +44,6 @@
                 </div>
             </div>
             <!-- /#page-content-wrapper -->
-
-<!--             <div class="container-fluid">
-                <div class="col-md-2">include "rest_framework/docs/toc.html" </div>
-                <div class="col-md-10" role="main">include "rest_framework/docs/document.html</div>
-            </div>
- -->
         </div>
 
         <script src="{% static 'rest_framework/docs/js/jquery-1.10.2.min.js' %}"></script>
@@ -96,7 +89,11 @@
                 languageControls.not('[data-language="' + language +'"]').parent().removeClass("active")
                 languageControls.filter('[data-language="' + language +'"]').parent().addClass("active")
 
-                button.closest("li.dropdown").find('.dropdown-toggle span').text(language)
+                console.log('-----');
+                console.log(button);
+                console.log('-----');
+
+                button.closest(".btn-group").find('.dropdown-toggle span').first().text(language)
 
                 var codeBlocks = $('pre.highlight')
                 codeBlocks.not('[data-language="' + language +'"]').addClass("hide")
