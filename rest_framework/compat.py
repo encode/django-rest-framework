@@ -17,11 +17,6 @@ from django.template import Context, RequestContext, Template
 from django.utils import six
 from django.views.generic import View
 
-try:
-    import importlib  # Available in Python 3.1+
-except ImportError:
-    from django.utils import importlib  # Will be removed in Django 1.9
-
 
 try:
     from django.urls import (
@@ -312,3 +307,10 @@ def set_many(instance, field, value):
     else:
         field = getattr(instance, field)
         field.set(value)
+
+def include(module, namespace=None, app_name=None):
+    from django.conf.urls import include
+    if django.VERSION < (1,9):
+        return include(module, namespace, app_name)
+    else:
+        return include((module, app_name), namespace)

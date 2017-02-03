@@ -159,6 +159,32 @@ class TestBaseSerializer:
 
         self.Serializer = ExampleSerializer
 
+    def test_abstract_methods_raise_proper_errors(self):
+        serializer = serializers.BaseSerializer()
+        with pytest.raises(NotImplementedError):
+            serializer.to_internal_value(None)
+        with pytest.raises(NotImplementedError):
+            serializer.to_representation(None)
+        with pytest.raises(NotImplementedError):
+            serializer.update(None, None)
+        with pytest.raises(NotImplementedError):
+            serializer.create(None)
+
+    def test_access_to_data_attribute_before_validation_raises_error(self):
+        serializer = serializers.BaseSerializer(data={'foo': 'bar'})
+        with pytest.raises(AssertionError):
+            serializer.data
+
+    def test_access_to_errors_attribute_before_validation_raises_error(self):
+        serializer = serializers.BaseSerializer(data={'foo': 'bar'})
+        with pytest.raises(AssertionError):
+            serializer.errors
+
+    def test_access_to_validated_data_attribute_before_validation_raises_error(self):
+        serializer = serializers.BaseSerializer(data={'foo': 'bar'})
+        with pytest.raises(AssertionError):
+            serializer.validated_data
+
     def test_serialize_instance(self):
         instance = {'id': 1, 'name': 'tom', 'domain': 'example.com'}
         serializer = self.Serializer(instance)
