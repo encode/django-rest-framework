@@ -434,9 +434,11 @@ Requires either the `Pillow` package or `PIL` package.  The `Pillow` package is 
 
 A field class that validates a list of objects.
 
-**Signature**: `ListField(child)`
+**Signature**: `ListField(child, min_length=None, max_length=None)`
 
 - `child` - A field instance that should be used for validating the objects in the list. If this argument is not provided then objects in the list will not be validated.
+- `min_length` - Validates that the list contains no fewer than this number of elements.
+- `max_length` - Validates that the list contains no more than this number of elements.
 
 For example, to validate a list of integers you might use something like the following:
 
