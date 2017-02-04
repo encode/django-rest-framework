@@ -1505,12 +1505,16 @@ class ListField(Field):
     initial = []
     default_error_messages = {
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
-        'empty': _('This list may not be empty.')
+        'empty': _('This list may not be empty.'),
+        'min_length': _('Ensure this field has at least {min_length} elements.'),
+        'max_length': _('Ensure this field has no more than {max_length} elements.')
     }
 
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         self.allow_empty = kwargs.pop('allow_empty', True)
+        self.max_length = kwargs.pop('max_length', None)
+        self.min_length = kwargs.pop('min_length', None)
 
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         assert self.child.source is None, (
@@ -1520,6 +1524,12 @@ class ListField(Field):
 
         super(ListField, self).__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
+        if self.max_length is not None:
+            message = self.error_messages['max_length'].format(max_length=self.max_length)
+            self.validators.append(MaxLengthValidator(self.max_length, message=message))
+        if self.min_length is not None:
+            message = self.error_messages['min_length'].format(min_length=self.min_length)
+            self.validators.append(MinLengthValidator(self.min_length, message=message))
 
     def get_value(self, dictionary):
         if self.field_name not in dictionary:
