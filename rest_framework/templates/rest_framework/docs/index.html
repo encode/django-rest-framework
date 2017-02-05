@@ -27,44 +27,19 @@
 
     <body data-spy="scroll" data-target="#sidebar-nav" data-offset="50">
 
-        <nav class="navbar navbar-default navbar-fixed-top top-navbar">
-          <div class="container-fluid">
-            <div class="navbar-header">
-                <a href="#document-title" class="navbar-toggle collapsed" id="menu-toggle">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-              <a class="navbar-brand" href="#">{{ document.title }}</a>
-            </div>
-          </div>
-        </nav>
+        {% include "rest_framework/docs/sidebar.html" %}
 
-        <div id="wrapper">
-            {% include "rest_framework/docs/sidebar.html" %}
-
-            <!-- Page Content -->
-            <div id="page-content-wrapper">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            {% include "rest_framework/docs/document.html" %}
-                        </div>
-                    </div>
+        <div class="container" id="main">
+            <div class="row">
+                <div class="col-md-12">
+                    {% include "rest_framework/docs/document.html" %}
                 </div>
             </div>
-            <!-- /#page-content-wrapper -->
         </div>
 
         <script src="{% static 'rest_framework/docs/js/jquery-1.10.2.min.js' %}"></script>
         <script src="{% static 'rest_framework/docs/js/bootstrap.min.js' %}"></script>
         <script>
-            $("#menu-toggle").click(function(e) {
-                e.preventDefault();
-                $("#wrapper").toggleClass("toggled");
-            });
-
             function getCookie(name) {
                 var cookieValue = null;
                 if (document.cookie && document.cookie !== '') {
@@ -98,7 +73,7 @@
                 languageControls.not('[data-language="' + language +'"]').parent().removeClass("active")
                 languageControls.filter('[data-language="' + language +'"]').parent().addClass("active")
 
-                button.closest(".btn-group").find('.dropdown-toggle span').first().text(language)
+                button.closest("li.dropdown").find('.dropdown-toggle span').text(language)
 
                 var codeBlocks = $('pre.highlight')
                 codeBlocks.not('[data-language="' + language +'"]').addClass("hide")
@@ -145,8 +120,6 @@
                         params[name] = false
                     }
                 })
-
-                console.log(params)
 
                 client.action(doc, key, params).then(function (data) {
                     var response = JSON.stringify(data, null, 2);
