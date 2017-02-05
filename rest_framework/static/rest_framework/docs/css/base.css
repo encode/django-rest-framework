@@ -181,13 +181,12 @@ body {
 }
 
 .coredocs-section {
-    border-top: 2px solid lightgrey;
     margin-top: 20px;
-    padding-top: 20px
+    padding-bottom: 10px;
+    border-bottom: 1px solid lightgrey;
 }
 
-.coredocs-section:first-child {
-    border-top: 0;
+.coredocs-section:last-child {
     margin-top: 0;
 }
 
@@ -205,3 +204,15 @@ body {
 .sidebar .language-switcher .btn {
     padding: 3px 7px;
 }
+
+
+/* @group Docs Content */
+
+.docs-content .btn {
+  font-size: inherit;
+}
+
+.code-samples pre {
+  margin-top: 20px;
+}
+/* @end Docs Content */

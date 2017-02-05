@@ -1,7 +1,7 @@
 {% load rest_framework %}
 
 {% for section_key, section in document.data.items %}
-    <h1 id="{{ section_key }}" class="coredocs-section">{{ section_key }}</h1>
+    <h2 id="{{ section_key }}" class="coredocs-section"><i class="fa fa-angle-right"></i> {{ section_key }}</h2>
     {% for link_key, link in section.links.items %}
         {% include "rest_framework/docs/link.html" %}
     {% endfor %}

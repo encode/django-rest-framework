@@ -2,9 +2,9 @@
 <div class="row coredocs-link">
 
 <div class="col-md-6 docs-content">
-<button class="btn btn-success" style="float: right; margin-top: 20px" data-toggle="modal" data-target="#{{ section_key }}_{{ link_key }}_modal">Interact</button>
+<button class="btn btn-sm btn-success" style="float: right; margin-top: 20px" data-toggle="modal" data-target="#{{ section_key }}_{{ link_key }}_modal">Interact</button>
 
-<h2 id="{{ section_key }}-{{ link_key }}">{{ link.title|default:link_key }}</h2>
+<h3 id="{{ section_key }}-{{ link_key }}">{{ link.title|default:link_key }}</h3>
     <p>
         <span class="label label-primary">{{ link.action|upper }}</span> <code>{{ link.url }}</code>
     </p>
