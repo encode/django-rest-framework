@@ -98,7 +98,7 @@ msgstr "Benutzerkonto ist gesperrt."
 
 #: authtoken/serializers.py:23
 msgid "Unable to log in with provided credentials."
-msgstr "Die angegeben Zugangsdaten stimmen nicht."
+msgstr "Die angegebenen Zugangsdaten stimmen nicht."
 
 #: authtoken/serializers.py:26
 msgid "Must include \"username\" and \"password\"."
