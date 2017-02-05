@@ -20,10 +20,6 @@
     margin-bottom: 0;
 }
 
-.sidebar .menu-list {
-    position: relative;
-}
-
 .sidebar .toggle-btn {
   display: none;
 }
@@ -190,11 +186,13 @@ body {
     margin-top: 0;
 }
 
+
+/* @group Language Switcher */
+
 .sidebar .language-switcher {
     text-align: center;
     margin-top: 20px;
     margin-bottom: 20px;
-    bottom: 0;
 }
 
 .sidebar .language-switcher h6 {
@@ -204,6 +202,32 @@ body {
 .sidebar .language-switcher .btn {
     padding: 3px 7px;
 }
+
+.sidebar .language-switcher .dropdown-menu {
+  margin-top: 5px;
+  margin-bottom: 20px;
+  border: 0;
+  border-radius: 0;
+  min-width: 130px;
+}
+
+.sidebar .language-switcher .dropdown-menu > li > a {
+  padding: 3px 10px;
+}
+
+.sidebar .language-switcher .dropdown-menu > .active > a,
+.sidebar .language-switcher .dropdown-menu > .active > a:hover,
+.sidebar .language-switcher .dropdown-menu > .active > a:focus {
+  background-color: #17759c;
+}
+
+.sidebar .language-switcher .dropdown-menu > li > a,
+.sidebar .language-switcher .dropdown-menu > li > a:hover,
+.sidebar .language-switcher .dropdown-menu > li > a:focus {
+  background-color: #23282e;
+}
+
+/* @end Language Switcher */
 
 
 /* @group Docs Content */

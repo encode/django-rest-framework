@@ -73,7 +73,7 @@
                 languageControls.not('[data-language="' + language +'"]').parent().removeClass("active")
                 languageControls.filter('[data-language="' + language +'"]').parent().addClass("active")
 
-                button.closest("li.dropdown").find('.dropdown-toggle span').text(language)
+                button.closest(".btn-group").find('.dropdown-toggle span').first().text(language)
 
                 var codeBlocks = $('pre.highlight')
                 codeBlocks.not('[data-language="' + language +'"]').addClass("hide")
