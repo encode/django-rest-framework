@@ -1668,6 +1668,16 @@ class TestEmptyListField(FieldValues):
     field = serializers.ListField(child=serializers.IntegerField(), allow_empty=False)
 
 
+class TestListFieldLengthLimit(FieldValues):
+    valid_inputs = ()
+    invalid_inputs = [
+        ((0, 1), ['Ensure this field has at least 3 elements.']),
+        ((0, 1, 2, 3, 4, 5), ['Ensure this field has no more than 4 elements.']),
+    ]
+    outputs = ()
+    field = serializers.ListField(child=serializers.IntegerField(), min_length=3, max_length=4)
+
+
 class TestUnvalidatedListField(FieldValues):
     """
     Values for `ListField` with no `child` argument.
