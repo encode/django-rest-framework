@@ -1,22 +1,24 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from rest_framework.test import APIClient
 
 
+@override_settings(ROOT_URLCONF='tests.browsable_api.auth_urls')
 class DropdownWithAuthTests(TestCase):
     """Tests correct dropdown behaviour with Auth views enabled."""
-
-    urls = 'tests.browsable_api.auth_urls'
-
     def setUp(self):
         self.client = APIClient(enforce_csrf_checks=True)
         self.username = 'john'
         self.email = 'lennon@thebeatles.com'
         self.password = 'password'
-        self.user = User.objects.create_user(self.username, self.email, self.password)
+        self.user = User.objects.create_user(
+            self.username,
+            self.email,
+            self.password
+        )
 
     def tearDown(self):
         self.client.logout()
@@ -24,29 +26,34 @@ class DropdownWithAuthTests(TestCase):
     def test_name_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
-        self.assertContains(response, 'john')
+        content = response.content.decode('utf8')
+        assert 'john' in content
 
     def test_logout_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
-        self.assertContains(response, '>Log out<')
+        content = response.content.decode('utf8')
+        assert '>Log out<' in content
 
     def test_login_shown_when_logged_out(self):
         response = self.client.get('/')
-        self.assertContains(response, '>Log in<')
+        content = response.content.decode('utf8')
+        assert '>Log in<' in content
 
 
+@override_settings(ROOT_URLCONF='tests.browsable_api.no_auth_urls')
 class NoDropdownWithoutAuthTests(TestCase):
     """Tests correct dropdown behaviour with Auth views NOT enabled."""
-
-    urls = 'tests.browsable_api.no_auth_urls'
-
     def setUp(self):
         self.client = APIClient(enforce_csrf_checks=True)
         self.username = 'john'
         self.email = 'lennon@thebeatles.com'
         self.password = 'password'
-        self.user = User.objects.create_user(self.username, self.email, self.password)
+        self.user = User.objects.create_user(
+            self.username,
+            self.email,
+            self.password
+        )
 
     def tearDown(self):
         self.client.logout()
@@ -54,13 +61,16 @@ class NoDropdownWithoutAuthTests(TestCase):
     def test_name_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
-        self.assertContains(response, 'john')
+        content = response.content.decode('utf8')
+        assert 'john' in content
 
     def test_dropdown_not_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
-        self.assertNotContains(response, '<li class="dropdown">')
+        content = response.content.decode('utf8')
+        assert '<li class="dropdown">' not in content
 
     def test_dropdown_not_shown_when_logged_out(self):
         response = self.client.get('/')
-        self.assertNotContains(response, '<li class="dropdown">')
+        content = response.content.decode('utf8')
+        assert '<li class="dropdown">' not in content

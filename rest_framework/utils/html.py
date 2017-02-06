@@ -14,7 +14,7 @@ def is_html_input(dictionary):
 
 def parse_html_list(dictionary, prefix=''):
     """
-    Used to suport list values in HTML forms.
+    Used to support list values in HTML forms.
     Supports lists of primitives and/or dictionaries.
 
     * List of primitives.
@@ -80,10 +80,12 @@ def parse_html_dict(dictionary, prefix=''):
     """
     ret = MultiValueDict()
     regex = re.compile(r'^%s\.(.+)$' % re.escape(prefix))
-    for field, value in dictionary.items():
+    for field in dictionary:
         match = regex.match(field)
         if not match:
             continue
         key = match.groups()[0]
-        ret[key] = value
+        value = dictionary.getlist(field)
+        ret.setlist(key, value)
+
     return ret

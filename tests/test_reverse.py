@@ -1,9 +1,9 @@
 from __future__ import unicode_literals
 
 from django.conf.urls import url
-from django.core.urlresolvers import NoReverseMatch
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
+from rest_framework.compat import NoReverseMatch
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 
@@ -30,27 +30,26 @@ class MockVersioningScheme(object):
         return 'http://scheme-reversed/view'
 
 
+@override_settings(ROOT_URLCONF='tests.test_reverse')
 class ReverseTests(TestCase):
     """
     Tests for fully qualified URLs when using `reverse`.
     """
-    urls = 'tests.test_reverse'
-
     def test_reversed_urls_are_fully_qualified(self):
         request = factory.get('/view')
         url = reverse('view', request=request)
-        self.assertEqual(url, 'http://testserver/view')
+        assert url == 'http://testserver/view'
 
     def test_reverse_with_versioning_scheme(self):
         request = factory.get('/view')
         request.versioning_scheme = MockVersioningScheme()
 
         url = reverse('view', request=request)
-        self.assertEqual(url, 'http://scheme-reversed/view')
+        assert url == 'http://scheme-reversed/view'
 
     def test_reverse_with_versioning_scheme_fallback_to_default_on_error(self):
         request = factory.get('/view')
         request.versioning_scheme = MockVersioningScheme(raise_error=True)
 
         url = reverse('view', request=request)
-        self.assertEqual(url, 'http://testserver/view')
+        assert url == 'http://testserver/view'

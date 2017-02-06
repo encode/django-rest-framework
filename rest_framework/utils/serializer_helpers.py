@@ -10,7 +10,7 @@ from rest_framework.compat import unicode_to_repr
 
 class ReturnDict(OrderedDict):
     """
-    Return object from `serialier.data` for the `Serializer` class.
+    Return object from `serializer.data` for the `Serializer` class.
     Includes a backlink to the serializer instance for renderers
     to use if they need richer field information.
     """
@@ -33,7 +33,7 @@ class ReturnDict(OrderedDict):
 
 class ReturnList(list):
     """
-    Return object from `serialier.data` for the `SerializerList` class.
+    Return object from `serializer.data` for the `SerializerList` class.
     Includes a backlink to the serializer instance for renderers
     to use if they need richer field information.
     """
@@ -78,7 +78,7 @@ class BoundField(object):
         ))
 
     def as_form_field(self):
-        value = '' if (self.value is None or self.value is False) else force_text(self.value)
+        value = '' if (self.value is None or self.value is False) else self.value
         return self.__class__(self._field, value, self.errors, self._prefix)
 
 

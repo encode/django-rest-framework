@@ -15,7 +15,7 @@ from django.utils import six
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import template_render
+from rest_framework.compat import coreapi, template_render
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -36,10 +36,11 @@ def _positive_int(integer_string, strict=False, cutoff=None):
 
 def _divide_with_ceil(a, b):
     """
-    Returns 'a' divded by 'b', with any remainder rounded up.
+    Returns 'a' divided by 'b', with any remainder rounded up.
     """
     if a % b:
         return (a // b) + 1
+
     return a // b
 
 
@@ -63,10 +64,10 @@ def _get_displayed_page_numbers(current, final):
 
     This implementation gives one page to each side of the cursor,
     or two pages to the side when the cursor is at the edge, then
-    ensures that any breaks between non-continous page numbers never
+    ensures that any breaks between non-continuous page numbers never
     remove only a single page.
 
-    For an alernativative implementation which gives two pages to each side of
+    For an alternative implementation which gives two pages to each side of
     the cursor, eg. as in GitHub issue list pagination, see:
 
     https://gist.github.com/tomchristie/321140cebb1c4a558b15
@@ -130,7 +131,7 @@ def _reverse_ordering(ordering_tuple):
     ordering and return a new tuple, eg. `('created', '-uuid')`.
     """
     def invert(x):
-        return x[1:] if (x.startswith('-')) else '-' + x
+        return x[1:] if x.startswith('-') else '-' + x
 
     return tuple([invert(item) for item in ordering_tuple])
 
@@ -155,6 +156,10 @@ class BasePagination(object):
 
     def get_results(self, data):
         return data['results']
+
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        return []
 
 
 class PageNumberPagination(BasePagination):
@@ -186,7 +191,7 @@ class PageNumberPagination(BasePagination):
 
     template = 'rest_framework/pagination/numbers.html'
 
-    invalid_page_message = _('Invalid page "{page_number}": {message}.')
+    invalid_page_message = _('Invalid page.')
 
     def paginate_queryset(self, queryset, request, view=None):
         """
@@ -279,6 +284,17 @@ class PageNumberPagination(BasePagination):
         context = self.get_html_context()
         return template_render(template, context)
 
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        fields = [
+            coreapi.Field(name=self.page_query_param, required=False, location='query')
+        ]
+        if self.page_size_query_param is not None:
+            fields.append(
+                coreapi.Field(name=self.page_size_query_param, required=False, location='query')
+            )
+        return fields
+
 
 class LimitOffsetPagination(BasePagination):
     """
@@ -303,6 +319,9 @@ class LimitOffsetPagination(BasePagination):
         self.request = request
         if self.count > self.limit and self.template is not None:
             self.display_page_controls = True
+
+        if self.count == 0 or self.offset > self.count:
+            return []
         return list(queryset[self.offset:self.offset + self.limit])
 
     def get_paginated_response(self, data):
@@ -318,6 +337,7 @@ class LimitOffsetPagination(BasePagination):
             try:
                 return _positive_int(
                     request.query_params[self.limit_query_param],
+                    strict=True,
                     cutoff=self.max_limit
                 )
             except (KeyError, ValueError):
@@ -358,17 +378,24 @@ class LimitOffsetPagination(BasePagination):
 
     def get_html_context(self):
         base_url = self.request.build_absolute_uri()
-        current = _divide_with_ceil(self.offset, self.limit) + 1
-        # The number of pages is a little bit fiddly.
-        # We need to sum both the number of pages from current offset to end
-        # plus the number of pages up to the current offset.
-        # When offset is not strictly divisible by the limit then we may
-        # end up introducing an extra page as an artifact.
-        final = (
-            _divide_with_ceil(self.count - self.offset, self.limit) +
-            _divide_with_ceil(self.offset, self.limit)
-        )
-        if final < 1:
+
+        if self.limit:
+            current = _divide_with_ceil(self.offset, self.limit) + 1
+
+            # The number of pages is a little bit fiddly.
+            # We need to sum both the number of pages from current offset to end
+            # plus the number of pages up to the current offset.
+            # When offset is not strictly divisible by the limit then we may
+            # end up introducing an extra page as an artifact.
+            final = (
+                _divide_with_ceil(self.count - self.offset, self.limit) +
+                _divide_with_ceil(self.offset, self.limit)
+            )
+
+            if final < 1:
+                final = 1
+        else:
+            current = 1
             final = 1
 
         if current > final:
@@ -395,18 +422,31 @@ class LimitOffsetPagination(BasePagination):
         context = self.get_html_context()
         return template_render(template, context)
 
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        return [
+            coreapi.Field(name=self.limit_query_param, required=False, location='query'),
+            coreapi.Field(name=self.offset_query_param, required=False, location='query')
+        ]
+
 
 class CursorPagination(BasePagination):
     """
-    The cursor pagination implementation is neccessarily complex.
+    The cursor pagination implementation is necessarily complex.
     For an overview of the position/offset style we use, see this post:
-    http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api/
+    http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api
     """
     cursor_query_param = 'cursor'
     page_size = api_settings.PAGE_SIZE
     invalid_cursor_message = _('Invalid cursor')
     ordering = '-created'
     template = 'rest_framework/pagination/previous_and_next.html'
+
+    # The offset in the cursor is used in situations where we have a
+    # nearly-unique index. (Eg millisecond precision creation timestamps)
+    # We guard against malicious users attempting to cause expensive database
+    # queries, by having a hard cap on the maximum possible size of the offset.
+    offset_cutoff = 1000
 
     def paginate_queryset(self, queryset, request, view=None):
         self.page_size = self.get_page_size(request)
@@ -450,10 +490,10 @@ class CursorPagination(BasePagination):
 
         # Determine the position of the final item following the page.
         if len(results) > len(self.page):
-            has_following_postion = True
+            has_following_position = True
             following_position = self._get_position_from_instance(results[-1], self.ordering)
         else:
-            has_following_postion = False
+            has_following_position = False
             following_position = None
 
         # If we have a reverse queryset, then the query ordering was in reverse
@@ -464,14 +504,14 @@ class CursorPagination(BasePagination):
         if reverse:
             # Determine next and previous positions for reverse cursors.
             self.has_next = (current_position is not None) or (offset > 0)
-            self.has_previous = has_following_postion
+            self.has_previous = has_following_position
             if self.has_next:
                 self.next_position = current_position
             if self.has_previous:
                 self.previous_position = following_position
         else:
             # Determine next and previous positions for forward cursors.
-            self.has_next = has_following_postion
+            self.has_next = has_following_position
             self.has_previous = (current_position is not None) or (offset > 0)
             if self.has_next:
                 self.next_position = following_position
@@ -508,7 +548,7 @@ class CursorPagination(BasePagination):
                 # our marker.
                 break
 
-            # The item in this postion has the same position as the item
+            # The item in this position has the same position as the item
             # following it, we can't use it as a marker position, so increment
             # the offset and keep seeking to the previous item.
             compare = position
@@ -556,7 +596,7 @@ class CursorPagination(BasePagination):
                 # our marker.
                 break
 
-            # The item in this postion has the same position as the item
+            # The item in this position has the same position as the item
             # following it, we can't use it as a marker position, so increment
             # the offset and keep seeking to the previous item.
             compare = position
@@ -638,18 +678,12 @@ class CursorPagination(BasePagination):
         if encoded is None:
             return None
 
-        # The offset in the cursor is used in situations where we have a
-        # nearly-unique index. (Eg millisecond precision creation timestamps)
-        # We guard against malicious users attempting to cause expensive database
-        # queries, by having a hard cap on the maximum possible size of the offset.
-        OFFSET_CUTOFF = 1000
-
         try:
             querystring = b64decode(encoded.encode('ascii')).decode('ascii')
             tokens = urlparse.parse_qs(querystring, keep_blank_values=True)
 
             offset = tokens.get('o', ['0'])[0]
-            offset = _positive_int(offset, cutoff=OFFSET_CUTOFF)
+            offset = _positive_int(offset, cutoff=self.offset_cutoff)
 
             reverse = tokens.get('r', ['0'])[0]
             reverse = bool(int(reverse))
@@ -677,7 +711,11 @@ class CursorPagination(BasePagination):
         return replace_query_param(self.base_url, self.cursor_query_param, encoded)
 
     def _get_position_from_instance(self, instance, ordering):
-        attr = getattr(instance, ordering[0].lstrip('-'))
+        field_name = ordering[0].lstrip('-')
+        if isinstance(instance, dict):
+            attr = instance[field_name]
+        else:
+            attr = getattr(instance, field_name)
         return six.text_type(attr)
 
     def get_paginated_response(self, data):
@@ -697,3 +735,9 @@ class CursorPagination(BasePagination):
         template = loader.get_template(self.template)
         context = self.get_html_context()
         return template_render(template, context)
+
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        return [
+            coreapi.Field(name=self.cursor_query_param, required=False, location='query')
+        ]

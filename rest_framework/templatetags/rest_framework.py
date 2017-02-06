@@ -3,14 +3,13 @@ from __future__ import absolute_import, unicode_literals
 import re
 
 from django import template
-from django.core.urlresolvers import NoReverseMatch, reverse
 from django.template import loader
 from django.utils import six
 from django.utils.encoding import force_text, iri_to_uri
 from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
 
-from rest_framework.compat import template_render
+from rest_framework.compat import NoReverseMatch, reverse, template_render
 from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
 
@@ -90,6 +89,21 @@ def add_query_param(request, key, val):
 
 
 @register.filter
+def as_string(value):
+    if value is None:
+        return ''
+    return '%s' % value
+
+
+@register.filter
+def as_list_of_strings(value):
+    return [
+        '' if (item is None) else ('%s' % item)
+        for item in value
+    ]
+
+
+@register.filter
 def add_class(value, css_class):
     """
     http://stackoverflow.com/questions/4124220/django-adding-css-classes-when-rendering-form-fields-in-a-template
@@ -121,7 +135,8 @@ def add_class(value, css_class):
 @register.filter
 def format_value(value):
     if getattr(value, 'is_hyperlink', False):
-        return mark_safe('<a href=%s>%s</a>' % (value, escape(value.name)))
+        name = six.text_type(value.obj)
+        return mark_safe('<a href=%s>%s</a>' % (value, escape(name)))
     if value is None or isinstance(value, bool):
         return mark_safe('<code>%s</code>' % {True: 'true', False: 'false', None: 'null'}[value])
     elif isinstance(value, list):
@@ -189,7 +204,7 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
     leading punctuation (opening parens) and it'll still do the right thing.
 
     If trim_url_limit is not None, the URLs in link text longer than this limit
-    will truncated to trim_url_limit-3 characters and appended with an elipsis.
+    will truncated to trim_url_limit-3 characters and appended with an ellipsis.
 
     If nofollow is True, the URLs in link text will get a rel="nofollow"
     attribute.

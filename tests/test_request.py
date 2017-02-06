@@ -7,11 +7,13 @@ from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.test import TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase, override_settings
 from django.utils import six
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.compat import is_anonymous
 from rest_framework.parsers import BaseParser, FormParser, MultiPartParser
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -40,14 +42,14 @@ class TestContentParsing(TestCase):
         Ensure request.data returns empty QueryDict for GET request.
         """
         request = Request(factory.get('/'))
-        self.assertEqual(request.data, {})
+        assert request.data == {}
 
     def test_standard_behaviour_determines_no_content_HEAD(self):
         """
         Ensure request.data returns empty QueryDict for HEAD request.
         """
         request = Request(factory.head('/'))
-        self.assertEqual(request.data, {})
+        assert request.data == {}
 
     def test_request_DATA_with_form_content(self):
         """
@@ -56,7 +58,7 @@ class TestContentParsing(TestCase):
         data = {'qwerty': 'uiop'}
         request = Request(factory.post('/', data))
         request.parsers = (FormParser(), MultiPartParser())
-        self.assertEqual(list(request.data.items()), list(data.items()))
+        assert list(request.data.items()) == list(data.items())
 
     def test_request_DATA_with_text_content(self):
         """
@@ -67,7 +69,7 @@ class TestContentParsing(TestCase):
         content_type = 'text/plain'
         request = Request(factory.post('/', content, content_type=content_type))
         request.parsers = (PlainTextParser(),)
-        self.assertEqual(request.data, content)
+        assert request.data == content
 
     def test_request_POST_with_form_content(self):
         """
@@ -76,7 +78,17 @@ class TestContentParsing(TestCase):
         data = {'qwerty': 'uiop'}
         request = Request(factory.post('/', data))
         request.parsers = (FormParser(), MultiPartParser())
-        self.assertEqual(list(request.POST.items()), list(data.items()))
+        assert list(request.POST.items()) == list(data.items())
+
+    def test_request_POST_with_files(self):
+        """
+        Ensure request.POST returns no content for POST request with file content.
+        """
+        upload = SimpleUploadedFile("file.txt", b"file_content")
+        request = Request(factory.post('/', {'upload': upload}))
+        request.parsers = (FormParser(), MultiPartParser())
+        assert list(request.POST.keys()) == []
+        assert list(request.FILES.keys()) == ['upload']
 
     def test_standard_behaviour_determines_form_content_PUT(self):
         """
@@ -85,7 +97,7 @@ class TestContentParsing(TestCase):
         data = {'qwerty': 'uiop'}
         request = Request(factory.put('/', data))
         request.parsers = (FormParser(), MultiPartParser())
-        self.assertEqual(list(request.data.items()), list(data.items()))
+        assert list(request.data.items()) == list(data.items())
 
     def test_standard_behaviour_determines_non_form_content_PUT(self):
         """
@@ -96,7 +108,7 @@ class TestContentParsing(TestCase):
         content_type = 'text/plain'
         request = Request(factory.put('/', content, content_type=content_type))
         request.parsers = (PlainTextParser(), )
-        self.assertEqual(request.data, content)
+        assert request.data == content
 
 
 class MockView(APIView):
@@ -113,9 +125,8 @@ urlpatterns = [
 ]
 
 
+@override_settings(ROOT_URLCONF='tests.test_request')
 class TestContentParsingWithAuthentication(TestCase):
-    urls = 'tests.test_request'
-
     def setUp(self):
         self.csrf_client = APIClient(enforce_csrf_checks=True)
         self.username = 'john'
@@ -131,10 +142,10 @@ class TestContentParsingWithAuthentication(TestCase):
         content = {'example': 'example'}
 
         response = self.client.post('/', content)
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        assert status.HTTP_200_OK == response.status_code
 
         response = self.csrf_client.post('/', content)
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        assert status.HTTP_200_OK == response.status_code
 
 
 class TestUserSetter(TestCase):
@@ -151,21 +162,21 @@ class TestUserSetter(TestCase):
 
     def test_user_can_be_set(self):
         self.request.user = self.user
-        self.assertEqual(self.request.user, self.user)
+        assert self.request.user == self.user
 
     def test_user_can_login(self):
         login(self.request, self.user)
-        self.assertEqual(self.request.user, self.user)
+        assert self.request.user == self.user
 
     def test_user_can_logout(self):
         self.request.user = self.user
-        self.assertFalse(self.request.user.is_anonymous())
+        self.assertFalse(is_anonymous(self.request.user))
         logout(self.request)
-        self.assertTrue(self.request.user.is_anonymous())
+        self.assertTrue(is_anonymous(self.request.user))
 
     def test_logged_in_user_is_set_on_wrapped_request(self):
         login(self.request, self.user)
-        self.assertEqual(self.wrapped_request.user, self.user)
+        assert self.wrapped_request.user == self.user
 
     def test_calling_user_fails_when_attribute_error_is_raised(self):
         """
@@ -196,15 +207,15 @@ class TestAuthSetter(TestCase):
     def test_auth_can_be_set(self):
         request = Request(factory.get('/'))
         request.auth = 'DUMMY'
-        self.assertEqual(request.auth, 'DUMMY')
+        assert request.auth == 'DUMMY'
 
 
 class TestSecure(TestCase):
 
     def test_default_secure_false(self):
         request = Request(factory.get('/', secure=False))
-        self.assertEqual(request.scheme, 'http')
+        assert request.scheme == 'http'
 
     def test_default_secure_true(self):
         request = Request(factory.get('/', secure=True))
-        self.assertEqual(request.scheme, 'https')
+        assert request.scheme == 'https'

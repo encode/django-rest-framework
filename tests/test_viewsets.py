@@ -21,15 +21,15 @@ class InitializeViewSetsTestCase(TestCase):
         })
 
         response = my_view(request)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {'ACTION': 'LIST'})
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'ACTION': 'LIST'}
 
     def test_initialize_view_set_with_empty_actions(self):
         try:
             BasicViewSet.as_view()
         except TypeError as e:
-            self.assertEqual(str(e), "The `actions` argument must be provided "
-                                     "when calling `.as_view()` on a ViewSet. "
-                                     "For example `.as_view({'get': 'list'})`")
+            assert str(e) == ("The `actions` argument must be provided "
+                              "when calling `.as_view()` on a ViewSet. "
+                              "For example `.as_view({'get': 'list'})`")
         else:
             self.fail("actions must not be empty.")

@@ -4,8 +4,20 @@ import os
 import re
 import shutil
 import sys
+from io import open
 
 from setuptools import setup
+
+try:
+    from pypandoc import convert
+
+    def read_md(f):
+        return convert(f, 'rst')
+except ImportError:
+    print("warning: pypandoc module not found, could not convert Markdown to RST")
+
+    def read_md(f):
+        return open(f, 'r', encoding='utf-8').read()
 
 
 def get_version(package):
@@ -45,9 +57,10 @@ version = get_version('rest_framework')
 
 
 if sys.argv[-1] == 'publish':
-    if os.system("pip freeze | grep wheel"):
-        print("wheel not installed.\nUse `pip install wheel`.\nExiting.")
-        sys.exit()
+    try:
+        import pypandoc
+    except ImportError:
+        print("pypandoc not installed.\nUse `pip install pypandoc`.\nExiting.")
     if os.system("pip freeze | grep twine"):
         print("twine not installed.\nUse `pip install twine`.\nExiting.")
         sys.exit()
@@ -68,6 +81,7 @@ setup(
     url='http://www.django-rest-framework.org',
     license='BSD',
     description='Web APIs for Django, made easy.',
+    long_description=read_md('README.md'),
     author='Tom Christie',
     author_email='tom@tomchristie.com',  # SEE NOTE BELOW (*)
     packages=get_packages('rest_framework'),
@@ -78,11 +92,19 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
+        'Framework :: Django :: 1.8',
+        'Framework :: Django :: 1.9',
+        'Framework :: Django :: 1.10',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Internet :: WWW/HTTP',
     ]
 )

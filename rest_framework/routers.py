@@ -16,15 +16,19 @@ For example, you might have a `urls.py` that looks something like this:
 from __future__ import unicode_literals
 
 import itertools
+import warnings
 from collections import OrderedDict, namedtuple
 
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
-from django.core.urlresolvers import NoReverseMatch
 
-from rest_framework import views
+from rest_framework import exceptions, renderers, views
+from rest_framework.compat import NoReverseMatch
+from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.schemas import SchemaGenerator
+from rest_framework.settings import api_settings
 from rest_framework.urlpatterns import format_suffix_patterns
 
 Route = namedtuple('Route', ['url', 'mapping', 'name', 'initkwargs'])
@@ -81,6 +85,7 @@ class BaseRouter(object):
 
 
 class SimpleRouter(BaseRouter):
+
     routes = [
         # List route.
         Route(
@@ -144,7 +149,9 @@ class SimpleRouter(BaseRouter):
 
         Returns a list of the Route namedtuple.
         """
-        known_actions = flatten([route.mapping.values() for route in self.routes if isinstance(route, Route)])
+        # converting to list as iterables are good for one pass, known host needs to be checked again and again for
+        # different functions.
+        known_actions = list(flatten([route.mapping.values() for route in self.routes if isinstance(route, Route)]))
 
         # Determine any `@detail_route` or `@list_route` decorated methods on the viewset
         detail_routes = []
@@ -154,6 +161,7 @@ class SimpleRouter(BaseRouter):
             httpmethods = getattr(attr, 'bind_to_methods', None)
             detail = getattr(attr, 'detail', True)
             if httpmethods:
+                # checking method names against the known actions list
                 if methodname in known_actions:
                     raise ImproperlyConfigured('Cannot use @detail_route or @list_route '
                                                'decorators on method "%s" '
@@ -171,10 +179,11 @@ class SimpleRouter(BaseRouter):
                 initkwargs = route.initkwargs.copy()
                 initkwargs.update(method_kwargs)
                 url_path = initkwargs.pop("url_path", None) or methodname
+                url_name = initkwargs.pop("url_name", None) or url_path
                 ret.append(Route(
                     url=replace_methodname(route.url, url_path),
                     mapping={httpmethod: methodname for httpmethod in httpmethods},
-                    name=replace_methodname(route.name, url_path),
+                    name=replace_methodname(route.name, url_name),
                     initkwargs=initkwargs,
                 ))
 
@@ -278,20 +287,67 @@ class DefaultRouter(SimpleRouter):
     include_root_view = True
     include_format_suffixes = True
     root_view_name = 'api-root'
+    default_schema_renderers = [renderers.CoreJSONRenderer, BrowsableAPIRenderer]
 
-    def get_api_root_view(self):
+    def __init__(self, *args, **kwargs):
+        if 'schema_title' in kwargs:
+            warnings.warn(
+                "Including a schema directly via a router is now pending "
+                "deprecation. Use `get_schema_view()` instead.",
+                PendingDeprecationWarning
+            )
+        if 'schema_renderers' in kwargs:
+            assert 'schema_title' in kwargs, 'Missing "schema_title" argument.'
+        if 'schema_url' in kwargs:
+            assert 'schema_title' in kwargs, 'Missing "schema_title" argument.'
+        self.schema_title = kwargs.pop('schema_title', None)
+        self.schema_url = kwargs.pop('schema_url', None)
+        self.schema_renderers = kwargs.pop('schema_renderers', self.default_schema_renderers)
+        if 'root_renderers' in kwargs:
+            self.root_renderers = kwargs.pop('root_renderers')
+        else:
+            self.root_renderers = list(api_settings.DEFAULT_RENDERER_CLASSES)
+        super(DefaultRouter, self).__init__(*args, **kwargs)
+
+    def get_schema_root_view(self, api_urls=None):
         """
-        Return a view to use as the API root.
+        Return a schema root view.
+        """
+        schema_renderers = self.schema_renderers
+        schema_generator = SchemaGenerator(
+            title=self.schema_title,
+            url=self.schema_url,
+            patterns=api_urls
+        )
+
+        class APISchemaView(views.APIView):
+            _ignore_model_permissions = True
+            exclude_from_schema = True
+            renderer_classes = schema_renderers
+
+            def get(self, request, *args, **kwargs):
+                schema = schema_generator.get_schema(request)
+                if schema is None:
+                    raise exceptions.PermissionDenied()
+                return Response(schema)
+
+        return APISchemaView.as_view()
+
+    def get_api_root_view(self, api_urls=None):
+        """
+        Return a basic root view.
         """
         api_root_dict = OrderedDict()
         list_name = self.routes[0].name
         for prefix, viewset, basename in self.registry:
             api_root_dict[prefix] = list_name.format(basename=basename)
 
-        class APIRoot(views.APIView):
+        class APIRootView(views.APIView):
             _ignore_model_permissions = True
+            exclude_from_schema = True
 
             def get(self, request, *args, **kwargs):
+                # Return a plain {"name": "hyperlink"} response.
                 ret = OrderedDict()
                 namespace = request.resolver_match.namespace
                 for key, url_name in api_root_dict.items():
@@ -311,21 +367,22 @@ class DefaultRouter(SimpleRouter):
 
                 return Response(ret)
 
-        return APIRoot.as_view()
+        return APIRootView.as_view()
 
     def get_urls(self):
         """
         Generate the list of URL patterns, including a default root view
         for the API, and appending `.json` style format suffixes.
         """
-        urls = []
+        urls = super(DefaultRouter, self).get_urls()
 
         if self.include_root_view:
-            root_url = url(r'^$', self.get_api_root_view(), name=self.root_view_name)
+            if self.schema_title:
+                view = self.get_schema_root_view(api_urls=urls)
+            else:
+                view = self.get_api_root_view(api_urls=urls)
+            root_url = url(r'^$', view, name=self.root_view_name)
             urls.append(root_url)
-
-        default_urls = super(DefaultRouter, self).get_urls()
-        urls.extend(default_urls)
 
         if self.include_format_suffixes:
             urls = format_suffix_patterns(urls)

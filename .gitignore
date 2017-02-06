@@ -11,6 +11,7 @@
 /*.egg-info/
 /env/
 MANIFEST
+coverage.*
 
 !.gitignore
 !.travis.yml

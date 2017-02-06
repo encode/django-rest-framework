@@ -45,6 +45,15 @@ class TestSimpleBoundField:
         assert serializer['amount'].errors is None
         assert serializer['amount'].name == 'amount'
 
+    def test_delete_field(self):
+        class ExampleSerializer(serializers.Serializer):
+            text = serializers.CharField(max_length=100)
+            amount = serializers.IntegerField()
+
+        serializer = ExampleSerializer()
+        del serializer.fields['text']
+        assert 'text' not in serializer.fields.keys()
+
     def test_as_form_fields(self):
         class ExampleSerializer(serializers.Serializer):
             bool_field = serializers.BooleanField()
@@ -54,6 +63,30 @@ class TestSimpleBoundField:
         assert serializer.is_valid()
         assert serializer['bool_field'].as_form_field().value == ''
         assert serializer['null_field'].as_form_field().value == ''
+
+    def test_rendering_boolean_field(self):
+        from rest_framework.renderers import HTMLFormRenderer
+
+        class ExampleSerializer(serializers.Serializer):
+            bool_field = serializers.BooleanField(
+                style={'base_template': 'checkbox.html', 'template_pack': 'rest_framework/vertical'})
+
+        serializer = ExampleSerializer(data={'bool_field': True})
+        assert serializer.is_valid()
+        renderer = HTMLFormRenderer()
+        rendered = renderer.render_field(serializer['bool_field'], {})
+        expected_packed = (
+            '<divclass="form-group">'
+            '<divclass="checkbox">'
+            '<label>'
+            '<inputtype="checkbox"name="bool_field"value="true"checked>'
+            'Boolfield'
+            '</label>'
+            '</div>'
+            '</div>'
+        )
+        rendered_packed = ''.join(rendered.split())
+        assert rendered_packed == expected_packed
 
 
 class TestNestedBoundField:

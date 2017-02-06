@@ -35,7 +35,7 @@ The default set of parsers may be set globally, using the `DEFAULT_PARSER_CLASSE
     }
 
 You can also set the parsers used for an individual view, or viewset,
-using the `APIView` class based views.
+using the `APIView` class-based views.
 
     from rest_framework.parsers import JSONParser
     from rest_framework.response import Response
@@ -51,7 +51,7 @@ using the `APIView` class based views.
             return Response({'received data': request.data})
 
 Or, if you're using the `@api_view` decorator with function based views.
-    
+
     from rest_framework.decorators import api_view
     from rest_framework.decorators import parser_classes
 
@@ -93,7 +93,9 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 Parses raw file upload content.  The `request.data` property will be a dictionary with a single key `'file'` containing the uploaded file.
 
-If the view used with `FileUploadParser` is called with a `filename` URL keyword argument, then that argument will be used as the filename.  If it is called without a `filename` URL keyword argument, then the client must set the filename in the `Content-Disposition` HTTP header.  For example `Content-Disposition: attachment; filename=upload.jpg`.
+If the view used with `FileUploadParser` is called with a `filename` URL keyword argument, then that argument will be used as the filename.
+
+If it is called without a `filename` URL keyword argument, then the client must set the filename in the `Content-Disposition` HTTP header.  For example `Content-Disposition: attachment; filename=upload.jpg`.
 
 **.media_type**: `*/*`
 
@@ -105,6 +107,7 @@ If the view used with `FileUploadParser` is called with a `filename` URL keyword
 
 ##### Basic usage example:
 
+    # views.py
     class FileUploadView(views.APIView):
         parser_classes = (FileUploadParser,)
 
@@ -115,6 +118,11 @@ If the view used with `FileUploadParser` is called with a `filename` URL keyword
             # ...
             return Response(status=204)
 
+    # urls.py
+    urlpatterns = [
+        # ...
+        url(r'^upload/(?P<filename>[^/]+)$', FileUploadView.as_view())
+    ]
 
 ---
 
@@ -216,7 +224,7 @@ Modify your REST framework settings.
 
 [jquery-ajax]: http://api.jquery.com/jQuery.ajax/
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion
-[upload-handlers]: https://docs.djangoproject.com/en/dev/topics/http/file-uploads/#upload-handlers
+[upload-handlers]: https://docs.djangoproject.com/en/stable/topics/http/file-uploads/#upload-handlers
 [rest-framework-yaml]: http://jpadilla.github.io/django-rest-framework-yaml/
 [rest-framework-xml]: http://jpadilla.github.io/django-rest-framework-xml/
 [yaml]: http://www.yaml.org/

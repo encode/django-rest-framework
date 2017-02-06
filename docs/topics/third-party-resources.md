@@ -189,6 +189,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-httpsignature][djangorestframework-httpsignature] - Provides an easy to use HTTP Signature Authentication mechanism.
 * [djoser][djoser] - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.
 * [django-rest-auth][django-rest-auth] - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.
+* [drf-oidc-auth][drf-oidc-auth] - Implements OpenID Connect token authentication for DRF.
 
 ### Permissions
 
@@ -203,6 +204,10 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-gis][djangorestframework-gis] - Geographic add-ons
 * [djangorestframework-hstore][djangorestframework-hstore] - Serializer class to support django-hstore DictionaryField model field and its schema-mode feature.
 * [djangorestframework-jsonapi][djangorestframework-jsonapi] - Provides a parser, renderer, serializers, and other tools to help build an API that is compliant with the jsonapi.org spec.
+* [html-json-forms][html-json-forms] - Provides an algorithm and serializer to process HTML JSON Form submissions per the (inactive) spec.
+* [django-rest-framework-serializer-extensions][drf-serializer-extensions] -
+  Enables black/whitelisting fields, and conditionally expanding child serializers on a per-view/request basis.
+* [djangorestframework-queryfields][djangorestframework-queryfields] - Serializer mixin allowing clients to control which fields will be sent in the API response.
 
 ### Serializer fields
 
@@ -237,6 +242,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 
 * [djangorestframework-chain][djangorestframework-chain] - Allows arbitrary chaining of both relations and lookup filters.
 * [django-url-filter][django-url-filter] - Allows a safe way to filter data via human-friendly URLs. It is a generic library which is not tied to DRF but it provides easy integration with DRF.
+* [drf-url-filter][drf-url-filter] is a simple Django app to apply filters on drf `ModelViewSet`'s `Queryset` in a clean, simple and configurable way. It also supports validations on incoming query params and their values.
 
 ### Misc
 
@@ -249,9 +255,11 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [ember-django-adapter][ember-django-adapter] - An adapter for working with Ember.js
 * [django-versatileimagefield][django-versatileimagefield] - Provides a drop-in replacement for Django's stock `ImageField` that makes it easy to serve images in multiple sizes/renditions from a single field. For DRF-specific implementation docs, [click here][django-versatileimagefield-drf-docs].
 * [drf-tracking][drf-tracking] - Utilities to track requests to DRF API views.
-* [django-rest-framework-braces][django-rest-framework-braces] - Collection of utilities for working with Django Rest Framework. The most notable ones are [FormSerializer](https://django-rest-framework-braces.readthedocs.org/en/latest/overview.html#formserializer) and [SerializerForm](https://django-rest-framework-braces.readthedocs.org/en/latest/overview.html#serializerform), which are adapters between DRF serializers and Django forms.
+* [drf_tweaks][drf_tweaks] - Serializers with one-step validation (and more), pagination without counts and other tweaks.
+* [django-rest-framework-braces][django-rest-framework-braces] - Collection of utilities for working with Django Rest Framework. The most notable ones are [FormSerializer](https://django-rest-framework-braces.readthedocs.io/en/latest/overview.html#formserializer) and [SerializerForm](https://django-rest-framework-braces.readthedocs.io/en/latest/overview.html#serializerform), which are adapters between DRF serializers and Django forms.
 * [drf-haystack][drf-haystack] - Haystack search for Django Rest Framework
 * [django-rest-framework-version-transforms][django-rest-framework-version-transforms] - Enables the use of delta transformations for versioning of DRF resource representations.
+* [django-rest-messaging][django-rest-messaging], [django-rest-messaging-centrifugo][django-rest-messaging-centrifugo] and [django-rest-messaging-js][django-rest-messaging-js] - A real-time pluggable messaging service using DRM.
 
 ## Other Resources
 
@@ -265,18 +273,18 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [ViewSets and Routers - django-rest-framework part 3][viewsets-and-routers-django-rest-framework-part-3]
 * [Django Rest Framework User Endpoint][django-rest-framework-user-endpoint]
 * [Check credentials using Django Rest Framework][check-credentials-using-django-rest-framework]
+* [Django REST Framework course][django-rest-framework-course]
 
 ### Videos
 
 * [Ember and Django Part 1 (Video)][ember-and-django-part 1-video]
 * [Django Rest Framework Part 1 (Video)][django-rest-framework-part-1-video]
-* [Pyowa July 2013 - Django Rest Framework (Video)][pyowa-july-2013-django-rest-framework-video]
-* [django-rest-framework and angularjs (Video)][django-rest-framework-and-angularjs-video]
 
 ### Articles
 
 * [Web API performance: profiling Django REST framework][web-api-performance-profiling-django-rest-framework]
 * [API Development with Django and Django REST Framework][api-development-with-django-and-django-rest-framework]
+* [Blog posts about Django REST framework][medium-django-rest-framework]
 
 ### Documentations
 * [Classy Django REST Framework][cdrf.co]
@@ -289,7 +297,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [travis-profile]: https://travis-ci.org/profile
 [pypi-register]: https://pypi.python.org/pypi?%3Aaction=register_form
 [semver]: http://semver.org/
-[tox-docs]: https://tox.readthedocs.org/en/latest/
+[tox-docs]: https://tox.readthedocs.io/en/latest/
 [drf-compat]: https://github.com/tomchristie/django-rest-framework/blob/master/rest_framework/compat.py
 [rest-framework-grid]: https://www.djangopackages.com/grids/g/django-rest-framework/
 [drf-create-pr]: https://github.com/tomchristie/django-rest-framework/compare
@@ -331,7 +339,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [ember-django-adapter]: https://github.com/dustinfarris/ember-django-adapter
 [beginners-guide-to-the-django-rest-framework]: http://code.tutsplus.com/tutorials/beginners-guide-to-the-django-rest-framework--cms-19786
 [getting-started-with-django-rest-framework-and-angularjs]: http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html
-[end-to-end-web-app-with-django-rest-framework-angularjs]: http://blog.mourafiq.com/post/55034504632/end-to-end-web-app-with-django-rest-framework
+[end-to-end-web-app-with-django-rest-framework-angularjs]: http://mourafiq.com/2013/07/01/end-to-end-web-app-with-django-angular-1.html
 [start-your-api-django-rest-framework-part-1]: https://godjango.com/41-start-your-api-django-rest-framework-part-1/
 [permissions-authentication-django-rest-framework-part-2]: https://godjango.com/43-permissions-authentication-django-rest-framework-part-2/
 [viewsets-and-routers-django-rest-framework-part-3]: https://godjango.com/45-viewsets-and-routers-django-rest-framework-part-3/
@@ -339,19 +347,28 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [check-credentials-using-django-rest-framework]: http://richardtier.com/2014/03/06/110/
 [ember-and-django-part 1-video]: http://www.neckbeardrepublic.com/screencasts/ember-and-django-part-1
 [django-rest-framework-part-1-video]: http://www.neckbeardrepublic.com/screencasts/django-rest-framework-part-1
-[pyowa-july-2013-django-rest-framework-video]: http://www.youtube.com/watch?v=e1zrehvxpbo
-[django-rest-framework-and-angularjs-video]: http://www.youtube.com/watch?v=q8frbgtj020
 [web-api-performance-profiling-django-rest-framework]: http://dabapps.com/blog/api-performance-profiling-django-rest-framework/
 [api-development-with-django-and-django-rest-framework]: https://bnotions.com/api-development-with-django-and-django-rest-framework/
 [django-rest-auth]: https://github.com/Tivix/django-rest-auth/
 [django-versatileimagefield]: https://github.com/WGBH/django-versatileimagefield
-[django-versatileimagefield-drf-docs]:http://django-versatileimagefield.readthedocs.org/en/latest/drf_integration.html
+[django-versatileimagefield-drf-docs]:https://django-versatileimagefield.readthedocs.io/en/latest/drf_integration.html
 [cdrf.co]:http://www.cdrf.co
 [drf-tracking]: https://github.com/aschn/drf-tracking
 [django-rest-framework-braces]: https://github.com/dealertrack/django-rest-framework-braces
 [dry-rest-permissions]: https://github.com/Helioscene/dry-rest-permissions
 [django-url-filter]: https://github.com/miki725/django-url-filter
+[drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
 [cookiecutter-django-rest]:  https://github.com/agconti/cookiecutter-django-rest
-[drf-haystack]: http://drf-haystack.readthedocs.org/en/latest/
+[drf-haystack]: https://drf-haystack.readthedocs.io/en/latest/
 [django-rest-framework-version-transforms]: https://github.com/mrhwick/django-rest-framework-version-transforms
 [djangorestframework-jsonapi]: https://github.com/django-json-api/django-rest-framework-json-api
+[html-json-forms]: https://github.com/wq/html-json-forms
+[django-rest-messaging]: https://github.com/raphaelgyory/django-rest-messaging
+[django-rest-messaging-centrifugo]: https://github.com/raphaelgyory/django-rest-messaging-centrifugo
+[django-rest-messaging-js]: https://github.com/raphaelgyory/django-rest-messaging-js
+[medium-django-rest-framework]: https://medium.com/django-rest-framework
+[django-rest-framework-course]: https://teamtreehouse.com/library/django-rest-framework
+[drf_tweaks]: https://github.com/ArabellaTech/drf_tweaks
+[drf-oidc-auth]: https://github.com/ByteInternet/drf-oidc-auth
+[drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
+[djangorestframework-queryfields]: https://github.com/wimglenn/djangorestframework-queryfields

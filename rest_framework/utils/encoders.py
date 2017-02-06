@@ -13,7 +13,7 @@ from django.utils import six, timezone
 from django.utils.encoding import force_text
 from django.utils.functional import Promise
 
-from rest_framework.compat import total_seconds
+from rest_framework.compat import coreapi, total_seconds
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -28,8 +28,6 @@ class JSONEncoder(json.JSONEncoder):
             return force_text(obj)
         elif isinstance(obj, datetime.datetime):
             representation = obj.isoformat()
-            if obj.microsecond:
-                representation = representation[:23] + representation[26:]
             if representation.endswith('+00:00'):
                 representation = representation[:-6] + 'Z'
             return representation
@@ -51,9 +49,17 @@ class JSONEncoder(json.JSONEncoder):
             return six.text_type(obj)
         elif isinstance(obj, QuerySet):
             return tuple(obj)
+        elif isinstance(obj, six.binary_type):
+            # Best-effort for binary blobs. See #4187.
+            return obj.decode('utf-8')
         elif hasattr(obj, 'tolist'):
             # Numpy arrays and array scalars.
             return obj.tolist()
+        elif (coreapi is not None) and isinstance(obj, (coreapi.Document, coreapi.Error)):
+            raise RuntimeError(
+                'Cannot return a coreapi object from a JSON view. '
+                'You should be using a schema renderer instead for this view.'
+            )
         elif hasattr(obj, '__getitem__'):
             try:
                 return dict(obj)

@@ -4,20 +4,21 @@ from __future__ import unicode_literals
 from collections import OrderedDict
 
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
-from django.core.urlresolvers import (
-    NoReverseMatch, Resolver404, get_script_prefix, resolve
-)
 from django.db.models import Manager
 from django.db.models.query import QuerySet
 from django.utils import six
-from django.utils.encoding import smart_text
+from django.utils.encoding import python_2_unicode_compatible, smart_text
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
+from rest_framework.compat import (
+    NoReverseMatch, Resolver404, get_script_prefix, resolve
+)
 from rest_framework.fields import (
     Field, empty, get_attribute, is_simple_callable, iter_options
 )
 from rest_framework.reverse import reverse
+from rest_framework.settings import api_settings
 from rest_framework.utils import html
 
 
@@ -36,17 +37,25 @@ class Hyperlink(six.text_type):
     We use this for hyperlinked URLs that may render as a named link
     in some contexts, or render as a plain URL in others.
     """
-    def __new__(self, url, name):
+    def __new__(self, url, obj):
         ret = six.text_type.__new__(self, url)
-        ret.name = name
+        ret.obj = obj
         return ret
 
     def __getnewargs__(self):
         return(str(self), self.name,)
 
+    @property
+    def name(self):
+        # This ensures that we only called `__str__` lazily,
+        # as in some cases calling __str__ on a model instances *might*
+        # involve a database lookup.
+        return six.text_type(self.obj)
+
     is_hyperlink = True
 
 
+@python_2_unicode_compatible
 class PKOnlyObject(object):
     """
     This is a mock object, used for when we only need the pk of the object
@@ -55,6 +64,9 @@ class PKOnlyObject(object):
     """
     def __init__(self, pk):
         self.pk = pk
+
+    def __str__(self):
+        return "%s" % self.pk
 
 
 # We assume that 'validators' are intended for the child serializer,
@@ -67,14 +79,19 @@ MANY_RELATION_KWARGS = (
 
 class RelatedField(Field):
     queryset = None
-    html_cutoff = 1000
-    html_cutoff_text = _('More than {count} items...')
+    html_cutoff = None
+    html_cutoff_text = None
 
     def __init__(self, **kwargs):
         self.queryset = kwargs.pop('queryset', self.queryset)
-        self.html_cutoff = kwargs.pop('html_cutoff', self.html_cutoff)
-        self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
-
+        self.html_cutoff = kwargs.pop(
+            'html_cutoff',
+            self.html_cutoff or int(api_settings.HTML_SELECT_CUTOFF)
+        )
+        self.html_cutoff_text = kwargs.pop(
+            'html_cutoff_text',
+            self.html_cutoff_text or _(api_settings.HTML_SELECT_CUTOFF_TEXT)
+        )
         if not method_overridden('get_queryset', RelatedField, self):
             assert self.queryset is not None or kwargs.get('read_only', None), (
                 'Relational field must provide a `queryset` argument, '
@@ -156,21 +173,27 @@ class RelatedField(Field):
         # Standard case, return the object instance.
         return get_attribute(instance, self.source_attrs)
 
-    @property
-    def choices(self):
+    def get_choices(self, cutoff=None):
         queryset = self.get_queryset()
         if queryset is None:
             # Ensure that field.choices returns something sensible
             # even when accessed with a read-only field.
             return {}
 
+        if cutoff is not None:
+            queryset = queryset[:cutoff]
+
         return OrderedDict([
             (
-                six.text_type(self.to_representation(item)),
+                self.to_representation(item),
                 self.display_value(item)
             )
             for item in queryset
         ])
+
+    @property
+    def choices(self):
+        return self.get_choices()
 
     @property
     def grouped_choices(self):
@@ -178,7 +201,7 @@ class RelatedField(Field):
 
     def iter_options(self):
         return iter_options(
-            self.grouped_choices,
+            self.get_choices(cutoff=self.html_cutoff),
             cutoff=self.html_cutoff,
             cutoff_text=self.html_cutoff_text
         )
@@ -287,9 +310,6 @@ class HyperlinkedRelatedField(RelatedField):
         kwargs = {self.lookup_url_kwarg: lookup_value}
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
 
-    def get_name(self, obj):
-        return six.text_type(obj)
-
     def to_internal_value(self, data):
         request = self.context.get('request', None)
         try:
@@ -325,14 +345,14 @@ class HyperlinkedRelatedField(RelatedField):
             self.fail('does_not_exist')
 
     def to_representation(self, value):
-        request = self.context.get('request', None)
-        format = self.context.get('format', None)
-
-        assert request is not None, (
+        assert 'request' in self.context, (
             "`%s` requires the request in the serializer"
             " context. Add `context={'request': request}` when instantiating "
             "the serializer." % self.__class__.__name__
         )
+
+        request = self.context['request']
+        format = self.context.get('format', None)
 
         # By default use whatever format is given for the current context
         # unless the target is a different type to the source.
@@ -368,8 +388,7 @@ class HyperlinkedRelatedField(RelatedField):
         if url is None:
             return None
 
-        name = self.get_name(value)
-        return Hyperlink(url, name)
+        return Hyperlink(url, value)
 
 
 class HyperlinkedIdentityField(HyperlinkedRelatedField):
@@ -437,15 +456,20 @@ class ManyRelatedField(Field):
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
         'empty': _('This list may not be empty.')
     }
-    html_cutoff = 1000
-    html_cutoff_text = _('More than {count} items...')
+    html_cutoff = None
+    html_cutoff_text = None
 
     def __init__(self, child_relation=None, *args, **kwargs):
         self.child_relation = child_relation
         self.allow_empty = kwargs.pop('allow_empty', True)
-        self.html_cutoff = kwargs.pop('html_cutoff', self.html_cutoff)
-        self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
-
+        self.html_cutoff = kwargs.pop(
+            'html_cutoff',
+            self.html_cutoff or int(api_settings.HTML_SELECT_CUTOFF)
+        )
+        self.html_cutoff_text = kwargs.pop(
+            'html_cutoff_text',
+            self.html_cutoff_text or _(api_settings.HTML_SELECT_CUTOFF_TEXT)
+        )
         assert child_relation is not None, '`child_relation` is a required argument.'
         super(ManyRelatedField, self).__init__(*args, **kwargs)
         self.child_relation.bind(field_name='', parent=self)
@@ -479,7 +503,7 @@ class ManyRelatedField(Field):
             return []
 
         relationship = get_attribute(instance, self.source_attrs)
-        return relationship.all() if (hasattr(relationship, 'all')) else relationship
+        return relationship.all() if hasattr(relationship, 'all') else relationship
 
     def to_representation(self, iterable):
         return [
@@ -487,9 +511,12 @@ class ManyRelatedField(Field):
             for value in iterable
         ]
 
+    def get_choices(self, cutoff=None):
+        return self.child_relation.get_choices(cutoff)
+
     @property
     def choices(self):
-        return self.child_relation.choices
+        return self.get_choices()
 
     @property
     def grouped_choices(self):
@@ -497,7 +524,7 @@ class ManyRelatedField(Field):
 
     def iter_options(self):
         return iter_options(
-            self.grouped_choices,
+            self.get_choices(cutoff=self.html_cutoff),
             cutoff=self.html_cutoff,
             cutoff_text=self.html_cutoff_text
         )

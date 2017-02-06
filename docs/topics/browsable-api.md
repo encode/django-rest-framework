@@ -163,4 +163,4 @@ Better support for autocomplete inputs is planned in future versions.
 [bcomponentsnav]: http://getbootstrap.com/2.3.2/components.html#navbar
 [autocomplete-packages]: https://www.djangopackages.com/grids/g/auto-complete/
 [django-autocomplete-light]: https://github.com/yourlabs/django-autocomplete-light
-[django-autocomplete-light-install]: http://django-autocomplete-light.readthedocs.org/en/latest/#install
+[django-autocomplete-light-install]: https://django-autocomplete-light.readthedocs.io/en/master/install.html

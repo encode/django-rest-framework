@@ -1,8 +1,8 @@
 from __future__ import unicode_literals
 
-from django.conf.urls import include, url
-from django.core.urlresolvers import RegexURLResolver
+from django.conf.urls import url
 
+from rest_framework.compat import RegexURLResolver, include
 from rest_framework.settings import api_settings
 
 
@@ -24,7 +24,7 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required):
         else:
             # Regular URL pattern
             regex = urlpattern.regex.pattern.rstrip('$').rstrip('/') + suffix_pattern
-            view = urlpattern._callback or urlpattern._callback_str
+            view = urlpattern.callback
             kwargs = urlpattern.default_args
             name = urlpattern.name
             # Add in both the existing and the new urlpattern

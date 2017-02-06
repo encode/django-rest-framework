@@ -3,9 +3,9 @@ from __future__ import unicode_literals
 from collections import namedtuple
 
 from django.conf.urls import include, url
-from django.core import urlresolvers
 from django.test import TestCase
 
+from rest_framework.compat import RegexURLResolver, Resolver404
 from rest_framework.test import APIRequestFactory
 from rest_framework.urlpatterns import format_suffix_patterns
 
@@ -28,22 +28,22 @@ class FormatSuffixTests(TestCase):
             urlpatterns = format_suffix_patterns(urlpatterns)
         except Exception:
             self.fail("Failed to apply `format_suffix_patterns` on  the supplied urlpatterns")
-        resolver = urlresolvers.RegexURLResolver(r'^/', urlpatterns)
+        resolver = RegexURLResolver(r'^/', urlpatterns)
         for test_path in test_paths:
             request = factory.get(test_path.path)
             try:
                 callback, callback_args, callback_kwargs = resolver.resolve(request.path_info)
             except Exception:
                 self.fail("Failed to resolve URL: %s" % request.path_info)
-            self.assertEqual(callback_args, test_path.args)
-            self.assertEqual(callback_kwargs, test_path.kwargs)
+            assert callback_args == test_path.args
+            assert callback_kwargs == test_path.kwargs
 
     def test_trailing_slash(self):
         factory = APIRequestFactory()
         urlpatterns = format_suffix_patterns([
             url(r'^test/$', dummy_view),
         ])
-        resolver = urlresolvers.RegexURLResolver(r'^/', urlpatterns)
+        resolver = RegexURLResolver(r'^/', urlpatterns)
 
         test_paths = [
             (URLTestPath('/test.api', (), {'format': 'api'}), True),
@@ -55,7 +55,7 @@ class FormatSuffixTests(TestCase):
             request = factory.get(test_path.path)
             try:
                 callback, callback_args, callback_kwargs = resolver.resolve(request.path_info)
-            except urlresolvers.Resolver404:
+            except Resolver404:
                 callback, callback_args, callback_kwargs = (None, None, None)
             if not expected_resolved:
                 assert callback is None

@@ -6,17 +6,32 @@ versions of Django/Python, and compatibility wrappers around optional packages.
 # flake8: noqa
 from __future__ import unicode_literals
 
+import inspect
+
 import django
+from django.apps import apps
 from django.conf import settings
-from django.db import connection, transaction
+from django.core.exceptions import ImproperlyConfigured
+from django.db import connection, models, transaction
 from django.template import Context, RequestContext, Template
 from django.utils import six
 from django.views.generic import View
 
+
 try:
-    import importlib  # Available in Python 3.1+
+    from django.urls import (
+        NoReverseMatch, RegexURLPattern, RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+    )
 except ImportError:
-    from django.utils import importlib  # Will be removed in Django 1.9
+    from django.core.urlresolvers import (  # Will be removed in Django 2.0
+        NoReverseMatch, RegexURLPattern, RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+    )
+
+
+try:
+    import urlparse  # Python 2.x
+except ImportError:
+    import urllib.parse as urlparse
 
 
 def unicode_repr(instance):
@@ -58,6 +73,84 @@ def distinct(queryset, base):
     return queryset.distinct()
 
 
+# Obtaining manager instances and names from model options differs after 1.10.
+def get_names_and_managers(options):
+    if django.VERSION >= (1, 10):
+        # Django 1.10 onwards provides a `.managers` property on the Options.
+        return [
+            (manager.name, manager)
+            for manager
+            in options.managers
+        ]
+    # For Django 1.8 and 1.9, use the three-tuple information provided
+    # by .concrete_managers and .abstract_managers
+    return [
+        (manager_info[1], manager_info[2])
+        for manager_info
+        in (options.concrete_managers + options.abstract_managers)
+    ]
+
+
+# field.rel is deprecated from 1.9 onwards
+def get_remote_field(field, **kwargs):
+    if 'default' in kwargs:
+        if django.VERSION < (1, 9):
+            return getattr(field, 'rel', kwargs['default'])
+        return getattr(field, 'remote_field', kwargs['default'])
+
+    if django.VERSION < (1, 9):
+        return field.rel
+    return field.remote_field
+
+
+def _resolve_model(obj):
+    """
+    Resolve supplied `obj` to a Django model class.
+
+    `obj` must be a Django model class itself, or a string
+    representation of one.  Useful in situations like GH #1225 where
+    Django may not have resolved a string-based reference to a model in
+    another model's foreign key definition.
+
+    String representations should have the format:
+        'appname.ModelName'
+    """
+    if isinstance(obj, six.string_types) and len(obj.split('.')) == 2:
+        app_name, model_name = obj.split('.')
+        resolved_model = apps.get_model(app_name, model_name)
+        if resolved_model is None:
+            msg = "Django did not return a model for {0}.{1}"
+            raise ImproperlyConfigured(msg.format(app_name, model_name))
+        return resolved_model
+    elif inspect.isclass(obj) and issubclass(obj, models.Model):
+        return obj
+    raise ValueError("{0} is not a Django model".format(obj))
+
+
+def is_authenticated(user):
+    if django.VERSION < (1, 10):
+        return user.is_authenticated()
+    return user.is_authenticated
+
+
+def is_anonymous(user):
+    if django.VERSION < (1, 10):
+        return user.is_anonymous()
+    return user.is_anonymous
+
+
+def get_related_model(field):
+    if django.VERSION < (1, 9):
+        return _resolve_model(field.rel.to)
+    return field.remote_field.model
+
+
+def value_from_object(field, obj):
+    if django.VERSION < (1, 9):
+        return field._get_val_from_obj(obj)
+    return field.value_from_object(obj)
+
+
 # contrib.postgres only supported from 1.8 onwards.
 try:
     from django.contrib.postgres import fields as postgres_fields
@@ -70,6 +163,16 @@ try:
     from django.contrib.postgres.fields import JSONField
 except ImportError:
     JSONField = None
+
+
+# coreapi is optional (Note that uritemplate is a dependency of coreapi)
+try:
+    import coreapi
+    import uritemplate
+except (ImportError, SyntaxError):
+    # SyntaxError is possible under python 3.2
+    coreapi = None
+    uritemplate = None
 
 
 # django-filter is optional
@@ -86,13 +189,19 @@ except ImportError:
     crispy_forms = None
 
 
+# requests is optional
+try:
+    import requests
+except ImportError:
+    requests = None
+
+
 # Django-guardian is optional. Import only if guardian is in INSTALLED_APPS
 # Fixes (#1712). We keep the try/except for the test suite.
 guardian = None
 try:
     if 'guardian' in settings.INSTALLED_APPS:
         import guardian
-        import guardian.shortcuts  # Fixes #1624
 except ImportError:
     pass
 
@@ -108,8 +217,13 @@ try:
 
     if markdown.version <= '2.2':
         HEADERID_EXT_PATH = 'headerid'
-    else:
+        LEVEL_PARAM = 'level'
+    elif markdown.version < '2.6':
         HEADERID_EXT_PATH = 'markdown.extensions.headerid'
+        LEVEL_PARAM = 'level'
+    else:
+        HEADERID_EXT_PATH = 'markdown.extensions.toc'
+        LEVEL_PARAM = 'baselevel'
 
     def apply_markdown(text):
         """
@@ -119,7 +233,7 @@ try:
         extensions = [HEADERID_EXT_PATH]
         extension_configs = {
             HEADERID_EXT_PATH: {
-                'level': '2'
+                LEVEL_PARAM: '2'
             }
         }
         md = markdown.Markdown(
@@ -185,3 +299,18 @@ def template_render(template, context=None, request=None):
     # backends template, e.g. django.template.backends.django.Template
     else:
         return template.render(context, request=request)
+
+
+def set_many(instance, field, value):
+    if django.VERSION < (1, 10):
+        setattr(instance, field, value)
+    else:
+        field = getattr(instance, field)
+        field.set(value)
+
+def include(module, namespace=None, app_name=None):
+    from django.conf.urls import include
+    if django.VERSION < (1,9):
+        return include(module, namespace, app_name)
+    else:
+        return include((module, app_name), namespace)

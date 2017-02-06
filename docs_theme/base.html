@@ -38,15 +38,12 @@
   </script>
 
   <style>
-    span.fusion-wrap a {
-      display: block;
-      margin-top: 10px;
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
       color: black;
-    }
-    a.fusion-poweredby {
-      display: block;
-      margin-top: 10px;
-    }
+  }
     @media (max-width: 767px) {
       div.promo {
         display: none;
@@ -104,12 +101,10 @@
                   {% endfor %}
                 {% endfor %}
 
-                {% if current_page and current_page.is_homepage %}
                   <div class="promo">
                     <hr/>
-                    <script type="text/javascript" src="//cdn.fusionads.net/fusion.js?zoneid=1332&serve=C6SDP2Y&placement=djangorestframework" id="_fusionads_js"></script>
+                    <div id="sidebarInclude">
                   </div>
-                {% endif %}
               </ul>
 
             </div>
@@ -146,6 +141,7 @@
   <script src="{{ base_url }}/js/jquery-1.8.1-min.js"></script>
   <script src="{{ base_url }}/js/prettify-1.0.js"></script>
   <script src="{{ base_url }}/js/bootstrap-2.1.1-min.js"></script>
+  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '{{ base_url }}';</script>
   <script src="{{ base_url }}/mkdocs/js/require.js"></script>
   <script src="{{ base_url }}/js/theme.js"></script>

@@ -41,6 +41,12 @@ class TestNestedSerializer:
         serializer = self.Serializer()
         assert serializer.data == expected_data
 
+    def test_nested_serialize_no_data(self):
+        data = None
+        serializer = self.Serializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {'non_field_errors': ['No data provided']}
+
 
 class TestNotRequiredNestedSerializer:
     def setup(self):
@@ -167,3 +173,32 @@ class TestNestedSerializerWithMany:
 
         expected_errors = {'not_allow_empty': {'non_field_errors': [serializers.ListSerializer.default_error_messages['empty']]}}
         assert serializer.errors == expected_errors
+
+
+class TestNestedSerializerWithList:
+    def setup(self):
+        class NestedSerializer(serializers.Serializer):
+            example = serializers.MultipleChoiceField(choices=[1, 2, 3])
+
+        class TestSerializer(serializers.Serializer):
+            nested = NestedSerializer()
+
+        self.Serializer = TestSerializer
+
+    def test_nested_serializer_with_list_json(self):
+        input_data = {
+            'nested': {
+                'example': [1, 2],
+            }
+        }
+        serializer = self.Serializer(data=input_data)
+
+        assert serializer.is_valid()
+        assert serializer.validated_data['nested']['example'] == set([1, 2])
+
+    def test_nested_serializer_with_list_multipart(self):
+        input_data = QueryDict('nested.example=1&nested.example=2')
+        serializer = self.Serializer(data=input_data)
+
+        assert serializer.is_valid()
+        assert serializer.validated_data['nested']['example'] == set([1, 2])

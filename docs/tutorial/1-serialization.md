@@ -48,6 +48,8 @@ We'll need to add our new `snippets` app and the `rest_framework` app to `INSTAL
         'snippets.apps.SnippetsConfig',
     )
 
+Please note that if you're using Django <1.9, you need to replace `snippets.apps.SnippetsConfig` with `snippets`.
+
 Okay, we're ready to roll.
 
 ## Creating a model to work with
@@ -88,7 +90,7 @@ The first thing we need to get started on our Web API is to provide a way of ser
 
 
     class SnippetSerializer(serializers.Serializer):
-        pk = serializers.IntegerField(read_only=True)
+        id = serializers.IntegerField(read_only=True)
         title = serializers.CharField(required=False, allow_blank=True, max_length=100)
         code = serializers.CharField(style={'base_template': 'textarea.html'})
         linenos = serializers.BooleanField(required=False)
@@ -144,13 +146,13 @@ We've now got a few snippet instances to play with.  Let's take a look at serial
 
     serializer = SnippetSerializer(snippet)
     serializer.data
-    # {'pk': 2, 'title': u'', 'code': u'print "hello, world"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}
+    # {'id': 2, 'title': u'', 'code': u'print "hello, world"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}
 
 At this point we've translated the model instance into Python native datatypes.  To finalize the serialization process we render the data into `json`.
 
     content = JSONRenderer().render(serializer.data)
     content
-    # '{"pk": 2, "title": "", "code": "print \\"hello, world\\"\\n", "linenos": false, "language": "python", "style": "friendly"}'
+    # '{"id": 2, "title": "", "code": "print \\"hello, world\\"\\n", "linenos": false, "language": "python", "style": "friendly"}'
 
 Deserialization is similar.  First we parse a stream into Python native datatypes...
 
@@ -175,7 +177,7 @@ We can also serialize querysets instead of model instances.  To do so we simply 
 
     serializer = SnippetSerializer(Snippet.objects.all(), many=True)
     serializer.data
-    # [OrderedDict([('pk', 1), ('title', u''), ('code', u'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('pk', 2), ('title', u''), ('code', u'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('pk', 3), ('title', u''), ('code', u'print "hello, world"'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
+    # [OrderedDict([('id', 1), ('title', u''), ('code', u'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', u''), ('code', u'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', u''), ('code', u'print "hello, world"'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
 
 ## Using ModelSerializers
 

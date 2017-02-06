@@ -1,9 +1,15 @@
 import datetime
 
-from django.db import models
+import pytest
+from django.db import DataError, models
 from django.test import TestCase
 
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+from rest_framework.validators import (
+    BaseUniqueForValidator, UniqueTogetherValidator, UniqueValidator,
+    qs_exists
+)
 
 
 def dedent(blocktext):
@@ -20,6 +26,21 @@ class UniquenessModel(models.Model):
 class UniquenessSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniquenessModel
+        fields = '__all__'
+
+
+class RelatedModel(models.Model):
+    user = models.OneToOneField(UniquenessModel, on_delete=models.CASCADE)
+    email = models.CharField(unique=True, max_length=80)
+
+
+class RelatedModelSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username',
+        validators=[UniqueValidator(queryset=UniquenessModel.objects.all(), lookup='iexact')])  # NOQA
+
+    class Meta:
+        model = RelatedModel
+        fields = ('username', 'email')
 
 
 class AnotherUniquenessModel(models.Model):
@@ -29,6 +50,19 @@ class AnotherUniquenessModel(models.Model):
 class AnotherUniquenessSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnotherUniquenessModel
+        fields = '__all__'
+
+
+class IntegerFieldModel(models.Model):
+    integer = models.IntegerField()
+
+
+class UniquenessIntegerSerializer(serializers.Serializer):
+    # Note that this field *deliberately* does not correspond with the model field.
+    # This allows us to ensure that `ValueError`, `TypeError` or `DataError` etc
+    # raised by a uniqueness check does not trigger a deceptive "this field is not unique"
+    # validation failure.
+    integer = serializers.CharField(validators=[UniqueValidator(queryset=IntegerFieldModel.objects.all())])
 
 
 class TestUniquenessValidation(TestCase):
@@ -48,7 +82,7 @@ class TestUniquenessValidation(TestCase):
         data = {'username': 'existing'}
         serializer = UniquenessSerializer(data=data)
         assert not serializer.is_valid()
-        assert serializer.errors == {'username': ['UniquenessModel with this username already exists.']}
+        assert serializer.errors == {'username': ['uniqueness model with this username already exists.']}
 
     def test_is_unique(self):
         data = {'username': 'other'}
@@ -65,13 +99,24 @@ class TestUniquenessValidation(TestCase):
     def test_doesnt_pollute_model(self):
         instance = AnotherUniquenessModel.objects.create(code='100')
         serializer = AnotherUniquenessSerializer(instance)
-        self.assertEqual(
-            AnotherUniquenessModel._meta.get_field('code').validators, [])
+        assert AnotherUniquenessModel._meta.get_field('code').validators == []
 
         # Accessing data shouldn't effect validators on the model
         serializer.data
-        self.assertEqual(
-            AnotherUniquenessModel._meta.get_field('code').validators, [])
+        assert AnotherUniquenessModel._meta.get_field('code').validators == []
+
+    def test_related_model_is_unique(self):
+        data = {'username': 'Existing', 'email': 'new-email@example.com'}
+        rs = RelatedModelSerializer(data=data)
+        assert not rs.is_valid()
+        assert rs.errors == {'username': ['This field must be unique.']}
+        data = {'username': 'new-username', 'email': 'new-email@example.com'}
+        rs = RelatedModelSerializer(data=data)
+        assert rs.is_valid()
+
+    def test_value_error_treated_as_not_unique(self):
+        serializer = UniquenessIntegerSerializer(data={'integer': 'abc'})
+        assert serializer.is_valid()
 
 
 # Tests for `UniqueTogetherValidator`
@@ -109,11 +154,13 @@ class NullUniquenessTogetherModel(models.Model):
 class UniquenessTogetherSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniquenessTogetherModel
+        fields = '__all__'
 
 
 class NullUniquenessTogetherSerializer(serializers.ModelSerializer):
     class Meta:
         model = NullUniquenessTogetherModel
+        fields = '__all__'
 
 
 class TestUniquenessTogetherValidation(TestCase):
@@ -210,6 +257,45 @@ class TestUniquenessTogetherValidation(TestCase):
         """)
         assert repr(serializer) == expected
 
+    def test_ignore_read_only_fields(self):
+        """
+        When serializer fields are read only, then uniqueness
+        validators should not be added for that field.
+        """
+        class ReadOnlyFieldSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ('id', 'race_name', 'position')
+                read_only_fields = ('race_name',)
+
+        serializer = ReadOnlyFieldSerializer()
+        expected = dedent("""
+            ReadOnlyFieldSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                race_name = CharField(read_only=True)
+                position = IntegerField(required=True)
+        """)
+        assert repr(serializer) == expected
+
+    def test_allow_explict_override(self):
+        """
+        Ensure validators can be explicitly removed..
+        """
+        class NoValidatorsSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ('id', 'race_name', 'position')
+                validators = []
+
+        serializer = NoValidatorsSerializer()
+        expected = dedent("""
+            NoValidatorsSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                race_name = CharField(max_length=100)
+                position = IntegerField()
+        """)
+        assert repr(serializer) == expected
+
     def test_ignore_validation_for_null_fields(self):
         # None values that are on fields which are part of the uniqueness
         # constraint cause the instance to ignore uniqueness validation.
@@ -238,6 +324,23 @@ class TestUniquenessTogetherValidation(TestCase):
         serializer = NullUniquenessTogetherSerializer(data=data)
         assert not serializer.is_valid()
 
+    def test_filter_queryset_do_not_skip_existing_attribute(self):
+        """
+        filter_queryset should add value from existing instance attribute
+        if it is not provided in attributes dict
+        """
+        class MockQueryset(object):
+            def filter(self, **kwargs):
+                self.called_with = kwargs
+
+        data = {'race_name': 'bar'}
+        queryset = MockQueryset()
+        validator = UniqueTogetherValidator(queryset, fields=('race_name',
+                                                              'position'))
+        validator.instance = self.instance
+        validator.filter_queryset(attrs=data, queryset=queryset)
+        assert queryset.called_with == {'race_name': 'bar', 'position': 1}
+
 
 # Tests for `UniqueForDateValidator`
 # ----------------------------------
@@ -250,6 +353,7 @@ class UniqueForDateModel(models.Model):
 class UniqueForDateSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniqueForDateModel
+        fields = '__all__'
 
 
 class TestUniquenessForDateValidation(TestCase):
@@ -307,6 +411,84 @@ class TestUniquenessForDateValidation(TestCase):
             'published': datetime.date(2000, 1, 1)
         }
 
+# Tests for `UniqueForMonthValidator`
+# ----------------------------------
+
+
+class UniqueForMonthModel(models.Model):
+    slug = models.CharField(max_length=100, unique_for_month='published')
+    published = models.DateField()
+
+
+class UniqueForMonthSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UniqueForMonthModel
+        fields = '__all__'
+
+
+class UniqueForMonthTests(TestCase):
+
+    def setUp(self):
+        self.instance = UniqueForMonthModel.objects.create(
+            slug='existing', published='2017-01-01'
+        )
+
+    def test_not_unique_for_month(self):
+        data = {'slug': 'existing', 'published': '2017-01-01'}
+        serializer = UniqueForMonthSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'slug': ['This field must be unique for the "published" month.']
+        }
+
+    def test_unique_for_month(self):
+        data = {'slug': 'existing', 'published': '2017-02-01'}
+        serializer = UniqueForMonthSerializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'slug': 'existing',
+            'published': datetime.date(2017, 2, 1)
+        }
+
+# Tests for `UniqueForYearValidator`
+# ----------------------------------
+
+
+class UniqueForYearModel(models.Model):
+    slug = models.CharField(max_length=100, unique_for_year='published')
+    published = models.DateField()
+
+
+class UniqueForYearSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UniqueForYearModel
+        fields = '__all__'
+
+
+class UniqueForYearTests(TestCase):
+
+    def setUp(self):
+        self.instance = UniqueForYearModel.objects.create(
+            slug='existing', published='2017-01-01'
+        )
+
+    def test_not_unique_for_year(self):
+        data = {'slug': 'existing', 'published': '2017-01-01'}
+        serializer = UniqueForYearSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'slug': ['This field must be unique for the "published" year.']
+        }
+
+    def test_unique_for_year(self):
+        data = {'slug': 'existing', 'published': '2018-01-01'}
+        serializer = UniqueForYearSerializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'slug': 'existing',
+            'published': datetime.date(2018, 1, 1)
+        }
+
 
 class HiddenFieldUniqueForDateModel(models.Model):
     slug = models.CharField(max_length=100, unique_for_date='published')
@@ -347,3 +529,37 @@ class TestHiddenFieldUniquenessForDateValidation(TestCase):
                     validators = [<UniqueForDateValidator(queryset=HiddenFieldUniqueForDateModel.objects.all(), field='slug', date_field='published')>]
         """)
         assert repr(serializer) == expected
+
+
+class ValidatorsTests(TestCase):
+
+    def test_qs_exists_handles_type_error(self):
+        class TypeErrorQueryset(object):
+            def exists(self):
+                raise TypeError
+        assert qs_exists(TypeErrorQueryset()) is False
+
+    def test_qs_exists_handles_value_error(self):
+        class ValueErrorQueryset(object):
+            def exists(self):
+                raise ValueError
+        assert qs_exists(ValueErrorQueryset()) is False
+
+    def test_qs_exists_handles_data_error(self):
+        class DataErrorQueryset(object):
+            def exists(self):
+                raise DataError
+        assert qs_exists(DataErrorQueryset()) is False
+
+    def test_validator_raises_error_if_not_all_fields_are_provided(self):
+        validator = BaseUniqueForValidator(queryset=object(), field='foo',
+                                           date_field='bar')
+        attrs = {'foo': 'baz'}
+        with pytest.raises(ValidationError):
+            validator.enforce_required_fields(attrs)
+
+    def test_validator_raises_error_when_abstract_method_called(self):
+        validator = BaseUniqueForValidator(queryset=object(), field='foo',
+                                           date_field='bar')
+        with pytest.raises(NotImplementedError):
+            validator.filter_queryset(attrs=None, queryset=None)

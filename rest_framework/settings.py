@@ -18,15 +18,13 @@ REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
 from __future__ import unicode_literals
-
-import warnings
+from importlib import import_module
 
 from django.conf import settings
 from django.test.signals import setting_changed
 from django.utils import six
 
 from rest_framework import ISO_8601
-from rest_framework.compat import importlib
 
 DEFAULTS = {
     # Base API policies
@@ -113,6 +111,17 @@ DEFAULTS = {
     'COMPACT_JSON': True,
     'COERCE_DECIMAL_TO_STRING': True,
     'UPLOADED_FILES_USE_URL': True,
+
+    # Browseable API
+    'HTML_SELECT_CUTOFF': 1000,
+    'HTML_SELECT_CUTOFF_TEXT': "More than {count} items...",
+
+    # Schemas
+    'SCHEMA_COERCE_PATH_PK': True,
+    'SCHEMA_COERCE_METHOD_NAMES': {
+        'retrieve': 'read',
+        'destroy': 'delete'
+    },
 }
 
 
@@ -165,7 +174,7 @@ def import_from_string(val, setting_name):
         # Nod to tastypie's use of importlib.
         parts = val.split('.')
         module_path, class_name = '.'.join(parts[:-1]), parts[-1]
-        module = importlib.import_module(module_path)
+        module = import_module(module_path)
         return getattr(module, class_name)
     except (ImportError, AttributeError) as e:
         msg = "Could not import '%s' for API setting '%s'. %s: %s." % (val, setting_name, e.__class__.__name__, e)
@@ -218,7 +227,7 @@ class APISettings(object):
         SETTINGS_DOC = "http://www.django-rest-framework.org/api-guide/settings/"
         for setting in REMOVED_SETTINGS:
             if setting in user_settings:
-                warnings.warn("The '%s' setting has been removed. Please refer to '%s' for available settings." % (setting, SETTINGS_DOC), DeprecationWarning)
+                raise RuntimeError("The '%s' setting has been removed. Please refer to '%s' for available settings." % (setting, SETTINGS_DOC))
         return user_settings
 
 

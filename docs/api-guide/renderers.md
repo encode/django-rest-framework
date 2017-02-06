@@ -28,7 +28,7 @@ The default set of renderers may be set globally, using the `DEFAULT_RENDERER_CL
     }
 
 You can also set the renderers used for an individual view, or viewset,
-using the `APIView` class based views.
+using the `APIView` class-based views.
 
     from django.contrib.auth.models import User
     from rest_framework.renderers import JSONRenderer
@@ -122,6 +122,8 @@ An example of a view that uses `TemplateHTMLRenderer`:
 You can use `TemplateHTMLRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
 
 If you're building websites that use `TemplateHTMLRenderer` along with other renderer classes, you should consider listing `TemplateHTMLRenderer` as the first class in the `renderer_classes` list, so that it will be prioritised first even for browsers that send poorly formed `ACCEPT:` headers.
+
+See the [_HTML & Forms_ Topic Page][html-and-forms] for further examples of `TemplateHTMLRenderer` usage.
 
 **.media_type**: `text/html`
 
@@ -471,8 +473,12 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 
 [Django REST Pandas] provides a serializer and renderers that support additional data processing and output via the [Pandas] DataFrame API.  Django REST Pandas includes renderers for Pandas-style CSV files, Excel workbooks (both `.xls` and `.xlsx`), and a number of [other formats]. It is maintained by [S. Andrew Sheppard][sheppard] as part of the [wq Project][wq].
 
+## LaTeX
 
-[cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
+[Rest Framework Latex] provides a renderer that outputs PDFs using Laulatex. It is maintained by [Pebble (S/F Software)][mypebble].
+
+
+[cite]: https://docs.djangoproject.com/en/stable/stable/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [html-and-forms]: ../topics/html-and-forms.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
@@ -481,7 +487,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [quote]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [application/vnd.github+json]: http://developer.github.com/v3/media/
 [application/vnd.collection+json]: http://www.amundsen.com/media-types/collection/
-[django-error-views]: https://docs.djangoproject.com/en/dev/topics/http/views/#customizing-error-views
+[django-error-views]: https://docs.djangoproject.com/en/stable/topics/http/views/#customizing-error-views
 [rest-framework-jsonp]: http://jpadilla.github.io/django-rest-framework-jsonp/
 [cors]: http://www.w3.org/TR/cors/
 [cors-docs]: http://www.django-rest-framework.org/topics/ajax-csrf-cors/
@@ -506,3 +512,5 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [other formats]: https://github.com/wq/django-rest-pandas#supported-formats
 [sheppard]: https://github.com/sheppard
 [wq]: https://github.com/wq
+[mypebble]: https://github.com/mypebble
+[Rest Framework Latex]: https://github.com/mypebble/rest-framework-latex

@@ -44,7 +44,7 @@ The default authentication schemes may be set globally, using the `DEFAULT_AUTHE
     }
 
 You can also set the authentication scheme on a per-view or per-viewset basis,
-using the `APIView` class based views.
+using the `APIView` class-based views.
 
     from rest_framework.authentication import SessionAuthentication, BasicAuthentication
     from rest_framework.permissions import IsAuthenticated
@@ -128,10 +128,9 @@ To use the `TokenAuthentication` scheme you'll need to [configure the authentica
 
 ---
 
-**Note:** Make sure to run `manage.py syncdb` after changing your settings. The `rest_framework.authtoken` app provides both Django (from v1.7) and South database migrations. See [Schema migrations](#schema-migrations) below.
+**Note:** Make sure to run `manage.py migrate` after changing your settings. The `rest_framework.authtoken` app provides Django database migrations.
 
 ---
-
 
 You'll also need to create tokens for your users.
 
@@ -144,10 +143,12 @@ For clients to authenticate, the token key should be included in the `Authorizat
 
     Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
 
+**Note:** If you want to use a different keyword in the header, such as `Bearer`, simply subclass `TokenAuthentication` and set the `keyword` class variable.
+
 If successfully authenticated, `TokenAuthentication` provides the following credentials.
 
 * `request.user` will be a Django `User` instance.
-* `request.auth` will be a `rest_framework.authtoken.models.BasicToken` instance.
+* `request.auth` will be a `rest_framework.authtoken.models.Token` instance.
 
 Unauthenticated responses that are denied permission will result in an `HTTP 401 Unauthorized` response with an appropriate WWW-Authenticate header.  For example:
 
@@ -206,6 +207,10 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
 
 Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.  If you need a customized version of the `obtain_auth_token` view, you can do so by overriding the `ObtainAuthToken` view class, and using that in your url conf instead.
 
+By default there are no permissions or throttling applied to the  `obtain_auth_token` view. If you do wish to apply throttling you'll need to override the view class,
+and include them using the `throttle_classes` attribute.
+
+
 ##### With Django admin
 
 It is also possible to create Tokens manually through admin interface. In case you are using a large user base, we recommend that you monkey patch the `TokenAdmin` class to customize it to your needs, more specifically by declaring the `user` field as `raw_field`.
@@ -216,38 +221,6 @@ It is also possible to create Tokens manually through admin interface. In case y
 
     TokenAdmin.raw_id_fields = ('user',)
 
-
-#### Schema migrations
-
-The `rest_framework.authtoken` app includes both Django native migrations (for Django versions >1.7) and South migrations (for Django versions <1.7) that will create the authtoken table.
-
-----
-
-**Note**: From REST Framework v2.4.0 using South with Django <1.7 requires upgrading South v1.0+
-
-----
-
-
-If you're using a [custom user model][custom-user-model] you'll need to make sure that any initial migration that creates the user table runs before the authtoken table is created.
-
-You can do so by inserting a `needed_by` attribute in your user migration:
-
-    class Migration:
-
-        needed_by = (
-            ('authtoken', '0001_initial'),
-        )
-
-        def forwards(self):
-            ...
-
-For more details, see the [south documentation on dependencies][south-dependencies].
-
-Also note that if you're using a `post_save` signal to create tokens, then the first time you create the database tables, you'll need to ensure any migrations are run prior to creating any superusers.  For example:
-
-    python manage.py syncdb --noinput  # Won't create a superuser just yet, due to `--noinput`.
-    python manage.py migrate
-    python manage.py createsuperuser
 
 ## SessionAuthentication
 
@@ -390,11 +363,9 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [oauth]: http://oauth.net/2/
 [permission]: permissions.md
 [throttling]: throttling.md
-[csrf-ajax]: https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
+[csrf-ajax]: https://docs.djangoproject.com/en/stable/ref/csrf/#ajax
 [mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization
-[custom-user-model]: https://docs.djangoproject.com/en/dev/topics/auth/customizing/#specifying-a-custom-user-model
-[south-dependencies]: http://south.readthedocs.org/en/latest/dependencies.html
-[django-oauth-toolkit-getting-started]: https://django-oauth-toolkit.readthedocs.org/en/latest/rest-framework/getting_started.html
+[django-oauth-toolkit-getting-started]: https://django-oauth-toolkit.readthedocs.io/en/latest/rest-framework/getting_started.html
 [django-rest-framework-oauth]: http://jpadilla.github.io/django-rest-framework-oauth/
 [django-rest-framework-oauth-authentication]: http://jpadilla.github.io/django-rest-framework-oauth/authentication/
 [django-rest-framework-oauth-permissions]: http://jpadilla.github.io/django-rest-framework-oauth/permissions/
@@ -403,7 +374,7 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [oauth-1.0a]: http://oauth.net/core/1.0a
 [django-oauth-plus]: http://code.larlet.fr/django-oauth-plus
 [django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
-[django-oauth2-provider-docs]: https://django-oauth2-provider.readthedocs.org/en/latest/
+[django-oauth2-provider-docs]: https://django-oauth2-provider.readthedocs.io/en/latest/
 [rfc6749]: http://tools.ietf.org/html/rfc6749
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
 [evonove]: https://github.com/evonove/
@@ -417,9 +388,9 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [djangorestframework-httpsignature]: https://github.com/etoccalino/django-rest-framework-httpsignature
 [amazon-http-signature]: http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
 [http-signature-ietf-draft]: https://datatracker.ietf.org/doc/draft-cavage-http-signatures/
-[hawkrest]: http://hawkrest.readthedocs.org/en/latest/
+[hawkrest]: https://hawkrest.readthedocs.io/en/latest/
 [hawk]: https://github.com/hueniverse/hawk
-[mohawk]: http://mohawk.readthedocs.org/en/latest/
+[mohawk]: https://mohawk.readthedocs.io/en/latest/
 [mac]: http://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05
 [djoser]: https://github.com/sunscrapers/djoser
 [django-rest-auth]: https://github.com/Tivix/django-rest-auth

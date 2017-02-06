@@ -17,7 +17,7 @@ class Tag(models.Model):
     Tags have a descriptive slug, and are attached to an arbitrary object.
     """
     tag = models.SlugField()
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     tagged_item = GenericForeignKey('content_type', 'object_id')
 
@@ -75,7 +75,7 @@ class TestGenericRelations(TestCase):
             'tags': ['django', 'python'],
             'url': 'https://www.djangoproject.com/'
         }
-        self.assertEqual(serializer.data, expected)
+        assert serializer.data == expected
 
     def test_generic_fk(self):
         """
@@ -105,4 +105,4 @@ class TestGenericRelations(TestCase):
                 'tagged_item': 'Note: Remember the milk'
             }
         ]
-        self.assertEqual(serializer.data, expected)
+        assert serializer.data == expected

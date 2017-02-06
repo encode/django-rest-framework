@@ -36,7 +36,7 @@ The `api_settings` object will check for any user-defined settings, and otherwis
 
 ## API policy settings
 
-*The following settings control the basic API policies, and are applied to every `APIView` class based view, or `@api_view` function based view.*
+*The following settings control the basic API policies, and are applied to every `APIView` class-based view, or `@api_view` function based view.*
 
 #### DEFAULT_RENDERER_CLASSES
 
@@ -98,13 +98,19 @@ Default: `'rest_framework.negotiation.DefaultContentNegotiation'`
 
 ## Generic view settings
 
-*The following settings control the behavior of the generic class based views.*
+*The following settings control the behavior of the generic class-based views.*
 
 #### DEFAULT_PAGINATION_SERIALIZER_CLASS
 
-A class the determines the default serialization style for paginated responses.
+---
 
-Default: `rest_framework.pagination.PaginationSerializer`
+**This setting has been removed.**
+
+The pagination API does not use serializers to determine the output format, and
+you'll need to instead override the `get_paginated_response method on a
+pagination class in order to specify how the output format is controlled.
+
+---
 
 #### DEFAULT_FILTER_BACKENDS
 
@@ -112,6 +118,16 @@ A list of filter backend classes that should be used for generic filtering.
 If set to `None` then generic filtering is disabled.
 
 #### PAGINATE_BY
+
+---
+
+**This setting has been removed.**
+
+See the pagination documentation for further guidance on [setting the pagination style](pagination.md#modifying-the-pagination-style).
+
+---
+
+#### PAGE_SIZE
 
 The default page size to use for pagination.  If set to `None`, pagination is disabled by default.
 
@@ -121,26 +137,11 @@ Default: `None`
 
 ---
 
-**This setting is pending deprecation.**
+**This setting has been removed.**
 
 See the pagination documentation for further guidance on [setting the pagination style](pagination.md#modifying-the-pagination-style).
 
 ---
-
-The name of a query parameter, which can be used by the client to override the default page size to use for pagination.  If set to `None`, clients may not override the default page size.
-
-For example, given the following settings:
-
-    REST_FRAMEWORK = {
-    	'PAGINATE_BY': 10,
-    	'PAGINATE_BY_PARAM': 'page_size',
-    }
-
-A client would be able to modify the pagination size by using the `page_size` query parameter.  For example:
-
-    GET http://example.com/api/accounts?page_size=25
-
-Default: `None`
 
 #### MAX_PAGINATE_BY
 
@@ -151,22 +152,6 @@ Default: `None`
 See the pagination documentation for further guidance on [setting the pagination style](pagination.md#modifying-the-pagination-style).
 
 ---
-
-The maximum page size to allow when the page size is specified by the client.  If set to `None`, then no maximum limit is applied.
-
-For example, given the following settings:
-
-    REST_FRAMEWORK = {
-    	'PAGINATE_BY': 10,
-    	'PAGINATE_BY_PARAM': 'page_size',
-        'MAX_PAGINATE_BY': 100
-    }
-
-A client request like the following would return a paginated list of up to 100 items.
-
-    GET http://example.com/api/accounts?page_size=999
-
-Default: `None`
 
 ### SEARCH_PARAM
 
@@ -196,7 +181,7 @@ If set, this value will restrict the set of versions that may be returned by the
 
 Default: `None`
 
-#### VERSION_PARAMETER
+#### VERSION_PARAM
 
 The string that should used for any versioning parameters, such as in the media type or URL query parameters.
 
@@ -246,6 +231,28 @@ Default:
         'rest_framework.renderers.MultiPartRenderer',
         'rest_framework.renderers.JSONRenderer'
     )
+
+---
+
+## Schema generation controls
+
+#### SCHEMA_COERCE_PATH_PK
+
+If set, this maps the `'pk'` identifier in the URL conf onto the actual field
+name when generating a schema path parameter. Typically this will be `'id'`.
+This gives a more suitable representation as "primary key" is an implementation
+detail, whereas "identifier" is a more general concept.
+
+Default: `True`
+
+#### SCHEMA_COERCE_METHOD_NAMES
+
+If set, this is used to map internal viewset method names onto external action
+names used in the schema generation. This allows us to generate names that
+are more suitable for an external representation than those that are used
+internally in the codebase.
+
+Default: `{'retrieve': 'read', 'destroy': 'delete'}`
 
 ---
 
@@ -397,6 +404,22 @@ This should be a function with the following signature:
 
 Default: `'rest_framework.views.get_view_description'`
 
+## HTML Select Field cutoffs
+
+Global settings for [select field cutoffs for rendering relational fields](relations.md#select-field-cutoffs) in the browsable API.
+
+#### HTML_SELECT_CUTOFF
+
+Global setting for the `html_cutoff` value.  Must be an integer.
+
+Default: 1000
+
+#### HTML_SELECT_CUTOFF_TEXT
+
+A string representing a global setting for `html_cutoff_text`.
+
+Default: `"More than {count} items..."`
+
 ---
 
 ## Miscellaneous settings
@@ -433,7 +456,7 @@ An integer of 0 or more, that may be used to specify the number of application p
 
 Default: `None`
 
-[cite]: http://www.python.org/dev/peps/pep-0020/
+[cite]: https://www.python.org/dev/peps/pep-0020/
 [rfc4627]: http://www.ietf.org/rfc/rfc4627.txt
 [heroku-minified-json]: https://github.com/interagent/http-api-design#keep-json-minified-in-all-responses
-[strftime]: http://docs.python.org/2/library/time.html#time.strftime
+[strftime]: https://docs.python.org/3/library/time.html#time.strftime

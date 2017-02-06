@@ -7,7 +7,7 @@ source: mixins.py
 >
 > &mdash; [Django Documentation][cite]
 
-One of the key benefits of class based views is the way they allow you to compose bits of reusable behavior.  REST framework takes advantage of this by providing a number of pre-built views that provide for commonly used patterns.
+One of the key benefits of class-based views is the way they allow you to compose bits of reusable behavior.  REST framework takes advantage of this by providing a number of pre-built views that provide for commonly used patterns.
 
 The generic views provided by REST framework allow you to quickly build API views that map closely to your database models.
 
@@ -26,7 +26,6 @@ Typically when using the generic views, you'll override the view, and set severa
         queryset = User.objects.all()
         serializer_class = UserSerializer
         permission_classes = (IsAdminUser,)
-        paginate_by = 100
 
 For more complex cases you might also want to override various methods on the view class.  For example.
 
@@ -71,8 +70,6 @@ The following attributes control the basic view behavior.
 The following attributes are used to control pagination when used with list views.
 
 * `pagination_class` - The pagination class that should be used when paginating list results. Defaults to the same value as the `DEFAULT_PAGINATION_CLASS` setting, which is `'rest_framework.pagination.PageNumberPagination'`.
-
-Note that usage of the `paginate_by`, `paginate_by_param` and `page_kwarg` attributes are now pending deprecation. The `pagination_serializer_class` attribute and `DEFAULT_PAGINATION_SERIALIZER_CLASS` setting have been removed completely. Pagination settings should instead be controlled by overriding a pagination class and setting any configuration attributes there. See the pagination documentation for more details.
 
 **Filtering**:
 
@@ -223,8 +220,6 @@ Also provides a `.partial_update(request, *args, **kwargs)` method, which is sim
 
 If an object is updated this returns a `200 OK` response, with a serialized representation of the object as the body of the response.
 
-If an object is created, for example when making a `DELETE` request followed by a `PUT` request to the same URL, this returns a `201 Created` response, with a serialized representation of the object as the body of the response.
-
 If the request data provided for updating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
 
 ## DestroyModelMixin
@@ -333,7 +328,8 @@ For example, if you need to lookup objects based on multiple fields in the URL c
             queryset = self.filter_queryset(queryset)  # Apply any filter backends
             filter = {}
             for field in self.lookup_fields:
-                filter[field] = self.kwargs[field]
+                if self.kwargs[field]: # Ignore empty fields.
+                    filter[field] = self.kwargs[field]
             return get_object_or_404(queryset, **filter)  # Lookup the object
 
 You can then simply apply this mixin to a view or viewset anytime you need to apply the custom behavior.
@@ -386,7 +382,7 @@ The [django-rest-framework-bulk package][django-rest-framework-bulk] implements 
 [Django Rest Multiple Models][django-rest-multiple-models] provides a generic view (and mixin) for sending multiple serialized models and/or querysets via a single API request.
 
 
-[cite]: https://docs.djangoproject.com/en/dev/ref/class-based-views/#base-vs-generic-views
+[cite]: https://docs.djangoproject.com/en/stable/ref/class-based-views/#base-vs-generic-views
 [GenericAPIView]: #genericapiview
 [ListModelMixin]: #listmodelmixin
 [CreateModelMixin]: #createmodelmixin

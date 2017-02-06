@@ -23,7 +23,7 @@ There's no requirement for you to use them, but if you do then the self-describi
 
 **Signature:** `reverse(viewname, *args, **kwargs)`
 
-Has the same behavior as [`django.core.urlresolvers.reverse`][reverse], except that it returns a fully qualified URL, using the request to determine the host and port.
+Has the same behavior as [`django.urls.reverse`][reverse], except that it returns a fully qualified URL, using the request to determine the host and port.
 
 You should **include the request as a keyword argument** to the function, for example:
 
@@ -44,12 +44,12 @@ You should **include the request as a keyword argument** to the function, for ex
 
 **Signature:** `reverse_lazy(viewname, *args, **kwargs)`
 
-Has the same behavior as [`django.core.urlresolvers.reverse_lazy`][reverse-lazy], except that it returns a fully qualified URL, using the request to determine the host and port.
+Has the same behavior as [`django.urls.reverse_lazy`][reverse-lazy], except that it returns a fully qualified URL, using the request to determine the host and port.
 
 As with the `reverse` function, you should **include the request as a keyword argument** to the function, for example:
 
     api_root = reverse_lazy('api-root', request=request)
 
 [cite]: http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5
-[reverse]: https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse
-[reverse-lazy]: https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse-lazy
+[reverse]: https://docs.djangoproject.com/en/stable/topics/http/urls/#reverse
+[reverse-lazy]: https://docs.djangoproject.com/en/stable/topics/http/urls/#reverse-lazy

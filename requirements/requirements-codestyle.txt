@@ -3,4 +3,4 @@ flake8==2.4.0
 pep8==1.5.7
 
 # Sort and lint imports
-isort==4.2.2
+isort==4.2.5

@@ -25,7 +25,7 @@ Using numeric HTTP status codes in your views doesn't always make for obvious re
 REST framework provides two wrappers you can use to write API views.
 
 1. The `@api_view` decorator for working with function based views.
-2. The `APIView` class for working with class based views.
+2. The `APIView` class for working with class-based views.
 
 These wrappers provide a few bits of functionality such as making sure you receive `Request` instances in your view, and adding context to `Response` objects so that content negotiation can be performed.
 
@@ -96,7 +96,7 @@ Notice that we're no longer explicitly tying our requests or responses to a give
 
 ## Adding optional format suffixes to our URLs
 
-To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints.  Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as [http://example.com/api/items/4/.json][json-url].
+To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints.  Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as [http://example.com/api/items/4.json][json-url].
 
 Start by adding a `format` keyword argument to both of the views, like so.
 
@@ -186,6 +186,8 @@ Similarly, we can control the format of the request that we send, using the `Con
         "style": "friendly"
     }
 
+If you add a `--debug` switch to the `http` requests above, you will be able to see the request type in request headers.
+
 Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/snippets/][devserver].
 
 ### Browsability
@@ -198,9 +200,9 @@ See the [browsable api][browsable-api] topic for more information about the brow
 
 ## What's next?
 
-In [tutorial part 3][tut-3], we'll start using class based views, and see how generic views reduce the amount of code we need to write.
+In [tutorial part 3][tut-3], we'll start using class-based views, and see how generic views reduce the amount of code we need to write.
 
-[json-url]: http://example.com/api/items/4/.json
+[json-url]: http://example.com/api/items/4.json
 [devserver]: http://127.0.0.1:8000/snippets/
 [browsable-api]: ../topics/browsable-api.md
 [tut-1]: 1-serialization.md
