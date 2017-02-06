@@ -252,6 +252,14 @@ class SimpleRouter(BaseRouter):
                     lookup=lookup,
                     trailing_slash=self.trailing_slash
                 )
+
+                # If there is no prefix, the first part of the url is probably
+                # controlled by project's urls.py and the router is in an app,
+                # so a slash in the beginning will (A) cause Django to give
+                # warnings and (B) generate URLS that will require using '//'.
+                if not prefix and regex[:2] == '^/':
+                    regex = '^' + regex[2:]
+
                 view = viewset.as_view(mapping, **route.initkwargs)
                 name = route.name.format(basename=basename)
                 ret.append(url(regex, view, name=name))
