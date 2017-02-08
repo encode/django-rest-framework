@@ -192,6 +192,14 @@ body {
     border-bottom: 1px solid lightgrey;
 }
 
+.coredocs-section span {
+  display: none;
+}
+
+.coredocs-section:hover span {
+  display: inline;
+}
+
 .coredocs-section:last-child {
     margin-top: 0;
 }
@@ -241,6 +249,18 @@ body {
 
 
 /* @group Docs Content */
+
+.docs-content .meta .label {
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.docs-content .meta code {
+    vertical-align: middle;
+    padding: .2em .6em .3em;
+    font-size: 14px;
+}
 
 .docs-content .btn {
   font-size: inherit;
