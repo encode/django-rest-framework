@@ -1,11 +1,10 @@
 import unittest
 
-import coreschema
-
 from django.conf.urls import include, url
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.test import TestCase, override_settings
+import coreschema
 
 from rest_framework import filters, pagination, permissions, serializers
 from rest_framework.compat import coreapi

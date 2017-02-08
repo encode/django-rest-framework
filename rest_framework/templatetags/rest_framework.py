@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
+import markdown
 import re
 
 from django import template
@@ -14,7 +15,6 @@ from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
 
 from markdown.extensions.fenced_code import FencedBlockPreprocessor
-import markdown
 
 
 register = template.Library()

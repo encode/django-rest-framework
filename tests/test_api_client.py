@@ -1,13 +1,13 @@
 from __future__ import unicode_literals
 
 import os
-import coreschema
 import tempfile
 import unittest
 
 from django.conf.urls import url
 from django.http import HttpResponse
 from django.test import override_settings
+import coreschema
 
 from rest_framework.compat import coreapi
 from rest_framework.parsers import FileUploadParser
