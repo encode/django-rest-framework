@@ -13,16 +13,15 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import exceptions, renderers, serializers
 from rest_framework.compat import (
-    RegexURLPattern, RegexURLResolver, coreapi, coreschema, uritemplate, urlparse
+    RegexURLPattern, RegexURLResolver, coreapi, coreschema, uritemplate,
+    urlparse
 )
 from rest_framework.request import clone_request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
-from rest_framework.utils.field_mapping import ClassLookupDict
 from rest_framework.utils.model_meta import _get_pk
 from rest_framework.views import APIView
-
 
 header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
 
@@ -32,7 +31,7 @@ def field_to_schema(field):
     description = force_text(field.help_text) if field.help_text else ''
 
     if isinstance(field, serializers.ListSerializer):
-        child_schema = serializer_to_schema(field.child)
+        child_schema = field_to_schema(field.child)
         return coreschema.Array(
             items=child_schema,
             title=title,
@@ -41,7 +40,7 @@ def field_to_schema(field):
     elif isinstance(field, serializers.Serializer):
         return coreschema.Object(
             properties={
-                key: serializer_to_schema(value)
+                key: field_to_schema(value)
                 for key, value
                 in field.fields.items()
             },

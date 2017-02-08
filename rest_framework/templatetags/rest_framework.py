@@ -8,13 +8,13 @@ from django.utils import six
 from django.utils.encoding import force_text, iri_to_uri
 from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
+from markdown.extensions.fenced_code import FencedBlockPreprocessor
 
-from rest_framework.compat import NoReverseMatch, reverse, template_render
+from rest_framework.compat import (
+    NoReverseMatch, markdown, reverse, template_render
+)
 from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
-
-from markdown.extensions.fenced_code import FencedBlockPreprocessor
-import markdown
 
 
 register = template.Library()
@@ -40,7 +40,7 @@ class FencedCodeExtension(markdown.Extension):
 
 
 @register.tag(name='code')
-def highlight_code(parser,token):
+def highlight_code(parser, token):
     code = token.split_contents()[-1]
     nodelist = parser.parse(('endcode',))
     parser.delete_first_token()
