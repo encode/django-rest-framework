@@ -129,58 +129,6 @@
   transition: all 1s ease;
 }
 
-@media (max-width: 767px) {
-  .main-container {
-    padding-left: 15px;
-    padding-right: 15px;
-  }
-
-  .sidebar {
-    position: relative;
-    width: 100%;
-    margin-bottom: 10px;
-  }
-
-  .sidebar .toggle-btn {
-    display: block;
-    cursor: pointer;
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    z-index: 10 !important;
-    padding: 3px;
-    width: 40px;
-    text-align: center;
-  }
-
-  .sidebar .language-switcher {
-    text-align: center;
-    margin-top: 10px;
-    margin-bottom: 10px;
-  }
-
-  .sidebar .brand {
-    margin-top: 0;
-    margin-bottom: 0;
-
-    text-align: left !important;
-    font-size: 22px;
-    padding: 0;
-    padding-left: 20px;
-    line-height: 50px !important;
-  }
-}
-
-@media (min-width: 767px) {
-  .sidebar .menu-list .menu-content {
-    display: block;
-  }
-  #main {
-    width:calc(100% - 225px);
-    float: right;
-  }
-}
-
 body {
   margin: 0px;
   padding: 0px;
@@ -219,6 +167,11 @@ body {
     text-align: center;
     margin-top: 20px;
     margin-bottom: 20px;
+
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 .sidebar .language-switcher h6 {
@@ -230,8 +183,7 @@ body {
 }
 
 .sidebar .language-switcher .dropdown-menu {
-  margin-top: 5px;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
   border: 0;
   border-radius: 0;
   min-width: 130px;
@@ -279,3 +231,69 @@ body {
 }
 
 /* @end Docs Content */
+
+
+@media (max-width: 767px) {
+  .main-container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .sidebar {
+    position: relative;
+    width: 100%;
+    margin-bottom: 10px;
+    overflow: visible;
+  }
+
+  .sidebar .toggle-btn {
+    display: block;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 10 !important;
+    padding: 3px;
+    width: 40px;
+    text-align: center;
+  }
+
+  .sidebar .language-switcher {
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    position: static;
+  }
+
+  .sidebar .language-switcher .btn .caret {
+    margin-left: 0;
+    border-bottom: 0;
+    border-top: 4px dashed;
+  }
+
+  .sidebar .language-switcher .dropup .dropdown-menu {
+    top: 30px;
+    bottom: inherit;
+  }
+
+  .sidebar .brand {
+    margin-top: 0;
+    margin-bottom: 0;
+
+    text-align: left !important;
+    font-size: 22px;
+    padding: 0;
+    padding-left: 20px;
+    line-height: 50px !important;
+  }
+}
+
+@media (min-width: 767px) {
+  .sidebar .menu-list .menu-content {
+    display: block;
+  }
+  #main {
+    width:calc(100% - 225px);
+    float: right;
+  }
+}

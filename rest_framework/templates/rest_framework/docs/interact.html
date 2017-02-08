@@ -1,0 +1,28 @@
+{% load rest_framework %}
+
+<!-- Modal -->
+<div class="modal fade api-modal" id="{{ section_key }}_{{ link_key }}_modal" tabindex="-1" role="dialog" aria-labelledby="api explorer modal">
+<div class="modal-dialog modal-lg" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <h4 class="modal-title">{{ link.title|default:link_key }}</h4>
+    </div>
+
+    <div class="modal-body">
+        <form data-key='["{{ section_key }}", "{{ link_key }}"]'>
+            {% form_for_link link %}
+
+            <div id="response">
+                <div class="response-error alert alert-danger hide"></div>
+                <pre class="response-data hide"></pre>
+            </div>
+
+            <div class="text-right">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+</div>
