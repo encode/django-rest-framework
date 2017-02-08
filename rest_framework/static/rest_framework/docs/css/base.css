@@ -186,21 +186,29 @@ body {
   padding: 0px;
 }
 
-.coredocs-section {
+.coredocs-section-title {
     margin-top: 20px;
     padding-bottom: 10px;
     border-bottom: 1px solid lightgrey;
 }
 
-.coredocs-section span {
+.coredocs-link-title a,
+.coredocs-section-title a {
   display: none;
 }
 
-.coredocs-section:hover span {
-  display: inline;
+.coredocs-link-title a,
+.coredocs-section-title a {
+  text-decoration: none;
 }
 
-.coredocs-section:last-child {
+.coredocs-link-title:hover a,
+.coredocs-section-title:hover a {
+  display: inline;
+  font-size: 20px;
+}
+
+.coredocs-section-title:last-child {
     margin-top: 0;
 }
 
@@ -269,4 +277,5 @@ body {
 .code-samples pre {
   margin-top: 20px;
 }
+
 /* @end Docs Content */
