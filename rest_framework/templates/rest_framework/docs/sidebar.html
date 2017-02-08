@@ -6,7 +6,7 @@
         <ul id="menu-content" class="menu-content collapse out">
             {% for section_key, section in document.data.items %}
             <li data-toggle="collapse" data-target="#{{ section_key }}-dropdown" class="collapsed">
-                <a href="#{{ section_key }}"><i class="fa fa-dot-circle-o fa-lg"></i> {{ section_key }} <span class="arrow"></span></a>
+                <a><i class="fa fa-dot-circle-o fa-lg"></i> {{ section_key }} <span class="arrow"></span></a>
             </li>
             <ul class="sub-menu collapse in" id="{{ section_key }}-dropdown">
                 {% for link_key, link in section.links.items %}

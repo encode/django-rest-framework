@@ -1,3 +1,8 @@
+.main-container {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
 .sidebar {
   overflow: auto;
   font-family: verdana;
@@ -125,6 +130,11 @@
 }
 
 @media (max-width: 767px) {
+  .main-container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
   .sidebar {
     position: relative;
     width: 100%;
