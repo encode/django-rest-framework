@@ -1,6 +1,5 @@
 from __future__ import absolute_import, unicode_literals
 
-import markdown
 import re
 
 from django import template
@@ -9,12 +8,13 @@ from django.utils import six
 from django.utils.encoding import force_text, iri_to_uri
 from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
+from markdown.extensions.fenced_code import FencedBlockPreprocessor
 
-from rest_framework.compat import NoReverseMatch, reverse, template_render
+from rest_framework.compat import (
+    NoReverseMatch, markdown, reverse, template_render
+)
 from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
-
-from markdown.extensions.fenced_code import FencedBlockPreprocessor
 
 
 register = template.Library()

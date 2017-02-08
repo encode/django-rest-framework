@@ -13,7 +13,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import exceptions, renderers, serializers
 from rest_framework.compat import (
-    RegexURLPattern, RegexURLResolver, coreapi, coreschema, uritemplate, urlparse
+    RegexURLPattern, RegexURLResolver, coreapi, coreschema, uritemplate,
+    urlparse
 )
 from rest_framework.request import clone_request
 from rest_framework.response import Response
@@ -21,7 +22,6 @@ from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 from rest_framework.utils.model_meta import _get_pk
 from rest_framework.views import APIView
-
 
 header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
 
