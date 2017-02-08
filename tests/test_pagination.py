@@ -370,6 +370,13 @@ class TestLimitOffset:
         assert self.pagination.display_page_controls
         assert isinstance(self.pagination.to_html(), type(''))
 
+    def test_pagination_not_applied_if_limit_or_default_limit_not_set(self):
+        class MockPagination(pagination.LimitOffsetPagination):
+            default_limit = None
+        request = Request(factory.get('/'))
+        queryset = MockPagination().paginate_queryset(self.queryset, request)
+        assert queryset is None
+
     def test_single_offset(self):
         """
         When the offset is not a multiple of the limit we get some edge cases:

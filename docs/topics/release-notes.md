@@ -228,7 +228,7 @@ You can determine your currently installed version using `pip freeze`:
 * Fixed use of deprecated Query.aggregates. ([#4003][gh4003])
 * Fix blank lines around docstrings. ([#4002][gh4002])
 * Fixed admin pagination when limit is 0. ([#3990][gh3990])
-* OrderingFilter adjustements. ([#3983][gh3983])
+* OrderingFilter adjustments. ([#3983][gh3983])
 * Non-required serializer related fields. ([#3976][gh3976])
 * Using safer calling way of "@api_view" in tutorial. ([#3971][gh3971])
 * ListSerializer doesn't handle unique_together constraints. ([#3970][gh3970])

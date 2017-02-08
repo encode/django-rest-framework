@@ -3,15 +3,20 @@ Tests for the throttling implementations in the permissions module.
 """
 from __future__ import unicode_literals
 
+import pytest
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.core.exceptions import ImproperlyConfigured
+from django.http import HttpRequest
 from django.test import TestCase
 
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.test import APIRequestFactory
+from rest_framework.test import APIRequestFactory, force_authenticate
 from rest_framework.throttling import (
-    BaseThrottle, ScopedRateThrottle, UserRateThrottle
+    AnonRateThrottle, BaseThrottle, ScopedRateThrottle, SimpleRateThrottle,
+    UserRateThrottle
 )
 from rest_framework.views import APIView
 
@@ -189,6 +194,8 @@ class ScopedRateThrottleTests(TestCase):
     """
 
     def setUp(self):
+        self.throttle = ScopedRateThrottle()
+
         class XYScopedRateThrottle(ScopedRateThrottle):
             TIMER_SECONDS = 0
             THROTTLE_RATES = {'x': '3/min', 'y': '1/min'}
@@ -288,6 +295,18 @@ class ScopedRateThrottleTests(TestCase):
             response = self.unscoped_view(request)
             assert response.status_code == 200
 
+    def test_get_cache_key_returns_correct_key_if_user_is_authenticated(self):
+        class DummyView(object):
+            throttle_scope = 'user'
+
+        request = Request(HttpRequest())
+        user = User.objects.create(username='test')
+        force_authenticate(request, user)
+        request.user = user
+        self.throttle.allow_request(request, DummyView())
+        cache_key = self.throttle.get_cache_key(request, view=DummyView())
+        assert cache_key == 'throttle_user_%s' % user.pk
+
 
 class XffTestingBase(TestCase):
     def setUp(self):
@@ -354,3 +373,79 @@ class XffUniqueMachinesTest(XffTestingBase):
         self.view(self.request)
         self.request.META['HTTP_X_FORWARDED_FOR'] = '0.0.0.0, 7.7.7.7, 2.2.2.2'
         assert self.view(self.request).status_code == 200
+
+
+class BaseThrottleTests(TestCase):
+
+    def test_allow_request_raises_not_implemented_error(self):
+        with pytest.raises(NotImplementedError):
+            BaseThrottle().allow_request(request={}, view={})
+
+
+class SimpleRateThrottleTests(TestCase):
+
+    def setUp(self):
+        SimpleRateThrottle.scope = 'anon'
+
+    def test_get_rate_raises_error_if_scope_is_missing(self):
+        throttle = SimpleRateThrottle()
+        with pytest.raises(ImproperlyConfigured):
+            throttle.scope = None
+            throttle.get_rate()
+
+    def test_throttle_raises_error_if_rate_is_missing(self):
+        SimpleRateThrottle.scope = 'invalid scope'
+        with pytest.raises(ImproperlyConfigured):
+            SimpleRateThrottle()
+
+    def test_parse_rate_returns_tuple_with_none_if_rate_not_provided(self):
+        rate = SimpleRateThrottle().parse_rate(None)
+        assert rate == (None, None)
+
+    def test_allow_request_returns_true_if_rate_is_none(self):
+        assert SimpleRateThrottle().allow_request(request={}, view={}) is True
+
+    def test_get_cache_key_raises_not_implemented_error(self):
+        with pytest.raises(NotImplementedError):
+            SimpleRateThrottle().get_cache_key({}, {})
+
+    def test_allow_request_returns_true_if_key_is_none(self):
+        throttle = SimpleRateThrottle()
+        throttle.rate = 'some rate'
+        throttle.get_cache_key = lambda *args: None
+        assert throttle.allow_request(request={}, view={}) is True
+
+    def test_wait_returns_correct_waiting_time_without_history(self):
+        throttle = SimpleRateThrottle()
+        throttle.num_requests = 1
+        throttle.duration = 60
+        throttle.history = []
+        waiting_time = throttle.wait()
+        assert isinstance(waiting_time, float)
+        assert waiting_time == 30.0
+
+    def test_wait_returns_none_if_there_are_no_available_requests(self):
+        throttle = SimpleRateThrottle()
+        throttle.num_requests = 1
+        throttle.duration = 60
+        throttle.now = throttle.timer()
+        throttle.history = [throttle.timer() for _ in range(3)]
+        assert throttle.wait() is None
+
+
+class AnonRateThrottleTests(TestCase):
+
+    def setUp(self):
+        self.throttle = AnonRateThrottle()
+
+    def test_authenticated_user_not_affected(self):
+        request = Request(HttpRequest())
+        user = User.objects.create(username='test')
+        force_authenticate(request, user)
+        request.user = user
+        assert self.throttle.get_cache_key(request, view={}) is None
+
+    def test_get_cache_key_returns_correct_value(self):
+        request = Request(HttpRequest())
+        cache_key = self.throttle.get_cache_key(request, view={})
+        assert cache_key == 'throttle_anon_None'

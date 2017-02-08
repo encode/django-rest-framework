@@ -105,7 +105,7 @@ If the python `markdown` library is installed, then [markdown syntax][markdown] 
         [ref]: http://example.com/activating-accounts
         """
 
-Note that one constraint of using viewsets is that any documentation be used for all generated views, so for example, you cannot have differing documentation for the generated list view and detail view.
+Note that when using viewsets the basic docstring is used for all generated views.  To provide descriptions for each view, such as for the the list and retrieve views, use docstring sections as described in [Schemas as documentation: Examples][schemas-examples].
 
 #### The `OPTIONS` method
 
@@ -148,3 +148,4 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [image-django-rest-swagger]: ../img/django-rest-swagger.png
 [image-apiary]: ../img/apiary.png
 [image-self-describing-api]: ../img/self-describing.png
+[schemas-examples]: api-guide/schemas/#examples

@@ -92,7 +92,7 @@ class TestRouterGeneratedSchema(TestCase):
     def test_anonymous_request(self):
         client = APIClient()
         response = client.get('/', HTTP_ACCEPT='application/coreapi+json')
-        self.assertEqual(response.status_code, 200)
+        assert response.status_code == 200
         expected = coreapi.Document(
             url='http://testserver/',
             title='Example API',
@@ -127,14 +127,14 @@ class TestRouterGeneratedSchema(TestCase):
                 }
             }
         )
-        self.assertEqual(response.data, expected)
+        assert response.data == expected
 
     @unittest.expectedFailure
     def test_authenticated_request(self):
         client = APIClient()
         client.force_authenticate(MockUser())
         response = client.get('/', HTTP_ACCEPT='application/coreapi+json')
-        self.assertEqual(response.status_code, 200)
+        assert response.status_code == 200
         expected = coreapi.Document(
             url='http://testserver/',
             title='Example API',
@@ -220,7 +220,7 @@ class TestRouterGeneratedSchema(TestCase):
                 }
             }
         )
-        self.assertEqual(response.data, expected)
+        assert response.data == expected
 
 
 class DenyAllUsingHttp404(permissions.BasePermission):
@@ -316,7 +316,7 @@ class TestSchemaGenerator(TestCase):
                 }
             }
         )
-        self.assertEqual(schema, expected)
+        assert schema == expected
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
@@ -370,7 +370,7 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
                 }
             }
         )
-        self.assertEqual(schema, expected)
+        assert schema == expected
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
@@ -405,7 +405,7 @@ class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
                 },
             }
         )
-        self.assertEqual(schema, expected)
+        assert schema == expected
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
