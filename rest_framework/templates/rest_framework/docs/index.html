@@ -8,14 +8,13 @@
 
 	    <title>{{ document.title }}</title>
 
-        <link href="{% static 'rest_framework/docs/css/bootstrap-custom.min.css' %}" rel="stylesheet">
+        <link href="{% static 'rest_framework/docs/css/bootstrap.min.css' %}" rel="stylesheet">
+        <link href="{% static 'rest_framework/docs/css/bootstrap-theme.min.css' %}" rel="stylesheet">
         <link href="{% static 'rest_framework/docs/css/font-awesome-4.0.3.css' %}" rel="stylesheet">
         <link href="{% static 'rest_framework/docs/css/base.css' %}" rel="stylesheet">
         <style>{{ code_style }}</style>
         <style>
         .highlight {background-color: #f7f7f9}
-        .coredocs-link {border-top: 1px solid lightgrey; margin-top: 20px}
-        .coredocs-section {border-top: 2px solid lightgrey; margin-top: 20px; padding-top: 20px}
         .checkbox label.control-label {font-weight: bold}
         @media (min-width: 768px) {
             .navbar-nav.navbar-right:last-child {
@@ -23,20 +22,23 @@
             }
         }
         </style>
-        <script src="https://unpkg.com/coreapi@0.0.17/dist/coreapi.js"></script>
+        <script src="https://unpkg.com/coreapi@0.0.18/dist/coreapi.js"></script>
     </head>
 
-    <body>
+    <body data-spy="scroll" data-target="#sidebar-nav" data-offset="50">
 
-        {% include "rest_framework/docs/nav.html" %}
+        {% include "rest_framework/docs/sidebar.html" %}
 
-        <div class="container-fluid">
-                <div class="col-md-2">{% include "rest_framework/docs/toc.html" %}</div>
-                <div class="col-md-10" role="main">{% include "rest_framework/docs/document.html" %}</div>
+        <div class="container" id="main">
+            <div class="row">
+                <div class="col-md-12">
+                    {% include "rest_framework/docs/document.html" %}
+                </div>
+            </div>
         </div>
 
         <script src="{% static 'rest_framework/docs/js/jquery-1.10.2.min.js' %}"></script>
-        <script src="{% static 'rest_framework/docs/js/bootstrap-3.0.3.min.js' %}"></script>
+        <script src="{% static 'rest_framework/docs/js/bootstrap.min.js' %}"></script>
         <script>
             function getCookie(name) {
                 var cookieValue = null;
@@ -61,8 +63,6 @@
             const doc = codec.decode(schema)
             const client = new coreapi.Client(null, null, csrf)
 
-            $('body').scrollspy({ target: '#toc' })
-
             // Language Control
             $('.language-control li a').click(function (event) {
                 event.preventDefault();
@@ -73,7 +73,7 @@
                 languageControls.not('[data-language="' + language +'"]').parent().removeClass("active")
                 languageControls.filter('[data-language="' + language +'"]').parent().addClass("active")
 
-                button.closest("li.dropdown").find('.dropdown-toggle span').text(language)
+                button.closest(".btn-group").find('.dropdown-toggle span').first().text(language)
 
                 var codeBlocks = $('pre.highlight')
                 codeBlocks.not('[data-language="' + language +'"]').addClass("hide")
@@ -120,8 +120,6 @@
                         params[name] = false
                     }
                 })
-
-                console.log(params)
 
                 client.action(doc, key, params).then(function (data) {
                     var response = JSON.stringify(data, null, 2);
