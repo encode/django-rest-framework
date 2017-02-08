@@ -40,7 +40,7 @@ class FencedCodeExtension(markdown.Extension):
 
 
 @register.tag(name='code')
-def highlight_code(parser,token):
+def highlight_code(parser, token):
     code = token.split_contents()[-1]
     nodelist = parser.parse(('endcode',))
     parser.delete_first_token()

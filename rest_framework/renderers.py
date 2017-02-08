@@ -817,8 +817,6 @@ class DocumentationRenderer(BaseRenderer):
         }
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
-        #from coredocs.main import render as render_docs
-        #return render_docs(data, theme='cerulean', highlight='emacs', static=lambda path: '/static/rest_framework/docs/' + path)
         template = loader.get_template(self.template)
         context = self.get_context(data)
         return template_render(template, context, request=renderer_context['request'])
