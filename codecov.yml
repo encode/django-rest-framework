@@ -1,6 +1,6 @@
 coverage:
   status:
-    project: true
+    project: false
     patch: false
     changes: false
 
