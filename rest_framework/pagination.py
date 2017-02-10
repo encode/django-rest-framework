@@ -307,7 +307,10 @@ class PageNumberPagination(BasePagination):
                     name=self.page_size_query_param,
                     required=False,
                     location='query',
-                    # description=force_text(self.page_size_query_description)
+                    schema=coreschema.Integer(
+                        title='Page size',
+                        description=force_text(self.page_size_query_description)
+                    )
                 )
             )
         return fields

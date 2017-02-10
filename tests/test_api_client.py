@@ -7,9 +7,8 @@ import unittest
 from django.conf.urls import url
 from django.http import HttpResponse
 from django.test import override_settings
-import coreschema
 
-from rest_framework.compat import coreapi
+from rest_framework.compat import coreapi, coreschema
 from rest_framework.parsers import FileUploadParser
 from rest_framework.renderers import CoreJSONRenderer
 from rest_framework.response import Response
@@ -194,7 +193,6 @@ urlpatterns = [
 @unittest.skipUnless(coreapi, 'coreapi not installed')
 @override_settings(ROOT_URLCONF='tests.test_api_client')
 class APIClientTests(APITestCase):
-    @unittest.expectedFailure
     def test_api_client(self):
         client = CoreAPIClient()
         schema = client.get('http://api.example.com/')

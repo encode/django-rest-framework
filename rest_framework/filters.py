@@ -13,6 +13,7 @@ from django.db import models
 from django.db.models.constants import LOOKUP_SEP
 from django.template import loader
 from django.utils import six
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import (
@@ -83,6 +84,8 @@ class SearchFilter(BaseFilterBackend):
         '@': 'search',
         '$': 'iregex',
     }
+    search_title = _('Search')
+    search_description = _('A search term.')
 
     def get_search_terms(self, request):
         """
@@ -170,8 +173,8 @@ class SearchFilter(BaseFilterBackend):
                 required=False,
                 location='query',
                 schema=coreschema.String(
-                    title='Search',
-                    description='...'
+                    title=force_text(self.search_title),
+                    description=force_text(self.search_description)
                 )
             )
         ]
@@ -181,6 +184,8 @@ class OrderingFilter(BaseFilterBackend):
     # The URL query parameter used for the ordering.
     ordering_param = api_settings.ORDERING_PARAM
     ordering_fields = None
+    ordering_title = _('Ordering')
+    ordering_description = _('Which field to use when ordering the results.')
     template = 'rest_framework/filters/ordering.html'
 
     def get_ordering(self, request, queryset, view):
@@ -299,8 +304,8 @@ class OrderingFilter(BaseFilterBackend):
                 required=False,
                 location='query',
                 schema=coreschema.String(
-                    title='Ordering',
-                    description='...'
+                    title=force_text(self.ordering_title),
+                    description=force_text(self.ordering_description)
                 )
             )
         ]
