@@ -40,6 +40,24 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.5.x series
 
+### 3.5.4
+
+**Date**: [10th February 2017][3.5.4-milestone]
+
+* Add max_length and min_length arguments for ListField. ([#4877][gh4877])
+* Add per-view custom exception handler support. ([#4753][gh4753])
+* Support disabling of declared fields on serializer subclasses. ([#4764][gh4764])
+* Support custom view names on `@list_route` and `@detail_route` endpoints. ([#4821][gh4821])
+* Correct labels for fields in login template when custom user model is used. ([#4841][gh4841])
+* Whitespace fixes for descriptions generated from docstrings. ([#4759][gh4759], [#4869][gh4869], [#4870][gh4870])
+* Better error reporting when schemas are returned by views without a schema renderer. ([#4790][gh4790])
+* Fix for returned response of `PUT` requests when `prefetch_related` is used. ([#4661][gh4661], [#4668][gh4668])
+* Fix for breadcrumb view names. ([#4750][gh4750])
+* Fix for RequestsClient ensuring fully qualified URLs. ([#4678][gh4678])
+* Fix for incorrect behavior of writable-nested fields check in some cases. ([#4634][gh4634], [#4669][gh4669])
+* Resolve Django deprecation warnings. ([#4712][gh4712])
+* Various cleanup of test cases.
+
 ### 3.5.3
 
 **Date**: [7th November 2016][3.5.3-milestone]
@@ -639,6 +657,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.5.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.1+Release%22
 [3.5.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.2+Release%22
 [3.5.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.3+Release%22
+[3.5.4-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.4+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -1216,3 +1235,22 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh4645]: https://github.com/tomchristie/django-rest-framework/issues/4645
 [gh4646]: https://github.com/tomchristie/django-rest-framework/issues/4646
 [gh4650]: https://github.com/tomchristie/django-rest-framework/issues/4650
+
+<!-- 3.5.4 -->
+
+[gh4877]: https://github.com/tomchristie/django-rest-framework/issues/4877
+[gh4753]: https://github.com/tomchristie/django-rest-framework/issues/4753
+[gh4764]: https://github.com/tomchristie/django-rest-framework/issues/4764
+[gh4821]: https://github.com/tomchristie/django-rest-framework/issues/4821
+[gh4841]: https://github.com/tomchristie/django-rest-framework/issues/4841
+[gh4759]: https://github.com/tomchristie/django-rest-framework/issues/4759
+[gh4869]: https://github.com/tomchristie/django-rest-framework/issues/4869
+[gh4870]: https://github.com/tomchristie/django-rest-framework/issues/4870
+[gh4790]: https://github.com/tomchristie/django-rest-framework/issues/4790
+[gh4661]: https://github.com/tomchristie/django-rest-framework/issues/4661
+[gh4668]: https://github.com/tomchristie/django-rest-framework/issues/4668
+[gh4750]: https://github.com/tomchristie/django-rest-framework/issues/4750
+[gh4678]: https://github.com/tomchristie/django-rest-framework/issues/4678
+[gh4634]: https://github.com/tomchristie/django-rest-framework/issues/4634
+[gh4669]: https://github.com/tomchristie/django-rest-framework/issues/4669
+[gh4712]: https://github.com/tomchristie/django-rest-framework/issues/4712
