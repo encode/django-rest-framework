@@ -141,10 +141,10 @@
                     form.find(".request-url").text(path)
 
                     // Filling the raw panel
-                    form.find(".response-raw-request").text(method + ' ' + path + '\n\n')
+                    // form.find(".response-raw-request").text(method + ' ' + path + '\n\n')
                 }
 
-                function responseCallback(response) {
+                function responseCallback(response, responseText) {
                     form.find(".response-status-code").removeClass("label-success").removeClass("label-danger")
                     if (response.ok) {
                         form.find(".response-status-code").addClass("label-success")
@@ -157,13 +157,17 @@
                     form.find(".meta").removeClass("hide")
                     
                     // Filling the raw panel
-                    var responseText = 'HTTP/1.1 ' + response.status + ' ' + response.statusText + '\n';
+                    var panelText = 'HTTP/1.1 ' + response.status + ' ' + response.statusText + '\n';
 
                     response.headers.forEach((header, key) => {
-                        responseText += normalizeHTTPHeader(key) + ': ' + header + '\n'
+                        panelText += normalizeHTTPHeader(key) + ': ' + header + '\n'
                     })
 
-                    form.find(".response-raw-response").text(responseText)
+                    if (responseText) {
+                        panelText += '\n' + responseText
+                    }
+
+                    form.find(".response-raw-response").text(panelText)
                 }
 
                 const client = new coreapi.Client({csrf: csrf, requestCallback: requestCallback, responseCallback: responseCallback})
