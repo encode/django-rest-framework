@@ -6,23 +6,38 @@
   <div class="modal-content">
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <h4 class="modal-title">{{ link.title|default:link_key }}</h4>
+      <h3 class="modal-title"><i class="fa fa-exchange"></i> {{ link.title|default:link_key }}</h3>
     </div>
 
+    <form data-key='["{{ section_key }}", "{{ link_key }}"]'>
     <div class="modal-body">
-        <form data-key='["{{ section_key }}", "{{ link_key }}"]'>
-            {% form_for_link link %}
+      <div class="row">
+        <div class="col-lg-6 request">
+          {% form_for_link link %}
+        </div>
 
-            <div id="response">
-                <div class="response-error alert alert-danger hide"></div>
-                <pre class="response-data hide"></pre>
-            </div>
+        <div class="col-lg-6 response" id="response">
+          <div class="request-info">Awaiting request</div>
 
-            <div class="text-right">
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </div>
-        </form>
+          <div class="meta hide">
+            <span class="label label-primary request-method"></span>
+            <code class="request-url"></code>
+            <label class="label label-lg response-status-code pull-right"></label>
+          </div>
+
+          <pre class="request-response hide"></pre>
+
+          <pre class="response-data hide"></pre>
+        </div>
+      </div>
     </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      <button type="submit" class="btn btn-primary">Send Request</button>
+    </div>
+    </form>
+
   </div>
 </div>
 </div>

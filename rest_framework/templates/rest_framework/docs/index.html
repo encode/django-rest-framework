@@ -22,7 +22,8 @@
             }
         }
         </style>
-        <script src="https://unpkg.com/coreapi@0.0.18/dist/coreapi.js"></script>
+        <script src="https://unpkg.com/coreapi@0.0.19/dist/coreapi.js"></script>
+
     </head>
 
     <body data-spy="scroll" data-target="#sidebar-nav" data-offset="50">
@@ -61,7 +62,6 @@
             const codec = new coreapi.codecs.CoreJSONCodec()
             const schema = {{ schema }}
             const doc = codec.decode(schema)
-            const client = new coreapi.Client(null, null, csrf)
 
             // Language Control
             $('.language-control li a').click(function (event) {
@@ -121,13 +121,42 @@
                     }
                 })
 
+                function requestCallback(request) {
+                    var requestText = request.options.method + ' ' + request.url;
+
+                    var parser = document.createElement('a');
+                    parser.href = request.url;
+
+                    form.find(".request-response").text(requestText)
+                    form.find(".request-response").removeClass("hide")
+                    form.find(".request-method").text(request.options.method)
+                    form.find(".request-url").text(parser.pathname + parser.hash + parser.search)
+                }
+
+                function responseCallback(response) {
+                    form.find(".response-status-code").removeClass("label-success").removeClass("label-danger")
+                    if (response.ok) {
+                        form.find(".response-status-code").addClass("label-success")
+                    } else {
+                        form.find(".response-status-code").addClass("label-danger")
+                    }
+
+                    form.find(".response-status-code").text(response.status)
+                    
+                    form.find(".meta").removeClass("hide")
+                }
+
+                const client = new coreapi.Client({csrf: csrf, requestCallback: requestCallback, responseCallback: responseCallback})
+
                 client.action(doc, key, params).then(function (data) {
                     var response = JSON.stringify(data, null, 2);
+                    form.find(".request-info").addClass("hide")
                     form.find(".response-data").text(response)
                     form.find(".response-data").removeClass("hide")
                     form.find(".response-error").addClass("hide")
                 }).catch(function (error) {
                     var response = JSON.stringify(error.content, null, 2);
+                    form.find(".request-info").addClass("hide")
                     form.find(".response-error").text(error.message)
                     form.find(".response-data").text(response)
                     form.find(".response-error").removeClass("hide")
