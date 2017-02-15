@@ -41,6 +41,14 @@
         <script src="{% static 'rest_framework/docs/js/jquery-1.10.2.min.js' %}"></script>
         <script src="{% static 'rest_framework/docs/js/bootstrap.min.js' %}"></script>
         <script>
+            function normalizeHTTPHeader(str) {
+                return (str.charAt(0).toUpperCase() + str.substring(1))
+                    .replace( /-(.)/g, function($1) { return $1.toUpperCase(); })
+                    .replace( /(Www)/g, function($1) { return 'WWW'; })
+                    .replace( /(Xss)/g, function($1) { return 'XSS'; })
+                    .replace( /(Md5)/g, function($1) { return 'MD5'; })
+            }
+
             function getCookie(name) {
                 var cookieValue = null;
                 if (document.cookie && document.cookie !== '') {
@@ -149,8 +157,13 @@
                     form.find(".meta").removeClass("hide")
                     
                     // Filling the raw panel
-                    console.log(response);
-                    form.find(".response-raw-response").text('HTTP/1.1 ' + response.status + ' ' + response.statusText)
+                    var responseText = 'HTTP/1.1 ' + response.status + ' ' + response.statusText + '\n';
+
+                    response.headers.forEach((header, key) => {
+                        responseText += normalizeHTTPHeader(key) + ': ' + header + '\n'
+                    })
+
+                    form.find(".response-raw-response").text(responseText)
                 }
 
                 const client = new coreapi.Client({csrf: csrf, requestCallback: requestCallback, responseCallback: responseCallback})
