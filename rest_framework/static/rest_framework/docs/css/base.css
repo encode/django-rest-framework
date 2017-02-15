@@ -168,46 +168,19 @@ body {
 
 /* @group Language Switcher */
 
-.sidebar .language-switcher {
-    text-align: center;
-    margin-top: 20px;
-    margin-bottom: 20px;
-
+.sidebar .menu-list.menu-list-bottom {
+    margin-bottom: 0;
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
+    border-top: 1px solid #23282e;
 }
 
-.sidebar .language-switcher h6 {
-    margin-bottom: 15px;
-}
-
-.sidebar .language-switcher .btn {
-    padding: 3px 7px;
-}
-
-.sidebar .language-switcher .dropdown-menu {
-  margin-bottom: 5px;
-  border: 0;
-  border-radius: 0;
-  min-width: 130px;
-}
-
-.sidebar .language-switcher .dropdown-menu > li > a {
-  padding: 3px 10px;
-}
-
-.sidebar .language-switcher .dropdown-menu > .active > a,
-.sidebar .language-switcher .dropdown-menu > .active > a:hover,
-.sidebar .language-switcher .dropdown-menu > .active > a:focus {
-  background-color: #17759c;
-}
-
-.sidebar .language-switcher .dropdown-menu > li > a,
-.sidebar .language-switcher .dropdown-menu > li > a:hover,
-.sidebar .language-switcher .dropdown-menu > li > a:focus {
-  background-color: #23282e;
+.sidebar .menu-list-bottom li span {
+  float: right;
+  margin-right: 20px;
+  color: #d19b3d;
 }
 
 /* @end Language Switcher */
@@ -263,22 +236,8 @@ body {
     text-align: center;
   }
 
-  .sidebar .language-switcher {
-    text-align: center;
-    margin-top: 10px;
-    margin-bottom: 10px;
+  .sidebar .menu-list.menu-list-bottom {
     position: static;
-  }
-
-  .sidebar .language-switcher .btn .caret {
-    margin-left: 0;
-    border-bottom: 0;
-    border-top: 4px dashed;
-  }
-
-  .sidebar .language-switcher .dropup .dropdown-menu {
-    top: 30px;
-    bottom: inherit;
   }
 
   .sidebar .brand {

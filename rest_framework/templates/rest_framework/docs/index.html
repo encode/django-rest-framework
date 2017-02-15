@@ -72,16 +72,16 @@
             const doc = codec.decode(schema)
 
             // Language Control
-            $('.language-control li a').click(function (event) {
+            $('#language-control li').click(function (event) {
                 event.preventDefault();
-                var button = $(this)
-                var language = button.data("language")
+                const languageMenuItem = $(this).find('a');
+                var language = languageMenuItem.data("language")
 
-                var languageControls = $('.language-control li a')
-                languageControls.not('[data-language="' + language +'"]').parent().removeClass("active")
-                languageControls.filter('[data-language="' + language +'"]').parent().addClass("active")
+                var languageControls = $(this).closest('ul').find('li');
+                languageControls.find('a').not('[data-language="' + language +'"]').parent().removeClass("active")
+                languageControls.find('a').filter('[data-language="' + language +'"]').parent().addClass("active")
 
-                button.closest(".btn-group").find('.dropdown-toggle span').first().text(language)
+                $('#selected-language').text(language)
 
                 var codeBlocks = $('pre.highlight')
                 codeBlocks.not('[data-language="' + language +'"]').addClass("hide")
