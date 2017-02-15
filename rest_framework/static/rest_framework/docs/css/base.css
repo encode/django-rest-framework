@@ -273,9 +273,8 @@ body {
 }
 
 .api-modal .modal-body .request-awaiting {
-  background-color: #f8f5f0;
   text-align: center;
-  padding: 5px 10px;
+  padding: 35px 10px;
 }
 
 .api-modal .modal-body .meta {
@@ -301,4 +300,5 @@ body {
 
 .api-modal .modal-content .response .well {
   margin: 0;
+  max-height: 550px;
 }
