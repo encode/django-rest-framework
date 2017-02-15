@@ -297,3 +297,35 @@ body {
     float: right;
   }
 }
+
+@media (min-width: 992px) {
+  .modal-lg {
+      width: 980px;
+  }
+}
+
+.api-modal .modal-title .fa {
+  color: #93c54b;
+}
+
+.api-modal .modal-body .request-info {
+  background-color: #f8f5f0;
+  text-align: center;
+  padding: 5px 10px;
+}
+
+.api-modal .modal-body .meta {
+  margin-bottom: 20px;
+}
+
+.api-modal .modal-body .meta .label {
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.api-modal .modal-body .meta code {
+    vertical-align: middle;
+    padding: .2em .6em .3em;
+    font-size: 14px;
+}
