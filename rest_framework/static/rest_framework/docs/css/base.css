@@ -3,6 +3,11 @@
   padding-right: 30px;
 }
 
+.btn:focus,
+.btn:focus:active {
+  outline: none;
+}
+
 .sidebar {
   overflow: auto;
   font-family: verdana;
@@ -308,7 +313,7 @@ body {
   color: #93c54b;
 }
 
-.api-modal .modal-body .request-info {
+.api-modal .modal-body .request-awaiting {
   background-color: #f8f5f0;
   text-align: center;
   padding: 5px 10px;
@@ -328,4 +333,13 @@ body {
     vertical-align: middle;
     padding: .2em .6em .3em;
     font-size: 14px;
+}
+
+.api-modal .modal-content .toggle-view {
+  text-align: right;
+  float: right;
+} 
+
+.api-modal .modal-content .response .well {
+  margin: 0;
 }

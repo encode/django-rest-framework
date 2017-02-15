@@ -122,15 +122,18 @@
                 })
 
                 function requestCallback(request) {
-                    var requestText = request.options.method + ' ' + request.url;
-
-                    var parser = document.createElement('a');
+                    let parser = document.createElement('a');
                     parser.href = request.url;
+                    const method = request.options.method
+                    const path = parser.pathname + parser.hash + parser.search
 
-                    form.find(".request-response").text(requestText)
-                    form.find(".request-response").removeClass("hide")
-                    form.find(".request-method").text(request.options.method)
-                    form.find(".request-url").text(parser.pathname + parser.hash + parser.search)
+                    // Filling the main response meta
+                    form.closest(".modal-content").find(".toggle-view").removeClass("hide")
+                    form.find(".request-method").text(method)
+                    form.find(".request-url").text(path)
+
+                    // Filling the raw panel
+                    form.find(".response-raw-request").text(method + ' ' + path + '\n\n')
                 }
 
                 function responseCallback(response) {
@@ -144,26 +147,37 @@
                     form.find(".response-status-code").text(response.status)
                     
                     form.find(".meta").removeClass("hide")
+                    
+                    // Filling the raw panel
+                    console.log(response);
+                    form.find(".response-raw-response").text('HTTP/1.1 ' + response.status + ' ' + response.statusText)
                 }
 
                 const client = new coreapi.Client({csrf: csrf, requestCallback: requestCallback, responseCallback: responseCallback})
 
                 client.action(doc, key, params).then(function (data) {
                     var response = JSON.stringify(data, null, 2);
-                    form.find(".request-info").addClass("hide")
+                    form.find(".request-awaiting").addClass("hide")
                     form.find(".response-data").text(response)
                     form.find(".response-data").removeClass("hide")
-                    form.find(".response-error").addClass("hide")
                 }).catch(function (error) {
                     var response = JSON.stringify(error.content, null, 2);
-                    form.find(".request-info").addClass("hide")
-                    form.find(".response-error").text(error.message)
+                    form.find(".request-awaiting").addClass("hide")
                     form.find(".response-data").text(response)
-                    form.find(".response-error").removeClass("hide")
                     form.find(".response-data").removeClass("hide")
-
-                    /*form.find(".response-data").addClass("hide")*/
                 })
+            });
+
+            $('.toggle-view button').click(function() {
+                var selectedView = $(this).data("display-toggle");
+                $(this).removeClass("btn-default").addClass('btn-info').siblings().removeClass('btn-info');
+                if (selectedView === 'raw') {
+                    $(this).closest(".modal-content").find(".response-raw").removeClass("hide");
+                    $(this).closest(".modal-content").find(".response-data").addClass("hide");
+                } else {
+                    $(this).closest(".modal-content").find(".response-data").removeClass("hide");
+                    $(this).closest(".modal-content").find(".response-raw").addClass("hide");
+                }
             });
         </script>
     </body>
