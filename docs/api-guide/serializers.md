@@ -1100,8 +1100,6 @@ This API included the `.get_field()`, `.get_pk_field()` and other methods.
 
 Because the serializers have been fundamentally redesigned with 3.0 this API no longer exists. You can still modify the fields that get created but you'll need to refer to the source code, and be aware that if the changes you make are against private bits of API then they may be subject to change.
 
-A new interface for controlling this behavior is currently planned for REST framework 3.1.
-
 ---
 
 # Third party packages
