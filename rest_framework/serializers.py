@@ -15,7 +15,7 @@ from __future__ import unicode_literals
 import copy
 import inspect
 import traceback
-from collections import OrderedDict
+from collections import Mapping, OrderedDict
 
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.exceptions import ImproperlyConfigured
@@ -326,11 +326,11 @@ def as_serializer_error(exc):
     else:
         detail = exc.detail
 
-    if isinstance(detail, dict):
+    if isinstance(detail, Mapping):
         # If errors may be a dict we use the standard {key: list of values}.
         # Here we ensure that all the values are *lists* of errors.
         return {
-            key: value if isinstance(value, (list, dict)) else [value]
+            key: value if isinstance(value, (list, Mapping)) else [value]
             for key, value in detail.items()
         }
     elif isinstance(detail, list):
@@ -442,7 +442,7 @@ class Serializer(BaseSerializer):
         """
         Dict of native values <- Dict of primitive datatypes.
         """
-        if not isinstance(data, dict):
+        if not isinstance(data, Mapping):
             message = self.error_messages['invalid'].format(
                 datatype=type(data).__name__
             )
