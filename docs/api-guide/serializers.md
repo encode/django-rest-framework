@@ -700,7 +700,7 @@ You can override a URL field view name and lookup field by using either, or both
             model = Account
             fields = ('account_url', 'account_name', 'users', 'created')
             extra_kwargs = {
-                'url': {'view_name': 'accounts', 'lookup_field': 'account_name'}
+                'url': {'view_name': 'accounts', 'lookup_field': 'account_name'},
                 'users': {'lookup_field': 'username'}
             }
 
@@ -1099,8 +1099,6 @@ REST framework 2 provided an API to allow developers to override how a `ModelSer
 This API included the `.get_field()`, `.get_pk_field()` and other methods.
 
 Because the serializers have been fundamentally redesigned with 3.0 this API no longer exists. You can still modify the fields that get created but you'll need to refer to the source code, and be aware that if the changes you make are against private bits of API then they may be subject to change.
-
-A new interface for controlling this behavior is currently planned for REST framework 3.1.
 
 ---
 

@@ -303,8 +303,6 @@ Format strings may either be [Python strftime formats][strftime] which explicitl
 
 When a value of `None` is used for the format `datetime` objects will be returned by `to_representation` and the final output representation will determined by the renderer class.
 
-In the case of JSON this means the default datetime representation uses the [ECMA 262 date time string specification][ecma262].  This is a subset of ISO 8601 which uses millisecond precision, and includes the 'Z' suffix for the UTC timezone, for example: `2013-01-29T12:34:56.123Z`.
-
 #### `auto_now` and `auto_now_add` model fields.
 
 When using `ModelSerializer` or `HyperlinkedModelSerializer`, note that any model fields with `auto_now=True` or `auto_now_add=True` will use serializer fields that are `read_only=True` by default.
@@ -434,9 +432,11 @@ Requires either the `Pillow` package or `PIL` package.  The `Pillow` package is 
 
 A field class that validates a list of objects.
 
-**Signature**: `ListField(child)`
+**Signature**: `ListField(child, min_length=None, max_length=None)`
 
 - `child` - A field instance that should be used for validating the objects in the list. If this argument is not provided then objects in the list will not be validated.
+- `min_length` - Validates that the list contains no fewer than this number of elements.
+- `max_length` - Validates that the list contains no more than this number of elements.
 
 For example, to validate a list of integers you might use something like the following:
 
