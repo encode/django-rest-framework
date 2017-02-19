@@ -236,7 +236,8 @@ General guides to using REST framework.
 * [Browser enhancements][browser-enhancements]
 * [The Browsable API][browsableapi]
 * [REST, Hypermedia & HATEOAS][rest-hypermedia-hateoas]
-* [Third Party Resources][third-party-resources]
+* [Third Party Packages][third-party-packages]
+* [Tutorials and Resources][tutorials-and-resources]
 * [Contributing to REST framework][contributing]
 * [Project management][project-management]
 * [3.0 Announcement][3.0-announcement]
@@ -365,7 +366,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [rest-hypermedia-hateoas]: topics/rest-hypermedia-hateoas.md
 [contributing]: topics/contributing.md
 [project-management]: topics/project-management.md
-[third-party-resources]: topics/third-party-resources.md
+[third-party-packages]: topics/third-party-packages.md
+[tutorials-and-resources]: topics/tutorials-and-resources.md
 [3.0-announcement]: topics/3.0-announcement.md
 [3.1-announcement]: topics/3.1-announcement.md
 [3.2-announcement]: topics/3.2-announcement.md
