@@ -4,9 +4,10 @@ from __future__ import unicode_literals
 import inspect
 import pickle
 import re
+import unittest
+from collections import Mapping
 
 import pytest
-
 from django.db import models
 
 from rest_framework import fields, relations, serializers
@@ -14,6 +15,11 @@ from rest_framework.compat import unicode_repr
 from rest_framework.fields import Field
 
 from .utils import MockObject
+
+try:
+    from collections import ChainMap
+except ImportError:
+    ChainMap = False
 
 
 # Test serializer fields imports.
@@ -112,6 +118,31 @@ class TestSerializer:
         serializer = self.Serializer(data=data)
         assert not serializer.is_valid()
         assert serializer.errors == {'non_field_errors': ['No data provided']}
+
+    @unittest.skipUnless(ChainMap, 'requires python 3.3')
+    def test_serialize_chainmap(self):
+        data = ChainMap({'char': 'abc'}, {'integer': 123})
+        serializer = self.Serializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'char': 'abc', 'integer': 123}
+        assert serializer.errors == {}
+
+    def test_serialize_custom_mapping(self):
+        class SinglePurposeMapping(Mapping):
+            def __getitem__(self, key):
+                return 'abc' if key == 'char' else 123
+
+            def __iter__(self):
+                yield 'char'
+                yield 'integer'
+
+            def __len__(self):
+                return 2
+
+        serializer = self.Serializer(data=SinglePurposeMapping())
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'char': 'abc', 'integer': 123}
+        assert serializer.errors == {}
 
 
 class TestValidateMethod:
