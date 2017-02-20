@@ -1446,10 +1446,10 @@ class FileField(Field):
         return data
 
     def to_representation(self, value):
-        use_url = getattr(self, 'use_url', api_settings.UPLOADED_FILES_USE_URL)
-
         if not value:
             return None
+
+        use_url = getattr(self, 'use_url', api_settings.UPLOADED_FILES_USE_URL)
 
         if use_url:
             if not getattr(value, 'url', None):
