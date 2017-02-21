@@ -4,8 +4,10 @@ from __future__ import unicode_literals
 from django.test import TestCase
 
 from rest_framework.relations import Hyperlink
+from rest_framework.templatetags import rest_framework
 from rest_framework.templatetags.rest_framework import (
-    add_nested_class, add_query_param, format_value, urlize_quoted_links
+    add_nested_class, add_query_param, as_string, break_long_headers,
+    format_value, get_pagination_html, urlize_quoted_links
 )
 from rest_framework.test import APIRequestFactory
 
@@ -41,6 +43,9 @@ class TemplateTagTests(TestCase):
         self.assertEqual(format_value(None), '<code>null</code>')
 
     def test_format_value_hyperlink(self):
+        """
+        Tests format_value with a URL
+        """
         url = 'http://url.com'
         name = 'name_of_url'
         hyperlink = Hyperlink(url, name)
@@ -53,6 +58,25 @@ class TemplateTagTests(TestCase):
         list_items = ['item1', 'item2', 'item3']
         self.assertEqual(format_value(list_items), '\n item1, item2, item3\n')
         self.assertEqual(format_value([]), '\n\n')
+
+    def test_format_value_dict(self):
+        """
+        Tests format_value with a dict
+        """
+        test_dict = {'a': 'b'}
+        expected_dict_format = """
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <th>a</th>
+                    <td>b</td>
+                </tr>
+            </tbody>
+        </table>"""
+        self.assertEqual(
+            format_html(format_value(test_dict)),
+            format_html(expected_dict_format)
+        )
 
     def test_format_value_table(self):
         """
@@ -84,20 +108,47 @@ class TemplateTagTests(TestCase):
         expected_dict_format = """
         <tableclass="tabletable-striped">
             <tbody>
-               <tr>
-                  <th>0</th>
-                  <td></td>
-               </tr>
-               <tr>
-                  <th>1</th>
-                  <td></td>
-               </tr>
-               <tr>
-                  <th>2</th>
-                  <td></td>
-               </tr>
+                <tr>
+                    <th>0</th>
+                    <td>
+                        <tableclass="tabletable-striped">
+                            <tbody>
+                                <tr>
+                                    <th>item1</th>
+                                    <td>value1</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <th>1</th>
+                    <td>
+                        <tableclass="tabletable-striped">
+                            <tbody>
+                                <tr>
+                                    <th>item2</th>
+                                    <td>value2</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <th>2</th>
+                    <td>
+                        <tableclass="tabletable-striped">
+                            <tbody>
+                                <tr>
+                                    <th>item3</th>
+                                    <td>value3</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
             </tbody>
-            </table>"""
+        </table>"""
 
         list_of_dicts = [{'item1': 'value1'}, {'item2': 'value2'}, {'item3': 'value3'}]
         self.assertEqual(
@@ -165,6 +216,27 @@ class TemplateTagTests(TestCase):
         for case in negative_cases:
             self.assertEqual(add_nested_class(case), '')
 
+    def test_as_string_with_none(self):
+        result = as_string(None)
+        assert result == ''
+
+    def test_get_pagination_html(self):
+        class MockPager(object):
+            def __init__(self):
+                self.called = False
+
+            def to_html(self):
+                self.called = True
+
+        pager = MockPager()
+        get_pagination_html(pager)
+        assert pager.called is True
+
+    def test_break_long_lines(self):
+        header = 'long test header,' * 20
+        expected_header = '<br> ' + ', <br>'.join(header.split(','))
+        assert break_long_headers(header) == expected_header
+
 
 class Issue1386Tests(TestCase):
     """
@@ -196,6 +268,15 @@ class Issue1386Tests(TestCase):
 
         # example from issue #1386, this shouldn't raise an exception
         urlize_quoted_links("asdf:[/p]zxcv.com")
+
+    def test_smart_urlquote_wrapper_handles_value_error(self):
+        def mock_smart_urlquote(url):
+            raise ValueError
+
+        old = rest_framework.smart_urlquote
+        rest_framework.smart_urlquote = mock_smart_urlquote
+        assert rest_framework.smart_urlquote_wrapper('test') is None
+        rest_framework.smart_urlquote = old
 
 
 class URLizerTests(TestCase):

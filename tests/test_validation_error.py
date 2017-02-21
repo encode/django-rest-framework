@@ -54,16 +54,16 @@ class TestValidationErrorWithFullDetails(TestCase):
 
         request = factory.get('/', content_type='application/json')
         response = view(request)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data, self.expected_response_data)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == self.expected_response_data
 
     def test_function_based_view_exception_handler(self):
         view = error_view
 
         request = factory.get('/', content_type='application/json')
         response = view(request)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data, self.expected_response_data)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == self.expected_response_data
 
 
 class TestValidationErrorWithCodes(TestCase):
@@ -89,13 +89,13 @@ class TestValidationErrorWithCodes(TestCase):
 
         request = factory.get('/', content_type='application/json')
         response = view(request)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data, self.expected_response_data)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == self.expected_response_data
 
     def test_function_based_view_exception_handler(self):
         view = error_view
 
         request = factory.get('/', content_type='application/json')
         response = view(request)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data, self.expected_response_data)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == self.expected_response_data

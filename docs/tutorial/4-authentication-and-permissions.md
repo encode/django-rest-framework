@@ -14,7 +14,7 @@ First, let's add a couple of fields.  One of those fields will be used to repres
 
 Add the following two fields to the `Snippet` model in `models.py`.
 
-    owner = models.ForeignKey('auth.User', related_name='snippets')
+    owner = models.ForeignKey('auth.User', related_name='snippets', on_delete=models.CASCADE)
     highlighted = models.TextField()
 
 We'd also need to make sure that when the model is saved, that we populate the highlighted field, using the `pygments` code highlighting library.
@@ -88,7 +88,7 @@ Make sure to also import the `UserSerializer` class
 Finally we need to add those views into the API, by referencing them from the URL conf. Add the following to the patterns in `urls.py`.
 
     url(r'^users/$', views.UserList.as_view()),
-    url(r'^users/(?P<id>[0-9]+)/$', views.UserDetail.as_view()),
+    url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
 
 ## Associating Snippets with Users
 

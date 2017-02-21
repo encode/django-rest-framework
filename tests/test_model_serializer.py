@@ -94,7 +94,7 @@ class Issue3674ParentModel(models.Model):
 
 
 class Issue3674ChildModel(models.Model):
-    parent = models.ForeignKey(Issue3674ParentModel, related_name='children')
+    parent = models.ForeignKey(Issue3674ParentModel, related_name='children', on_delete=models.CASCADE)
     value = models.CharField(primary_key=True, max_length=64)
 
 
@@ -1013,7 +1013,7 @@ class Issue3674Test(TestCase):
             title = models.CharField(max_length=64)
 
         class TestChildModel(models.Model):
-            parent = models.ForeignKey(TestParentModel, related_name='children')
+            parent = models.ForeignKey(TestParentModel, related_name='children', on_delete=models.CASCADE)
             value = models.CharField(primary_key=True, max_length=64)
 
         class TestChildModelSerializer(serializers.ModelSerializer):

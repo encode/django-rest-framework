@@ -189,6 +189,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-httpsignature][djangorestframework-httpsignature] - Provides an easy to use HTTP Signature Authentication mechanism.
 * [djoser][djoser] - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.
 * [django-rest-auth][django-rest-auth] - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.
+* [drf-oidc-auth][drf-oidc-auth] - Implements OpenID Connect token authentication for DRF.
 
 ### Permissions
 
@@ -203,7 +204,10 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-gis][djangorestframework-gis] - Geographic add-ons
 * [djangorestframework-hstore][djangorestframework-hstore] - Serializer class to support django-hstore DictionaryField model field and its schema-mode feature.
 * [djangorestframework-jsonapi][djangorestframework-jsonapi] - Provides a parser, renderer, serializers, and other tools to help build an API that is compliant with the jsonapi.org spec.
-* [html-json-forms][html-json-forms]: Provides an algorithm and serializer to process HTML JSON Form submissions per the (inactive) spec.
+* [html-json-forms][html-json-forms] - Provides an algorithm and serializer to process HTML JSON Form submissions per the (inactive) spec.
+* [django-rest-framework-serializer-extensions][drf-serializer-extensions] -
+  Enables black/whitelisting fields, and conditionally expanding child serializers on a per-view/request basis.
+* [djangorestframework-queryfields][djangorestframework-queryfields] - Serializer mixin allowing clients to control which fields will be sent in the API response.
 
 ### Serializer fields
 
@@ -251,6 +255,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [ember-django-adapter][ember-django-adapter] - An adapter for working with Ember.js
 * [django-versatileimagefield][django-versatileimagefield] - Provides a drop-in replacement for Django's stock `ImageField` that makes it easy to serve images in multiple sizes/renditions from a single field. For DRF-specific implementation docs, [click here][django-versatileimagefield-drf-docs].
 * [drf-tracking][drf-tracking] - Utilities to track requests to DRF API views.
+* [drf_tweaks][drf_tweaks] - Serializers with one-step validation (and more), pagination without counts and other tweaks.
 * [django-rest-framework-braces][django-rest-framework-braces] - Collection of utilities for working with Django Rest Framework. The most notable ones are [FormSerializer](https://django-rest-framework-braces.readthedocs.io/en/latest/overview.html#formserializer) and [SerializerForm](https://django-rest-framework-braces.readthedocs.io/en/latest/overview.html#serializerform), which are adapters between DRF serializers and Django forms.
 * [drf-haystack][drf-haystack] - Haystack search for Django Rest Framework
 * [django-rest-framework-version-transforms][django-rest-framework-version-transforms] - Enables the use of delta transformations for versioning of DRF resource representations.
@@ -363,3 +368,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-messaging-js]: https://github.com/raphaelgyory/django-rest-messaging-js
 [medium-django-rest-framework]: https://medium.com/django-rest-framework
 [django-rest-framework-course]: https://teamtreehouse.com/library/django-rest-framework
+[drf_tweaks]: https://github.com/ArabellaTech/drf_tweaks
+[drf-oidc-auth]: https://github.com/ByteInternet/drf-oidc-auth
+[drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
+[djangorestframework-queryfields]: https://github.com/wimglenn/djangorestframework-queryfields

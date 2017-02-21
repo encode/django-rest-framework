@@ -47,7 +47,7 @@ Any example validation error might look like this:
 
 You can implement custom exception handling by creating a handler function that converts exceptions raised in your API views into response objects.  This allows you to control the style of error responses used by your API.
 
-The function must take a pair of arguments, this first is the exception to be handled, and the second is a dictionary containing any extra context such as the view currently being handled. The exception handler function should either return a `Response` object, or return `None` if the exception cannot be handled.  If the handler returns `None` then the exception will be re-raised and Django will return a standard HTTP 500 'server error' response.
+The function must take a pair of arguments, the first is the exception to be handled, and the second is a dictionary containing any extra context such as the view currently being handled. The exception handler function should either return a `Response` object, or return `None` if the exception cannot be handled.  If the handler returns `None` then the exception will be re-raised and Django will return a standard HTTP 500 'server error' response.
 
 For example, you might want to ensure that all error responses include the HTTP status code in the body of the response, like so:
 
@@ -119,7 +119,7 @@ The available attributes and methods are:
 
 * `.detail` - Return the textual description of the error.
 * `.get_codes()` - Return the code identifier of the error.
-* `.full_details()` - Return both the textual description and the code identifier.
+* `.get_full_details()` - Return both the textual description and the code identifier.
 
 In most cases the error detail will be a simple item:
 
@@ -127,7 +127,7 @@ In most cases the error detail will be a simple item:
     You do not have permission to perform this action.
     >>> print(exc.get_codes())
     permission_denied
-    >>> print(exc.full_details())
+    >>> print(exc.get_full_details())
     {'message':'You do not have permission to perform this action.','code':'permission_denied'}
 
 In the case of validation errors the error detail will be either a list or

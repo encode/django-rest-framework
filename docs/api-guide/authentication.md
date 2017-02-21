@@ -363,7 +363,7 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [oauth]: http://oauth.net/2/
 [permission]: permissions.md
 [throttling]: throttling.md
-[csrf-ajax]: https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
+[csrf-ajax]: https://docs.djangoproject.com/en/stable/ref/csrf/#ajax
 [mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization
 [django-oauth-toolkit-getting-started]: https://django-oauth-toolkit.readthedocs.io/en/latest/rest-framework/getting_started.html
 [django-rest-framework-oauth]: http://jpadilla.github.io/django-rest-framework-oauth/

@@ -35,8 +35,8 @@ class FormatSuffixTests(TestCase):
                 callback, callback_args, callback_kwargs = resolver.resolve(request.path_info)
             except Exception:
                 self.fail("Failed to resolve URL: %s" % request.path_info)
-            self.assertEqual(callback_args, test_path.args)
-            self.assertEqual(callback_kwargs, test_path.kwargs)
+            assert callback_args == test_path.args
+            assert callback_kwargs == test_path.kwargs
 
     def test_trailing_slash(self):
         factory = APIRequestFactory()

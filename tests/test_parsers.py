@@ -35,7 +35,7 @@ class TestFormParser(TestCase):
         stream = StringIO(self.string)
         data = parser.parse(stream)
 
-        self.assertEqual(Form(data).is_valid(), True)
+        assert Form(data).is_valid() is True
 
 
 class TestFileUploadParser(TestCase):
@@ -62,7 +62,7 @@ class TestFileUploadParser(TestCase):
         self.stream.seek(0)
         data_and_files = parser.parse(self.stream, None, self.parser_context)
         file_obj = data_and_files.files['file']
-        self.assertEqual(file_obj._size, 14)
+        assert file_obj._size == 14
 
     def test_parse_missing_filename(self):
         """
@@ -108,22 +108,22 @@ class TestFileUploadParser(TestCase):
     def test_get_filename(self):
         parser = FileUploadParser()
         filename = parser.get_filename(self.stream, None, self.parser_context)
-        self.assertEqual(filename, 'file.txt')
+        assert filename == 'file.txt'
 
     def test_get_encoded_filename(self):
         parser = FileUploadParser()
 
         self.__replace_content_disposition('inline; filename*=utf-8\'\'ÀĥƦ.txt')
         filename = parser.get_filename(self.stream, None, self.parser_context)
-        self.assertEqual(filename, 'ÀĥƦ.txt')
+        assert filename == 'ÀĥƦ.txt'
 
         self.__replace_content_disposition('inline; filename=fallback.txt; filename*=utf-8\'\'ÀĥƦ.txt')
         filename = parser.get_filename(self.stream, None, self.parser_context)
-        self.assertEqual(filename, 'ÀĥƦ.txt')
+        assert filename == 'ÀĥƦ.txt'
 
         self.__replace_content_disposition('inline; filename=fallback.txt; filename*=utf-8\'en-us\'ÀĥƦ.txt')
         filename = parser.get_filename(self.stream, None, self.parser_context)
-        self.assertEqual(filename, 'ÀĥƦ.txt')
+        assert filename == 'ÀĥƦ.txt'
 
     def __replace_content_disposition(self, disposition):
         self.parser_context['request'].META['HTTP_CONTENT_DISPOSITION'] = disposition

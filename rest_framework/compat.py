@@ -17,11 +17,6 @@ from django.template import Context, RequestContext, Template
 from django.utils import six
 from django.views.generic import View
 
-try:
-    import importlib  # Available in Python 3.1+
-except ImportError:
-    from django.utils import importlib  # Will be removed in Django 1.9
-
 
 try:
     from django.urls import (
@@ -170,6 +165,16 @@ except ImportError:
     JSONField = None
 
 
+# coreapi is optional (Note that uritemplate is a dependency of coreapi)
+try:
+    import coreapi
+    import uritemplate
+except (ImportError, SyntaxError):
+    # SyntaxError is possible under python 3.2
+    coreapi = None
+    uritemplate = None
+
+
 # django-filter is optional
 try:
     import django_filters
@@ -182,16 +187,6 @@ try:
     import crispy_forms
 except ImportError:
     crispy_forms = None
-
-
-# coreapi is optional (Note that uritemplate is a dependency of coreapi)
-try:
-    import coreapi
-    import uritemplate
-except (ImportError, SyntaxError):
-    # SyntaxError is possible under python 3.2
-    coreapi = None
-    uritemplate = None
 
 
 # requests is optional
@@ -207,7 +202,6 @@ guardian = None
 try:
     if 'guardian' in settings.INSTALLED_APPS:
         import guardian
-        import guardian.shortcuts  # Fixes #1624
 except ImportError:
     pass
 
@@ -313,3 +307,10 @@ def set_many(instance, field, value):
     else:
         field = getattr(instance, field)
         field.set(value)
+
+def include(module, namespace=None, app_name=None):
+    from django.conf.urls import include
+    if django.VERSION < (1,9):
+        return include(module, namespace, app_name)
+    else:
+        return include((module, app_name), namespace)

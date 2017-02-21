@@ -20,7 +20,7 @@ With `ModelForm` the validation is performed partially on the form, and partiall
 * It is easy to switch between using shortcut `ModelSerializer` classes and using  explicit `Serializer` classes. Any validation behavior being used for `ModelSerializer` is simple to replicate.
 * Printing the `repr` of a serializer instance will show you exactly what validation rules it applies. There's no extra hidden validation behavior being called on the model instance.
 
-When you're using `ModelSerializer` all of this is handled automatically for you. If you want to drop down to using a `Serializer` classes instead, then you need to define the validation rules explicitly.
+When you're using `ModelSerializer` all of this is handled automatically for you. If you want to drop down to using `Serializer` classes instead, then you need to define the validation rules explicitly.
 
 #### Example
 
@@ -153,13 +153,13 @@ The field will not be writable to the user, but the default value will still be 
 
 #### Using with a hidden date field.
 
-If you want the date field to be entirely hidden from the user, then use `HiddenField`. This field type does not accept user input, but instead always returns it's default value to the `validated_data` in the serializer.
+If you want the date field to be entirely hidden from the user, then use `HiddenField`. This field type does not accept user input, but instead always returns its default value to the `validated_data` in the serializer.
 
     published = serializers.HiddenField(default=timezone.now)
 
 ---
 
-**Note**: The `UniqueFor<Range>Validation` classes always imposes an implicit constraint that the fields they are applied to are always treated as required. Fields with `default` values are an exception to this as they always supply a value even when omitted from user input.
+**Note**: The `UniqueFor<Range>Validation` classes impose an implicit constraint that the fields they are applied to are always treated as required. Fields with `default` values are an exception to this as they always supply a value even when omitted from user input.
 
 ---
 
@@ -272,6 +272,12 @@ A validator may be any callable that raises a `serializers.ValidationError` on f
         if value % 2 != 0:
             raise serializers.ValidationError('This field must be an even number.')
 
+#### Field-level validation
+
+You can specify custom field-level validation by adding `.validate_<field_name>` methods
+to your `Serializer` subclass. This is documented in the
+[Serializer docs](http://www.django-rest-framework.org/api-guide/serializers/#field-level-validation)
+
 ## Class-based
 
 To write a class-based validator, use the `__call__` method. Class-based validators are useful as they allow you to parameterize and reuse behavior.
@@ -294,4 +300,4 @@ In some advanced cases you might want a validator to be passed the serializer fi
         # In `__call__` we can then use that information to modify the validation behavior.
         self.is_update = serializer_field.parent.instance is not None
 
-[cite]: https://docs.djangoproject.com/en/dev/ref/validators/
+[cite]: https://docs.djangoproject.com/en/stable/ref/validators/

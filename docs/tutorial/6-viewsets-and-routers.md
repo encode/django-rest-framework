@@ -51,7 +51,7 @@ This time we've used the `ModelViewSet` class in order to get the complete set o
 
 Notice that we've also used the `@detail_route` decorator to create a custom action, named `highlight`.  This decorator can be used to add any custom endpoints that don't fit into the standard `create`/`update`/`delete` style.
 
-Custom actions which use the `@detail_route` decorator will respond to `GET` requests.  We can use the `methods` argument if we wanted an action that responded to `POST` requests.
+Custom actions which use the `@detail_route` decorator will respond to `GET` requests by default.  We can use the `methods` argument if we wanted an action that responded to `POST` requests.
 
 The URLs for custom actions by default depend on the method name itself. If you want to change the way url should be constructed, you can include url_path as a decorator keyword argument.
 
@@ -92,10 +92,10 @@ Now that we've bound our resources into concrete views, we can register the view
     urlpatterns = format_suffix_patterns([
         url(r'^$', api_root),
         url(r'^snippets/$', snippet_list, name='snippet-list'),
-        url(r'^snippets/(?P<id>[0-9]+)/$', snippet_detail, name='snippet-detail'),
-        url(r'^snippets/(?P<id>[0-9]+)/highlight/$', snippet_highlight, name='snippet-highlight'),
+        url(r'^snippets/(?P<pk>[0-9]+)/$', snippet_detail, name='snippet-detail'),
+        url(r'^snippets/(?P<pk>[0-9]+)/highlight/$', snippet_highlight, name='snippet-highlight'),
         url(r'^users/$', user_list, name='user-list'),
-        url(r'^users/(?P<id>[0-9]+)/$', user_detail, name='user-detail')
+        url(r'^users/(?P<pk>[0-9]+)/$', user_detail, name='user-detail')
     ])
 
 ## Using Routers
