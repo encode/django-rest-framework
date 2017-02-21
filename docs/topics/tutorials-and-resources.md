@@ -1,5 +1,7 @@
 # Tutorials and Resources
 
+There are a wide range of resources available for learning and using Django REST framework. We try to keep a comprehensive list available here.
+
 ## Tutorials
 
 * [Beginner's Guide to the Django REST Framework][beginners-guide-to-the-django-rest-framework]
@@ -62,7 +64,7 @@
 * [Classy Django REST Framework][cdrf.co]
 * [DRF-schema-adapter][drf-schema]
 
-Want your Django REST Framework talk/tutorial/article to be added to our website? Please [email us][mailto:anna@django-rest-framework.org]!
+Want your Django REST Framework talk/tutorial/article to be added to our website? Or know of a resource that's not yet included here? Please [submit a pull request][submit-pr] or [email us][mailto:anna@django-rest-framework.org]!
 
 
 [beginners-guide-to-the-django-rest-framework]: http://code.tutsplus.com/tutorials/beginners-guide-to-the-django-rest-framework--cms-19786
@@ -104,3 +106,4 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [drf-an-intro]: https://realpython.com/blog/python/django-rest-framework-quick-start/
 [drf-tutorial]: https://tests4geeks.com/django-rest-framework-tutorial/
 [building-a-restful-api-with-drf]: http://agiliq.com/blog/2014/12/building-a-restful-api-with-django-rest-framework/
+[submit-pr]: https://github.com/tomchristie/django-rest-framework

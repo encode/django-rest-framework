@@ -1,0 +1,45 @@
+# Jobs
+
+Looking for a Django REST Framework related job? We highlight job vacancies by our awesome sponsors here and also provide a list of other job resources that may be helpful.
+
+
+## Sponsors Who Are Hiring
+
+Coming soon.
+
+
+## Other Places to Look for Django REST Framework Jobs
+
+* [https://www.djangoproject.com/community/jobs/][djangoproject-website]
+* [https://www.python.org/jobs/][python-org-jobs]
+* [https://djangogigs.com][django-gigs-com]
+* [https://djangojobs.net/jobs/][django-jobs-net]
+* [http://djangojobbers.com][django-jobbers-com]
+* [https://www.indeed.com/q-Django-jobs.html][indeed-com]
+* [http://stackoverflow.com/jobs/developer-jobs-using-django][stackoverflow-com]
+* [https://www.upwork.com/o/jobs/browse/skill/django-framework/][upwork-com]
+* [https://www.technojobs.co.uk/django-jobs][technobjobs-co-uk]
+* [https://remoteok.io/remote-django-jobs][remoteok-io]
+* [https://www.remotepython.com/jobs/][remotepython-com]
+
+
+Your company is hiring and you would like for us to feature vacancies on this site? Please consider [signing up for a corporate sponsorship plan][drf-funding].
+
+Know of any other great resources for Django REST Framework jobs that are missing in our list? Please [submit a pull request][submit-pr] or [email us][mailto:anna@django-rest-framework.org].
+
+Wonder how else you can help? One of the best ways you can help Django REST Framework is to ask interviewers if their company is signed up for [REST Framework sponsorship][drf-funding] yet.
+
+
+[djangoproject-website]: https://www.djangoproject.com/community/jobs/
+[python-org-jobs]: https://www.python.org/jobs/
+[django-gigs-com]: https://djangogigs.com
+[django-jobs-net]: https://djangojobs.net/jobs/
+[django-jobbers-com]: http://djangojobbers.com
+[indeed-com]: https://www.indeed.com/q-Django-jobs.html
+[stackoverflow-com]: http://stackoverflow.com/jobs/developer-jobs-using-django
+[upwork-com]: https://www.upwork.com/o/jobs/browse/skill/django-framework/
+[technobjobs-co-uk]: https://www.technojobs.co.uk/django-jobs
+[remoteok-io]: https://remoteok.io/remote-django-jobs  
+[remotepython-com]: https://www.remotepython.com/jobs/
+[drf-funding]: https://fund.django-rest-framework.org/topics/funding/
+[submit-pr]: https://github.com/tomchristie/django-rest-framework

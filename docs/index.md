@@ -251,6 +251,7 @@ General guides to using REST framework.
 * [Mozilla Grant][mozilla-grant]
 * [Funding][funding]
 * [Release Notes][release-notes]
+* [Jobs][jobs]
 
 ## Development
 
@@ -379,6 +380,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [mozilla-grant]: topics/mozilla-grant.md
 [funding]: topics/funding.md
 [release-notes]: topics/release-notes.md
+[jobs]: topics/jobs.md
 
 [tox]: http://testrun.org/tox/latest/
 
