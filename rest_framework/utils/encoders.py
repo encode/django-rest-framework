@@ -6,10 +6,10 @@ from __future__ import unicode_literals
 import datetime
 import decimal
 import json
-from json.encoder import (FLOAT_REPR, INFINITY, c_make_encoder, 
-                          encode_basestring_ascii, encode_basestring, 
-                          _make_iterencode)
 import uuid
+from json.encoder import (FLOAT_REPR, INFINITY, _make_iterencode,
+                          c_make_encoder, encode_basestring,
+                          encode_basestring_ascii)
 
 from django.db.models.query import QuerySet
 from django.utils import six, timezone
@@ -55,7 +55,7 @@ class JSONEncoder(json.JSONEncoder):
                 return _orig_encoder(o)
 
         def floatstr(o, allow_nan=self.allow_nan,
-                _repr=FLOAT_REPR, _inf=INFINITY, _neginf=-INFINITY):
+                     _repr=FLOAT_REPR, _inf=INFINITY, _neginf=-INFINITY):
             # Check for specials.  Note that this type of test is processor
             # and/or platform-specific, so do tests which don't depend on the
             # internals.
@@ -75,7 +75,6 @@ class JSONEncoder(json.JSONEncoder):
                     repr(o))
 
             return text
-
 
         if (_one_shot and c_make_encoder is not None
                 and self.indent is None):
@@ -124,7 +123,7 @@ class JSONEncoder(json.JSONEncoder):
         elif hasattr(obj, 'tolist'):
             # Numpy arrays and array scalars.
             return obj.tolist()
-        elif (coreapi is not None) and isinstance(obj, (coreapi.Document, 
+        elif (coreapi is not None) and isinstance(obj, (coreapi.Document,
                                                         coreapi.Error)):
             raise RuntimeError(
                 'Cannot return a coreapi object from a JSON view. '
