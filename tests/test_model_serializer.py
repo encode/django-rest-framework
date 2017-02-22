@@ -10,6 +10,7 @@ from __future__ import unicode_literals
 import decimal
 from collections import OrderedDict
 
+import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.core.validators import (
     MaxValueValidator, MinLengthValidator, MinValueValidator
@@ -1064,3 +1065,18 @@ class Issue3674Test(TestCase):
 
         child_expected = {'parent': 1, 'value': 'def'}
         self.assertEqual(child_serializer.data, child_expected)
+
+
+class Issue4897TestCase(TestCase):
+    def test_should_assert_if_writing_readonly_fields(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = OneFieldModel
+                fields = ('char_field',)
+                readonly_fields = fields
+
+        obj = OneFieldModel.objects.create(char_field='abc')
+
+        with pytest.raises(AssertionError) as cm:
+            TestSerializer(obj).fields
+        cm.match(r'readonly_fields')
