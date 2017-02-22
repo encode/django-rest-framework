@@ -7,7 +7,7 @@ import datetime
 import decimal
 import json
 import uuid
-from json.encoder import (FLOAT_REPR, INFINITY, _make_iterencode,
+from json.encoder import (INFINITY, _make_iterencode,
                           encode_basestring, encode_basestring_ascii)
 
 from django.db.models.query import QuerySet
@@ -16,6 +16,11 @@ from django.utils.encoding import force_text
 from django.utils.functional import Promise
 
 from rest_framework.compat import coreapi, total_seconds
+
+try:
+    from json.encoder import FLOAT_REPR
+except:
+    FLOAT_REPR = float.__repr__
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -46,12 +51,6 @@ class JSONEncoder(json.JSONEncoder):
                     if isinstance(o, str):
                         o = o.decode(_encoding)
                     return _orig_encoder(o)
-
-        if self.encoding != 'utf-8':
-            def _encoder(o, _orig_encoder=_encoder, _encoding=self.encoding):
-                if isinstance(o, str):
-                    o = o.decode(_encoding)
-                return _orig_encoder(o)
 
         def floatstr(o, allow_nan=self.allow_nan,
                      _repr=FLOAT_REPR, _inf=INFINITY, _neginf=-INFINITY):
