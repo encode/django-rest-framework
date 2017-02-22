@@ -1,3 +1,4 @@
+import json
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 from uuid import uuid4
@@ -92,3 +93,11 @@ class JSONEncoderTests(TestCase):
         """
         foo = MockList()
         assert self.encoder.default(foo) == [1, 2, 3]
+
+    def test_encode_float(self):
+        """
+        Tests encoding floats with special values
+        """
+
+        f = [3.141592653, float('inf'), float('-inf'), float('nan')]
+        assert json.dumps(f, cls=JSONEncoder) == '[3.141592653, "Infinity", "-Infinity", "NaN"]'
