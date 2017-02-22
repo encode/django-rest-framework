@@ -59,11 +59,11 @@ class JSONEncoder(json.JSONEncoder):
             # internals.
 
             if o != o:
-                text = 'null'
+                text = '"NaN"'
             elif o == _inf:
-                text = 'null'
+                text = '"Infinity"'
             elif o == _neginf:
-                text = 'null'
+                text = '"-Infinity"'
             else:
                 return _repr(o)
 
