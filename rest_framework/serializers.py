@@ -1290,6 +1290,15 @@ class ModelSerializer(Serializer):
                 kwargs['read_only'] = True
                 extra_kwargs[field_name] = kwargs
 
+        else:
+            # Guard against the possible misspelling `readonly_fields` (used
+            # by the Django admin and others).
+            assert not hasattr(self.Meta, 'readonly_fields'), (
+                'Serializer `%s.%s` has field `readonly_fields`; '
+                'the correct spelling for the option is `read_only_fields`.' %
+                (self.__class__.__module__, self.__class__.__name__)
+            )
+
         return extra_kwargs
 
     def get_uniqueness_extra_kwargs(self, field_names, declared_fields, extra_kwargs):
