@@ -33,6 +33,7 @@ types_lookup = ClassLookupDict({
     serializers.FileField: 'file',
     serializers.MultipleChoiceField: 'array',
     serializers.ManyRelatedField: 'array',
+    serializers.PrimaryKeyRelatedField: 'integer',
     serializers.Serializer: 'object',
     serializers.ListSerializer: 'array'
 })
