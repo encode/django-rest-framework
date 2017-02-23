@@ -1,0 +1,119 @@
+{% load rest_framework %}
+<div class="row coredocs-link">
+
+<div class="col-md-6 docs-content">
+<button class="btn btn-success" style="float: right; margin-top: 20px" data-toggle="modal" data-target="#{{ section_key }}_{{ link_key }}_modal">Interact</button>
+
+<h2 id="{{ section_key }}-{{ link_key }}">{{ link.title|default:link_key }}</h2>
+    <p>
+        <span class="label label-primary">{{ link.action|upper }}</span> <code>{{ link.url }}</code>
+    </p>
+
+    <p>{% render_markdown link.description %}</p>
+
+{% if link.fields|with_location:'path' %}
+    <h4>Path Parameters</h4>
+    <p>The following parameters should be included in the URL path.</p>
+    <table class="parameters table table-bordered table-striped">
+        <thead>
+            <tr><th>Parameter</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+            {% for field in link.fields|with_location:'path' %}
+            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.description %}{{ field.description }}{% endif %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+{% if link.fields|with_location:'query' %}
+    <h4>Query Parameters</h4>
+    <p>The following parameters should be included as part of a URL query string.</p>
+    <table class="parameters table table-bordered table-striped">
+        <thead>
+            <tr><th>Parameter</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+            {% for field in link.fields|with_location:'query' %}
+            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.description %}{{ field.description }}{% endif %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+{% if link.fields|with_location:'header' %}
+    <h4>Header Parameters</h4>
+    <p>The following parameters should be included as HTTP headers.</p>
+    <table class="parameters table table-bordered table-striped">
+        <thead>
+            <tr><th>Parameter</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+            {% for field in link.fields|with_location:'header' %}
+            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.description %}{{ field.description }}{% endif %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+{% if link.fields|with_location:'body' %}
+    <h4>Request Body</h4>
+    <p>The request body should be <code>"{{ link.encoding }}"</code> encoded, and should contain a single item.</p>
+    <table class="parameters table table-bordered table-striped">
+        <thead>
+            <tr><th>Parameter</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+            {% for field in link.fields|with_location:'body' %}
+            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.description %}{{ field.description }}{% endif %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% elif link.fields|with_location:'form' %}
+    <h4>Request Body</h4>
+    <p>The request body should be a <code>"{{ link.encoding }}"</code> encoded object, containing the following&nbsp;items.</p>
+    <table class="parameters table table-bordered table-striped">
+        <thead>
+            <tr><th>Parameter</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+            {% for field in link.fields|with_location:'form' %}
+            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.description %}{{ field.description }}{% endif %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+</div>
+
+    <div class="col-md-6 code-samples">
+        {% if 'shell' in langs %}{% include "rest_framework/docs/langs/shell.html" %}{% endif %}
+        {% if 'python' in langs %}{% include "rest_framework/docs/langs/python.html" %}{% endif %}
+        {% if 'javascript' in langs %}{% include "rest_framework/docs/langs/javascript.html" %}{% endif %}
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade api-modal" id="{{ section_key }}_{{ link_key }}_modal" tabindex="-1" role="dialog" aria-labelledby="api explorer modal">
+<div class="modal-dialog modal-lg" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <h4 class="modal-title">{{ link.title|default:link_key }}</h4>
+    </div>
+
+    <div class="modal-body">
+        <form data-key='["{{ section_key }}", "{{ link_key }}"]'>
+            {% form_for_link link %}
+
+            <div id="response">
+                <div class="response-error alert alert-danger hide"></div>
+                <pre class="response-data hide"></pre>
+            </div>
+
+            <div class="text-right">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+
+  </div>
+</div>
+</div>

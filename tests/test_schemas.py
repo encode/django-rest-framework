@@ -92,7 +92,7 @@ class TestRouterGeneratedSchema(TestCase):
         response = client.get('/', HTTP_ACCEPT='application/coreapi+json')
         assert response.status_code == 200
         expected = coreapi.Document(
-            url='',
+            url='http://testserver/',
             title='Example API',
             content={
                 'example': {
@@ -100,8 +100,8 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/',
                         action='get',
                         fields=[
-                            coreapi.Field('page', required=False, location='query'),
-                            coreapi.Field('page_size', required=False, location='query'),
+                            coreapi.Field('page', required=False, location='query', description='A page number within the paginated result set.'),
+                            coreapi.Field('page_size', required=False, location='query', description='Number of results to return per page.'),
                             coreapi.Field('ordering', required=False, location='query')
                         ]
                     ),
@@ -133,7 +133,7 @@ class TestRouterGeneratedSchema(TestCase):
         response = client.get('/', HTTP_ACCEPT='application/coreapi+json')
         assert response.status_code == 200
         expected = coreapi.Document(
-            url='',
+            url='http://testserver/',
             title='Example API',
             content={
                 'example': {
@@ -141,8 +141,8 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/',
                         action='get',
                         fields=[
-                            coreapi.Field('page', required=False, location='query'),
-                            coreapi.Field('page_size', required=False, location='query'),
+                            coreapi.Field('page', required=False, location='query', description='A page number within the paginated result set.'),
+                            coreapi.Field('page_size', required=False, location='query', description='Number of results to return per page.'),
                             coreapi.Field('ordering', required=False, location='query')
                         ]
                     ),
@@ -388,7 +388,7 @@ class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
         request = factory.get('/')
         schema = generator.get_schema(Request(request))
         expected = coreapi.Document(
-            url='',
+            url='http://testserver/',
             title='Example API',
             content={
                 'example': {
