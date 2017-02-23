@@ -1,14 +1,9 @@
 # Jobs
 
-Looking for a Django REST Framework related job? We highlight job vacancies by our awesome sponsors here and also provide a list of other job resources that may be helpful.
+Looking for a new Django REST Framework related role? On this site we provide a list of job resources that may be helpful. It's also worth checking out if any of [our sponsors are hiring][drf-funding].
 
 
-## Sponsors Who Are Hiring
-
-Coming soon.
-
-
-## Other Places to Look for Django REST Framework Jobs
+## Places to Look for Django REST Framework Jobs
 
 * [https://www.djangoproject.com/community/jobs/][djangoproject-website]
 * [https://www.python.org/jobs/][python-org-jobs]
@@ -22,8 +17,6 @@ Coming soon.
 * [https://remoteok.io/remote-django-jobs][remoteok-io]
 * [https://www.remotepython.com/jobs/][remotepython-com]
 
-
-Your company is hiring and you would like for us to feature vacancies on this site? Please consider [signing up for a corporate sponsorship plan][drf-funding].
 
 Know of any other great resources for Django REST Framework jobs that are missing in our list? Please [submit a pull request][submit-pr] or [email us][mailto:anna@django-rest-framework.org].
 
