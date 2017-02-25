@@ -271,7 +271,11 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/third-party-resources/">Third Party Resources</a>
+                    <a href="../../topics/third-party-packages/">Third Party Packages</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/tutorials-and-resources/">Tutorials and Resources</a>
                   </li>
                   
                   <li >
@@ -320,6 +324,10 @@
                   
                   <li >
                     <a href="../../topics/release-notes/">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/jobs/">Jobs</a>
                   </li>
                   
                 </ul>
@@ -576,6 +584,10 @@
                   
                     <li>
                       <a href="#queryfields">QueryFields</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#drf-writable-nested">DRF Writable Nested</a>
                     </li>
                   
                 
@@ -1450,7 +1462,6 @@ class MySerializer(MyBaseSerializer):
 <p>REST framework 2 provided an API to allow developers to override how a <code>ModelSerializer</code> class would automatically generate the default set of fields.</p>
 <p>This API included the <code>.get_field()</code>, <code>.get_pk_field()</code> and other methods.</p>
 <p>Because the serializers have been fundamentally redesigned with 3.0 this API no longer exists. You can still modify the fields that get created but you'll need to refer to the source code, and be aware that if the changes you make are against private bits of API then they may be subject to change.</p>
-<p>A new interface for controlling this behavior is currently planned for REST framework 3.1.</p>
 <hr />
 <h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages are also available.</p>
@@ -1481,6 +1492,8 @@ blacklisted and child serializers can be optionally expanded.</p>
 <p><a href="https://bitbucket.org/levit_scs/drf_base64">DRF-Base64</a> provides a set of field and model serializers that handles the upload of base64-encoded files.</p>
 <h2 id="queryfields"><a class="toclink" href="#queryfields">QueryFields</a></h2>
 <p><a href="http://djangorestframework-queryfields.readthedocs.io/">djangorestframework-queryfields</a> allows API clients to specify which fields will be sent in the response via inclusion/exclusion query parameters.  </p>
+<h2 id="drf-writable-nested"><a class="toclink" href="#drf-writable-nested">DRF Writable Nested</a></h2>
+<p>The <a href="http://github.com/Brogency/drf-writable-nested">drf-writable-nested</a> package provides writable nested model serializer which allows to create/update models with nested related data.</p>
             
 
           </div> <!--/span-->
