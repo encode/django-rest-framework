@@ -178,12 +178,14 @@
                 client.action(doc, key, params).then(function (data) {
                     var response = JSON.stringify(data, null, 2);
                     form.find(".request-awaiting").addClass("hide")
+                    form.find(".response-data").text('')
                     form.find(".response-data").jsonView(response)
                     form.find(".response-data").removeClass("hide")
                 }).catch(function (error) {
                     var response = JSON.stringify(error.content, null, 2);
                     form.find(".request-awaiting").addClass("hide")
-                    form.find(".response-data").text(response)
+                    form.find(".response-data").text('')
+                    form.find(".response-data").jsonView(response)
                     form.find(".response-data").removeClass("hide")
                 })
             });
@@ -215,9 +217,15 @@
                     $('#selected-authentication').text('none');
                     $('#auth-control').find("[data-auth='none']").addClass('active');
                 }
-
             });
 
+            $('#auth-control').find("[data-auth='none']").click(function (event) {
+                event.preventDefault();
+                window.token = null;
+                $('#selected-authentication').text('none');
+                $('#auth-control').find("[data-auth='none']").addClass('active');
+                $('#auth-control').find("[data-auth='token']").removeClass('active');
+            })
         </script>
     </body>
 </html>
