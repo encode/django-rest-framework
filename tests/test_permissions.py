@@ -200,6 +200,11 @@ class ModelPermissionsIntegrationTests(TestCase):
         response = empty_list_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_calling_method_not_allowed(self):
+        request = factory.generic('METHOD_NOT_ALLOWED', '/')
+        response = object_permissions_list_view(request)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 class BasicPermModel(models.Model):
     text = models.CharField(max_length=100)
