@@ -73,6 +73,8 @@ The following methods are used by REST framework to instantiate the various plug
 
 ### .get_content_negotiator(self)
 
+### .get_exception_handler(self)
+
 ## API policy implementation methods
 
 The following methods are called before dispatching to the handler method.

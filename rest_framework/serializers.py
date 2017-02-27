@@ -12,18 +12,27 @@ response content is handled by parsers and renderers.
 """
 from __future__ import unicode_literals
 
+import copy
+import inspect
 import traceback
+from collections import Mapping, OrderedDict
 
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.db.models import DurationField as ModelDurationField
 from django.db.models.fields import Field as DjangoModelField
 from django.db.models.fields import FieldDoesNotExist
+from django.utils import six, timezone
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import JSONField as ModelJSONField
 from rest_framework.compat import postgres_fields, set_many, unicode_to_repr
-from rest_framework.utils import model_meta
+from rest_framework.exceptions import ErrorDetail, ValidationError
+from rest_framework.fields import get_error_detail, set_value
+from rest_framework.settings import api_settings
+from rest_framework.utils import html, model_meta, representation
 from rest_framework.utils.field_mapping import (
     ClassLookupDict, get_field_kwargs, get_nested_relation_kwargs,
     get_relation_kwargs, get_url_kwargs
@@ -42,9 +51,23 @@ from rest_framework.validators import (
 #
 # This helps keep the separation between model fields, form fields, and
 # serializer fields more explicit.
+from rest_framework.fields import (  # NOQA # isort:skip
+    BooleanField, CharField, ChoiceField, DateField, DateTimeField, DecimalField,
+    DictField, DurationField, EmailField, Field, FileField, FilePathField, FloatField,
+    HiddenField, IPAddressField, ImageField, IntegerField, JSONField, ListField,
+    ModelField, MultipleChoiceField, NullBooleanField, ReadOnlyField, RegexField,
+    SerializerMethodField, SlugField, TimeField, URLField, UUIDField,
+)
+from rest_framework.relations import (  # NOQA # isort:skip
+    HyperlinkedIdentityField, HyperlinkedRelatedField, ManyRelatedField,
+    PrimaryKeyRelatedField, RelatedField, SlugRelatedField, StringRelatedField,
+)
 
-from rest_framework.fields import *  # NOQA # isort:skip
-from rest_framework.relations import *  # NOQA # isort:skip
+# Non-field imports, but public API
+from rest_framework.fields import (  # NOQA # isort:skip
+    CreateOnlyDefault, CurrentUserDefault, SkipField, empty
+)
+from rest_framework.relations import Hyperlink, PKOnlyObject  # NOQA # isort:skip
 
 # We assume that 'validators' are intended for the child serializer,
 # rather than the parent serializer.
@@ -282,7 +305,11 @@ class SerializerMetaclass(type):
         # in order to maintain the correct order of fields.
         for base in reversed(bases):
             if hasattr(base, '_declared_fields'):
-                fields = list(base._declared_fields.items()) + fields
+                fields = [
+                    (field_name, obj) for field_name, obj
+                    in base._declared_fields.items()
+                    if field_name not in attrs
+                ] + fields
 
         return OrderedDict(fields)
 
@@ -299,11 +326,11 @@ def as_serializer_error(exc):
     else:
         detail = exc.detail
 
-    if isinstance(detail, dict):
+    if isinstance(detail, Mapping):
         # If errors may be a dict we use the standard {key: list of values}.
         # Here we ensure that all the values are *lists* of errors.
         return {
-            key: value if isinstance(value, (list, dict)) else [value]
+            key: value if isinstance(value, (list, Mapping)) else [value]
             for key, value in detail.items()
         }
     elif isinstance(detail, list):
@@ -415,7 +442,7 @@ class Serializer(BaseSerializer):
         """
         Dict of native values <- Dict of primitive datatypes.
         """
-        if not isinstance(data, dict):
+        if not isinstance(data, Mapping):
             message = self.error_messages['invalid'].format(
                 datatype=type(data).__name__
             )
@@ -507,7 +534,7 @@ class Serializer(BaseSerializer):
     @property
     def errors(self):
         ret = super(Serializer, self).errors
-        if isinstance(ret, list) and len(ret) == 1 and ret[0].code == 'null':
+        if isinstance(ret, list) and len(ret) == 1 and getattr(ret[0], 'code', None) == 'null':
             # Edge case. Provide a more descriptive error than
             # "this field may not be null", when no data is passed.
             detail = ErrorDetail('No data provided', code='null')
@@ -705,7 +732,7 @@ class ListSerializer(BaseSerializer):
     @property
     def errors(self):
         ret = super(ListSerializer, self).errors
-        if isinstance(ret, list) and len(ret) == 1 and ret[0].code == 'null':
+        if isinstance(ret, list) and len(ret) == 1 and getattr(ret[0], 'code', None) == 'null':
             # Edge case. Provide a more descriptive error than
             # "this field may not be null", when no data is passed.
             detail = ErrorDetail('No data provided', code='null')
@@ -746,7 +773,7 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
         isinstance(field, BaseSerializer) and
         (field.source in validated_data) and
         isinstance(validated_data[field.source], (list, dict))
-        for key, field in serializer.fields.items()
+        for field in serializer._writable_fields
     ), (
         'The `.{method_name}()` method does not support writable nested '
         'fields by default.\nWrite an explicit `.{method_name}()` method for '
@@ -1150,7 +1177,7 @@ class ModelSerializer(Serializer):
 
         if postgres_fields and isinstance(model_field, postgres_fields.ArrayField):
             # Populate the `child` argument on `ListField` instances generated
-            # for the PostgrSQL specfic `ArrayField`.
+            # for the PostgreSQL specific `ArrayField`.
             child_model_field = model_field.base_field
             child_field_class, child_field_kwargs = self.build_standard_field(
                 'child', child_model_field
@@ -1262,6 +1289,15 @@ class ModelSerializer(Serializer):
                 kwargs = extra_kwargs.get(field_name, {})
                 kwargs['read_only'] = True
                 extra_kwargs[field_name] = kwargs
+
+        else:
+            # Guard against the possible misspelling `readonly_fields` (used
+            # by the Django admin and others).
+            assert not hasattr(self.Meta, 'readonly_fields'), (
+                'Serializer `%s.%s` has field `readonly_fields`; '
+                'the correct spelling for the option is `read_only_fields`.' %
+                (self.__class__.__module__, self.__class__.__name__)
+            )
 
         return extra_kwargs
 

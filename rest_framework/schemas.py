@@ -1,10 +1,11 @@
-import os
 import re
 from collections import OrderedDict
 from importlib import import_module
 
 from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
+from django.core.exceptions import PermissionDenied
+from django.http import Http404
 from django.utils import six
 from django.utils.encoding import force_text, smart_text
 
@@ -35,6 +36,18 @@ types_lookup = ClassLookupDict({
     serializers.Serializer: 'object',
     serializers.ListSerializer: 'array'
 })
+
+
+def common_path(paths):
+    split_paths = [path.strip('/').split('/') for path in paths]
+    s1 = min(split_paths)
+    s2 = max(split_paths)
+    common = s1
+    for i, c in enumerate(s1):
+        if c != s2[i]:
+            common = s1[:i]
+            break
+    return '/' + '/'.join(common)
 
 
 def get_pk_name(model):
@@ -250,6 +263,8 @@ class SchemaGenerator(object):
             view_endpoints.append((path, method, view))
 
         # Only generate the path prefix for paths that will be included
+        if not paths:
+            return None
         prefix = self.determine_path_prefix(paths)
 
         for path, method, view in view_endpoints:
@@ -292,7 +307,7 @@ class SchemaGenerator(object):
                 # one URL that doesn't have a path prefix.
                 return '/'
             prefixes.append('/' + prefix + '/')
-        return os.path.commonprefix(prefixes)
+        return common_path(prefixes)
 
     def create_view(self, callback, method, request=None):
         """
@@ -328,7 +343,7 @@ class SchemaGenerator(object):
 
         try:
             view.check_permissions(view.request)
-        except exceptions.APIException:
+        except (exceptions.APIException, Http404, PermissionDenied):
             return False
         return True
 
@@ -399,7 +414,7 @@ class SchemaGenerator(object):
                 current_section, seperator, lead = line.partition(':')
                 sections[current_section] = lead.strip()
             else:
-                sections[current_section] += line + '\n'
+                sections[current_section] += '\n' + line
 
         header = getattr(view, 'action', method.lower())
         if header in sections:
@@ -556,11 +571,11 @@ class SchemaGenerator(object):
         return named_path_components + [action]
 
 
-def get_schema_view(title=None, url=None, renderer_classes=None):
+def get_schema_view(title=None, url=None, urlconf=None, renderer_classes=None):
     """
     Return a schema view.
     """
-    generator = SchemaGenerator(title=title, url=url)
+    generator = SchemaGenerator(title=title, url=url, urlconf=urlconf)
     if renderer_classes is None:
         if renderers.BrowsableAPIRenderer in api_settings.DEFAULT_RENDERER_CLASSES:
             rclasses = [renderers.CoreJSONRenderer, renderers.BrowsableAPIRenderer]

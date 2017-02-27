@@ -164,7 +164,7 @@ As with `DjangoModelPermissions`, this permission must only be applied to views 
 
 Note that `DjangoObjectPermissions` **does not** require the `django-guardian` package, and should support other object-level backends equally well.
 
-As with `DjangoModelPermissions` you can use custom model permissions by overriding `DjangoModelPermissions` and setting the `.perms_map` property.  Refer to the source code for details.
+As with `DjangoModelPermissions` you can use custom model permissions by overriding `DjangoObjectPermissions` and setting the `.perms_map` property.  Refer to the source code for details.
 
 ---
 
@@ -259,18 +259,22 @@ The [REST Condition][rest-condition] package is another extension for building c
 
 ## DRY Rest Permissions
 
-The [DRY Rest Permissions][dry-rest-permissions] package provides the ability to define different permissions for individual default and custom actions. This package is made for apps with permissions that are derived from relationships defined in the app's data model. It also supports permission checks being returned to a client app through the API's serializer. Additionally it supports adding permissions to the default and custom list actions to restrict the data they retrive per user.
+The [DRY Rest Permissions][dry-rest-permissions] package provides the ability to define different permissions for individual default and custom actions. This package is made for apps with permissions that are derived from relationships defined in the app's data model. It also supports permission checks being returned to a client app through the API's serializer. Additionally it supports adding permissions to the default and custom list actions to restrict the data they retrieve per user.
 
 ## Django Rest Framework Roles
 
 The [Django Rest Framework Roles][django-rest-framework-roles] package makes it easier to parameterize your API over multiple types of users.
 
+## Django Rest Framework API Key
+
+The [Django Rest Framework API Key][django-rest-framework-api-key] package allows you to ensure that every request made to the server requires an API key header. You can generate one from the django admin interface.
+
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
 [throttling]: throttling.md
 [filtering]: filtering.md
-[contribauth]: https://docs.djangoproject.com/en/dev/topics/auth/customizing/#custom-permissions
-[objectpermissions]: https://docs.djangoproject.com/en/dev/topics/auth/customizing/#handling-object-permissions
+[contribauth]: https://docs.djangoproject.com/en/stable/topics/auth/customizing/#custom-permissions
+[objectpermissions]: https://docs.djangoproject.com/en/stable/topics/auth/customizing/#handling-object-permissions
 [guardian]: https://github.com/lukaszb/django-guardian
 [get_objects_for_user]: http://pythonhosted.org/django-guardian/api/guardian.shortcuts.html#get-objects-for-user
 [2.2-announcement]: ../topics/2.2-announcement.md
@@ -280,3 +284,4 @@ The [Django Rest Framework Roles][django-rest-framework-roles] package makes it 
 [rest-condition]: https://github.com/caxap/rest_condition
 [dry-rest-permissions]: https://github.com/Helioscene/dry-rest-permissions
 [django-rest-framework-roles]: https://github.com/computer-lab/django-rest-framework-roles
+[django-rest-framework-api-key]: https://github.com/manosim/django-rest-framework-api-key

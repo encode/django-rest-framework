@@ -106,15 +106,6 @@ if requests is not None:
         def close(self):
             pass
 
-    class NoExternalRequestsAdapter(requests.adapters.HTTPAdapter):
-        def send(self, request, *args, **kwargs):
-            msg = (
-                'RequestsClient refusing to make an outgoing network request '
-                'to "%s". Only "testserver" or hostnames in your ALLOWED_HOSTS '
-                'setting are valid.' % request.url
-            )
-            raise RuntimeError(msg)
-
     class RequestsClient(requests.Session):
         def __init__(self, *args, **kwargs):
             super(RequestsClient, self).__init__(*args, **kwargs)
@@ -123,7 +114,7 @@ if requests is not None:
             self.mount('https://', adapter)
 
         def request(self, method, url, *args, **kwargs):
-            if ':' not in url:
+            if not url.startswith('http'):
                 raise ValueError('Missing "http:" or "https:". Use a fully qualified URL, eg "http://testserver%s"' % url)
             return super(RequestsClient, self).request(method, url, *args, **kwargs)
 

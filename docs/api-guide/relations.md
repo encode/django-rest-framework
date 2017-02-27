@@ -39,7 +39,7 @@ In order to explain the various types of relational fields, we'll use a couple o
         artist = models.CharField(max_length=100)
 
     class Track(models.Model):
-        album = models.ForeignKey(Album, related_name='tracks')
+        album = models.ForeignKey(Album, related_name='tracks', on_delete=models.CASCADE)
         order = models.IntegerField()
         title = models.CharField(max_length=100)
         duration = models.IntegerField()
@@ -484,7 +484,7 @@ Note that reverse relationships are not automatically included by the `ModelSeri
 You'll normally want to ensure that you've set an appropriate `related_name` argument on the relationship, that you can use as the field name.  For example:
 
     class Track(models.Model):
-        album = models.ForeignKey(Album, related_name='tracks')
+        album = models.ForeignKey(Album, related_name='tracks', on_delete=models.CASCADE)
         ...
 
 If you have not set a related name for the reverse relationship, you'll need to use the automatically generated related name in the `fields` argument.  For example:
@@ -505,10 +505,10 @@ For example, given the following model for a tag, which has a generic relationsh
         """
         Tags arbitrary model instances using a generic relation.
 
-        See: https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/
+        See: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/
         """
         tag_name = models.SlugField()
-        content_type = models.ForeignKey(ContentType)
+        content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
         object_id = models.PositiveIntegerField()
         tagged_object = GenericForeignKey('content_type', 'object_id')
 
@@ -593,9 +593,9 @@ The [drf-nested-routers package][drf-nested-routers] provides routers and relati
 The [rest-framework-generic-relations][drf-nested-relations] library provides read/write serialization for generic foreign keys.
 
 [cite]: http://lwn.net/Articles/193245/
-[reverse-relationships]: https://docs.djangoproject.com/en/dev/topics/db/queries/#following-relationships-backward
+[reverse-relationships]: https://docs.djangoproject.com/en/stable/topics/db/queries/#following-relationships-backward
 [routers]: http://www.django-rest-framework.org/api-guide/routers#defaultrouter
-[generic-relations]: https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#id1
+[generic-relations]: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/#id1
 [2.2-announcement]: ../topics/2.2-announcement.md
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [drf-nested-relations]: https://github.com/Ian-Foote/rest-framework-generic-relations

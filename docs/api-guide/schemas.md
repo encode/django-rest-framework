@@ -145,6 +145,18 @@ May be used to pass a canonical URL for the schema.
         url='https://www.example.org/api/'
     )
 
+#### `urlconf`
+
+A string representing the import path to the URL conf that you want
+to generate an API schema for. This defaults to the value of Django's
+ROOT_URLCONF setting.
+
+    schema_view = get_schema_view(
+        title='Server Monitoring API',
+        url='https://www.example.org/api/',
+        urlconf='myproject.urls'
+    )
+
 #### `renderer_classes`
 
 May be used to pass the set of renderer classes that can be used to render the API root endpoint.
@@ -281,8 +293,8 @@ A generic view with sections in the class docstring, using single-line style.
 
     class UserList(generics.ListCreateAPIView):
         """
-        get: Create a new user.
-        post: List all the users.
+        get: List all the users.
+        post: Create a new user.
         """
         queryset = User.objects.all()
         serializer_class = UserSerializer
@@ -344,12 +356,12 @@ Typically you'll instantiate `SchemaGenerator` with a single argument, like so:
 
 Arguments:
 
-* `title` - The name of the API. **required**
+* `title` **required** - The name of the API.
 * `url` - The root URL of the API schema. This option is not required unless the schema is included under path prefix.
 * `patterns` - A list of URLs to inspect when generating the schema. Defaults to the project's URL conf.
 * `urlconf` - A URL conf module name to use when generating the schema. Defaults to `settings.ROOT_URLCONF`.
 
-### get_schema()
+### get_schema(self, request)
 
 Returns a `coreapi.Document` instance that represents the API schema.
 
@@ -359,9 +371,48 @@ Returns a `coreapi.Document` instance that represents the API schema.
         generator = schemas.SchemaGenerator(title='Bookings API')
         return Response(generator.get_schema())
 
-Arguments:
+The `request` argument is optional, and may be used if you want to apply per-user
+permissions to the resulting schema generation.
 
-* `request` - The incoming request. Optionally used if you want to apply per-user permissions to the schema-generation.
+### get_links(self, request)
+
+Return a nested dictionary containing all the links that should be included in the API schema.
+
+This is a good point to override if you want to modify the resulting structure of the generated schema,
+as you can build a new dictionary with a different layout.
+
+### get_link(self, path, method, view)
+
+Returns a `coreapi.Link` instance corresponding to the given view.
+
+You can override this if you need to provide custom behaviors for particular views.
+
+### get_description(self, path, method, view)
+
+Returns a string to use as the link description. By default this is based on the
+view docstring as described in the "Schemas as Documentation" section above.
+
+### get_encoding(self, path, method, view)
+
+Returns a string to indicate the encoding for any request body, when interacting
+with the given view. Eg. `'application/json'`. May return a blank string for views
+that do not expect a request body.
+
+### get_path_fields(self, path, method, view):
+
+Return a list of `coreapi.Link()` instances. One for each path parameter in the URL.
+
+### get_serializer_fields(self, path, method, view)
+
+Return a list of `coreapi.Link()` instances. One for each field in the serializer class used by the view.
+
+### get_pagination_fields(self, path, method, view
+
+Return a list of `coreapi.Link()` instances, as returned by the `get_schema_fields()` method on any pagination class used by the view.
+
+### get_filter_fields(self, path, method, view)
+
+Return a list of `coreapi.Link()` instances, as returned by the `get_schema_fields()` method of any filter classes used by the view.
 
 ---
 
@@ -502,5 +553,5 @@ A short description of the meaning and intended usage of the input field.
 [open-api]: https://openapis.org/
 [json-hyperschema]: http://json-schema.org/latest/json-schema-hypermedia.html
 [api-blueprint]: https://apiblueprint.org/
-[static-files]: https://docs.djangoproject.com/en/dev/howto/static-files/
-[named-arguments]: https://docs.djangoproject.com/en/dev/topics/http/urls/#named-groups
+[static-files]: https://docs.djangoproject.com/en/stable/howto/static-files/
+[named-arguments]: https://docs.djangoproject.com/en/stable/topics/http/urls/#named-groups

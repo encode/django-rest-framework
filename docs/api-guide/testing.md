@@ -187,15 +187,27 @@ As usual CSRF validation will only apply to any session authenticated views.  Th
 # RequestsClient
 
 REST framework also includes a client for interacting with your application
-using the popular Python library, `requests`.
+using the popular Python library, `requests`. This may be useful if:
+
+* You are expecting to interface with the API primarily from another Python service,
+and want to test the service at the same level as the client will see.
+* You want to write tests in such a way that they can also be run against a staging or
+live environment. (See "Live tests" below.)
 
 This exposes exactly the same interface as if you were using a requests session
 directly.
 
     client = RequestsClient()
     response = client.get('http://testserver/users/')
+    assert response.status_code == 200
 
 Note that the requests client requires you to pass fully qualified URLs.
+
+## `RequestsClient` and working with the database
+
+The `RequestsClient` class is useful if you want to write tests that solely interact with the service interface. This is a little stricter than using the standard Django test client, as it means that all interactions should be via the API.
+
+If you're using `RequestsClient` you'll want to ensure that test setup, and results assertions are performed as regular API calls, rather than interacting with the database models directly. For example, rather than checking that `Customer.objects.count() == 3` you would list the customers endpoint, and ensure that it contains three records.
 
 ## Headers & Authentication
 
@@ -251,9 +263,8 @@ The CoreAPIClient allows you to interact with your API using the Python
 `coreapi` client library.
 
     # Fetch the API schema
-    url = reverse('schema')
     client = CoreAPIClient()
-    schema = client.get(url)
+    schema = client.get('http://testserver/schema/')
 
     # Create a new organisation
     params = {'name': 'MegaCorp', 'status': 'active'}
@@ -364,6 +375,6 @@ For example, to add support for using `format='html'` in test requests, you migh
     }
 
 [cite]: http://jacobian.org/writing/django-apps-with-buildout/#s-create-a-test-wrapper
-[client]: https://docs.djangoproject.com/en/dev/topics/testing/tools/#the-test-client
-[requestfactory]: https://docs.djangoproject.com/en/dev/topics/testing/advanced/#django.test.client.RequestFactory
+[client]: https://docs.djangoproject.com/en/stable/topics/testing/tools/#the-test-client
+[requestfactory]: https://docs.djangoproject.com/en/stable/topics/testing/advanced/#django.test.client.RequestFactory
 [configuration]: #configuration

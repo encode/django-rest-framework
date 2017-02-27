@@ -1,15 +1,66 @@
 # coding: utf-8
 from __future__ import unicode_literals
 
+import inspect
 import pickle
 import re
+import unittest
+from collections import Mapping
 
 import pytest
+from django.db import models
 
-from rest_framework import serializers
+from rest_framework import fields, relations, serializers
 from rest_framework.compat import unicode_repr
+from rest_framework.fields import Field
 
 from .utils import MockObject
+
+try:
+    from collections import ChainMap
+except ImportError:
+    ChainMap = False
+
+
+# Test serializer fields imports.
+# -------------------------------
+
+class TestFieldImports:
+    def is_field(self, name, value):
+        return (
+            isinstance(value, type) and
+            issubclass(value, Field) and
+            not name.startswith('_')
+        )
+
+    def test_fields(self):
+        msg = "Expected `fields.%s` to be imported in `serializers`"
+        field_classes = [
+            key for key, value
+            in inspect.getmembers(fields)
+            if self.is_field(key, value)
+        ]
+
+        # sanity check
+        assert 'Field' in field_classes
+        assert 'BooleanField' in field_classes
+
+        for field in field_classes:
+            assert hasattr(serializers, field), msg % field
+
+    def test_relations(self):
+        msg = "Expected `relations.%s` to be imported in `serializers`"
+        field_classes = [
+            key for key, value
+            in inspect.getmembers(relations)
+            if self.is_field(key, value)
+        ]
+
+        # sanity check
+        assert 'RelatedField' in field_classes
+
+        for field in field_classes:
+            assert hasattr(serializers, field), msg % field
 
 
 # Tests for core functionality.
@@ -68,6 +119,31 @@ class TestSerializer:
         assert not serializer.is_valid()
         assert serializer.errors == {'non_field_errors': ['No data provided']}
 
+    @unittest.skipUnless(ChainMap, 'requires python 3.3')
+    def test_serialize_chainmap(self):
+        data = ChainMap({'char': 'abc'}, {'integer': 123})
+        serializer = self.Serializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'char': 'abc', 'integer': 123}
+        assert serializer.errors == {}
+
+    def test_serialize_custom_mapping(self):
+        class SinglePurposeMapping(Mapping):
+            def __getitem__(self, key):
+                return 'abc' if key == 'char' else 123
+
+            def __iter__(self):
+                yield 'char'
+                yield 'integer'
+
+            def __len__(self):
+                return 2
+
+        serializer = self.Serializer(data=SinglePurposeMapping())
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'char': 'abc', 'integer': 123}
+        assert serializer.errors == {}
+
 
 class TestValidateMethod:
     def test_non_field_error_validate_method(self):
@@ -113,6 +189,32 @@ class TestBaseSerializer:
                 }
 
         self.Serializer = ExampleSerializer
+
+    def test_abstract_methods_raise_proper_errors(self):
+        serializer = serializers.BaseSerializer()
+        with pytest.raises(NotImplementedError):
+            serializer.to_internal_value(None)
+        with pytest.raises(NotImplementedError):
+            serializer.to_representation(None)
+        with pytest.raises(NotImplementedError):
+            serializer.update(None, None)
+        with pytest.raises(NotImplementedError):
+            serializer.create(None)
+
+    def test_access_to_data_attribute_before_validation_raises_error(self):
+        serializer = serializers.BaseSerializer(data={'foo': 'bar'})
+        with pytest.raises(AssertionError):
+            serializer.data
+
+    def test_access_to_errors_attribute_before_validation_raises_error(self):
+        serializer = serializers.BaseSerializer(data={'foo': 'bar'})
+        with pytest.raises(AssertionError):
+            serializer.errors
+
+    def test_access_to_validated_data_attribute_before_validation_raises_error(self):
+        serializer = serializers.BaseSerializer(data={'foo': 'bar'})
+        with pytest.raises(AssertionError):
+            serializer.validated_data
 
     def test_serialize_instance(self):
         instance = {'id': 1, 'name': 'tom', 'domain': 'example.com'}
@@ -357,3 +459,55 @@ class TestSerializerValidationWithCompiledRegexField:
         assert serializer.is_valid()
         assert serializer.validated_data == {'name': '2'}
         assert serializer.errors == {}
+
+
+class Test4606Regression:
+    def setup(self):
+        class ExampleSerializer(serializers.Serializer):
+            name = serializers.CharField(required=True)
+            choices = serializers.CharField(required=True)
+        self.Serializer = ExampleSerializer
+
+    def test_4606_regression(self):
+        serializer = self.Serializer(data=[{"name": "liz"}], many=True)
+        with pytest.raises(serializers.ValidationError):
+            serializer.is_valid(raise_exception=True)
+
+
+class TestDeclaredFieldInheritance:
+    def test_declared_field_disabling(self):
+        class Parent(serializers.Serializer):
+            f1 = serializers.CharField()
+            f2 = serializers.CharField()
+
+        class Child(Parent):
+            f1 = None
+
+        class Grandchild(Child):
+            pass
+
+        assert len(Parent._declared_fields) == 2
+        assert len(Child._declared_fields) == 1
+        assert len(Grandchild._declared_fields) == 1
+
+    def test_meta_field_disabling(self):
+        # Declaratively setting a field on a child class will *not* prevent
+        # the ModelSerializer from generating a default field.
+        class MyModel(models.Model):
+            f1 = models.CharField(max_length=10)
+            f2 = models.CharField(max_length=10)
+
+        class Parent(serializers.ModelSerializer):
+            class Meta:
+                model = MyModel
+                fields = ['f1', 'f2']
+
+        class Child(Parent):
+            f1 = None
+
+        class Grandchild(Child):
+            pass
+
+        assert len(Parent().get_fields()) == 2
+        assert len(Child().get_fields()) == 2
+        assert len(Grandchild().get_fields()) == 2
