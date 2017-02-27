@@ -76,6 +76,15 @@
             const schema = {{ schema }}
             const doc = codec.decode(schema)
 
+            {% if user.is_authenticated %}
+                window.auth = {
+                    'type': 'session',
+                };
+                $('#selected-authentication').text('session');
+                $('#auth-control').children().removeClass('active');
+                $('#auth-control').find("[data-auth='session']").addClass('active');
+            {% endif %}
+
             // Language Control
             $('#language-control li').click(function (event) {
                 event.preventDefault();

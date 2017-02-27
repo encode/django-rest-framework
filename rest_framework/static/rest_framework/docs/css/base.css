@@ -273,8 +273,9 @@ body {
 }
 
 .api-modal .modal-body .request-awaiting {
-  text-align: center;
   padding: 35px 10px;
+  color: #7F8177;
+  text-align: center;
 }
 
 .api-modal .modal-body .meta {
