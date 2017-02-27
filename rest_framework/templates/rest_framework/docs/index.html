@@ -68,6 +68,7 @@
                 }
                 return cookieValue;
             }
+
             const csrf = {'X-CSRFToken': getCookie('csrftoken')}
 
             const coreapi = window.coreapi
@@ -173,7 +174,18 @@
                     form.find(".response-raw-response").text(panelText)
                 }
 
-                const client = new coreapi.Client({csrf: csrf, requestCallback: requestCallback, responseCallback: responseCallback})
+                let options = {
+                    requestCallback: requestCallback, 
+                    responseCallback: responseCallback,
+                }
+
+                if (window.auth && window.auth.type === 'token') {
+                    options.headers = {
+                        'Authorization': window.auth.value
+                    }
+                }
+
+                const client = new coreapi.Client(options)
 
                 client.action(doc, key, params).then(function (data) {
                     var response = JSON.stringify(data, null, 2);
@@ -205,15 +217,20 @@
             $('form.authentication-form').submit(function(event) {
                 event.preventDefault();
                 const form = $(this).closest("form");
-                const token = window.token = form.find('input').val();
+                const value = form.find('input').val();
                 $('#auth_token_modal').modal('hide');
 
                 $('#auth-control').children().removeClass('active');
 
-                if (token) {
+                if (value) {
+                    window.auth = {
+                        'type': 'token',
+                        'value': value,
+                    };
                     $('#selected-authentication').text('token');
                     $('#auth-control').find("[data-auth='token']").addClass('active');
                 } else {
+                    window.auth = null;
                     $('#selected-authentication').text('none');
                     $('#auth-control').find("[data-auth='none']").addClass('active');
                 }
@@ -221,7 +238,7 @@
 
             $('#auth-control').find("[data-auth='none']").click(function (event) {
                 event.preventDefault();
-                window.token = null;
+                window.auth = null;
                 $('#selected-authentication').text('none');
                 $('#auth-control').find("[data-auth='none']").addClass('active');
                 $('#auth-control').find("[data-auth='token']").removeClass('active');
