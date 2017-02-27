@@ -57,13 +57,13 @@ def field_to_schema(field):
         return coreschema.String(title=title, description=description)
     elif isinstance(field, serializers.MultipleChoiceField):
         return coreschema.Array(
-            items=coreschema.Enum(enum=list(field.choices.values())),
+            items=coreschema.Enum(enum=list(field.choices.keys())),
             title=title,
             description=description
         )
     elif isinstance(field, serializers.ChoiceField):
         return coreschema.Enum(
-            enum=list(field.choices.values()),
+            enum=list(field.choices.keys()),
             title=title,
             description=description
         )

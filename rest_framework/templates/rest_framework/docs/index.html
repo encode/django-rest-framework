@@ -13,6 +13,9 @@
         <link href="{% static 'rest_framework/docs/css/font-awesome-4.0.3.css' %}" rel="stylesheet">
         <link href="{% static 'rest_framework/docs/css/base.css' %}" rel="stylesheet">
         <link href="{% static 'rest_framework/docs/css/jquery.json-view.min.css' %}" rel="stylesheet">
+
+        <link href="{% static 'rest_framework/docs/img/favicon.ico' %}" rel="shortcut icon">
+
         <style>{{ code_style }}</style>
         <style>
         .highlight {background-color: #f7f7f9}
@@ -40,6 +43,7 @@
         </div>
 
         {% include "rest_framework/docs/auth/token.html" %}
+        {% include "rest_framework/docs/auth/basic.html" %}
         {% include "rest_framework/docs/auth/session.html" %}
 
         <script src="{% static 'rest_framework/docs/js/jquery-1.10.2.min.js' %}"></script>
@@ -192,11 +196,18 @@
                     options.headers = {
                         'Authorization': window.auth.value
                     }
+                } else if (window.auth && window.auth.type === 'basic') {
+                    const token = window.auth.username + ':' + window.auth.password
+                    const hash = window.btoa(token)
+                    options.headers = {
+                        'Authorization': 'Basic ' + hash
+                    }
                 } else if (window.auth && window.auth.type === 'session') {
                     options.csrf = {
                         'X-CSRFToken': getCookie('csrftoken')
                     }
                 }
+
 
                 const client = new coreapi.Client(options)
 
@@ -263,6 +274,23 @@
                 $('#auth-control').children().removeClass('active');
                 $('#auth-control').find("[data-auth='token']").addClass('active');
                 $('#auth_token_modal').modal('hide');
+            });
+
+            // Authentication: basic
+            $('form.authentication-basic-form').submit(function(event) {
+                event.preventDefault();
+                const form = $(this).closest("form");
+                const username = form.find('input#username').val();
+                const password = form.find('input#password').val();
+                window.auth = {
+                    'type': 'basic',
+                    'username': username,
+                    'password': password,
+                };
+                $('#selected-authentication').text('basic');
+                $('#auth-control').children().removeClass('active');
+                $('#auth-control').find("[data-auth='basic']").addClass('active');
+                $('#auth_basic_modal').modal('hide');
             });
 
             // Authentication: session
