@@ -17,9 +17,14 @@
         </ul>
 
         <ul class="menu-list menu-list-bottom">
-            <li>
-                <a><i class="fa fa-user fa-lg"></i> Authentication</a> <span>none</span>
+            <li data-toggle="collapse" data-target="#auth-control" class="collapsed">
+                <a><i class="fa fa-user fa-lg"></i> Authentication</a> <span id="selected-authentication">none</span>
             </li>
+            <ul class="sub-menu out" id="auth-control">
+                <li data-auth="none" class="active"><a href="#" data-language="none">none</a></li>
+                <li data-auth="token" data-toggle="modal" data-target="#auth_token_modal"><a href="#">token</a></li>
+            </ul>
+
             <li data-toggle="collapse" data-target="#language-control" class="collapsed">
                 <a><i class="fa fa-code fa-lg"></i> Source Code</a> <span id="selected-language">shell</span>
             </li>

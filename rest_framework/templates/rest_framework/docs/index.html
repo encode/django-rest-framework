@@ -12,6 +12,7 @@
         <link href="{% static 'rest_framework/docs/css/bootstrap-theme.min.css' %}" rel="stylesheet">
         <link href="{% static 'rest_framework/docs/css/font-awesome-4.0.3.css' %}" rel="stylesheet">
         <link href="{% static 'rest_framework/docs/css/base.css' %}" rel="stylesheet">
+        <link href="{% static 'rest_framework/docs/css/jquery.json-view.min.css' %}" rel="stylesheet">
         <style>{{ code_style }}</style>
         <style>
         .highlight {background-color: #f7f7f9}
@@ -38,8 +39,11 @@
             </div>
         </div>
 
+        {% include "rest_framework/docs/auth/token.html" %}
+
         <script src="{% static 'rest_framework/docs/js/jquery-1.10.2.min.js' %}"></script>
         <script src="{% static 'rest_framework/docs/js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'rest_framework/docs/js/jquery.json-view.min.js' %}"></script>
         <script>
             function normalizeHTTPHeader(str) {
                 return (str.charAt(0).toUpperCase() + str.substring(1))
@@ -89,8 +93,7 @@
             })
 
             // API Explorer
-
-            $('form').submit(function(event) {
+            $('form.api-interaction').submit(function(event) {
                 event.preventDefault();
 
                 const form = $(this).closest("form");
@@ -175,7 +178,7 @@
                 client.action(doc, key, params).then(function (data) {
                     var response = JSON.stringify(data, null, 2);
                     form.find(".request-awaiting").addClass("hide")
-                    form.find(".response-data").text(response)
+                    form.find(".response-data").jsonView(response)
                     form.find(".response-data").removeClass("hide")
                 }).catch(function (error) {
                     var response = JSON.stringify(error.content, null, 2);
@@ -196,6 +199,25 @@
                     $(this).closest(".modal-content").find(".response-raw").addClass("hide");
                 }
             });
+
+            $('form.authentication-form').submit(function(event) {
+                event.preventDefault();
+                const form = $(this).closest("form");
+                const token = window.token = form.find('input').val();
+                $('#auth_token_modal').modal('hide');
+
+                $('#auth-control').children().removeClass('active');
+
+                if (token) {
+                    $('#selected-authentication').text('token');
+                    $('#auth-control').find("[data-auth='token']").addClass('active');
+                } else {
+                    $('#selected-authentication').text('none');
+                    $('#auth-control').find("[data-auth='none']").addClass('active');
+                }
+
+            });
+
         </script>
     </body>
 </html>
