@@ -25,7 +25,9 @@ from django.utils.dateparse import (
 )
 from django.utils.duration import duration_string
 from django.utils.encoding import is_protected_type, smart_text
-from django.utils.formats import localize_input, sanitize_separators
+from django.utils.formats import (
+    localize_input, number_format, sanitize_separators
+)
 from django.utils.functional import cached_property
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.timezone import utc
@@ -920,6 +922,10 @@ class FloatField(Field):
     def __init__(self, **kwargs):
         self.max_value = kwargs.pop('max_value', None)
         self.min_value = kwargs.pop('min_value', None)
+        self.localize = kwargs.pop('localize', False)
+        self.coerce_to_string = kwargs.pop('coerce_to_string', None)
+        if self.localize:
+            self.coerce_to_string = True
         super(FloatField, self).__init__(**kwargs)
         if self.max_value is not None:
             message = self.error_messages['max_value'].format(max_value=self.max_value)
@@ -930,7 +936,12 @@ class FloatField(Field):
 
     def to_internal_value(self, data):
 
-        if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
+        data = smart_text(data).strip()
+
+        if self.localize:
+            data = sanitize_separators(data)
+
+        if len(data) > self.MAX_STRING_LENGTH:
             self.fail('max_string_length')
 
         try:
@@ -939,6 +950,10 @@ class FloatField(Field):
             self.fail('invalid')
 
     def to_representation(self, value):
+        if self.localize:
+            return number_format(value)
+        if self.coerce_to_string:
+            return str(float(value))
         return float(value)
 
 
