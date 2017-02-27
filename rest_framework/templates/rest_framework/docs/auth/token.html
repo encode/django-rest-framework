@@ -8,13 +8,13 @@
       <h3 class="modal-title"><i class="fa fa-key"></i> Authentication Token</h3>
     </div>
 
-    <form class="form-horizontal authentication-form">
+    <form class="form-horizontal authentication-token-form">
     <div class="modal-body">
       <div class="form-group">
         <label for="authorization" class="col-sm-2 control-label">Authorization:</label>
 
         <div class="col-sm-10">
-          <input type="text" class="form-control" id="authorization" placeholder="Bearer XXXX-XXXX-XXXX-XXXX" aria-describedby="helpBlock">
+          <input type="text" class="form-control" id="authorization" placeholder="Bearer XXXX-XXXX-XXXX-XXXX" aria-describedby="helpBlock" required>
           <span id="helpBlock" class="help-block">The value to include for the <code>Authorization</code> header in outgoing HTTP requests.</span>
         </div>
       </div>
@@ -22,7 +22,7 @@
 
     <div class="modal-footer">
       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="submit" class="btn btn-primary">Use Token Authentication</button>
     </div>
     </form>
 

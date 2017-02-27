@@ -129,6 +129,22 @@ def optional_login(request):
 
 
 @register.simple_tag
+def optional_docs_login(request):
+    """
+    Include a login snippet if REST framework's login view is in the URLconf.
+    """
+    try:
+        login_url = reverse('rest_framework:login')
+    except NoReverseMatch:
+        return 'log in'
+
+    snippet = "<a href='{href}?next={next}'>log in</a>"
+    snippet = format_html(snippet, href=login_url, next=escape(request.path))
+
+    return mark_safe(snippet)
+
+
+@register.simple_tag
 def optional_logout(request, user):
     """
     Include a logout snippet if REST framework's logout view is in the URLconf.

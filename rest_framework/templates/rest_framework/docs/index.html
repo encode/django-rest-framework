@@ -40,6 +40,7 @@
         </div>
 
         {% include "rest_framework/docs/auth/token.html" %}
+        {% include "rest_framework/docs/auth/session.html" %}
 
         <script src="{% static 'rest_framework/docs/js/jquery-1.10.2.min.js' %}"></script>
         <script src="{% static 'rest_framework/docs/js/bootstrap.min.js' %}"></script>
@@ -183,6 +184,10 @@
                     options.headers = {
                         'Authorization': window.auth.value
                     }
+                } else if (window.auth && window.auth.type === 'session') {
+                    options.csrf = {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
                 }
 
                 const client = new coreapi.Client(options)
@@ -214,35 +219,41 @@
                 }
             });
 
-            $('form.authentication-form').submit(function(event) {
-                event.preventDefault();
-                const form = $(this).closest("form");
-                const value = form.find('input').val();
-                $('#auth_token_modal').modal('hide');
-
-                $('#auth-control').children().removeClass('active');
-
-                if (value) {
-                    window.auth = {
-                        'type': 'token',
-                        'value': value,
-                    };
-                    $('#selected-authentication').text('token');
-                    $('#auth-control').find("[data-auth='token']").addClass('active');
-                } else {
-                    window.auth = null;
-                    $('#selected-authentication').text('none');
-                    $('#auth-control').find("[data-auth='none']").addClass('active');
-                }
-            });
-
+            // Authentication: none
             $('#auth-control').find("[data-auth='none']").click(function (event) {
                 event.preventDefault();
                 window.auth = null;
                 $('#selected-authentication').text('none');
+                $('#auth-control').children().removeClass('active');
                 $('#auth-control').find("[data-auth='none']").addClass('active');
-                $('#auth-control').find("[data-auth='token']").removeClass('active');
             })
+
+            // Authentication: token
+            $('form.authentication-token-form').submit(function(event) {
+                event.preventDefault();
+                const form = $(this).closest("form");
+                const value = form.find('input').val();
+                window.auth = {
+                    'type': 'token',
+                    'value': value,
+                };
+                $('#selected-authentication').text('token');
+                $('#auth-control').children().removeClass('active');
+                $('#auth-control').find("[data-auth='token']").addClass('active');
+                $('#auth_token_modal').modal('hide');
+            });
+
+            // Authentication: session
+            $('form.authentication-session-form').submit(function(event) {
+                event.preventDefault();
+                window.auth = {
+                    'type': 'session',
+                };
+                $('#selected-authentication').text('session');
+                $('#auth-control').children().removeClass('active');
+                $('#auth-control').find("[data-auth='session']").addClass('active');
+                $('#auth_session_modal').modal('hide');
+            });
         </script>
     </body>
 </html>
