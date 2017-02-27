@@ -801,7 +801,7 @@ class DocumentationRenderer(BaseRenderer):
     template = 'rest_framework/docs/index.html'
     code_style = 'emacs'
 
-    def get_context(self, data):
+    def get_context(self, data, request):
         from pygments.formatters import HtmlFormatter
         from django.utils.html import mark_safe
         formatter = HtmlFormatter(style=self.code_style)
@@ -813,12 +813,13 @@ class DocumentationRenderer(BaseRenderer):
             'document': data,
             'langs': langs,
             'code_style': code_style,
-            'schema': schema
+            'schema': schema,
+            'request': request
         }
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         template = loader.get_template(self.template)
-        context = self.get_context(data)
+        context = self.get_context(data, renderer_context['request'])
         return template_render(template, context, request=renderer_context['request'])
 
 

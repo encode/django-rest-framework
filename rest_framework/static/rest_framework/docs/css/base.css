@@ -30,30 +30,28 @@
     margin-bottom: 0;
 }
 
+.sidebar .brand a {
+    color: #FFF;
+}
+
+.sidebar .brand a:hover,
+.sidebar .brand a:active,
+.sidebar .brand a:focus {
+  text-decoration: none;
+}
+
 .sidebar .toggle-btn {
   display: none;
 }
 
 .sidebar .menu-list ul,
 .sidebar .menu-list li {
+  background: #2e353d;
   list-style: none;
   padding: 0px;
   margin: 0px;
   line-height: 35px;
   cursor: pointer;
-  /*    
-    .collapsed{
-       .arrow:before{
-                 font-family: FontAwesome;
-                 content: "\f053";
-                 display: inline-block;
-                 padding-left:10px;
-                 padding-right: 10px;
-                 vertical-align: middle;
-                 float:right;
-            }
-     }
-*/
 }
 
 .sidebar .menu-list ul :not(collapsed) .arrow:before,
@@ -97,8 +95,14 @@
   background-color: #020203;
 }
 
-.sidebar .menu-list ul .sub-menu li:before,
-.sidebar .menu-list li .sub-menu li:before {
+
+.sidebar .menu-list ul .sub-menu li a,
+.sidebar .menu-list li .sub-menu li a {
+  display: block;
+}
+
+.sidebar .menu-list ul .sub-menu li a:before,
+.sidebar .menu-list li .sub-menu li a:before {
   font-family: FontAwesome;
   content: "\f105";
   display: inline-block;
@@ -273,8 +277,9 @@ body {
 }
 
 .api-modal .modal-body .request-awaiting {
-  text-align: center;
   padding: 35px 10px;
+  color: #7F8177;
+  text-align: center;
 }
 
 .api-modal .modal-body .meta {

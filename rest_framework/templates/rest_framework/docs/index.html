@@ -12,6 +12,10 @@
         <link href="{% static 'rest_framework/docs/css/bootstrap-theme.min.css' %}" rel="stylesheet">
         <link href="{% static 'rest_framework/docs/css/font-awesome-4.0.3.css' %}" rel="stylesheet">
         <link href="{% static 'rest_framework/docs/css/base.css' %}" rel="stylesheet">
+        <link href="{% static 'rest_framework/docs/css/jquery.json-view.min.css' %}" rel="stylesheet">
+
+        <link href="{% static 'rest_framework/docs/img/favicon.ico' %}" rel="shortcut icon">
+
         <style>{{ code_style }}</style>
         <style>
         .highlight {background-color: #f7f7f9}
@@ -22,7 +26,7 @@
             }
         }
         </style>
-        <script src="https://unpkg.com/coreapi@0.0.19/dist/coreapi.js"></script>
+        <script src="https://unpkg.com/coreapi@0.0.20/dist/coreapi.js"></script>
 
     </head>
 
@@ -38,8 +42,13 @@
             </div>
         </div>
 
+        {% include "rest_framework/docs/auth/token.html" %}
+        {% include "rest_framework/docs/auth/basic.html" %}
+        {% include "rest_framework/docs/auth/session.html" %}
+
         <script src="{% static 'rest_framework/docs/js/jquery-1.10.2.min.js' %}"></script>
         <script src="{% static 'rest_framework/docs/js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'rest_framework/docs/js/jquery.json-view.min.js' %}"></script>
         <script>
             function normalizeHTTPHeader(str) {
                 return (str.charAt(0).toUpperCase() + str.substring(1))
@@ -64,12 +73,21 @@
                 }
                 return cookieValue;
             }
-            const csrf = {'X-CSRFToken': getCookie('csrftoken')}
 
+            let responseDisplay = 'data';
             const coreapi = window.coreapi
             const codec = new coreapi.codecs.CoreJSONCodec()
             const schema = {{ schema }}
             const doc = codec.decode(schema)
+
+            {% if user.is_authenticated %}
+                window.auth = {
+                    'type': 'session',
+                };
+                $('#selected-authentication').text('session');
+                $('#auth-control').children().removeClass('active');
+                $('#auth-control').find("[data-auth='session']").addClass('active');
+            {% endif %}
 
             // Language Control
             $('#language-control li').click(function (event) {
@@ -89,8 +107,7 @@
             })
 
             // API Explorer
-
-            $('form').submit(function(event) {
+            $('form.api-interaction').submit(function(event) {
                 event.preventDefault();
 
                 const form = $(this).closest("form");
@@ -170,31 +187,122 @@
                     form.find(".response-raw-response").text(panelText)
                 }
 
-                const client = new coreapi.Client({csrf: csrf, requestCallback: requestCallback, responseCallback: responseCallback})
+                let options = {
+                    requestCallback: requestCallback, 
+                    responseCallback: responseCallback,
+                }
+
+                if (window.auth && window.auth.type === 'token') {
+                    options.headers = {
+                        'Authorization': window.auth.value
+                    }
+                } else if (window.auth && window.auth.type === 'basic') {
+                    const token = window.auth.username + ':' + window.auth.password
+                    const hash = window.btoa(token)
+                    options.headers = {
+                        'Authorization': 'Basic ' + hash
+                    }
+                } else if (window.auth && window.auth.type === 'session') {
+                    options.csrf = {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                }
+
+
+                const client = new coreapi.Client(options)
 
                 client.action(doc, key, params).then(function (data) {
                     var response = JSON.stringify(data, null, 2);
                     form.find(".request-awaiting").addClass("hide")
-                    form.find(".response-data").text(response)
-                    form.find(".response-data").removeClass("hide")
+                    form.find(".response-raw").addClass("hide")
+                    form.find(".response-data").addClass("hide")
+                    form.find(".response-data").text('')
+                    form.find(".response-data").jsonView(response)
+
+                    if (responseDisplay === 'data') {
+                        form.find(".response-data").removeClass("hide")
+                    } else {
+                        form.find(".response-raw").removeClass("hide")
+                    }
                 }).catch(function (error) {
                     var response = JSON.stringify(error.content, null, 2);
                     form.find(".request-awaiting").addClass("hide")
-                    form.find(".response-data").text(response)
-                    form.find(".response-data").removeClass("hide")
+                    form.find(".response-raw").addClass("hide")
+                    form.find(".response-data").addClass("hide")
+                    form.find(".response-data").text('')
+                    form.find(".response-data").jsonView(response)
+
+                    if (responseDisplay === 'data') {
+                        form.find(".response-data").removeClass("hide")
+                    } else {
+                        form.find(".response-raw").removeClass("hide")
+                    }
                 })
             });
 
             $('.toggle-view button').click(function() {
-                var selectedView = $(this).data("display-toggle");
+                responseDisplay = $(this).data("display-toggle");
                 $(this).removeClass("btn-default").addClass('btn-info').siblings().removeClass('btn-info');
-                if (selectedView === 'raw') {
+                if (responseDisplay === 'raw') {
                     $(this).closest(".modal-content").find(".response-raw").removeClass("hide");
                     $(this).closest(".modal-content").find(".response-data").addClass("hide");
                 } else {
                     $(this).closest(".modal-content").find(".response-data").removeClass("hide");
                     $(this).closest(".modal-content").find(".response-raw").addClass("hide");
                 }
+            });
+
+            // Authentication: none
+            $('#auth-control').find("[data-auth='none']").click(function (event) {
+                event.preventDefault();
+                window.auth = null;
+                $('#selected-authentication').text('none');
+                $('#auth-control').children().removeClass('active');
+                $('#auth-control').find("[data-auth='none']").addClass('active');
+            })
+
+            // Authentication: token
+            $('form.authentication-token-form').submit(function(event) {
+                event.preventDefault();
+                const form = $(this).closest("form");
+                const value = form.find('input').val();
+                window.auth = {
+                    'type': 'token',
+                    'value': value,
+                };
+                $('#selected-authentication').text('header');
+                $('#auth-control').children().removeClass('active');
+                $('#auth-control').find("[data-auth='token']").addClass('active');
+                $('#auth_token_modal').modal('hide');
+            });
+
+            // Authentication: basic
+            $('form.authentication-basic-form').submit(function(event) {
+                event.preventDefault();
+                const form = $(this).closest("form");
+                const username = form.find('input#username').val();
+                const password = form.find('input#password').val();
+                window.auth = {
+                    'type': 'basic',
+                    'username': username,
+                    'password': password,
+                };
+                $('#selected-authentication').text('basic');
+                $('#auth-control').children().removeClass('active');
+                $('#auth-control').find("[data-auth='basic']").addClass('active');
+                $('#auth_basic_modal').modal('hide');
+            });
+
+            // Authentication: session
+            $('form.authentication-session-form').submit(function(event) {
+                event.preventDefault();
+                window.auth = {
+                    'type': 'session',
+                };
+                $('#selected-authentication').text('session');
+                $('#auth-control').children().removeClass('active');
+                $('#auth-control').find("[data-auth='session']").addClass('active');
+                $('#auth_session_modal').modal('hide');
             });
         </script>
     </body>
