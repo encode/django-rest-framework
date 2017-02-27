@@ -70,8 +70,7 @@
                 return cookieValue;
             }
 
-            const csrf = {'X-CSRFToken': getCookie('csrftoken')}
-
+            let responseDisplay = 'data';
             const coreapi = window.coreapi
             const codec = new coreapi.codecs.CoreJSONCodec()
             const schema = {{ schema }}
@@ -195,22 +194,36 @@
                 client.action(doc, key, params).then(function (data) {
                     var response = JSON.stringify(data, null, 2);
                     form.find(".request-awaiting").addClass("hide")
+                    form.find(".response-raw").addClass("hide")
+                    form.find(".response-data").addClass("hide")
                     form.find(".response-data").text('')
                     form.find(".response-data").jsonView(response)
-                    form.find(".response-data").removeClass("hide")
+
+                    if (responseDisplay === 'data') {
+                        form.find(".response-data").removeClass("hide")
+                    } else {
+                        form.find(".response-raw").removeClass("hide")
+                    }
                 }).catch(function (error) {
                     var response = JSON.stringify(error.content, null, 2);
                     form.find(".request-awaiting").addClass("hide")
+                    form.find(".response-raw").addClass("hide")
+                    form.find(".response-data").addClass("hide")
                     form.find(".response-data").text('')
                     form.find(".response-data").jsonView(response)
-                    form.find(".response-data").removeClass("hide")
+
+                    if (responseDisplay === 'data') {
+                        form.find(".response-data").removeClass("hide")
+                    } else {
+                        form.find(".response-raw").removeClass("hide")
+                    }
                 })
             });
 
             $('.toggle-view button').click(function() {
-                var selectedView = $(this).data("display-toggle");
+                responseDisplay = $(this).data("display-toggle");
                 $(this).removeClass("btn-default").addClass('btn-info').siblings().removeClass('btn-info');
-                if (selectedView === 'raw') {
+                if (responseDisplay === 'raw') {
                     $(this).closest(".modal-content").find(".response-raw").removeClass("hide");
                     $(this).closest(".modal-content").find(".response-data").addClass("hide");
                 } else {
