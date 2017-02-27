@@ -76,12 +76,7 @@ def _get_forward_relationships(opts):
     Returns an `OrderedDict` of field names to `RelationInfo`.
     """
     forward_relations = OrderedDict()
-    for field in [
-        field for field in opts.fields
-        if field.serialize and get_remote_field(field) and not (field.primary_key and field.one_to_one)
-        # If the field is a OneToOneField and it's been marked as PK, then this
-        # is a multi-table inheritance auto created PK ('%_ptr').
-    ]:
+    for field in [field for field in opts.fields if field.serialize and get_remote_field(field)]:
         forward_relations[field.name] = RelationInfo(
             model_field=field,
             related_model=get_related_model(field),

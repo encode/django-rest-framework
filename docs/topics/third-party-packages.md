@@ -1,4 +1,4 @@
-# Third Party Resources
+# Third Party Packages
 
 > Software ecosystems […] establish a community that further accelerates the sharing of knowledge, content, issues, expertise and skills.
 >
@@ -165,7 +165,7 @@ We suggest adding your package to the [REST Framework][rest-framework-grid] grid
 
 #### Adding to the Django REST framework docs
 
-Create a [Pull Request][drf-create-pr] or [Issue][drf-create-issue] on GitHub, and we'll add a link to it from the main REST framework documentation. You can add your package under **Third party packages** of the API Guide section that best applies, like [Authentication][authentication] or [Permissions][permissions]. You can also link your package under the [Third Party Resources][third-party-resources] section.
+Create a [Pull Request][drf-create-pr] or [Issue][drf-create-issue] on GitHub, and we'll add a link to it from the main REST framework documentation. You can add your package under **Third party packages** of the API Guide section that best applies, like [Authentication][authentication] or [Permissions][permissions]. You can also link your package under the [Third Party Packages][third-party-packages] section.
 
 #### Announce on the discussion group.
 
@@ -261,33 +261,6 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-rest-framework-version-transforms][django-rest-framework-version-transforms] - Enables the use of delta transformations for versioning of DRF resource representations.
 * [django-rest-messaging][django-rest-messaging], [django-rest-messaging-centrifugo][django-rest-messaging-centrifugo] and [django-rest-messaging-js][django-rest-messaging-js] - A real-time pluggable messaging service using DRM.
 
-## Other Resources
-
-### Tutorials
-
-* [Beginner's Guide to the Django Rest Framework][beginners-guide-to-the-django-rest-framework]
-* [Getting Started with Django Rest Framework and AngularJS][getting-started-with-django-rest-framework-and-angularjs]
-* [End to end web app with Django-Rest-Framework & AngularJS][end-to-end-web-app-with-django-rest-framework-angularjs]
-* [Start Your API - django-rest-framework part 1][start-your-api-django-rest-framework-part-1]
-* [Permissions & Authentication - django-rest-framework part 2][permissions-authentication-django-rest-framework-part-2]
-* [ViewSets and Routers - django-rest-framework part 3][viewsets-and-routers-django-rest-framework-part-3]
-* [Django Rest Framework User Endpoint][django-rest-framework-user-endpoint]
-* [Check credentials using Django Rest Framework][check-credentials-using-django-rest-framework]
-* [Django REST Framework course][django-rest-framework-course]
-
-### Videos
-
-* [Ember and Django Part 1 (Video)][ember-and-django-part 1-video]
-* [Django Rest Framework Part 1 (Video)][django-rest-framework-part-1-video]
-
-### Articles
-
-* [Web API performance: profiling Django REST framework][web-api-performance-profiling-django-rest-framework]
-* [API Development with Django and Django REST Framework][api-development-with-django-and-django-rest-framework]
-* [Blog posts about Django REST framework][medium-django-rest-framework]
-
-### Documentations
-* [Classy Django REST Framework][cdrf.co]
 
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
@@ -304,7 +277,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [drf-create-issue]: https://github.com/tomchristie/django-rest-framework/issues/new
 [authentication]: ../api-guide/authentication.md
 [permissions]: ../api-guide/permissions.md
-[third-party-resources]: ../topics/third-party-resources/#existing-third-party-packages
+[third-party-packages]: ../topics/third-party-packages/#existing-third-party-packages
 [discussion-group]: https://groups.google.com/forum/#!forum/django-rest-framework
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
@@ -337,22 +310,9 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [gaiarestframework]: https://github.com/AppsFuel/gaiarestframework
 [drf-extensions]: https://github.com/chibisov/drf-extensions
 [ember-django-adapter]: https://github.com/dustinfarris/ember-django-adapter
-[beginners-guide-to-the-django-rest-framework]: http://code.tutsplus.com/tutorials/beginners-guide-to-the-django-rest-framework--cms-19786
-[getting-started-with-django-rest-framework-and-angularjs]: http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html
-[end-to-end-web-app-with-django-rest-framework-angularjs]: http://mourafiq.com/2013/07/01/end-to-end-web-app-with-django-angular-1.html
-[start-your-api-django-rest-framework-part-1]: https://godjango.com/41-start-your-api-django-rest-framework-part-1/
-[permissions-authentication-django-rest-framework-part-2]: https://godjango.com/43-permissions-authentication-django-rest-framework-part-2/
-[viewsets-and-routers-django-rest-framework-part-3]: https://godjango.com/45-viewsets-and-routers-django-rest-framework-part-3/
-[django-rest-framework-user-endpoint]: http://richardtier.com/2014/02/25/django-rest-framework-user-endpoint/
-[check-credentials-using-django-rest-framework]: http://richardtier.com/2014/03/06/110/
-[ember-and-django-part 1-video]: http://www.neckbeardrepublic.com/screencasts/ember-and-django-part-1
-[django-rest-framework-part-1-video]: http://www.neckbeardrepublic.com/screencasts/django-rest-framework-part-1
-[web-api-performance-profiling-django-rest-framework]: http://dabapps.com/blog/api-performance-profiling-django-rest-framework/
-[api-development-with-django-and-django-rest-framework]: https://bnotions.com/api-development-with-django-and-django-rest-framework/
 [django-rest-auth]: https://github.com/Tivix/django-rest-auth/
 [django-versatileimagefield]: https://github.com/WGBH/django-versatileimagefield
 [django-versatileimagefield-drf-docs]:https://django-versatileimagefield.readthedocs.io/en/latest/drf_integration.html
-[cdrf.co]:http://www.cdrf.co
 [drf-tracking]: https://github.com/aschn/drf-tracking
 [django-rest-framework-braces]: https://github.com/dealertrack/django-rest-framework-braces
 [dry-rest-permissions]: https://github.com/Helioscene/dry-rest-permissions
@@ -366,8 +326,6 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-messaging]: https://github.com/raphaelgyory/django-rest-messaging
 [django-rest-messaging-centrifugo]: https://github.com/raphaelgyory/django-rest-messaging-centrifugo
 [django-rest-messaging-js]: https://github.com/raphaelgyory/django-rest-messaging-js
-[medium-django-rest-framework]: https://medium.com/django-rest-framework
-[django-rest-framework-course]: https://teamtreehouse.com/library/django-rest-framework
 [drf_tweaks]: https://github.com/ArabellaTech/drf_tweaks
 [drf-oidc-auth]: https://github.com/ByteInternet/drf-oidc-auth
 [drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
