@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 import re
 
+from collections import OrderedDict
 from django import template
 from django.template import loader
 from django.utils import six
@@ -76,10 +77,10 @@ def with_location(fields, location):
 @register.simple_tag
 def form_for_link(link):
     import coreschema
-    properties = {
-        field.name: field.schema or coreschema.String()
+    properties = OrderedDict([
+        (field.name, field.schema or coreschema.String())
         for field in link.fields
-    }
+    ])
     required = [
         field.name
         for field in link.fields

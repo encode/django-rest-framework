@@ -39,11 +39,11 @@ def field_to_schema(field):
         )
     elif isinstance(field, serializers.Serializer):
         return coreschema.Object(
-            properties={
-                key: field_to_schema(value)
+            properties=OrderedDict([
+                (key, field_to_schema(value))
                 for key, value
                 in field.fields.items()
-            },
+            ]),
             title=title,
             description=description
         )
