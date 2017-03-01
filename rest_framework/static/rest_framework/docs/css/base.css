@@ -1,3 +1,23 @@
+h1 {
+    font-size: 45px;
+}
+
+.intro-code {
+    margin-top: 20px;
+}
+
+pre.highlight code * {
+  white-space: nowrap;    // this sets all children inside to nowrap
+}
+
+pre.highlight {
+  overflow-x: auto;       // this sets the scrolling in x
+}
+
+pre.highlight code {
+  white-space: pre;       // forces <code> to respect <pre> formatting
+}
+
 .main-container {
   padding-left: 30px;
   padding-right: 30px;
@@ -301,9 +321,23 @@ body {
 .api-modal .modal-content .toggle-view {
   text-align: right;
   float: right;
-} 
+}
 
 .api-modal .modal-content .response .well {
   margin: 0;
   max-height: 550px;
+}
+
+.highlight {
+    background-color: #f7f7f9
+}
+
+.checkbox label.control-label {
+    font-weight: bold
+}
+
+@media (min-width: 768px) {
+    .navbar-nav.navbar-right:last-child {
+        margin-right: 0 !important;
+    }
 }

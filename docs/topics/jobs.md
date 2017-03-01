@@ -3,7 +3,7 @@
 Looking for a new Django REST Framework related role? On this site we provide a list of job resources that may be helpful. It's also worth checking out if any of [our sponsors are hiring][drf-funding].
 
 
-## Places to Look for Django REST Framework Jobs
+## Places to look for Django REST Framework Jobs
 
 * [https://www.djangoproject.com/community/jobs/][djangoproject-website]
 * [https://www.python.org/jobs/][python-org-jobs]

@@ -291,7 +291,7 @@ class SchemaGenerator(object):
         self.url = url
         self.endpoints = None
 
-    def get_schema(self, request=None):
+    def get_schema(self, request=None, public=False):
         """
         Generate a `coreapi.Document` representing the API schema.
         """
@@ -299,7 +299,7 @@ class SchemaGenerator(object):
             inspector = self.endpoint_inspector_cls(self.patterns, self.urlconf)
             self.endpoints = inspector.get_api_endpoints()
 
-        links = self.get_links(request)
+        links = self.get_links(None if public else request)
         if not links:
             return None
 
@@ -661,7 +661,7 @@ class SchemaGenerator(object):
         return named_path_components + [action]
 
 
-def get_schema_view(title=None, url=None, urlconf=None, renderer_classes=None):
+def get_schema_view(title=None, url=None, urlconf=None, renderer_classes=None, public=False):
     """
     Return a schema view.
     """
@@ -680,7 +680,7 @@ def get_schema_view(title=None, url=None, urlconf=None, renderer_classes=None):
         renderer_classes = rclasses
 
         def get(self, request, *args, **kwargs):
-            schema = generator.get_schema(request)
+            schema = generator.get_schema(request, public)
             if schema is None:
                 raise exceptions.PermissionDenied()
             return Response(schema)

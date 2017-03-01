@@ -17,16 +17,8 @@
         <link href="{% static 'rest_framework/docs/img/favicon.ico' %}" rel="shortcut icon">
 
         <style>{{ code_style }}</style>
-        <style>
-        .highlight {background-color: #f7f7f9}
-        .checkbox label.control-label {font-weight: bold}
-        @media (min-width: 768px) {
-            .navbar-nav.navbar-right:last-child {
-                margin-right: 0 !important;
-            }
-        }
-        </style>
-        <script src="https://unpkg.com/coreapi@0.0.20/dist/coreapi.js"></script>
+        <script src="{% static 'rest_framework/js/coreapi-0.0.20.js' %}"></script>
+        <script src="{% url 'api-docs:schema-js' %}"></script>
 
     </head>
 
@@ -76,9 +68,7 @@
 
             let responseDisplay = 'data';
             const coreapi = window.coreapi
-            const codec = new coreapi.codecs.CoreJSONCodec()
-            const schema = {{ schema }}
-            const doc = codec.decode(schema)
+            const schema = window.schema
 
             {% if user.is_authenticated %}
                 window.auth = {
@@ -147,71 +137,70 @@
                 })
 
                 function requestCallback(request) {
+                    // Fill in the "GET /foo/" display.
                     let parser = document.createElement('a');
                     parser.href = request.url;
                     const method = request.options.method
                     const path = parser.pathname + parser.hash + parser.search
 
-                    // Filling the main response meta
-                    form.closest(".modal-content").find(".toggle-view").removeClass("hide")
                     form.find(".request-method").text(method)
                     form.find(".request-url").text(path)
-
-                    // Filling the raw panel
-                    // form.find(".response-raw-request").text(method + ' ' + path + '\n\n')
                 }
 
                 function responseCallback(response, responseText) {
+                    // Display the 'Data'/'Raw' control.
+                    form.closest(".modal-content").find(".toggle-view").removeClass("hide")
+
+                    // Fill in the "200 OK" display.
                     form.find(".response-status-code").removeClass("label-success").removeClass("label-danger")
                     if (response.ok) {
                         form.find(".response-status-code").addClass("label-success")
                     } else {
                         form.find(".response-status-code").addClass("label-danger")
                     }
-
                     form.find(".response-status-code").text(response.status)
-                    
                     form.find(".meta").removeClass("hide")
-                    
-                    // Filling the raw panel
-                    var panelText = 'HTTP/1.1 ' + response.status + ' ' + response.statusText + '\n';
 
+                    // Fill in the Raw HTTP response display.
+                    var panelText = 'HTTP/1.1 ' + response.status + ' ' + response.statusText + '\n';
                     response.headers.forEach((header, key) => {
                         panelText += normalizeHTTPHeader(key) + ': ' + header + '\n'
                     })
-
                     if (responseText) {
                         panelText += '\n' + responseText
                     }
-
                     form.find(".response-raw-response").text(panelText)
                 }
 
+                // Instantiate a client to make the outgoing request.
                 let options = {
-                    requestCallback: requestCallback, 
+                    requestCallback: requestCallback,
                     responseCallback: responseCallback,
                 }
 
+                // Setup authentication options.
                 if (window.auth && window.auth.type === 'token') {
+                    // Header authentication
                     options.headers = {
                         'Authorization': window.auth.value
                     }
                 } else if (window.auth && window.auth.type === 'basic') {
+                    // Basic authentication
                     const token = window.auth.username + ':' + window.auth.password
                     const hash = window.btoa(token)
                     options.headers = {
                         'Authorization': 'Basic ' + hash
                     }
                 } else if (window.auth && window.auth.type === 'session') {
+                    // Session authentication
                     options.csrf = {
                         'X-CSRFToken': getCookie('csrftoken')
                     }
                 }
 
-
                 const client = new coreapi.Client(options)
 
-                client.action(doc, key, params).then(function (data) {
+                client.action(schema, key, params).then(function (data) {
                     var response = JSON.stringify(data, null, 2);
                     form.find(".request-awaiting").addClass("hide")
                     form.find(".response-raw").addClass("hide")
@@ -240,6 +229,7 @@
                 })
             });
 
+            // 'Data'/'Raw' control
             $('.toggle-view button').click(function() {
                 responseDisplay = $(this).data("display-toggle");
                 $(this).removeClass("btn-default").addClass('btn-info').siblings().removeClass('btn-info');
