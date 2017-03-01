@@ -1,7 +1,7 @@
 {% load rest_framework %}
 <table class="table table-striped">
   <tbody>
-    {% for key, value in value.items %}
+    {% for key, value in value %}
       <tr>
         <th>{{ key|format_value }}</th>
         <td>{{ value|format_value }}</td>

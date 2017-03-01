@@ -148,7 +148,7 @@ def format_value(value):
         return template_render(template, context)
     elif isinstance(value, dict):
         template = loader.get_template('rest_framework/admin/dict_value.html')
-        context = {'value': value}
+        context = {'value': value.items()}
         return template_render(template, context)
     elif isinstance(value, six.string_types):
         if (
