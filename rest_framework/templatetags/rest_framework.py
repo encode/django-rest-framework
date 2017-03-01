@@ -148,7 +148,7 @@ def format_value(value):
         return template_render(template, context)
     elif isinstance(value, dict):
         template = loader.get_template('rest_framework/admin/dict_value.html')
-        context = {'value': value.items()}
+        context = {'value': value}
         return template_render(template, context)
     elif isinstance(value, six.string_types):
         if (
@@ -161,6 +161,12 @@ def format_value(value):
         elif '\n' in value:
             return mark_safe('<pre>%s</pre>' % escape(value))
     return six.text_type(value)
+
+
+@register.filter
+def items(value):
+    if hasattr(value, 'items'):
+        return value.items()
 
 
 @register.filter

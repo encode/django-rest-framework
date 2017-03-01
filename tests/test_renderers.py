@@ -656,13 +656,12 @@ class AdminRendererTests(TestCase):
             renderer_classes = (AdminRenderer, )
 
             def get(self, request):
-                return Response({'foo' : 'a string'})
+                return Response({'foo': 'a string'})
         view = DummyView.as_view()
         request = factory.get('/')
         response = view(request)
         response.render()
         self.assertInHTML('<tr><th>Foo</th><td>a string</td></tr>', str(response.content))
-
 
     def test_render_dict_with_items_key(self):
         factory = APIRequestFactory()
@@ -671,14 +670,13 @@ class AdminRendererTests(TestCase):
             renderer_classes = (AdminRenderer, )
 
             def get(self, request):
-                return Response({'items' : 'a string'})
+                return Response({'items': 'a string'})
 
         view = DummyView.as_view()
         request = factory.get('/')
         response = view(request)
         response.render()
         self.assertInHTML('<tr><th>Items</th><td>a string</td></tr>', str(response.content))
-
 
     def test_render_dict_with_iteritems_key(self):
         factory = APIRequestFactory()
@@ -687,7 +685,7 @@ class AdminRendererTests(TestCase):
             renderer_classes = (AdminRenderer, )
 
             def get(self, request):
-                return Response({'iteritems' : 'a string'})
+                return Response({'iteritems': 'a string'})
 
         view = DummyView.as_view()
         request = factory.get('/')
