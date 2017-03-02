@@ -165,8 +165,13 @@ def format_value(value):
 
 @register.filter
 def items(value):
-    if hasattr(value, 'items'):
-        return value.items()
+    """
+    Simple filter to return the items of the dict. Useful when the dict may
+    have a key 'items' which is resolved first in Django tempalte dot-notation
+    lookup.  See issue #4931
+    Also see: https://stackoverflow.com/questions/15416662/django-template-loop-over-dictionary-items-with-items-as-key
+    """
+    return value.items()
 
 
 @register.filter
