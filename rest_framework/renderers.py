@@ -808,7 +808,6 @@ class DocumentationRenderer(BaseRenderer):
         formatter = HtmlFormatter(style=self.code_style)
         code_style = formatter.get_style_defs('.highlight')
         langs = ['shell', 'javascript', 'python']
-        codec = coreapi.codecs.CoreJSONCodec()
         return {
             'document': data,
             'langs': langs,
