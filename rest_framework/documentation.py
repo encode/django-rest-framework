@@ -1,6 +1,6 @@
+from django.conf.urls import url, include
 from rest_framework.renderers import CoreJSONRenderer, DocumentationRenderer, SchemaJSRenderer
 from rest_framework.schemas import get_schema_view
-from django.conf.urls import url, include
 
 
 def get_docs_view(title=None, url=None, renderer_classes=None, public=True):
