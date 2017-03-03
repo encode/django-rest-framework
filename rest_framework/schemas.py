@@ -275,7 +275,7 @@ class SchemaGenerator(object):
     # Set by 'SCHEMA_COERCE_PATH_PK'.
     coerce_path_pk = None
 
-    def __init__(self, title=None, url=None, patterns=None, urlconf=None):
+    def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None):
         assert coreapi, '`coreapi` must be installed for schema support.'
         assert coreschema, '`coreschema` must be installed for schema support.'
 
@@ -288,6 +288,7 @@ class SchemaGenerator(object):
         self.patterns = patterns
         self.urlconf = urlconf
         self.title = title
+        self.description = description
         self.url = url
         self.endpoints = None
 
@@ -307,7 +308,10 @@ class SchemaGenerator(object):
         if not url and request is not None:
             url = request.build_absolute_uri()
 
-        return coreapi.Document(title=self.title, url=url, content=links)
+        return coreapi.Document(
+            title=self.title, description=self.description,
+            url=url, content=links
+        )
 
     def get_links(self, request=None):
         """
@@ -661,11 +665,11 @@ class SchemaGenerator(object):
         return named_path_components + [action]
 
 
-def get_schema_view(title=None, url=None, urlconf=None, renderer_classes=None, public=False):
+def get_schema_view(title=None, url=None, description=None, urlconf=None, renderer_classes=None, public=False):
     """
     Return a schema view.
     """
-    generator = SchemaGenerator(title=title, url=url, urlconf=urlconf)
+    generator = SchemaGenerator(title=title, url=url, description=description, urlconf=urlconf)
     if renderer_classes is None:
         if renderers.BrowsableAPIRenderer in api_settings.DEFAULT_RENDERER_CLASSES:
             rclasses = [renderers.CoreJSONRenderer, renderers.BrowsableAPIRenderer]

@@ -3,6 +3,9 @@
 <div class="row intro">
 <div class="col-md-6 intro-title">
     <h1>{{ document.title }}</h1>
+    {% if document.description %}
+    <p>{% render_markdown document.description %}</p>
+    {% endif %}
 </div>
 <div class="col-md-6 intro-code">
     {% if 'shell' in langs %}{% include "rest_framework/docs/langs/shell-intro.html" %}{% endif %}
