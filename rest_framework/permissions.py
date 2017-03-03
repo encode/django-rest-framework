@@ -8,7 +8,6 @@ from django.http import Http404
 from rest_framework import exceptions
 from rest_framework.compat import is_authenticated
 
-
 SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
 
 

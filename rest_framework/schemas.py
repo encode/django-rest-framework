@@ -5,37 +5,82 @@ from importlib import import_module
 from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
 from django.core.exceptions import PermissionDenied
+from django.db import models
 from django.http import Http404
 from django.utils import six
 from django.utils.encoding import force_text, smart_text
+from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import exceptions, renderers, serializers
 from rest_framework.compat import (
-    RegexURLPattern, RegexURLResolver, coreapi, uritemplate, urlparse
+    RegexURLPattern, RegexURLResolver, coreapi, coreschema, uritemplate,
+    urlparse
 )
 from rest_framework.request import clone_request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
-from rest_framework.utils.field_mapping import ClassLookupDict
 from rest_framework.utils.model_meta import _get_pk
 from rest_framework.views import APIView
 
-
 header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
 
-types_lookup = ClassLookupDict({
-    serializers.Field: 'string',
-    serializers.IntegerField: 'integer',
-    serializers.FloatField: 'number',
-    serializers.DecimalField: 'number',
-    serializers.BooleanField: 'boolean',
-    serializers.FileField: 'file',
-    serializers.MultipleChoiceField: 'array',
-    serializers.ManyRelatedField: 'array',
-    serializers.Serializer: 'object',
-    serializers.ListSerializer: 'array'
-})
+
+def field_to_schema(field):
+    title = force_text(field.label) if field.label else ''
+    description = force_text(field.help_text) if field.help_text else ''
+
+    if isinstance(field, serializers.ListSerializer):
+        child_schema = field_to_schema(field.child)
+        return coreschema.Array(
+            items=child_schema,
+            title=title,
+            description=description
+        )
+    elif isinstance(field, serializers.Serializer):
+        return coreschema.Object(
+            properties=OrderedDict([
+                (key, field_to_schema(value))
+                for key, value
+                in field.fields.items()
+            ]),
+            title=title,
+            description=description
+        )
+    elif isinstance(field, serializers.ManyRelatedField):
+        return coreschema.Array(
+            items=coreschema.String(),
+            title=title,
+            description=description
+        )
+    elif isinstance(field, serializers.RelatedField):
+        return coreschema.String(title=title, description=description)
+    elif isinstance(field, serializers.MultipleChoiceField):
+        return coreschema.Array(
+            items=coreschema.Enum(enum=list(field.choices.keys())),
+            title=title,
+            description=description
+        )
+    elif isinstance(field, serializers.ChoiceField):
+        return coreschema.Enum(
+            enum=list(field.choices.keys()),
+            title=title,
+            description=description
+        )
+    elif isinstance(field, serializers.BooleanField):
+        return coreschema.Boolean(title=title, description=description)
+    elif isinstance(field, (serializers.DecimalField, serializers.FloatField)):
+        return coreschema.Number(title=title, description=description)
+    elif isinstance(field, serializers.IntegerField):
+        return coreschema.Integer(title=title, description=description)
+
+    if field.style.get('base_template') == 'textarea.html':
+        return coreschema.String(
+            title=title,
+            description=description,
+            format='textarea'
+        )
+    return coreschema.String(title=title, description=description)
 
 
 def common_path(paths):
@@ -111,6 +156,20 @@ def endpoint_ordering(endpoint):
         'DELETE': 4
     }.get(method, 5)
     return (path, method_priority)
+
+
+def get_pk_description(model, model_field):
+    if isinstance(model_field, models.AutoField):
+        value_type = _('unique integer value')
+    elif isinstance(model_field, models.UUIDField):
+        value_type = _('UUID string')
+    else:
+        value_type = _('unique value')
+
+    return _('A {value_type} identifying this {name}.').format(
+        value_type=value_type,
+        name=model._meta.verbose_name,
+    )
 
 
 class EndpointInspector(object):
@@ -216,8 +275,9 @@ class SchemaGenerator(object):
     # Set by 'SCHEMA_COERCE_PATH_PK'.
     coerce_path_pk = None
 
-    def __init__(self, title=None, url=None, patterns=None, urlconf=None):
+    def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None):
         assert coreapi, '`coreapi` must be installed for schema support.'
+        assert coreschema, '`coreschema` must be installed for schema support.'
 
         if url and not url.endswith('/'):
             url += '/'
@@ -228,10 +288,11 @@ class SchemaGenerator(object):
         self.patterns = patterns
         self.urlconf = urlconf
         self.title = title
+        self.description = description
         self.url = url
         self.endpoints = None
 
-    def get_schema(self, request=None):
+    def get_schema(self, request=None, public=False):
         """
         Generate a `coreapi.Document` representing the API schema.
         """
@@ -239,10 +300,18 @@ class SchemaGenerator(object):
             inspector = self.endpoint_inspector_cls(self.patterns, self.urlconf)
             self.endpoints = inspector.get_api_endpoints()
 
-        links = self.get_links(request)
+        links = self.get_links(None if public else request)
         if not links:
             return None
-        return coreapi.Document(title=self.title, url=self.url, content=links)
+
+        url = self.url
+        if not url and request is not None:
+            url = request.build_absolute_uri()
+
+        return coreapi.Document(
+            title=self.title, description=self.description,
+            url=url, content=links
+        )
 
     def get_links(self, request=None):
         """
@@ -450,10 +519,37 @@ class SchemaGenerator(object):
         Return a list of `coreapi.Field` instances corresponding to any
         templated path variables.
         """
+        model = getattr(getattr(view, 'queryset', None), 'model', None)
         fields = []
 
         for variable in uritemplate.variables(path):
-            field = coreapi.Field(name=variable, location='path', required=True)
+            title = ''
+            description = ''
+            schema_cls = coreschema.String
+            if model is not None:
+                # Attempt to infer a field description if possible.
+                try:
+                    model_field = model._meta.get_field(variable)
+                except:
+                    pass
+
+                if model_field is not None and model_field.verbose_name:
+                    title = force_text(model_field.verbose_name)
+
+                if model_field is not None and model_field.help_text:
+                    description = force_text(model_field.help_text)
+                elif model_field is not None and model_field.primary_key:
+                    description = get_pk_description(model, model_field)
+
+                if isinstance(model_field, models.AutoField):
+                    schema_cls = coreschema.Integer
+
+            field = coreapi.Field(
+                name=variable,
+                location='path',
+                required=True,
+                schema=schema_cls(title=title, description=description)
+            )
             fields.append(field)
 
         return fields
@@ -477,7 +573,7 @@ class SchemaGenerator(object):
                     name='data',
                     location='body',
                     required=True,
-                    type='array'
+                    schema=coreschema.Array()
                 )
             ]
 
@@ -490,13 +586,11 @@ class SchemaGenerator(object):
                 continue
 
             required = field.required and method != 'PATCH'
-            description = force_text(field.help_text) if field.help_text else ''
             field = coreapi.Field(
                 name=field.field_name,
                 location='form',
                 required=required,
-                description=description,
-                type=types_lookup[field]
+                schema=field_to_schema(field)
             )
             fields.append(field)
 
@@ -571,11 +665,11 @@ class SchemaGenerator(object):
         return named_path_components + [action]
 
 
-def get_schema_view(title=None, url=None, urlconf=None, renderer_classes=None):
+def get_schema_view(title=None, url=None, description=None, urlconf=None, renderer_classes=None, public=False):
     """
     Return a schema view.
     """
-    generator = SchemaGenerator(title=title, url=url, urlconf=urlconf)
+    generator = SchemaGenerator(title=title, url=url, description=description, urlconf=urlconf)
     if renderer_classes is None:
         if renderers.BrowsableAPIRenderer in api_settings.DEFAULT_RENDERER_CLASSES:
             rclasses = [renderers.CoreJSONRenderer, renderers.BrowsableAPIRenderer]
@@ -590,7 +684,7 @@ def get_schema_view(title=None, url=None, urlconf=None, renderer_classes=None):
         renderer_classes = rclasses
 
         def get(self, request, *args, **kwargs):
-            schema = generator.get_schema(request)
+            schema = generator.get_schema(request, public)
             if schema is None:
                 raise exceptions.PermissionDenied()
             return Response(schema)

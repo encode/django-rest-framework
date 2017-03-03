@@ -6,9 +6,13 @@
 
 There are a variety of approaches to API documentation.  This document introduces a few of the various tools and options you might choose from.  The approaches should not be considered exclusive - you may want to provide more than one documentation style for you API, such as a self describing API that also includes static documentation of the various API endpoints.
 
-## Endpoint documentation
+##
 
-The most common way to document Web APIs today is to produce documentation that lists the API endpoints verbatim, and describes the allowable operations on each.  There are various tools that allow you to do this in an automated or semi-automated way.
+... TODO ...
+
+## Third party packages
+
+There are a number of mature third-party packages for providing API documentation.
 
 ---
 

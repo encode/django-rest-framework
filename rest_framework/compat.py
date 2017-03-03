@@ -175,6 +175,13 @@ except (ImportError, SyntaxError):
     uritemplate = None
 
 
+# coreschema is optional
+try:
+    import coreschema
+except ImportError:
+    coreschema = None
+
+
 # django-filter is optional
 try:
     import django_filters
