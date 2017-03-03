@@ -310,7 +310,8 @@ class Field(object):
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=empty, source=None,
                  label=None, help_text=None, style=None,
-                 error_messages=None, validators=None, allow_null=False):
+                 error_messages=None, validators=None, allow_null=False,
+                 permission=0, read_permission=0, write_permission=0):
         self._creation_counter = Field._creation_counter
         Field._creation_counter += 1
 
@@ -334,6 +335,9 @@ class Field(object):
         self.help_text = help_text
         self.style = {} if style is None else style
         self.allow_null = allow_null
+        self.permission = permission
+        self.read_permission = read_permission
+        self.write_permission = write_permission
 
         if self.default_empty_html is not empty:
             if default is not empty:
@@ -443,8 +447,6 @@ class Field(object):
         try:
             return get_attribute(instance, self.source_attrs)
         except (KeyError, AttributeError) as exc:
-            if not self.required and self.default is empty:
-                raise SkipField()
             msg = (
                 'Got {exc_type} when attempting to get a value for field '
                 '`{field}` on serializer `{serializer}`.\nThe serializer '

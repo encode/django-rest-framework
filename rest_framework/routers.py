@@ -136,12 +136,14 @@ class SimpleRouter(BaseRouter):
         it from the viewset.
         """
         queryset = getattr(viewset, 'queryset', None)
-
-        assert queryset is not None, '`base_name` argument not specified, and could ' \
+        model = getattr(viewset, 'model', None)
+        
+        assert ((queryset is not None) or (model is not None)), '`base_name` argument not specified, and could ' \
             'not automatically determine the name from the viewset, as ' \
             'it does not have a `.queryset` attribute.'
 
-        return queryset.model._meta.object_name.lower()
+        model = model if model is not None else queryset.model
+        return model._meta.object_name.lower()
 
     def get_routes(self, viewset):
         """
