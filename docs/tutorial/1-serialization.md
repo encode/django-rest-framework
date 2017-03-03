@@ -216,25 +216,14 @@ It's important to remember that `ModelSerializer` classes don't do anything part
 Let's see how we can write some API views using our new Serializer class.
 For the moment we won't use any of REST framework's other features, we'll just write the views as regular Django views.
 
-We'll start off by creating a subclass of HttpResponse that we can use to render any data we return into `json`.
-
 Edit the `snippets/views.py` file, and add the following.
 
-    from django.http import HttpResponse
+    from django.http import HttpResponse, JSONResponse
     from django.views.decorators.csrf import csrf_exempt
     from rest_framework.renderers import JSONRenderer
     from rest_framework.parsers import JSONParser
     from snippets.models import Snippet
     from snippets.serializers import SnippetSerializer
-
-    class JSONResponse(HttpResponse):
-        """
-        An HttpResponse that renders its content into JSON.
-        """
-        def __init__(self, data, **kwargs):
-            content = JSONRenderer().render(data)
-            kwargs['content_type'] = 'application/json'
-            super(JSONResponse, self).__init__(content, **kwargs)
 
 The root of our API is going to be a view that supports listing all the existing snippets, or creating a new snippet.
 
