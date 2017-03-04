@@ -100,7 +100,10 @@ def get_attribute(instance, attrs):
             if isinstance(instance, collections.Mapping):
                 instance = instance[attr]
             else:
-                instance = getattr(instance, attr)
+                try:
+                    instance = getattr(instance, attr)
+                except KeyError as exc:
+                    raise ValueError('Exception raised in property attribute "{0}"; original exception was: {1}'.format(attr, exc))
         except ObjectDoesNotExist:
             return None
         if is_simple_callable(instance):
