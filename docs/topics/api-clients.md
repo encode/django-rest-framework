@@ -304,7 +304,7 @@ other protocols can also be supported.
 
 #### Configuring transports
 
-The behaviour of the network layer can be customized by configuring the
+The behavior of the network layer can be customized by configuring the
 transports that the client is instantiated with.
 
     import requests
@@ -317,6 +317,126 @@ transports that the client is instantiated with.
 More complex customizations can also be achieved, for example modifying the
 underlying `requests.Session` instance to [attach transport adaptors][transport-adaptors]
 that modify the outgoing requests.
+
+---
+
+# JavaScript Client Library
+
+The JavaScript client library allows you to interact with your API either from a browser, or using node.
+
+## Installing the JavaScript client
+
+There are two separate JavaScript resources that you need to include in your HTML pages in order to use the JavaScript client library. These are a static `coreapi.js` file, which contains the code for the dynamic client library, and a templated `schema.js` resource, which exposes your API schema.
+
+First, install the API documentation views. These will include the schema resource that'll allow you to load the schema directly from an HTML page, without having to make an asynchronous AJAX call.
+
+    url(r'^docs/', include_docs_urls(title='My API service'))
+
+Once the API documentation URLs are installed, you'll be able to include both the required JavaScript resources. Note that the ordering of these two lines is important, as the schema loading requires CoreAPI to already be installed.
+
+    {% load staticfiles %}
+    <script src="{% static 'rest_framework/js/coreapi.js' %}"></script>
+    <script src="{% url 'api-docs:schema-js' %}"></script>
+
+The `coreapi` library, and the `schema` object will now both be available on the `window` instance.
+
+    const coreapi = window.coreapi
+    const schema = window.schema
+
+## Instantiating a client
+
+    var client = coreapi.Client()
+
+Header authentication
+
+    var auth = coreapi.auth.HeaderAuthentication({
+        value: 'JWT <token>'
+    })
+    var client = coreapi.Client({auth: auth})
+
+Basic authentication
+
+    var auth = coreapi.auth.BasicAuthentication({
+        userName: '<username>',
+        password: '<password>'
+    })
+    var client = coreapi.Client({auth: auth})
+
+Session authentication
+
+	// https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
+    let auth = coreapi.auth.SessionAuthentication({
+        csrfHeader: 'X-CSRFToken',
+        csrfToken: getCookie('csrftoken')
+    })
+    let client = coreapi.Client({auth: auth})
+
+## Using the client
+
+Making requests
+
+    let action = ["users", "list"]
+    client.action(schema, action).then(function(result) {
+        // Return value is in 'result'
+    })
+
+Including parameters
+
+    let action = ["users", "create"]
+    let params = {username: "example", email: "example@example.com"}
+    client.action(schema, action, params).then(function(result) {
+        // Return value is in 'result'
+    })
+
+Handling errors
+
+    client.action(schema, action, params).then(function(result) {
+        // Return value is in 'result'
+    }).catch(function (error) {
+        // Error value is in 'error'
+    })
+
+If you're using session authentication, and handling login requests using regular HTML forms then you probably won't need an authentication flow for the client. However, if you're using one of the other types of authentication, 
+
+A suggested pattern for this would be to initially make an unauthenticated client request to an "obtain token" endpoint
+
+For example, using the "Django REST framework JWT" package
+
+    // Globally accessible state
+    window.client = coreapi.Client()
+    window.loggedIn = false
+
+    function loginUser(username, password) {
+        let action = ["api-token-auth", "obtain-token"]
+        let params = {username: "example", email: "example@example.com"}
+        client.action(schema, action, params).then(function(result) {
+            // On success, instantiate an authenticated client.
+            let authConfig = {value: 'JWT ' + result['token']}
+            let auth = window.coreapi.auth.HeaderAuthentication(authConfig)
+            window.client = coreapi.Client({auth: auth})
+            window.loggedIn = true
+        }).catch(function (error) {
+            // Handle error case where eg. user provides incorrect credentials.
+        })
+    }
+
+## Installation with node
+
+The coreapi package is available on NPM.
+
+    $ npm install coreapi
+    $ node
+    const coreapi = require('coreapi')
+
+You'll either want to include the API schema in your codebase directly, by copying it from the `schema.js` resource, or else load the schema asynchronously. For example:
+
+    let client = new coreapi.Client()
+    let schema = null
+    client.get("https://api.example.org/").then(function(data) {
+        // Load a CoreJSON API schema.
+        schema = data
+        console.log('schema loaded')
+    })
 
 [heroku-api]: https://devcenter.heroku.com/categories/platform-api
 [heroku-example]: http://www.coreapi.org/tools-and-resources/example-services/#heroku-json-hyper-schema
