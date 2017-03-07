@@ -9,7 +9,6 @@ from django.utils import six
 from django.utils.encoding import force_text, iri_to_uri
 from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
-from markdown.extensions.fenced_code import FencedBlockPreprocessor
 
 from rest_framework.compat import (
     NoReverseMatch, markdown, reverse, template_render
@@ -22,22 +21,6 @@ register = template.Library()
 
 # Regex for adding classes to html snippets
 class_re = re.compile(r'(?<=class=["\'])(.*)(?=["\'])')
-
-
-class CustomFencedBlockPreprocessor(FencedBlockPreprocessor):
-    CODE_WRAP = '<pre%s><code>%s</code></pre>'
-    LANG_TAG = ' class="highlight %s"'
-
-
-class FencedCodeExtension(markdown.Extension):
-
-    def extendMarkdown(self, md, md_globals):
-        """ Add FencedBlockPreprocessor to the Markdown instance. """
-        md.registerExtension(self)
-
-        md.preprocessors.add('fenced_code_block',
-                             CustomFencedBlockPreprocessor(md),
-                             ">normalize_whitespace")
 
 
 @register.tag(name='code')
@@ -92,7 +75,9 @@ def form_for_link(link):
 
 @register.simple_tag
 def render_markdown(markdown_text):
-    return markdown.markdown(markdown_text, extensions=[FencedCodeExtension(), "tables"])
+    if not markdown:
+        return markdown_text
+    return markdown.markdown(markdown_text)
 
 
 @register.simple_tag
