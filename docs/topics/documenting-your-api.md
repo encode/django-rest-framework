@@ -4,13 +4,72 @@
 >
 > &mdash; Roy Fielding, [REST APIs must be hypertext driven][cite]
 
-There are a variety of approaches to API documentation.  This document introduces a few of the various tools and options you might choose from.  The approaches should not be considered exclusive - you may want to provide more than one documentation style for you API, such as a self describing API that also includes static documentation of the various API endpoints.
+REST framework provides built-in support for API documentation. There are also a number of great third-party documentation tools available.
 
-## Endpoint documentation
+## Built-in API documentation
 
-The most common way to document Web APIs today is to produce documentation that lists the API endpoints verbatim, and describes the allowable operations on each.  There are various tools that allow you to do this in an automated or semi-automated way.
+The built-in API documentation includes:
+
+* Documentation of API endpoints.
+* Automatically generated code samples for each of the available API client libraries.
+* Support for API interaction.
+
+### Installation
+
+To install the API documentation, you'll need to include it in your projects URLconf:
+
+    from rest_framework.documentation import include_docs_urls
+
+    urlpatterns = [
+        ...
+        url(r'^docs/', include_docs_urls(title='My API title'))
+    ]
+
+This will include two different views:
+
+  * `/docs/` - The documentation page itself.
+  * `/docs/schema.js` - A JavaScript resource that exposes the API schema.
+
+### Documenting your views
+
+You can document your views by including docstrings that describe each of the available actions.
+For example:
+
+    class UserList(generics.ListAPIView):
+        """
+        Return a list of all the existing users.
+        """"
+
+If a view supports multiple methods, you should split your documentation using `method:` style delimiters.
+
+    class UserList(generics.ListCreateAPIView):
+        """
+        get:
+        Return a list of all the existing users.
+
+        post:
+        Create a new user instance.
+        """
+
+When using viewsets, you should use the relevant action names as delimiters.
+
+    class UserViewSet(viewsets.ModelViewSet):
+        """
+        retrieve:
+        Return the given user.
+
+        list:
+        Return a list of all the existing users.
+
+        create:
+        Create a new user instance.
+        """
 
 ---
+
+## Third party packages
+
+There are a number of mature third-party packages for providing API documentation.
 
 #### DRF Docs
 
@@ -35,6 +94,34 @@ Mark is also the author of the [REST Framework Docs][rest-framework-docs] packag
 Both this package and DRF docs are fully documented, well supported, and come highly recommended.
 
 ![Screenshot - Django REST Swagger][image-django-rest-swagger]
+
+---
+
+### DRF AutoDocs
+
+Oleksander Mashianovs' [DRF Auto Docs][drfautodocs-repo] automated api renderer.
+
+Collects almost all the code you written into documentation effortlessly.
+
+Supports:
+
+ * functional view docs
+ * tree-like structure
+ * Docstrings:
+  * markdown
+  * preserve space & newlines
+  * formatting with nice syntax
+ * Fields:
+  * choices rendering
+  * help_text (to specify SerializerMethodField output, etc)
+  * smart read_only/required rendering
+ * Endpoint properties:
+  * filter_backends
+  * authentication_classes
+  * permission_classes
+  * extra url params(GET params)
+
+![whole structure](http://joxi.ru/52aBGNI4k3oyA0.jpg)
 
 ---
 
@@ -77,7 +164,7 @@ If the python `markdown` library is installed, then [markdown syntax][markdown] 
         [ref]: http://example.com/activating-accounts
         """
 
-Note that one constraint of using viewsets is that any documentation be used for all generated views, so for example, you cannot have differing documentation for the generated list view and detail view.
+Note that when using viewsets the basic docstring is used for all generated views.  To provide descriptions for each view, such as for the the list and retrieve views, use docstring sections as described in [Schemas as documentation: Examples][schemas-examples].
 
 #### The `OPTIONS` method
 
@@ -109,6 +196,7 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [drfdocs-repo]: https://github.com/ekonstantinidis/django-rest-framework-docs
 [drfdocs-website]: http://www.drfdocs.com/
 [drfdocs-demo]: http://demo.drfdocs.com/
+[drfautodocs-repo]: https://github.com/iMakedonsky/drf-autodocs
 [django-rest-swagger]: https://github.com/marcgibbons/django-rest-swagger
 [swagger]: https://developers.helloreverb.com/swagger/
 [rest-framework-docs]: https://github.com/marcgibbons/django-rest-framework-docs
@@ -119,3 +207,4 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [image-django-rest-swagger]: ../img/django-rest-swagger.png
 [image-apiary]: ../img/apiary.png
 [image-self-describing-api]: ../img/self-describing.png
+[schemas-examples]: ../api-guide/schemas/#examples

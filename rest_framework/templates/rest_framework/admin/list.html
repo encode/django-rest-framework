@@ -6,7 +6,7 @@
   <tbody>
     {% for row in results %}
       <tr>
-        {% for key, value in row.items %}
+        {% for key, value in row|items %}
           {% if key in columns %}
             <td {{ value|add_nested_class }} >
               {{ value|format_value }}

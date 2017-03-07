@@ -67,8 +67,8 @@ class DBTransactionTests(TestCase):
 
         with self.assertNumQueries(1):
             response = self.view(request)
-        self.assertFalse(transaction.get_rollback())
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert not transaction.get_rollback()
+        assert response.status_code == status.HTTP_200_OK
         assert BasicModel.objects.count() == 1
 
 
@@ -98,7 +98,7 @@ class DBTransactionErrorTests(TestCase):
             # 3 - release savepoint
             with transaction.atomic():
                 self.assertRaises(Exception, self.view, request)
-                self.assertFalse(transaction.get_rollback())
+                assert not transaction.get_rollback()
         assert BasicModel.objects.count() == 1
 
 
@@ -128,9 +128,8 @@ class DBTransactionAPIExceptionTests(TestCase):
             # 4 - release savepoint (django>=1.8 only)
             with transaction.atomic():
                 response = self.view(request)
-                self.assertTrue(transaction.get_rollback())
-        self.assertEqual(response.status_code,
-                         status.HTTP_500_INTERNAL_SERVER_ERROR)
+                assert transaction.get_rollback()
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
         assert BasicModel.objects.count() == 0
 
 
@@ -151,5 +150,4 @@ class NonAtomicDBTransactionAPIExceptionTests(TransactionTestCase):
 
         # without checking connection.in_atomic_block view raises 500
         # due attempt to rollback without transaction
-        self.assertEqual(response.status_code,
-                         status.HTTP_404_NOT_FOUND)
+        assert response.status_code == status.HTTP_404_NOT_FOUND

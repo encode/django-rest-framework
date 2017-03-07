@@ -117,7 +117,7 @@ class NamespaceVersioning(BaseVersioning):
 
     def determine_version(self, request, *args, **kwargs):
         resolver_match = getattr(request, 'resolver_match', None)
-        if (resolver_match is None or not resolver_match.namespace):
+        if resolver_match is None or not resolver_match.namespace:
             return self.default_version
 
         # Allow for possibly nested namespaces.

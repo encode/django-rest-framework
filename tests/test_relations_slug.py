@@ -61,7 +61,7 @@ class SlugForeignKeyTests(TestCase):
             {'id': 3, 'name': 'source-3', 'target': 'target-1'}
         ]
         with self.assertNumQueries(4):
-            self.assertEqual(serializer.data, expected)
+            assert serializer.data == expected
 
     def test_foreign_key_retrieve_select_related(self):
         queryset = ForeignKeySource.objects.all().select_related('target')
@@ -76,7 +76,7 @@ class SlugForeignKeyTests(TestCase):
             {'id': 1, 'name': 'target-1', 'sources': ['source-1', 'source-2', 'source-3']},
             {'id': 2, 'name': 'target-2', 'sources': []},
         ]
-        self.assertEqual(serializer.data, expected)
+        assert serializer.data == expected
 
     def test_reverse_foreign_key_retrieve_prefetch_related(self):
         queryset = ForeignKeyTarget.objects.all().prefetch_related('sources')
@@ -88,9 +88,9 @@ class SlugForeignKeyTests(TestCase):
         data = {'id': 1, 'name': 'source-1', 'target': 'target-2'}
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
-        self.assertTrue(serializer.is_valid())
+        assert serializer.is_valid()
         serializer.save()
-        self.assertEqual(serializer.data, data)
+        assert serializer.data == data
 
         # Ensure source 1 is updated, and everything else is as expected
         queryset = ForeignKeySource.objects.all()
@@ -100,20 +100,20 @@ class SlugForeignKeyTests(TestCase):
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
             {'id': 3, 'name': 'source-3', 'target': 'target-1'}
         ]
-        self.assertEqual(serializer.data, expected)
+        assert serializer.data == expected
 
     def test_foreign_key_update_incorrect_type(self):
         data = {'id': 1, 'name': 'source-1', 'target': 123}
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
-        self.assertFalse(serializer.is_valid())
-        self.assertEqual(serializer.errors, {'target': ['Object with name=123 does not exist.']})
+        assert not serializer.is_valid()
+        assert serializer.errors == {'target': ['Object with name=123 does not exist.']}
 
     def test_reverse_foreign_key_update(self):
         data = {'id': 2, 'name': 'target-2', 'sources': ['source-1', 'source-3']}
         instance = ForeignKeyTarget.objects.get(pk=2)
         serializer = ForeignKeyTargetSerializer(instance, data=data)
-        self.assertTrue(serializer.is_valid())
+        assert serializer.is_valid()
         # We shouldn't have saved anything to the db yet since save
         # hasn't been called.
         queryset = ForeignKeyTarget.objects.all()
@@ -122,10 +122,10 @@ class SlugForeignKeyTests(TestCase):
             {'id': 1, 'name': 'target-1', 'sources': ['source-1', 'source-2', 'source-3']},
             {'id': 2, 'name': 'target-2', 'sources': []},
         ]
-        self.assertEqual(new_serializer.data, expected)
+        assert new_serializer.data == expected
 
         serializer.save()
-        self.assertEqual(serializer.data, data)
+        assert serializer.data == data
 
         # Ensure target 2 is update, and everything else is as expected
         queryset = ForeignKeyTarget.objects.all()
@@ -134,16 +134,16 @@ class SlugForeignKeyTests(TestCase):
             {'id': 1, 'name': 'target-1', 'sources': ['source-2']},
             {'id': 2, 'name': 'target-2', 'sources': ['source-1', 'source-3']},
         ]
-        self.assertEqual(serializer.data, expected)
+        assert serializer.data == expected
 
     def test_foreign_key_create(self):
         data = {'id': 4, 'name': 'source-4', 'target': 'target-2'}
         serializer = ForeignKeySourceSerializer(data=data)
         serializer.is_valid()
-        self.assertTrue(serializer.is_valid())
+        assert serializer.is_valid()
         obj = serializer.save()
-        self.assertEqual(serializer.data, data)
-        self.assertEqual(obj.name, 'source-4')
+        assert serializer.data == data
+        assert obj.name == 'source-4'
 
         # Ensure source 4 is added, and everything else is as expected
         queryset = ForeignKeySource.objects.all()
@@ -154,15 +154,15 @@ class SlugForeignKeyTests(TestCase):
             {'id': 3, 'name': 'source-3', 'target': 'target-1'},
             {'id': 4, 'name': 'source-4', 'target': 'target-2'},
         ]
-        self.assertEqual(serializer.data, expected)
+        assert serializer.data == expected
 
     def test_reverse_foreign_key_create(self):
         data = {'id': 3, 'name': 'target-3', 'sources': ['source-1', 'source-3']}
         serializer = ForeignKeyTargetSerializer(data=data)
-        self.assertTrue(serializer.is_valid())
+        assert serializer.is_valid()
         obj = serializer.save()
-        self.assertEqual(serializer.data, data)
-        self.assertEqual(obj.name, 'target-3')
+        assert serializer.data == data
+        assert obj.name == 'target-3'
 
         # Ensure target 3 is added, and everything else is as expected
         queryset = ForeignKeyTarget.objects.all()
@@ -172,14 +172,14 @@ class SlugForeignKeyTests(TestCase):
             {'id': 2, 'name': 'target-2', 'sources': []},
             {'id': 3, 'name': 'target-3', 'sources': ['source-1', 'source-3']},
         ]
-        self.assertEqual(serializer.data, expected)
+        assert serializer.data == expected
 
     def test_foreign_key_update_with_invalid_null(self):
         data = {'id': 1, 'name': 'source-1', 'target': None}
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
-        self.assertFalse(serializer.is_valid())
-        self.assertEqual(serializer.errors, {'target': ['This field may not be null.']})
+        assert not serializer.is_valid()
+        assert serializer.errors == {'target': ['This field may not be null.']}
 
 
 class SlugNullableForeignKeyTests(TestCase):
@@ -200,15 +200,15 @@ class SlugNullableForeignKeyTests(TestCase):
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
             {'id': 3, 'name': 'source-3', 'target': None},
         ]
-        self.assertEqual(serializer.data, expected)
+        assert serializer.data == expected
 
     def test_foreign_key_create_with_valid_null(self):
         data = {'id': 4, 'name': 'source-4', 'target': None}
         serializer = NullableForeignKeySourceSerializer(data=data)
-        self.assertTrue(serializer.is_valid())
+        assert serializer.is_valid()
         obj = serializer.save()
-        self.assertEqual(serializer.data, data)
-        self.assertEqual(obj.name, 'source-4')
+        assert serializer.data == data
+        assert obj.name == 'source-4'
 
         # Ensure source 4 is created, and everything else is as expected
         queryset = NullableForeignKeySource.objects.all()
@@ -219,7 +219,7 @@ class SlugNullableForeignKeyTests(TestCase):
             {'id': 3, 'name': 'source-3', 'target': None},
             {'id': 4, 'name': 'source-4', 'target': None}
         ]
-        self.assertEqual(serializer.data, expected)
+        assert serializer.data == expected
 
     def test_foreign_key_create_with_valid_emptystring(self):
         """
@@ -229,10 +229,10 @@ class SlugNullableForeignKeyTests(TestCase):
         data = {'id': 4, 'name': 'source-4', 'target': ''}
         expected_data = {'id': 4, 'name': 'source-4', 'target': None}
         serializer = NullableForeignKeySourceSerializer(data=data)
-        self.assertTrue(serializer.is_valid())
+        assert serializer.is_valid()
         obj = serializer.save()
-        self.assertEqual(serializer.data, expected_data)
-        self.assertEqual(obj.name, 'source-4')
+        assert serializer.data == expected_data
+        assert obj.name == 'source-4'
 
         # Ensure source 4 is created, and everything else is as expected
         queryset = NullableForeignKeySource.objects.all()
@@ -243,15 +243,15 @@ class SlugNullableForeignKeyTests(TestCase):
             {'id': 3, 'name': 'source-3', 'target': None},
             {'id': 4, 'name': 'source-4', 'target': None}
         ]
-        self.assertEqual(serializer.data, expected)
+        assert serializer.data == expected
 
     def test_foreign_key_update_with_valid_null(self):
         data = {'id': 1, 'name': 'source-1', 'target': None}
         instance = NullableForeignKeySource.objects.get(pk=1)
         serializer = NullableForeignKeySourceSerializer(instance, data=data)
-        self.assertTrue(serializer.is_valid())
+        assert serializer.is_valid()
         serializer.save()
-        self.assertEqual(serializer.data, data)
+        assert serializer.data == data
 
         # Ensure source 1 is updated, and everything else is as expected
         queryset = NullableForeignKeySource.objects.all()
@@ -261,7 +261,7 @@ class SlugNullableForeignKeyTests(TestCase):
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
             {'id': 3, 'name': 'source-3', 'target': None}
         ]
-        self.assertEqual(serializer.data, expected)
+        assert serializer.data == expected
 
     def test_foreign_key_update_with_valid_emptystring(self):
         """
@@ -272,9 +272,9 @@ class SlugNullableForeignKeyTests(TestCase):
         expected_data = {'id': 1, 'name': 'source-1', 'target': None}
         instance = NullableForeignKeySource.objects.get(pk=1)
         serializer = NullableForeignKeySourceSerializer(instance, data=data)
-        self.assertTrue(serializer.is_valid())
+        assert serializer.is_valid()
         serializer.save()
-        self.assertEqual(serializer.data, expected_data)
+        assert serializer.data == expected_data
 
         # Ensure source 1 is updated, and everything else is as expected
         queryset = NullableForeignKeySource.objects.all()
@@ -284,4 +284,4 @@ class SlugNullableForeignKeyTests(TestCase):
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
             {'id': 3, 'name': 'source-3', 'target': None}
         ]
-        self.assertEqual(serializer.data, expected)
+        assert serializer.data == expected

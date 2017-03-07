@@ -45,6 +45,15 @@ class TestSimpleBoundField:
         assert serializer['amount'].errors is None
         assert serializer['amount'].name == 'amount'
 
+    def test_delete_field(self):
+        class ExampleSerializer(serializers.Serializer):
+            text = serializers.CharField(max_length=100)
+            amount = serializers.IntegerField()
+
+        serializer = ExampleSerializer()
+        del serializer.fields['text']
+        assert 'text' not in serializer.fields.keys()
+
     def test_as_form_fields(self):
         class ExampleSerializer(serializers.Serializer):
             bool_field = serializers.BooleanField()

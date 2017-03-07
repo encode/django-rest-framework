@@ -1,4 +1,4 @@
-"""
+r"""
 ______ _____ _____ _____    __
 | ___ \  ___/  ___|_   _|  / _|                                           | |
 | |_/ / |__ \ `--.  | |   | |_ _ __ __ _ _ __ ___   _____      _____  _ __| |__
@@ -8,7 +8,7 @@ ______ _____ _____ _____    __
 """
 
 __title__ = 'Django REST framework'
-__version__ = '3.5.3'
+__version__ = '3.5.4'
 __author__ = 'Tom Christie'
 __license__ = 'BSD 2-Clause'
 __copyright__ = 'Copyright 2011-2016 Tom Christie'

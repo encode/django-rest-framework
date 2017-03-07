@@ -152,7 +152,7 @@ class Request(object):
 
         force_user = getattr(request, '_force_auth_user', None)
         force_token = getattr(request, '_force_auth_token', None)
-        if (force_user is not None or force_token is not None):
+        if force_user is not None or force_token is not None:
             forced_auth = ForcedAuthentication(force_user, force_token)
             self.authenticators = (forced_auth,)
 
@@ -353,10 +353,9 @@ class Request(object):
 
     def _not_authenticated(self):
         """
-        Return a three-tuple of (authenticator, user, authtoken), representing
-        an unauthenticated request.
+        Set authenticator, user & authtoken representing an unauthenticated request.
 
-        By default this will be (None, AnonymousUser, None).
+        Defaults are None, AnonymousUser & None.
         """
         self._authenticator = None
 

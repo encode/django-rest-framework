@@ -8,6 +8,7 @@ REST framework also provides an HTML renderer that renders the browsable API.
 """
 from __future__ import unicode_literals
 
+import base64
 import json
 from collections import OrderedDict
 
@@ -19,6 +20,7 @@ from django.http.multipartparser import parse_header
 from django.template import Template, loader
 from django.test.client import encode_multipart
 from django.utils import six
+from django.utils.html import mark_safe
 
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
@@ -228,7 +230,7 @@ class StaticHTMLRenderer(TemplateHTMLRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         renderer_context = renderer_context or {}
-        response = renderer_context['response']
+        response = renderer_context.get('response')
 
         if response and response.exception:
             request = renderer_context['request']
@@ -540,7 +542,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             # If possible, serialize the initial content for the generic form
             default_parser = view.parser_classes[0]
             renderer_class = getattr(default_parser, 'renderer_class', None)
-            if (hasattr(view, 'get_serializer') and renderer_class):
+            if hasattr(view, 'get_serializer') and renderer_class:
                 # View has a serializer defined and parser class has a
                 # corresponding renderer that can be used to render the data.
 
@@ -598,7 +600,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         paginator = getattr(view, 'paginator', None)
         if isinstance(data, list):
             pass
-        elif (paginator is not None and data is not None):
+        elif paginator is not None and data is not None:
             try:
                 paginator.get_results(data)
             except (TypeError, KeyError):
@@ -738,7 +740,7 @@ class AdminRenderer(BrowsableAPIRenderer):
         ret = template_render(template, context, request=renderer_context['request'])
 
         # Creation and deletion should use redirects in the admin style.
-        if (response.status_code == status.HTTP_201_CREATED) and ('Location' in response):
+        if response.status_code == status.HTTP_201_CREATED and 'Location' in response:
             response.status_code = status.HTTP_303_SEE_OTHER
             response['Location'] = request.build_absolute_uri()
             ret = ''
@@ -764,7 +766,7 @@ class AdminRenderer(BrowsableAPIRenderer):
         )
 
         paginator = getattr(context['view'], 'paginator', None)
-        if (paginator is not None and data is not None):
+        if paginator is not None and data is not None:
             try:
                 results = paginator.get_results(data)
             except (TypeError, KeyError):
@@ -792,6 +794,47 @@ class AdminRenderer(BrowsableAPIRenderer):
         context['error_form'] = getattr(self, 'error_form', None)
         context['error_title'] = getattr(self, 'error_title', None)
         return context
+
+
+class DocumentationRenderer(BaseRenderer):
+    media_type = 'text/html'
+    format = 'html'
+    charset = 'utf-8'
+    template = 'rest_framework/docs/index.html'
+    code_style = 'emacs'
+
+    def get_context(self, data, request):
+        from pygments.formatters import HtmlFormatter
+        formatter = HtmlFormatter(style=self.code_style)
+        code_style = formatter.get_style_defs('.highlight')
+        langs = ['shell', 'javascript', 'python']
+        return {
+            'document': data,
+            'langs': langs,
+            'code_style': code_style,
+            'request': request
+        }
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        template = loader.get_template(self.template)
+        context = self.get_context(data, renderer_context['request'])
+        return template_render(template, context, request=renderer_context['request'])
+
+
+class SchemaJSRenderer(BaseRenderer):
+    media_type = 'script/javascript'
+    format = 'javascript'
+    charset = 'utf-8'
+    template = 'rest_framework/schema.js'
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        codec = coreapi.codecs.CoreJSONCodec()
+        schema = base64.b64encode(codec.encode(data))
+
+        template = loader.get_template(self.template)
+        context = {'schema': mark_safe(schema)}
+        request = renderer_context['request']
+        return template_render(template, context, request=request)
 
 
 class MultiPartRenderer(BaseRenderer):

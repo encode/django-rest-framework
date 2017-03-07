@@ -75,7 +75,7 @@ class TestGenericRelations(TestCase):
             'tags': ['django', 'python'],
             'url': 'https://www.djangoproject.com/'
         }
-        self.assertEqual(serializer.data, expected)
+        assert serializer.data == expected
 
     def test_generic_fk(self):
         """
@@ -105,4 +105,4 @@ class TestGenericRelations(TestCase):
                 'tagged_item': 'Note: Remember the milk'
             }
         ]
-        self.assertEqual(serializer.data, expected)
+        assert serializer.data == expected

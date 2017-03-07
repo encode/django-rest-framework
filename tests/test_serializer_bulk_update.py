@@ -44,9 +44,9 @@ class BulkCreateSerializerTests(TestCase):
         ]
 
         serializer = self.BookSerializer(data=data, many=True)
-        self.assertEqual(serializer.is_valid(), True)
-        self.assertEqual(serializer.validated_data, data)
-        self.assertEqual(serializer.errors, [])
+        assert serializer.is_valid() is True
+        assert serializer.validated_data == data
+        assert serializer.errors == []
 
     def test_bulk_create_errors(self):
         """
@@ -75,9 +75,9 @@ class BulkCreateSerializerTests(TestCase):
         ]
 
         serializer = self.BookSerializer(data=data, many=True)
-        self.assertEqual(serializer.is_valid(), False)
-        self.assertEqual(serializer.errors, expected_errors)
-        self.assertEqual(serializer.validated_data, [])
+        assert serializer.is_valid() is False
+        assert serializer.errors == expected_errors
+        assert serializer.validated_data == []
 
     def test_invalid_list_datatype(self):
         """
@@ -85,7 +85,7 @@ class BulkCreateSerializerTests(TestCase):
         """
         data = ['foo', 'bar', 'baz']
         serializer = self.BookSerializer(data=data, many=True)
-        self.assertEqual(serializer.is_valid(), False)
+        assert serializer.is_valid() is False
 
         text_type_string = six.text_type.__name__
         message = 'Invalid data. Expected a dictionary, but got %s.' % text_type_string
@@ -95,7 +95,7 @@ class BulkCreateSerializerTests(TestCase):
             {'non_field_errors': [message]}
         ]
 
-        self.assertEqual(serializer.errors, expected_errors)
+        assert serializer.errors == expected_errors
 
     def test_invalid_single_datatype(self):
         """
@@ -103,11 +103,11 @@ class BulkCreateSerializerTests(TestCase):
         """
         data = 123
         serializer = self.BookSerializer(data=data, many=True)
-        self.assertEqual(serializer.is_valid(), False)
+        assert serializer.is_valid() is False
 
         expected_errors = {'non_field_errors': ['Expected a list of items but got type "int".']}
 
-        self.assertEqual(serializer.errors, expected_errors)
+        assert serializer.errors == expected_errors
 
     def test_invalid_single_object(self):
         """
@@ -120,8 +120,8 @@ class BulkCreateSerializerTests(TestCase):
             'author': 'Tom Wolfe'
         }
         serializer = self.BookSerializer(data=data, many=True)
-        self.assertEqual(serializer.is_valid(), False)
+        assert serializer.is_valid() is False
 
         expected_errors = {'non_field_errors': ['Expected a list of items but got type "dict".']}
 
-        self.assertEqual(serializer.errors, expected_errors)
+        assert serializer.errors == expected_errors

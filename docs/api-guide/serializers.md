@@ -578,16 +578,6 @@ Alternative representations include serializing using hyperlinks, serializing co
 
 For full details see the [serializer relations][relations] documentation.
 
-## Inheritance of the 'Meta' class
-
-The inner `Meta` class on serializers is not inherited from parent classes by default. This is the same behavior as with Django's `Model` and `ModelForm` classes. If you want the `Meta` class to inherit from a parent class you must do so explicitly. For example:
-
-    class AccountSerializer(MyBaseSerializer):
-        class Meta(MyBaseSerializer.Meta):
-            model = Account
-
-Typically we would recommend *not* using inheritance on inner Meta classes, but instead declaring all options explicitly.
-
 ## Customizing field mappings
 
 The ModelSerializer class also exposes an API that you can override in order to alter how serializer fields are automatically determined when instantiating the serializer.
@@ -710,7 +700,7 @@ You can override a URL field view name and lookup field by using either, or both
             model = Account
             fields = ('account_url', 'account_name', 'users', 'created')
             extra_kwargs = {
-                'url': {'view_name': 'accounts', 'lookup_field': 'account_name'}
+                'url': {'view_name': 'accounts', 'lookup_field': 'account_name'},
                 'users': {'lookup_field': 'username'}
             }
 
@@ -1025,6 +1015,40 @@ If any of the validation fails, then the method should raise a `serializers.Vali
 
 The `data` argument passed to this method will normally be the value of `request.data`, so the datatype it provides will depend on the parser classes you have configured for your API.
 
+## Serializer Inheritance
+
+Similar to Django forms, you can extend and reuse serializers through inheritance. This allows you to declare a common set of fields or methods on a parent class that can then be used in a number of serializers. For example,
+
+    class MyBaseSerializer(Serializer):
+        my_field = serializers.CharField()
+
+        def validate_my_field(self):
+            ...
+
+    class MySerializer(MyBaseSerializer):
+        ...
+
+Like Django's `Model` and `ModelForm` classes, the inner `Meta` class on serializers does not implicitly inherit from it's parents' inner `Meta` classes. If you want the `Meta` class to inherit from a parent class you must do so explicitly. For example:
+
+    class AccountSerializer(MyBaseSerializer):
+        class Meta(MyBaseSerializer.Meta):
+            model = Account
+
+Typically we would recommend *not* using inheritance on inner Meta classes, but instead declaring all options explicitly.
+
+Additionally, the following caveats apply to serializer inheritance:
+
+* Normal Python name resolution rules apply. If you have multiple base classes that declare a `Meta` inner class, only the first one will be used. This means the child’s `Meta`, if it exists, otherwise the `Meta` of the first parent, etc.
+* It’s possible to declaratively remove a `Field` inherited from a parent class by setting the name to be `None` on the subclass.
+
+        class MyBaseSerializer(ModelSerializer):
+            my_field = serializers.CharField()
+
+        class MySerializer(MyBaseSerializer):
+            my_field = None
+
+    However, you can only use this technique to opt out from a field defined declaratively by a parent class; it won’t prevent the `ModelSerializer` from generating a default field. To opt-out from default fields, see [Specifying which fields to include](#specifying-which-fields-to-include).
+
 ## Dynamically modifying fields
 
 Once a serializer has been initialized, the dictionary of fields that are set on the serializer may be accessed using the `.fields` attribute.  Accessing and modifying this attribute allows you to dynamically modify the serializer.
@@ -1076,8 +1100,6 @@ This API included the `.get_field()`, `.get_pk_field()` and other methods.
 
 Because the serializers have been fundamentally redesigned with 3.0 this API no longer exists. You can still modify the fields that get created but you'll need to refer to the source code, and be aware that if the changes you make are against private bits of API then they may be subject to change.
 
-A new interface for controlling this behavior is currently planned for REST framework 3.1.
-
 ---
 
 # Third party packages
@@ -1112,13 +1134,36 @@ The [dynamic-rest][dynamic-rest] package extends the ModelSerializer and ModelVi
 
 The [drf-dynamic-fields][drf-dynamic-fields] package provides a mixin to dynamically limit the fields per serializer to a subset specified by an URL parameter.
 
+## DRF FlexFields
+
+The [drf-flex-fields][drf-flex-fields] package extends the ModelSerializer and ModelViewSet to provide commonly used functionality for dynamically setting fields and expanding primitive fields to nested models, both from URL parameters and your serializer class definitions.
+
+## Serializer Extensions
+
+The [django-rest-framework-serializer-extensions][drf-serializer-extensions]
+package provides a collection of tools to DRY up your serializers, by allowing
+fields to be defined on a per-view/request basis. Fields can be whitelisted,
+blacklisted and child serializers can be optionally expanded.
+
 ## HTML JSON Forms
 
 The [html-json-forms][html-json-forms] package provides an algorithm and serializer for processing `<form>` submissions per the (inactive) [HTML JSON Form specification][json-form-spec].  The serializer facilitates processing of arbitrarily nested JSON structures within HTML.  For example, `<input name="items[0][id]" value="5">` will be interpreted as `{"items": [{"id": "5"}]}`.
 
+## DRF-Base64
+
+[DRF-Base64][drf-base64] provides a set of field and model serializers that handles the upload of base64-encoded files.
+
+## QueryFields
+
+[djangorestframework-queryfields][djangorestframework-queryfields] allows API clients to specify which fields will be sent in the response via inclusion/exclusion query parameters.  
+
+## DRF Writable Nested
+
+The [drf-writable-nested][drf-writable-nested] package provides writable nested model serializer which allows to create/update models with nested related data.
+
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
-[model-managers]: https://docs.djangoproject.com/en/dev/topics/db/managers/
+[model-managers]: https://docs.djangoproject.com/en/stable/topics/db/managers/
 [encapsulation-blogpost]: http://www.dabapps.com/blog/django-models-and-encapsulation/
 [django-rest-marshmallow]: http://tomchristie.github.io/django-rest-marshmallow/
 [marshmallow]: https://marshmallow.readthedocs.io/en/latest/
@@ -1129,5 +1174,10 @@ The [html-json-forms][html-json-forms] package provides an algorithm and seriali
 [django-hstore]: https://github.com/djangonauts/django-hstore
 [dynamic-rest]: https://github.com/AltSchool/dynamic-rest
 [html-json-forms]: https://github.com/wq/html-json-forms
+[drf-flex-fields]: https://github.com/rsinger86/drf-flex-fields
 [json-form-spec]: https://www.w3.org/TR/html-json-forms/
 [drf-dynamic-fields]: https://github.com/dbrgn/drf-dynamic-fields
+[drf-base64]: https://bitbucket.org/levit_scs/drf_base64
+[drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
+[djangorestframework-queryfields]: http://djangorestframework-queryfields.readthedocs.io/
+[drf-writable-nested]: http://github.com/Brogency/drf-writable-nested

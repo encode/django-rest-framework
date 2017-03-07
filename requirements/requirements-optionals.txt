@@ -2,4 +2,5 @@
 markdown==2.6.4
 django-guardian==1.4.6
 django-filter==1.0.0
-coreapi==2.0.8
+coreapi==2.2.4
+coreschema==0.0.4

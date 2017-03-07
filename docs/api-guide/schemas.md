@@ -145,6 +145,18 @@ May be used to pass a canonical URL for the schema.
         url='https://www.example.org/api/'
     )
 
+#### `urlconf`
+
+A string representing the import path to the URL conf that you want
+to generate an API schema for. This defaults to the value of Django's
+ROOT_URLCONF setting.
+
+    schema_view = get_schema_view(
+        title='Server Monitoring API',
+        url='https://www.example.org/api/',
+        urlconf='myproject.urls'
+    )
+
 #### `renderer_classes`
 
 May be used to pass the set of renderer classes that can be used to render the API root endpoint.
@@ -281,8 +293,8 @@ A generic view with sections in the class docstring, using single-line style.
 
     class UserList(generics.ListCreateAPIView):
         """
-        get: Create a new user.
-        post: List all the users.
+        get: List all the users.
+        post: Create a new user.
         """
         queryset = User.objects.all()
         serializer_class = UserSerializer
@@ -541,5 +553,5 @@ A short description of the meaning and intended usage of the input field.
 [open-api]: https://openapis.org/
 [json-hyperschema]: http://json-schema.org/latest/json-schema-hypermedia.html
 [api-blueprint]: https://apiblueprint.org/
-[static-files]: https://docs.djangoproject.com/en/dev/howto/static-files/
-[named-arguments]: https://docs.djangoproject.com/en/dev/topics/http/urls/#named-groups
+[static-files]: https://docs.djangoproject.com/en/stable/howto/static-files/
+[named-arguments]: https://docs.djangoproject.com/en/stable/topics/http/urls/#named-groups
