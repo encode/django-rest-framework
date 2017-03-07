@@ -39,7 +39,7 @@ class CodeNode(template.Node):
 
     def render(self, context):
         text = self.nodelist.render(context)
-        return pygments_highlight(text)
+        return pygments_highlight(text, self.lang, self.style)
 
 
 @register.filter()
