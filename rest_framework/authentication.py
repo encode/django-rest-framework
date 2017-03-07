@@ -37,6 +37,12 @@ class BaseAuthentication(object):
     """
     All authentication classes should extend BaseAuthentication.
     """
+    def user_is_active(self, user):
+        """
+        Returns True if user is active else returns False.
+        Override this if some other field in custom user model determines user's activeness.
+        """
+        return user.is_active
 
     def authenticate(self, request):
         """
@@ -84,13 +90,6 @@ class BasicAuthentication(BaseAuthentication):
 
         userid, password = auth_parts[0], auth_parts[2]
         return self.authenticate_credentials(userid, password)
-
-    def user_is_active(self, user):
-        """
-        Returns True if user is active else returns False.
-        Override this if some other field in custom user model determines user's activeness.
-        """
-        return user.is_active
 
     def authenticate_credentials(self, userid, password):
         """
