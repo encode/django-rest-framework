@@ -85,6 +85,13 @@ class BasicAuthentication(BaseAuthentication):
         userid, password = auth_parts[0], auth_parts[2]
         return self.authenticate_credentials(userid, password)
 
+    def user_is_active(self, user):
+        """
+        Returns True if user is active else returns False.
+        Override this if some other field in custom user model determines user's activeness.
+        """
+        return user.is_active
+
     def authenticate_credentials(self, userid, password):
         """
         Authenticate the userid and password against username and password.
@@ -98,7 +105,7 @@ class BasicAuthentication(BaseAuthentication):
         if user is None:
             raise exceptions.AuthenticationFailed(_('Invalid username/password.'))
 
-        if not user.is_active:
+        if not self.user_is_active(user):
             raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
 
         return (user, None)
@@ -122,7 +129,7 @@ class SessionAuthentication(BaseAuthentication):
         user = getattr(request._request, 'user', None)
 
         # Unauthenticated, CSRF validation not required
-        if not user or not user.is_active:
+        if not user or not self.user_is_active(user):
             return None
 
         self.enforce_csrf(request)
@@ -194,7 +201,7 @@ class TokenAuthentication(BaseAuthentication):
         except model.DoesNotExist:
             raise exceptions.AuthenticationFailed(_('Invalid token.'))
 
-        if not token.user.is_active:
+        if not self.user_is_active(token.user):
             raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
 
         return (token.user, token)
