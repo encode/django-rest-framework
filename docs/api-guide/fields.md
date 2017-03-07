@@ -55,6 +55,8 @@ The `default` is not applied during partial update operations. In the partial up
 
 May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a `set_context` method, that will be called each time before getting the value with the field instance as only argument. This works the same way as for [validators](validators.md#using-set_context).
 
+When serializing the instance, default will be used if the the object attribute or dictionary key is not present in the instance.
+
 Note that setting a `default` value implies that the field is not required. Including both the `default` and `required` keyword arguments is invalid and will raise an error.
 
 ### `source`
