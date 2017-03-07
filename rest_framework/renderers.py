@@ -25,7 +25,7 @@ from django.utils.html import mark_safe
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
     INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi,
-    template_render
+    pygments_css, template_render
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
@@ -802,16 +802,13 @@ class DocumentationRenderer(BaseRenderer):
     charset = 'utf-8'
     template = 'rest_framework/docs/index.html'
     code_style = 'emacs'
+    languages = ['shell', 'javascript', 'python']
 
     def get_context(self, data, request):
-        from pygments.formatters import HtmlFormatter
-        formatter = HtmlFormatter(style=self.code_style)
-        code_style = formatter.get_style_defs('.highlight')
-        langs = ['shell', 'javascript', 'python']
         return {
             'document': data,
-            'langs': langs,
-            'code_style': code_style,
+            'langs': self.languages,
+            'code_style': pygments_css(self.code_style),
             'request': request
         }
 

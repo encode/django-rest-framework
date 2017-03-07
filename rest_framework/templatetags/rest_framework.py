@@ -11,7 +11,7 @@ from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
 
 from rest_framework.compat import (
-    NoReverseMatch, markdown, reverse, template_render
+    NoReverseMatch, markdown, reverse, template_render, pygments_highlight
 )
 from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
@@ -39,14 +39,8 @@ class CodeNode(template.Node):
         self.nodelist = code
 
     def render(self, context):
-        from pygments import highlight
-        from pygments.lexers import get_lexer_by_name
-        from pygments.formatters import HtmlFormatter
-        body = self.nodelist.render(context)
-        lexer = get_lexer_by_name(self.lang, stripall=False)
-        formatter = HtmlFormatter(nowrap=True, style=self.style)
-        code = highlight(body, lexer, formatter)
-        return code
+        text = self.nodelist.render(context)
+        return pygments_highlight(text)
 
 
 @register.filter()
