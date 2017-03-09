@@ -6,9 +6,9 @@
         <ul id="menu-content" class="menu-content collapse out">
             {% for section_key, section in document.data.items %}
             <li data-toggle="collapse" data-target="#{{ section_key }}-dropdown" class="collapsed">
-                <a><i class="fa fa-dot-circle-o fa-lg"></i> {{ section_key }} <span class="arrow"></span></a>
+                <a><i class="fa fa-dot-circle-o fa-lg"></i> {% if section_key %}{{ section_key }}{% else %}API Endpoints{% endif %} <span class="arrow"></span></a>
             </li>
-            <ul class="sub-menu collapse" id="{{ section_key }}-dropdown">
+            <ul class="sub-menu {% if section_key %}collapse{% endif %}" id="{{ section_key }}-dropdown">
                 {% for link_key, link in section.links.items %}
                     <li><a href="#{{ section_key }}-{{ link_key }}">{{ link.title|default:link_key }}</a></li>
                 {% endfor %}
@@ -22,7 +22,7 @@
             </li>
             <ul class="sub-menu collapse out" id="auth-control">
                 <li data-auth="none" {% if not user.is_authenticated %}class="active"{% endif %}><a href="#" data-language="none">none</a></li>
-                <li data-auth="token" data-toggle="modal" data-target="#auth_token_modal"><a href="#">header</a></li>
+                <li data-auth="token" data-toggle="modal" data-target="#auth_token_modal"><a href="#">token</a></li>
                 <li data-auth="basic" data-toggle="modal" data-target="#auth_basic_modal"><a href="#">basic</a></li>
                 <li data-auth="session"  data-toggle="modal" data-target="#auth_session_modal" {% if user.is_authenticated %}class="active"{% endif %}><a href="#">session</a></li>
             </ul>

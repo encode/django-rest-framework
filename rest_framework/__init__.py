@@ -8,10 +8,10 @@ ______ _____ _____ _____    __
 """
 
 __title__ = 'Django REST framework'
-__version__ = '3.5.4'
+__version__ = '3.6.0'
 __author__ = 'Tom Christie'
 __license__ = 'BSD 2-Clause'
-__copyright__ = 'Copyright 2011-2016 Tom Christie'
+__copyright__ = 'Copyright 2011-2017 Tom Christie'
 
 # Version synonym
 VERSION = __version__

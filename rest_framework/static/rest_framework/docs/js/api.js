@@ -1,28 +1,13 @@
-function normalizeHTTPHeader(str) {
-    return (str.charAt(0).toUpperCase() + str.substring(1))
-        .replace( /-(.)/g, function($1) { return $1.toUpperCase(); })
-        .replace( /(Www)/g, function($1) { return 'WWW'; })
-        .replace( /(Xss)/g, function($1) { return 'XSS'; })
-        .replace( /(Md5)/g, function($1) { return 'MD5'; })
+function normalizeHTTPHeader (str) {
+  // Capitalize HTTP headers for display.
+  return (str.charAt(0).toUpperCase() + str.substring(1))
+    .replace(/-(.)/g, function ($1) { return $1.toUpperCase() })
+    .replace(/(Www)/g, function ($1) { return 'WWW' })
+    .replace(/(Xss)/g, function ($1) { return 'XSS' })
+    .replace(/(Md5)/g, function ($1) { return 'MD5' })
 }
 
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-let responseDisplay = 'data';
+let responseDisplay = 'data'
 const coreapi = window.coreapi
 const schema = window.schema
 
@@ -55,28 +40,44 @@ $('form.api-interaction').submit(function(event) {
     for (var [paramKey, paramValue] of formData.entries()) {
         var elem = form.find("[name=" + paramKey + "]")
         var dataType = elem.data('type') || 'string'
-        var dataLocation = elem.data('location')
 
         if (dataType === 'integer' && paramValue) {
-            paramValue = parseInt(paramValue)
+            let value = parseInt(paramValue)
+            if (!isNaN(value)) {
+              params[paramKey] = value
+            }
         } else if (dataType === 'number' && paramValue) {
-            paramValue = parseFloat(paramValue)
+            let value = parseFloat(paramValue)
+            if (!isNaN(value)) {
+              params[paramKey] = value
+            }
         } else if (dataType === 'boolean' && paramValue) {
-            paramValue = {
+            let value = {
                 'true': true,
                 'false': false
             }[paramValue.toLowerCase()]
+            if (value !== undefined) {
+              params[paramKey]
+            }
         } else if (dataType === 'array' && paramValue) {
-            paramValue = JSON.parse(paramValue)
+            try {
+              params[paramKey] = JSON.parse(paramValue)
+            } catch (err) {
+              // Ignore malformed JSON
+            }
+        } else if (dataType === 'object' && paramValue) {
+            try {
+              params[paramKey] = JSON.parse(paramValue)
+            } catch (err) {
+              // Ignore malformed JSON
+            }
+        } else if (dataType === 'string' && paramValue) {
+            params[paramKey] = paramValue
         }
-
-        if (dataLocation === 'query' && !paramValue) {
-            continue
-        }
-        params[paramKey] = paramValue
     }
 
     form.find(":checkbox").each(function( index ) {
+        // Handle unselected checkboxes
         var name = $(this).attr("name");
         if (!params.hasOwnProperty(name)) {
             params[name] = false
@@ -127,22 +128,23 @@ $('form.api-interaction').submit(function(event) {
 
     // Setup authentication options.
     if (window.auth && window.auth.type === 'token') {
-        // Header authentication
-        options.headers = {
-            'Authorization': window.auth.value
-        }
+      // Header authentication
+      options.auth = new coreapi.auth.TokenAuthentication({
+        prefix: window.auth.scheme,
+        token: window.auth.token
+      })
     } else if (window.auth && window.auth.type === 'basic') {
-        // Basic authentication
-        const token = window.auth.username + ':' + window.auth.password
-        const hash = window.btoa(token)
-        options.headers = {
-            'Authorization': 'Basic ' + hash
-        }
+      // Basic authentication
+      options.auth = new coreapi.auth.BasicAuthentication({
+        username: window.auth.username,
+        password: window.auth.password
+      })
     } else if (window.auth && window.auth.type === 'session') {
-        // Session authentication
-        options.csrf = {
-            'X-CSRFToken': getCookie('csrftoken')
-        }
+      // Session authentication
+      options.auth = new coreapi.auth.SessionAuthentication({
+        csrfCookieName: 'csrftoken',
+        csrfHeaderName: 'X-CSRFToken'
+      })
     }
 
     const client = new coreapi.Client(options)
@@ -202,12 +204,14 @@ $('#auth-control').find("[data-auth='none']").click(function (event) {
 $('form.authentication-token-form').submit(function(event) {
     event.preventDefault();
     const form = $(this).closest("form");
-    const value = form.find('input').val();
+    const scheme = form.find('input#scheme').val();
+    const token = form.find('input#token').val();
     window.auth = {
         'type': 'token',
-        'value': value,
+        'scheme': scheme,
+        'token': token
     };
-    $('#selected-authentication').text('header');
+    $('#selected-authentication').text('token');
     $('#auth-control').children().removeClass('active');
     $('#auth-control').find("[data-auth='token']").addClass('active');
     $('#auth_token_modal').modal('hide');
@@ -222,7 +226,7 @@ $('form.authentication-basic-form').submit(function(event) {
     window.auth = {
         'type': 'basic',
         'username': username,
-        'password': password,
+        'password': password
     };
     $('#selected-authentication').text('basic');
     $('#auth-control').children().removeClass('active');

@@ -320,9 +320,9 @@ class DefaultRouter(SimpleRouter):
     def __init__(self, *args, **kwargs):
         if 'schema_title' in kwargs:
             warnings.warn(
-                "Including a schema directly via a router is now pending "
-                "deprecation. Use `get_schema_view()` instead.",
-                PendingDeprecationWarning
+                "Including a schema directly via a router is now deprecated. "
+                "Use `get_schema_view()` instead.",
+                DeprecationWarning
             )
         if 'schema_renderers' in kwargs:
             assert 'schema_title' in kwargs, 'Missing "schema_title" argument.'
@@ -331,13 +331,6 @@ class DefaultRouter(SimpleRouter):
         self.schema_title = kwargs.pop('schema_title', None)
         self.schema_url = kwargs.pop('schema_url', None)
         self.schema_renderers = kwargs.pop('schema_renderers', self.default_schema_renderers)
-        if self.default_schema_renderers:
-            warnings.warn(
-                "The 'DefaultRouter.default_schema_renderers' is pending "
-                "deprecation. You should override "
-                "'DefaultRouter.APISchemaView' instead.",
-                PendingDeprecationWarning
-            )
 
         if 'root_renderers' in kwargs:
             self.root_renderers = kwargs.pop('root_renderers')
