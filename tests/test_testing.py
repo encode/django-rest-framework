@@ -200,7 +200,7 @@ class TestAPITestClient(TestCase):
             data=None,
             content_type='application/json'
         )
-        assert response.status_code == 200 == response.content
+        assert response.status_code == 200
         assert response.data == {"flag": True}
 
 
