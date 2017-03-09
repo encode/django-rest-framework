@@ -16,6 +16,10 @@ The built-in API documentation includes:
 
 ### Installation
 
+The `coreapi` library is required as a dependancy for the API docs. Make sure
+to install the latest version. The `pygments` and `markdown` libraries
+are optional but recommended.
+
 To install the API documentation, you'll need to include it in your projects URLconf:
 
     from rest_framework.documentation import include_docs_urls
