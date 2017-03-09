@@ -40,28 +40,44 @@ $('form.api-interaction').submit(function(event) {
     for (var [paramKey, paramValue] of formData.entries()) {
         var elem = form.find("[name=" + paramKey + "]")
         var dataType = elem.data('type') || 'string'
-        var dataLocation = elem.data('location')
 
         if (dataType === 'integer' && paramValue) {
-            paramValue = parseInt(paramValue)
+            let value = parseInt(paramValue)
+            if (!isNaN(value)) {
+              params[paramKey] = value
+            }
         } else if (dataType === 'number' && paramValue) {
-            paramValue = parseFloat(paramValue)
+            let value = parseFloat(paramValue)
+            if (!isNaN(value)) {
+              params[paramKey] = value
+            }
         } else if (dataType === 'boolean' && paramValue) {
-            paramValue = {
+            let value = {
                 'true': true,
                 'false': false
             }[paramValue.toLowerCase()]
+            if (value !== undefined) {
+              params[paramKey]
+            }
         } else if (dataType === 'array' && paramValue) {
-            paramValue = JSON.parse(paramValue)
+            try {
+              params[paramKey] = JSON.parse(paramValue)
+            } catch (err) {
+              // Ignore malformed JSON
+            }
+        } else if (dataType === 'object' && paramValue) {
+            try {
+              params[paramKey] = JSON.parse(paramValue)
+            } catch (err) {
+              // Ignore malformed JSON
+            }
+        } else if (dataType === 'string' && paramValue) {
+            params[paramKey] = paramValue
         }
-
-        if (dataLocation === 'query' && !paramValue) {
-            continue
-        }
-        params[paramKey] = paramValue
     }
 
     form.find(":checkbox").each(function( index ) {
+        // Handle unselected checkboxes
         var name = $(this).attr("name");
         if (!params.hasOwnProperty(name)) {
             params[name] = false
