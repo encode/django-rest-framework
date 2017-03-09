@@ -443,7 +443,9 @@ class Field(object):
         try:
             return get_attribute(instance, self.source_attrs)
         except (KeyError, AttributeError) as exc:
-            if not self.required and self.default is empty:
+            if self.default is not empty:
+                return self.get_default()
+            if not self.required:
                 raise SkipField()
             msg = (
                 'Got {exc_type} when attempting to get a value for field '
