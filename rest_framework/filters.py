@@ -45,9 +45,9 @@ if django_filters:
     class FilterSet(DFFilterSet):
         def __init__(self, *args, **kwargs):
             warnings.warn(
-                "The built in 'rest_framework.filters.FilterSet' is pending deprecation. "
+                "The built in 'rest_framework.filters.FilterSet' is deprecated. "
                 "You should use 'django_filters.rest_framework.FilterSet' instead.",
-                PendingDeprecationWarning
+                DeprecationWarning
             )
             return super(FilterSet, self).__init__(*args, **kwargs)
 else:
@@ -64,9 +64,9 @@ class DjangoFilterBackend(BaseFilterBackend):
         assert django_filters.VERSION >= (0, 15, 3), 'django-filter 0.15.3 and above is required'
 
         warnings.warn(
-            "The built in 'rest_framework.filters.DjangoFilterBackend' is pending deprecation. "
+            "The built in 'rest_framework.filters.DjangoFilterBackend' is deprecated. "
             "You should use 'django_filters.rest_framework.DjangoFilterBackend' instead.",
-            PendingDeprecationWarning
+            DeprecationWarning
         )
 
         from django_filters.rest_framework import DjangoFilterBackend
