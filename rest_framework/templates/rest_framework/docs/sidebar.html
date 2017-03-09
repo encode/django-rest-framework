@@ -22,7 +22,7 @@
             </li>
             <ul class="sub-menu collapse out" id="auth-control">
                 <li data-auth="none" {% if not user.is_authenticated %}class="active"{% endif %}><a href="#" data-language="none">none</a></li>
-                <li data-auth="token" data-toggle="modal" data-target="#auth_token_modal"><a href="#">header</a></li>
+                <li data-auth="token" data-toggle="modal" data-target="#auth_token_modal"><a href="#">token</a></li>
                 <li data-auth="basic" data-toggle="modal" data-target="#auth_basic_modal"><a href="#">basic</a></li>
                 <li data-auth="session"  data-toggle="modal" data-target="#auth_session_modal" {% if user.is_authenticated %}class="active"{% endif %}><a href="#">session</a></li>
             </ul>
