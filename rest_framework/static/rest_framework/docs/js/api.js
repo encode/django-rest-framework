@@ -211,7 +211,7 @@ $('form.authentication-token-form').submit(function(event) {
         'scheme': scheme,
         'token': token
     };
-    $('#selected-authentication').text('header');
+    $('#selected-authentication').text('token');
     $('#auth-control').children().removeClass('active');
     $('#auth-control').find("[data-auth='token']").addClass('active');
     $('#auth_token_modal').modal('hide');
