@@ -287,6 +287,10 @@
                   </li>
                   
                   <li >
+                    <a href="../jobs/">Jobs</a>
+                  </li>
+                  
+                  <li >
                     <a href="../3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
@@ -311,6 +315,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.6-announcement/">3.6 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -324,10 +332,6 @@
                   
                   <li >
                     <a href="../release-notes/">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../jobs/">Jobs</a>
                   </li>
                   
                 </ul>
@@ -419,11 +423,41 @@
                     </li>
                   
                     <li>
+                      <a href="#authentication">Authentication</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#interacting-with-the-api">Interacting with the API</a>
+                    </li>
+                  
+                    <li>
                       <a href="#codecs_1">Codecs</a>
                     </li>
                   
                     <li>
                       <a href="#transports">Transports</a>
+                    </li>
+                  
+                
+                  <li class="main">
+                    <a href="#javascript-client-library">JavaScript Client Library</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#installing-the-javascript-client">Installing the JavaScript client</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#instantiating-a-client">Instantiating a client</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#using-the-client">Using the client</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#installation-with-node">Installation with node</a>
                     </li>
                   
                 
@@ -628,8 +662,48 @@ client = coreapi.Client()
 <pre><code>schema = client.get('https://api.example.org/')
 </code></pre>
 <p>The object returned from this call will be a <code>Document</code> instance, which is
-the internal representation of the interface that we are interacting with.</p>
-<p>Now that we have our schema <code>Document</code>, we can now start to interact with the API:</p>
+a representation of the API schema.</p>
+<h2 id="authentication"><a class="toclink" href="#authentication">Authentication</a></h2>
+<p>Typically you'll also want to provide some authentication credentials when
+instantiating the client.</p>
+<h4 id="token-authentication"><a class="toclink" href="#token-authentication">Token authentication</a></h4>
+<p>The <code>TokenAuthentication</code> class can be used to support REST framework's built-in
+<code>TokenAuthentication</code>, as well as OAuth and JWT schemes.</p>
+<pre><code>auth = coreapi.auth.TokenAuthentication(
+    scheme='JWT'
+    token='&lt;token&gt;'
+)
+client = coreapi.Client(auth=auth)
+</code></pre>
+<p>When using TokenAuthentication you'll probably need to implement a login flow
+using the CoreAPI client.</p>
+<p>A suggested pattern for this would be to initially make an unauthenticated client
+request to an "obtain token" endpoint</p>
+<p>For example, using the "Django REST framework JWT" package</p>
+<pre><code>client = coreapi.Client()
+schema = client.get('https://api.example.org/')
+
+action = ['api-token-auth', 'obtain-token']
+params = {username: "example", email: "example@example.com"}
+result = client.action(schema, action, params)
+
+auth = coreapi.auth.TokenAuthentication(
+    scheme='JWT',
+    token=result['token']
+)
+client = coreapi.Client(auth=auth)
+</code></pre>
+<h4 id="basic-authentication"><a class="toclink" href="#basic-authentication">Basic authentication</a></h4>
+<p>The <code>BasicAuthentication</code> class can be used to support HTTP Basic Authentication.</p>
+<pre><code>auth = coreapi.auth.BasicAuthentication(
+    username='&lt;username&gt;',
+    password='&lt;password&gt;'
+)
+client = coreapi.Client(auth=auth)
+</code></pre>
+<h2 id="interacting-with-the-api"><a class="toclink" href="#interacting-with-the-api">Interacting with the API</a></h2>
+<p>Now that we have a client and have fetched our schema <code>Document</code>, we can now
+start to interact with the API:</p>
 <pre><code>users = client.action(schema, ['users', 'list'])
 </code></pre>
 <p>Some endpoints may include named parameters, which might be either optional or required:</p>
@@ -674,7 +748,7 @@ support.</p>
 <p>Currently the <code>coreapi</code> library only includes an HTTP/HTTPS transport, but
 other protocols can also be supported.</p>
 <h4 id="configuring-transports"><a class="toclink" href="#configuring-transports">Configuring transports</a></h4>
-<p>The behaviour of the network layer can be customized by configuring the
+<p>The behavior of the network layer can be customized by configuring the
 transports that the client is instantiated with.</p>
 <pre><code>import requests
 from coreapi import transports, Client
@@ -686,6 +760,130 @@ client = Client(transports=transports)
 <p>More complex customizations can also be achieved, for example modifying the
 underlying <code>requests.Session</code> instance to <a href="http://docs.python-requests.org/en/master/user/advanced/#transport-adapters">attach transport adaptors</a>
 that modify the outgoing requests.</p>
+<hr />
+<h1 id="javascript-client-library"><a class="toclink" href="#javascript-client-library">JavaScript Client Library</a></h1>
+<p>The JavaScript client library allows you to interact with your API either from a browser, or using node.</p>
+<h2 id="installing-the-javascript-client"><a class="toclink" href="#installing-the-javascript-client">Installing the JavaScript client</a></h2>
+<p>There are two separate JavaScript resources that you need to include in your HTML pages in order to use the JavaScript client library. These are a static <code>coreapi.js</code> file, which contains the code for the dynamic client library, and a templated <code>schema.js</code> resource, which exposes your API schema.</p>
+<p>First, install the API documentation views. These will include the schema resource that'll allow you to load the schema directly from an HTML page, without having to make an asynchronous AJAX call.</p>
+<pre><code>from rest_framework.documentation import include_docs_urls
+
+urlpatterns = [
+    ...
+    url(r'^docs/', include_docs_urls(title='My API service'))
+]
+</code></pre>
+<p>Once the API documentation URLs are installed, you'll be able to include both the required JavaScript resources. Note that the ordering of these two lines is important, as the schema loading requires CoreAPI to already be installed.</p>
+<pre><code>&lt;!--
+    Load the CoreAPI library and the API schema.
+
+    /static/rest_framework/js/coreapi-0.1.0.js
+    /docs/schema.js
+--&gt;
+{% load staticfiles %}
+&lt;script src="{% static 'rest_framework/js/coreapi-0.1.0.js' %}"&gt;&lt;/script&gt;
+&lt;script src="{% url 'api-docs:schema-js' %}"&gt;&lt;/script&gt;
+</code></pre>
+<p>The <code>coreapi</code> library, and the <code>schema</code> object will now both be available on the <code>window</code> instance.</p>
+<pre><code>const coreapi = window.coreapi
+const schema = window.schema
+</code></pre>
+<h2 id="instantiating-a-client"><a class="toclink" href="#instantiating-a-client">Instantiating a client</a></h2>
+<p>In order to interact with the API you'll need a client instance.</p>
+<pre><code>var client = coreapi.Client()
+</code></pre>
+<p>Typically you'll also want to provide some authentication credentials when
+instantiating the client.</p>
+<h4 id="session-authentication"><a class="toclink" href="#session-authentication">Session authentication</a></h4>
+<p>The <code>SessionAuthentication</code> class allows session cookies to provide the user
+authentication. You'll want to provide a standard HTML login flow, to allow
+the user to login, and then instantiate a client using session authentication:</p>
+<pre><code>let auth = coreapi.auth.SessionAuthentication({
+    csrfCookieName: 'csrftoken',
+    csrfHeaderName: 'X-CSRFToken'
+})
+let client = coreapi.Client({auth: auth})
+</code></pre>
+<p>The authentication scheme will handle including a CSRF header in any outgoing
+requests for unsafe HTTP methods.</p>
+<h4 id="token-authentication_1"><a class="toclink" href="#token-authentication_1">Token authentication</a></h4>
+<p>The <code>TokenAuthentication</code> class can be used to support REST framework's built-in
+<code>TokenAuthentication</code>, as well as OAuth and JWT schemes.</p>
+<pre><code>let auth = coreapi.auth.TokenAuthentication({
+    scheme: 'JWT'
+    token: '&lt;token&gt;'
+})
+let client = coreapi.Client({auth: auth})
+</code></pre>
+<p>When using TokenAuthentication you'll probably need to implement a login flow
+using the CoreAPI client.</p>
+<p>A suggested pattern for this would be to initially make an unauthenticated client
+request to an "obtain token" endpoint</p>
+<p>For example, using the "Django REST framework JWT" package</p>
+<pre><code>// Setup some globally accessible state
+window.client = coreapi.Client()
+window.loggedIn = false
+
+function loginUser(username, password) {
+    let action = ["api-token-auth", "obtain-token"]
+    let params = {username: "example", email: "example@example.com"}
+    client.action(schema, action, params).then(function(result) {
+        // On success, instantiate an authenticated client.
+        let auth = window.coreapi.auth.TokenAuthentication({
+            scheme: 'JWT',
+            token: result['token']
+        })
+        window.client = coreapi.Client({auth: auth})
+        window.loggedIn = true
+    }).catch(function (error) {
+        // Handle error case where eg. user provides incorrect credentials.
+    })
+}
+</code></pre>
+<h4 id="basic-authentication_1"><a class="toclink" href="#basic-authentication_1">Basic authentication</a></h4>
+<p>The <code>BasicAuthentication</code> class can be used to support HTTP Basic Authentication.</p>
+<pre><code>let auth = coreapi.auth.BasicAuthentication({
+    username: '&lt;username&gt;',
+    password: '&lt;password&gt;'
+})
+let client = coreapi.Client({auth: auth})
+</code></pre>
+<h2 id="using-the-client"><a class="toclink" href="#using-the-client">Using the client</a></h2>
+<p>Making requests:</p>
+<pre><code>let action = ["users", "list"]
+client.action(schema, action).then(function(result) {
+    // Return value is in 'result'
+})
+</code></pre>
+<p>Including parameters:</p>
+<pre><code>let action = ["users", "create"]
+let params = {username: "example", email: "example@example.com"}
+client.action(schema, action, params).then(function(result) {
+    // Return value is in 'result'
+})
+</code></pre>
+<p>Handling errors:</p>
+<pre><code>client.action(schema, action, params).then(function(result) {
+    // Return value is in 'result'
+}).catch(function (error) {
+    // Error value is in 'error'
+})
+</code></pre>
+<h2 id="installation-with-node"><a class="toclink" href="#installation-with-node">Installation with node</a></h2>
+<p>The coreapi package is available on NPM.</p>
+<pre><code>$ npm install coreapi
+$ node
+const coreapi = require('coreapi')
+</code></pre>
+<p>You'll either want to include the API schema in your codebase directly, by copying it from the <code>schema.js</code> resource, or else load the schema asynchronously. For example:</p>
+<pre><code>let client = new coreapi.Client()
+let schema = null
+client.get("https://api.example.org/").then(function(data) {
+    // Load a CoreJSON API schema.
+    schema = data
+    console.log('schema loaded')
+})
+</code></pre>
             
 
           </div> <!--/span-->

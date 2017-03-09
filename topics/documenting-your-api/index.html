@@ -287,6 +287,10 @@
                   </li>
                   
                   <li >
+                    <a href="../jobs/">Jobs</a>
+                  </li>
+                  
+                  <li >
                     <a href="../3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
@@ -311,6 +315,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.6-announcement/">3.6 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -324,10 +332,6 @@
                   
                   <li >
                     <a href="../release-notes/">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="../jobs/">Jobs</a>
                   </li>
                   
                 </ul>
@@ -379,7 +383,11 @@
 
                   
                     <li>
-                      <a href="#endpoint-documentation">Endpoint documentation</a>
+                      <a href="#built-in-api-documentation">Built-in API documentation</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#third-party-packages">Third party packages</a>
                     </li>
                   
                     <li>
@@ -410,10 +418,65 @@
 <p>A REST API should spend almost all of its descriptive effort in defining the media type(s) used for representing resources and driving application state.</p>
 <p>&mdash; Roy Fielding, <a href="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">REST APIs must be hypertext driven</a></p>
 </blockquote>
-<p>There are a variety of approaches to API documentation.  This document introduces a few of the various tools and options you might choose from.  The approaches should not be considered exclusive - you may want to provide more than one documentation style for you API, such as a self describing API that also includes static documentation of the various API endpoints.</p>
-<h2 id="endpoint-documentation"><a class="toclink" href="#endpoint-documentation">Endpoint documentation</a></h2>
-<p>The most common way to document Web APIs today is to produce documentation that lists the API endpoints verbatim, and describes the allowable operations on each.  There are various tools that allow you to do this in an automated or semi-automated way.</p>
+<p>REST framework provides built-in support for API documentation. There are also a number of great third-party documentation tools available.</p>
+<h2 id="built-in-api-documentation"><a class="toclink" href="#built-in-api-documentation">Built-in API documentation</a></h2>
+<p>The built-in API documentation includes:</p>
+<ul>
+<li>Documentation of API endpoints.</li>
+<li>Automatically generated code samples for each of the available API client libraries.</li>
+<li>Support for API interaction.</li>
+</ul>
+<h3 id="installation"><a class="toclink" href="#installation">Installation</a></h3>
+<p>The <code>coreapi</code> library is required as a dependancy for the API docs. Make sure
+to install the latest version. The <code>pygments</code> and <code>markdown</code> libraries
+are optional but recommended.</p>
+<p>To install the API documentation, you'll need to include it in your projects URLconf:</p>
+<pre><code>from rest_framework.documentation import include_docs_urls
+
+urlpatterns = [
+    ...
+    url(r'^docs/', include_docs_urls(title='My API title'))
+]
+</code></pre>
+<p>This will include two different views:</p>
+<ul>
+<li><code>/docs/</code> - The documentation page itself.</li>
+<li><code>/docs/schema.js</code> - A JavaScript resource that exposes the API schema.</li>
+</ul>
+<h3 id="documenting-your-views"><a class="toclink" href="#documenting-your-views">Documenting your views</a></h3>
+<p>You can document your views by including docstrings that describe each of the available actions.
+For example:</p>
+<pre><code>class UserList(generics.ListAPIView):
+    """
+    Return a list of all the existing users.
+    """"
+</code></pre>
+<p>If a view supports multiple methods, you should split your documentation using <code>method:</code> style delimiters.</p>
+<pre><code>class UserList(generics.ListCreateAPIView):
+    """
+    get:
+    Return a list of all the existing users.
+
+    post:
+    Create a new user instance.
+    """
+</code></pre>
+<p>When using viewsets, you should use the relevant action names as delimiters.</p>
+<pre><code>class UserViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+    Return the given user.
+
+    list:
+    Return a list of all the existing users.
+
+    create:
+    Create a new user instance.
+    """
+</code></pre>
 <hr />
+<h2 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h2>
+<p>There are a number of mature third-party packages for providing API documentation.</p>
 <h4 id="drf-docs"><a class="toclink" href="#drf-docs">DRF Docs</a></h4>
 <p><a href="https://github.com/ekonstantinidis/django-rest-framework-docs">DRF Docs</a> allows you to document Web APIs made with Django REST Framework and it is authored by Emmanouil Konstantinidis. It's made to work out of the box and its setup should not take more than a couple of minutes. Complete documentation can be found on the <a href="http://www.drfdocs.com/">website</a> while there is also a <a href="http://demo.drfdocs.com/">demo</a> available for people to see what it looks like. <strong>Live API Endpoints</strong> allow you to utilize the endpoints from within the documentation in a neat way.</p>
 <p>Features include customizing the template with your branding, settings for hiding the docs depending on the environment and more.</p>
@@ -474,7 +537,7 @@
     [ref]: http://example.com/activating-accounts
     """
 </code></pre>
-<p>Note that when using viewsets the basic docstring is used for all generated views.  To provide descriptions for each view, such as for the the list and retrieve views, use docstring sections as described in <a href="../api-guide/schemas/#examples">Schemas as documentation: Examples</a>.</p>
+<p>Note that when using viewsets the basic docstring is used for all generated views.  To provide descriptions for each view, such as for the the list and retrieve views, use docstring sections as described in <a href="../../api-guide/schemas/#examples">Schemas as documentation: Examples</a>.</p>
 <h4 id="the-options-method"><a class="toclink" href="#the-options-method">The <code>OPTIONS</code> method</a></h4>
 <p>REST framework APIs also support programmatically accessible descriptions, using the <code>OPTIONS</code> HTTP method.  A view will respond to an <code>OPTIONS</code> request with metadata including the name, description, and the various media types it accepts and responds with.</p>
 <p>When using the generic views, any <code>OPTIONS</code> requests will additionally respond with metadata regarding any <code>POST</code> or <code>PUT</code> actions available, describing which fields are on the serializer.</p>
