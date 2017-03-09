@@ -249,6 +249,7 @@ try:
         return md.convert(text)
 except ImportError:
     apply_markdown = None
+    markdown = None
 
 
 try:
