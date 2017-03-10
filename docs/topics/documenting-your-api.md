@@ -4,13 +4,76 @@
 >
 > &mdash; Roy Fielding, [REST APIs must be hypertext driven][cite]
 
-There are a variety of approaches to API documentation.  This document introduces a few of the various tools and options you might choose from.  The approaches should not be considered exclusive - you may want to provide more than one documentation style for you API, such as a self describing API that also includes static documentation of the various API endpoints.
+REST framework provides built-in support for API documentation. There are also a number of great third-party documentation tools available.
 
-## Endpoint documentation
+## Built-in API documentation
 
-The most common way to document Web APIs today is to produce documentation that lists the API endpoints verbatim, and describes the allowable operations on each.  There are various tools that allow you to do this in an automated or semi-automated way.
+The built-in API documentation includes:
+
+* Documentation of API endpoints.
+* Automatically generated code samples for each of the available API client libraries.
+* Support for API interaction.
+
+### Installation
+
+The `coreapi` library is required as a dependancy for the API docs. Make sure
+to install the latest version. The `pygments` and `markdown` libraries
+are optional but recommended.
+
+To install the API documentation, you'll need to include it in your projects URLconf:
+
+    from rest_framework.documentation import include_docs_urls
+
+    urlpatterns = [
+        ...
+        url(r'^docs/', include_docs_urls(title='My API title'))
+    ]
+
+This will include two different views:
+
+  * `/docs/` - The documentation page itself.
+  * `/docs/schema.js` - A JavaScript resource that exposes the API schema.
+
+### Documenting your views
+
+You can document your views by including docstrings that describe each of the available actions.
+For example:
+
+    class UserList(generics.ListAPIView):
+        """
+        Return a list of all the existing users.
+        """"
+
+If a view supports multiple methods, you should split your documentation using `method:` style delimiters.
+
+    class UserList(generics.ListCreateAPIView):
+        """
+        get:
+        Return a list of all the existing users.
+
+        post:
+        Create a new user instance.
+        """
+
+When using viewsets, you should use the relevant action names as delimiters.
+
+    class UserViewSet(viewsets.ModelViewSet):
+        """
+        retrieve:
+        Return the given user.
+
+        list:
+        Return a list of all the existing users.
+
+        create:
+        Create a new user instance.
+        """
 
 ---
+
+## Third party packages
+
+There are a number of mature third-party packages for providing API documentation.
 
 #### DRF Docs
 

@@ -1,10 +1,10 @@
 {% load rest_framework %}
 <table class="table table-striped">
   <tbody>
-    {% for key, value in value.items %}
+    {% for k, v in value|items %}
       <tr>
-        <th>{{ key|format_value }}</th>
-        <td>{{ value|format_value }}</td>
+        <th>{{ k|format_value }}</th>
+        <td>{{ v|format_value }}</td>
       </tr>
     {% endfor %}
   </tbody>

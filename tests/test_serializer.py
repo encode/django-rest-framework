@@ -372,36 +372,44 @@ class TestNotRequiredOutput:
         serializer.save()
         assert serializer.data == {'included': 'abc'}
 
-    def test_default_required_output_for_dict(self):
-        """
-        'default="something"' should require dictionary key.
 
-        We need to handle this as the field will have an implicit
-        'required=False', but it should still have a value.
-        """
+class TestDefaultOutput:
+    def setup(self):
         class ExampleSerializer(serializers.Serializer):
-            omitted = serializers.CharField(default='abc')
-            included = serializers.CharField()
+            has_default = serializers.CharField(default='x')
+            has_default_callable = serializers.CharField(default=lambda: 'y')
+            no_default = serializers.CharField()
+        self.Serializer = ExampleSerializer
 
-        serializer = ExampleSerializer({'included': 'abc'})
-        with pytest.raises(KeyError):
-            serializer.data
-
-    def test_default_required_output_for_object(self):
+    def test_default_used_for_dict(self):
         """
-        'default="something"' should require object attribute.
-
-        We need to handle this as the field will have an implicit
-        'required=False', but it should still have a value.
+        'default="something"' should be used if dictionary key is missing from input.
         """
-        class ExampleSerializer(serializers.Serializer):
-            omitted = serializers.CharField(default='abc')
-            included = serializers.CharField()
+        serializer = self.Serializer({'no_default': 'abc'})
+        assert serializer.data == {'has_default': 'x', 'has_default_callable': 'y', 'no_default': 'abc'}
 
-        instance = MockObject(included='abc')
-        serializer = ExampleSerializer(instance)
-        with pytest.raises(AttributeError):
-            serializer.data
+    def test_default_used_for_object(self):
+        """
+        'default="something"' should be used if object attribute is missing from input.
+        """
+        instance = MockObject(no_default='abc')
+        serializer = self.Serializer(instance)
+        assert serializer.data == {'has_default': 'x', 'has_default_callable': 'y', 'no_default': 'abc'}
+
+    def test_default_not_used_when_in_dict(self):
+        """
+        'default="something"' should not be used if dictionary key is present in input.
+        """
+        serializer = self.Serializer({'has_default': 'def', 'has_default_callable': 'ghi', 'no_default': 'abc'})
+        assert serializer.data == {'has_default': 'def', 'has_default_callable': 'ghi', 'no_default': 'abc'}
+
+    def test_default_not_used_when_in_object(self):
+        """
+        'default="something"' should not be used if object attribute is present in input.
+        """
+        instance = MockObject(has_default='def', has_default_callable='ghi', no_default='abc')
+        serializer = self.Serializer(instance)
+        assert serializer.data == {'has_default': 'def', 'has_default_callable': 'ghi', 'no_default': 'abc'}
 
 
 class TestCacheSerializerData:

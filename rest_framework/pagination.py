@@ -12,10 +12,11 @@ from django.core.paginator import Paginator as DjangoPaginator
 from django.core.paginator import InvalidPage
 from django.template import loader
 from django.utils import six
+from django.utils.encoding import force_text
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import coreapi, template_render
+from rest_framework.compat import coreapi, coreschema, template_render
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -178,10 +179,12 @@ class PageNumberPagination(BasePagination):
 
     # Client can control the page using this query parameter.
     page_query_param = 'page'
+    page_query_description = _('A page number within the paginated result set.')
 
     # Client can control the page size using this query parameter.
     # Default is 'None'. Set to eg 'page_size' to enable usage.
     page_size_query_param = None
+    page_size_query_description = _('Number of results to return per page.')
 
     # Set to an integer to limit the maximum page size the client may request.
     # Only relevant if 'page_size_query_param' has also been set.
@@ -286,12 +289,29 @@ class PageNumberPagination(BasePagination):
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         fields = [
-            coreapi.Field(name=self.page_query_param, required=False, location='query')
+            coreapi.Field(
+                name=self.page_query_param,
+                required=False,
+                location='query',
+                schema=coreschema.Integer(
+                    title='Page',
+                    description=force_text(self.page_query_description)
+                )
+            )
         ]
         if self.page_size_query_param is not None:
             fields.append(
-                coreapi.Field(name=self.page_size_query_param, required=False, location='query')
+                coreapi.Field(
+                    name=self.page_size_query_param,
+                    required=False,
+                    location='query',
+                    schema=coreschema.Integer(
+                        title='Page size',
+                        description=force_text(self.page_size_query_description)
+                    )
+                )
             )
         return fields
 
@@ -305,7 +325,9 @@ class LimitOffsetPagination(BasePagination):
     """
     default_limit = api_settings.PAGE_SIZE
     limit_query_param = 'limit'
+    limit_query_description = _('Number of results to return per page.')
     offset_query_param = 'offset'
+    offset_query_description = _('The initial index from which to return the results.')
     max_limit = None
     template = 'rest_framework/pagination/numbers.html'
 
@@ -424,9 +446,26 @@ class LimitOffsetPagination(BasePagination):
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         return [
-            coreapi.Field(name=self.limit_query_param, required=False, location='query'),
-            coreapi.Field(name=self.offset_query_param, required=False, location='query')
+            coreapi.Field(
+                name=self.limit_query_param,
+                required=False,
+                location='query',
+                schema=coreschema.Integer(
+                    title='Limit',
+                    description=force_text(self.limit_query_description)
+                )
+            ),
+            coreapi.Field(
+                name=self.offset_query_param,
+                required=False,
+                location='query',
+                schema=coreschema.Integer(
+                    title='Offset',
+                    description=force_text(self.offset_query_description)
+                )
+            )
         ]
 
 
@@ -437,6 +476,7 @@ class CursorPagination(BasePagination):
     http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api
     """
     cursor_query_param = 'cursor'
+    cursor_query_description = _('The pagination cursor value.')
     page_size = api_settings.PAGE_SIZE
     invalid_cursor_message = _('Invalid cursor')
     ordering = '-created'
@@ -738,6 +778,15 @@ class CursorPagination(BasePagination):
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         return [
-            coreapi.Field(name=self.cursor_query_param, required=False, location='query')
+            coreapi.Field(
+                name=self.cursor_query_param,
+                required=False,
+                location='query',
+                schema=coreschema.String(
+                    title='Cursor',
+                    description=force_text(self.cursor_query_description)
+                )
+            )
         ]
