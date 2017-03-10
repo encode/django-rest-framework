@@ -63,14 +63,14 @@ def form_for_link(link):
         if field.required
     ]
     schema = coreschema.Object(properties=properties, required=required)
-    return coreschema.render_to_form(schema)
+    return mark_safe(coreschema.render_to_form(schema))
 
 
 @register.simple_tag
 def render_markdown(markdown_text):
     if not markdown:
         return markdown_text
-    return markdown.markdown(markdown_text)
+    return mark_safe(markdown.markdown(markdown_text))
 
 
 @register.simple_tag
