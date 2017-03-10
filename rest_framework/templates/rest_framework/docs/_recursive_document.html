@@ -1,6 +1,6 @@
 {% for section_key, section in items %}
 {% if section_key %}
-  <h{{level}} id="{{prefix}}-{{ section_key }}" class="coredocs-section-title">{{ section_key }} <a href="#{{ section_key }}"><i class="fa fa-link" aria-hidden="true"></i>
+  <h{{level}} id="{{prefix}}{{ section_key }}" class="coredocs-section-title">{{ section_key }} <a href="#{{ section_key }}"><i class="fa fa-link" aria-hidden="true"></i>
   </a></h{{level}}>
 {% endif %}
 
