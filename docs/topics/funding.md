@@ -97,10 +97,6 @@ form.signup {
 
 # Funding
 
-> As a direct result of [a successful Mozilla grant application](mozilla-grant.md), I will be leaving my current role at [DabApps](http://www.dabapps.com), and attempting to secure a sustainable business model for REST framework development. I need your help in order to make this work.
->
-> &mdash; Tom Christie
-
 If you use REST framework commercially we strongly encourage you to invest in its continued development by signing up for a paid plan.
 
 **We believe that collaboratively funded software can offer outstanding returns on investment, by encouraging our users to collectively share the cost of development.**
@@ -115,36 +111,50 @@ REST framework continues to be open-source and permissively licensed, but we fir
 
 ---
 
-## Making the business case
+## What funding has enabled so far
 
-Our [successful Kickstarter campaign](https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3) demonstrates the impressive cost-reward ratio of shared funding of open-source software.
+* The [3.4](http://www.django-rest-framework.org/topics/3.4-announcement/) and [3.5](http://www.django-rest-framework.org/topics/3.5-announcement/) releases, including schema generation for both Swagger and RAML, a Python client library, a Command Line client, and addressing of a large number of outstanding issues.
+* The [3.6](http://www.django-rest-framework.org/topics/3.6-announcement/) release, including  JavaScript client library, and API documentation, complete with auto-generated code samples.
+* Tom Christie, the creator of Django REST framework, working on the project full-time.
+* Over 320 closed issues on [GitHub](https://github.com/tomchristie/django-rest-framework) since Tom Christie started working on the project full-time (June 2016 - March 2017).
+* A community & operations manager position part-time for 4 months, helping mature the business and grow sponsorship.
+* Contracting development time for the work on the JavaScript client library and API documentation tooling.
 
-With *typical corporate fundings of just £100-£1000 per organization* we successfully delivered:
+---
 
-* The comprehensive serializer redesign, and **version 3.0 release**.
-* Ongoing triage and community support, **closing over 1600 tickets**.
-* Substantial improvements to the Browsable API.
-* The admin interface.
-* A new pagination API including offset/limit and cursor pagination implementations, plus on-page controls.
-* A versioning API, including URL-based and header-based versioning schemes.
-* Support for customizable exception handling.
-* Support for Django's PostgreSQL HStoreField, ArrayField and JSONField.
-* Templated HTML form support, including HTML forms with nested list and objects.
-* Internationalization support for API responses, currently with 27 languages.
-* The metadata APIs for handling `OPTIONS` requests and schema endpoints.
-* Numerous minor improvements and better quality throughout the codebase.
+## What future funding will enable
 
-This incredible level of return on investment is *only possible through collaboratively funded models*, which is why we believe that supporting our paid plans is in everyone's best interest.
+* Realtime API support, using WebSockets. This will consist of documentation and support for using REST framework together with Django Channels, plus integrating WebSocket support into the client libraries.
+* Better authentication defaults, possibly bringing JWT in to the core package.
+* Securing the community & operations manager position long-term.
+* Opening up and securing a part-time position to focus on ticket triage and resolution.
+* Paying for development time on building API client libraries in a range of programming languages. These would be integrated directly into the upcoming API documentation.
 
 Sign up for a paid plan today, and help ensure that REST framework becomes a sustainable, full-time funded project.
 
 ---
 
-## Freelancer plan
+## What our sponsors and users say
 
-This subscription is recommended for freelancers and other individuals with an interest in seeing REST framework continue to&nbsp;improve.
+> As a developer, Django REST framework feels like an obvious and natural extension to all the great things that make up Django and it's community. Getting started is easy while providing simple abstractions which makes it flexible and customizable. Contributing and supporting Django REST framework helps ensure its future and one way or another it also helps Django, and the Python ecosystem.
+>
+> &mdash; José Padilla, Django REST Framework Contributor
 
-If you are using REST framework as an full-time employee, consider recommending that your company takes out a [corporate&nbsp;plan](#corporate-plans).
+>  The number one feature of the Python programming language is its community. Such a community is only possible because of the Open Source nature of the language and all the culture that comes from it. Building great Open Source projects require great minds. Given that, we at Vinta are not only proud to sponsor the team behind DRF but we also recognize the ROI that comes from it.
+>
+> &mdash; Filipe Ximenes, Vinta Software
+
+>  It's really awesome that this project continues to endure. The code base is top notch and the maintainers are committed to the highest level of quality.
+DRF is one of the core reasons why Django is top choice among web frameworks today. In my opinion, it sets the standard for rest frameworks for the development community at large.
+>
+
+---
+
+## Individual plan
+
+This subscription is recommended for individuals with an interest in seeing REST framework continue to&nbsp;improve.
+
+If you are using REST framework as a full-time employee, consider recommending that your company takes out a [corporate&nbsp;plan](#corporate-plans).
 
 <div class="pricing">
 				<div class="span4">
@@ -154,7 +164,7 @@ If you are using REST framework as an full-time employee, consider recommending 
 							<span class="price">{{ rates.personal1 }}</span>
 							<span class="period">/month{% if vat %} +VAT{% endif %}</span>
 						</div>
-						<div class="plan-name">Freelancer</div>
+						<div class="plan-name">Individual</div>
 						<div class="specs freelancer">
 							<div class="spec">
 								Support ongoing development
@@ -306,7 +316,7 @@ Our professional and premium plans also include **priority support**. At any tim
 
 *Billing is monthly and you can cancel at any time.*
 
-Once you've signed up I'll contact you via email and arrange your ad placements on the site.
+Once you've signed, we will contact you via email and arrange your ad placements on the site.
 
 For further enquires please contact <a href=mailto:funding@django-rest-framework.org>funding@django-rest-framework.org</a>.
 
@@ -314,14 +324,7 @@ For further enquires please contact <a href=mailto:funding@django-rest-framework
 
 ## Accountability
 
-In order to ensure that I can be fully focused on trying to secure a sustainable
-& well-funded open source business I will be leaving my current role at [DabApps](http://www.dabapps.com)
-at the end of May 2016.
-
-I have formed a UK limited company, [Encode](http://www.encode.io), which will
-act as the business entity behind REST framework. I will be issuing monthly reports
-from Encode on progress both towards the [Mozilla grant](mozilla-grant.md), and for development time
-funded via the REST framework paid plans.
+In an effort to keep the project as transparent as possible, we are releasing [monthly progress reports](http://www.encode.io/reports/february-2017) and regularly include financial reports and cost breakdowns.
 
 <!-- Begin MailChimp Signup Form -->
 <link href="//cdn-images.mailchimp.com/embedcode/classic-10_7.css" rel="stylesheet" type="text/css">
