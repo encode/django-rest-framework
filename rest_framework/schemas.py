@@ -531,7 +531,7 @@ class SchemaGenerator(object):
                 try:
                     model_field = model._meta.get_field(variable)
                 except:
-                    pass
+                    model_field = None  # Set model_field to None so it doesn't fail test
 
                 if model_field is not None and model_field.verbose_name:
                     title = force_text(model_field.verbose_name)
