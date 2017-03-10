@@ -115,6 +115,13 @@ pre.highlight code {
   background-color: #020203;
 }
 
+.sidebar .menu-list li.collapsed + ul.menu-content {
+  height: 0;
+}
+
+.sidebar .menu-list li.collapsed + ul.menu-content li {
+  display: none;
+}
 
 .sidebar .menu-list ul .sub-menu li a,
 .sidebar .menu-list li .sub-menu li a {
