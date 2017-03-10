@@ -1,0 +1,17 @@
+<ul id="{% if prefix %}{{prefix}}-dropdown{% else %}menu-content{% endif %}" class="menu-content collapse out">
+    {% for section_key, section in items %}
+        <li data-toggle="collapse" data-target="#{{prefix}}{{ section_key }}-dropdown" class="collapsed">
+          <a><i class="fa fa-dot-circle-o fa-lg"></i> {% if prefix %}{{prefix}}/{% endif %}{% if section_key %}{{ section_key }}{% else %}API Endpoints{% endif %} <span class="arrow"></span></a>
+        </li>
+        {% if section.links.items %}
+            <ul class="sub-menu {% if section_key %}collapse{% endif %}" id="{{prefix}}{{ section_key }}-dropdown">
+                {% for link_key, link in section.links.items %}
+                <li><a href="#{{prefix}}-{{ section_key }}-{{ link_key }}">{{ link.title|default:link_key }}</a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            {% include 'rest_framework/docs/_recursive_menu.html' with items=section.items prefix=prefix|add:section_key %}
+        {% endif %}
+    {% endfor %}
+</ul>
+

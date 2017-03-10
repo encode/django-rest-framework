@@ -6,7 +6,7 @@ var schema = window.schema    // Loaded by `schema.js`
 var client = new coreapi.Client()
 
 // Interact with the API endpoint
-var action = [{% if section_key %}"{{ section_key }}", {% endif %}"{{ link_key }}"]
+var action = [{% if prefix %}{{ prefix|split_keys }} {% endif %}{% if section_key %}"{{ section_key }}", {% endif %}"{{ link_key }}"]
 {% if link.fields %}var params = {
 {% for field in link.fields %}    {{ field.name }}: ...{% if not loop.last %},{% endif %}
 {% endfor %}}

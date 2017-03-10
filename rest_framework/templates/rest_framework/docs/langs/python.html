@@ -6,7 +6,7 @@ client = coreapi.Client()
 schema = client.get("{{ document.url }}"{% if schema_format %}, format="{{ schema_format }}"{% endif %})
 
 # Interact with the API endpoint
-action = [{% if section_key %}"{{ section_key }}", {% endif %}"{{ link_key }}"]
+action = [{% if prefix %}{{ prefix|split_keys }} {% endif %}{% if section_key %}"{{ section_key }}", {% endif %}"{{ link_key }}"]
 {% if link.fields %}params = {
 {% for field in link.fields %}    "{{ field.name }}": ...{% if not loop.last %},{% endif %}
 {% endfor %}}

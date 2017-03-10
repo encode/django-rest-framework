@@ -362,3 +362,22 @@ def break_long_headers(header):
     if len(header) > 160 and ',' in header:
         header = mark_safe('<br> ' + ', <br>'.join(header.split(',')))
     return header
+
+
+@register.filter
+def split_keys(keys, cmd_type='script'):
+    if not keys:
+        return ''
+
+    if cmd_type == 'script':
+        joiner = ', '
+        wrapper = '"'
+    else:
+        joiner = ' '
+        wrapper = ''
+
+    return joiner.join([
+        '{wrapper}{k}{wrapper}'.format(k=k, wrapper=wrapper)
+        if k != '' else ''
+        for k in keys.split('/')
+    ])
