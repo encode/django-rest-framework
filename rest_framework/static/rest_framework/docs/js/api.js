@@ -7,7 +7,7 @@ function normalizeHTTPHeader (str) {
     .replace(/(Md5)/g, function ($1) { return 'MD5' })
 }
 
-let responseDisplay = 'data'
+var responseDisplay = 'data'
 const coreapi = window.coreapi
 const schema = window.schema
 
@@ -28,6 +28,39 @@ $('#language-control li').click(function (event) {
     codeBlocks.filter('[data-language="' + language +'"]').removeClass("hide")
 })
 
+function formEntries (form) {
+  // Polyfill for new FormData(form).entries()
+  var formData = new FormData(form)
+  if (formData.entries !== undefined) {
+    return formData.entries()
+  }
+
+  var entries = []
+
+  for (var {name, type, value, files, checked, selectedOptions} of Array.from(form.elements)) {
+    if (!name) {
+      continue
+    }
+
+    if (type === 'file') {
+      for (var file of files) {
+        entries.push([name, file])
+      }
+    } else if (type === 'select-multiple' || type === 'select-one') {
+      for (var elm of Array.from(selectedOptions)) {
+        entries.push([name, elm.value])
+      }
+    } else if (type === 'checkbox') {
+      if (checked) {
+        entries.push([name, value])
+      }
+    } else {
+      entries.push([name, value])
+    }
+  }
+  return entries
+}
+
 // API Explorer
 $('form.api-interaction').submit(function(event) {
     event.preventDefault();
@@ -36,23 +69,23 @@ $('form.api-interaction').submit(function(event) {
     const key = form.data("key");
     var params = {};
 
-    const formData = new FormData(form.get()[0]);
-    for (var [paramKey, paramValue] of formData.entries()) {
+    const entries = formEntries(form.get()[0]);
+    for (var [paramKey, paramValue] of entries) {
         var elem = form.find("[name=" + paramKey + "]")
         var dataType = elem.data('type') || 'string'
 
         if (dataType === 'integer' && paramValue) {
-            let value = parseInt(paramValue)
+            var value = parseInt(paramValue)
             if (!isNaN(value)) {
               params[paramKey] = value
             }
         } else if (dataType === 'number' && paramValue) {
-            let value = parseFloat(paramValue)
+            var value = parseFloat(paramValue)
             if (!isNaN(value)) {
               params[paramKey] = value
             }
         } else if (dataType === 'boolean' && paramValue) {
-            let value = {
+            var value = {
                 'true': true,
                 'false': false
             }[paramValue.toLowerCase()]
@@ -86,7 +119,7 @@ $('form.api-interaction').submit(function(event) {
 
     function requestCallback(request) {
         // Fill in the "GET /foo/" display.
-        let parser = document.createElement('a');
+        var parser = document.createElement('a');
         parser.href = request.url;
         const method = request.options.method
         const path = parser.pathname + parser.hash + parser.search
@@ -111,7 +144,7 @@ $('form.api-interaction').submit(function(event) {
 
         // Fill in the Raw HTTP response display.
         var panelText = 'HTTP/1.1 ' + response.status + ' ' + response.statusText + '\n';
-        response.headers.forEach((header, key) => {
+        response.headers.forEach(function(header, key) {
             panelText += normalizeHTTPHeader(key) + ': ' + header + '\n'
         })
         if (responseText) {
@@ -121,7 +154,7 @@ $('form.api-interaction').submit(function(event) {
     }
 
     // Instantiate a client to make the outgoing request.
-    let options = {
+    var options = {
         requestCallback: requestCallback,
         responseCallback: responseCallback,
     }
