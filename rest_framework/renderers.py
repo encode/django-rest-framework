@@ -805,8 +805,11 @@ class DocumentationRenderer(BaseRenderer):
     languages = ['shell', 'javascript', 'python']
 
     def get_context(self, data, request):
+        document = data
+        document_data_list = document.data.items()
         return {
-            'document': data,
+            'document': document,
+            'document_data_list': document_data_list,
             'langs': self.languages,
             'code_style': pygments_css(self.code_style),
             'request': request
