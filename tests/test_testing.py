@@ -69,7 +69,7 @@ class TestAPITestClient(TestCase):
         self.client.credentials(HTTP_AUTHORIZATION='example')
         for _ in range(0, 3):
             response = self.client.get('/view/')
-            self.assertEqual(response.data['auth'], 'example')
+            assert response.data['auth'] == 'example'
 
     def test_force_authenticate(self):
         """
@@ -78,7 +78,7 @@ class TestAPITestClient(TestCase):
         user = User.objects.create_user('example', 'example@example.com')
         self.client.force_authenticate(user)
         response = self.client.get('/view/')
-        self.assertEqual(response.data['user'], 'example')
+        assert response.data['user'] == 'example'
 
     def test_force_authenticate_with_sessions(self):
         """
@@ -89,16 +89,16 @@ class TestAPITestClient(TestCase):
 
         # First request does not yet have an active session
         response = self.client.get('/session-view/')
-        self.assertEqual(response.data['active_session'], False)
+        assert response.data['active_session'] is False
 
         # Subsequent requests have an active session
         response = self.client.get('/session-view/')
-        self.assertEqual(response.data['active_session'], True)
+        assert response.data['active_session'] is True
 
         # Force authenticating as `None` should also logout the user session.
         self.client.force_authenticate(None)
         response = self.client.get('/session-view/')
-        self.assertEqual(response.data['active_session'], False)
+        assert response.data['active_session'] is False
 
     def test_csrf_exempt_by_default(self):
         """
@@ -107,7 +107,7 @@ class TestAPITestClient(TestCase):
         User.objects.create_user('example', 'example@example.com', 'password')
         self.client.login(username='example', password='password')
         response = self.client.post('/view/')
-        self.assertEqual(response.status_code, 200)
+        assert response.status_code == 200
 
     def test_explicitly_enforce_csrf_checks(self):
         """
@@ -118,8 +118,8 @@ class TestAPITestClient(TestCase):
         client.login(username='example', password='password')
         response = client.post('/view/')
         expected = {'detail': 'CSRF Failed: CSRF cookie not set.'}
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.data, expected)
+        assert response.status_code == 403
+        assert response.data == expected
 
     def test_can_logout(self):
         """
@@ -127,10 +127,10 @@ class TestAPITestClient(TestCase):
         """
         self.client.credentials(HTTP_AUTHORIZATION='example')
         response = self.client.get('/view/')
-        self.assertEqual(response.data['auth'], 'example')
+        assert response.data['auth'] == 'example'
         self.client.logout()
         response = self.client.get('/view/')
-        self.assertEqual(response.data['auth'], b'')
+        assert response.data['auth'] == b''
 
     def test_logout_resets_force_authenticate(self):
         """
@@ -139,50 +139,50 @@ class TestAPITestClient(TestCase):
         user = User.objects.create_user('example', 'example@example.com', 'password')
         self.client.force_authenticate(user)
         response = self.client.get('/view/')
-        self.assertEqual(response.data['user'], 'example')
+        assert response.data['user'] == 'example'
         self.client.logout()
         response = self.client.get('/view/')
-        self.assertEqual(response.data['user'], '')
+        assert response.data['user'] == ''
 
     def test_follow_redirect(self):
         """
         Follow redirect by setting follow argument.
         """
         response = self.client.get('/redirect-view/')
-        self.assertEqual(response.status_code, 302)
+        assert response.status_code == 302
         response = self.client.get('/redirect-view/', follow=True)
-        self.assertIsNotNone(response.redirect_chain)
-        self.assertEqual(response.status_code, 200)
+        assert response.redirect_chain is not None
+        assert response.status_code == 200
 
         response = self.client.post('/redirect-view/')
-        self.assertEqual(response.status_code, 302)
+        assert response.status_code == 302
         response = self.client.post('/redirect-view/', follow=True)
-        self.assertIsNotNone(response.redirect_chain)
-        self.assertEqual(response.status_code, 200)
+        assert response.redirect_chain is not None
+        assert response.status_code == 200
 
         response = self.client.put('/redirect-view/')
-        self.assertEqual(response.status_code, 302)
+        assert response.status_code == 302
         response = self.client.put('/redirect-view/', follow=True)
-        self.assertIsNotNone(response.redirect_chain)
-        self.assertEqual(response.status_code, 200)
+        assert response.redirect_chain is not None
+        assert response.status_code == 200
 
         response = self.client.patch('/redirect-view/')
-        self.assertEqual(response.status_code, 302)
+        assert response.status_code == 302
         response = self.client.patch('/redirect-view/', follow=True)
-        self.assertIsNotNone(response.redirect_chain)
-        self.assertEqual(response.status_code, 200)
+        assert response.redirect_chain is not None
+        assert response.status_code == 200
 
         response = self.client.delete('/redirect-view/')
-        self.assertEqual(response.status_code, 302)
+        assert response.status_code == 302
         response = self.client.delete('/redirect-view/', follow=True)
-        self.assertIsNotNone(response.redirect_chain)
-        self.assertEqual(response.status_code, 200)
+        assert response.redirect_chain is not None
+        assert response.status_code == 200
 
         response = self.client.options('/redirect-view/')
-        self.assertEqual(response.status_code, 302)
+        assert response.status_code == 302
         response = self.client.options('/redirect-view/', follow=True)
-        self.assertIsNotNone(response.redirect_chain)
-        self.assertEqual(response.status_code, 200)
+        assert response.redirect_chain is not None
+        assert response.status_code == 200
 
     def test_invalid_multipart_data(self):
         """
@@ -200,8 +200,8 @@ class TestAPITestClient(TestCase):
             data=None,
             content_type='application/json'
         )
-        self.assertEqual(response.status_code, 200, response.content)
-        self.assertEqual(response.data, {"flag": True})
+        assert response.status_code == 200
+        assert response.data == {"flag": True}
 
 
 class TestAPIRequestFactory(TestCase):
@@ -214,7 +214,7 @@ class TestAPIRequestFactory(TestCase):
         request = factory.post('/view/')
         request.user = user
         response = view(request)
-        self.assertEqual(response.status_code, 200)
+        assert response.status_code == 200
 
     def test_explicitly_enforce_csrf_checks(self):
         """
@@ -226,8 +226,8 @@ class TestAPIRequestFactory(TestCase):
         request.user = user
         response = view(request)
         expected = {'detail': 'CSRF Failed: CSRF cookie not set.'}
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.data, expected)
+        assert response.status_code == 403
+        assert response.data == expected
 
     def test_invalid_format(self):
         """
@@ -249,7 +249,7 @@ class TestAPIRequestFactory(TestCase):
         request = factory.get('/view')
         force_authenticate(request, user=user)
         response = view(request)
-        self.assertEqual(response.data['user'], 'example')
+        assert response.data['user'] == 'example'
 
     def test_upload_file(self):
         # This is a 1x1 black png
@@ -264,13 +264,13 @@ class TestAPIRequestFactory(TestCase):
         """
         factory = APIRequestFactory()
         request = factory.get('/view/?demo=test')
-        self.assertEqual(dict(request.GET), {'demo': ['test']})
+        assert dict(request.GET) == {'demo': ['test']}
         request = factory.get('/view/', {'demo': 'test'})
-        self.assertEqual(dict(request.GET), {'demo': ['test']})
+        assert dict(request.GET) == {'demo': ['test']}
 
     def test_request_factory_url_arguments_with_unicode(self):
         factory = APIRequestFactory()
         request = factory.get('/view/?demo=testé')
-        self.assertEqual(dict(request.GET), {'demo': ['testé']})
+        assert dict(request.GET) == {'demo': ['testé']}
         request = factory.get('/view/', {'demo': 'testé'})
-        self.assertEqual(dict(request.GET), {'demo': ['testé']})
+        assert dict(request.GET) == {'demo': ['testé']}
