@@ -116,7 +116,7 @@ REST framework continues to be open-source and permissively licensed, but we fir
 * The [3.4](http://www.django-rest-framework.org/topics/3.4-announcement/) and [3.5](http://www.django-rest-framework.org/topics/3.5-announcement/) releases, including schema generation for both Swagger and RAML, a Python client library, a Command Line client, and addressing of a large number of outstanding issues.
 * The [3.6](http://www.django-rest-framework.org/topics/3.6-announcement/) release, including  JavaScript client library, and API documentation, complete with auto-generated code samples.
 * Tom Christie, the creator of Django REST framework, working on the project full-time.
-* Over 320 closed issues on [GitHub](https://github.com/tomchristie/django-rest-framework) since Tom Christie started working on the project full-time (June 2016 - March 2017).
+* Around 80-90 issues and pull requests closed per month since Tom Christie started working on the project full-time.
 * A community & operations manager position part-time for 4 months, helping mature the business and grow sponsorship.
 * Contracting development time for the work on the JavaScript client library and API documentation tooling.
 
@@ -125,7 +125,7 @@ REST framework continues to be open-source and permissively licensed, but we fir
 ## What future funding will enable
 
 * Realtime API support, using WebSockets. This will consist of documentation and support for using REST framework together with Django Channels, plus integrating WebSocket support into the client libraries.
-* Better authentication defaults, possibly bringing JWT in to the core package.
+* Better authentication defaults, possibly bringing JWT & CORs support into the core package.
 * Securing the community & operations manager position long-term.
 * Opening up and securing a part-time position to focus on ticket triage and resolution.
 * Paying for development time on building API client libraries in a range of programming languages. These would be integrated directly into the upcoming API documentation.
@@ -138,7 +138,7 @@ Sign up for a paid plan today, and help ensure that REST framework becomes a sus
 
 > As a developer, Django REST framework feels like an obvious and natural extension to all the great things that make up Django and it's community. Getting started is easy while providing simple abstractions which makes it flexible and customizable. Contributing and supporting Django REST framework helps ensure its future and one way or another it also helps Django, and the Python ecosystem.
 >
-> &mdash; José Padilla, Django REST Framework Contributor
+> &mdash; José Padilla, Django REST framework contributor
 
 >  The number one feature of the Python programming language is its community. Such a community is only possible because of the Open Source nature of the language and all the culture that comes from it. Building great Open Source projects require great minds. Given that, we at Vinta are not only proud to sponsor the team behind DRF but we also recognize the ROI that comes from it.
 >
@@ -147,6 +147,7 @@ Sign up for a paid plan today, and help ensure that REST framework becomes a sus
 >  It's really awesome that this project continues to endure. The code base is top notch and the maintainers are committed to the highest level of quality.
 DRF is one of the core reasons why Django is top choice among web frameworks today. In my opinion, it sets the standard for rest frameworks for the development community at large.
 >
+> &mdash; agconti, Django REST framework user
 
 ---
 
@@ -316,7 +317,7 @@ Our professional and premium plans also include **priority support**. At any tim
 
 *Billing is monthly and you can cancel at any time.*
 
-Once you've signed, we will contact you via email and arrange your ad placements on the site.
+Once you've signed up, we will contact you via email and arrange your ad placements on the site.
 
 For further enquires please contact <a href=mailto:funding@django-rest-framework.org>funding@django-rest-framework.org</a>.
 
