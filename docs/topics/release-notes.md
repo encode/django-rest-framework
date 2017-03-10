@@ -38,6 +38,32 @@ You can determine your currently installed version using `pip freeze`:
 
 ---
 
+## 3.6.x series
+
+### 3.6.2
+
+**Date**: [10th March 2017][3.6.2-milestone]
+
+* Support for Safari & IE in API docs. ([#4959][gh4959], [#4961][gh4961])
+* Add missing `mark_safe` in API docs template tags. ([#4952][gh4952], [#4953][gh4953])
+* Add missing glyicon fonts. ([#4950][gh4950], [#4951][gh4951])
+* Fix One-to-one fields in API docs. ([#4955][gh4955], [#4956][gh4956])
+* Test clean ups. ([#4949][gh4949])
+
+### 3.6.1
+
+**Date**: [9th March 2017][3.6.1-milestone]
+
+* Ensure `markdown` dependancy is optional. ([#4947][gh4947])
+
+### 3.6.0
+
+**Date**: [9th March 2017][3.6.0-milestone]
+
+See the [release announcement][3.6-release].
+
+---
+
 ## 3.5.x series
 
 ### 3.5.4
@@ -625,6 +651,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [ticket-582]: https://github.com/tomchristie/django-rest-framework/issues/582
 [rfc-6266]: http://tools.ietf.org/html/rfc6266#section-4.3
 [old-release-notes]: https://github.com/tomchristie/django-rest-framework/blob/version-2.4.x/docs/topics/release-notes.md
+[3.6-release]: 3.6-announcement.md
 
 [3.0.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.1+Release%22
 [3.0.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.0.2+Release%22
@@ -658,6 +685,9 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.5.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.2+Release%22
 [3.5.3-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.3+Release%22
 [3.5.4-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.5.4+Release%22
+[3.6.0-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.6.0+Release%22
+[3.6.1-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.6.1+Release%22
+[3.6.2-milestone]: https://github.com/tomchristie/django-rest-framework/issues?q=milestone%3A%223.6.2+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/tomchristie/django-rest-framework/issues/2013
@@ -1254,3 +1284,17 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh4634]: https://github.com/tomchristie/django-rest-framework/issues/4634
 [gh4669]: https://github.com/tomchristie/django-rest-framework/issues/4669
 [gh4712]: https://github.com/tomchristie/django-rest-framework/issues/4712
+
+<!-- 3.6.1 -->
+[gh4947]: https://github.com/tomchristie/django-rest-framework/issues/4947
+
+<!-- 3.6.2 -->
+[gh4959]: https://github.com/tomchristie/django-rest-framework/issues/4959
+[gh4961]: https://github.com/tomchristie/django-rest-framework/issues/4961
+[gh4952]: https://github.com/tomchristie/django-rest-framework/issues/4952
+[gh4953]: https://github.com/tomchristie/django-rest-framework/issues/4953
+[gh4950]: https://github.com/tomchristie/django-rest-framework/issues/4950
+[gh4951]: https://github.com/tomchristie/django-rest-framework/issues/4951
+[gh4955]: https://github.com/tomchristie/django-rest-framework/issues/4955
+[gh4956]: https://github.com/tomchristie/django-rest-framework/issues/4956
+[gh4949]: https://github.com/tomchristie/django-rest-framework/issues/4949
