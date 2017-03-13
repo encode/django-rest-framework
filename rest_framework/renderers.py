@@ -819,7 +819,7 @@ class DocumentationRenderer(BaseRenderer):
 
 
 class SchemaJSRenderer(BaseRenderer):
-    media_type = 'script/javascript'
+    media_type = 'application/javascript'
     format = 'javascript'
     charset = 'utf-8'
     template = 'rest_framework/schema.js'
