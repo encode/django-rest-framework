@@ -18,7 +18,7 @@
           </label>
         {% endif %}
 
-        {% for key, text in field.choices.items %}
+        {% for key, text in field.choices|items %}
           <label class="radio-inline">
             <input type="radio" name="{{ field.name }}" value="{{ key }}" {% if key|as_string == field.value|as_string %}checked{% endif %}>
             {{ text }}
@@ -35,7 +35,7 @@
         </div>
       {% endif %}
 
-      {% for key, text in field.choices.items %}
+      {% for key, text in field.choices|items %}
         <div class="radio">
           <label>
             <input type="radio" name="{{ field.name }}" value="{{ key }}" {% if key|as_string == field.value|as_string %}checked{% endif %}>
