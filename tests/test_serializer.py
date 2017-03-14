@@ -9,6 +9,7 @@ from collections import Mapping
 
 import pytest
 from django.db import models
+from django.http import QueryDict
 
 from rest_framework import fields, relations, serializers
 from rest_framework.compat import unicode_repr
@@ -455,6 +456,20 @@ class TestDefaultInclusions:
         assert serializer.validated_data == {'integer': 456}
         assert serializer.errors == {}
 
+
+class TestSerializerManyRelatedFieldIsNotRequiredByDefault:
+    def setup(self):
+        class ExampleSerializer(serializers.Serializer):
+            name = serializers.StringRelatedField(many=True)
+        self.Serializer = ExampleSerializer
+
+    def test_validation_success_dictionary(self):
+        serializer = self.Serializer(data={})
+        assert serializer.is_valid()
+
+    def test_validation_success_querydict(self):
+        serializer = self.Serializer(data=QueryDict(''))
+        assert serializer.is_valid()
 
 class TestSerializerValidationWithCompiledRegexField:
     def setup(self):
