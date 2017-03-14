@@ -101,6 +101,15 @@ class TestRootView(TestCase):
         assert response.status_code == status.HTTP_200_OK
         assert response.data == self.data
 
+    def test_head_root_view(self):
+        """
+        HEAD requests to ListCreateAPIView should return 200.
+        """
+        request = factory.head('/')
+        with self.assertNumQueries(1):
+            response = self.view(request).render()
+        assert response.status_code == status.HTTP_200_OK
+
     def test_post_root_view(self):
         """
         POST requests to ListCreateAPIView should create a new object.
