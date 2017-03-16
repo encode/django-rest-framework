@@ -147,7 +147,7 @@ Sign up for a paid plan today, and help ensure that REST framework becomes a sus
 >  It's really awesome that this project continues to endure. The code base is top notch and the maintainers are committed to the highest level of quality.
 DRF is one of the core reasons why Django is top choice among web frameworks today. In my opinion, it sets the standard for rest frameworks for the development community at large.
 >
-> &mdash; agconti, Django REST framework user
+> &mdash; Andrew Conti, Django REST framework user
 
 ---
 
