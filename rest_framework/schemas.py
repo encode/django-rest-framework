@@ -600,7 +600,8 @@ class SchemaGenerator(object):
         if not is_list_view(path, method, view):
             return []
 
-        if not getattr(view, 'pagination_class', None):
+        pagination = getattr(view, 'pagination_class', None)
+        if not pagination or not pagination.page_size:
             return []
 
         paginator = view.pagination_class()
