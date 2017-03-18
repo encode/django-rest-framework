@@ -28,25 +28,27 @@ function formEntries (form) {
 
   var entries = []
 
-  for (var { name, type, value, files, checked, selectedOptions } of Array.from(form.elements)) {
-    if (!name) {
+  for (var i = 0; i < form.elements.length; i++) {
+    var element = form.elements[i]
+
+    if (!element.name) {
       continue
     }
 
-    if (type === 'file') {
-      for (var file of files) {
-        entries.push([name, file])
+    if (element.type === 'file') {
+      for (var j = 0; j < element.files.length; j++) {
+        entries.push([element.name, element.files[j]])
       }
-    } else if (type === 'select-multiple' || type === 'select-one') {
-      for (var elm of Array.from(selectedOptions)) {
-        entries.push([name, elm.value])
+    } else if (element.type === 'select-multiple' || element.type === 'select-one') {
+      for (var j = 0; j < element.selectedOptions.length; j++) {
+        entries.push([element.name, element.selectedOptions[j].value])
       }
-    } else if (type === 'checkbox') {
-      if (checked) {
-        entries.push([name, value])
+    } else if (element.type === 'checkbox') {
+      if (element.checked) {
+        entries.push([element.name, element.value])
       }
     } else {
-      entries.push([name, value])
+      entries.push([element.name, element.value])
     }
   }
 
@@ -94,7 +96,10 @@ $(function () {
     var params = {}
     var entries = formEntries($form.get()[0])
 
-    for (var [paramKey, paramValue] of entries) {
+    for (var i = 0; i < entries.length; i++) {
+      var entry = entries[i]
+      var paramKey = entry[0]
+      var paramValue = entry[1]
       var $elem = $form.find('[name=' + paramKey + ']')
       var dataType = $elem.data('type') || 'string'
 
