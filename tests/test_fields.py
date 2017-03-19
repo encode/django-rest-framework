@@ -9,7 +9,7 @@ import pytest
 from django.http import QueryDict
 from django.test import TestCase, override_settings
 from django.utils import six
-from django.utils.timezone import utc, pytz
+from django.utils.timezone import pytz, utc
 
 import rest_framework
 from rest_framework import serializers
@@ -1213,10 +1213,8 @@ class TestNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     """
     valid_inputs = {}
     invalid_inputs = {
-        '2017-03-12T02:30:00': [
-            'Datetime can not be converted to server timezone due to NonExistentTimeError.'],
-        '2017-11-05T01:30:00': [
-            'Datetime can not be converted to server timezone due to AmbiguousTimeError.']
+        '2017-03-12T02:30:00': ['Datetime can not be represented in timezone "America/New_York".'],
+        '2017-11-05T01:30:00': ['Datetime can not be represented in timezone "America/New_York".']
     }
     outputs = {}
     field = serializers.DateTimeField(default_timezone=pytz.timezone('America/New_York'))
