@@ -1,6 +1,6 @@
-import re
 from collections import OrderedDict
 from importlib import import_module
+import re
 
 from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
@@ -22,6 +22,7 @@ from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 from rest_framework.utils.model_meta import _get_pk
 from rest_framework.views import APIView
+
 
 header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
 
@@ -541,7 +542,8 @@ class SchemaGenerator(object):
                 elif model_field is not None and model_field.primary_key:
                     description = get_pk_description(model, model_field)
 
-                if isinstance(model_field, models.AutoField):
+                # BigAutoField is outside of Integer range
+                if isinstance(model_field, models.AutoField) and not isinstance(model_field, models.BigAutoField):
                     schema_cls = coreschema.Integer
 
             field = coreapi.Field(
