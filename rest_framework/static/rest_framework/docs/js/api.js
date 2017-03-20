@@ -163,7 +163,7 @@ $('form.api-interaction').submit(function(event) {
     if (window.auth && window.auth.type === 'token') {
       // Header authentication
       options.auth = new coreapi.auth.TokenAuthentication({
-        prefix: window.auth.scheme,
+        scheme: window.auth.scheme,
         token: window.auth.token
       })
     } else if (window.auth && window.auth.type === 'basic') {
