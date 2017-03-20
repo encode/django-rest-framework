@@ -50,7 +50,7 @@ DEFAULTS = {
     'DEFAULT_VERSIONING_CLASS': None,
 
     # Generic view behavior
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': None,
     'DEFAULT_FILTER_BACKENDS': (),
 
     # Throttling
