@@ -1213,8 +1213,8 @@ class TestNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     """
     valid_inputs = {}
     invalid_inputs = {
-        '2017-03-12T02:30:00': ['Datetime can not be represented in timezone "America/New_York".'],
-        '2017-11-05T01:30:00': ['Datetime can not be represented in timezone "America/New_York".']
+        '2017-03-12T02:30:00': ['Invalid datetime for the timezone "America/New_York".'],
+        '2017-11-05T01:30:00': ['Invalid datetime for the timezone "America/New_York".']
     }
     outputs = {}
     field = serializers.DateTimeField(default_timezone=pytz.timezone('America/New_York'))

@@ -1085,7 +1085,7 @@ class DateTimeField(Field):
     default_error_messages = {
         'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}.'),
         'date': _('Expected a datetime but got a date.'),
-        'make_aware': _('Datetime can not be represented in timezone "{timezone}".')
+        'make_aware': _('Invalid datetime for the timezone "{timezone}".')
     }
     datetime_parser = datetime.datetime.strptime
 
