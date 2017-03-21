@@ -1,6 +1,6 @@
+import re
 from collections import OrderedDict
 from importlib import import_module
-import re
 
 from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
@@ -22,7 +22,6 @@ from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 from rest_framework.utils.model_meta import _get_pk
 from rest_framework.views import APIView
-
 
 header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
 
