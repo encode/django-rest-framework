@@ -541,7 +541,8 @@ class SchemaGenerator(object):
                 elif model_field is not None and model_field.primary_key:
                     description = get_pk_description(model, model_field)
 
-                if isinstance(model_field, models.AutoField):
+                # BigAutoField is outside of Integer range
+                if isinstance(model_field, models.AutoField) and not isinstance(model_field, models.BigAutoField):
                     schema_cls = coreschema.Integer
 
             field = coreapi.Field(
