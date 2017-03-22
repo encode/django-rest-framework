@@ -33,7 +33,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    get_remote_field, unicode_repr, unicode_to_repr, value_from_object
+    InvalidTimeError, get_remote_field, unicode_repr, unicode_to_repr,
+    value_from_object
 )
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
@@ -1108,7 +1109,7 @@ class DateTimeField(Field):
         if (field_timezone is not None) and not timezone.is_aware(value):
             try:
                 return timezone.make_aware(value, field_timezone)
-            except Exception:
+            except InvalidTimeError:
                 self.fail('make_aware', timezone=field_timezone)
         elif (field_timezone is None) and timezone.is_aware(value):
             return timezone.make_naive(value, utc)

@@ -9,10 +9,10 @@ import pytest
 from django.http import QueryDict
 from django.test import TestCase, override_settings
 from django.utils import six
-from django.utils.timezone import pytz, utc
+from django.utils.timezone import utc
 
 import rest_framework
-from rest_framework import serializers
+from rest_framework import compat, serializers
 from rest_framework.fields import is_simple_callable
 
 try:
@@ -1217,7 +1217,16 @@ class TestNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
         '2017-11-05T01:30:00': ['Invalid datetime for the timezone "America/New_York".']
     }
     outputs = {}
-    field = serializers.DateTimeField(default_timezone=pytz.timezone('America/New_York'))
+
+    class MockTimezone:
+        @staticmethod
+        def localize(value, is_dst):
+            raise compat.InvalidTimeError()
+
+        def __str__(self):
+            return 'America/New_York'
+
+    field = serializers.DateTimeField(default_timezone=MockTimezone())
 
 
 class TestTimeField(FieldValues):
