@@ -1,32 +1,23 @@
+var responseDisplay = 'data'
+var coreapi = window.coreapi
+var schema = window.schema
+
 function normalizeHTTPHeader (str) {
   // Capitalize HTTP headers for display.
   return (str.charAt(0).toUpperCase() + str.substring(1))
-    .replace(/-(.)/g, function ($1) { return $1.toUpperCase() })
-    .replace(/(Www)/g, function ($1) { return 'WWW' })
-    .replace(/(Xss)/g, function ($1) { return 'XSS' })
-    .replace(/(Md5)/g, function ($1) { return 'MD5' })
+    .replace(/-(.)/g, function ($1) {
+      return $1.toUpperCase()
+    })
+    .replace(/(Www)/g, function ($1) {
+      return 'WWW'
+    })
+    .replace(/(Xss)/g, function ($1) {
+      return 'XSS'
+    })
+    .replace(/(Md5)/g, function ($1) {
+      return 'MD5'
+    })
 }
-
-var responseDisplay = 'data'
-const coreapi = window.coreapi
-const schema = window.schema
-
-// Language Control
-$('#language-control li').click(function (event) {
-    event.preventDefault();
-    const languageMenuItem = $(this).find('a');
-    var language = languageMenuItem.data("language")
-
-    var languageControls = $(this).closest('ul').find('li');
-    languageControls.find('a').not('[data-language="' + language +'"]').parent().removeClass("active")
-    languageControls.find('a').filter('[data-language="' + language +'"]').parent().addClass("active")
-
-    $('#selected-language').text(language)
-
-    var codeBlocks = $('pre.highlight')
-    codeBlocks.not('[data-language="' + language +'"]').addClass("hide")
-    codeBlocks.filter('[data-language="' + language +'"]').removeClass("hide")
-})
 
 function formEntries (form) {
   // Polyfill for new FormData(form).entries()
@@ -37,126 +28,164 @@ function formEntries (form) {
 
   var entries = []
 
-  for (var {name, type, value, files, checked, selectedOptions} of Array.from(form.elements)) {
-    if (!name) {
+  for (var i = 0; i < form.elements.length; i++) {
+    var element = form.elements[i]
+
+    if (!element.name) {
       continue
     }
 
-    if (type === 'file') {
-      for (var file of files) {
-        entries.push([name, file])
+    if (element.type === 'file') {
+      for (var j = 0; j < element.files.length; j++) {
+        entries.push([element.name, element.files[j]])
       }
-    } else if (type === 'select-multiple' || type === 'select-one') {
-      for (var elm of Array.from(selectedOptions)) {
-        entries.push([name, elm.value])
+    } else if (element.type === 'select-multiple' || element.type === 'select-one') {
+      for (var j = 0; j < element.selectedOptions.length; j++) {
+        entries.push([element.name, element.selectedOptions[j].value])
       }
-    } else if (type === 'checkbox') {
-      if (checked) {
-        entries.push([name, value])
+    } else if (element.type === 'checkbox') {
+      if (element.checked) {
+        entries.push([element.name, element.value])
       }
     } else {
-      entries.push([name, value])
+      entries.push([element.name, element.value])
     }
   }
+
   return entries
 }
 
-// API Explorer
-$('form.api-interaction').submit(function(event) {
-    event.preventDefault();
+$(function () {
+  var $selectedAuthentication = $('#selected-authentication')
+  var $authControl = $('#auth-control')
+  var $authTokenModal = $('#auth_token_modal')
 
-    const form = $(this).closest("form");
-    const key = form.data("key");
-    var params = {};
+  // Language Control
+  $('#language-control li').click(function (event) {
+    event.preventDefault()
+    var $languageMenuItem = $(this).find('a')
+    var $languageControls = $(this).closest('ul').find('li')
+    var $languageControlLinks = $languageControls.find('a')
+    var language = $languageMenuItem.data('language')
 
-    const entries = formEntries(form.get()[0]);
-    for (var [paramKey, paramValue] of entries) {
-        var elem = form.find("[name=" + paramKey + "]")
-        var dataType = elem.data('type') || 'string'
+    $languageControlLinks.not('[data-language="' + language + '"]').parent().removeClass('active')
+    $languageControlLinks.filter('[data-language="' + language + '"]').parent().addClass('active')
 
-        if (dataType === 'integer' && paramValue) {
-            var value = parseInt(paramValue)
-            if (!isNaN(value)) {
-              params[paramKey] = value
-            }
-        } else if (dataType === 'number' && paramValue) {
-            var value = parseFloat(paramValue)
-            if (!isNaN(value)) {
-              params[paramKey] = value
-            }
-        } else if (dataType === 'boolean' && paramValue) {
-            var value = {
-                'true': true,
-                'false': false
-            }[paramValue.toLowerCase()]
-            if (value !== undefined) {
-              params[paramKey]
-            }
-        } else if (dataType === 'array' && paramValue) {
-            try {
-              params[paramKey] = JSON.parse(paramValue)
-            } catch (err) {
-              // Ignore malformed JSON
-            }
-        } else if (dataType === 'object' && paramValue) {
-            try {
-              params[paramKey] = JSON.parse(paramValue)
-            } catch (err) {
-              // Ignore malformed JSON
-            }
-        } else if (dataType === 'string' && paramValue) {
-            params[paramKey] = paramValue
+    $('#selected-language').text(language)
+
+    var $codeBlocks = $('pre.highlight')
+    $codeBlocks.not('[data-language="' + language + '"]').addClass('hide')
+    $codeBlocks.filter('[data-language="' + language + '"]').removeClass('hide')
+  })
+
+  // API Explorer
+  $('form.api-interaction').submit(function (event) {
+    event.preventDefault()
+
+    var $form = $(this).closest('form')
+    var $requestMethod = $form.find('.request-method')
+    var $requestUrl = $form.find('.request-url')
+    var $toggleView = $form.closest('.modal-content').find('.toggle-view')
+    var $responseStatusCode = $form.find('.response-status-code')
+    var $meta = $form.find('.meta')
+    var $responseRawResponse = $form.find('.response-raw-response')
+    var $requestAwaiting = $form.find('.request-awaiting')
+    var $responseRaw = $form.find('.response-raw')
+    var $responseData = $form.find('.response-data')
+    var key = $form.data('key')
+    var params = {}
+    var entries = formEntries($form.get()[0])
+
+    for (var i = 0; i < entries.length; i++) {
+      var entry = entries[i]
+      var paramKey = entry[0]
+      var paramValue = entry[1]
+      var $elem = $form.find('[name=' + paramKey + ']')
+      var dataType = $elem.data('type') || 'string'
+
+      if (dataType === 'integer' && paramValue) {
+        var value = parseInt(paramValue)
+        if (!isNaN(value)) {
+          params[paramKey] = value
         }
+      } else if (dataType === 'number' && paramValue) {
+        var value = parseFloat(paramValue)
+        if (!isNaN(value)) {
+          params[paramKey] = value
+        }
+      } else if (dataType === 'boolean' && paramValue) {
+        var value = {
+          'true': true,
+          'false': false
+        }[paramValue.toLowerCase()]
+        if (value !== undefined) {
+          params[paramKey]
+        }
+      } else if (dataType === 'array' && paramValue) {
+        try {
+          params[paramKey] = JSON.parse(paramValue)
+        } catch (err) {
+          // Ignore malformed JSON
+        }
+      } else if (dataType === 'object' && paramValue) {
+        try {
+          params[paramKey] = JSON.parse(paramValue)
+        } catch (err) {
+          // Ignore malformed JSON
+        }
+      } else if (dataType === 'string' && paramValue) {
+        params[paramKey] = paramValue
+      }
     }
 
-    form.find(":checkbox").each(function( index ) {
-        // Handle unselected checkboxes
-        var name = $(this).attr("name");
-        if (!params.hasOwnProperty(name)) {
-            params[name] = false
-        }
+    $form.find(':checkbox').each(function (index) {
+      // Handle unselected checkboxes
+      var name = $(this).attr('name')
+      if (!params.hasOwnProperty(name)) {
+        params[name] = false
+      }
     })
 
-    function requestCallback(request) {
-        // Fill in the "GET /foo/" display.
-        var parser = document.createElement('a');
-        parser.href = request.url;
-        const method = request.options.method
-        const path = parser.pathname + parser.hash + parser.search
+    function requestCallback (request) {
+      // Fill in the "GET /foo/" display.
+      var parser = document.createElement('a')
+      parser.href = request.url
+      var method = request.options.method
+      var path = parser.pathname + parser.hash + parser.search
 
-        form.find(".request-method").text(method)
-        form.find(".request-url").text(path)
+      $requestMethod.text(method)
+      $requestUrl.text(path)
     }
 
-    function responseCallback(response, responseText) {
-        // Display the 'Data'/'Raw' control.
-        form.closest(".modal-content").find(".toggle-view").removeClass("hide")
+    function responseCallback (response, responseText) {
+      // Display the 'Data'/'Raw' control.
+      $toggleView.removeClass('hide')
 
-        // Fill in the "200 OK" display.
-        form.find(".response-status-code").removeClass("label-success").removeClass("label-danger")
-        if (response.ok) {
-            form.find(".response-status-code").addClass("label-success")
-        } else {
-            form.find(".response-status-code").addClass("label-danger")
-        }
-        form.find(".response-status-code").text(response.status)
-        form.find(".meta").removeClass("hide")
+      // Fill in the "200 OK" display.
+      $responseStatusCode.removeClass('label-success').removeClass('label-danger')
+      if (response.ok) {
+        $responseStatusCode.addClass('label-success')
+      } else {
+        $responseStatusCode.addClass('label-danger')
+      }
+      $responseStatusCode.text(response.status)
+      $meta.removeClass('hide')
 
-        // Fill in the Raw HTTP response display.
-        var panelText = 'HTTP/1.1 ' + response.status + ' ' + response.statusText + '\n';
-        response.headers.forEach(function(header, key) {
-            panelText += normalizeHTTPHeader(key) + ': ' + header + '\n'
-        })
-        if (responseText) {
-            panelText += '\n' + responseText
-        }
-        form.find(".response-raw-response").text(panelText)
+      // Fill in the Raw HTTP response display.
+      var panelText = 'HTTP/1.1 ' + response.status + ' ' + response.statusText + '\n'
+      response.headers.forEach(function (header, key) {
+        panelText += normalizeHTTPHeader(key) + ': ' + header + '\n'
+      })
+      if (responseText) {
+        panelText += '\n' + responseText
+      }
+      $responseRawResponse.text(panelText)
     }
 
     // Instantiate a client to make the outgoing request.
     var options = {
-        requestCallback: requestCallback,
-        responseCallback: responseCallback,
+      requestCallback: requestCallback,
+      responseCallback: responseCallback
     }
 
     // Setup authentication options.
@@ -180,101 +209,104 @@ $('form.api-interaction').submit(function(event) {
       })
     }
 
-    const client = new coreapi.Client(options)
+    var client = new coreapi.Client(options)
 
     client.action(schema, key, params).then(function (data) {
-        var response = JSON.stringify(data, null, 2);
-        form.find(".request-awaiting").addClass("hide")
-        form.find(".response-raw").addClass("hide")
-        form.find(".response-data").addClass("hide")
-        form.find(".response-data").text('')
-        form.find(".response-data").jsonView(response)
+      var response = JSON.stringify(data, null, 2)
+      $requestAwaiting.addClass('hide')
+      $responseRaw.addClass('hide')
+      $responseData.addClass('hide').text('').jsonView(response)
 
-        if (responseDisplay === 'data') {
-            form.find(".response-data").removeClass("hide")
-        } else {
-            form.find(".response-raw").removeClass("hide")
-        }
+      if (responseDisplay === 'data') {
+        $responseData.removeClass('hide')
+      } else {
+        $responseRaw.removeClass('hide')
+      }
     }).catch(function (error) {
-        var response = JSON.stringify(error.content, null, 2);
-        form.find(".request-awaiting").addClass("hide")
-        form.find(".response-raw").addClass("hide")
-        form.find(".response-data").addClass("hide")
-        form.find(".response-data").text('')
-        form.find(".response-data").jsonView(response)
+      var response = JSON.stringify(error.content, null, 2)
+      $requestAwaiting.addClass('hide')
+      $responseRaw.addClass('hide')
+      $responseData.addClass('hide').text('').jsonView(response)
 
-        if (responseDisplay === 'data') {
-            form.find(".response-data").removeClass("hide")
-        } else {
-            form.find(".response-raw").removeClass("hide")
-        }
+      if (responseDisplay === 'data') {
+        $responseData.removeClass('hide')
+      } else {
+        $responseRaw.removeClass('hide')
+      }
     })
-});
+  })
 
-// 'Data'/'Raw' control
-$('.toggle-view button').click(function() {
-    responseDisplay = $(this).data("display-toggle");
-    $(this).removeClass("btn-default").addClass('btn-info').siblings().removeClass('btn-info');
+  // 'Data'/'Raw' control
+  $('.toggle-view button').click(function () {
+    var $modalContent = $(this).closest('.modal-content')
+    var $modalResponseRaw = $modalContent.find('.response-raw')
+    var $modalResponseData = $modalContent.find('.response-data')
+
+    responseDisplay = $(this).data('display-toggle')
+
+    $(this).removeClass('btn-default').addClass('btn-info').siblings().removeClass('btn-info')
+
     if (responseDisplay === 'raw') {
-        $(this).closest(".modal-content").find(".response-raw").removeClass("hide");
-        $(this).closest(".modal-content").find(".response-data").addClass("hide");
+      $modalResponseRaw.removeClass('hide')
+      $modalResponseData.addClass('hide')
     } else {
-        $(this).closest(".modal-content").find(".response-data").removeClass("hide");
-        $(this).closest(".modal-content").find(".response-raw").addClass("hide");
+      $modalResponseData.removeClass('hide')
+      $modalResponseRaw.addClass('hide')
     }
-});
+  })
 
-// Authentication: none
-$('#auth-control').find("[data-auth='none']").click(function (event) {
-    event.preventDefault();
-    window.auth = null;
-    $('#selected-authentication').text('none');
-    $('#auth-control').children().removeClass('active');
-    $('#auth-control').find("[data-auth='none']").addClass('active');
+  // Authentication: none
+  $authControl.find("[data-auth='none']").click(function (event) {
+    event.preventDefault()
+    window.auth = null
+    $selectedAuthentication.text('none')
+    $authControl.children().removeClass('active')
+    $authControl.find("[data-auth='none']").addClass('active')
+  })
+
+  // Authentication: token
+  $('form.authentication-token-form').submit(function (event) {
+    event.preventDefault()
+    var $form = $(this).closest('form')
+    var scheme = $form.find('input#scheme').val()
+    var token = $form.find('input#token').val()
+    window.auth = {
+      'type': 'token',
+      'scheme': scheme,
+      'token': token
+    }
+    $selectedAuthentication.text('token')
+    $authControl.children().removeClass('active')
+    $authControl.find("[data-auth='token']").addClass('active')
+    $authTokenModal.modal('hide')
+  })
+
+  // Authentication: basic
+  $('form.authentication-basic-form').submit(function (event) {
+    event.preventDefault()
+    var $form = $(this).closest('form')
+    var username = $form.find('input#username').val()
+    var password = $form.find('input#password').val()
+    window.auth = {
+      'type': 'basic',
+      'username': username,
+      'password': password
+    }
+    $selectedAuthentication.text('basic')
+    $authControl.children().removeClass('active')
+    $authControl.find("[data-auth='basic']").addClass('active')
+    $authTokenModal.modal('hide')
+  })
+
+  // Authentication: session
+  $('form.authentication-session-form').submit(function (event) {
+    event.preventDefault()
+    window.auth = {
+      'type': 'session'
+    }
+    $selectedAuthentication.text('session')
+    $authControl.children().removeClass('active')
+    $authControl.find("[data-auth='session']").addClass('active')
+    $authTokenModal.modal('hide')
+  })
 })
-
-// Authentication: token
-$('form.authentication-token-form').submit(function(event) {
-    event.preventDefault();
-    const form = $(this).closest("form");
-    const scheme = form.find('input#scheme').val();
-    const token = form.find('input#token').val();
-    window.auth = {
-        'type': 'token',
-        'scheme': scheme,
-        'token': token
-    };
-    $('#selected-authentication').text('token');
-    $('#auth-control').children().removeClass('active');
-    $('#auth-control').find("[data-auth='token']").addClass('active');
-    $('#auth_token_modal').modal('hide');
-});
-
-// Authentication: basic
-$('form.authentication-basic-form').submit(function(event) {
-    event.preventDefault();
-    const form = $(this).closest("form");
-    const username = form.find('input#username').val();
-    const password = form.find('input#password').val();
-    window.auth = {
-        'type': 'basic',
-        'username': username,
-        'password': password
-    };
-    $('#selected-authentication').text('basic');
-    $('#auth-control').children().removeClass('active');
-    $('#auth-control').find("[data-auth='basic']").addClass('active');
-    $('#auth_basic_modal').modal('hide');
-});
-
-// Authentication: session
-$('form.authentication-session-form').submit(function(event) {
-    event.preventDefault();
-    window.auth = {
-        'type': 'session',
-    };
-    $('#selected-authentication').text('session');
-    $('#auth-control').children().removeClass('active');
-    $('#auth-control').find("[data-auth='session']").addClass('active');
-    $('#auth_session_modal').modal('hide');
-});
