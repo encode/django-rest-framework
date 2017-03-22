@@ -526,6 +526,7 @@ class SchemaGenerator(object):
             title = ''
             description = ''
             schema_cls = coreschema.String
+            kwargs = {}
             if model is not None:
                 # Attempt to infer a field description if possible.
                 try:
@@ -541,14 +542,16 @@ class SchemaGenerator(object):
                 elif model_field is not None and model_field.primary_key:
                     description = get_pk_description(model, model_field)
 
-                if isinstance(model_field, models.AutoField):
+                if hasattr(view, 'lookup_value_regex') and view.lookup_field == variable:
+                    kwargs['pattern'] = view.lookup_value_regex
+                elif isinstance(model_field, models.AutoField):
                     schema_cls = coreschema.Integer
 
             field = coreapi.Field(
                 name=variable,
                 location='path',
                 required=True,
-                schema=schema_cls(title=title, description=description)
+                schema=schema_cls(title=title, description=description, **kwargs)
             )
             fields.append(field)
 
