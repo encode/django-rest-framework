@@ -328,7 +328,7 @@ class SchemaGenerator(object):
                 continue
             link = self.get_link(path, method, view)
             typical_path = self.make_typical_path(path)
-            keys = self.get_keys(subpath, method, view)
+            keys = self.get_keys(typical_path, method, view)
             insert_into(links, keys, link)
         return links
 
