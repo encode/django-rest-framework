@@ -328,7 +328,7 @@ class SchemaGenerator(object):
                 continue
             link = self.get_link(path, method, view)
             typical_path = self.make_typical_path(path)
-            keys = self.get_keys(typical_path, method, view)
+            keys = self.get_keys(path, typical_path, method, view)
             insert_into(links, keys, link)
         return links
 
@@ -590,7 +590,7 @@ class SchemaGenerator(object):
 
     # Method for generating the link layout....
 
-    def get_keys(self, subpath, method, view):
+    def get_keys(self, path, subpath, method, view):
         """
         Return a list of keys that should be used to layout a link within
         the schema document.
@@ -607,7 +607,7 @@ class SchemaGenerator(object):
             action = view.action
         else:
             # Views have no associated action, so we determine one from the method.
-            if is_list_view(subpath, method, view):
+            if is_list_view(path, method, view):
                 action = 'list'
             else:
                 action = self.default_mapping[method.lower()]
