@@ -336,6 +336,15 @@ class SchemaGenerator(object):
     # Methods used when we generate a view instance from the raw callback...
 
 
+    def make_typical_path(self, path):
+        """
+        Removes '/' from path and returns a linked value using '-'.
+        """
+        ret = [ partial for partial in path.split('/')
+                if partial and '{' not in partial ]
+        return '-'.join(ret)
+
+
     def create_view(self, callback, method, request=None):
         """
         Given a callback, return an actual view instance.
