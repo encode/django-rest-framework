@@ -128,6 +128,8 @@ def _resolve_model(obj):
 
 
 def is_authenticated(user):
+    if not user:
+      return False
     if django.VERSION < (1, 10):
         return user.is_authenticated()
     return user.is_authenticated
