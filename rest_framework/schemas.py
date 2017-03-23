@@ -83,18 +83,6 @@ def field_to_schema(field):
     return coreschema.String(title=title, description=description)
 
 
-def common_path(paths):
-    split_paths = [path.strip('/').split('/') for path in paths]
-    s1 = min(split_paths)
-    s2 = max(split_paths)
-    common = s1
-    for i, c in enumerate(s1):
-        if c != s2[i]:
-            common = s1[:i]
-            break
-    return '/' + '/'.join(common)
-
-
 def get_pk_name(model):
     meta = model._meta.concrete_model._meta
     return _get_pk(meta).name
