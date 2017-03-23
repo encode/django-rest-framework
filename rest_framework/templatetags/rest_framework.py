@@ -362,3 +362,8 @@ def break_long_headers(header):
     if len(header) > 160 and ',' in header:
         header = mark_safe('<br> ' + ', <br>'.join(header.split(',')))
     return header
+
+
+@register.filter
+def symbolize(word):
+    return word.replace('-', ' ').upper()
