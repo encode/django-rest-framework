@@ -322,13 +322,12 @@ class SchemaGenerator(object):
         # Only generate the path prefix for paths that will be included
         if not paths:
             return None
-        prefix = self.determine_path_prefix(paths)
 
         for path, method, view in view_endpoints:
             if not self.has_view_permissions(path, method, view):
                 continue
             link = self.get_link(path, method, view)
-            subpath = path[len(prefix):]
+            typical_path = self.make_typical_path(path)
             keys = self.get_keys(subpath, method, view)
             insert_into(links, keys, link)
         return links
