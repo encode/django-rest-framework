@@ -22,10 +22,10 @@
                 <a><i class="fa fa-user fa-lg"></i> Authentication</a> <span id="selected-authentication">{% if user.is_authenticated %}session{% else %}none{% endif %}</span>
             </li>
             <ul class="sub-menu collapse out" id="auth-control">
-                <li data-auth="none" {% if not user.is_authenticated %}class="active"{% endif %}><a href="#" data-language="none">none</a></li>
-                <li data-auth="token" data-toggle="modal" data-target="#auth_token_modal"><a href="#">token</a></li>
-                <li data-auth="basic" data-toggle="modal" data-target="#auth_basic_modal"><a href="#">basic</a></li>
-                <li data-auth="session"  data-toggle="modal" data-target="#auth_session_modal" {% if user.is_authenticated %}class="active"{% endif %}><a href="#">session</a></li>
+                <li {% if not user.is_authenticated %}class="active"{% endif %}><a data-auth="none" href="#">none</a></li>
+                <li><a data-auth="token" data-toggle="modal" data-target="#auth_token_modal" href="#">token</a></li>
+                <li><a data-auth="basic" data-toggle="modal" data-target="#auth_basic_modal" href="#">basic</a></li>
+                <li {% if user.is_authenticated %}class="active"{% endif %}><a data-auth="session" data-toggle="modal" data-target="#auth_session_modal" href="#">session</a></li>
             </ul>
 
             <li data-toggle="collapse" data-target="#language-control" class="collapsed">

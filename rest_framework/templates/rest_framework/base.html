@@ -63,12 +63,15 @@
               {% else %}
                 <li><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
               {% endif %}
+            {% empty %}
+              {% block breadcrumbs_empty %}&nbsp;{% endblock breadcrumbs_empty %}
             {% endfor %}
           </ul>
         {% endblock %}
 
         <!-- Content -->
         <div id="content">
+          {% block content %}
 
           {% if 'GET' in allowed_methods %}
             <form id="get-form" class="pull-right">
@@ -252,6 +255,7 @@
                 </div>
               {% endif %}
             {% endif %}
+          {% endblock content %}
         </div><!-- /.content -->
       </div><!-- /.container -->
     </div><!-- ./wrapper -->

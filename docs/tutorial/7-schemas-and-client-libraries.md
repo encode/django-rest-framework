@@ -41,7 +41,7 @@ view in our URL configuration.
     schema_view = get_schema_view(title='Pastebin API')
 
     urlpatterns = [
-        url('^schema/$', schema_view),
+        url(r'^schema/$', schema_view),
         ...
     ]
 
