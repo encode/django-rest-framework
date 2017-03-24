@@ -70,6 +70,7 @@ class ExampleViewSet(ModelViewSet):
         assert self.action
         return super(ExampleViewSet, self).get_serializer(*args, **kwargs)
 
+
 if coreapi:
     schema_view = get_schema_view(title='Example API')
 else:

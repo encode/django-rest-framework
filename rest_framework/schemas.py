@@ -338,8 +338,7 @@ class SchemaGenerator(object):
         """
         Removes '/' from path and returns a linked value using '-'.
         """
-        ret = [ partial for partial in path.split('/')
-                if partial and '{' not in partial ]
+        ret = [partial for partial in path.split('/') if partial and '{' not in partial]
         return '-'.join(ret)
 
     def create_view(self, callback, method, request=None):
