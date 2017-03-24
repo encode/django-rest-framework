@@ -327,22 +327,20 @@ class SchemaGenerator(object):
             if not self.has_view_permissions(path, method, view):
                 continue
             link = self.get_link(path, method, view)
-            typical_path = self.make_typical_path(path)
-            keys = self.get_keys(path, typical_path, method, view)
+            overall = self.make_overall(path)
+            keys = self.get_keys(path, overall, method, view)
             insert_into(links, keys, link)
         return links
 
     # Methods used when we generate a view instance from the raw callback...
 
-
-    def make_typical_path(self, path):
+    def make_overall(self, path):
         """
         Removes '/' from path and returns a linked value using '-'.
         """
         ret = [ partial for partial in path.split('/')
                 if partial and '{' not in partial ]
         return '-'.join(ret)
-
 
     def create_view(self, callback, method, request=None):
         """
@@ -590,7 +588,7 @@ class SchemaGenerator(object):
 
     # Method for generating the link layout....
 
-    def get_keys(self, path, subpath, method, view):
+    def get_keys(self, path, overall, method, view):
         """
         Return a list of keys that should be used to layout a link within
         the schema document.
@@ -614,7 +612,7 @@ class SchemaGenerator(object):
 
         named_path_components = [
             component for component
-            in subpath.strip('/').split('/')
+            in overall.strip('/').split('/')
             if '{' not in component
         ]
 
@@ -626,8 +624,8 @@ class SchemaGenerator(object):
                     action = self.coerce_method_names[action]
                 return named_path_components + [action]
             else:
+                named_path_components = overall.split('-')
                 return named_path_components[:-1] + [action]
-
         if action in self.coerce_method_names:
             action = self.coerce_method_names[action]
 
