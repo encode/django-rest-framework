@@ -38,6 +38,9 @@ class ExampleSerializer(serializers.Serializer):
     read_only = serializers.CharField(read_only=True)
     hidden = serializers.HiddenField(default='hello')
 
+    class Meta:
+        extra_kwargs = {'b': {'help_text': 'Another field description'}}
+
 
 class AnotherSerializer(serializers.Serializer):
     c = serializers.CharField(required=True)
@@ -152,7 +155,7 @@ class TestRouterGeneratedSchema(TestCase):
                         encoding='application/json',
                         fields=[
                             coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description='A field description')),
-                            coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
+                            coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B', description='Another field description'))
                         ]
                     ),
                     'read': coreapi.Link(
