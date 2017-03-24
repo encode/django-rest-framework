@@ -405,11 +405,11 @@ class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
 class Test4605Regression(TestCase):
     def test_4605_regression(self):
         generator = SchemaGenerator()
-        typical_path1 = generator.make_typical_path(
-            '/api/v1/items/',
+        overall = generator.make_overall(
+            '/api/',
         )
-        assert typical_path1 == 'api-v1-items'
-        typical_path2 = generator.make_typical_path(
+        assert overall == 'api'
+        overall = generator.make_overall(
             '/auth/convert-token/'
         )
-        assert typical_path2 == 'auth-convert-token'
+        assert overall == 'auth-convert-token'
