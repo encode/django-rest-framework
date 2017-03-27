@@ -1,6 +1,6 @@
 require([
     base_url + '/mkdocs/js/mustache.min.js',
-    base_url + '/mkdocs/js/lunr-0.5.7.min.js',
+    base_url + '/mkdocs/js/lunr.min.js',
     'text!search-results-template.mustache',
     'text!../search_index.json',
 ], function (Mustache, lunr, results_template, data) {
@@ -70,7 +70,7 @@ require([
              */
             jQuery('#mkdocs_search_modal a').click(function(){
                 jQuery('#mkdocs_search_modal').modal('hide');
-            })
+            });
         }
 
     };

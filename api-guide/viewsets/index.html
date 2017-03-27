@@ -633,7 +633,9 @@ class UserViewSet(viewsets.ModelViewSet):
 <p>You may need to provide custom <code>ViewSet</code> classes that do not have the full set of <code>ModelViewSet</code> actions, or that customize the behavior in some other way.</p>
 <h2 id="example_3"><a class="toclink" href="#example_3">Example</a></h2>
 <p>To create a base viewset class that provides <code>create</code>, <code>list</code> and <code>retrieve</code> operations, inherit from <code>GenericViewSet</code>, and mixin the required actions:</p>
-<pre><code>class CreateListRetrieveViewSet(mixins.CreateModelMixin,
+<pre><code>from rest_framework import mixins
+
+class CreateListRetrieveViewSet(mixins.CreateModelMixin,
                                 mixins.ListModelMixin,
                                 mixins.RetrieveModelMixin,
                                 viewsets.GenericViewSet):

@@ -452,10 +452,10 @@ view in our URL configuration.</p>
 schema_view = get_schema_view(title='Pastebin API')
 
 urlpatterns = [
-    url('^schema/$', schema_view),
-    ...
-]
 </code></pre>
+<p>url(r'^schema/$', schema_view),
+        ...
+    ]</p>
 <p>If you visit the API root endpoint in a browser you should now see <code>corejson</code>
 representation become available as an option.</p>
 <p><img alt="Schema format" src="../../img/corejson-format.png" /></p>
