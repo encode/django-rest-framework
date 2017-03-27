@@ -358,24 +358,7 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 
 ## drfpasswordless
 
-[drfpasswordless][drfpasswordless] adds passwordless support to Django Rest Framework's own TokenAuthentication scheme. Users log in and sign up with a token sent to a contact point, either an email address or a mobile number.
-
-#### Example
-
-    curl -X POST -d "email=aaron@example.com" localhost:8000/auth/email/
-
-User receives an email:
-
-    ..
-    <h1>Your login token is 123456</h1>
-    ..
-
-The client has 15 minutes to provide the correct token in exchange for an authentication token (provided by Django Rest Framework's Token Authentication).
-
-    curl -X POST -d "token=815381" localhost:8000/callback/auth/
-
-    > HTTP/1.0 200 OK
-    > {"token":"76be2d9ecfaf5fa4226d722bzdd8a4fff207ed0e”}
+[drfpasswordless][drfpasswordless] adds (Medium, Square Cash inspired) passwordless support to Django REST Framework's own TokenAuthentication scheme. Users log in and sign up with a token sent to a contact point like an email address or a mobile number.
 
 [cite]: http://jacobian.org/writing/rest-worst-practices/
 [http401]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
