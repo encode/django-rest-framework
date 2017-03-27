@@ -123,10 +123,7 @@ def get_field_kwargs(field_name, model_field):
             kwargs['allow_folders'] = model_field.allow_folders
 
     if model_field.choices:
-        # If this model field contains choices, then return early.
-        # Further keyword arguments are not valid.
         kwargs['choices'] = model_field.choices
-        return kwargs
 
     # Our decimal validation is handled in the field code, not validator code.
     # (In Django 1.9+ this differs from previous style)
