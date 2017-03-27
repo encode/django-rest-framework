@@ -9,6 +9,7 @@ from collections import Mapping
 
 import pytest
 from django.db import models
+from django.test import TestCase
 
 from rest_framework import fields, relations, serializers
 from rest_framework.compat import unicode_repr
@@ -519,3 +520,37 @@ class TestDeclaredFieldInheritance:
         assert len(Parent().get_fields()) == 2
         assert len(Child().get_fields()) == 2
         assert len(Grandchild().get_fields()) == 2
+
+
+CHOICES = (
+    ('choice1', 'choice 1'),
+    ('choice2', 'choice 1'),
+)
+
+
+class Poll(models.Model):
+    form_name = models.CharField(
+        'name', max_length=254, unique=True, choices=CHOICES
+    )
+
+
+class Test5004(TestCase):
+    def test_unique_choice_field(self):
+        Poll.objects.create(form_name='choice1')
+
+        class PollSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Poll
+                fields = '__all__'
+
+        serializer = PollSerializer(data={'form_name': 'choice1'})
+
+        with self.assertRaises(serializers.ValidationError) as excinfo:
+            serializer.is_valid(raise_exception=True)
+
+        assert excinfo.exception.get_full_details() == {
+            'form_name': [{
+                'message': 'poll with this name already exists.',
+                'code': 'unique'
+            }]
+        }
