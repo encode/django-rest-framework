@@ -377,6 +377,47 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
+class TestSchemaGeneratorWithOverlappingKeys(TestCase):
+    def setUp(self):
+        self.patterns = [
+            url('^api/v1/example/(?P<pk>\d+)/?$', ExampleDetailView.as_view()),
+            url('^api/v1/example/(?P<pk>\d+)/(?P<id2>\d+)/?$', ExampleDetailView.as_view()),
+        ]
+
+    def test_schema_for_regular_views(self):
+        generator = SchemaGenerator(title='Example API', patterns=self.patterns)
+        schema = generator.get_schema()
+        expected = coreapi.Document(
+            url='',
+            title='Example API',
+            content={
+                'example': {
+                    'id': {
+                        'read': coreapi.Link(
+                            url='/api/v1/example/{id}/',
+                            action='get',
+                            fields=[
+                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            ]
+                        ),
+                        'id2': {
+                            'read': coreapi.Link(
+                                url='/api/v1/example/{id}/{id2}/',
+                                action='get',
+                                fields=[
+                                    coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                                    coreapi.Field('id2', required=True, location='path', schema=coreschema.String())
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        )
+        assert schema == expected
+
+
+@unittest.skipUnless(coreapi, 'coreapi is not installed')
 class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
     def setUp(self):
         router = DefaultRouter()
