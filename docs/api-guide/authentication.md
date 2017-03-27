@@ -356,6 +356,27 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 
 [Django-rest-knox][django-rest-knox] library provides models and views to handle token based authentication in a more secure and extensible way than the built-in TokenAuthentication scheme - with Single Page Applications and Mobile clients in mind. It provides per-client tokens, and views to generate them when provided some other authentication (usually basic authentication), to delete the token (providing a server enforced logout) and to delete all tokens (logs out all clients that a user is logged into).
 
+## drfpasswordless
+
+[drfpasswordless][drfpasswordless] adds passwordless support to Django Rest Framework's own TokenAuthentication scheme. Users log in and sign up with a token sent to a contact point, either an email address or a mobile number.
+
+#### Example
+
+    curl -X POST -d "email=aaron@example.com" localhost:8000/auth/email/
+
+User receives an email:
+
+    ..
+    <h1>Your login token is 123456</h1>
+    ..
+
+The client has 15 minutes to provide the correct token in exchange for an authentication token (provided by Django Rest Framework's Token Authentication).
+
+    curl -X POST -d "token=815381" localhost:8000/callback/auth/
+
+    > HTTP/1.0 200 OK
+    > {"token":"76be2d9ecfaf5fa4226d722bzdd8a4fff207ed0e”}
+
 [cite]: http://jacobian.org/writing/rest-worst-practices/
 [http401]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
 [http403]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
@@ -396,3 +417,4 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [django-rest-auth]: https://github.com/Tivix/django-rest-auth
 [django-rest-framework-social-oauth2]: https://github.com/PhilipGarnero/django-rest-framework-social-oauth2
 [django-rest-knox]: https://github.com/James1345/django-rest-knox
+[drfpasswordless]: https://github.com/aaronn/django-rest-framework-passwordless
