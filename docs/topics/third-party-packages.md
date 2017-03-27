@@ -190,6 +190,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djoser][djoser] - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.
 * [django-rest-auth][django-rest-auth] - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.
 * [drf-oidc-auth][drf-oidc-auth] - Implements OpenID Connect token authentication for DRF.
+* [drfpasswordless][drfpasswordless] - Adds (Medium, Square Cash inspired) passwordless logins and signups via email and mobile numbers.
 
 ### Permissions
 
@@ -330,3 +331,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [drf-oidc-auth]: https://github.com/ByteInternet/drf-oidc-auth
 [drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
 [djangorestframework-queryfields]: https://github.com/wimglenn/djangorestframework-queryfields
+[drfpasswordless]: https://github.com/aaronn/django-rest-framework-passwordless
