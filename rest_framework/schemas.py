@@ -647,9 +647,8 @@ class SchemaGenerator(object):
                 action = self.default_mapping[method.lower()]
 
         named_path_components = [
-            component for component
+            component.strip('{}') for component
             in subpath.strip('/').split('/')
-            if '{' not in component
         ]
 
         if is_custom_action(action):

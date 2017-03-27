@@ -115,13 +115,15 @@ class TestRouterGeneratedSchema(TestCase):
                             action='get'
                         )
                     },
-                    'read': coreapi.Link(
-                        url='/example/{id}/',
-                        action='get',
-                        fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                        ]
-                    )
+                    'id': {
+                        'read': coreapi.Link(
+                            url='/example/{id}/',
+                            action='get',
+                            fields=[
+                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            ]
+                        )
+                    },
                 }
             }
         )
@@ -155,24 +157,6 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
                         ]
                     ),
-                    'read': coreapi.Link(
-                        url='/example/{id}/',
-                        action='get',
-                        fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                        ]
-                    ),
-                    'custom_action': coreapi.Link(
-                        url='/example/{id}/custom_action/',
-                        action='post',
-                        encoding='application/json',
-                        description='A description of custom action.',
-                        fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('c', required=True, location='form', schema=coreschema.String(title='C')),
-                            coreapi.Field('d', required=False, location='form', schema=coreschema.String(title='D')),
-                        ]
-                    ),
                     'custom_list_action': coreapi.Link(
                         url='/example/custom_list_action/',
                         action='get'
@@ -187,33 +171,53 @@ class TestRouterGeneratedSchema(TestCase):
                             action='post'
                         )
                     },
-                    'update': coreapi.Link(
-                        url='/example/{id}/',
-                        action='put',
-                        encoding='application/json',
-                        fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description=('A field description'))),
-                            coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
-                        ]
-                    ),
-                    'partial_update': coreapi.Link(
-                        url='/example/{id}/',
-                        action='patch',
-                        encoding='application/json',
-                        fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('a', required=False, location='form', schema=coreschema.String(title='A', description='A field description')),
-                            coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
-                        ]
-                    ),
-                    'delete': coreapi.Link(
-                        url='/example/{id}/',
-                        action='delete',
-                        fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                        ]
-                    )
+                    'id': {
+                        'read': coreapi.Link(
+                            url='/example/{id}/',
+                            action='get',
+                            fields=[
+                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            ]
+                        ),
+                        'update': coreapi.Link(
+                            url='/example/{id}/',
+                            action='put',
+                            encoding='application/json',
+                            fields=[
+                                coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                                coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description=('A field description'))),
+                                coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
+                            ]
+                        ),
+                        'partial_update': coreapi.Link(
+                            url='/example/{id}/',
+                            action='patch',
+                            encoding='application/json',
+                            fields=[
+                                coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                                coreapi.Field('a', required=False, location='form', schema=coreschema.String(title='A', description='A field description')),
+                                coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
+                            ]
+                        ),
+                        'delete': coreapi.Link(
+                            url='/example/{id}/',
+                            action='delete',
+                            fields=[
+                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            ]
+                        ),
+                        'custom_action': coreapi.Link(
+                            url='/example/{id}/custom_action/',
+                            action='post',
+                            encoding='application/json',
+                            description='A description of custom action.',
+                            fields=[
+                                coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                                coreapi.Field('c', required=True, location='form', schema=coreschema.String(title='C')),
+                                coreapi.Field('d', required=False, location='form', schema=coreschema.String(title='D')),
+                            ]
+                        ),
+                    }
                 }
             }
         )
@@ -293,21 +297,23 @@ class TestSchemaGenerator(TestCase):
                         action='get',
                         fields=[]
                     ),
-                    'read': coreapi.Link(
-                        url='/example/{id}/',
-                        action='get',
-                        fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                        ]
-                    ),
-                    'sub': {
-                        'list': coreapi.Link(
-                            url='/example/{id}/sub/',
+                    'id': {
+                        'read': coreapi.Link(
+                            url='/example/{id}/',
                             action='get',
                             fields=[
                                 coreapi.Field('id', required=True, location='path', schema=coreschema.String())
                             ]
-                        )
+                        ),
+                        'sub': {
+                            'list': coreapi.Link(
+                                url='/example/{id}/sub/',
+                                action='get',
+                                fields=[
+                                    coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                                ]
+                            )
+                        }
                     }
                 }
             }
@@ -346,21 +352,23 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
                         action='get',
                         fields=[]
                     ),
-                    'read': coreapi.Link(
-                        url='/api/v1/example/{id}/',
-                        action='get',
-                        fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                        ]
-                    ),
-                    'sub': {
-                        'list': coreapi.Link(
-                            url='/api/v1/example/{id}/sub/',
+                    'id': {
+                        'read': coreapi.Link(
+                            url='/api/v1/example/{id}/',
                             action='get',
                             fields=[
                                 coreapi.Field('id', required=True, location='path', schema=coreschema.String())
                             ]
-                        )
+                        ),
+                        'sub': {
+                            'list': coreapi.Link(
+                                url='/api/v1/example/{id}/sub/',
+                                action='get',
+                                fields=[
+                                    coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                                ]
+                            )
+                        }
                     }
                 }
             }
