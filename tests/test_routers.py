@@ -65,6 +65,18 @@ class EmptyPrefixViewSet(viewsets.ModelViewSet):
         return self.queryset[index]
 
 
+class TestViewSet(viewsets.ViewSet):
+    def list(self, request, *args, **kwargs):
+        return Response({'method': 'list'})
+
+    def create(self, request, *args, **kwargs):
+        return Response({'method': 'create'})
+
+
+class DisableCreateViewSet(TestViewSet):
+    create = None
+
+
 notes_router = SimpleRouter()
 notes_router.register(r'notes', NoteViewSet)
 
@@ -80,6 +92,10 @@ empty_prefix_urls = [
     url(r'^', include(empty_prefix_router.urls)),
 ]
 
+diabled_router = SimpleRouter()
+diabled_router.register(r'test', TestViewSet, base_name='test')
+diabled_router.register(r'disabled', DisableCreateViewSet, base_name='disable')
+
 urlpatterns = [
     url(r'^non-namespaced/', include(namespaced_router.urls)),
     url(r'^namespaced/', include(namespaced_router.urls, namespace='example', app_name='example')),
@@ -87,6 +103,7 @@ urlpatterns = [
     url(r'^example2/', include(kwarged_notes_router.urls)),
 
     url(r'^empty-prefix/', include(empty_prefix_urls)),
+    url(r'^disabled/', include(diabled_router.urls)),
 ]
 
 
@@ -390,3 +407,23 @@ class TestEmptyPrefix(TestCase):
         response = self.client.get('/empty-prefix/1/')
         assert response.status_code == 200
         assert json.loads(response.content.decode('utf-8')) == {'uuid': '111', 'text': 'First'}
+
+
+@override_settings(ROOT_URLCONF='tests.test_routers')
+class TestDisableRoute(TestCase):
+    """
+    Ensure route handlers can be disabled by setting them to `None`.
+    """
+
+    def test_exception_raised_when_action_applied_to_existing_route(self):
+        response = self.client.get('/disabled/test/')
+        assert response.data == {'method': 'list'}
+
+        response = self.client.post('/disabled/test/')
+        assert response.data == {'method': 'create'}
+
+        response = self.client.get('/disabled/disabled/')
+        assert response.data == {'method': 'list'}
+
+        response = self.client.post('/disabled/disabled/')
+        assert response.status_code == 405

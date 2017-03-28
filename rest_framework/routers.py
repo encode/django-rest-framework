@@ -210,7 +210,7 @@ class SimpleRouter(BaseRouter):
         """
         bound_methods = {}
         for method, action in method_map.items():
-            if hasattr(viewset, action):
+            if getattr(viewset, action, None) is not None:
                 bound_methods[method] = action
         return bound_methods
 
