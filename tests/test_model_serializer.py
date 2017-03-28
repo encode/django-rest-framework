@@ -99,6 +99,15 @@ class Issue3674ChildModel(models.Model):
     value = models.CharField(primary_key=True, max_length=64)
 
 
+class UniqueChoiceModel(models.Model):
+    CHOICES = (
+        ('choice1', 'choice 1'),
+        ('choice2', 'choice 1'),
+    )
+
+    name = models.CharField(max_length=254, unique=True, choices=CHOICES)
+
+
 class TestModelSerializer(TestCase):
     def test_create_method(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -1080,3 +1089,22 @@ class Issue4897TestCase(TestCase):
         with pytest.raises(AssertionError) as cm:
             TestSerializer(obj).fields
         cm.match(r'readonly_fields')
+
+
+class Test5004UniqueChoiceField(TestCase):
+    def test_unique_choice_field(self):
+        class TestUniqueChoiceSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniqueChoiceModel
+                fields = '__all__'
+
+        UniqueChoiceModel.objects.create(name='choice1')
+        serializer = TestUniqueChoiceSerializer(data={'name': 'choice1'})
+        expected = dedent("""
+            TestUniqueChoiceSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                name = ChoiceField(choices=(('choice1', 'choice 1'), ('choice2', 'choice 1')), validators=[<UniqueValidator(queryset=UniqueChoiceModel.objects.all())>])
+        """)
+        self.assertEqual(unicode_repr(TestUniqueChoiceSerializer()), expected)
+        assert not serializer.is_valid()
+        assert serializer.errors == {'name': ['unique choice model with this name already exists.']}

@@ -519,29 +519,3 @@ class TestDeclaredFieldInheritance:
         assert len(Parent().get_fields()) == 2
         assert len(Child().get_fields()) == 2
         assert len(Grandchild().get_fields()) == 2
-
-
-class Poll(models.Model):
-    CHOICES = (
-        ('choice1', 'choice 1'),
-        ('choice2', 'choice 1'),
-    )
-
-    name = models.CharField(
-        'name', max_length=254, unique=True, choices=CHOICES
-    )
-
-
-@pytest.mark.django_db
-class Test5004UniqueChoiceField:
-    def test_unique_choice_field(self):
-        Poll.objects.create(name='choice1')
-
-        class PollSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = Poll
-                fields = '__all__'
-
-        serializer = PollSerializer(data={'name': 'choice1'})
-        assert not serializer.is_valid()
-        assert serializer.errors == {'name': ['poll with this name already exists.']}
