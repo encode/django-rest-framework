@@ -38,7 +38,8 @@ from rest_framework.utils.field_mapping import (
     get_relation_kwargs, get_url_kwargs
 )
 from rest_framework.utils.serializer_helpers import (
-    BindingDict, BoundField, NestedBoundField, ReturnDict, ReturnList
+    BindingDict, BoundField, JSONBoundField, NestedBoundField, ReturnDict,
+    ReturnList
 )
 from rest_framework.validators import (
     UniqueForDateValidator, UniqueForMonthValidator, UniqueForYearValidator,
@@ -521,6 +522,8 @@ class Serializer(BaseSerializer):
         error = self.errors.get(key) if hasattr(self, '_errors') else None
         if isinstance(field, Serializer):
             return NestedBoundField(field, value, error)
+        if isinstance(field, JSONField):
+            return JSONBoundField(field, value, error)
         return BoundField(field, value, error)
 
     # Include a backlink to the serializer class on return objects.
