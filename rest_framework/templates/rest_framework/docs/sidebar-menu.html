@@ -1,0 +1,18 @@
+{% load rest_framework %}
+
+{% if section.links %}
+    <ul class="sub-menu {% if parent_key %}collapse{% endif %}" id="{{ parent_key }}-dropdown">
+        {% for link_key, link in section.links|items %}
+            <li><a href="#{{ parent_key }}-{{ link_key }}">{{ link.title|default:link_key }}</a></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% for key, sect in section.data|items %}
+    <li data-toggle="collapse" data-target="#{{ parent_key|add:'-' }}{{ key }}-dropdown" class="collapsed">
+        <a><i class="fa fa-dot-circle-o fa-lg"></i> {{ parent_key|add:' / ' }}{% if key %}{{ key }}{% else %}API Endpoints{% endif %} <span class="arrow"></span></a>
+    </li>
+    {% with section=sect parent_key=parent_key|add:'-'|add:key %}
+        {% include 'rest_framework/docs/sidebar-menu.html' %}
+    {% endwith %}
+{% endfor %}
