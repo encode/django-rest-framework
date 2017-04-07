@@ -290,7 +290,7 @@ class APIView(View):
         """
         Returns the exception handler that this view uses.
         """
-        return api_settings.EXCEPTION_HANDLER
+        return self.settings.EXCEPTION_HANDLER
 
     # API policy implementation methods
 
