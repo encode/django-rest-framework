@@ -127,7 +127,7 @@ class BasicAuthTests(TestCase):
     def test_regression_handle_bad_base64_basic_auth_header(self):
         """Ensure POSTing JSON over basic auth with incorrectly padded Base64 string is handled correctly"""
         # regression test for issue in 'rest_framework.authentication.BasicAuthentication.authenticate'
-        # https://github.com/tomchristie/django-rest-framework/issues/4089
+        # https://github.com/encode/django-rest-framework/issues/4089
         auth = 'Basic =a='
         response = self.csrf_client.post(
             '/basic/',
@@ -185,7 +185,7 @@ class SessionAuthTests(TestCase):
         """
         Ensure the login template renders for a basic GET.
 
-        cf. [#1810](https://github.com/tomchristie/django-rest-framework/pull/1810)
+        cf. [#1810](https://github.com/encode/django-rest-framework/pull/1810)
         """
         response = self.csrf_client.get('/auth/login/')
         content = response.content.decode('utf8')

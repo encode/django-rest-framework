@@ -2,7 +2,7 @@ site_name: Django REST framework
 site_url: http://www.django-rest-framework.org/
 site_description: Django REST framework - Web APIs for Django
 
-repo_url: https://github.com/tomchristie/django-rest-framework
+repo_url: https://github.com/encode/django-rest-framework
 
 theme_dir: docs_theme
 

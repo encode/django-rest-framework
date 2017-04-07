@@ -106,5 +106,5 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [drf-an-intro]: https://realpython.com/blog/python/django-rest-framework-quick-start/
 [drf-tutorial]: https://tests4geeks.com/django-rest-framework-tutorial/
 [building-a-restful-api-with-drf]: http://agiliq.com/blog/2014/12/building-a-restful-api-with-django-rest-framework/
-[submit-pr]: https://github.com/tomchristie/django-rest-framework
+[submit-pr]: https://github.com/encode/django-rest-framework
 [anna-email]: mailto:anna@django-rest-framework.org
