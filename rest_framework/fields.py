@@ -618,8 +618,8 @@ class Field(object):
         originally created with, rather than copying the complete state.
         """
         # Treat regexes and validators as immutable.
-        # See https://github.com/tomchristie/django-rest-framework/issues/1954
-        # and https://github.com/tomchristie/django-rest-framework/pull/4489
+        # See https://github.com/encode/django-rest-framework/issues/1954
+        # and https://github.com/encode/django-rest-framework/pull/4489
         args = [
             copy.deepcopy(item) if not isinstance(item, REGEX_TYPE) else item
             for item in self._args

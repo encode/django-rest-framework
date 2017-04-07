@@ -242,7 +242,7 @@ class RendererEndToEndTests(TestCase):
         """
         Regression test for #1196
 
-        https://github.com/tomchristie/django-rest-framework/issues/1196
+        https://github.com/encode/django-rest-framework/issues/1196
         """
         resp = self.client.get('/empty')
         self.assertEqual(resp.get('Content-Type', None), None)

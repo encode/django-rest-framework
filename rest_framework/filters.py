@@ -323,7 +323,7 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         # We want to defer this import until run-time, rather than import-time.
-        # See https://github.com/tomchristie/django-rest-framework/issues/4608
+        # See https://github.com/encode/django-rest-framework/issues/4608
         # (Also see #1624 for why we need to make this import explicitly)
         from guardian.shortcuts import get_objects_for_user
 

@@ -335,7 +335,7 @@ class PKForeignKeyTests(TestCase):
         """
         Regression test for #1072
 
-        https://github.com/tomchristie/django-rest-framework/issues/1072
+        https://github.com/encode/django-rest-framework/issues/1072
         """
         serializer = NullableForeignKeySourceSerializer()
         assert serializer.data['target'] is None

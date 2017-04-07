@@ -18,7 +18,7 @@ from rest_framework.utils.representation import smart_repr
 
 # Robust filter and exist implementations. Ensures that queryset.exists() for
 # an invalid value returns `False`, rather than raising an error.
-# Refs https://github.com/tomchristie/django-rest-framework/issues/3381
+# Refs https://github.com/encode/django-rest-framework/issues/3381
 
 def qs_exists(queryset):
     try:
