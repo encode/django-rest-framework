@@ -310,7 +310,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [django-filter]: http://pypi.python.org/pypi/django-filter
 [django-crispy-forms]: https://github.com/maraujop/django-crispy-forms
-[django-guardian]: https://github.com/lukaszb/django-guardian
+[django-guardian]: https://github.com/django-guardian/django-guardian
 [0.4]: https://github.com/encode/django-rest-framework/tree/0.4.X
 [image]: img/quickstart.png
 [index]: .
