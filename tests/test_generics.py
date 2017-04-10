@@ -398,7 +398,7 @@ class TestCreateModelWithAutoNowAddField(TestCase):
         """
         Regression test for #285
 
-        https://github.com/tomchristie/django-rest-framework/issues/285
+        https://github.com/encode/django-rest-framework/issues/285
         """
         data = {'email': 'foobar@example.com', 'content': 'foobar'}
         request = factory.post('/', data, format='json')
