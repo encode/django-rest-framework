@@ -140,9 +140,13 @@ Sign up for a paid plan today, and help ensure that REST framework becomes a sus
 >
 > &mdash; José Padilla, Django REST framework contributor
 
+&nbsp;
+
 >  The number one feature of the Python programming language is its community. Such a community is only possible because of the Open Source nature of the language and all the culture that comes from it. Building great Open Source projects require great minds. Given that, we at Vinta are not only proud to sponsor the team behind DRF but we also recognize the ROI that comes from it.
 >
 > &mdash; Filipe Ximenes, Vinta Software
+
+&nbsp;
 
 >  It's really awesome that this project continues to endure. The code base is top notch and the maintainers are committed to the highest level of quality.
 DRF is one of the core reasons why Django is top choice among web frameworks today. In my opinion, it sets the standard for rest frameworks for the development community at large.
@@ -325,7 +329,7 @@ For further enquires please contact <a href=mailto:funding@django-rest-framework
 
 ## Accountability
 
-In an effort to keep the project as transparent as possible, we are releasing [monthly progress reports](http://www.encode.io/reports/february-2017) and regularly include financial reports and cost breakdowns.
+In an effort to keep the project as transparent as possible, we are releasing [monthly progress reports](http://www.encode.io/reports/march-2017) and regularly include financial reports and cost breakdowns.
 
 <!-- Begin MailChimp Signup Form -->
 <link href="//cdn-images.mailchimp.com/embedcode/classic-10_7.css" rel="stylesheet" type="text/css">

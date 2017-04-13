@@ -17,9 +17,9 @@ We have a quarterly maintenance cycle where new members may join the maintenance
 
 #### Current team
 
-The [maintenance team for Q4 2015](https://github.com/tomchristie/django-rest-framework/issues/2190):
+The [maintenance team for Q4 2015](https://github.com/encode/django-rest-framework/issues/2190):
 
-* [@tomchristie](https://github.com/tomchristie/)
+* [@tomchristie](https://github.com/encode/)
 * [@xordoquy](https://github.com/xordoquy/) (Release manager.)
 * [@carltongibson](https://github.com/carltongibson/)
 * [@kevin-brown](https://github.com/kevin-brown/)
@@ -104,9 +104,9 @@ The following template should be used for the description of the issue, and serv
 
     Checklist:
 
-    - [ ] Create pull request for [release notes](https://github.com/tomchristie/django-rest-framework/blob/master/docs/topics/release-notes.md) based on the [*.*.* milestone](https://github.com/tomchristie/django-rest-framework/milestones/***).
+    - [ ] Create pull request for [release notes](https://github.com/encode/django-rest-framework/blob/master/docs/topics/release-notes.md) based on the [*.*.* milestone](https://github.com/encode/django-rest-framework/milestones/***).
     - [ ] Update the translations from [transifex](http://www.django-rest-framework.org/topics/project-management/#translations).
-    - [ ] Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/tomchristie/django-rest-framework/blob/master/rest_framework/__init__.py).
+    - [ ] Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/encode/django-rest-framework/blob/master/rest_framework/__init__.py).
     - [ ] Confirm with @tomchristie that release is finalized and ready to go.
     - [ ] Ensure that release date is included in pull request.
     - [ ] Merge the release pull request.
@@ -197,10 +197,10 @@ The following issues still need to be addressed:
 * Document ownership and management of the security mailing list.
 
 [bus-factor]: http://en.wikipedia.org/wiki/Bus_factor
-[un-triaged]: https://github.com/tomchristie/django-rest-framework/issues?q=is%3Aopen+no%3Alabel
+[un-triaged]: https://github.com/encode/django-rest-framework/issues?q=is%3Aopen+no%3Alabel
 [transifex-project]: https://www.transifex.com/projects/p/django-rest-framework/
 [transifex-client]: https://pypi.python.org/pypi/transifex-client
 [translation-memory]: http://docs.transifex.com/guides/tm#let-tm-automatically-populate-translations
-[github-org]: https://github.com/tomchristie/django-rest-framework/issues/2162
+[github-org]: https://github.com/encode/django-rest-framework/issues/2162
 [sandbox]: http://restframework.herokuapp.com/
 [mailing-list]: https://groups.google.com/forum/#!forum/django-rest-framework

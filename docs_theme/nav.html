@@ -1,11 +1,11 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small {% if not next_page %}disabled{% endif %}" rel="prev" {% if next_page %}href="{{ next_page.url }}"{% endif %}>
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small {% if not page.next_page %}disabled{% endif %}" rel="prev" {% if page.next_page %}href="{{ page.next_page.url }}"{% endif %}>
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small {% if not previous_page %}disabled{% endif %}" rel="next" {% if previous_page %}href="{{ previous_page.url }}"{% endif %}>
+          <a class="repo-link btn btn-inverse btn-small {% if not page.previous_page %}disabled{% endif %}" rel="next" {% if page.previous_page %}href="{{ page.previous_page.url }}"{% endif %}>
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
@@ -16,7 +16,7 @@
           </a>
           <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
           <div class="nav-collapse collapse">
-            {% if include_nav %}
+            {% if nav|length>1 %}
             <!-- Main navigation -->
             <ul class="nav navbar-nav">
               {% for nav_item in nav %} {% if nav_item.children %}

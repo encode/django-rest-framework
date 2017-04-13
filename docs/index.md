@@ -18,10 +18,10 @@
 </style>
 
 <p class="badges" height=20px>
-    <iframe src="http://ghbtns.com/github-btn.html?user=tomchristie&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" class="github-star-button" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
+    <iframe src="http://ghbtns.com/github-btn.html?user=encode&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" class="github-star-button" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
 
-    <a href="http://travis-ci.org/tomchristie/django-rest-framework?branch=master">
-        <img src="https://secure.travis-ci.org/tomchristie/django-rest-framework.svg?branch=master" class="status-badge">
+    <a href="http://travis-ci.org/encode/django-rest-framework?branch=master">
+        <img src="https://secure.travis-ci.org/encode/django-rest-framework.svg?branch=master" class="status-badge">
     </a>
 
     <a href="https://pypi.python.org/pypi/djangorestframework">
@@ -108,7 +108,7 @@ Install using `pip`, including any optional packages you want...
 
 ...or clone the project from github.
 
-    git clone git@github.com:tomchristie/django-rest-framework.git
+    git clone git@github.com:encode/django-rest-framework.git
 
 Add `'rest_framework'` to your `INSTALLED_APPS` setting.
 
@@ -310,8 +310,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [django-filter]: http://pypi.python.org/pypi/django-filter
 [django-crispy-forms]: https://github.com/maraujop/django-crispy-forms
-[django-guardian]: https://github.com/lukaszb/django-guardian
-[0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
+[django-guardian]: https://github.com/django-guardian/django-guardian
+[0.4]: https://github.com/encode/django-rest-framework/tree/0.4.X
 [image]: img/quickstart.png
 [index]: .
 [oauth1-section]: api-guide/authentication/#django-rest-framework-oauth

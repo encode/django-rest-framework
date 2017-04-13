@@ -4,11 +4,11 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <title>{% if page_title %}{{ page_title }} - {% endif %}{{ site_name }}</title>
+  <title>{% if page.title %}{{ page.title }} - {% endif %}{{ config.site_name }}</title>
   <link href="{{ base_url }}/img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="{{ canonical_url }}" />
+  <link rel="canonical" href="{{ page.canonical_url }}" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST{% if current_page %}, {{ current_page.title }}{% endif %}">
+  <meta name="description" content="Django, API, REST{% if page %}, {{ page.title }}{% endif %}">
   <meta name="author" content="Tom Christie">
 
   <!-- Le styles -->
@@ -51,7 +51,7 @@
     }
   </style>
 </head>
-<body onload="prettyPrint()" class="{% if current_page and current_page.is_homepage %}index{% endif %}-page">
+<body onload="prettyPrint()" class="{% if page and page.is_homepage %}index{% endif %}-page">
 
   <div class="wrapper">
     {% include "nav.html" %}
@@ -83,14 +83,14 @@
           <div class="span3">
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                {% if current_page and current_page.is_homepage %}
+                {% if page and page.is_homepage %}
                   <li class="main">
                     <a href="#">Django REST framework</a>
                   </li>
                 {% endif %}
 
-                {% for toc_item in toc %}
-                  <li class="{% if current_page and not current_page.is_homepage %}main{% endif %}">
+                {% for toc_item in page.toc %}
+                  <li class="{% if page and not page.is_homepage %}main{% endif %}">
                     <a href="{{ toc_item.url }}">{{ toc_item.title }}</a>
                   </li>
 
@@ -112,15 +112,15 @@
 
           <div id="main-content" class="span9">
             {% block content %}
-              {% if meta.source %}
-                {% for filename in meta.source %}
-                  <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/{{ filename }}">
+              {% if page.meta.source %}
+                {% for filename in page.meta.source %}
+                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/master/rest_framework/{{ filename }}">
                     <span class="label label-info">{{ filename }}</span>
                   </a>
                 {% endfor %}
               {% endif %}
 
-              {{ content }}
+              {{ page.content }}
             {% endblock %}
 
           </div> <!--/span-->

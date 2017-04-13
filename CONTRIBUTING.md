@@ -50,7 +50,7 @@ Getting involved in triaging incoming issues is a good way to start contributing
 
 To start developing on Django REST framework, clone the repo:
 
-    git clone git@github.com:tomchristie/django-rest-framework.git
+    git clone git@github.com:encode/django-rest-framework.git
 
 Changes should broadly follow the [PEP 8][pep-8] style conventions, and we recommend you set up your editor to automatically indicate non-conforming styles.
 
@@ -198,10 +198,10 @@ If you want to draw attention to a note or warning, use a pair of enclosing line
 [code-of-conduct]: https://www.djangoproject.com/conduct/
 [google-group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [so-filter]: http://stackexchange.com/filters/66475/rest-framework
-[issues]: https://github.com/tomchristie/django-rest-framework/issues?state=open
+[issues]: https://github.com/encode/django-rest-framework/issues?state=open
 [pep-8]: http://www.python.org/dev/peps/pep-0008/
 [pull-requests]: https://help.github.com/articles/using-pull-requests
 [tox]: https://tox.readthedocs.io/en/latest/
 [markdown]: http://daringfireball.net/projects/markdown/basics
-[docs]: https://github.com/tomchristie/django-rest-framework/tree/master/docs
+[docs]: https://github.com/encode/django-rest-framework/tree/master/docs
 [mou]: http://mouapp.com/

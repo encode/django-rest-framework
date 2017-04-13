@@ -142,7 +142,7 @@ Note that you can use both an overridden `.get_queryset()` and generic filtering
 The `django-filter` library includes a `DjangoFilterBackend` class which
 supports highly customizable field filtering for REST framework.
 
-To use `DjangoFilterBackend`, first install `django-filter`.
+To use `DjangoFilterBackend`, first install `django-filter`. Then add `django_filters` to Django's `INSTALLED_APPS`
 
     pip install django-filter
 
@@ -432,8 +432,11 @@ The method should return a rendered HTML string.
 ## Pagination & schemas
 
 You can also make the filter controls available to the schema autogeneration
-that REST framework provides, by implementing a `get_schema_fields()` method,
-which should return a list of `coreapi.Field` instances.
+that REST framework provides, by implementing a `get_schema_fields()` method. This method should have the following signature:
+
+`get_schema_fields(self, view)`
+
+The method should return a list of `coreapi.Field` instances.
 
 # Third party packages
 

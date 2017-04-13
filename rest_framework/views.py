@@ -9,6 +9,7 @@ from django.db import models
 from django.http import Http404
 from django.http.response import HttpResponseBase
 from django.utils import six
+from django.utils.cache import cc_delim_re, patch_vary_headers
 from django.utils.encoding import smart_text
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
@@ -290,7 +291,7 @@ class APIView(View):
         """
         Returns the exception handler that this view uses.
         """
-        return api_settings.EXCEPTION_HANDLER
+        return self.settings.EXCEPTION_HANDLER
 
     # API policy implementation methods
 
@@ -413,6 +414,11 @@ class APIView(View):
             response.accepted_renderer = request.accepted_renderer
             response.accepted_media_type = request.accepted_media_type
             response.renderer_context = self.get_renderer_context()
+
+        # Add new vary headers to the response instead of overwriting.
+        vary_headers = self.headers.pop('Vary', None)
+        if vary_headers is not None:
+            patch_vary_headers(response, cc_delim_re.split(vary_headers))
 
         for key, value in self.headers.items():
             response[key] = value
