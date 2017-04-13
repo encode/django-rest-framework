@@ -156,6 +156,7 @@ class TestCustomLookupFields(TestCase):
     """
     def setUp(self):
         RouterTestModel.objects.create(uuid='123', text='foo bar')
+        RouterTestModel.objects.create(uuid='a b', text='baz qux')
 
     def test_custom_lookup_field_route(self):
         detail_route = notes_router.urls[-1]
@@ -164,11 +165,18 @@ class TestCustomLookupFields(TestCase):
 
     def test_retrieve_lookup_field_list_view(self):
         response = self.client.get('/example/notes/')
-        assert response.data == [{"url": "http://testserver/example/notes/123/", "uuid": "123", "text": "foo bar"}]
+        assert response.data == [
+            {"url": "http://testserver/example/notes/123/", "uuid": "123", "text": "foo bar"},
+            {"url": "http://testserver/example/notes/a%20b/", "uuid": "a b", "text": "baz qux"},
+        ]
 
     def test_retrieve_lookup_field_detail_view(self):
         response = self.client.get('/example/notes/123/')
         assert response.data == {"url": "http://testserver/example/notes/123/", "uuid": "123", "text": "foo bar"}
+
+    def test_retrieve_lookup_field_url_encoded_detail_view_(self):
+        response = self.client.get('/example/notes/a%20b/')
+        assert response.data == {"url": "http://testserver/example/notes/a%20b/", "uuid": "a b", "text": "baz qux"}
 
 
 class TestLookupValueRegex(TestCase):
@@ -209,6 +217,10 @@ class TestLookupUrlKwargs(TestCase):
 
     def test_retrieve_lookup_url_kwarg_detail_view(self):
         response = self.client.get('/example2/notes/fo/')
+        assert response.data == {"url": "http://testserver/example/notes/123/", "uuid": "123", "text": "foo bar"}
+
+    def test_retrieve_lookup_url_encoded_kwarg_detail_view(self):
+        response = self.client.get('/example2/notes/foo%20bar/')
         assert response.data == {"url": "http://testserver/example/notes/123/", "uuid": "123", "text": "foo bar"}
 
 
