@@ -1306,6 +1306,12 @@ class DurationField(Field):
     def to_representation(self, value):
         return duration_string(value)
 
+    def to_native(self, value):
+        value = super(IntegerField, self).to_native(value)
+        if value is None:
+            return value
+        return int(value)
+
 
 # Choice types...
 
