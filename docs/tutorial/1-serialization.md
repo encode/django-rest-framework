@@ -52,7 +52,7 @@ Please note that if you're using Django <1.9, you need to replace `snippets.apps
 
 Okay, we're ready to roll.
 
-## Creating a model to work with
+## Creating a model with which to work
 
 For the purposes of this tutorial we're going to start by creating a simple `Snippet` model that is used to store code snippets.  Go ahead and edit the `snippets/models.py` file.  Note: Good programming practices include comments.  Although you will find them in our repository version of this tutorial code, we have omitted them here to focus on the code itself.
 
