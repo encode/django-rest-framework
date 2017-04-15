@@ -48,7 +48,7 @@ We'll add a url pattern for our new API root in `snippets/urls.py`:
 
 And then add a url pattern for the snippet highlights:
 
-    url(r'^snippets/(?P<pk>[0-9]+)/highlight/$', views.SnippetHighlight.as_view()),
+    url(r'^snippets/(?P<pk>[0-9]+)/highlight/$', views.SnippetHighlight.as_view(), name='snippet-highlight'),
 
 ## Hyperlinking our API
 
