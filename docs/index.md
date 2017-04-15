@@ -175,6 +175,12 @@ Here's our project's root `urls.py` module:
 
 You can now open the API in your browser at [http://127.0.0.1:8000/](http://127.0.0.1:8000/), and view your new 'users' API. If you use the login control in the top right corner you'll also be able to add, create and delete users from the system.
 
+## Upgrade
+
+Upgrade to the latest release using `pip`,
+
+    pip install djangorestframework --upgrade
+
 ## Quickstart
 
 Can't wait to get started? The [quickstart guide][quickstart] is the fastest way to get up and running, and building APIs with REST framework.
