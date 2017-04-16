@@ -293,6 +293,14 @@ We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to inc
         url(r'^', include('snippets.urls')),
     ]
 
+Then edit tutorial/urls.py and add:
+
+    import snippets.urls
+    
+    urlpatterns = patterns('',
+        url(r'', include('snippets.urls')),
+    )
+
 It's worth noting that there are a couple of edge cases we're not dealing with properly at the moment.  If we send malformed `json`, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.
 
 ## Testing our first attempt at a Web API
