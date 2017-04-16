@@ -6,7 +6,7 @@ python:
     - "3.5"
 
 sudo: false
-
+cache: pip
 env:
     - DJANGO=1.8
     - DJANGO=1.9
