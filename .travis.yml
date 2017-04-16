@@ -7,6 +7,10 @@ python:
 
 sudo: false
 
+cache:
+  directories:
+    - $HOME/.cache/pip
+
 env:
     - DJANGO=1.8
     - DJANGO=1.9
