@@ -310,7 +310,7 @@ class Field(object):
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=empty, source=None,
                  label=None, help_text=None, style=None,
-                 error_messages=None, validators=None, allow_null=False):
+                 error_messages=None, validators=None, allow_null=False, allow_blank=False):
         self._creation_counter = Field._creation_counter
         Field._creation_counter += 1
 
@@ -334,6 +334,7 @@ class Field(object):
         self.help_text = help_text
         self.style = {} if style is None else style
         self.allow_null = allow_null
+        self.allow_blank = allow_blank
 
         if self.default_empty_html is not empty:
             if default is not empty:
@@ -731,7 +732,6 @@ class CharField(Field):
     initial = ''
 
     def __init__(self, **kwargs):
-        self.allow_blank = kwargs.pop('allow_blank', False)
         self.trim_whitespace = kwargs.pop('trim_whitespace', True)
         self.max_length = kwargs.pop('max_length', None)
         self.min_length = kwargs.pop('min_length', None)
@@ -1328,8 +1328,6 @@ class ChoiceField(Field):
         self.choice_strings_to_values = {
             six.text_type(key): key for key in self.choices.keys()
         }
-
-        self.allow_blank = kwargs.pop('allow_blank', False)
 
         super(ChoiceField, self).__init__(**kwargs)
 
