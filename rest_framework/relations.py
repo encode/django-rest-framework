@@ -33,7 +33,7 @@ def method_overridden(method_name, klass, instance):
 
 class Hyperlink(six.text_type):
     """
-    A string like object that additionally has an associated name.
+    A stringlike object that additionally has an associated name.
     We use this for hyperlinked URLs that may render as a named link
     in some contexts, or render as a plain URL in others.
     """
