@@ -42,9 +42,11 @@ We don't need our `JSONResponse` class in `views.py` anymore, so go ahead and de
     from rest_framework.response import Response
     from snippets.models import Snippet
     from snippets.serializers import SnippetSerializer
+    from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 
     @api_view(['GET', 'POST'])
+    @permission_classes((IsAuthenticatedOrReadOnly,))
     def snippet_list(request):
         """
         List all snippets, or create a new snippet.
@@ -66,6 +68,7 @@ Our instance view is an improvement over the previous example.  It's a little mo
 Here is the view for an individual snippet, in the `views.py` module.
 
     @api_view(['GET', 'PUT', 'DELETE'])
+    @permission_classes((IsAuthenticatedOrReadOnly,))
     def snippet_detail(request, pk):
         """
         Retrieve, update or delete a snippet instance.
