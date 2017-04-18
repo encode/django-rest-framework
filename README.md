@@ -1,5 +1,7 @@
 # [Django REST framework][docs]
 
+[![Join the chat at https://gitter.im/tomchristie/django-rest-framework](https://badges.gitter.im/tomchristie/django-rest-framework.svg)](https://gitter.im/tomchristie/django-rest-framework?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![build-status-image]][travis]
 [![coverage-status-image]][codecov]
 [![pypi-version]][pypi]
