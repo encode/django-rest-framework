@@ -3,10 +3,12 @@ from __future__ import unicode_literals
 import copy
 import sys
 
+from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
 from django.test import TestCase
 
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.settings import APISettings, api_settings
 from rest_framework.test import APIRequestFactory
@@ -63,6 +65,26 @@ def error_view(request):
     raise Exception
 
 
+@api_view(['GET'])
+def permissiondenied_instance_view(request):
+    raise PermissionDenied()
+
+
+@api_view(['GET'])
+def permissiondenied_class_view(request):
+    raise PermissionDenied
+
+
+@api_view(['GET'])
+def django_permissiondenied_instance_view(request):
+    raise DjangoPermissionDenied()
+
+
+@api_view(['GET'])
+def django_permissiondenied_class_view(request):
+    raise DjangoPermissionDenied
+
+
 def sanitise_json_error(error_dict):
     """
     Exact contents of JSON error messages depend on the installed version
@@ -100,6 +122,50 @@ class FunctionBasedViewIntegrationTests(TestCase):
         }
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert sanitise_json_error(response.data) == expected
+
+
+class FunctionBasedPermissionDeniedTests(TestCase):
+
+    def test_permission_denied_instance_error(self):
+        self.view = permissiondenied_instance_view
+        request = factory.get('/', content_type='application/json')
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        expected = {
+            'detail': 'You do not have permission to perform this action.'
+        }
+        self.assertEqual(sanitise_json_error(response.data), expected)
+
+    def test_permission_denied_class_error(self):
+        self.view = permissiondenied_class_view
+
+        request = factory.get('/', content_type='application/json')
+        response = self.view(request)
+        expected = {
+            'detail': 'You do not have permission to perform this action.'
+        }
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(sanitise_json_error(response.data), expected)
+
+    def test_django_permission_denied_instance_error(self):
+        self.view = django_permissiondenied_instance_view
+        request = factory.get('/', content_type='application/json')
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        expected = {
+            'detail': u'Permission denied.'
+        }
+        self.assertEqual(sanitise_json_error(response.data), expected)
+
+    def test_django_permission_denied_class_error(self):
+        self.view = django_permissiondenied_class_view
+        request = factory.get('/', content_type='application/json')
+        response = self.view(request)
+        expected = {
+            'detail': u'Permission denied.'
+        }
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(sanitise_json_error(response.data), expected)
 
 
 class TestCustomExceptionHandler(TestCase):
