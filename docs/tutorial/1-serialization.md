@@ -324,7 +324,7 @@ You can install httpie using pip:
 
 Finally, we can get a list of all of the snippets:
 
-    http http://127.0.0.1:8000/snippets/
+    http http://127.0.0.1:8000/snippets/ # Note the trailing slash
 
     HTTP/1.1 200 OK
     ...
