@@ -170,6 +170,22 @@ May be used to pass the set of renderer classes that can be used to render the A
         renderer_classes=[CoreJSONRenderer, APIBlueprintRenderer]
     )
 
+#### `patterns`
+
+List of url patterns to limit the schema introspection to. If you only want the `myproject.api` urls
+to be exposed in the schema:
+
+    schema_url_patterns = [
+        url(r'^api/', include('myproject.api.urls')),
+    ]
+
+    schema_view = get_schema_view(
+        title='Server Monitoring API',
+        url='https://www.example.org/api/',
+        patterns=schema_url_patterns,
+    )
+
+
 ## Using an explicit schema view
 
 If you need a little more control than the `get_schema_view()` shortcut gives you,
