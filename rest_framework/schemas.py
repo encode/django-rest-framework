@@ -246,7 +246,10 @@ class EndpointInspector(object):
         Return a list of the valid HTTP methods for this endpoint.
         """
         if hasattr(callback, 'actions'):
-            return [method.upper() for method in callback.actions.keys()]
+            return [
+                method.upper() for method in
+                set(callback.actions.keys()).intersection(set(callback.cls().http_method_names))
+            ]
 
         return [
             method for method in

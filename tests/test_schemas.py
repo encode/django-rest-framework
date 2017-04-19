@@ -246,6 +246,11 @@ class PermissionDeniedExampleViewSet(ExampleViewSet):
     permission_classes = [DenyAllUsingPermissionDenied]
 
 
+class MethodLimitedViewSet(ExampleViewSet):
+    permission_classes = []
+    http_method_names = ['get', 'head', 'options']
+
+
 class ExampleListView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -362,6 +367,61 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
                             ]
                         )
                     }
+                }
+            }
+        )
+        assert schema == expected
+
+
+@unittest.skipUnless(coreapi, 'coreapi is not installed')
+class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
+    def setUp(self):
+        router = DefaultRouter()
+        router.register('example1', MethodLimitedViewSet, base_name='example1')
+        self.patterns = [
+            url(r'^', include(router.urls))
+        ]
+
+    def test_schema_for_regular_views(self):
+        """
+        Ensure that schema generation works for ViewSet classes
+        with method limitation by Django CBV's http_method_names attribute
+        """
+        generator = SchemaGenerator(title='Example API', patterns=self.patterns)
+        request = factory.get('/example1/')
+        schema = generator.get_schema(Request(request))
+
+        expected = coreapi.Document(
+            url='http://testserver/example1/',
+            title='Example API',
+            content={
+                'example1': {
+                    'list': coreapi.Link(
+                        url='/example1/',
+                        action='get',
+                        fields=[
+                            coreapi.Field('page', required=False, location='query', schema=coreschema.Integer(title='Page', description='A page number within the paginated result set.')),
+                            coreapi.Field('page_size', required=False, location='query', schema=coreschema.Integer(title='Page size', description='Number of results to return per page.')),
+                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                        ]
+                    ),
+                    'custom_list_action': coreapi.Link(
+                        url='/example1/custom_list_action/',
+                        action='get'
+                    ),
+                    'custom_list_action_multiple_methods': {
+                        'read': coreapi.Link(
+                            url='/example1/custom_list_action_multiple_methods/',
+                            action='get'
+                        )
+                    },
+                    'read': coreapi.Link(
+                        url='/example1/{id}/',
+                        action='get',
+                        fields=[
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                        ]
+                    )
                 }
             }
         )
