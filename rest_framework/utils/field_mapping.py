@@ -104,7 +104,9 @@ def get_field_kwargs(field_name, model_field):
         kwargs['allow_null'] = True
 
     if model_field.blank and (isinstance(model_field, models.CharField) or
-                              isinstance(model_field, models.TextField)):
+                              isinstance(model_field, models.TextField) or
+                              isinstance(model_field, models.IPAddressField) or
+                              isinstance(model_field, models.GenericIPAddressField)):
         kwargs['allow_blank'] = True
 
     if isinstance(model_field, models.FilePathField):
