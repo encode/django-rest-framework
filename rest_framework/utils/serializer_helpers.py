@@ -101,7 +101,7 @@ class NestedBoundField(BoundField):
     def __getitem__(self, key):
         field = self.fields[key]
         value = self.value.get(key) if self.value else None
-        error = self.errors.get(key) if self.errors else None
+        error = self.errors.get(key) if isinstance(self.errors, dict) else None
         if hasattr(field, 'fields'):
             return NestedBoundField(field, value, error, prefix=self.name + '.')
         return BoundField(field, value, error, prefix=self.name + '.')
