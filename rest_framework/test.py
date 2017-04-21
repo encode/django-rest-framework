@@ -156,7 +156,7 @@ class APIRequestFactory(DjangoRequestFactory):
         """
 
         if data is None:
-            return ('', content_type)
+            return '', content_type
 
         assert format is None or content_type is None, (
             'You may not set both `format` and `content_type`.'

@@ -706,7 +706,7 @@ class CursorPagination(BasePagination):
         )
 
         if isinstance(ordering, six.string_types):
-            return (ordering,)
+            return ordering,
         return tuple(ordering)
 
     def decode_cursor(self, request):

@@ -28,7 +28,7 @@ class ReturnDict(OrderedDict):
     def __reduce__(self):
         # Pickling these objects will drop the .serializer backlink,
         # but preserve the raw data.
-        return (dict, (dict(self),))
+        return dict, (dict(self),)
 
 
 class ReturnList(list):
@@ -48,7 +48,7 @@ class ReturnList(list):
     def __reduce__(self):
         # Pickling these objects will drop the .serializer backlink,
         # but preserve the raw data.
-        return (list, (list(self),))
+        return list, (list(self),)
 
 
 class BoundField(object):

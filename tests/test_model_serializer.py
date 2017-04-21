@@ -611,7 +611,7 @@ class DisplayValueTargetModel(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
-        return '%s Color' % (self.name)
+        return '%s Color' % self.name
 
 
 class DisplayValueModel(models.Model):
@@ -639,7 +639,7 @@ class TestRelationalFieldDisplayValue(TestCase):
     def test_custom_display_value(self):
         class TestField(serializers.PrimaryKeyRelatedField):
             def display_value(self, instance):
-                return 'My %s Color' % (instance.name)
+                return 'My %s Color' % instance.name
 
         class TestSerializer(serializers.ModelSerializer):
             color = TestField(queryset=DisplayValueTargetModel.objects.all())

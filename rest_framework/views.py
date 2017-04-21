@@ -306,7 +306,7 @@ class APIView(View):
             return conneg.select_renderer(request, renderers, self.format_kwarg)
         except Exception:
             if force:
-                return (renderers[0], renderers[0].media_type)
+                return renderers[0], renderers[0].media_type
             raise
 
     def perform_authentication(self, request):
@@ -356,9 +356,9 @@ class APIView(View):
         incoming request. Returns a two-tuple of (version, versioning_scheme)
         """
         if self.versioning_class is None:
-            return (None, None)
+            return None, None
         scheme = self.versioning_class()
-        return (scheme.determine_version(request, *args, **kwargs), scheme)
+        return scheme.determine_version(request, *args, **kwargs), scheme
 
     # Dispatch methods
 

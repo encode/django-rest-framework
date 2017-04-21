@@ -209,7 +209,7 @@ class OrderingFilter(BaseFilterBackend):
     def get_default_ordering(self, view):
         ordering = getattr(view, 'ordering', None)
         if isinstance(ordering, six.string_types):
-            return (ordering,)
+            return ordering,
         return ordering
 
     def get_default_valid_fields(self, queryset, view, context={}):

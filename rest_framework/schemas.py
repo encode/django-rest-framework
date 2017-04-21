@@ -155,7 +155,7 @@ def endpoint_ordering(endpoint):
         'PATCH': 3,
         'DELETE': 4
     }.get(method, 5)
-    return (path, method_priority)
+    return path, method_priority
 
 
 def get_pk_description(model, model_field):

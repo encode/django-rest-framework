@@ -101,7 +101,7 @@ class BasicAuthentication(BaseAuthentication):
         if not user.is_active:
             raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
 
-        return (user, None)
+        return user, None
 
     def authenticate_header(self, request):
         return 'Basic realm="%s"' % self.www_authenticate_realm
@@ -128,7 +128,7 @@ class SessionAuthentication(BaseAuthentication):
         self.enforce_csrf(request)
 
         # CSRF passed with authenticated user
-        return (user, None)
+        return user, None
 
     def enforce_csrf(self, request):
         """
@@ -197,7 +197,7 @@ class TokenAuthentication(BaseAuthentication):
         if not token.user.is_active:
             raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
 
-        return (token.user, token)
+        return token.user, token
 
     def authenticate_header(self, request):
         return self.keyword
