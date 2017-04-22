@@ -98,12 +98,16 @@ class MultiPartParser(BaseParser):
         `.data` will be a `QueryDict` containing all the form parameters.
         `.files` will be a `QueryDict` containing all the form files.
         """
+        meta = {}
+        upload_handlers = []
         parser_context = parser_context or {}
-        request = parser_context['request']
-        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
-        meta = request.META.copy()
+        if 'request' in parser_context:
+            request = parser_context['request']
+            meta = request.META.copy()
+            upload_handlers = request.upload_handlers
+
         meta['CONTENT_TYPE'] = media_type
-        upload_handlers = request.upload_handlers
+        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
 
         try:
             parser = DjangoMultiPartParser(meta, stream, upload_handlers, encoding)
