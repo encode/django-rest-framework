@@ -117,7 +117,7 @@ The simplest way to include a schema in your project is to use the
 Once the view has been added, you'll be able to make API requests to retrieve
 the auto-generated schema definition.
 
-    $ http http://127.0.0.1:8000/ Accept:application/vnd.coreapi+json
+    $ http http://127.0.0.1:8000/ Accept:application/coreapi+json
     HTTP/1.0 200 OK
     Allow: GET, HEAD, OPTIONS
     Content-Type: application/vnd.coreapi+json
