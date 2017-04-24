@@ -493,7 +493,7 @@ class ManyRelatedField(Field):
             self.fail('empty')
             
         if self.child_relation.use_pk_only_optimization:
-            values = list(self.child_relation.get_queryset.filter(pk__in=data))
+            values = list(self.child_relation.get_queryset().filter(pk__in=data))
             missing_primary_keys = set(v.pk for v in values) - set(data)
         
             if missing_primary_keys:
