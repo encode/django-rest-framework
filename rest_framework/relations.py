@@ -492,7 +492,7 @@ class ManyRelatedField(Field):
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
             
-        if self.child_relation.use_pk_only_optimization:
+        if isinstance(self.child_relation, PrimaryKeyRelatedField):
             values = list(self.child_relation.get_queryset().filter(pk__in=data))
             missing_primary_keys = set(v.pk for v in values) - set(data)
         
