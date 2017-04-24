@@ -1,6 +1,7 @@
 """
 Helpers for dealing with HTML input.
 """
+import json
 import re
 
 from django.utils.datastructures import MultiValueDict
@@ -50,6 +51,12 @@ def parse_html_list(dictionary, prefix=''):
     for field, value in dictionary.items():
         match = regex.match(field)
         if not match:
+            try:
+                normalized_value = json.loads(value)
+            except ValueError:
+                continue
+            if field == prefix and isinstance(normalized_value, list):
+                return normalized_value
             continue
         index, key = match.groups()
         index = int(index)
