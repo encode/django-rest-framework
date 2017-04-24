@@ -39,6 +39,7 @@ matrix:
       - env: DJANGO=master
 
 install:
+    - pip install --upgrade pip
     - pip install tox tox-travis
 
 script:
