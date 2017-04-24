@@ -1,5 +1,4 @@
 language: python
-
 cache: pip
 
 python:
@@ -40,7 +39,7 @@ matrix:
 
 install:
     - pip install --upgrade pip
-    - pip install tox tox-travis
+    - pip install tox tox-travis wheel
 
 script:
     - tox
