@@ -492,11 +492,17 @@ class ManyRelatedField(Field):
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
             
-        values = list(self.child_relation.get_queryset.filter(pk__in=data))
-        missing_primary_keys = set(v.pk for v in values) - set(data)
+        if self.child_relation.use_pk_only_optimization:
+            values = list(self.child_relation.get_queryset.filter(pk__in=data))
+            missing_primary_keys = set(v.pk for v in values) - set(data)
         
-        if missing_primary_keys:
-            self.fail('missing_ids', ids_not_found=list(missing_primary_keys))
+            if missing_primary_keys:
+                self.fail('missing_ids', ids_not_found=list(missing_primary_keys))
+        else:
+            values = [
+                self.child_relation.to_internal_value(item)
+                for item in data
+            ]
 
         return values
 
