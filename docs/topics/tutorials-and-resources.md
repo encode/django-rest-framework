@@ -59,6 +59,7 @@ There are a wide range of resources available for learning and using Django REST
 ## Books
 
 * [Hello Web App: Intermediate Concepts, Chapter 10][hello-web-app-intermediate]
+* [Two Scoops of Django 1.11, Chapter 16, 17, 26, and more][two-scoops-of-django-11]
 
 ### Documentations
 * [Classy Django REST Framework][cdrf.co]
@@ -108,3 +109,4 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [building-a-restful-api-with-drf]: http://agiliq.com/blog/2014/12/building-a-restful-api-with-django-rest-framework/
 [submit-pr]: https://github.com/encode/django-rest-framework
 [anna-email]: mailto:anna@django-rest-framework.org
+[two-scoops-of-django-11]: https://www.twoscoopspress.com/products/two-scoops-of-django-1-11
