@@ -417,3 +417,8 @@ ul.sponsor {
 .toclink {
   color: #333;
 }
+
+.book-cover img {
+  margin: 0 !important;
+  display: inline-block !important;
+}

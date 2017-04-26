@@ -2,6 +2,17 @@
 
 There are a wide range of resources available for learning and using Django REST framework. We try to keep a comprehensive list available here.
 
+## Books
+
+<div class="book-covers">
+  <a class="book-cover" href="https://hellowebapp.com/order/">
+    <img src="../../img/books/hwa-cover.png"/>
+  </a>
+  <a class="book-cover" href="https://www.twoscoopspress.com/products/two-scoops-of-django-1-11">
+    <img src="../../img/books/tsd-cover.png"/>
+  </a>
+</div>
+
 ## Tutorials
 
 * [Beginner's Guide to the Django REST Framework][beginners-guide-to-the-django-rest-framework]
@@ -56,12 +67,6 @@ There are a wide range of resources available for learning and using Django REST
 * [New Django Admin with DRF and EmberJS... What are the News?][new-django-admin-with-drf-and-emberjs]
 * [Blog posts about Django REST Framework][medium-django-rest-framework]
 
-## Books
-
-* [Two Scoops of Django 1.11, Chapter 16, 17, 26, and more][two-scoops-of-django-11]
-* [Hello Web App: Intermediate Concepts, Chapter 10][hello-web-app-intermediate]
-* [Two Scoops of Django 1.11, Chapter 16, 17, 26, and more][two-scoops-of-django-11]
-
 ### Documentations
 * [Classy Django REST Framework][cdrf.co]
 * [DRF-schema-adapter][drf-schema]
@@ -97,7 +102,6 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [drf-schema]: http://drf-schema-adapter.readthedocs.io/en/latest/
 [creating-a-production-ready-api-with-python-and-drf-part1]: https://www.andreagrandi.it/2016/09/28/creating-production-ready-api-python-django-rest-framework-part-1/
 [creating-a-production-ready-api-with-python-and-drf-part2]: https://www.andreagrandi.it/2016/10/01/creating-a-production-ready-api-with-python-and-django-rest-framework-part-2/
-[hello-web-app-intermediate]: https://hellowebapp.com/order/
 [django-rest-api-so-easy]: https://www.youtube.com/watch?v=cqP758k1BaQ
 [full-fledged-rest-api-with-django-oauth-tookit]: https://www.youtube.com/watch?v=M6Ud3qC2tTk
 [drf-in-your-pjs]: https://www.youtube.com/watch?v=xMtHsWa72Ww
@@ -110,4 +114,3 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [building-a-restful-api-with-drf]: http://agiliq.com/blog/2014/12/building-a-restful-api-with-django-rest-framework/
 [submit-pr]: https://github.com/encode/django-rest-framework
 [anna-email]: mailto:anna@django-rest-framework.org
-[two-scoops-of-django-11]: https://www.twoscoopspress.com/products/two-scoops-of-django-1-11
