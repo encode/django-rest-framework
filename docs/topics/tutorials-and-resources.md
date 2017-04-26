@@ -60,6 +60,7 @@ There are a wide range of resources available for learning and using Django REST
 
 * [Two Scoops of Django 1.11, Chapter 16, 17, 26, and more][two-scoops-of-django-11]
 * [Hello Web App: Intermediate Concepts, Chapter 10][hello-web-app-intermediate]
+* [Two Scoops of Django 1.11, Chapter 16, 17, 26, and more][two-scoops-of-django-11]
 
 ### Documentations
 * [Classy Django REST Framework][cdrf.co]
