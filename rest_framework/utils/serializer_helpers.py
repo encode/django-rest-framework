@@ -85,7 +85,7 @@ class BoundField(object):
 
 class JSONBoundField(BoundField):
     def as_form_field(self):
-        value = json.dumps(self.value)
+        value = json.dumps(self.value, sort_keys=True, indent=4)
         return self.__class__(self._field, value, self.errors, self._prefix)
 
 
