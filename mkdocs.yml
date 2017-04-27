@@ -2,7 +2,7 @@ site_name: Django REST framework
 site_url: http://www.django-rest-framework.org/
 site_description: Django REST framework - Web APIs for Django
 
-repo_url: https://github.com/tomchristie/django-rest-framework
+repo_url: https://github.com/encode/django-rest-framework
 
 theme_dir: docs_theme
 
@@ -58,15 +58,18 @@ pages:
      - 'Browser Enhancements': 'topics/browser-enhancements.md'
      - 'The Browsable API': 'topics/browsable-api.md'
      - 'REST, Hypermedia & HATEOAS': 'topics/rest-hypermedia-hateoas.md'
-     - 'Third Party Resources': 'topics/third-party-resources.md'
+     - 'Third Party Packages': 'topics/third-party-packages.md'
+     - 'Tutorials and Resources': 'topics/tutorials-and-resources.md'
      - 'Contributing to REST framework': 'topics/contributing.md'
      - 'Project management': 'topics/project-management.md'
+     - 'Jobs': 'topics/jobs.md'
      - '3.0 Announcement': 'topics/3.0-announcement.md'
      - '3.1 Announcement': 'topics/3.1-announcement.md'
      - '3.2 Announcement': 'topics/3.2-announcement.md'
      - '3.3 Announcement': 'topics/3.3-announcement.md'
      - '3.4 Announcement': 'topics/3.4-announcement.md'
      - '3.5 Announcement': 'topics/3.5-announcement.md'
+     - '3.6 Announcement': 'topics/3.6-announcement.md'
      - 'Kickstarter Announcement': 'topics/kickstarter-announcement.md'
      - 'Mozilla Grant': 'topics/mozilla-grant.md'
      - 'Funding': 'topics/funding.md'

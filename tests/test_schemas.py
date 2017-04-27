@@ -6,7 +6,7 @@ from django.http import Http404
 from django.test import TestCase, override_settings
 
 from rest_framework import filters, pagination, permissions, serializers
-from rest_framework.compat import coreapi
+from rest_framework.compat import coreapi, coreschema
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.request import Request
 from rest_framework.routers import DefaultRouter
@@ -92,7 +92,7 @@ class TestRouterGeneratedSchema(TestCase):
         response = client.get('/', HTTP_ACCEPT='application/coreapi+json')
         assert response.status_code == 200
         expected = coreapi.Document(
-            url='',
+            url='http://testserver/',
             title='Example API',
             content={
                 'example': {
@@ -100,9 +100,9 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/',
                         action='get',
                         fields=[
-                            coreapi.Field('page', required=False, location='query'),
-                            coreapi.Field('page_size', required=False, location='query'),
-                            coreapi.Field('ordering', required=False, location='query')
+                            coreapi.Field('page', required=False, location='query', schema=coreschema.Integer(title='Page', description='A page number within the paginated result set.')),
+                            coreapi.Field('page_size', required=False, location='query', schema=coreschema.Integer(title='Page size', description='Number of results to return per page.')),
+                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'custom_list_action': coreapi.Link(
@@ -119,7 +119,7 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path')
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
                         ]
                     )
                 }
@@ -133,7 +133,7 @@ class TestRouterGeneratedSchema(TestCase):
         response = client.get('/', HTTP_ACCEPT='application/coreapi+json')
         assert response.status_code == 200
         expected = coreapi.Document(
-            url='',
+            url='http://testserver/',
             title='Example API',
             content={
                 'example': {
@@ -141,9 +141,9 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/',
                         action='get',
                         fields=[
-                            coreapi.Field('page', required=False, location='query'),
-                            coreapi.Field('page_size', required=False, location='query'),
-                            coreapi.Field('ordering', required=False, location='query')
+                            coreapi.Field('page', required=False, location='query', schema=coreschema.Integer(title='Page', description='A page number within the paginated result set.')),
+                            coreapi.Field('page_size', required=False, location='query', schema=coreschema.Integer(title='Page size', description='Number of results to return per page.')),
+                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'create': coreapi.Link(
@@ -151,15 +151,15 @@ class TestRouterGeneratedSchema(TestCase):
                         action='post',
                         encoding='application/json',
                         fields=[
-                            coreapi.Field('a', required=True, location='form', type='string', description='A field description'),
-                            coreapi.Field('b', required=False, location='form', type='string')
+                            coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description='A field description')),
+                            coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
                         ]
                     ),
                     'read': coreapi.Link(
                         url='/example/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path')
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
                         ]
                     ),
                     'custom_action': coreapi.Link(
@@ -168,9 +168,9 @@ class TestRouterGeneratedSchema(TestCase):
                         encoding='application/json',
                         description='A description of custom action.',
                         fields=[
-                            coreapi.Field('id', required=True, location='path'),
-                            coreapi.Field('c', required=True, location='form', type='string'),
-                            coreapi.Field('d', required=False, location='form', type='string'),
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                            coreapi.Field('c', required=True, location='form', schema=coreschema.String(title='C')),
+                            coreapi.Field('d', required=False, location='form', schema=coreschema.String(title='D')),
                         ]
                     ),
                     'custom_list_action': coreapi.Link(
@@ -192,9 +192,9 @@ class TestRouterGeneratedSchema(TestCase):
                         action='put',
                         encoding='application/json',
                         fields=[
-                            coreapi.Field('id', required=True, location='path'),
-                            coreapi.Field('a', required=True, location='form', type='string', description='A field description'),
-                            coreapi.Field('b', required=False, location='form', type='string')
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                            coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description=('A field description'))),
+                            coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
                         ]
                     ),
                     'partial_update': coreapi.Link(
@@ -202,16 +202,16 @@ class TestRouterGeneratedSchema(TestCase):
                         action='patch',
                         encoding='application/json',
                         fields=[
-                            coreapi.Field('id', required=True, location='path'),
-                            coreapi.Field('a', required=False, location='form', type='string', description='A field description'),
-                            coreapi.Field('b', required=False, location='form', type='string')
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                            coreapi.Field('a', required=False, location='form', schema=coreschema.String(title='A', description='A field description')),
+                            coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
                         ]
                     ),
                     'delete': coreapi.Link(
                         url='/example/{id}/',
                         action='delete',
                         fields=[
-                            coreapi.Field('id', required=True, location='path')
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
                         ]
                     )
                 }
@@ -297,7 +297,7 @@ class TestSchemaGenerator(TestCase):
                         url='/example/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path')
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
                         ]
                     ),
                     'sub': {
@@ -305,7 +305,7 @@ class TestSchemaGenerator(TestCase):
                             url='/example/{id}/sub/',
                             action='get',
                             fields=[
-                                coreapi.Field('id', required=True, location='path')
+                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
                             ]
                         )
                     }
@@ -350,7 +350,7 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
                         url='/api/v1/example/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path')
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
                         ]
                     ),
                     'sub': {
@@ -358,7 +358,7 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
                             url='/api/v1/example/{id}/sub/',
                             action='get',
                             fields=[
-                                coreapi.Field('id', required=True, location='path')
+                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
                             ]
                         )
                     }
@@ -388,7 +388,7 @@ class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
         request = factory.get('/')
         schema = generator.get_schema(Request(request))
         expected = coreapi.Document(
-            url='',
+            url='http://testserver/',
             title='Example API',
             content={
                 'example': {

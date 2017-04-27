@@ -63,12 +63,15 @@
               {% else %}
                 <li><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
               {% endif %}
+            {% empty %}
+              {% block breadcrumbs_empty %}&nbsp;{% endblock breadcrumbs_empty %}
             {% endfor %}
           </ul>
         {% endblock %}
 
         <!-- Content -->
         <div id="content">
+          {% block content %}
 
           {% if 'GET' in allowed_methods %}
             <form id="get-form" class="pull-right">
@@ -150,7 +153,7 @@
               </div>
 
               <div class="response-info">
-                <pre class="prettyprint"><span class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}{% for key, val in response_headers.items %}
+                <pre class="prettyprint"><span class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}{% for key, val in response_headers|items %}
 <b>{{ key }}:</b> <span class="lit">{{ val|break_long_headers|urlize_quoted_links }}</span>{% endfor %}
 
 </span>{{ content|urlize_quoted_links }}</pre>{% endautoescape %}
@@ -252,6 +255,7 @@
                 </div>
               {% endif %}
             {% endif %}
+          {% endblock content %}
         </div><!-- /.content -->
       </div><!-- /.container -->
     </div><!-- ./wrapper -->

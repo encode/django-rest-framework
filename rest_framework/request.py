@@ -353,10 +353,9 @@ class Request(object):
 
     def _not_authenticated(self):
         """
-        Return a three-tuple of (authenticator, user, authtoken), representing
-        an unauthenticated request.
+        Set authenticator, user & authtoken representing an unauthenticated request.
 
-        By default this will be (None, AnonymousUser, None).
+        Defaults are None, AnonymousUser & None.
         """
         self._authenticator = None
 

@@ -240,9 +240,59 @@ Once we have a `Client` instance, we can fetch an API schema from the network.
     schema = client.get('https://api.example.org/')
 
 The object returned from this call will be a `Document` instance, which is
-the internal representation of the interface that we are interacting with.
+a representation of the API schema.
 
-Now that we have our schema `Document`, we can now start to interact with the API:
+## Authentication
+
+Typically you'll also want to provide some authentication credentials when
+instantiating the client.
+
+#### Token authentication
+
+The `TokenAuthentication` class can be used to support REST framework's built-in
+`TokenAuthentication`, as well as OAuth and JWT schemes.
+
+    auth = coreapi.auth.TokenAuthentication(
+        scheme='JWT'
+        token='<token>'
+    )
+    client = coreapi.Client(auth=auth)
+
+When using TokenAuthentication you'll probably need to implement a login flow
+using the CoreAPI client.
+
+A suggested pattern for this would be to initially make an unauthenticated client
+request to an "obtain token" endpoint
+
+For example, using the "Django REST framework JWT" package
+
+    client = coreapi.Client()
+    schema = client.get('https://api.example.org/')
+
+    action = ['api-token-auth', 'obtain-token']
+    params = {username: "example", email: "example@example.com"}
+    result = client.action(schema, action, params)
+
+    auth = coreapi.auth.TokenAuthentication(
+        scheme='JWT',
+        token=result['token']
+    )
+    client = coreapi.Client(auth=auth)
+
+#### Basic authentication
+
+The `BasicAuthentication` class can be used to support HTTP Basic Authentication.
+
+    auth = coreapi.auth.BasicAuthentication(
+        username='<username>',
+        password='<password>'
+    )
+    client = coreapi.Client(auth=auth)
+
+## Interacting with the API
+
+Now that we have a client and have fetched our schema `Document`, we can now
+start to interact with the API:
 
     users = client.action(schema, ['users', 'list'])
 
@@ -304,7 +354,7 @@ other protocols can also be supported.
 
 #### Configuring transports
 
-The behaviour of the network layer can be customized by configuring the
+The behavior of the network layer can be customized by configuring the
 transports that the client is instantiated with.
 
     import requests
@@ -317,6 +367,158 @@ transports that the client is instantiated with.
 More complex customizations can also be achieved, for example modifying the
 underlying `requests.Session` instance to [attach transport adaptors][transport-adaptors]
 that modify the outgoing requests.
+
+---
+
+# JavaScript Client Library
+
+The JavaScript client library allows you to interact with your API either from a browser, or using node.
+
+## Installing the JavaScript client
+
+There are two separate JavaScript resources that you need to include in your HTML pages in order to use the JavaScript client library. These are a static `coreapi.js` file, which contains the code for the dynamic client library, and a templated `schema.js` resource, which exposes your API schema.
+
+First, install the API documentation views. These will include the schema resource that'll allow you to load the schema directly from an HTML page, without having to make an asynchronous AJAX call.
+
+    from rest_framework.documentation import include_docs_urls
+
+    urlpatterns = [
+        ...
+        url(r'^docs/', include_docs_urls(title='My API service'))
+    ]
+
+Once the API documentation URLs are installed, you'll be able to include both the required JavaScript resources. Note that the ordering of these two lines is important, as the schema loading requires CoreAPI to already be installed.
+
+    <!--
+        Load the CoreAPI library and the API schema.
+
+        /static/rest_framework/js/coreapi-0.1.0.js
+        /docs/schema.js
+    -->
+    {% load staticfiles %}
+    <script src="{% static 'rest_framework/js/coreapi-0.1.0.js' %}"></script>
+    <script src="{% url 'api-docs:schema-js' %}"></script>
+
+The `coreapi` library, and the `schema` object will now both be available on the `window` instance.
+
+    const coreapi = window.coreapi
+    const schema = window.schema
+
+## Instantiating a client
+
+In order to interact with the API you'll need a client instance.
+
+    var client = coreapi.Client()
+
+Typically you'll also want to provide some authentication credentials when
+instantiating the client.
+
+#### Session authentication
+
+The `SessionAuthentication` class allows session cookies to provide the user
+authentication. You'll want to provide a standard HTML login flow, to allow
+the user to login, and then instantiate a client using session authentication:
+
+    let auth = coreapi.auth.SessionAuthentication({
+        csrfCookieName: 'csrftoken',
+        csrfHeaderName: 'X-CSRFToken'
+    })
+    let client = coreapi.Client({auth: auth})
+
+The authentication scheme will handle including a CSRF header in any outgoing
+requests for unsafe HTTP methods.
+
+#### Token authentication
+
+The `TokenAuthentication` class can be used to support REST framework's built-in
+`TokenAuthentication`, as well as OAuth and JWT schemes.
+
+    let auth = coreapi.auth.TokenAuthentication({
+        scheme: 'JWT'
+        token: '<token>'
+    })
+    let client = coreapi.Client({auth: auth})
+
+When using TokenAuthentication you'll probably need to implement a login flow
+using the CoreAPI client.
+
+A suggested pattern for this would be to initially make an unauthenticated client
+request to an "obtain token" endpoint
+
+For example, using the "Django REST framework JWT" package
+
+    // Setup some globally accessible state
+    window.client = coreapi.Client()
+    window.loggedIn = false
+
+    function loginUser(username, password) {
+        let action = ["api-token-auth", "obtain-token"]
+        let params = {username: "example", email: "example@example.com"}
+        client.action(schema, action, params).then(function(result) {
+            // On success, instantiate an authenticated client.
+            let auth = window.coreapi.auth.TokenAuthentication({
+                scheme: 'JWT',
+                token: result['token']
+            })
+            window.client = coreapi.Client({auth: auth})
+            window.loggedIn = true
+        }).catch(function (error) {
+            // Handle error case where eg. user provides incorrect credentials.
+        })
+    }
+
+#### Basic authentication
+
+The `BasicAuthentication` class can be used to support HTTP Basic Authentication.
+
+    let auth = coreapi.auth.BasicAuthentication({
+        username: '<username>',
+        password: '<password>'
+    })
+    let client = coreapi.Client({auth: auth})
+
+## Using the client
+
+Making requests:
+
+    let action = ["users", "list"]
+    client.action(schema, action).then(function(result) {
+        // Return value is in 'result'
+    })
+
+Including parameters:
+
+    let action = ["users", "create"]
+    let params = {username: "example", email: "example@example.com"}
+    client.action(schema, action, params).then(function(result) {
+        // Return value is in 'result'
+    })
+
+Handling errors:
+
+    client.action(schema, action, params).then(function(result) {
+        // Return value is in 'result'
+    }).catch(function (error) {
+        // Error value is in 'error'
+    })
+
+## Installation with node
+
+The coreapi package is available on NPM.
+
+    $ npm install coreapi
+    $ node
+    const coreapi = require('coreapi')
+
+You'll either want to include the API schema in your codebase directly, by copying it from the `schema.js` resource, or else load the schema asynchronously. For example:
+
+    let client = new coreapi.Client()
+    let schema = null
+    client.get("https://api.example.org/").then(function(data) {
+        // Load a CoreJSON API schema.
+        schema = data
+        console.log('schema loaded')
+    })
 
 [heroku-api]: https://devcenter.heroku.com/categories/platform-api
 [heroku-example]: http://www.coreapi.org/tools-and-resources/example-services/#heroku-json-hyper-schema

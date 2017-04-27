@@ -101,6 +101,15 @@ class TestRootView(TestCase):
         assert response.status_code == status.HTTP_200_OK
         assert response.data == self.data
 
+    def test_head_root_view(self):
+        """
+        HEAD requests to ListCreateAPIView should return 200.
+        """
+        request = factory.head('/')
+        with self.assertNumQueries(1):
+            response = self.view(request).render()
+        assert response.status_code == status.HTTP_200_OK
+
     def test_post_root_view(self):
         """
         POST requests to ListCreateAPIView should create a new object.
@@ -389,7 +398,7 @@ class TestCreateModelWithAutoNowAddField(TestCase):
         """
         Regression test for #285
 
-        https://github.com/tomchristie/django-rest-framework/issues/285
+        https://github.com/encode/django-rest-framework/issues/285
         """
         data = {'email': 'foobar@example.com', 'content': 'foobar'}
         request = factory.post('/', data, format='json')

@@ -175,6 +175,13 @@ except (ImportError, SyntaxError):
     uritemplate = None
 
 
+# coreschema is optional
+try:
+    import coreschema
+except ImportError:
+    coreschema = None
+
+
 # django-filter is optional
 try:
     import django_filters
@@ -242,6 +249,38 @@ try:
         return md.convert(text)
 except ImportError:
     apply_markdown = None
+    markdown = None
+
+
+try:
+    import pygments
+    from pygments.lexers import get_lexer_by_name
+    from pygments.formatters import HtmlFormatter
+
+    def pygments_highlight(text, lang, style):
+        lexer = get_lexer_by_name(lang, stripall=False)
+        formatter = HtmlFormatter(nowrap=True, style=style)
+        return pygments.highlight(text, lexer, formatter)
+
+    def pygments_css(style):
+        formatter = HtmlFormatter(style=style)
+        return formatter.get_style_defs('.highlight')
+
+except ImportError:
+    pygments = None
+
+    def pygments_highlight(text, lang, style):
+        return text
+
+    def pygments_css(style):
+        return None
+
+
+try:
+    import pytz
+    from pytz.exceptions import InvalidTimeError
+except ImportError:
+    InvalidTimeError = Exception
 
 
 # `separators` argument to `json.dumps()` differs between 2.x and 3.x
@@ -307,6 +346,7 @@ def set_many(instance, field, value):
     else:
         field = getattr(instance, field)
         field.set(value)
+
 
 def include(module, namespace=None, app_name=None):
     from django.conf.urls import include

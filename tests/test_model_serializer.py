@@ -10,6 +10,7 @@ from __future__ import unicode_literals
 import decimal
 from collections import OrderedDict
 
+import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.core.validators import (
     MaxValueValidator, MinLengthValidator, MinValueValidator
@@ -96,6 +97,15 @@ class Issue3674ParentModel(models.Model):
 class Issue3674ChildModel(models.Model):
     parent = models.ForeignKey(Issue3674ParentModel, related_name='children', on_delete=models.CASCADE)
     value = models.CharField(primary_key=True, max_length=64)
+
+
+class UniqueChoiceModel(models.Model):
+    CHOICES = (
+        ('choice1', 'choice 1'),
+        ('choice2', 'choice 1'),
+    )
+
+    name = models.CharField(max_length=254, unique=True, choices=CHOICES)
 
 
 class TestModelSerializer(TestCase):
@@ -1064,3 +1074,31 @@ class Issue3674Test(TestCase):
 
         child_expected = {'parent': 1, 'value': 'def'}
         self.assertEqual(child_serializer.data, child_expected)
+
+
+class Issue4897TestCase(TestCase):
+    def test_should_assert_if_writing_readonly_fields(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = OneFieldModel
+                fields = ('char_field',)
+                readonly_fields = fields
+
+        obj = OneFieldModel.objects.create(char_field='abc')
+
+        with pytest.raises(AssertionError) as cm:
+            TestSerializer(obj).fields
+        cm.match(r'readonly_fields')
+
+
+class Test5004UniqueChoiceField(TestCase):
+    def test_unique_choice_field(self):
+        class TestUniqueChoiceSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniqueChoiceModel
+                fields = '__all__'
+
+        UniqueChoiceModel.objects.create(name='choice1')
+        serializer = TestUniqueChoiceSerializer(data={'name': 'choice1'})
+        assert not serializer.is_valid()
+        assert serializer.errors == {'name': ['unique choice model with this name already exists.']}

@@ -81,7 +81,7 @@ If you're translating a new language you'll need to translate the existing REST 
 
 4. Edit the `django.po` file you've just copied, translating all the error messages.
 
-5. Run `manage.py compilemessages -l pt_BR` to make the translations 
+5. Run `manage.py compilemessages -l pt_BR` to make the translations
 available for Django to use. You should see a message like `processing file django.po in <...>/locale/pt_BR/LC_MESSAGES`.
 
 6. Restart your development server to see the changes take effect.
@@ -106,7 +106,7 @@ For API clients the most appropriate of these will typically be to use the `Acce
 [django-translation]: https://docs.djangoproject.com/en/1.7/topics/i18n/translation
 [custom-exception-handler]: ../api-guide/exceptions.md#custom-exception-handling
 [transifex-project]: https://www.transifex.com/projects/p/django-rest-framework/
-[django-po-source]: https://raw.githubusercontent.com/tomchristie/django-rest-framework/master/rest_framework/locale/en_US/LC_MESSAGES/django.po 
+[django-po-source]: https://raw.githubusercontent.com/encode/django-rest-framework/master/rest_framework/locale/en_US/LC_MESSAGES/django.po
 [django-language-preference]: https://docs.djangoproject.com/en/1.7/topics/i18n/translation/#how-django-discovers-language-preference
 [django-locale-paths]: https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-LOCALE_PATHS
 [django-locale-name]: https://docs.djangoproject.com/en/1.7/topics/i18n/#term-locale-name

@@ -8,6 +8,7 @@ REST framework also provides an HTML renderer that renders the browsable API.
 """
 from __future__ import unicode_literals
 
+import base64
 import json
 from collections import OrderedDict
 
@@ -19,11 +20,12 @@ from django.http.multipartparser import parse_header
 from django.template import Template, loader
 from django.test.client import encode_multipart
 from django.utils import six
+from django.utils.html import mark_safe
 
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
     INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi,
-    template_render
+    pygments_css, template_render
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
@@ -792,6 +794,44 @@ class AdminRenderer(BrowsableAPIRenderer):
         context['error_form'] = getattr(self, 'error_form', None)
         context['error_title'] = getattr(self, 'error_title', None)
         return context
+
+
+class DocumentationRenderer(BaseRenderer):
+    media_type = 'text/html'
+    format = 'html'
+    charset = 'utf-8'
+    template = 'rest_framework/docs/index.html'
+    code_style = 'emacs'
+    languages = ['shell', 'javascript', 'python']
+
+    def get_context(self, data, request):
+        return {
+            'document': data,
+            'langs': self.languages,
+            'code_style': pygments_css(self.code_style),
+            'request': request
+        }
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        template = loader.get_template(self.template)
+        context = self.get_context(data, renderer_context['request'])
+        return template_render(template, context, request=renderer_context['request'])
+
+
+class SchemaJSRenderer(BaseRenderer):
+    media_type = 'application/javascript'
+    format = 'javascript'
+    charset = 'utf-8'
+    template = 'rest_framework/schema.js'
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        codec = coreapi.codecs.CoreJSONCodec()
+        schema = base64.b64encode(codec.encode(data))
+
+        template = loader.get_template(self.template)
+        context = {'schema': mark_safe(schema)}
+        request = renderer_context['request']
+        return template_render(template, context, request=request)
 
 
 class MultiPartRenderer(BaseRenderer):

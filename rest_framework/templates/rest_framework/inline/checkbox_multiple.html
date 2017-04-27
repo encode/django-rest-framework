@@ -5,7 +5,7 @@
     <label class="sr-only">{{ field.label }}</label>
   {% endif %}
 
-  {% for key, text in field.choices.items %}
+  {% for key, text in field.choices|items %}
     <div class="checkbox">
       <label>
         <input type="checkbox" name="{{ field.name }}" value="{{ key }}" {% if key|as_string in field.value|as_list_of_strings %}checked{% endif %}>

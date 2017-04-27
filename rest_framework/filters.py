@@ -13,10 +13,11 @@ from django.db import models
 from django.db.models.constants import LOOKUP_SEP
 from django.template import loader
 from django.utils import six
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import (
-    coreapi, distinct, django_filters, guardian, template_render
+    coreapi, coreschema, distinct, django_filters, guardian, template_render
 )
 from rest_framework.settings import api_settings
 
@@ -34,6 +35,7 @@ class BaseFilterBackend(object):
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         return []
 
 
@@ -43,9 +45,9 @@ if django_filters:
     class FilterSet(DFFilterSet):
         def __init__(self, *args, **kwargs):
             warnings.warn(
-                "The built in 'rest_framework.filters.FilterSet' is pending deprecation. "
+                "The built in 'rest_framework.filters.FilterSet' is deprecated. "
                 "You should use 'django_filters.rest_framework.FilterSet' instead.",
-                PendingDeprecationWarning
+                DeprecationWarning
             )
             return super(FilterSet, self).__init__(*args, **kwargs)
 else:
@@ -62,9 +64,9 @@ class DjangoFilterBackend(BaseFilterBackend):
         assert django_filters.VERSION >= (0, 15, 3), 'django-filter 0.15.3 and above is required'
 
         warnings.warn(
-            "The built in 'rest_framework.filters.DjangoFilterBackend' is pending deprecation. "
+            "The built in 'rest_framework.filters.DjangoFilterBackend' is deprecated. "
             "You should use 'django_filters.rest_framework.DjangoFilterBackend' instead.",
-            PendingDeprecationWarning
+            DeprecationWarning
         )
 
         from django_filters.rest_framework import DjangoFilterBackend
@@ -82,6 +84,8 @@ class SearchFilter(BaseFilterBackend):
         '@': 'search',
         '$': 'iregex',
     }
+    search_title = _('Search')
+    search_description = _('A search term.')
 
     def get_search_terms(self, request):
         """
@@ -162,13 +166,26 @@ class SearchFilter(BaseFilterBackend):
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        return [coreapi.Field(name=self.search_param, required=False, location='query')]
+        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
+        return [
+            coreapi.Field(
+                name=self.search_param,
+                required=False,
+                location='query',
+                schema=coreschema.String(
+                    title=force_text(self.search_title),
+                    description=force_text(self.search_description)
+                )
+            )
+        ]
 
 
 class OrderingFilter(BaseFilterBackend):
     # The URL query parameter used for the ordering.
     ordering_param = api_settings.ORDERING_PARAM
     ordering_fields = None
+    ordering_title = _('Ordering')
+    ordering_description = _('Which field to use when ordering the results.')
     template = 'rest_framework/filters/ordering.html'
 
     def get_ordering(self, request, queryset, view):
@@ -280,7 +297,18 @@ class OrderingFilter(BaseFilterBackend):
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        return [coreapi.Field(name=self.ordering_param, required=False, location='query')]
+        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
+        return [
+            coreapi.Field(
+                name=self.ordering_param,
+                required=False,
+                location='query',
+                schema=coreschema.String(
+                    title=force_text(self.ordering_title),
+                    description=force_text(self.ordering_description)
+                )
+            )
+        ]
 
 
 class DjangoObjectPermissionsFilter(BaseFilterBackend):
@@ -295,7 +323,7 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         # We want to defer this import until run-time, rather than import-time.
-        # See https://github.com/tomchristie/django-rest-framework/issues/4608
+        # See https://github.com/encode/django-rest-framework/issues/4608
         # (Also see #1624 for why we need to make this import explicitly)
         from guardian.shortcuts import get_objects_for_user
 

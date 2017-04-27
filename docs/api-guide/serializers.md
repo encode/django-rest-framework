@@ -1100,8 +1100,6 @@ This API included the `.get_field()`, `.get_pk_field()` and other methods.
 
 Because the serializers have been fundamentally redesigned with 3.0 this API no longer exists. You can still modify the fields that get created but you'll need to refer to the source code, and be aware that if the changes you make are against private bits of API then they may be subject to change.
 
-A new interface for controlling this behavior is currently planned for REST framework 3.1.
-
 ---
 
 # Third party packages
@@ -1159,6 +1157,9 @@ The [html-json-forms][html-json-forms] package provides an algorithm and seriali
 
 [djangorestframework-queryfields][djangorestframework-queryfields] allows API clients to specify which fields will be sent in the response via inclusion/exclusion query parameters.  
 
+## DRF Writable Nested
+
+The [drf-writable-nested][drf-writable-nested] package provides writable nested model serializer which allows to create/update models with nested related data.
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
@@ -1179,3 +1180,4 @@ The [html-json-forms][html-json-forms] package provides an algorithm and seriali
 [drf-base64]: https://bitbucket.org/levit_scs/drf_base64
 [drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
 [djangorestframework-queryfields]: http://djangorestframework-queryfields.readthedocs.io/
+[drf-writable-nested]: http://github.com/Brogency/drf-writable-nested

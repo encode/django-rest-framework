@@ -22,12 +22,11 @@ from collections import OrderedDict, namedtuple
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
 
-from rest_framework import exceptions, renderers, views
+from rest_framework import views
 from rest_framework.compat import NoReverseMatch
-from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.schemas import SchemaGenerator
+from rest_framework.schemas import SchemaGenerator, SchemaView
 from rest_framework.settings import api_settings
 from rest_framework.urlpatterns import format_suffix_patterns
 
@@ -276,6 +275,36 @@ class SimpleRouter(BaseRouter):
         return ret
 
 
+class APIRootView(views.APIView):
+    """
+    The default basic root view for DefaultRouter
+    """
+    _ignore_model_permissions = True
+    exclude_from_schema = True
+    api_root_dict = None
+
+    def get(self, request, *args, **kwargs):
+        # Return a plain {"name": "hyperlink"} response.
+        ret = OrderedDict()
+        namespace = request.resolver_match.namespace
+        for key, url_name in self.api_root_dict.items():
+            if namespace:
+                url_name = namespace + ':' + url_name
+            try:
+                ret[key] = reverse(
+                    url_name,
+                    args=args,
+                    kwargs=kwargs,
+                    request=request,
+                    format=kwargs.get('format', None)
+                )
+            except NoReverseMatch:
+                # Don't bail out if eg. no list routes exist, only detail routes.
+                continue
+
+        return Response(ret)
+
+
 class DefaultRouter(SimpleRouter):
     """
     The default router extends the SimpleRouter, but also adds in a default
@@ -284,14 +313,17 @@ class DefaultRouter(SimpleRouter):
     include_root_view = True
     include_format_suffixes = True
     root_view_name = 'api-root'
-    default_schema_renderers = [renderers.CoreJSONRenderer, BrowsableAPIRenderer]
+    default_schema_renderers = None
+    APIRootView = APIRootView
+    APISchemaView = SchemaView
+    SchemaGenerator = SchemaGenerator
 
     def __init__(self, *args, **kwargs):
         if 'schema_title' in kwargs:
             warnings.warn(
-                "Including a schema directly via a router is now pending "
-                "deprecation. Use `get_schema_view()` instead.",
-                PendingDeprecationWarning
+                "Including a schema directly via a router is now deprecated. "
+                "Use `get_schema_view()` instead.",
+                DeprecationWarning
             )
         if 'schema_renderers' in kwargs:
             assert 'schema_title' in kwargs, 'Missing "schema_title" argument.'
@@ -300,6 +332,7 @@ class DefaultRouter(SimpleRouter):
         self.schema_title = kwargs.pop('schema_title', None)
         self.schema_url = kwargs.pop('schema_url', None)
         self.schema_renderers = kwargs.pop('schema_renderers', self.default_schema_renderers)
+
         if 'root_renderers' in kwargs:
             self.root_renderers = kwargs.pop('root_renderers')
         else:
@@ -310,25 +343,16 @@ class DefaultRouter(SimpleRouter):
         """
         Return a schema root view.
         """
-        schema_renderers = self.schema_renderers
-        schema_generator = SchemaGenerator(
+        schema_generator = self.SchemaGenerator(
             title=self.schema_title,
             url=self.schema_url,
             patterns=api_urls
         )
 
-        class APISchemaView(views.APIView):
-            _ignore_model_permissions = True
-            exclude_from_schema = True
-            renderer_classes = schema_renderers
-
-            def get(self, request, *args, **kwargs):
-                schema = schema_generator.get_schema(request)
-                if schema is None:
-                    raise exceptions.PermissionDenied()
-                return Response(schema)
-
-        return APISchemaView.as_view()
+        return self.APISchemaView.as_view(
+            renderer_classes=self.schema_renderers,
+            schema_generator=schema_generator,
+        )
 
     def get_api_root_view(self, api_urls=None):
         """
@@ -339,32 +363,7 @@ class DefaultRouter(SimpleRouter):
         for prefix, viewset, basename in self.registry:
             api_root_dict[prefix] = list_name.format(basename=basename)
 
-        class APIRootView(views.APIView):
-            _ignore_model_permissions = True
-            exclude_from_schema = True
-
-            def get(self, request, *args, **kwargs):
-                # Return a plain {"name": "hyperlink"} response.
-                ret = OrderedDict()
-                namespace = request.resolver_match.namespace
-                for key, url_name in api_root_dict.items():
-                    if namespace:
-                        url_name = namespace + ':' + url_name
-                    try:
-                        ret[key] = reverse(
-                            url_name,
-                            args=args,
-                            kwargs=kwargs,
-                            request=request,
-                            format=kwargs.get('format', None)
-                        )
-                    except NoReverseMatch:
-                        # Don't bail out if eg. no list routes exist, only detail routes.
-                        continue
-
-                return Response(ret)
-
-        return APIRootView.as_view()
+        return self.APIRootView.as_view(api_root_dict=api_root_dict)
 
     def get_urls(self):
         """

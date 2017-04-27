@@ -5,8 +5,8 @@ from __future__ import unicode_literals
 
 from django.http import Http404
 
+from rest_framework import exceptions
 from rest_framework.compat import is_authenticated
-
 
 SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
 
@@ -108,6 +108,10 @@ class DjangoModelPermissions(BasePermission):
             'app_label': model_cls._meta.app_label,
             'model_name': model_cls._meta.model_name
         }
+
+        if method not in self.perms_map:
+            raise exceptions.MethodNotAllowed(method)
+
         return [perm % kwargs for perm in self.perms_map[method]]
 
     def has_permission(self, request, view):
@@ -169,6 +173,10 @@ class DjangoObjectPermissions(DjangoModelPermissions):
             'app_label': model_cls._meta.app_label,
             'model_name': model_cls._meta.model_name
         }
+
+        if method not in self.perms_map:
+            raise exceptions.MethodNotAllowed(method)
+
         return [perm % kwargs for perm in self.perms_map[method]]
 
     def has_object_permission(self, request, view, obj):
