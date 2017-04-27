@@ -162,7 +162,7 @@ The `credentials` method is appropriate for testing APIs that require authentica
 
 #### .force_authenticate(user=None, token=None)
 
-Sometimes you may want to bypass authentication, and simple force all requests by the test client to be automatically treated as authenticated.
+Sometimes you may want to bypass authentication entirely and force all requests by the test client to be automatically treated as authenticated.
 
 This can be a useful shortcut if you're testing the API but don't want to have to construct valid authentication credentials in order to make test requests.
 
