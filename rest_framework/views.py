@@ -328,7 +328,7 @@ class APIView(View):
                 self.permission_denied(
                     request,
                     message=getattr(permission, 'message', None),
-                    code=getattr(permission, 'code', None)
+                    code=getattr(permission, 'code', None) if api_settings.USE_PERMISSION_CODE else None
                 )
 
     def check_object_permissions(self, request, obj):
@@ -341,7 +341,7 @@ class APIView(View):
                 self.permission_denied(
                     request,
                     message=getattr(permission, 'message', None),
-                    code=getattr(permission, 'code', None)
+                    code=getattr(permission, 'code', None) if api_settings.USE_PERMISSION_CODE else None
                 )
 
     def check_throttles(self, request):
