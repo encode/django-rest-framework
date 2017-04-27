@@ -275,6 +275,14 @@ except ImportError:
     def pygments_css(style):
         return None
 
+
+try:
+    import pytz
+    from pytz.exceptions import InvalidTimeError
+except ImportError:
+    InvalidTimeError = Exception
+
+
 # `separators` argument to `json.dumps()` differs between 2.x and 3.x
 # See: http://bugs.python.org/issue22767
 if six.PY3:
@@ -338,6 +346,7 @@ def set_many(instance, field, value):
     else:
         field = getattr(instance, field)
         field.set(value)
+
 
 def include(module, namespace=None, app_name=None):
     from django.conf.urls import include

@@ -12,7 +12,7 @@ from django.utils import six
 from django.utils.timezone import utc
 
 import rest_framework
-from rest_framework import serializers
+from rest_framework import compat, serializers
 from rest_framework.fields import is_simple_callable
 
 try:
@@ -1203,6 +1203,30 @@ class TestNaiveDateTimeField(FieldValues):
     invalid_inputs = {}
     outputs = {}
     field = serializers.DateTimeField(default_timezone=None)
+
+
+class TestNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
+    """
+    Invalid values for `DateTimeField` with datetime in DST shift (non-existing or ambiguous) and timezone with DST.
+    Timezone America/New_York has DST shift from 2017-03-12T02:00:00 to 2017-03-12T03:00:00 and
+     from 2017-11-05T02:00:00 to 2017-11-05T01:00:00 in 2017.
+    """
+    valid_inputs = {}
+    invalid_inputs = {
+        '2017-03-12T02:30:00': ['Invalid datetime for the timezone "America/New_York".'],
+        '2017-11-05T01:30:00': ['Invalid datetime for the timezone "America/New_York".']
+    }
+    outputs = {}
+
+    class MockTimezone:
+        @staticmethod
+        def localize(value, is_dst):
+            raise compat.InvalidTimeError()
+
+        def __str__(self):
+            return 'America/New_York'
+
+    field = serializers.DateTimeField(default_timezone=MockTimezone())
 
 
 class TestTimeField(FieldValues):
