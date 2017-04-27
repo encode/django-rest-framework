@@ -201,6 +201,7 @@ class PageNumberPagination(BasePagination):
         Paginate a queryset if required, either returning a
         page object, or `None` if pagination is not configured for this view.
         """
+        self.view_page_size = getattr(view, 'page_size', None)
         page_size = self.get_page_size(request)
         if not page_size:
             return None
@@ -244,7 +245,7 @@ class PageNumberPagination(BasePagination):
             except (KeyError, ValueError):
                 pass
 
-        return self.page_size
+        return self.view_page_size or self.page_size
 
     def get_next_link(self):
         if not self.page.has_next():
@@ -332,6 +333,7 @@ class LimitOffsetPagination(BasePagination):
     template = 'rest_framework/pagination/numbers.html'
 
     def paginate_queryset(self, queryset, request, view=None):
+        self.view_limit = getattr(view, 'limit', None)
         self.limit = self.get_limit(request)
         if self.limit is None:
             return None
@@ -365,7 +367,7 @@ class LimitOffsetPagination(BasePagination):
             except (KeyError, ValueError):
                 pass
 
-        return self.default_limit
+        return self.view_limit or self.default_limit
 
     def get_offset(self, request):
         try:
@@ -479,7 +481,7 @@ class CursorPagination(BasePagination):
     cursor_query_description = _('The pagination cursor value.')
     page_size = api_settings.PAGE_SIZE
     invalid_cursor_message = _('Invalid cursor')
-    ordering = '-created'
+    ordering = api_settings.ORDERING
     template = 'rest_framework/pagination/previous_and_next.html'
 
     # The offset in the cursor is used in situations where we have a
@@ -494,6 +496,7 @@ class CursorPagination(BasePagination):
             return None
 
         self.base_url = request.build_absolute_uri()
+        self.view_ordering = getattr(view, 'ordering', None)
         self.ordering = self.get_ordering(request, queryset, view)
 
         self.cursor = self.decode_cursor(request)
@@ -688,7 +691,7 @@ class CursorPagination(BasePagination):
         else:
             # The default case is to check for an `ordering` attribute
             # on this pagination instance.
-            ordering = self.ordering
+            ordering = self.view_ordering or self.ordering
             assert ordering is not None, (
                 'Using cursor pagination, but no ordering attribute was declared '
                 'on the pagination class.'
