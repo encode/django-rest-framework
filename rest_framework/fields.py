@@ -1337,6 +1337,10 @@ class ChoiceField(Field):
         self.allow_blank = kwargs.pop('allow_blank', False)
 
         super(ChoiceField, self).__init__(**kwargs)
+        
+        if not self.required:
+            self.choices[''] = ''
+            self.choice_strings_to_values[''] = ''
 
     def to_internal_value(self, data):
         if data == '' and self.allow_blank:
