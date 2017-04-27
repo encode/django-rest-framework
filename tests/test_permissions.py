@@ -209,6 +209,15 @@ class ModelPermissionsIntegrationTests(TestCase):
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
+    def test_calling_standard_method_not_allowed(self):
+        request = factory.delete('/', HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = root_view(request)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+        request = factory.delete('/', HTTP_AUTHORIZATION=self.disallowed_credentials)
+        response = root_view(request)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 class BasicPermModel(models.Model):
     text = models.CharField(max_length=100)
