@@ -71,9 +71,23 @@ def api_view(http_method_names=None, exclude_from_schema=False):
 
         WrappedAPIView.permission_classes = getattr(func, 'permission_classes',
                                                     APIView.permission_classes)
+        WrappedAPIView.permission_classes = getattr(func, 'permission_classes',
+                                                    APIView.permission_classes)
+
+        def get_serializer_class(self):
+            return getattr(func, 'serializer_class', None)
+
+        WrappedAPIView.get_serializer_class = types.MethodType(get_serializer_class, WrappedAPIView)
 
         WrappedAPIView.exclude_from_schema = exclude_from_schema
         return WrappedAPIView.as_view()
+    return decorator
+
+
+def serializer_class(clazz):
+    def decorator(func):
+        func.serializer_class = clazz
+        return func
     return decorator
 
 
