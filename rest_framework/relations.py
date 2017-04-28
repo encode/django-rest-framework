@@ -256,6 +256,39 @@ class PrimaryKeyRelatedField(RelatedField):
         return value.pk
 
 
+class SerializableRelatedField(RelatedField):
+    default_error_messages = {
+        'required': _('This field is required.'),
+        'does_not_exist': _('Invalid pk "{pk_value}" - object does not exist.'),
+        'incorrect_type': _('Incorrect type. Expected pk value, received {data_type}.'),
+    }
+
+    def __init__(self, **kwargs):
+        self.serializer_class = kwargs.pop('serializer_class', None)
+        assert self.serializer_class is not None, (
+            'SerializableRelatedField field must provide a `serializer_class` argument'
+        )
+        self.serializer_params = kwargs.pop('serializer_params', dict())
+        from rest_framework.serializers import ModelSerializer
+        if 'queryset' not in kwargs and issubclass(self.serializer_class, ModelSerializer):
+            kwargs['queryset'] = self.serializer_class.Meta.model.objects.all()
+        kwargs['style'] = {'base_template': 'input.html', 'input_type': 'numeric'}
+        super(SerializableRelatedField, self).__init__(**kwargs)
+
+    def to_internal_value(self, data):
+        try:
+            return self.get_queryset().get(pk=data)
+        except ObjectDoesNotExist:
+            self.fail('does_not_exist', pk_value=data)
+        except (TypeError, ValueError):
+            self.fail('incorrect_type', data_type=type(data).__name__)
+
+    def to_representation(self, value):
+        return (self
+                .serializer_class(instance=value, context=self.context, **self.serializer_params)
+                .data)
+
+
 class HyperlinkedRelatedField(RelatedField):
     lookup_field = 'pk'
     view_name = None
