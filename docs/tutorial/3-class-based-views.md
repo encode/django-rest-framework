@@ -8,7 +8,7 @@ We'll start by rewriting the root view as a class-based view.  All this involves
 
     from snippets.models import Snippet
     from snippets.serializers import SnippetSerializer
-    from django.http import Http404
+    from django.shortcuts import get_object_or_404
     from rest_framework.views import APIView
     from rest_framework.response import Response
     from rest_framework import status
@@ -37,10 +37,9 @@ So far, so good.  It looks pretty similar to the previous case, but we've got be
         Retrieve, update or delete a snippet instance.
         """
         def get_object(self, pk):
-            try:
-                return Snippet.objects.get(pk=pk)
-            except Snippet.DoesNotExist:
-                raise Http404
+            snippet = get_object_or_404(Snippet, pk=pk)
+            
+            return snippet
 
         def get(self, request, pk, format=None):
             snippet = self.get_object(pk)
