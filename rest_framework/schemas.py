@@ -604,7 +604,7 @@ class SchemaGenerator(object):
             return []
 
         pagination = getattr(view, 'pagination_class', None)
-        if not pagination or not pagination.page_size:
+        if not pagination or not getattr(pagination, 'page_size', None):
             return []
 
         paginator = view.pagination_class()
@@ -695,18 +695,15 @@ class SchemaView(APIView):
 
 
 def get_schema_view(
-    title=None,
-    url=None,
-    description=None,
-    urlconf=None,
-    renderer_classes=None,
-    public=False,
-    generator_class=SchemaGenerator,
-):
+        title=None, url=None, description=None, urlconf=None, renderer_classes=None,
+        public=False, patterns=None, generator_class=SchemaGenerator):
     """
     Return a schema view.
     """
-    generator = generator_class(title=title, url=url, description=description, urlconf=urlconf)
+    generator = generator_class(
+        title=title, url=url, description=description,
+        urlconf=urlconf, patterns=patterns,
+    )
     return SchemaView.as_view(
         renderer_classes=renderer_classes,
         schema_generator=generator,

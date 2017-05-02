@@ -8,7 +8,7 @@ from django.core import validators
 from django.db import models
 from django.utils.text import capfirst
 
-from rest_framework.compat import DecimalValidator
+from rest_framework.compat import DecimalValidator, JSONField
 from rest_framework.validators import UniqueValidator
 
 NUMERIC_FIELD_TYPES = (
@@ -88,7 +88,7 @@ def get_field_kwargs(field_name, model_field):
     if decimal_places is not None:
         kwargs['decimal_places'] = decimal_places
 
-    if isinstance(model_field, models.TextField):
+    if isinstance(model_field, models.TextField) or (JSONField and isinstance(model_field, JSONField)):
         kwargs['style'] = {'base_template': 'textarea.html'}
 
     if isinstance(model_field, models.AutoField) or not model_field.editable:

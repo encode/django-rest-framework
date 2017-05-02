@@ -318,3 +318,217 @@ class TestSerializerPartialUsage:
         assert serializer.is_valid()
         assert serializer.validated_data == {}
         assert serializer.errors == {}
+
+    def test_allow_empty_true(self):
+        class ListSerializer(serializers.Serializer):
+            update_field = serializers.IntegerField()
+            store_field = serializers.IntegerField()
+
+        instance = [
+            {'update_field': 11, 'store_field': 12},
+            {'update_field': 21, 'store_field': 22},
+        ]
+
+        serializer = ListSerializer(instance, data=[], partial=True, many=True)
+        assert serializer.is_valid()
+        assert serializer.validated_data == []
+        assert serializer.errors == []
+
+    def test_update_allow_empty_true(self):
+        class ListSerializer(serializers.Serializer):
+            update_field = serializers.IntegerField()
+            store_field = serializers.IntegerField()
+
+        instance = [
+            {'update_field': 11, 'store_field': 12},
+            {'update_field': 21, 'store_field': 22},
+        ]
+        input_data = [{'update_field': 31}, {'update_field': 41}]
+        updated_data_list = [
+            {'update_field': 31, 'store_field': 12},
+            {'update_field': 41, 'store_field': 22},
+        ]
+
+        serializer = ListSerializer(
+            instance, data=input_data, partial=True, many=True)
+        assert serializer.is_valid()
+
+        for index, data in enumerate(serializer.validated_data):
+            for key, value in data.items():
+                assert value == updated_data_list[index][key]
+
+        assert serializer.errors == []
+
+    def test_allow_empty_false(self):
+        class ListSerializer(serializers.Serializer):
+            update_field = serializers.IntegerField()
+            store_field = serializers.IntegerField()
+
+        instance = [
+            {'update_field': 11, 'store_field': 12},
+            {'update_field': 21, 'store_field': 22},
+        ]
+
+        serializer = ListSerializer(
+            instance, data=[], allow_empty=False, partial=True, many=True)
+        assert not serializer.is_valid()
+        assert serializer.validated_data == []
+        assert len(serializer.errors) == 1
+        assert serializer.errors['non_field_errors'][0] == 'This list may not be empty.'
+
+    def test_update_allow_empty_false(self):
+        class ListSerializer(serializers.Serializer):
+            update_field = serializers.IntegerField()
+            store_field = serializers.IntegerField()
+
+        instance = [
+            {'update_field': 11, 'store_field': 12},
+            {'update_field': 21, 'store_field': 22},
+        ]
+        input_data = [{'update_field': 31}, {'update_field': 41}]
+        updated_data_list = [
+            {'update_field': 31, 'store_field': 12},
+            {'update_field': 41, 'store_field': 22},
+        ]
+
+        serializer = ListSerializer(
+            instance, data=input_data, allow_empty=False, partial=True, many=True)
+        assert serializer.is_valid()
+
+        for index, data in enumerate(serializer.validated_data):
+            for key, value in data.items():
+                assert value == updated_data_list[index][key]
+
+        assert serializer.errors == []
+
+    def test_as_field_allow_empty_true(self):
+        class ListSerializer(serializers.Serializer):
+            update_field = serializers.IntegerField()
+            store_field = serializers.IntegerField()
+
+        class Serializer(serializers.Serializer):
+            extra_field = serializers.IntegerField()
+            list_field = ListSerializer(many=True)
+
+        instance = {
+            'extra_field': 1,
+            'list_field': [
+                {'update_field': 11, 'store_field': 12},
+                {'update_field': 21, 'store_field': 22},
+            ]
+        }
+
+        serializer = Serializer(instance, data={}, partial=True)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {}
+        assert serializer.errors == {}
+
+    def test_udate_as_field_allow_empty_true(self):
+        class ListSerializer(serializers.Serializer):
+            update_field = serializers.IntegerField()
+            store_field = serializers.IntegerField()
+
+        class Serializer(serializers.Serializer):
+            extra_field = serializers.IntegerField()
+            list_field = ListSerializer(many=True)
+
+        instance = {
+            'extra_field': 1,
+            'list_field': [
+                {'update_field': 11, 'store_field': 12},
+                {'update_field': 21, 'store_field': 22},
+            ]
+        }
+        input_data_1 = {'extra_field': 2}
+        input_data_2 = {
+            'list_field': [
+                {'update_field': 31},
+                {'update_field': 41},
+            ]
+        }
+
+        # data_1
+        serializer = Serializer(instance, data=input_data_1, partial=True)
+        assert serializer.is_valid()
+        assert len(serializer.validated_data) == 1
+        assert serializer.validated_data['extra_field'] == 2
+        assert serializer.errors == {}
+
+        # data_2
+        serializer = Serializer(instance, data=input_data_2, partial=True)
+        assert serializer.is_valid()
+
+        updated_data_list = [
+            {'update_field': 31, 'store_field': 12},
+            {'update_field': 41, 'store_field': 22},
+        ]
+        for index, data in enumerate(serializer.validated_data['list_field']):
+            for key, value in data.items():
+                assert value == updated_data_list[index][key]
+
+        assert serializer.errors == {}
+
+    def test_as_field_allow_empty_false(self):
+        class ListSerializer(serializers.Serializer):
+            update_field = serializers.IntegerField()
+            store_field = serializers.IntegerField()
+
+        class Serializer(serializers.Serializer):
+            extra_field = serializers.IntegerField()
+            list_field = ListSerializer(many=True, allow_empty=False)
+
+        instance = {
+            'extra_field': 1,
+            'list_field': [
+                {'update_field': 11, 'store_field': 12},
+                {'update_field': 21, 'store_field': 22},
+            ]
+        }
+
+        serializer = Serializer(instance, data={}, partial=True)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {}
+        assert serializer.errors == {}
+
+    def test_update_as_field_allow_empty_false(self):
+        class ListSerializer(serializers.Serializer):
+            update_field = serializers.IntegerField()
+            store_field = serializers.IntegerField()
+
+        class Serializer(serializers.Serializer):
+            extra_field = serializers.IntegerField()
+            list_field = ListSerializer(many=True, allow_empty=False)
+
+        instance = {
+            'extra_field': 1,
+            'list_field': [
+                {'update_field': 11, 'store_field': 12},
+                {'update_field': 21, 'store_field': 22},
+            ]
+        }
+        input_data_1 = {'extra_field': 2}
+        input_data_2 = {
+            'list_field': [
+                {'update_field': 31},
+                {'update_field': 41},
+            ]
+        }
+        updated_data_list = [
+            {'update_field': 31, 'store_field': 12},
+            {'update_field': 41, 'store_field': 22},
+        ]
+
+        # data_1
+        serializer = Serializer(instance, data=input_data_1, partial=True)
+        assert serializer.is_valid()
+        assert serializer.errors == {}
+
+        # data_2
+        serializer = Serializer(instance, data=input_data_2, partial=True)
+        assert serializer.is_valid()
+
+        for index, data in enumerate(serializer.validated_data['list_field']):
+            for key, value in data.items():
+                assert value == updated_data_list[index][key]
+
+        assert serializer.errors == {}

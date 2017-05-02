@@ -7,7 +7,9 @@ from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.db.models import Manager
 from django.db.models.query import QuerySet
 from django.utils import six
-from django.utils.encoding import python_2_unicode_compatible, smart_text
+from django.utils.encoding import (
+    python_2_unicode_compatible, smart_text, uri_to_iri
+)
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
@@ -323,6 +325,8 @@ class HyperlinkedRelatedField(RelatedField):
             prefix = get_script_prefix()
             if data.startswith(prefix):
                 data = '/' + data[len(prefix):]
+
+        data = uri_to_iri(data)
 
         try:
             match = resolve(data)
