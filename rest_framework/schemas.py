@@ -247,7 +247,7 @@ class EndpointInspector(object):
         """
         if hasattr(callback, 'actions'):
             actions = set(callback.actions.keys())
-            http_method_names = set(callback.cls().http_method_names)
+            http_method_names = set(callback.cls.http_method_names)
             return [method.upper() for method in actions & http_method_names]
 
         return [
