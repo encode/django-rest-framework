@@ -261,7 +261,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [drf-haystack][drf-haystack] - Haystack search for Django Rest Framework
 * [django-rest-framework-version-transforms][django-rest-framework-version-transforms] - Enables the use of delta transformations for versioning of DRF resource representations.
 * [django-rest-messaging][django-rest-messaging], [django-rest-messaging-centrifugo][django-rest-messaging-centrifugo] and [django-rest-messaging-js][django-rest-messaging-js] - A real-time pluggable messaging service using DRM.
-
+* [djangorest-alchemy][djangorest-alchemy] - SQLAlchemy support for REST framework.
 
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
@@ -332,3 +332,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
 [djangorestframework-queryfields]: https://github.com/wimglenn/djangorestframework-queryfields
 [drfpasswordless]: https://github.com/aaronn/django-rest-framework-passwordless
+[djangorest-alchemy]: https://github.com/dealertrack/djangorest-alchemy
