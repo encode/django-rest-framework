@@ -23,7 +23,7 @@ class CreateModelMixin(object):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        serializer.save()
+        return serializer.save()
 
     def get_success_headers(self, data):
         try:
@@ -77,7 +77,7 @@ class UpdateModelMixin(object):
         return Response(serializer.data)
 
     def perform_update(self, serializer):
-        serializer.save()
+        return serializer.save()
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
