@@ -138,7 +138,7 @@ def get_field_kwargs(field_name, model_field):
                 if not isinstance(validator, validators.MaxValueValidator)
             ]
 
-        # Ensure that max_value is passed explicitly as a keyword arg,
+        # Ensure that min_value is passed explicitly as a keyword arg,
         # rather than as a validator.
         min_value = next((
             validator.limit_value for validator in validator_kwarg
