@@ -252,8 +252,13 @@ class ForceAuthClientHandler(ClientHandler):
 
 
 class APIClient(APIRequestFactory, DjangoClient):
+    request = None
+
     def __init__(self, enforce_csrf_checks=False, **defaults):
+        self.request = defaults.get('request') if 'request' in defaults else None
+
         super(APIClient, self).__init__(**defaults)
+
         self.handler = ForceAuthClientHandler(enforce_csrf_checks)
         self._credentials = {}
 
@@ -274,6 +279,9 @@ class APIClient(APIRequestFactory, DjangoClient):
             self.logout()  # Also clear any possible session info if required
 
     def request(self, **kwargs):
+        if self.request is not None:
+            return self.request
+
         # Ensure that any credentials set get added to every request.
         kwargs.update(self._credentials)
         return super(APIClient, self).request(**kwargs)
