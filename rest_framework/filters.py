@@ -50,12 +50,17 @@ if django_filters:
                 DeprecationWarning
             )
             return super(FilterSet, self).__init__(*args, **kwargs)
+
+    DFBase = django_filters.rest_framework.DjangoFilterBackend
+
 else:
     def FilterSet():
         assert False, 'django-filter must be installed to use the `FilterSet` class'
 
+    DFBase = BaseFilterBackend
 
-class DjangoFilterBackend(BaseFilterBackend):
+
+class DjangoFilterBackend(DFBase):
     """
     A filter backend that uses django-filter.
     """
@@ -69,9 +74,7 @@ class DjangoFilterBackend(BaseFilterBackend):
             DeprecationWarning
         )
 
-        from django_filters.rest_framework import DjangoFilterBackend
-
-        return DjangoFilterBackend(*args, **kwargs)
+        return super(DjangoFilterBackend, cls).__new__(cls, *args, **kwargs)
 
 
 class SearchFilter(BaseFilterBackend):
