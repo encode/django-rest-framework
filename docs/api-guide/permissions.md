@@ -206,6 +206,22 @@ Custom permissions will raise a `PermissionDenied` exception if the test fails. 
         def has_permission(self, request, view):
              ...
         
+
+If you want to have more control over the error message, for example, format with data, fetched from the database, you can define a `message` property in the permission class:
+
+    from rest_framework import permissions
+
+    class CustomerAccessPermission(permissions.BasePermission):
+        @property
+        def message(self):
+            product = SomeProductModel.objects.get(...)
+            return 'Adding customers for product {} not allowed.'.format(product.name)
+        
+        def has_permission(self, request, view):
+             ...
+        
+
+
 ## Examples
 
 The following is an example of a permission class that checks the incoming request's IP address against a blacklist, and denies the request if the IP has been blacklisted.
