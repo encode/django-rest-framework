@@ -590,10 +590,12 @@ class SchemaGenerator(object):
             if field.read_only or isinstance(field, serializers.HiddenField):
                 continue
 
+            location = 'query' if isinstance(field, serializers.QueryParamField) else 'form'
+
             required = field.required and method != 'PATCH'
             field = coreapi.Field(
                 name=field.field_name,
-                location='form',
+                location=location,
                 required=required,
                 schema=field_to_schema(field)
             )

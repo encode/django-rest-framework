@@ -767,6 +767,10 @@ class CharField(Field):
         return six.text_type(value)
 
 
+class QueryParamField(CharField):
+    pass
+
+
 class EmailField(CharField):
     default_error_messages = {
         'invalid': _('Enter a valid email address.')
