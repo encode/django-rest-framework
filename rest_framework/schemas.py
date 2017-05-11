@@ -564,7 +564,7 @@ class SchemaGenerator(object):
         Return a list of `coreapi.Field` instances corresponding to any
         request body input, as determined by the serializer class.
         """
-        if method not in ('PUT', 'PATCH', 'POST'):
+        if method not in ('PUT', 'GET', 'PATCH', 'POST'):
             return []
 
         if not hasattr(view, 'get_serializer'):
