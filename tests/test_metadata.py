@@ -77,7 +77,7 @@ class TestMetadata:
                 min_value=1, max_value=1000
             )
             char_field = serializers.CharField(
-                required=False, min_length=3, max_length=40
+                required=False, min_length=3, max_length=40, default='Cookie'
             )
             list_field = serializers.ListField(
                 child=serializers.ListField(
@@ -85,6 +85,7 @@ class TestMetadata:
                 )
             )
             nested_field = NestedField()
+            defaultuser_field = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
         class ExampleView(views.APIView):
             """Example view."""
@@ -92,7 +93,10 @@ class TestMetadata:
                 pass
 
             def get_serializer(self):
-                return ExampleSerializer()
+                if self.request:
+                    return ExampleSerializer(context={'request': self.request})
+                else:
+                    return ExampleSerializer()
 
         view = ExampleView.as_view()
         response = view(request=request)
@@ -136,7 +140,8 @@ class TestMetadata:
                         'read_only': False,
                         'label': 'Char field',
                         'min_length': 3,
-                        'max_length': 40
+                        'max_length': 40,
+                        'default': 'Cookie'
                     },
                     'list_field': {
                         'type': 'list',
@@ -173,6 +178,13 @@ class TestMetadata:
                                 'label': 'B'
                             }
                         }
+                    },
+                    'defaultuser_field': {
+                        'type': 'field',
+                        'required': False,
+                        'read_only': False,
+                        'label': 'Defaultuser field',
+                        'default': 'AnonymousUser'
                     }
                 }
             }
