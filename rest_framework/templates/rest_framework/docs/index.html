@@ -49,7 +49,7 @@
                 };
                 $('#selected-authentication').text('session');
                 $('#auth-control').children().removeClass('active');
-                $('#auth-control').find("[data-auth='session']").addClass('active');
+                $('#auth-control').find("[data-auth='session']").closest('li').addClass('active');
             {% endif %}
         </script>
     </body>
