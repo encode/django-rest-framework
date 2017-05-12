@@ -246,7 +246,9 @@ class EndpointInspector(object):
         Return a list of the valid HTTP methods for this endpoint.
         """
         if hasattr(callback, 'actions'):
-            return [method.upper() for method in callback.actions.keys()]
+            actions = set(callback.actions.keys())
+            http_method_names = set(callback.cls.http_method_names)
+            return [method.upper() for method in actions & http_method_names]
 
         return [
             method for method in
@@ -604,7 +606,7 @@ class SchemaGenerator(object):
             return []
 
         pagination = getattr(view, 'pagination_class', None)
-        if not pagination or not pagination.page_size:
+        if not pagination or not getattr(pagination, 'page_size', None):
             return []
 
         paginator = view.pagination_class()
@@ -694,11 +696,16 @@ class SchemaView(APIView):
         return Response(schema)
 
 
-def get_schema_view(title=None, url=None, description=None, urlconf=None, renderer_classes=None, public=False):
+def get_schema_view(
+        title=None, url=None, description=None, urlconf=None, renderer_classes=None,
+        public=False, patterns=None, generator_class=SchemaGenerator):
     """
     Return a schema view.
     """
-    generator = SchemaGenerator(title=title, url=url, description=description, urlconf=urlconf)
+    generator = generator_class(
+        title=title, url=url, description=description,
+        urlconf=urlconf, patterns=patterns,
+    )
     return SchemaView.as_view(
         renderer_classes=renderer_classes,
         schema_generator=generator,

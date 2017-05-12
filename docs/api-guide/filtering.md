@@ -142,7 +142,7 @@ Note that you can use both an overridden `.get_queryset()` and generic filtering
 The `django-filter` library includes a `DjangoFilterBackend` class which
 supports highly customizable field filtering for REST framework.
 
-To use `DjangoFilterBackend`, first install `django-filter`.
+To use `DjangoFilterBackend`, first install `django-filter`. Then add `django_filters` to Django's `INSTALLED_APPS`
 
     pip install django-filter
 
@@ -160,16 +160,6 @@ Or add the filter backend to an individual View or ViewSet.
         ...
         filter_backends = (DjangoFilterBackend,)
 
-If you are using the browsable API or admin API you may also want to install `django-crispy-forms`, which will enhance the presentation of the filter forms in HTML views, by allowing them to render Bootstrap 3 HTML.
-
-    pip install django-crispy-forms
-
-With crispy forms installed and added to Django's `INSTALLED_APPS`, the browsable API will present a filtering control for `DjangoFilterBackend`, like so:
-
-![Django Filter](../img/django-filter.png)
-
-#### Specifying filter fields
-
 If all you need is simple equality-based filtering, you can set a `filter_fields` attribute on the view, or viewset, listing the set of fields you wish to filter against.
 
     class ProductList(generics.ListAPIView):
@@ -182,80 +172,10 @@ This will automatically create a `FilterSet` class for the given fields, and wil
 
     http://example.com/api/products?category=clothing&in_stock=True
 
-#### Specifying a FilterSet
+For more advanced filtering requirements you can specify a `FilterSet` class that should be used by the view.
+You can read more about `FilterSet`s in the [django-filter documentation][django-filter-docs].
+It's also recommended that you read the section on [DRF integration][django-filter-drf-docs].
 
-For more advanced filtering requirements you can specify a `FilterSet` class that should be used by the view.  For example:
-
-    import django_filters
-    from myapp.models import Product
-    from myapp.serializers import ProductSerializer
-    from rest_framework import generics
-
-    class ProductFilter(django_filters.rest_framework.FilterSet):
-        min_price = django_filters.NumberFilter(name="price", lookup_expr='gte')
-        max_price = django_filters.NumberFilter(name="price", lookup_expr='lte')
-        class Meta:
-            model = Product
-            fields = ['category', 'in_stock', 'min_price', 'max_price']
-
-    class ProductList(generics.ListAPIView):
-        queryset = Product.objects.all()
-        serializer_class = ProductSerializer
-        filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-        filter_class = ProductFilter
-
-
-Which will allow you to make requests such as:
-
-    http://example.com/api/products?category=clothing&max_price=10.00
-
-You can also span relationships using `django-filter`, let's assume that each
-product has foreign key to `Manufacturer` model, so we create filter that
-filters using `Manufacturer` name. For example:
-
-    import django_filters
-    from myapp.models import Product
-    from myapp.serializers import ProductSerializer
-    from rest_framework import generics
-
-    class ProductFilter(django_filters.rest_framework.FilterSet):
-        class Meta:
-            model = Product
-            fields = ['category', 'in_stock', 'manufacturer__name']
-
-This enables us to make queries like:
-
-    http://example.com/api/products?manufacturer__name=foo
-
-This is nice, but it exposes the Django's double underscore convention as part of the API.  If you instead want to explicitly name the filter argument you can instead explicitly include it on the `FilterSet` class:
-
-    import django_filters
-    from myapp.models import Product
-    from myapp.serializers import ProductSerializer
-    from rest_framework import generics
-
-    class ProductFilter(django_filters.rest_framework.FilterSet):
-        manufacturer = django_filters.CharFilter(name="manufacturer__name")
-
-        class Meta:
-            model = Product
-            fields = ['category', 'in_stock', 'manufacturer']
-
-And now you can execute:
-
-    http://example.com/api/products?manufacturer=foo
-
-For more details on using filter sets see the [django-filter documentation][django-filter-docs].
-
----
-
-**Hints & Tips**
-
-* By default filtering is not enabled.  If you want to use `DjangoFilterBackend` remember to make sure it is installed by using the `'DEFAULT_FILTER_BACKENDS'` setting.
-* When using boolean fields, you should use the values `True` and `False` in the URL query parameters, rather than `0`, `1`, `true` or `false`.  (The allowed boolean values are currently hardwired in Django's [NullBooleanSelect implementation][nullbooleanselect].)
-* `django-filter` supports filtering across relationships, using Django's double-underscore syntax.
-
----
 
 ## SearchFilter
 
@@ -432,8 +352,11 @@ The method should return a rendered HTML string.
 ## Pagination & schemas
 
 You can also make the filter controls available to the schema autogeneration
-that REST framework provides, by implementing a `get_schema_fields()` method,
-which should return a list of `coreapi.Field` instances.
+that REST framework provides, by implementing a `get_schema_fields()` method. This method should have the following signature:
+
+`get_schema_fields(self, view)`
+
+The method should return a list of `coreapi.Field` instances.
 
 # Third party packages
 
@@ -458,6 +381,7 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [cite]: https://docs.djangoproject.com/en/stable/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter]: https://github.com/alex/django-filter
 [django-filter-docs]: https://django-filter.readthedocs.io/en/latest/index.html
+[django-filter-drf-docs]: https://django-filter.readthedocs.io/en/develop/guide/rest_framework.html
 [guardian]: https://django-guardian.readthedocs.io/
 [view-permissions]: https://django-guardian.readthedocs.io/en/latest/userguide/assign.html
 [view-permissions-blogpost]: http://blog.nyaruka.com/adding-a-view-permission-to-django-models

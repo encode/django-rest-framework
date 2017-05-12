@@ -43,7 +43,7 @@ class TestPrefetchRelatedUpdates(TestCase):
 
     def test_prefetch_related_excluding_instance_from_original_queryset(self):
         """
-        Regression test for https://github.com/tomchristie/django-rest-framework/issues/4661
+        Regression test for https://github.com/encode/django-rest-framework/issues/4661
         """
         view = UserUpdate.as_view()
         pk = self.user.pk

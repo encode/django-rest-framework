@@ -202,6 +202,21 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         assert len(w) == 0
 
     @unittest.skipUnless(django_filters, 'django-filter not installed')
+    def test_backend_mro(self):
+        class CustomBackend(filters.DjangoFilterBackend):
+            def filter_queryset(self, request, queryset, view):
+                assert False, "custom filter_queryset should run"
+
+        class DFFilterFieldsRootView(FilterFieldsRootView):
+            filter_backends = (CustomBackend,)
+
+        view = DFFilterFieldsRootView.as_view()
+        request = factory.get('/')
+
+        with pytest.raises(AssertionError, message="custom filter_queryset should run"):
+            view(request).render()
+
+    @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_get_filtered_fields_root_view(self):
         """
         GET requests to paginated ListCreateAPIView should return paginated results.

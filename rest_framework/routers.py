@@ -316,6 +316,7 @@ class DefaultRouter(SimpleRouter):
     default_schema_renderers = None
     APIRootView = APIRootView
     APISchemaView = SchemaView
+    SchemaGenerator = SchemaGenerator
 
     def __init__(self, *args, **kwargs):
         if 'schema_title' in kwargs:
@@ -342,7 +343,7 @@ class DefaultRouter(SimpleRouter):
         """
         Return a schema root view.
         """
-        schema_generator = SchemaGenerator(
+        schema_generator = self.SchemaGenerator(
             title=self.schema_title,
             url=self.schema_url,
             patterns=api_urls

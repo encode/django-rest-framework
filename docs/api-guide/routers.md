@@ -270,7 +270,7 @@ Let's take a look at the routes our `CustomReadOnlyRouter` would generate for a 
         lookup_field = 'username'
 
         @detail_route()
-        def group_names(self, request):
+        def group_names(self, request, pk=None):
             """
             Returns a list of all the group names that the given
             user belongs to.

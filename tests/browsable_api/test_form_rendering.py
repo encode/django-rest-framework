@@ -44,7 +44,7 @@ class TestManyPostView(TestCase):
         POST request to a view that returns a list of objects should
         still successfully return the browsable API with a rendered form.
 
-        Regression test for https://github.com/tomchristie/django-rest-framework/pull/3164
+        Regression test for https://github.com/encode/django-rest-framework/pull/3164
         """
         data = {}
         request = factory.post('/', data, format='json')

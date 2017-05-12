@@ -146,8 +146,6 @@ An alternative, but more complex option would be to replace the input with an au
 
 There are [a variety of packages for autocomplete widgets][autocomplete-packages], such as [django-autocomplete-light][django-autocomplete-light], that you may want to refer to. Note that you will not be able to simply include these components as standard widgets, but will need to write the HTML template explicitly. This is because REST framework 3.0 no longer supports the `widget` keyword argument since it now uses templated HTML generation.
 
-Better support for autocomplete inputs is planned in future versions.
-
 ---
 
 [cite]: http://en.wikiquote.org/wiki/Alfred_North_Whitehead

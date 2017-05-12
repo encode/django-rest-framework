@@ -310,7 +310,7 @@ Quit out of the shell...
 	Validating models...
 
 	0 errors found
-	Django version 1.8.3, using settings 'tutorial.settings'
+	Django version 1.11, using settings 'tutorial.settings'
 	Development server is running at http://127.0.0.1:8000/
 	Quit the server with CONTROL-C.
 
@@ -373,7 +373,7 @@ Our API views don't do anything particularly special at the moment, beyond servi
 We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 
 [quickstart]: quickstart.md
-[repo]: https://github.com/tomchristie/rest-framework-tutorial
+[repo]: https://github.com/encode/rest-framework-tutorial
 [sandbox]: http://restframework.herokuapp.com/
 [virtualenv]: http://www.virtualenv.org/en/latest/index.html
 [tut-2]: 2-requests-and-responses.md

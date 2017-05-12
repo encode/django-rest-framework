@@ -190,6 +190,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djoser][djoser] - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.
 * [django-rest-auth][django-rest-auth] - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.
 * [drf-oidc-auth][drf-oidc-auth] - Implements OpenID Connect token authentication for DRF.
+* [drfpasswordless][drfpasswordless] - Adds (Medium, Square Cash inspired) passwordless logins and signups via email and mobile numbers.
 
 ### Permissions
 
@@ -260,7 +261,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [drf-haystack][drf-haystack] - Haystack search for Django Rest Framework
 * [django-rest-framework-version-transforms][django-rest-framework-version-transforms] - Enables the use of delta transformations for versioning of DRF resource representations.
 * [django-rest-messaging][django-rest-messaging], [django-rest-messaging-centrifugo][django-rest-messaging-centrifugo] and [django-rest-messaging-js][django-rest-messaging-js] - A real-time pluggable messaging service using DRM.
-
+* [djangorest-alchemy][djangorest-alchemy] - SQLAlchemy support for REST framework.
 
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
@@ -271,10 +272,10 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [pypi-register]: https://pypi.python.org/pypi?%3Aaction=register_form
 [semver]: http://semver.org/
 [tox-docs]: https://tox.readthedocs.io/en/latest/
-[drf-compat]: https://github.com/tomchristie/django-rest-framework/blob/master/rest_framework/compat.py
+[drf-compat]: https://github.com/encode/django-rest-framework/blob/master/rest_framework/compat.py
 [rest-framework-grid]: https://www.djangopackages.com/grids/g/django-rest-framework/
-[drf-create-pr]: https://github.com/tomchristie/django-rest-framework/compare
-[drf-create-issue]: https://github.com/tomchristie/django-rest-framework/issues/new
+[drf-create-pr]: https://github.com/encode/django-rest-framework/compare
+[drf-create-issue]: https://github.com/encode/django-rest-framework/issues/new
 [authentication]: ../api-guide/authentication.md
 [permissions]: ../api-guide/permissions.md
 [third-party-packages]: ../topics/third-party-packages/#existing-third-party-packages
@@ -330,3 +331,5 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [drf-oidc-auth]: https://github.com/ByteInternet/drf-oidc-auth
 [drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
 [djangorestframework-queryfields]: https://github.com/wimglenn/djangorestframework-queryfields
+[drfpasswordless]: https://github.com/aaronn/django-rest-framework-passwordless
+[djangorest-alchemy]: https://github.com/dealertrack/djangorest-alchemy

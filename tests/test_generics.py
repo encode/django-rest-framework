@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import pytest
 from django.db import models
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from django.utils import six
@@ -10,7 +11,8 @@ from rest_framework import generics, renderers, serializers, status
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
 from tests.models import (
-    BasicModel, ForeignKeySource, ForeignKeyTarget, RESTFrameworkModel
+    BasicModel, ForeignKeySource, ForeignKeyTarget, RESTFrameworkModel,
+    UUIDForeignKeyTarget
 )
 
 factory = APIRequestFactory()
@@ -398,7 +400,7 @@ class TestCreateModelWithAutoNowAddField(TestCase):
         """
         Regression test for #285
 
-        https://github.com/tomchristie/django-rest-framework/issues/285
+        https://github.com/encode/django-rest-framework/issues/285
         """
         data = {'email': 'foobar@example.com', 'content': 'foobar'}
         request = factory.post('/', data, format='json')
@@ -647,3 +649,19 @@ class ApiViewsTests(TestCase):
         view.delete('test request', 'test arg', test_kwarg='test')
         assert view.called is True
         assert view.call_args == data
+
+
+class GetObjectOr404Tests(TestCase):
+    def setUp(self):
+        super(GetObjectOr404Tests, self).setUp()
+        self.uuid_object = UUIDForeignKeyTarget.objects.create(name='bar')
+
+    def test_get_object_or_404_with_valid_uuid(self):
+        obj = generics.get_object_or_404(
+            UUIDForeignKeyTarget, pk=self.uuid_object.pk
+        )
+        assert obj == self.uuid_object
+
+    def test_get_object_or_404_with_invalid_string_for_uuid(self):
+        with pytest.raises(Http404):
+            generics.get_object_or_404(UUIDForeignKeyTarget, pk='not-a-uuid')

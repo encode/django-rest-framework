@@ -38,7 +38,8 @@ from rest_framework.utils.field_mapping import (
     get_relation_kwargs, get_url_kwargs
 )
 from rest_framework.utils.serializer_helpers import (
-    BindingDict, BoundField, NestedBoundField, ReturnDict, ReturnList
+    BindingDict, BoundField, JSONBoundField, NestedBoundField, ReturnDict,
+    ReturnList
 )
 from rest_framework.validators import (
     UniqueForDateValidator, UniqueForMonthValidator, UniqueForYearValidator,
@@ -521,6 +522,8 @@ class Serializer(BaseSerializer):
         error = self.errors.get(key) if hasattr(self, '_errors') else None
         if isinstance(field, Serializer):
             return NestedBoundField(field, value, error)
+        if isinstance(field, JSONField):
+            return JSONBoundField(field, value, error)
         return BoundField(field, value, error)
 
     # Include a backlink to the serializer class on return objects.
@@ -561,6 +564,10 @@ class ListSerializer(BaseSerializer):
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         super(ListSerializer, self).__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
+
+    def bind(self, field_name, parent):
+        super(ListSerializer, self).bind(field_name, parent)
+        self.partial = self.parent.partial
 
     def get_initial(self):
         if hasattr(self, 'initial_data'):
@@ -613,6 +620,9 @@ class ListSerializer(BaseSerializer):
             }, code='not_a_list')
 
         if not self.allow_empty and len(data) == 0:
+            if self.parent and self.partial:
+                raise SkipField()
+
             message = self.error_messages['empty']
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
