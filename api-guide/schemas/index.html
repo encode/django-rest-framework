@@ -57,7 +57,7 @@
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
           <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../format-suffixes/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
@@ -465,7 +465,7 @@
             
               
                 
-                  <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/schemas.py">
+                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/master/rest_framework/schemas.py">
                     <span class="label label-info">schemas.py</span>
                   </a>
                 
@@ -566,7 +566,7 @@ urlpatterns = [
 </code></pre>
 <p>Once the view has been added, you'll be able to make API requests to retrieve
 the auto-generated schema definition.</p>
-<pre><code>$ http http://127.0.0.1:8000/ Accept:application/vnd.coreapi+json
+<pre><code>$ http http://127.0.0.1:8000/ Accept:application/coreapi+json
 HTTP/1.0 200 OK
 Allow: GET, HEAD, OPTIONS
 Content-Type: application/vnd.coreapi+json
@@ -608,6 +608,19 @@ schema_view = get_schema_view(
     title='Server Monitoring API',
     url='https://www.example.org/api/',
     renderer_classes=[CoreJSONRenderer, APIBlueprintRenderer]
+)
+</code></pre>
+<h4 id="patterns"><a class="toclink" href="#patterns"><code>patterns</code></a></h4>
+<p>List of url patterns to limit the schema introspection to. If you only want the <code>myproject.api</code> urls
+to be exposed in the schema:</p>
+<pre><code>schema_url_patterns = [
+    url(r'^api/', include('myproject.api.urls')),
+]
+
+schema_view = get_schema_view(
+    title='Server Monitoring API',
+    url='https://www.example.org/api/',
+    patterns=schema_url_patterns,
 )
 </code></pre>
 <h2 id="using-an-explicit-schema-view"><a class="toclink" href="#using-an-explicit-schema-view">Using an explicit schema view</a></h2>

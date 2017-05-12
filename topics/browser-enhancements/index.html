@@ -57,7 +57,7 @@
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
           <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../browsable-api/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
@@ -427,9 +427,9 @@
 <p>&mdash; <a href="http://www.amazon.com/Restful-Web-Services-Leonard-Richardson/dp/0596529260">RESTful Web Services</a>, Leonard Richardson &amp; Sam Ruby.</p>
 </blockquote>
 <p>In order to allow the browsable API to function, there are a couple of browser enhancements that REST framework needs to provide.</p>
-<p>As of version 3.3.0 onwards these are enabled with javascript, using the <a href="https://github.com/tomchristie/ajax-form">ajax-form</a> library.</p>
+<p>As of version 3.3.0 onwards these are enabled with javascript, using the <a href="https://github.com/encode/ajax-form">ajax-form</a> library.</p>
 <h2 id="browser-based-put-delete-etc"><a class="toclink" href="#browser-based-put-delete-etc">Browser based PUT, DELETE, etc...</a></h2>
-<p>The <a href="https://github.com/tomchristie/ajax-form">AJAX form library</a> supports browser-based <code>PUT</code>, <code>DELETE</code> and other methods on HTML forms.</p>
+<p>The <a href="https://github.com/encode/ajax-form">AJAX form library</a> supports browser-based <code>PUT</code>, <code>DELETE</code> and other methods on HTML forms.</p>
 <p>After including the library, use the <code>data-method</code> attribute on the form, like so:</p>
 <pre><code>&lt;form action="/" data-method="PUT"&gt;
     &lt;input name='foo'/&gt;
@@ -438,7 +438,7 @@
 </code></pre>
 <p>Note that prior to 3.3.0, this support was server-side rather than javascript based. The method overloading style (as used in <a href="http://guides.rubyonrails.org/form_helpers.html#how-do-forms-with-put-or-delete-methods-work">Ruby on Rails</a>) is no longer supported due to subtle issues that it introduces in request parsing.</p>
 <h2 id="browser-based-submission-of-non-form-content"><a class="toclink" href="#browser-based-submission-of-non-form-content">Browser based submission of non-form content</a></h2>
-<p>Browser-based submission of content types such as JSON are supported by the <a href="https://github.com/tomchristie/ajax-form">AJAX form library</a>, using form fields with <code>data-override='content-type'</code> and <code>data-override='content'</code> attributes.</p>
+<p>Browser-based submission of content types such as JSON are supported by the <a href="https://github.com/encode/ajax-form">AJAX form library</a>, using form fields with <code>data-override='content-type'</code> and <code>data-override='content'</code> attributes.</p>
 <p>For example:</p>
 <pre><code>    &lt;form action="/"&gt;
         &lt;input data-override='content-type' value='application/json' type='hidden'/&gt;

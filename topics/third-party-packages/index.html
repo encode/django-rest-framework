@@ -57,7 +57,7 @@
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
           <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../tutorials-and-resources/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
@@ -513,19 +513,19 @@ You probably want to also tag the version now:
 </code></pre>
 <h4 id="version-compatibility"><a class="toclink" href="#version-compatibility">Version compatibility</a></h4>
 <p>Sometimes, in order to ensure your code works on various different versions of Django, Python or third party libraries, you'll need to run slightly different code depending on the environment. Any code that branches in this way should be isolated into a <code>compat.py</code> module, and should provide a single common interface that the rest of the codebase can use.</p>
-<p>Check out Django REST framework's <a href="https://github.com/tomchristie/django-rest-framework/blob/master/rest_framework/compat.py">compat.py</a> for an example.</p>
+<p>Check out Django REST framework's <a href="https://github.com/encode/django-rest-framework/blob/master/rest_framework/compat.py">compat.py</a> for an example.</p>
 <h3 id="once-your-package-is-available"><a class="toclink" href="#once-your-package-is-available">Once your package is available</a></h3>
 <p>Once your package is decently documented and available on PyPI, you might want share it with others that might find it useful.</p>
 <h4 id="adding-to-the-django-rest-framework-grid"><a class="toclink" href="#adding-to-the-django-rest-framework-grid">Adding to the Django REST framework grid</a></h4>
 <p>We suggest adding your package to the <a href="https://www.djangopackages.com/grids/g/django-rest-framework/">REST Framework</a> grid on Django Packages.</p>
 <h4 id="adding-to-the-django-rest-framework-docs"><a class="toclink" href="#adding-to-the-django-rest-framework-docs">Adding to the Django REST framework docs</a></h4>
-<p>Create a <a href="https://github.com/tomchristie/django-rest-framework/compare">Pull Request</a> or <a href="https://github.com/tomchristie/django-rest-framework/issues/new">Issue</a> on GitHub, and we'll add a link to it from the main REST framework documentation. You can add your package under <strong>Third party packages</strong> of the API Guide section that best applies, like <a href="../../api-guide/authentication/">Authentication</a> or <a href="../../api-guide/permissions/">Permissions</a>. You can also link your package under the <a href="../../topics/third-party-packages/#existing-third-party-packages">Third Party Packages</a> section.</p>
+<p>Create a <a href="https://github.com/encode/django-rest-framework/compare">Pull Request</a> or <a href="https://github.com/encode/django-rest-framework/issues/new">Issue</a> on GitHub, and we'll add a link to it from the main REST framework documentation. You can add your package under <strong>Third party packages</strong> of the API Guide section that best applies, like <a href="../../api-guide/authentication/">Authentication</a> or <a href="../../api-guide/permissions/">Permissions</a>. You can also link your package under the <a href="../../topics/third-party-packages/#existing-third-party-packages">Third Party Packages</a> section.</p>
 <h4 id="announce-on-the-discussion-group"><a class="toclink" href="#announce-on-the-discussion-group">Announce on the discussion group.</a></h4>
 <p>You can also let others know about your package through the <a href="https://groups.google.com/forum/#!forum/django-rest-framework">discussion group</a>.</p>
 <h2 id="existing-third-party-packages"><a class="toclink" href="#existing-third-party-packages">Existing Third Party Packages</a></h2>
 <p>Django REST Framework has a growing community of developers, packages, and resources.</p>
 <p>Check out a grid detailing all the packages and ecosystem around Django REST Framework at <a href="https://www.djangopackages.com/grids/g/django-rest-framework/">Django Packages</a>.</p>
-<p>To submit new content, <a href="https://github.com/tomchristie/django-rest-framework/issues/new">open an issue</a> or <a href="https://github.com/tomchristie/django-rest-framework/compare">create a pull request</a>.</p>
+<p>To submit new content, <a href="https://github.com/encode/django-rest-framework/issues/new">open an issue</a> or <a href="https://github.com/encode/django-rest-framework/compare">create a pull request</a>.</p>
 <h3 id="authentication"><a class="toclink" href="#authentication">Authentication</a></h3>
 <ul>
 <li><a href="https://github.com/juanriaza/django-rest-framework-digestauth">djangorestframework-digestauth</a> - Provides Digest Access Authentication support.</li>
@@ -537,6 +537,7 @@ You probably want to also tag the version now:
 <li><a href="https://github.com/sunscrapers/djoser">djoser</a> - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.</li>
 <li><a href="https://github.com/Tivix/django-rest-auth/">django-rest-auth</a> - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.</li>
 <li><a href="https://github.com/ByteInternet/drf-oidc-auth">drf-oidc-auth</a> - Implements OpenID Connect token authentication for DRF.</li>
+<li><a href="https://github.com/aaronn/django-rest-framework-passwordless">drfpasswordless</a> - Adds (Medium, Square Cash inspired) passwordless logins and signups via email and mobile numbers.</li>
 </ul>
 <h3 id="permissions"><a class="toclink" href="#permissions">Permissions</a></h3>
 <ul>
@@ -607,6 +608,7 @@ You probably want to also tag the version now:
 <li><a href="https://drf-haystack.readthedocs.io/en/latest/">drf-haystack</a> - Haystack search for Django Rest Framework</li>
 <li><a href="https://github.com/mrhwick/django-rest-framework-version-transforms">django-rest-framework-version-transforms</a> - Enables the use of delta transformations for versioning of DRF resource representations.</li>
 <li><a href="https://github.com/raphaelgyory/django-rest-messaging">django-rest-messaging</a>, <a href="https://github.com/raphaelgyory/django-rest-messaging-centrifugo">django-rest-messaging-centrifugo</a> and <a href="https://github.com/raphaelgyory/django-rest-messaging-js">django-rest-messaging-js</a> - A real-time pluggable messaging service using DRM.</li>
+<li><a href="https://github.com/dealertrack/djangorest-alchemy">djangorest-alchemy</a> - SQLAlchemy support for REST framework.</li>
 </ul>
             
 

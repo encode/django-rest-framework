@@ -57,7 +57,7 @@
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
           <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../versioning/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
@@ -469,7 +469,7 @@
             
               
                 
-                  <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/pagination.py">
+                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/master/rest_framework/pagination.py">
                     <span class="label label-info">pagination.py</span>
                   </a>
                 
@@ -692,8 +692,9 @@ class StandardResultsSetPagination(PageNumberPagination):
 <p>API responses for list endpoints will now include a <code>Link</code> header, instead of including the pagination links as part of the body of the response, for example:</p>
 <h2 id="pagination-schemas"><a class="toclink" href="#pagination-schemas">Pagination &amp; schemas</a></h2>
 <p>You can also make the pagination controls available to the schema autogeneration
-that REST framework provides, by implementing a <code>get_schema_fields()</code> method,
-which should return a list of <code>coreapi.Field</code> instances.</p>
+that REST framework provides, by implementing a <code>get_schema_fields()</code> method. This method should have the following signature:</p>
+<p><code>get_schema_fields(self, view)</code></p>
+<p>The method should return a list of <code>coreapi.Field</code> instances.</p>
 <hr />
 <p><img alt="Link Header" src="../../img/link-header-pagination.png" /></p>
 <p><em>A custom pagination style, using the 'Link' header'</em></p>

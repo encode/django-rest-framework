@@ -57,7 +57,7 @@
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
           <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../3.4-announcement/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
@@ -422,7 +422,7 @@
 <li>A <a href="../html-and-forms/">forms API</a>, allowing serializers to be rendered as HTML forms.</li>
 <li>Django 1.9 support.</li>
 <li>A <a href="../../../api-guide/fields#jsonfield"><code>JSONField</code> serializer field</a>, corresponding to Django 1.9's Postgres <code>JSONField</code> model field.</li>
-<li>Browsable API support <a href="https://github.com/tomchristie/ajax-form">via AJAX</a>, rather than server side request overloading.</li>
+<li>Browsable API support <a href="https://github.com/encode/ajax-form">via AJAX</a>, rather than server side request overloading.</li>
 </ul>
 <p><img alt="Filter Controls" src="../../img/filter-controls.png" /></p>
 <p><em>Example of the new filter controls</em></p>
@@ -433,7 +433,7 @@
 <h2 id="deprecations"><a class="toclink" href="#deprecations">Deprecations</a></h2>
 <p>The AJAX based support for the browsable API means that there are a number of internal cleanups in the <code>request</code> class. For the vast majority of developers this should largely remain transparent:</p>
 <ul>
-<li>To support form based <code>PUT</code> and <code>DELETE</code>, or to support form content types such as JSON, you should now use the <a href="https://github.com/tomchristie/ajax-form">AJAX forms</a> javascript library. This replaces the previous 'method and content type overloading' that required significant internal complexity to the request class.</li>
+<li>To support form based <code>PUT</code> and <code>DELETE</code>, or to support form content types such as JSON, you should now use the <a href="https://github.com/encode/ajax-form">AJAX forms</a> javascript library. This replaces the previous 'method and content type overloading' that required significant internal complexity to the request class.</li>
 <li>The <code>accept</code> query parameter is no longer supported by the default content negotiation class. If you require it then you'll need to <a href="../browser-enhancements/#url-based-accept-headers">use a custom content negotiation class</a>.</li>
 <li>The custom <code>HTTP_X_HTTP_METHOD_OVERRIDE</code> header is no longer supported by default. If you require it then you'll need to <a href="../browser-enhancements/#http-header-based-method-overriding">use custom middleware</a>.</li>
 </ul>

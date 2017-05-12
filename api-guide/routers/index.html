@@ -57,7 +57,7 @@
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
           <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../parsers/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
@@ -451,7 +451,7 @@
             
               
                 
-                  <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/routers.py">
+                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/master/rest_framework/routers.py">
                     <span class="label label-info">routers.py</span>
                   </a>
                 
@@ -678,7 +678,7 @@ class CustomReadOnlyRouter(SimpleRouter):
     lookup_field = 'username'
 
     @detail_route()
-    def group_names(self, request):
+    def group_names(self, request, pk=None):
         """
         Returns a list of all the group names that the given
         user belongs to.

@@ -57,7 +57,7 @@
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
           <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../settings/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
@@ -503,7 +503,7 @@
             
               
                 
-                  <a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/test.py">
+                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/master/rest_framework/test.py">
                     <span class="label label-info">test.py</span>
                   </a>
                 
@@ -626,7 +626,7 @@ client.credentials()
 </code></pre>
 <p>The <code>credentials</code> method is appropriate for testing APIs that require authentication headers, such as basic authentication, OAuth1a and OAuth2 authentication, and simple token authentication schemes.</p>
 <h4 id="force_authenticateusernone-tokennone"><a class="toclink" href="#force_authenticateusernone-tokennone">.force_authenticate(user=None, token=None)</a></h4>
-<p>Sometimes you may want to bypass authentication, and simple force all requests by the test client to be automatically treated as authenticated.</p>
+<p>Sometimes you may want to bypass authentication entirely and force all requests by the test client to be automatically treated as authenticated.</p>
 <p>This can be a useful shortcut if you're testing the API but don't want to have to construct valid authentication credentials in order to make test requests.</p>
 <pre><code>user = User.objects.get(username='lauren')
 client = APIClient()
