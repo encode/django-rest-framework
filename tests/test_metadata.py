@@ -143,10 +143,12 @@ class TestMetadata:
                         'required': True,
                         'read_only': False,
                         'label': 'List field',
+                        'initial': '[]',
                         'child': {
                             'type': 'list',
                             'required': True,
                             'read_only': False,
+                            'initial': '[]',
                             'child': {
                                 'type': 'integer',
                                 'required': True,
@@ -355,7 +357,8 @@ class TestModelSerializerMetadata(TestCase):
                         'type': 'field',
                         'required': False,
                         'read_only': True,
-                        'label': 'Children'
+                        'label': 'Children',
+                        'initial': '[]',
                     },
                     'integer_field': {
                         'type': 'integer',
