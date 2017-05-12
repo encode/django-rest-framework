@@ -11,6 +11,7 @@ from functools import reduce
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.db.models.constants import LOOKUP_SEP
+from django.db.models.sql.constants import ORDER_PATTERN
 from django.template import loader
 from django.utils import six
 from django.utils.encoding import force_text
@@ -268,7 +269,7 @@ class OrderingFilter(BaseFilterBackend):
 
     def remove_invalid_fields(self, queryset, fields, view, request):
         valid_fields = [item[0] for item in self.get_valid_fields(queryset, view, {'request': request})]
-        return [term for term in fields if term.lstrip('-') in valid_fields]
+        return [term for term in fields if term.lstrip('-') in valid_fields and ORDER_PATTERN.match(term)]
 
     def filter_queryset(self, request, queryset, view):
         ordering = self.get_ordering(request, queryset, view)
