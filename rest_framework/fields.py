@@ -1435,6 +1435,7 @@ class FileField(Field):
         self.allow_empty_file = kwargs.pop('allow_empty_file', False)
         if 'use_url' in kwargs:
             self.use_url = kwargs.pop('use_url')
+        self.url_prefix = kwargs.pop('url_prefix', api_settings.UPLOADED_FILES_URL_PREFIX)
         super(FileField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, data):
@@ -1465,6 +1466,8 @@ class FileField(Field):
                 # If the file has not been saved it may not have a URL.
                 return None
             url = value.url
+            if self.url_prefix:
+                url = self.url_prefix + url
             request = self.context.get('request', None)
             if request is not None:
                 return request.build_absolute_uri(url)
