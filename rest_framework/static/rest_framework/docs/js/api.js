@@ -23,7 +23,7 @@ function formEntries (form) {
   // Polyfill for new FormData(form).entries()
   var formData = new FormData(form)
   if (formData.entries !== undefined) {
-    return formData.entries()
+    return Array.from(formData.entries())
   }
 
   var entries = []
@@ -59,6 +59,8 @@ $(function () {
   var $selectedAuthentication = $('#selected-authentication')
   var $authControl = $('#auth-control')
   var $authTokenModal = $('#auth_token_modal')
+  var $authBasicModal = $('#auth_basic_modal')
+  var $authSessionModal = $('#auth_session_modal')
 
   // Language Control
   $('#language-control li').click(function (event) {
@@ -260,8 +262,8 @@ $(function () {
     event.preventDefault()
     window.auth = null
     $selectedAuthentication.text('none')
-    $authControl.children().removeClass('active')
-    $authControl.find("[data-auth='none']").addClass('active')
+    $authControl.find("[data-auth]").closest('li').removeClass('active')
+    $authControl.find("[data-auth='none']").closest('li').addClass('active')
   })
 
   // Authentication: token
@@ -276,8 +278,8 @@ $(function () {
       'token': token
     }
     $selectedAuthentication.text('token')
-    $authControl.children().removeClass('active')
-    $authControl.find("[data-auth='token']").addClass('active')
+    $authControl.find("[data-auth]").closest('li').removeClass('active')
+    $authControl.find("[data-auth='token']").closest('li').addClass('active')
     $authTokenModal.modal('hide')
   })
 
@@ -293,9 +295,9 @@ $(function () {
       'password': password
     }
     $selectedAuthentication.text('basic')
-    $authControl.children().removeClass('active')
-    $authControl.find("[data-auth='basic']").addClass('active')
-    $authTokenModal.modal('hide')
+    $authControl.find("[data-auth]").closest('li').removeClass('active')
+    $authControl.find("[data-auth='basic']").closest('li').addClass('active')
+    $authBasicModal.modal('hide')
   })
 
   // Authentication: session
@@ -305,8 +307,8 @@ $(function () {
       'type': 'session'
     }
     $selectedAuthentication.text('session')
-    $authControl.children().removeClass('active')
-    $authControl.find("[data-auth='session']").addClass('active')
-    $authTokenModal.modal('hide')
+    $authControl.find("[data-auth]").closest('li').removeClass('active')
+    $authControl.find("[data-auth='session']").closest('li').addClass('active')
+    $authSessionModal.modal('hide')
   })
 })
