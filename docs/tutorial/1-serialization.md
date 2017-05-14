@@ -16,14 +16,14 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 Before we do anything else we'll create a new virtual environment, using [virtualenv].  This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
 
+    cd ~
+    mkdir tutorial && cd tutorial
     virtualenv env
     source env/bin/activate
 
-Now that we're inside a virtualenv environment, we can install our package requirements.
+Now that we're inside a virtualenv environment, we can install our package requirements. Pygments will be used for code highlighting.
 
-    pip install django
-    pip install djangorestframework
-    pip install pygments  # We'll be using this for the code highlighting
+    pip install django djangorestframework pygments
 
 **Note:** To exit the virtualenv environment at any time, just type `deactivate`.  For more information see the [virtualenv documentation][virtualenv].
 
@@ -32,9 +32,7 @@ Now that we're inside a virtualenv environment, we can install our package requi
 Okay, we're ready to get coding.
 To get started, let's create a new project to work with.
 
-    cd ~
-    django-admin.py startproject tutorial
-    cd tutorial
+    django-admin.py startproject tutorial .
 
 Once that's done we can create an app that we'll use to create a simple Web API.
 
