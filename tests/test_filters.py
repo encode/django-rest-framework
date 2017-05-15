@@ -764,6 +764,23 @@ class OrderingFilterTests(TestCase):
             {'id': 1, 'title': 'zyx', 'text': 'abc'},
         ]
 
+    def test_incorrecturl_extrahyphens_ordering(self):
+        class OrderingListView(generics.ListAPIView):
+            queryset = OrderingFilterModel.objects.all()
+            serializer_class = OrderingFilterSerializer
+            filter_backends = (filters.OrderingFilter,)
+            ordering = ('title',)
+            ordering_fields = ('text',)
+
+        view = OrderingListView.as_view()
+        request = factory.get('/', {'ordering': '--text'})
+        response = view(request)
+        assert response.data == [
+            {'id': 3, 'title': 'xwv', 'text': 'cde'},
+            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+            {'id': 1, 'title': 'zyx', 'text': 'abc'},
+        ]
+
     def test_incorrectfield_ordering(self):
         class OrderingListView(generics.ListAPIView):
             queryset = OrderingFilterModel.objects.all()
@@ -883,6 +900,7 @@ class OrderingFilterTests(TestCase):
             queryset = OrderingFilterModel.objects.all()
             filter_backends = (filters.OrderingFilter,)
             ordering = ('title',)
+
             # note: no ordering_fields and serializer_class specified
 
             def get_serializer_class(self):
