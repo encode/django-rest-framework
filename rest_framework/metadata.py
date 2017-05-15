@@ -36,6 +36,7 @@ class SimpleMetadata(BaseMetadata):
     for us to base this on.
     """
     label_lookup = ClassLookupDict({
+        serializers.BaseSerializer: 'serializer',
         serializers.Field: 'field',
         serializers.BooleanField: 'boolean',
         serializers.NullBooleanField: 'boolean',
@@ -147,5 +148,8 @@ class SimpleMetadata(BaseMetadata):
                 }
                 for choice_value, choice_name in field.choices.items()
             ]
+
+        if isinstance(field, serializers.BaseSerializer):
+            field_info['fields'] = self.get_serializer_info(field)
 
         return field_info
