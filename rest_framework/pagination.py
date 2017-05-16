@@ -572,7 +572,7 @@ class CursorPagination(BasePagination):
         if not self.has_next:
             return None
 
-        if self.cursor and self.cursor.reverse and self.cursor.offset != 0:
+        if self.cursor and self.cursor.reverse and self.cursor.offset != 0 and self.page:
             # If we're reversing direction and we have an offset cursor
             # then we cannot use the first position we find as a marker.
             compare = self._get_position_from_instance(self.page[-1], self.ordering)
@@ -620,7 +620,7 @@ class CursorPagination(BasePagination):
         if not self.has_previous:
             return None
 
-        if self.cursor and not self.cursor.reverse and self.cursor.offset != 0:
+        if self.cursor and not self.cursor.reverse and self.cursor.offset != 0 and self.page:
             # If we're reversing direction and we have an offset cursor
             # then we cannot use the first position we find as a marker.
             compare = self._get_position_from_instance(self.page[0], self.ordering)
