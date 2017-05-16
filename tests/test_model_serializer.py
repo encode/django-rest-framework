@@ -524,6 +524,38 @@ class TestRelationalFieldMappings(TestCase):
         """)
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
+    def test_nested_hyperlinked_relations_star(self):
+        class TestSerializer(serializers.HyperlinkedModelSerializer):
+            class Meta:
+                model = RelationalModel
+                depth = 1
+                fields = '__all__'
+
+                extra_kwargs = {
+                    'url': {
+                        'source': '*',
+                    }}
+
+        expected = dedent("""
+            TestSerializer():
+                url = HyperlinkedIdentityField(source='*', view_name='relationalmodel-detail')
+                foreign_key = NestedSerializer(read_only=True):
+                    url = HyperlinkedIdentityField(view_name='foreignkeytargetmodel-detail')
+                    name = CharField(max_length=100)
+                one_to_one = NestedSerializer(read_only=True):
+                    url = HyperlinkedIdentityField(view_name='onetoonetargetmodel-detail')
+                    name = CharField(max_length=100)
+                many_to_many = NestedSerializer(many=True, read_only=True):
+                    url = HyperlinkedIdentityField(view_name='manytomanytargetmodel-detail')
+                    name = CharField(max_length=100)
+                through = NestedSerializer(many=True, read_only=True):
+                    url = HyperlinkedIdentityField(view_name='throughtargetmodel-detail')
+                    name = CharField(max_length=100)
+        """)
+        self.maxDiff = None
+
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
+
     def test_nested_unique_together_relations(self):
         class TestSerializer(serializers.HyperlinkedModelSerializer):
             class Meta:
