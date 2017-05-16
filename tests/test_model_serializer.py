@@ -524,7 +524,7 @@ class TestRelationalFieldMappings(TestCase):
         """)
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
-    def test_nested_hyperlinked_relations_star(self):
+    def test_nested_hyperlinked_relations_starred_source(self):
         class TestSerializer(serializers.HyperlinkedModelSerializer):
             class Meta:
                 model = RelationalModel
@@ -553,7 +553,6 @@ class TestRelationalFieldMappings(TestCase):
                     name = CharField(max_length=100)
         """)
         self.maxDiff = None
-
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
     def test_nested_unique_together_relations(self):
