@@ -22,6 +22,7 @@ from django.utils.six.moves.urllib import parse as urlparse
 
 from rest_framework import renderers
 from rest_framework.exceptions import ParseError
+import codecs
 
 
 class DataAndFiles(object):
@@ -61,8 +62,8 @@ class JSONParser(BaseParser):
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
 
         try:
-            data = stream.read().decode(encoding)
-            return json.loads(data)
+            decoded_stream = codecs.decode(stream, encoding)
+            return json.load(decoded_stream)
         except ValueError as exc:
             raise ParseError('JSON parse error - %s' % six.text_type(exc))
 
