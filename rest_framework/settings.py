@@ -107,6 +107,8 @@ DEFAULTS = {
     'TIME_FORMAT': ISO_8601,
     'TIME_INPUT_FORMATS': (ISO_8601,),
 
+    'REMOVE_CONTENT_TYPE_ON_HTTP_204': True,
+
     # Encoding
     'UNICODE_JSON': True,
     'COMPACT_JSON': True,
