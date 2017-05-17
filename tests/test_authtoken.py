@@ -27,3 +27,9 @@ class AuthTokenTests(TestCase):
     def test_validate_raise_error_if_no_credentials_provided(self):
         with pytest.raises(ValidationError):
             AuthTokenSerializer().validate({})
+
+    def test_whitespace_in_password(self):
+        data = {'username': self.user.username, 'password': 'test pass '}
+        self.user.set_password(data['password'])
+        self.user.save()
+        assert AuthTokenSerializer(data=data).is_valid()
