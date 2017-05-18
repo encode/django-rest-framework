@@ -128,7 +128,7 @@ class SimpleRouter(BaseRouter):
     def __init__(self, trailing_slash=True):
         if isinstance(trailing_slash, str):
             self.trailing_slash = trailing_slash
-        else: 
+        else:
             self.trailing_slash = trailing_slash and '/' or ''
         super(SimpleRouter, self).__init__()
 
