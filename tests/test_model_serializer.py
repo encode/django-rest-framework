@@ -42,6 +42,10 @@ class OneFieldModel(models.Model):
     char_field = models.CharField(max_length=100)
 
 
+class ExtendedModel(OneFieldModel):
+    text_field = models.TextField(max_length=100)
+
+
 class RegularFieldsModel(models.Model):
     """
     A model class for testing regular flat fields.
@@ -150,6 +154,26 @@ class TestModelSerializer(TestCase):
             serializer.is_valid()
         msginitial = 'Cannot use ModelSerializer with Abstract Models.'
         assert str(excinfo.exception).startswith(msginitial)
+
+    def test_inheritance(self):
+        """
+        Check serializer contains only correct fields
+        """
+        class TestSerializer(serializers.ModelSerializer):
+
+            class Meta:
+                model = ExtendedModel
+                fields = '__all__'
+
+        instance = ExtendedModel.objects.create(
+            char_field="An Instance",
+            text_field="""To check only the two fields plus id are present in data"""
+        )
+
+        serializer = TestSerializer(instance)
+        data = serializer.data
+        assert len(data.keys()) == 3
+        assert data.keys() == ['id', 'char_field', 'text_field',]
 
 
 class TestRegularFieldMappings(TestCase):
