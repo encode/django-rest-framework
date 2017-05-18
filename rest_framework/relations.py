@@ -22,6 +22,7 @@ from rest_framework.fields import (
 from rest_framework.reverse import reverse
 from rest_framework.settings import api_settings
 from rest_framework.utils import html
+from rest_framework.validators import ValidateSetRelationPermission
 
 
 def method_overridden(method_name, klass, instance):
@@ -105,6 +106,12 @@ class RelatedField(Field):
         )
         kwargs.pop('many', None)
         kwargs.pop('allow_empty', None)
+        try:
+            permission = kwargs.pop('permission')
+        except KeyError:
+            pass
+        else:
+            self.validators.append(ValidateSetRelationPermission(permission))
         super(RelatedField, self).__init__(**kwargs)
 
     def __new__(cls, *args, **kwargs):
