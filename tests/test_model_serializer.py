@@ -151,6 +151,31 @@ class TestModelSerializer(TestCase):
         msginitial = 'Cannot use ModelSerializer with Abstract Models.'
         assert str(excinfo.exception).startswith(msginitial)
 
+    def test_repr_side_effects(self):
+        """
+        Test that modifying ModelSerializer.fields in __init__ while calling
+        `repr` does not have side-effects (issue #3196)
+        """
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = OneFieldModel
+                fields = ('char_field',)
+
+            def __init__(self, instance=None, data=serializers.empty, **kwargs):
+                super(TestSerializer, self).__init__(instance, data, **kwargs)
+                repr(self)
+                self.fields.pop('char_field')
+
+        instance = OneFieldModel.objects.create(char_field='value')
+
+        new_data = {'char_field': 'new_value'}
+        serializer = TestSerializer(instance, new_data)
+
+        serializer.is_valid()
+
+        self.assertDictEqual(serializer.validated_data, {})
+
 
 class TestRegularFieldMappings(TestCase):
     def test_regular_fields(self):
