@@ -165,7 +165,7 @@ If all you need is simple equality-based filtering, you can set a `filter_fields
     class ProductList(generics.ListAPIView):
         queryset = Product.objects.all()
         serializer_class = ProductSerializer
-        filter_backends = (filters.DjangoFilterBackend,)
+        filter_backends = (DjangoFilterBackend,)
         filter_fields = ('category', 'in_stock')
 
 This will automatically create a `FilterSet` class for the given fields, and will allow you to make requests such as:
