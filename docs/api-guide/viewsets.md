@@ -51,7 +51,7 @@ Typically we wouldn't do this, but would instead register the viewset with a rou
     from rest_framework.routers import DefaultRouter
 
     router = DefaultRouter()
-    router.register(r'users', UserViewSet)
+    router.register(r'users', UserViewSet, base_name='user')
     urlpatterns = router.urls
 
 Rather than writing your own viewsets, you'll often want to use the existing base classes that provide a default set of behavior.  For example:
