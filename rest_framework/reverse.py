@@ -5,6 +5,9 @@ from __future__ import unicode_literals
 
 from django.utils import six
 from django.utils.functional import lazy
+from django.core.urlresolvers import resolve
+from django.http import Http404
+
 
 from rest_framework.compat import reverse as django_reverse
 from rest_framework.compat import NoReverseMatch
@@ -60,9 +63,25 @@ def _reverse(viewname, args=None, kwargs=None, request=None, format=None, **extr
     if format is not None:
         kwargs = kwargs or {}
         kwargs['format'] = format
-    url = django_reverse(viewname, args=args, kwargs=kwargs, **extra)
+
+    if request:
+        if hasattr(request, 'resolver_match'):
+            namespace = request.resolver_match.namespace
+        else:
+            try:
+                namespace = resolve(request.path).namespace
+            except Http404:
+                namespace=None
+
+        if namespace and ':' not in viewname:
+            viewname = '{namespace}:{viewname}'.format(namespace=namespace,
+                                                   viewname=viewname)
+
+    url = django_reverse(viewname, args=args, kwargs=kwargs,
+                          **extra)
     if request:
         return request.build_absolute_uri(url)
+
     return url
 
 
