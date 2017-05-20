@@ -14,6 +14,7 @@ from __future__ import unicode_literals
 
 import copy
 import inspect
+import re
 import traceback
 from collections import Mapping, OrderedDict
 
@@ -367,10 +368,20 @@ class Serializer(BaseSerializer):
 
     @cached_property
     def _writable_fields(self):
-        return [
-            field for field in self.fields.values()
-            if (not field.read_only) or (field.default is not empty)
-        ]
+        ret = []
+        for field in self.fields.values():
+            if re.compile("\_set$").findall(field.source):
+                try:
+                    for field in field.child._writable_fields:
+                        if (not field.read_only) or (field.default is not empty):
+                            ret.append(field)
+                except:
+                    if (not field.read_only) or (field.default is not empty):
+                        ret.append(field)
+                continue
+            if (not field.read_only) or (field.default is not empty):
+                ret.append(field)
+        return ret
 
     @cached_property
     def _readable_fields(self):
