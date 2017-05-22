@@ -220,6 +220,7 @@ class BaseSerializer(Field):
         return self.instance
 
     def is_valid(self, raise_exception=False):
+        assert self._initial_data is not None
         assert not hasattr(self, 'restore_object'), (
             'Serializer `%s.%s` has old-style version 2 `.restore_object()` '
             'that is no longer compatible with REST framework 3. '
