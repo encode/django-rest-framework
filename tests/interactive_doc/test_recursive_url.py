@@ -32,7 +32,7 @@ class TestRecursiveUrlViewSets(TestCase):
         for route in (('not_dummies',), ('dummy', 'aaaas'), ('dummy', 'bbbbs')):
             path = "-".join(route)
             self.assertTrue(
-                re.search(header_re.format(level=1+len(route), path=path, title=route[-1]), self.content),
+                re.search(header_re.format(level=1 + len(route), path=path, title=route[-1]), self.content),
                 'unable to find documentation section for {}'.format(path)
             )
             for method in ('read', 'create'):
