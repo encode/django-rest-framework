@@ -365,19 +365,14 @@ def break_long_headers(header):
 
 
 @register.filter
-def split_keys(keys, cmd_type='script'):
-    if not keys:
-        return ''
+def list_add(lst, item):
+    """
+    Appends a item to a list or a tuple. Original value is not modified.
 
-    if cmd_type == 'script':
-        joiner = ', '
-        wrapper = '"'
-    else:
-        joiner = ' '
-        wrapper = ''
-
-    return joiner.join([
-        '{wrapper}{k}{wrapper}'.format(k=k, wrapper=wrapper)
-        if k != '' else ''
-        for k in keys.split('/')
-    ])
+    Can be only applied to lists or tuples, raises TypeError otherwise.
+    """
+    if isinstance(lst, list):
+        return lst + [item]
+    elif isinstance(lst, tuple):
+        return lst + (item,)
+    raise TypeError("list_add only accepts lists or tuples")

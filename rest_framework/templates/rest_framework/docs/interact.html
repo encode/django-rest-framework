@@ -16,7 +16,7 @@
 
     </div>
 
-    <form data-key='[{{ prefix|split_keys }} "{{ section_key }}", "{{ link_key }}"]' class="api-interaction">
+    <form data-key='[{% for p in path %}"{{ p }}", {% endfor %}"{{ section_key }}", "{{ link_key }}"]' class="api-interaction">
     <div class="modal-body">
       <div class="row">
         <div class="col-lg-6 request">

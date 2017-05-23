@@ -4,7 +4,7 @@
 
     <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
     <div class="menu-list">
-        {% include 'rest_framework/docs/_recursive_menu.html' with items=document.data|items %}
+        {% include "rest_framework/docs/_recursive_menu.html" with items=document.data|items path=""|make_list %}
 
         <ul class="menu-list menu-list-bottom">
             <li data-toggle="collapse" data-target="#auth-control" class="collapsed">

@@ -27,16 +27,16 @@ class TestRecursiveUrlViewSets(TestCase):
             )
 
     def test_documentation(self):
-        header_re = 'h{level}\s+id="{path}".*>{title} <a href="#{path}"'
+        header_re = 'h{level}\s+id="{path}".*>\s*{title}\s*<a href="#{path}"'
 
         for route in (('not_dummies',), ('dummy', 'aaaas'), ('dummy', 'bbbbs')):
-            path = "/".join(route)
+            path = "-".join(route)
             self.assertTrue(
                 re.search(header_re.format(level=1+len(route), path=path, title=route[-1]), self.content),
                 'unable to find documentation section for {}'.format(path)
             )
             for method in ('read', 'create'):
-                subpath = "{}/retrieve_alt-{}".format(path, method)
+                subpath = "{}-retrieve_alt-{}".format(path, method)
                 self.assertTrue(
                     re.search(header_re.format(level=3, path=subpath, title=method), self.content),
                     'unable to find documentation section for {}'.format(subpath)

@@ -1,22 +1,18 @@
 {% load rest_framework %}
 {% if items %}
-<ul id="{% if prefix %}{{prefix}}-dropdown{% else %}menu-content{% endif %}" class="menu-content collapse out">
+<ul id="{% if path %}{{ path|join:"-" }}-dropdown{% else %}menu-content{% endif %}" class="menu-content collapse out">
     {% for section_key, section in items %}
-        <li data-toggle="collapse" data-target="#{{prefix}}{{ section_key }}-dropdown" class="collapsed">
-          <a><i class="fa fa-dot-circle-o fa-lg"></i> {% if prefix %}{{prefix}}/{% endif %}{% if section_key %}{{ section_key }}{% else %}API Endpoints{% endif %} <span class="arrow"></span></a>
+        <li data-toggle="collapse" data-target="#{{ path|list_add:section_key|join:"-" }}-dropdown" class="collapsed">
+          <a><i class="fa fa-dot-circle-o fa-lg"></i> {% for p in path %}{{ p }}/{% endfor %}{% if section_key %}{{ section_key }}{% else %}API Endpoints{% endif %} <span class="arrow"></span></a>
         </li>
         {% if section.links|items %}
-            <ul class="sub-menu {% if section_key %}collapse{% endif %}" id="{{prefix}}{{ section_key }}-dropdown">
+            <ul class="sub-menu {% if section_key %}collapse{% endif %}" id="{{ path|list_add:section_key|join:'-' }}-dropdown">
                 {% for link_key, link in section.links|items %}
-                <li><a href="#{% if prefix %}{{prefix}}/{% endif %}{{ section_key }}-{{ link_key }}">{{ link.title|default:link_key }}</a></li>
+                <li><a href="#{{ path|list_add:section_key|list_add:link_key|join:"-" }}">{{ link.title|default:link_key }}</a></li>
                 {% endfor %}
             </ul>
         {% endif %}
-        {% if prefix %}
-            {% include 'rest_framework/docs/_recursive_menu.html' with items=section.data|items prefix=prefix|add:'/'|add:section_key %}
-        {% else %}
-            {% include 'rest_framework/docs/_recursive_menu.html' with items=section.data|items prefix=section_key %}
-        {% endif %}
+        {% include "rest_framework/docs/_recursive_menu.html" with items=section.data|items path=path|list_add:section_key %}
     {% endfor %}
 </ul>
 {% endif %}
