@@ -832,6 +832,8 @@ class UUIDField(Field):
         if not isinstance(data, uuid.UUID):
             try:
                 if isinstance(data, six.integer_types):
+                    # if isinstance(data, bool):
+                    #     self.fail('invalid', value=data)
                     return uuid.UUID(int=data)
                 elif isinstance(data, six.string_types):
                     return uuid.UUID(hex=data)
