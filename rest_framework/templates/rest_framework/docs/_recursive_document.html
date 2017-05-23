@@ -4,12 +4,12 @@
   </a></h{{level}}>
 {% endif %}
 
-    {% if section.links.items %}
-        {% for link_key, link in section.links.items %}
+    {% if section.links|items %}
+        {% for link_key, link in section.links|items %}
             {% include "rest_framework/docs/link.html" with prefix=prefix level=level|add:1%}
         {% endfor %}
     {% else %}
-        {% include 'rest_framework/docs/_recursive_document.html' with items=section.items prefix=prefix|add:section_key|add:'/' level=level|add:1 %}
+        {% include 'rest_framework/docs/_recursive_document.html' with items=section|items prefix=prefix|add:section_key|add:'/' level=level|add:1 %}
     {% endif %}
 {% endfor %}
 
