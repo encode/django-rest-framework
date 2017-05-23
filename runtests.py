@@ -12,7 +12,7 @@ PYTEST_ARGS = {
     'fast': ['tests', '--tb=short', '-q', '-s', '-rw'],
 }
 
-FLAKE8_ARGS = ['rest_framework', 'tests', '--ignore=E501']
+FLAKE8_ARGS = ['rest_framework', 'tests']
 
 ISORT_ARGS = ['--recursive', '--check-only', '-o' 'uritemplate', '-p', 'tests', 'rest_framework', 'tests']
 
