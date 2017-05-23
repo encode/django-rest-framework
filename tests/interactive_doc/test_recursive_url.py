@@ -53,3 +53,7 @@ class TestRecursiveUrlViewSets(TestCase):
                     '$ coreapi action {} retrieve_alt {}'.format(' '.join(route), method) in self.content,
                     'unable to find shell code snippet for {}'.format(subpath)
                 )
+                self.assertTrue(
+                    re.search('<li><a href="#{}"[^>]*>\s*{}'.format(subpath, method), self.content),
+                    'unable to find sidebar link for {}'.format(subpath)
+                )
