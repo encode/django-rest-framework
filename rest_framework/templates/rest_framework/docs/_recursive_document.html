@@ -1,9 +1,9 @@
 {% load rest_framework %}
 {% for section_key, section in items %}
     {% if section_key %}
-        <h{{level}} id="{{ path|list_add:section_key|join:'-' }}" class="coredocs-section-title">
+        <h{{level}} id="{{ path|list_add:section_key|join:'-'|slugify }}" class="coredocs-section-title">
             {{ section_key }}
-            <a href="#{{ path|list_add:section_key|join:'-' }}"><i class="fa fa-link" aria-hidden="true"></i></a>
+            <a href="#{{ path|list_add:section_key|join:'-'|slugify }}"><i class="fa fa-link" aria-hidden="true"></i></a>
         </h{{level}}>
     {% endif %}
 

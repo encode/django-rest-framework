@@ -10,9 +10,9 @@
         <i class="fa fa-exchange"></i> Interact
     </button>
 
-    <h3 id="{{ path|list_add:section_key|list_add:link_key|join:"-" }}" class="coredocs-link-title">
+    <h3 id="{{ path|list_add:section_key|list_add:link_key|join:"-"|slugify }}" class="coredocs-link-title">
         {{ link.title|default:link_key }}
-        <a href="#{{ path|list_add:section_key|list_add:link_key|join:"-" }}"><i class="fa fa-link" aria-hidden="true"></i></a>
+        <a href="#{{ path|list_add:section_key|list_add:link_key|join:"-"|slugify }}"><i class="fa fa-link" aria-hidden="true"></i></a>
     </h3>
 
     <div class="meta">
