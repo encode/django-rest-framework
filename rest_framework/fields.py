@@ -1309,6 +1309,8 @@ class DurationField(Field):
         self.fail('invalid', format='[DD] [HH:[MM:]]ss[.uuuuuu]')
 
     def to_representation(self, value):
+        if isinstance(value, six.string_types):
+            return value
         return duration_string(value)
 
 
@@ -1790,4 +1792,6 @@ class ModelField(Field):
         value = value_from_object(self.model_field, obj)
         if is_protected_type(value):
             return value
+        if isinstance(obj, dict):
+            return obj[self.model_field.attname]
         return self.model_field.value_to_string(obj)
