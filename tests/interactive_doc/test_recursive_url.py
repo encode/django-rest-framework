@@ -41,3 +41,15 @@ class TestRecursiveUrlViewSets(TestCase):
                     re.search(header_re.format(level=3, path=subpath, title=method), self.content),
                     'unable to find documentation section for {}'.format(subpath)
                 )
+                action_code = 'action = [{}, "retrieve_alt", "{}"]'.format(
+                    ", ".join('"{}"'.format(r) for r in route),
+                    method
+                )
+                self.assertTrue(
+                    action_code in self.content.replace('&quot;', '"'),
+                    'unable to find code snippet for {}'.format(subpath)
+                )
+                self.assertTrue(
+                    '$ coreapi action {} retrieve_alt {}'.format(' '.join(route), method) in self.content,
+                    'unable to find shell code snippet for {}'.format(subpath)
+                )
