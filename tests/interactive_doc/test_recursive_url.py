@@ -27,12 +27,17 @@ class TestRecursiveUrlViewSets(TestCase):
             )
 
     def test_documentation(self):
-        self.assertTrue(
-            re.search('h2.*>not_dummies <a', self.content),
-            'unable to find documentation section for not_dummies'
-        )
-        for model_type in ['aaaa', 'bbbb']:
+        header_re = 'h{level}\s+id="{path}".*>{title} <a href="#{path}"'
+
+        for route in (('not_dummies',), ('dummy', 'aaaas'), ('dummy', 'bbbbs')):
+            path = "/".join(route)
             self.assertTrue(
-                re.search('h3.*>{}s <a'.format(model_type), self.content),
-                'unable to find documentation section for dummy/{}'.format(model_type)
+                re.search(header_re.format(level=1+len(route), path=path, title=route[-1]), self.content),
+                'unable to find documentation section for {}'.format(path)
             )
+            for method in ('read', 'create'):
+                subpath = "{}/retrieve_alt-{}".format(path, method)
+                self.assertTrue(
+                    re.search(header_re.format(level=3, path=subpath, title=method), self.content),
+                    'unable to find documentation section for {}'.format(subpath)
+                )
