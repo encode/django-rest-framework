@@ -123,6 +123,8 @@ DEFAULTS = {
         'retrieve': 'read',
         'destroy': 'delete'
     },
+
+    'USE_PERMISSION_CODE': False,
 }
 
 

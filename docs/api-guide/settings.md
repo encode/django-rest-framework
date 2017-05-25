@@ -456,6 +456,12 @@ An integer of 0 or more, that may be used to specify the number of application p
 
 Default: `None`
 
+#### USE_PERMISSION_CODE
+
+USE_PERMISSION_CODE determines whether BasePermission.code is used in exceptions.PermissionDenied.
+
+Default: `False`
+
 [cite]: https://www.python.org/dev/peps/pep-0020/
 [rfc4627]: http://www.ietf.org/rfc/rfc4627.txt
 [heroku-minified-json]: https://github.com/interagent/http-api-design#keep-json-minified-in-all-responses
