@@ -6,8 +6,8 @@ on the request, such as form content or json encoded data.
 """
 from __future__ import unicode_literals
 
-import json
 import codecs
+import json
 
 from django.conf import settings
 from django.core.files.uploadhandler import StopFutureHandlers
