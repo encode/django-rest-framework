@@ -7,6 +7,7 @@ on the request, such as form content or json encoded data.
 from __future__ import unicode_literals
 
 import json
+import codecs
 
 from django.conf import settings
 from django.core.files.uploadhandler import StopFutureHandlers
@@ -22,7 +23,6 @@ from django.utils.six.moves.urllib import parse as urlparse
 
 from rest_framework import renderers
 from rest_framework.exceptions import ParseError
-import codecs
 
 
 class DataAndFiles(object):
@@ -62,7 +62,7 @@ class JSONParser(BaseParser):
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
 
         try:
-            decoded_stream = codecs.decode(stream, encoding)
+            decoded_stream = codecs.getreader(encoding)(stream)
             return json.load(decoded_stream)
         except ValueError as exc:
             raise ParseError('JSON parse error - %s' % six.text_type(exc))
