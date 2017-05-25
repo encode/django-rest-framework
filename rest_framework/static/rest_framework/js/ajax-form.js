@@ -37,6 +37,17 @@ function doAjaxSubmit(e) {
 
   if (contentType) {
     data = form.find('[data-override="content"]').val() || ''
+
+    if (contentType === 'multipart/form-data') {
+      // We need to add a boundary parameter to the header
+      var re = /^--([0-9A-Z'()+_,-./:=?]{1,70})[ \f\t\v\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*$/im;
+      var boundary = re.exec(data);
+      if (boundary !== null) {
+        contentType += '; boundary="' + boundary[1] + '"';
+      }
+      // Fix textarea.value EOL normalisation (multipart/form-data should use CR+NL, not NL)
+      data = data.replace(/\n/g, '\r\n');
+    }
   } else {
     contentType = form.attr('enctype') || form.attr('encoding')
 
