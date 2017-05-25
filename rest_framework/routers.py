@@ -100,13 +100,13 @@ class SimpleRouter(BaseRouter):
         # Generated using @list_route decorator
         # on methods of the viewset.
         DynamicListRoute(
-            url=r'^{prefix}/{methodname}{trailing_slash}$',
+            url=r'^{prefix}{methodname}{trailing_slash}$',
             name='{basename}-{methodnamehyphen}',
             initkwargs={}
         ),
         # Detail route.
         Route(
-            url=r'^{prefix}/{lookup}{trailing_slash}$',
+            url=r'^{prefix}{lookup}{trailing_slash}$',
             mapping={
                 'get': 'retrieve',
                 'put': 'update',
@@ -119,7 +119,7 @@ class SimpleRouter(BaseRouter):
         # Dynamically generated detail routes.
         # Generated using @detail_route decorator on methods of the viewset.
         DynamicDetailRoute(
-            url=r'^{prefix}/{lookup}/{methodname}{trailing_slash}$',
+            url=r'^{prefix}{lookup}/{methodname}{trailing_slash}$',
             name='{basename}-{methodnamehyphen}',
             initkwargs={}
         ),
@@ -255,6 +255,9 @@ class SimpleRouter(BaseRouter):
                     continue
 
                 # Build the url pattern
+                if prefix:
+                    prefix += "/"
+
                 regex = route.url.format(
                     prefix=prefix,
                     lookup=lookup,
