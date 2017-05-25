@@ -1547,12 +1547,13 @@ class ListField(Field):
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
-            val = dictionary.getlist(self.field_name, [])
+            val = dictionary.getlist(self.field_name, empty)
+            if val == empty:
+                return val
             if len(val) > 0:
                 # Support QueryDict lists in HTML input.
                 return val
-            parsed_list = html.parse_html_list(dictionary, prefix=self.field_name)
-            return parsed_list if parsed_list else empty
+            return html.parse_html_list(dictionary, prefix=self.field_name)
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
