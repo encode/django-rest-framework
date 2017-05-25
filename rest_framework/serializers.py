@@ -108,6 +108,7 @@ class BaseSerializer(Field):
     .errors - Not available.
     .data - Available.
     """
+    _dict_class = OrderedDict
 
     def __init__(self, instance=None, data=empty, **kwargs):
         self.instance = instance
@@ -312,7 +313,7 @@ class SerializerMetaclass(type):
                     if field_name not in attrs
                 ] + fields
 
-        return OrderedDict(fields)
+        return attrs.get('_dict_class', OrderedDict)(fields)
 
     def __new__(cls, name, bases, attrs):
         attrs['_declared_fields'] = cls._get_declared_fields(bases, attrs)
@@ -399,14 +400,14 @@ class Serializer(BaseSerializer):
 
     def get_initial(self):
         if hasattr(self, 'initial_data'):
-            return OrderedDict([
+            return self._dict_class([
                 (field_name, field.get_value(self.initial_data))
                 for field_name, field in self.fields.items()
                 if (field.get_value(self.initial_data) is not empty) and
                 not field.read_only
             ])
 
-        return OrderedDict([
+        return self._dict_class([
             (field.field_name, field.get_initial())
             for field in self.fields.values()
             if not field.read_only
@@ -451,8 +452,8 @@ class Serializer(BaseSerializer):
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
             }, code='invalid')
 
-        ret = OrderedDict()
-        errors = OrderedDict()
+        ret = self._dict_class()
+        errors = self._dict_class()
         fields = self._writable_fields
 
         for field in fields:
@@ -480,7 +481,7 @@ class Serializer(BaseSerializer):
         """
         Object instance -> Dict of primitive datatypes.
         """
-        ret = OrderedDict()
+        ret = self._dict_class()
         fields = self._readable_fields
 
         for field in fields:
@@ -1001,7 +1002,7 @@ class ModelSerializer(Serializer):
         )
 
         # Determine the fields that should be included on the serializer.
-        fields = OrderedDict()
+        fields = self._dict_class()
 
         for field_name in field_names:
             # If the field is explicitly declared on the class then use that.
