@@ -96,7 +96,7 @@ class TestHyperlinkedRelatedField(APISimpleTestCase):
     def setUp(self):
         self.queryset = MockQueryset([
             MockObject(pk=1, name='foobar'),
-            MockObject(pk=2, name='baz qux'),
+            MockObject(pk=2, name='bazABCqux'),
         ])
         self.field = serializers.HyperlinkedRelatedField(
             view_name='example',
@@ -116,7 +116,7 @@ class TestHyperlinkedRelatedField(APISimpleTestCase):
         assert instance is self.queryset.items[0]
 
     def test_hyperlinked_related_lookup_url_encoded_exists(self):
-        instance = self.field.to_internal_value('http://example.org/example/baz%20qux/')
+        instance = self.field.to_internal_value('http://example.org/example/baz%41%42%43qux/')
         assert instance is self.queryset.items[1]
 
     def test_hyperlinked_related_lookup_does_not_exist(self):
