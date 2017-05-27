@@ -199,6 +199,12 @@ except ImportError:
 # requests is optional
 try:
     import requests
+    # requests >=2.16.0 no longer includes vendored packages and lists urllib3 as a dependency
+    try:
+        import urllib3
+    except ImportError:
+        # requests installation is <2.16.0
+        urllib3 = requests.packages.urllib3
 except ImportError:
     requests = None
 

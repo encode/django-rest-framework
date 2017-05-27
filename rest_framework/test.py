@@ -17,7 +17,7 @@ from django.utils import six
 from django.utils.encoding import force_bytes
 from django.utils.http import urlencode
 
-from rest_framework.compat import coreapi, requests
+from rest_framework.compat import coreapi, requests, urllib3
 from rest_framework.settings import api_settings
 
 
@@ -27,7 +27,7 @@ def force_authenticate(request, user=None, token=None):
 
 
 if requests is not None:
-    class HeaderDict(requests.packages.urllib3._collections.HTTPHeaderDict):
+    class HeaderDict(urllib3._collections.HTTPHeaderDict):
         def get_all(self, key, default):
             return self.getheaders(key)
 
@@ -98,7 +98,7 @@ if requests is not None:
 
             # Build the underlying urllib3.HTTPResponse
             raw_kwargs['body'] = io.BytesIO(b''.join(wsgi_response))
-            raw = requests.packages.urllib3.HTTPResponse(**raw_kwargs)
+            raw = urllib3.HTTPResponse(**raw_kwargs)
 
             # Build the requests.Response
             return self.build_response(request, raw)
