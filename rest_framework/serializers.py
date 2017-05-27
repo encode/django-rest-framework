@@ -181,7 +181,7 @@ class BaseSerializer(Field):
             'You must call `.is_valid()` before calling `.save()`.'
         )
 
-        assert not self.errors, (
+        assert not self._errors, (
             'You cannot call `.save()` on a serializer with invalid data.'
         )
 
@@ -242,7 +242,7 @@ class BaseSerializer(Field):
                 self._errors = {}
 
         if self._errors and raise_exception:
-            raise ValidationError(self.errors)
+            raise ValidationError(self._errors)
 
         return not bool(self._errors)
 
