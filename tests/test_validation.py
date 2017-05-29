@@ -243,6 +243,7 @@ class RegexSerializer(serializers.Serializer):
         validators=[RegexValidator(regex=re.compile('^[0-9]{4,6}$'),
                                    message='A PIN is 4-6 digits')])
 
+
 expected_repr = """
 RegexSerializer():
     pin = CharField(validators=[<django.core.validators.RegexValidator object>])

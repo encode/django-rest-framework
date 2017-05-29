@@ -5,6 +5,7 @@
     <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
     <div class="menu-list">
         <ul id="menu-content" class="menu-content collapse out">
+            {% if document.data %}
             {% for section_key, section in document.data|items %}
             <li data-toggle="collapse" data-target="#{{ section_key }}-dropdown" class="collapsed">
                 <a><i class="fa fa-dot-circle-o fa-lg"></i> {% if section_key %}{{ section_key }}{% else %}API Endpoints{% endif %} <span class="arrow"></span></a>
@@ -15,6 +16,7 @@
                 {% endfor %}
             </ul>
             {% endfor %}
+            {% endif %}
         </ul>
 
         <ul class="menu-list menu-list-bottom">

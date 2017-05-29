@@ -108,6 +108,7 @@ class HTMLView1(APIView):
     def get(self, request, **kwargs):
         return Response('text')
 
+
 urlpatterns = [
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
     url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
