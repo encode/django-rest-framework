@@ -188,6 +188,12 @@ to be exposed in the schema:
         patterns=schema_url_patterns,
     )
 
+#### `generator_class`
+
+May be used to specify a `SchemaGenerator` subclass to be passed to the
+`SchemaView`.
+
+
 
 ## Using an explicit schema view
 
