@@ -35,7 +35,10 @@ DynamicDetailRoute = namedtuple('DynamicDetailRoute', ['url', 'name', 'initkwarg
 DynamicListRoute = namedtuple('DynamicListRoute', ['url', 'name', 'initkwargs'])
 
 
-def replace_curly_brackets(url_path):
+def escape_curly_brackets(url_path):
+    """
+    Double brackets in regex of url_path for escape string formatting
+    """
     if ('{' and '}') in url_path:
         url_path = url_path.replace('{', '{{').replace('}', '}}')
     return url_path
@@ -184,7 +187,7 @@ class SimpleRouter(BaseRouter):
                 initkwargs = route.initkwargs.copy()
                 initkwargs.update(method_kwargs)
                 url_path = initkwargs.pop("url_path", None) or methodname
-                url_path = replace_curly_brackets(url_path)
+                url_path = escape_curly_brackets(url_path)
                 url_name = initkwargs.pop("url_name", None) or url_path
                 ret.append(Route(
                     url=replace_methodname(route.url, url_path),
