@@ -65,6 +65,19 @@ class EmptyPrefixViewSet(viewsets.ModelViewSet):
         return self.queryset[index]
 
 
+class RegexUrlPathViewSet(viewsets.ViewSet):
+    @list_route(url_path='list/(?P<kwarg>[0-9]{4})')
+    def regex_url_path_list(self, request, *args, **kwargs):
+        kwarg = self.kwargs.get('kwarg', '')
+        return Response({'kwarg': kwarg})
+
+    @detail_route(url_path='detail/(?P<kwarg>[0-9]{4})')
+    def regex_url_path_detail(self, request, *args, **kwargs):
+        pk = self.kwargs.get('pk', '')
+        kwarg = self.kwargs.get('kwarg', '')
+        return Response({'pk': pk, 'kwarg': kwarg})
+
+
 notes_router = SimpleRouter()
 notes_router.register(r'notes', NoteViewSet)
 
@@ -80,6 +93,9 @@ empty_prefix_urls = [
     url(r'^', include(empty_prefix_router.urls)),
 ]
 
+regex_url_path_router = SimpleRouter()
+regex_url_path_router.register(r'', RegexUrlPathViewSet, base_name='regex')
+
 urlpatterns = [
     url(r'^non-namespaced/', include(namespaced_router.urls)),
     url(r'^namespaced/', include(namespaced_router.urls, namespace='example', app_name='example')),
@@ -87,6 +103,7 @@ urlpatterns = [
     url(r'^example2/', include(kwarged_notes_router.urls)),
 
     url(r'^empty-prefix/', include(empty_prefix_urls)),
+    url(r'^regex/', include(regex_url_path_router.urls))
 ]
 
 
@@ -402,3 +419,19 @@ class TestEmptyPrefix(TestCase):
         response = self.client.get('/empty-prefix/1/')
         assert response.status_code == 200
         assert json.loads(response.content.decode('utf-8')) == {'uuid': '111', 'text': 'First'}
+
+
+@override_settings(ROOT_URLCONF='tests.test_routers')
+class TestRegexUrlPath(TestCase):
+    def test_regex_url_path_list(self):
+        kwarg = '1234'
+        response = self.client.get('/regex/list/{}/'.format(kwarg))
+        assert response.status_code == 200
+        assert json.loads(response.content.decode('utf-8')) == {'kwarg': kwarg}
+
+    def test_regex_url_path_detail(self):
+        pk = '1'
+        kwarg = '1234'
+        response = self.client.get('/regex/{}/detail/{}/'.format(pk, kwarg))
+        assert response.status_code == 200
+        assert json.loads(response.content.decode('utf-8')) == {'pk': pk, 'kwarg': kwarg}
