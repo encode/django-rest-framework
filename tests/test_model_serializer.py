@@ -22,6 +22,7 @@ from django.utils import six
 
 from rest_framework import serializers
 from rest_framework.compat import set_many, unicode_repr
+from rest_framework.test import APIRequestFactory
 
 
 def dedent(blocktext):
@@ -818,6 +819,51 @@ class TestIntegration(TestCase):
         }
         self.assertEqual(serializer.data, expected)
 
+    def test_many_to_many_not_required(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RelationalModel
+                fields = '__all__'
+                extra_kwargs = {'many_to_many': {'required': False}}
+
+        new_foreign_key = ForeignKeyTargetModel.objects.create(
+            name='foreign_key'
+        )
+        new_one_to_one = OneToOneTargetModel.objects.create(
+            name='one_to_one'
+        )
+
+        data = {
+            'foreign_key': new_foreign_key.pk,
+            'one_to_one': new_one_to_one.pk,
+        }
+
+        serializer = TestSerializer(data=data)
+        assert serializer.is_valid(), serializer.errors
+
+    def test_many_to_many_not_required_with_querydict(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RelationalModel
+                fields = '__all__'
+                extra_kwargs = {'many_to_many': {'required': False}}
+
+        new_foreign_key = ForeignKeyTargetModel.objects.create(
+            name='foreign_key'
+        )
+        new_one_to_one = OneToOneTargetModel.objects.create(
+            name='one_to_one'
+        )
+
+        data = {
+            'foreign_key': new_foreign_key.pk,
+            'one_to_one': new_one_to_one.pk,
+        }
+
+        data_querydict = APIRequestFactory().post('', data).POST
+
+        serializer = TestSerializer(data=data_querydict)
+        assert serializer.is_valid(), serializer.errors
 
 # Tests for bulk create using `ListSerializer`.
 
