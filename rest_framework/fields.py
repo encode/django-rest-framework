@@ -19,6 +19,7 @@ from django.core.validators import (
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
+from django.http.request import QueryDict
 from django.utils import six, timezone
 from django.utils.dateparse import (
     parse_date, parse_datetime, parse_duration, parse_time
@@ -1546,6 +1547,8 @@ class ListField(Field):
                 return empty
         # We override the default field access in order to support
         # lists in HTML forms.
+        if dictionary.__class__ == QueryDict:
+            return dictionary.getlist(self.field_name, empty)
         if html.is_html_input(dictionary):
             val = dictionary.getlist(self.field_name, [])
             if len(val) > 0:
