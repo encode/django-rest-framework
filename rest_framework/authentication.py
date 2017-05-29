@@ -37,6 +37,12 @@ class BaseAuthentication(object):
     """
     All authentication classes should extend BaseAuthentication.
     """
+    def user_is_active(self, user):
+        """
+        Returns True if user is active else returns False.
+        Override this if some other field in custom user model determines user's activeness.
+        """
+        return user.is_active
 
     def authenticate(self, request):
         """
@@ -98,7 +104,7 @@ class BasicAuthentication(BaseAuthentication):
         if user is None:
             raise exceptions.AuthenticationFailed(_('Invalid username/password.'))
 
-        if not user.is_active:
+        if not self.user_is_active(user):
             raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
 
         return (user, None)
@@ -122,7 +128,7 @@ class SessionAuthentication(BaseAuthentication):
         user = getattr(request._request, 'user', None)
 
         # Unauthenticated, CSRF validation not required
-        if not user or not user.is_active:
+        if not user or not self.user_is_active(user):
             return None
 
         self.enforce_csrf(request)
@@ -194,7 +200,7 @@ class TokenAuthentication(BaseAuthentication):
         except model.DoesNotExist:
             raise exceptions.AuthenticationFailed(_('Invalid token.'))
 
-        if not token.user.is_active:
+        if not self.user_is_active(token.user):
             raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
 
         return (token.user, token)
