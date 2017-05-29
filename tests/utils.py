@@ -20,6 +20,9 @@ class MockQueryset(object):
     def __init__(self, iterable):
         self.items = iterable
 
+    def __getitem__(self, val):
+        return self.items[val]
+
     def get(self, **lookup):
         for item in self.items:
             if all([
