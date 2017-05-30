@@ -40,8 +40,10 @@ function doAjaxSubmit(e) {
 
     if (contentType === 'multipart/form-data') {
       // We need to add a boundary parameter to the header
+      // We assume the first valid-looking boundary line in the body is correct
+      // regex is from RFC 2046 appendix A
       var re = /^--([0-9A-Z'()+_,-./:=?]{1,70})[ \f\t\v\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*$/im;
-      var boundary = re.exec(data);
+      var boundary = data.match(re);
       if (boundary !== null) {
         contentType += '; boundary="' + boundary[1] + '"';
       }
