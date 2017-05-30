@@ -146,7 +146,7 @@ class TestNestedListSerializer:
 
     def setup(self):
         class TestSerializer(serializers.Serializer):
-            integers = serializers.ListSerializer(child=serializers.IntegerField())
+            integers = serializers.ListSerializer(child=serializers.IntegerField(), required=False)
             booleans = serializers.ListSerializer(child=serializers.BooleanField())
 
             def create(self, validated_data):
@@ -215,6 +215,22 @@ class TestNestedListSerializer:
         })
         expected_output = {
             "integers": [123, 456],
+            "booleans": [True, False]
+        }
+        serializer = self.Serializer(data=input_data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == expected_output
+
+    def test_validate_empty_html_input(self):
+        """
+        When a field isn't present in HTML input, the field isn't included
+        in the output.
+        """
+        input_data = MultiValueDict({
+            "booleans[0]": ["true"],
+            "booleans[1]": ["false"]
+        })
+        expected_output = {
             "booleans": [True, False]
         }
         serializer = self.Serializer(data=input_data)
