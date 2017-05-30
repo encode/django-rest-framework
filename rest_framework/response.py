@@ -77,10 +77,11 @@ class Response(SimpleTemplateResponse):
             )
             return bytes(ret.encode(charset))
 
-        if not ret:
+        if self.status_code == 204:
             del self['Content-Type']
-
-        return ret
+            return bytes()
+        else:
+            return ret
 
     @property
     def status_text(self):

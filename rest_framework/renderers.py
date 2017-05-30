@@ -53,6 +53,9 @@ class BaseRenderer(object):
         raise NotImplementedError('Renderer class requires .render() to be implemented')
 
 
+_NULL_JSON = bytes('null'.encode('ascii'))
+
+
 class JSONRenderer(BaseRenderer):
     """
     Renderer which serializes to JSON.
@@ -89,7 +92,7 @@ class JSONRenderer(BaseRenderer):
         Render `data` into JSON, returning a bytestring.
         """
         if data is None:
-            return bytes()
+            return _NULL_JSON
 
         renderer_context = renderer_context or {}
         indent = self.get_indent(accepted_media_type, renderer_context)
