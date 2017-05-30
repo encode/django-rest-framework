@@ -125,7 +125,8 @@ class SessionAuthentication(BaseAuthentication):
         if not user or not user.is_active:
             return None
 
-        self.enforce_csrf(request)
+        if not request.csrf_exempt:
+            self.enforce_csrf(request)
 
         # CSRF passed with authenticated user
         return (user, None)
