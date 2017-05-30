@@ -251,7 +251,7 @@ class TestTrailingSlashIncluded(TestCase):
         self.urls = self.router.urls
 
     def test_urls_have_trailing_slash_by_default(self):
-        expected = ['^notes/$', '^notes/(?P<pk>[^/.]+)/$']
+        expected = ['^notes/$', '^notes/(?P<pk>[^/]+)/$']
         for idx in range(len(expected)):
             assert expected[idx] == self.urls[idx].regex.pattern
 
@@ -266,7 +266,7 @@ class TestTrailingSlashRemoved(TestCase):
         self.urls = self.router.urls
 
     def test_urls_can_have_trailing_slash_removed(self):
-        expected = ['^notes$', '^notes/(?P<pk>[^/.]+)$']
+        expected = ['^notes$', '^notes/(?P<pk>[^/]+)$']
         for idx in range(len(expected)):
             assert expected[idx] == self.urls[idx].regex.pattern
 
