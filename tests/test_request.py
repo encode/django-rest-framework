@@ -120,7 +120,6 @@ class MockView(APIView):
 
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 urlpatterns = [
     url(r'^$', MockView.as_view()),
 ]
