@@ -390,4 +390,4 @@ The [django-rest-framework-bulk package][django-rest-framework-bulk] implements 
 [UpdateModelMixin]: #updatemodelmixin
 [DestroyModelMixin]: #destroymodelmixin
 [django-rest-framework-bulk]: https://github.com/miki725/django-rest-framework-bulk
-[django-rest-multiple-models]: https://github.com/Axiologue/DjangoRestMultipleModels
+[django-rest-multiple-models]: https://github.com/MattBroach/DjangoRestMultipleModels

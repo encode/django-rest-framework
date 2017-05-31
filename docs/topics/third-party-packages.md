@@ -296,7 +296,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [drf-compound-fields]: https://github.com/estebistec/drf-compound-fields
 [django-extra-fields]: https://github.com/Hipo/drf-extra-fields
 [djangorestframework-bulk]: https://github.com/miki725/django-rest-framework-bulk
-[django-rest-multiple-models]: https://github.com/Axiologue/DjangoRestMultipleModels
+[django-rest-multiple-models]: https://github.com/MattBroach/DjangoRestMultipleModels
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [wq.db.rest]: http://wq.io/docs/about-rest
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
