@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 
 import decimal
 from collections import OrderedDict
+import pytest
 
 import pytest
 from django.core.exceptions import ImproperlyConfigured
@@ -683,6 +684,22 @@ class TestRelationalFieldDisplayValue(TestCase):
 
         serializer = TestSerializer()
         expected = OrderedDict([(1, 'My Red Color'), (2, 'My Yellow Color'), (3, 'My Green Color')])
+        self.assertEqual(serializer.fields['color'].choices, expected)
+
+    def test_to_representation_returns_dict_type(self):
+        class TestField(serializers.RelatedField):
+            def to_representation(self, value):
+                return {'id': value.id}
+
+        class TestSerializer(serializers.ModelSerializer):
+            color = TestField(queryset=DisplayValueTargetModel.objects.all())
+
+            class Meta:
+                model = DisplayValueModel
+                fields = '__all__'
+
+        serializer = TestSerializer()
+        expected = OrderedDict([("{'id': 1}", 'Red Color'), ("{'id': 2}", 'Yellow Color'), ("{'id': 3}", 'Green Color')])
         self.assertEqual(serializer.fields['color'].choices, expected)
 
 
