@@ -16,5 +16,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         username = options['username']
-        token = self.create_user_token(username)
+
+        try:
+            token = self.create_user_token(username)
+        except User.DoesNotExist:
+            print('Cannot create the Token: user {0} does not exist'.format(
+                username
+            ))
         print('Generated token {0} for user {1}'.format(token.key, username))

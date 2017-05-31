@@ -48,3 +48,7 @@ class AuthTokenCommandTests(TestCase):
         assert token is not None
         token_saved = Token.objects.first()
         assert token.key == token_saved.key
+
+    def test_command_create_user_token_invalid_user(self):
+        with pytest.raises(User.DoesNotExist):
+            AuthTokenCommand().create_user_token('not_existing_user')
