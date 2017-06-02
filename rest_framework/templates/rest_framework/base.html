@@ -32,7 +32,8 @@
 
     <div class="wrapper">
       {% block navbar %}
-        <div class="navbar navbar-static-top {% block bootstrap_navbar_variant %}navbar-inverse{% endblock %}">
+        <div class="navbar navbar-static-top {% block bootstrap_navbar_variant %}navbar-inverse{% endblock %}"
+             role="navigation" aria-label="{% trans "navbar" %}">
           <div class="container">
             <span>
               {% block branding %}
@@ -70,9 +71,10 @@
         {% endblock %}
 
         <!-- Content -->
-        <div id="content">
+        <div id="content" role="main" aria-label="{% trans "content" %}">
           {% block content %}
 
+          <div class="region"  aria-label="{% trans "request form" %}">
           {% if 'GET' in allowed_methods %}
             <form id="get-form" class="pull-right">
               <fieldset>
@@ -131,8 +133,9 @@
               {% trans "Filters" %}
             </button>
           {% endif %}
+          </div>
 
-            <div class="content-main">
+            <div class="content-main" role="main"  aria-label="{% trans "main content" %}">
               <div class="page-header">
                 <h1>{{ name }}</h1>
               </div>
@@ -148,11 +151,11 @@
                 </nav>
               {% endif %}
 
-              <div class="request-info" style="clear: both" >
+              <div class="request-info" style="clear: both" aria-label="{% trans "request info" %}">
                 <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
               </div>
 
-              <div class="response-info">
+              <div class="response-info" aria-label="{% trans "response info" %}">
                 <pre class="prettyprint"><span class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}{% for key, val in response_headers|items %}
 <b>{{ key }}:</b> <span class="lit">{{ val|break_long_headers|urlize_quoted_links }}</span>{% endfor %}
 
