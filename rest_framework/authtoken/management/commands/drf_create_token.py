@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from rest_framework.authtoken.models import Token
 
 
@@ -23,7 +23,9 @@ class Command(BaseCommand):
         try:
             token = self.create_user_token(username)
         except UserModel.DoesNotExist:
-            print('Cannot create the Token: user {0} does not exist'.format(
-                username
-            ))
-        print('Generated token {0} for user {1}'.format(token.key, username))
+            raise CommandError(
+                'Cannot create the Token: user {0} does not exist'.format(
+                    username)
+            )
+        self.stdout.write(
+            'Generated token {0} for user {1}'.format(token.key, username))
