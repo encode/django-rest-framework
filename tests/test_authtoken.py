@@ -44,11 +44,27 @@ class AuthTokenCommandTests(TestCase):
         self.user = User.objects.create_user(username='test_user')
 
     def test_command_create_user_token(self):
-        token = AuthTokenCommand().create_user_token(self.user.username)
+        token = AuthTokenCommand().create_user_token(self.user.username, False)
         assert token is not None
         token_saved = Token.objects.first()
         assert token.key == token_saved.key
 
     def test_command_create_user_token_invalid_user(self):
         with pytest.raises(User.DoesNotExist):
-            AuthTokenCommand().create_user_token('not_existing_user')
+            AuthTokenCommand().create_user_token('not_existing_user', False)
+
+    def test_command_reset_user_token(self):
+        AuthTokenCommand().create_user_token(self.user.username, False)
+        first_token_key = Token.objects.first().key
+        AuthTokenCommand().create_user_token(self.user.username, True)
+        second_token_key = Token.objects.first().key
+
+        assert first_token_key != second_token_key
+
+    def test_command_do_not_reset_user_token(self):
+        AuthTokenCommand().create_user_token(self.user.username, False)
+        first_token_key = Token.objects.first().key
+        AuthTokenCommand().create_user_token(self.user.username, False)
+        second_token_key = Token.objects.first().key
+
+        assert first_token_key == second_token_key
