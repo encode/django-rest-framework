@@ -56,7 +56,7 @@ if six.PY3:
         """
         True if the object is a callable that takes no arguments.
         """
-        if not (inspect.isfunction(obj) or inspect.ismethod(obj)):
+        if not callable(obj):
             return False
 
         sig = inspect.signature(obj)

@@ -1,4 +1,5 @@
 import datetime
+import functools
 import os
 import re
 import unittest
@@ -68,12 +69,17 @@ class TestIsSimpleCallable:
         def valid_vargs_kwargs(*args, **kwargs):
             pass
 
+        @functools.lru_cache(None)
+        def wrapped_by_native_function():
+            pass
+
         def invalid(param, param2='value'):
             pass
 
         assert is_simple_callable(simple)
         assert is_simple_callable(valid)
         assert is_simple_callable(valid_vargs_kwargs)
+        assert is_simple_callable(wrapped_by_native_function)
         assert not is_simple_callable(invalid)
 
     def test_4602_regression(self):
