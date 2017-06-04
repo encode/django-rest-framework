@@ -20,7 +20,7 @@
     <div class="modal-body">
       <div class="row">
         <div class="col-lg-6 request">
-          {% form_for_link link %}
+          {% autoescape off %}{% form_for_link link %}{% endautoescape %}
         </div>
 
         <hr class="hidden-lg hidden-xl" />
