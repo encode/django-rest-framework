@@ -1,4 +1,5 @@
 language: python
+cache: pip
 
 python:
     - "2.7"
@@ -37,7 +38,8 @@ matrix:
       - env: DJANGO=master
 
 install:
-    - pip install tox tox-travis
+    - pip install --upgrade pip
+    - pip install tox tox-travis wheel
 
 script:
     - tox
