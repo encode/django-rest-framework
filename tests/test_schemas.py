@@ -70,6 +70,7 @@ class ExampleViewSet(ModelViewSet):
         assert self.action
         return super(ExampleViewSet, self).get_serializer(*args, **kwargs)
 
+
 if coreapi:
     schema_view = get_schema_view(title='Example API')
 else:
@@ -109,18 +110,18 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/custom_list_action/',
                         action='get'
                     ),
-                    'custom_list_action_multiple_methods': {
-                        'read': coreapi.Link(
-                            url='/example/custom_list_action_multiple_methods/',
-                            action='get'
-                        )
-                    },
                     'read': coreapi.Link(
                         url='/example/{id}/',
                         action='get',
                         fields=[
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String())
                         ]
+                    )
+                },
+                'example-custom_list_action_multiple_methods': {
+                    'read': coreapi.Link(
+                        url='/example/custom_list_action_multiple_methods/',
+                        action='get'
                     )
                 }
             }
@@ -162,31 +163,6 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String())
                         ]
                     ),
-                    'custom_action': coreapi.Link(
-                        url='/example/{id}/custom_action/',
-                        action='post',
-                        encoding='application/json',
-                        description='A description of custom action.',
-                        fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('c', required=True, location='form', schema=coreschema.String(title='C')),
-                            coreapi.Field('d', required=False, location='form', schema=coreschema.String(title='D')),
-                        ]
-                    ),
-                    'custom_list_action': coreapi.Link(
-                        url='/example/custom_list_action/',
-                        action='get'
-                    ),
-                    'custom_list_action_multiple_methods': {
-                        'read': coreapi.Link(
-                            url='/example/custom_list_action_multiple_methods/',
-                            action='get'
-                        ),
-                        'create': coreapi.Link(
-                            url='/example/custom_list_action_multiple_methods/',
-                            action='post'
-                        )
-                    },
                     'update': coreapi.Link(
                         url='/example/{id}/',
                         action='put',
@@ -213,8 +189,33 @@ class TestRouterGeneratedSchema(TestCase):
                         fields=[
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String())
                         ]
+                    ),
+                    'custom_list_action': coreapi.Link(
+                        url='/example/custom_list_action/',
+                        action='get'
+                    ),
+                    'custom_action': coreapi.Link(
+                        url='/example/{id}/custom_action/',
+                        action='post',
+                        encoding='application/json',
+                        description='A description of custom action.',
+                        fields=[
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                            coreapi.Field('c', required=True, location='form', schema=coreschema.String(title='C')),
+                            coreapi.Field('d', required=False, location='form', schema=coreschema.String(title='D')),
+                        ]
                     )
-                }
+                },
+                'example-custom_list_action_multiple_methods': {
+                    'read': coreapi.Link(
+                        url='/example/custom_list_action_multiple_methods/',
+                        action='get'
+                    ),
+                    'create': coreapi.Link(
+                        url='/example/custom_list_action_multiple_methods/',
+                        action='post'
+                    )
+                },
             }
         )
         assert response.data == expected
@@ -304,16 +305,15 @@ class TestSchemaGenerator(TestCase):
                         fields=[
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String())
                         ]
-                    ),
-                    'sub': {
-                        'list': coreapi.Link(
-                            url='/example/{id}/sub/',
-                            action='get',
-                            fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                            ]
-                        )
-                    }
+                    )},
+                'example-sub': {
+                    'list': coreapi.Link(
+                        url='/example/{id}/sub/',
+                        action='get',
+                        fields=[
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                        ]
+                    )
                 }
             }
         )
@@ -340,7 +340,7 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
             url='',
             title='Example API',
             content={
-                'example': {
+                'api-v1-example': {
                     'create': coreapi.Link(
                         url='/api/v1/example/',
                         action='post',
@@ -357,16 +357,15 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
                         fields=[
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String())
                         ]
-                    ),
-                    'sub': {
-                        'list': coreapi.Link(
-                            url='/api/v1/example/{id}/sub/',
-                            action='get',
-                            fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
-                            ]
-                        )
-                    }
+                    )},
+                'api-v1-example-sub': {
+                    'list': coreapi.Link(
+                        url='/api/v1/example/{id}/sub/',
+                        action='get',
+                        fields=[
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                        ]
+                    )
                 }
             }
         )
@@ -467,8 +466,11 @@ class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
 class Test4605Regression(TestCase):
     def test_4605_regression(self):
         generator = SchemaGenerator()
-        prefix = generator.determine_path_prefix([
-            '/api/v1/items/',
+        overall = generator.make_overall(
+            '/api/',
+        )
+        assert overall == 'api'
+        overall = generator.make_overall(
             '/auth/convert-token/'
-        ])
-        assert prefix == '/'
+        )
+        assert overall == 'auth-convert-token'

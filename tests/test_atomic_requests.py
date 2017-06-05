@@ -45,6 +45,7 @@ class NonAtomicAPIExceptionView(APIView):
         BasicModel.objects.all()
         raise Http404
 
+
 urlpatterns = (
     url(r'^$', NonAtomicAPIExceptionView.as_view()),
 )
