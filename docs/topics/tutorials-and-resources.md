@@ -35,6 +35,7 @@ There are a wide range of resources available for learning and using Django REST
 
 ### Talks
 
+* [Level Up! Rethinking the Web API Framework][pycon-us-2017]
 * [How to Make a Full Fledged REST API with Django OAuth Toolkit][full-fledged-rest-api-with-django-oauth-tookit]
 * [Django REST API - So Easy You Can Learn It in 25 Minutes][django-rest-api-so-easy]
 * [Tom Christie about Django Rest Framework at Django: Under The Hood][django-under-hood-2014]
@@ -114,3 +115,4 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [building-a-restful-api-with-drf]: http://agiliq.com/blog/2014/12/building-a-restful-api-with-django-rest-framework/
 [submit-pr]: https://github.com/encode/django-rest-framework
 [anna-email]: mailto:anna@django-rest-framework.org
+[pycon-us-2017]: https://www.youtube.com/watch?v=Rk6MHZdust4
