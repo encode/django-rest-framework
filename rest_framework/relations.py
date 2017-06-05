@@ -261,6 +261,7 @@ class PrimaryKeyRelatedField(RelatedField):
 
 class HyperlinkedRelatedField(RelatedField):
     lookup_field = 'pk'
+    lookup_url_kwarg = 'pk'
     view_name = None
 
     default_error_messages = {
@@ -276,7 +277,7 @@ class HyperlinkedRelatedField(RelatedField):
             self.view_name = view_name
         assert self.view_name is not None, 'The `view_name` argument is required.'
         self.lookup_field = kwargs.pop('lookup_field', self.lookup_field)
-        self.lookup_url_kwarg = kwargs.pop('lookup_url_kwarg', self.lookup_field)
+        self.lookup_url_kwarg = kwargs.pop('lookup_url_kwarg', self.lookup_url_kwarg)
         self.format = kwargs.pop('format', None)
 
         # We include this simply for dependency injection in tests.
