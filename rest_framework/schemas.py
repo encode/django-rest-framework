@@ -8,7 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.http import Http404
 from django.utils import six
-from django.utils.encoding import force_text, smart_text
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import exceptions, renderers, serializers
@@ -19,7 +19,6 @@ from rest_framework.compat import (
 from rest_framework.request import clone_request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.utils import formatting
 from rest_framework.utils.model_meta import _get_pk
 from rest_framework.views import APIView
 
@@ -469,31 +468,36 @@ class SchemaGenerator(object):
         This will be based on the method docstring if one exists,
         or else the class docstring.
         """
-        method_name = getattr(view, 'action', method.lower())
-        method_docstring = getattr(view, method_name, None).__doc__
-        if method_docstring:
+        method = method.lower()
+        method_name = getattr(view, 'action', method)
+        view_method = getattr(view, method_name, None)
+        description = None
+        if view_method:
             # An explicit docstring on the method or action.
-            return formatting.dedent(smart_text(method_docstring))
-
-        description = view.get_view_description()
+            description = api_settings.VIEW_DESCRIPTION_FUNCTION(view_method)
+        if not description:
+            description = view.get_view_description()
         lines = [line.strip() for line in description.splitlines()]
         current_section = ''
         sections = {'': ''}
 
         for line in lines:
             if header_regex.match(line):
-                current_section, seperator, lead = line.partition(':')
+                current_section, separator, lead = line.partition(':')
                 sections[current_section] = lead.strip()
             else:
                 sections[current_section] += '\n' + line
 
-        header = getattr(view, 'action', method.lower())
-        if header in sections:
-            return sections[header].strip()
-        if header in self.coerce_method_names:
-            if self.coerce_method_names[header] in sections:
-                return sections[self.coerce_method_names[header]].strip()
-        return sections[''].strip()
+        section_name = ''
+        for attempt in (method_name, self.default_mapping.get(method, method)):
+            if attempt in sections:
+                section_name = attempt
+                break
+            if self.coerce_method_names.get(attempt) in sections:
+                section_name = self.coerce_method_names[attempt]
+                break
+
+        return sections[section_name].strip()
 
     def get_encoding(self, path, method, view):
         """

@@ -69,6 +69,20 @@ When using viewsets, you should use the relevant action names as delimiters.
         Create a new user instance.
         """
 
+When using the `@detail_route` or `@list_route` decorators, the docstring for
+the decorated method may use the `action:` style delimiters.
+
+    class UserViewSet(viewsets.ModelViewSet):
+	@detail_route(methods=('get', 'post'))
+	def groups(self, request, pk=None):
+            """
+            retrieve:
+            Return the groups for the given user.
+
+            create:
+            Add the user to a new group.
+            """
+
 ---
 
 ## Third party packages

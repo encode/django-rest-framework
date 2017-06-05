@@ -1,0 +1,17 @@
+{% load rest_framework %}
+
+{% for link_key, link in section.links|items %}
+    {% with section_key=parent_key %}
+        {% include "rest_framework/docs/link.html" %}
+    {% endwith %}
+{% endfor %}
+
+{% for section_key, sect in section.data|items %}
+    {% if section_key %}
+        <h2 id="{{ parent_key|add:'-' }}{{ section_key }}" class="coredocs-section-title">{{ parent_key|add:' / ' }}{{ section_key }} <a href="#{{ parent_key|add:'-' }}{{ section_key }}"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+    {% endif %}
+
+    {% with parent_key=parent_key|add:'-'|add:section_key section=sect %}
+        {% include "rest_framework/docs/document-incl.html" %}
+    {% endwith %}
+{% endfor %}

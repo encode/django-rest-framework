@@ -55,7 +55,19 @@ class ExampleViewSet(ModelViewSet):
         """
         A description of custom action.
         """
-        return super(ExampleSerializer, self).retrieve(self, request)
+        return super(ExampleViewSet, self).retrieve(self, request)
+
+    @detail_route(methods=['get', 'post'], serializer_class=EmptySerializer)
+    def custom_action2(self, request, pk):
+        """
+        read: A description for getting items.
+
+        create: A description for creating items.
+        """
+        if request.method == 'GET':
+            return super(ExampleViewSet, self).retrieve(self, request)
+        else:
+            return super(ExampleViewSet, self).create(self, request)
 
     @list_route()
     def custom_list_action(self, request):
@@ -105,6 +117,16 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
+                    'custom_action2': {
+                        'read': coreapi.Link(
+                            url='/example/{id}/custom_action2/',
+                            action='get',
+                            description='A description for getting items.',
+                            fields=[
+                                coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                            ],
+                        ),
+                    },
                     'custom_list_action': coreapi.Link(
                         url='/example/custom_list_action/',
                         action='get'
@@ -173,6 +195,24 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('d', required=False, location='form', schema=coreschema.String(title='D')),
                         ]
                     ),
+                    'custom_action2': {
+                        'read': coreapi.Link(
+                            url='/example/{id}/custom_action2/',
+                            action='get',
+                            description='A description for getting items.',
+                            fields=[
+                                coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                            ],
+                        ),
+                        'create': coreapi.Link(
+                            url='/example/{id}/custom_action2/',
+                            action='post',
+                            description='A description for creating items.',
+                            fields=[
+                                coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                            ],
+                        ),
+                    },
                     'custom_list_action': coreapi.Link(
                         url='/example/custom_list_action/',
                         action='get'
