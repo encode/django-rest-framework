@@ -498,7 +498,7 @@ class Field(object):
         if data is empty:
             if getattr(self.root, 'partial', False):
                 raise SkipField()
-            if self.required:
+            if self.required and not getattr(self, 'allow_blank', None):
                 self.fail('required')
             return (True, self.get_default())
 
