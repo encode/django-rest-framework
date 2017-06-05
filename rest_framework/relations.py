@@ -296,9 +296,17 @@ class HyperlinkedRelatedField(RelatedField):
         Takes the matched URL conf arguments, and should return an
         object instance, or raise an `ObjectDoesNotExist` exception.
         """
-        lookup_value = view_kwargs[self.lookup_url_kwarg]
-        lookup_kwargs = {self.lookup_field: lookup_value}
+        lookup_kwargs = self.get_object_kwargs(view_name, view_args, view_kwargs)
         return self.get_queryset().get(**lookup_kwargs)
+
+    def get_object_kwargs(self, view_name, view_args, view_kwargs):
+        """
+        Get default kwargs for looking up an object.
+
+        Separate for subclassing purposes.
+        """
+        lookup_value = view_kwargs[self.lookup_url_kwarg]
+        return {self.lookup_field: lookup_value}
 
     def get_url(self, obj, view_name, request, format):
         """
@@ -311,9 +319,17 @@ class HyperlinkedRelatedField(RelatedField):
         if hasattr(obj, 'pk') and obj.pk in (None, ''):
             return None
 
-        lookup_value = getattr(obj, self.lookup_field)
-        kwargs = {self.lookup_url_kwarg: lookup_value}
+        kwargs = self.get_url_kwargs(obj, view_name, request, format)
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
+
+    def get_url_kwargs(self, obj, view_name, request, format):
+        """
+        Get default kwargs for creating the object's URL.
+
+        Separate for subclassing purposes.
+        """
+        lookup_value = getattr(obj, self.lookup_field)
+        return {self.lookup_url_kwarg: lookup_value}
 
     def to_internal_value(self, data):
         request = self.context.get('request', None)
