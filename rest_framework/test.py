@@ -47,13 +47,13 @@ if requests is not None:
         A transport adapter for `requests`, that makes requests via the
         Django WSGI app, rather than making actual HTTP requests over the network.
         """
-        def __init__(self):
+        def __init__(self, client):
             self.app = WSGIHandler()
-            self.factory = DjangoRequestFactory()
+            self.client = client
 
-        def get_environ(self, request):
+        def get_raw_response(self, request):
             """
-            Given a `requests.PreparedRequest` instance, return a WSGI environ dict.
+            Given a `requests.PreparedRequest` instance, return a response from the underlying client.
             """
             method = request.method
             url = request.url
@@ -75,7 +75,7 @@ if requests is not None:
                     continue
                 kwargs['HTTP_%s' % key.replace('-', '_')] = value
 
-            return self.factory.generic(method, url, **kwargs).environ
+            return self.client.generic(method, url, **kwargs)
 
         def send(self, request, *args, **kwargs):
             """
@@ -83,21 +83,22 @@ if requests is not None:
             """
             raw_kwargs = {}
 
-            def start_response(wsgi_status, wsgi_headers):
-                status, _, reason = wsgi_status.partition(' ')
-                raw_kwargs['status'] = int(status)
-                raw_kwargs['reason'] = reason
-                raw_kwargs['headers'] = wsgi_headers
-                raw_kwargs['version'] = 11
-                raw_kwargs['preload_content'] = False
-                raw_kwargs['original_response'] = MockOriginalResponse(wsgi_headers)
-
             # Make the outgoing request via WSGI.
-            environ = self.get_environ(request)
-            wsgi_response = self.app(environ, start_response)
+            raw_response = self.get_raw_response(request)
+
+            # Gather all response headers
+            response_headers = [(str(k), str(v)) for k, v in raw_response.items()]
+            for c in raw_response.cookies.values():
+                response_headers.append((str('Set-Cookie'), str(c.output(header=''))))
 
             # Build the underlying urllib3.HTTPResponse
-            raw_kwargs['body'] = io.BytesIO(b''.join(wsgi_response))
+            raw_kwargs['status'] = raw_response.status_code
+            raw_kwargs['reason'] = raw_response.reason_phrase
+            raw_kwargs['headers'] = response_headers
+            raw_kwargs['version'] = 11
+            raw_kwargs['preload_content'] = False
+            raw_kwargs['original_response'] = MockOriginalResponse(response_headers)
+            raw_kwargs['body'] = io.BytesIO(raw_response.content)
             raw = requests.packages.urllib3.HTTPResponse(**raw_kwargs)
 
             # Build the requests.Response
@@ -108,8 +109,11 @@ if requests is not None:
 
     class RequestsClient(requests.Session):
         def __init__(self, *args, **kwargs):
+            client = kwargs.pop("client", None)
+            if client is None:
+                client = APIClient()
             super(RequestsClient, self).__init__(*args, **kwargs)
-            adapter = DjangoTestAdapter()
+            adapter = DjangoTestAdapter(client)
             self.mount('http://', adapter)
             self.mount('https://', adapter)
 
