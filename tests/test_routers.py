@@ -9,7 +9,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.test import TestCase, override_settings
 
-from rest_framework import permissions, serializers, viewsets
+from rest_framework import mixins, permissions, serializers, viewsets
 from rest_framework.compat import include
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
@@ -132,10 +132,6 @@ class BasicViewSet(viewsets.ViewSet):
         return Response({'method': 'link2'})
 
 
-class TestSimpleRouter(TestCase):
-    def setUp(self):
-        self.router = SimpleRouter()
-
     def test_link_and_action_decorator(self):
         routes = self.router.get_routes(BasicViewSet)
         decorator_routes = routes[2:]
@@ -153,6 +149,45 @@ class TestSimpleRouter(TestCase):
                 methods_map = ['get']
             for method in methods_map:
                 assert route.mapping[method] == endpoint
+
+
+class TestUpdateViewSets(TestCase):
+    """
+    Verify that the *UpdateModelMixin mixin classes expose the correct methods
+    for a router to pick up.
+    """
+    def test_update_viewsets(self):
+        class PartialUpdateViewSet(
+                mixins.PartialUpdateModelMixin,
+                viewsets.GenericViewSet,
+        ):
+            pass
+
+
+        class FullUpdateViewSet(
+                mixins.FullUpdateModelMixin,
+                viewsets.GenericViewSet,
+        ):
+            pass
+
+
+        class UpdateViewSet(
+                mixins.FullUpdateModelMixin,
+                viewsets.GenericViewSet,
+        ):
+            pass
+
+
+        for cls, actions in (
+            (PartialUpdateViewSet, {'patch', 'partial_update'}),
+            (FullUpdateViewSet, {'put', 'update'}),
+            (UpdateViewSet, {'patch': 'partial_update', 'put', 'update'}),
+        ):
+            router = SimpleRouter()
+            router.register('test', cls, 'basename')
+            urls = router.get_urls()
+            assert len(urls) == 1
+            assert urls[0].callback.actions == actions
 
 
 @override_settings(ROOT_URLCONF='tests.test_routers')

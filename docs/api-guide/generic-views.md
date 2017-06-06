@@ -222,6 +222,16 @@ If an object is updated this returns a `200 OK` response, with a serialized repr
 
 If the request data provided for updating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
 
+## PartialUpdateModelMixin
+
+Similar to `UpdateModelMixin` except that it only includes the `partial_update`
+(i.e. `PATCH`) capability and not the `update` (i.e. `PUT`) capability.
+
+## FullUpdateModelMixin
+
+Similar to `UpdateModelMixin` except that it only includes the `update`
+(i.e. `PUT`) capability and not the `partial_update` (i.e. `PATCH`) capability.
+
 ## DestroyModelMixin
 
 Provides a `.destroy(request, *args, **kwargs)` method, that implements deletion of an existing model instance.

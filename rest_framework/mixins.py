@@ -58,11 +58,8 @@ class RetrieveModelMixin(object):
         return Response(serializer.data)
 
 
-class UpdateModelMixin(object):
-    """
-    Update a model instance.
-    """
-    def update(self, request, *args, **kwargs):
+class _UpdateModelMixin(object):
+    def do_update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -79,9 +76,30 @@ class UpdateModelMixin(object):
     def perform_update(self, serializer):
         serializer.save()
 
+
+class PartialUpdateModelMixin(_UpdateModelMixin):
+    """
+    Partial update a model instance.
+    """
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
-        return self.update(request, *args, **kwargs)
+        return self.do_update(request, *args, **kwargs)
+
+
+class FullUpdateModelMixin(object):
+    """
+    Full update a model instance.
+    """
+    def update(self, request, *args, **kwargs):
+        kwargs['partial'] = False
+        return self.do_update(request, *args, **kwargs)
+
+
+class UpdateModelMixin(FullUpdateModelMixin, PartialUpdateModelMixin):
+    """
+    Update a model instance fully or partially.
+    """
+    pass
 
 
 class DestroyModelMixin(object):
