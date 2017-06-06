@@ -57,7 +57,7 @@ from rest_framework.fields import (  # NOQA # isort:skip
     DictField, DurationField, EmailField, Field, FileField, FilePathField, FloatField,
     HiddenField, IPAddressField, ImageField, IntegerField, JSONField, ListField,
     ModelField, MultipleChoiceField, NullBooleanField, ReadOnlyField, RegexField,
-    SerializerMethodField, SlugField, TimeField, URLField, UUIDField,
+    SerializerMethodField, SlugField, TimeField, URLField, UUIDField, QueryParamField,
 )
 from rest_framework.relations import (  # NOQA # isort:skip
     HyperlinkedIdentityField, HyperlinkedRelatedField, ManyRelatedField,

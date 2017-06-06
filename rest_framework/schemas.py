@@ -564,8 +564,12 @@ class SchemaGenerator(object):
         Return a list of `coreapi.Field` instances corresponding to any
         request body input, as determined by the serializer class.
         """
-        if method not in ('PUT', 'PATCH', 'POST'):
-            return []
+
+        if hasattr(view, 'action') and view.action == 'add_item':
+            pass
+
+        body_allowed_methods = ('PUT', 'PATCH', 'POST')
+        method_allow_body = method in body_allowed_methods
 
         if not hasattr(view, 'get_serializer'):
             return []
@@ -590,10 +594,15 @@ class SchemaGenerator(object):
             if field.read_only or isinstance(field, serializers.HiddenField):
                 continue
 
+            location = 'query' if isinstance(field, serializers.QueryParamField) else 'form'
+
+            if not method_allow_body and location != 'query':
+                continue
+
             required = field.required and method != 'PATCH'
             field = coreapi.Field(
                 name=field.field_name,
-                location='form',
+                location=location,
                 required=required,
                 schema=field_to_schema(field)
             )
