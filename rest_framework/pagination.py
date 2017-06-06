@@ -225,7 +225,7 @@ class PageNumberPagination(BasePagination):
         self.request = request
         return list(self.page)
 
-    def get_paginated_response(self, data):
+    def get_paginated_response(self, data, queryset):
         return Response(OrderedDict([
             ('count', self.page.paginator.count),
             ('next', self.get_next_link()),
@@ -346,7 +346,7 @@ class LimitOffsetPagination(BasePagination):
             return []
         return list(queryset[self.offset:self.offset + self.limit])
 
-    def get_paginated_response(self, data):
+    def get_paginated_response(self, data, queryset):
         return Response(OrderedDict([
             ('count', self.count),
             ('next', self.get_next_link()),
@@ -758,7 +758,7 @@ class CursorPagination(BasePagination):
             attr = getattr(instance, field_name)
         return six.text_type(attr)
 
-    def get_paginated_response(self, data):
+    def get_paginated_response(self, data, queryset):
         return Response(OrderedDict([
             ('next', self.get_next_link()),
             ('previous', self.get_previous_link()),

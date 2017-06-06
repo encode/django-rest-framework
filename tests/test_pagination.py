@@ -177,7 +177,7 @@ class TestPageNumberPagination:
         return list(self.pagination.paginate_queryset(self.queryset, request))
 
     def get_paginated_content(self, queryset):
-        response = self.pagination.get_paginated_response(queryset)
+        response = self.pagination.get_paginated_response(queryset, queryset)
         return response.data
 
     def get_html_context(self):
@@ -287,7 +287,7 @@ class TestPageNumberPaginationOverride:
         return list(self.pagination.paginate_queryset(self.queryset, request))
 
     def get_paginated_content(self, queryset):
-        response = self.pagination.get_paginated_response(queryset)
+        response = self.pagination.get_paginated_response(queryset, queryset)
         return response.data
 
     def get_html_context(self):
@@ -338,7 +338,7 @@ class TestLimitOffset:
         return list(self.pagination.paginate_queryset(self.queryset, request))
 
     def get_paginated_content(self, queryset):
-        response = self.pagination.get_paginated_response(queryset)
+        response = self.pagination.get_paginated_response(queryset, queryset)
         return response.data
 
     def get_html_context(self):
