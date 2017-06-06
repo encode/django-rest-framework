@@ -344,6 +344,23 @@ class TestUnicodeRepr:
 
 
 class TestNotRequiredOutput:
+    def test_not_required_property_exception(self):
+        """
+        A KeyError should propogate when it is thrown in a property attribute.
+        """
+        class ExampleSerializer(serializers.Serializer):
+            raises_key_error = serializers.CharField(required=False)
+
+        class ExampleObject:
+            @property
+            def raises_key_error(self):
+                raise KeyError()
+
+        instance = ExampleObject()
+        serializer = ExampleSerializer(instance)
+        with pytest.raises(ValueError):
+            serializer.data
+
     def test_not_required_output_for_dict(self):
         """
         'required=False' should allow a dictionary key to be missing in output.
