@@ -8,6 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.http import Http404
 from django.http.response import HttpResponseBase
+from django.shortcuts import get_object_or_404 as _get_object_or_404
 from django.utils import six
 from django.utils.cache import cc_delim_re, patch_vary_headers
 from django.utils.encoding import smart_text
@@ -392,7 +393,11 @@ class APIView(View):
 
         # Ensure that the incoming request is permitted
         self.perform_authentication(request)
-        self.check_permissions(request)
+        if getattr(self, 'requires_object_permission', None) and 'pk' in kwargs:
+            obj = _get_object_or_404(self.get_queryset(), pk=kwargs['pk'])
+            self.check_object_permissions(request, obj)
+        else:
+            self.check_permissions(request)
         self.check_throttles(request)
 
     def finalize_response(self, request, response, *args, **kwargs):
