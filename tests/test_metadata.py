@@ -114,6 +114,7 @@ class TestMetadata:
                         'type': 'choice',
                         'required': True,
                         'read_only': False,
+                        'allow_null': False,
                         'label': 'Choice field',
                         'choices': [
                             {'display_name': 'red', 'value': 'red'},
@@ -125,6 +126,7 @@ class TestMetadata:
                         'type': 'integer',
                         'required': True,
                         'read_only': False,
+                        'allow_null': False,
                         'label': 'Integer field',
                         'min_value': 1,
                         'max_value': 1000,
@@ -134,6 +136,7 @@ class TestMetadata:
                         'type': 'string',
                         'required': False,
                         'read_only': False,
+                        'allow_null': False,
                         'label': 'Char field',
                         'min_length': 3,
                         'max_length': 40
@@ -142,15 +145,18 @@ class TestMetadata:
                         'type': 'list',
                         'required': True,
                         'read_only': False,
+                        'allow_null': False,
                         'label': 'List field',
                         'child': {
                             'type': 'list',
                             'required': True,
                             'read_only': False,
+                            'allow_null': False,
                             'child': {
                                 'type': 'integer',
                                 'required': True,
-                                'read_only': False
+                                'read_only': False,
+                                'allow_null': False,
                             }
                         }
                     },
@@ -158,18 +164,21 @@ class TestMetadata:
                         'type': 'nested object',
                         'required': True,
                         'read_only': False,
+                        'allow_null': False,
                         'label': 'Nested field',
                         'children': {
                             'a': {
                                 'type': 'integer',
                                 'required': True,
                                 'read_only': False,
+                                'allow_null': False,
                                 'label': 'A'
                             },
                             'b': {
                                 'type': 'integer',
                                 'required': True,
                                 'read_only': False,
+                                'allow_null': False,
                                 'label': 'B'
                             }
                         }
@@ -349,18 +358,21 @@ class TestModelSerializerMetadata(TestCase):
                         'type': 'integer',
                         'required': False,
                         'read_only': True,
+                        'allow_null': False,
                         'label': 'ID'
                     },
                     'children': {
                         'type': 'field',
                         'required': False,
                         'read_only': True,
+                        'allow_null': False,
                         'label': 'Children'
                     },
                     'integer_field': {
                         'type': 'integer',
                         'required': True,
                         'read_only': False,
+                        'allow_null': False,
                         'label': 'Integer field',
                         'min_value': 1,
                         'max_value': 1000
@@ -369,6 +381,7 @@ class TestModelSerializerMetadata(TestCase):
                         'type': 'string',
                         'required': False,
                         'read_only': False,
+                        'allow_null': True,
                         'label': 'Name',
                         'max_length': 100
                     }
