@@ -524,6 +524,9 @@ class SchemaGenerator(object):
         model = getattr(getattr(view, 'queryset', None), 'model', None)
         fields = []
 
+        if not hasattr(uritemplate, 'variables'):
+            return fields
+
         for variable in uritemplate.variables(path):
             title = ''
             description = ''
