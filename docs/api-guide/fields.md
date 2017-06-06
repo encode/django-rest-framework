@@ -533,10 +533,10 @@ The serializer method referred to by the `method_name` argument should accept a 
 
     from django.contrib.auth.models import User
     from django.utils.timezone import now
-    from rest_framework import serializers
+    from rest_framework import fields
 
     class UserSerializer(serializers.ModelSerializer):
-        days_since_joined = serializers.SerializerMethodField()
+        days_since_joined = fields.SerializerMethodField()
 
         class Meta:
             model = User
