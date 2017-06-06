@@ -14,6 +14,7 @@ from rest_framework import fields, relations, serializers
 from rest_framework.compat import unicode_repr
 from rest_framework.fields import Field
 
+from .models import MinValueItem
 from .utils import MockObject
 
 try:
@@ -143,6 +144,21 @@ class TestSerializer:
         assert serializer.is_valid()
         assert serializer.validated_data == {'char': 'abc', 'integer': 123}
         assert serializer.errors == {}
+
+
+class TestMinValueSerializer:
+    def setup(self):
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = MinValueItem
+                fields = ('integer', 'positive_integer')
+        self.serializer = ExampleSerializer()
+
+    def test_min_value_for_integer_field(self):
+        assert self.serializer['integer'].min_value == 0
+
+    def test_min_value_for_positive_integer_field(self):
+        assert self.serializer['positive_integer'].min_value == 0
 
 
 class TestValidateMethod:
