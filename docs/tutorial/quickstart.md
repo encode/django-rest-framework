@@ -19,18 +19,18 @@ Create a new Django project named `tutorial`, then start a new app called `quick
     pip install djangorestframework
 
     # Set up a new project with a single application
-    django-admin.py startproject tutorial .  # Note the trailing '.' character
+    django-admin startproject tutorial .  # Note the trailing '.' character
     cd tutorial
-    django-admin.py startapp quickstart
+    ./manage.py startapp quickstart
     cd ..
 
 Now sync your database for the first time:
 
-    python manage.py migrate
+    ./manage.py migrate
 
 We'll also create an initial user named `admin` with a password of `password123`. We'll authenticate as that user later in our example.
 
-    python manage.py createsuperuser
+    ./manage.py createsuperuser
 
 Once you've set up a database and initial user created and ready to go, open up the app's directory and we'll get coding...
 
