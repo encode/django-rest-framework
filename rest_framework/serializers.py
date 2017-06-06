@@ -1039,7 +1039,7 @@ class ModelSerializer(Serializer):
         set of fields, but also takes into account the `Meta.fields` or
         `Meta.exclude` options if they have been specified.
         """
-        fields = getattr(self.Meta, 'fields', None)
+        fields = getattr(self.Meta, 'fields', getattr(self.Meta, 'include', None))
         exclude = getattr(self.Meta, 'exclude', None)
 
         if fields and fields != ALL_FIELDS and not isinstance(fields, (list, tuple)):
