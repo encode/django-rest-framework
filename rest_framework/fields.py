@@ -910,7 +910,7 @@ class IntegerField(Field):
         return data
 
     def to_representation(self, value):
-        return int(value)
+        return int(value) if value is not None else None
 
 
 class FloatField(Field):
@@ -944,7 +944,7 @@ class FloatField(Field):
             self.fail('invalid')
 
     def to_representation(self, value):
-        return float(value)
+        return float(value) if value is not None else None
 
 
 class DecimalField(Field):
