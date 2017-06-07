@@ -119,6 +119,9 @@ class SimpleRateThrottle(BaseThrottle):
         if self.rate is None:
             return True
 
+        if request.method == 'OPTIONS':
+            return True
+
         self.key = self.get_cache_key(request, view)
         if self.key is None:
             return True
