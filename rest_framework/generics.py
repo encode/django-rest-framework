@@ -9,6 +9,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404 as _get_object_or_404
 
 from rest_framework import mixins, views
+from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
 
@@ -291,3 +292,20 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
+
+
+def paginated_response(request, queryset, serializer_class, pagination_class=None, **kwargs):
+    if pagination_class is None:
+        pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+
+    paginator = pagination_class()
+    for attr, value in kwargs.items():
+        setattr(paginator, attr, value)
+
+    page = paginator.paginate_queryset(queryset, request)
+    if page is None:
+        serializer = serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
+    serializer = serializer_class(page, many=True)
+    return paginator.get_paginated_response(serializer.data)
