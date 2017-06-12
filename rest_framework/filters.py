@@ -48,7 +48,7 @@ if django_filters:
             warnings.warn(
                 "The built in 'rest_framework.filters.FilterSet' is deprecated. "
                 "You should use 'django_filters.rest_framework.FilterSet' instead.",
-                DeprecationWarning
+                DeprecationWarning, stacklevel=2
             )
             return super(FilterSet, self).__init__(*args, **kwargs)
 
@@ -72,7 +72,7 @@ class DjangoFilterBackend(DFBase):
         warnings.warn(
             "The built in 'rest_framework.filters.DjangoFilterBackend' is deprecated. "
             "You should use 'django_filters.rest_framework.DjangoFilterBackend' instead.",
-            DeprecationWarning
+            DeprecationWarning, stacklevel=2
         )
 
         return super(DjangoFilterBackend, cls).__new__(cls, *args, **kwargs)
