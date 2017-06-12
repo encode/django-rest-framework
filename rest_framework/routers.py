@@ -333,7 +333,7 @@ class DefaultRouter(SimpleRouter):
             warnings.warn(
                 "Including a schema directly via a router is now deprecated. "
                 "Use `get_schema_view()` instead.",
-                DeprecationWarning
+                DeprecationWarning, stacklevel=2
             )
         if 'schema_renderers' in kwargs:
             assert 'schema_title' in kwargs, 'Missing "schema_title" argument.'
