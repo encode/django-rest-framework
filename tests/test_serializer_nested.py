@@ -1,3 +1,5 @@
+import pytest
+from django.db import models
 from django.http import QueryDict
 
 from rest_framework import serializers
@@ -202,3 +204,23 @@ class TestNestedSerializerWithList:
 
         assert serializer.is_valid()
         assert serializer.validated_data['nested']['example'] == set([1, 2])
+
+
+class TestNestedWrites:
+    def test_nested_source_attr_write(self):
+        class NestedSourceModel(models.Model):
+            profile = models.CharField()
+
+        class NestedSourceSerializer(serializers.ModelSerializer):
+            address = serializers.CharField(source='profile.address')
+
+            class Meta:
+                model = NestedSourceModel
+                fields = ('address',)
+
+        data = QueryDict('address=52 festive road')
+        serializer = NestedSourceSerializer(data=data)
+        serializer.is_valid()
+        assert serializer.validated_data == {'profile': {'address': '52 festive road'}}
+        with pytest.raises(AssertionError):
+            serializer.save()
