@@ -360,6 +360,25 @@ In an effort to keep the project as transparent as possible, we are releasing [m
 
 ---
 
+## Frequently asked questions
+
+**Q: Can you issue monthly invoices?**
+A: Yes, we are happy to issue monthly invoices. Please just <a href=mailto:funding@django-rest-framework.org>email us</a> and let us know who to issue the invoice to (name and address) and which email address to send it to each month.
+
+**Q: Does sponsorship include VAT?**
+A: Sponsorship is VAT exempt.
+
+**Q: Do I have to sign up for a certain time period?**
+A: No, we appreciate your support for any time period that is convenient for you. Also, you can cancel your sponsorship anytime.
+
+**Q: Can I pay yearly? Can I pay upfront fox X amount of months at a time?**
+A: We are currently only set up to accept monthly payments. However, if you'd like to support Django REST framework and you can only do yearly/upfront payments, we are happy to work with you and figure out a convenient solution.
+
+**Q: Are you only looking for corporate sponsors?**
+A: No, we value individual sponsors just as much as corporate sponsors and appreciate any kind of support.
+
+---
+
 ## Our sponsors
 
 <div id="fundingInclude"></div>
