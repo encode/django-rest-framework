@@ -335,7 +335,6 @@ class Request(object):
         """
         Attempt to authenticate the request using each authentication instance
         in turn.
-        Returns a three-tuple of (authenticator, user, authtoken).
         """
         for authenticator in self.authenticators:
             try:
