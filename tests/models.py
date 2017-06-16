@@ -88,3 +88,11 @@ class NullableOneToOneSource(RESTFrameworkModel):
     target = models.OneToOneField(
         OneToOneTarget, null=True, blank=True,
         related_name='nullable_source', on_delete=models.CASCADE)
+
+
+class OneToOnePKSource(RESTFrameworkModel):
+    """ Test model where the primary key is a OneToOneField with another model. """
+    name = models.CharField(max_length=100)
+    target = models.OneToOneField(
+        OneToOneTarget, primary_key=True,
+        related_name='required_source', on_delete=models.CASCADE)

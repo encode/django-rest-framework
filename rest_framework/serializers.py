@@ -1159,6 +1159,11 @@ class ModelSerializer(Serializer):
         field_class = field_mapping[model_field]
         field_kwargs = get_field_kwargs(field_name, model_field)
 
+        # Special case to handle when a OneToOneField is also the primary key
+        if model_field.one_to_one and model_field.primary_key:
+            field_class = self.serializer_related_field
+            field_kwargs['queryset'] = model_field.related_model.objects
+
         if 'choices' in field_kwargs:
             # Fields with choices get coerced into `ChoiceField`
             # instead of using their regular typed field.
