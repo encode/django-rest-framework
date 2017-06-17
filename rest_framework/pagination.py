@@ -149,7 +149,7 @@ class BasePagination(object):
     def paginate_queryset(self, queryset, request, view=None):  # pragma: no cover
         raise NotImplementedError('paginate_queryset() must be implemented.')
 
-    def get_paginated_response(self, data):  # pragma: no cover
+    def get_paginated_response(self, data, extra_fields={}):  # pragma: no cover
         raise NotImplementedError('get_paginated_response() must be implemented.')
 
     def to_html(self):  # pragma: no cover
@@ -234,7 +234,10 @@ class PageNumberPagination(BasePagination):
         ])
     
     def get_paginated_response(self, data, extra_fields={}):
-        return Response(self.get_paginated_dictionary(data).update(extra_fields))
+        ordered_dict = self.get_paginated_dictionary(data)
+        for key in extra_fields:
+            ordered_dict.__setitem__(key, extra_fields[key])
+        return Response(ordered_dict)
 
     def get_page_size(self, request):
         if self.page_size_query_param:
@@ -349,13 +352,19 @@ class LimitOffsetPagination(BasePagination):
             return []
         return list(queryset[self.offset:self.offset + self.limit])
 
-    def get_paginated_response(self, data):
-        return Response(OrderedDict([
+    def get_paginated_dictionary(self, data):
+        return OrderedDict([
             ('count', self.count),
             ('next', self.get_next_link()),
             ('previous', self.get_previous_link()),
             ('results', data)
-        ]))
+        ])
+
+    def get_paginated_response(self, data, extra_fields={}):
+        ordered_dict = self.get_paginated_dictionary(data)
+        for key in extra_fields:
+            ordered_dict.__setitem__(key, extra_fields[key])
+        return Response(ordered_dict)
 
     def get_limit(self, request):
         if self.limit_query_param:
@@ -761,12 +770,18 @@ class CursorPagination(BasePagination):
             attr = getattr(instance, field_name)
         return six.text_type(attr)
 
-    def get_paginated_response(self, data):
-        return Response(OrderedDict([
+    def get_paginated_dictionary(self, data):
+        return OrderedDict([
             ('next', self.get_next_link()),
             ('previous', self.get_previous_link()),
             ('results', data)
-        ]))
+        ])
+
+    def get_paginated_response(self, data, extra_fields={}):
+        ordered_dict = self.get_paginated_dictionary(data)
+        for key in extra_fields:
+            ordered_dict.__setitem__(key, extra_fields[key])
+        return Response(ordered_dict)
 
     def get_html_context(self):
         return {
