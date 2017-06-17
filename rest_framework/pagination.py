@@ -225,13 +225,16 @@ class PageNumberPagination(BasePagination):
         self.request = request
         return list(self.page)
 
-    def get_paginated_response(self, data):
-        return Response(OrderedDict([
+    def get_paginated_dictionary(self, data):
+        return OrderedDict([
             ('count', self.page.paginator.count),
             ('next', self.get_next_link()),
             ('previous', self.get_previous_link()),
             ('results', data)
-        ]))
+        ])
+    
+    def get_paginated_response(self, data, extra_fields={}):
+        return Response(self.get_paginated_dictionary(data).update(extra_fields))
 
     def get_page_size(self, request):
         if self.page_size_query_param:
