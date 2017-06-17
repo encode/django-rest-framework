@@ -42,7 +42,11 @@ class ListModelMixin(object):
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            if 'extra_fields' in kwargs:
+                extra_fields = kwargs['extra_fields']
+            else:
+                extra_fields = {}
+            return self.get_paginated_response(serializer.data, extra_fields)
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
