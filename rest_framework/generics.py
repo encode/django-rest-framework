@@ -172,12 +172,12 @@ class GenericAPIView(views.APIView):
             return None
         return self.paginator.paginate_queryset(queryset, self.request, view=self)
 
-    def get_paginated_response(self, data):
+    def get_paginated_response(self, data, extra_fields={}):
         """
         Return a paginated style `Response` object for the given output data.
         """
         assert self.paginator is not None
-        return self.paginator.get_paginated_response(data)
+        return self.paginator.get_paginated_response(data, extra_fields)
 
 
 # Concrete view classes that provide method handlers
