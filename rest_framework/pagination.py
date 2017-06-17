@@ -232,7 +232,7 @@ class PageNumberPagination(BasePagination):
             ('previous', self.get_previous_link()),
             ('results', data)
         ])
-    
+
     def get_paginated_response(self, data, extra_fields={}):
         ordered_dict = self.get_paginated_dictionary(data)
         for key in extra_fields:
