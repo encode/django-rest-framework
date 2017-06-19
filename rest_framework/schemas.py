@@ -553,7 +553,7 @@ class SchemaGenerator(object):
                 name=variable,
                 location='path',
                 required=True,
-                schema=schema_cls(title=title, description=description, **kwargs)
+                schema=schema_cls(title=title, description=description, default='', **kwargs)
             )
             fields.append(field)
 
