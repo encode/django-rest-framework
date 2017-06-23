@@ -230,5 +230,5 @@ The generic views use the `raise_exception=True` flag, which means that you can 
 
 By default this exception results in a response with the HTTP status code "400 Bad Request".
 
-[cite]: http://www.doughellmann.com/articles/how-tos/python-exception-handling/index.html
+[cite]: https://doughellmann.com/blog/2009/06/19/python-exception-handling-techniques/
 [authentication]: authentication.md
