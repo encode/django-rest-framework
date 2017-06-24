@@ -275,13 +275,13 @@ class APIClientTests(APITestCase):
         client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
 
-        temp = tempfile.NamedTemporaryFile()
-        temp.write(b'example file content')
-        temp.flush()
+        with tempfile.NamedTemporaryFile() as temp:
+            temp.write(b'example file content')
+            temp.flush()
+            temp.seek(0)
 
-        with open(temp.name, 'rb') as upload:
-            name = os.path.basename(upload.name)
-            data = client.action(schema, ['encoding', 'multipart'], params={'example': upload})
+            name = os.path.basename(temp.name)
+            data = client.action(schema, ['encoding', 'multipart'], params={'example': temp})
 
         expected = {
             'method': 'POST',
@@ -407,13 +407,13 @@ class APIClientTests(APITestCase):
         client = CoreAPIClient()
         schema = client.get('http://api.example.com/')
 
-        temp = tempfile.NamedTemporaryFile()
-        temp.write(b'example file content')
-        temp.flush()
+        with tempfile.NamedTemporaryFile(delete=False) as temp:
+            temp.write(b'example file content')
+            temp.flush()
+            temp.seek(0)
 
-        with open(temp.name, 'rb') as upload:
-            name = os.path.basename(upload.name)
-            data = client.action(schema, ['encoding', 'raw_upload'], params={'example': upload})
+            name = os.path.basename(temp.name)
+            data = client.action(schema, ['encoding', 'raw_upload'], params={'example': temp})
 
         expected = {
             'method': 'POST',

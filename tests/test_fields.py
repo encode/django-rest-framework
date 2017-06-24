@@ -704,6 +704,17 @@ class TestSlugField(FieldValues):
     outputs = {}
     field = serializers.SlugField()
 
+    def test_allow_unicode_true(self):
+        field = serializers.SlugField(allow_unicode=True)
+
+        validation_error = False
+        try:
+            field.run_validation(u'slug-99-\u0420')
+        except serializers.ValidationError:
+            validation_error = True
+
+        assert not validation_error
+
 
 class TestURLField(FieldValues):
     """
