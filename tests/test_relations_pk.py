@@ -6,8 +6,8 @@ from django.utils import six
 from rest_framework import serializers
 from tests.models import (
     ForeignKeySource, ForeignKeyTarget, ManyToManySource, ManyToManyTarget,
-    NullableForeignKeySource, NullableOneToOneSource,
-    NullableUUIDForeignKeySource, OneToOneTarget, UUIDForeignKeyTarget
+    NullableForeignKeySource, NullableOneToOneSource, NullableUUIDForeignKeySource,
+    OneToOnePKSource, OneToOneTarget, UUIDForeignKeyTarget
 )
 
 
@@ -61,6 +61,13 @@ class NullableOneToOneTargetSerializer(serializers.ModelSerializer):
     class Meta:
         model = OneToOneTarget
         fields = ('id', 'name', 'nullable_source')
+
+
+class OneToOnePKSourceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = OneToOnePKSource
+        fields = '__all__'
 
 
 # TODO: Add test that .data cannot be accessed prior to .is_valid
@@ -486,3 +493,51 @@ class PKNullableOneToOneTests(TestCase):
             {'id': 2, 'name': 'target-2', 'nullable_source': 1},
         ]
         assert serializer.data == expected
+
+
+class OneToOnePrimaryKeyTests(TestCase):
+
+    def setUp(self):
+        # Given: Some target models already exist
+        self.target = target = OneToOneTarget(name='target-1')
+        target.save()
+        self.alt_target = alt_target = OneToOneTarget(name='target-2')
+        alt_target.save()
+
+    def test_one_to_one_when_primary_key(self):
+        # When: Creating a Source pointing at the id of the second Target
+        target_pk = self.alt_target.id
+        source = OneToOnePKSourceSerializer(data={'name': 'source-2', 'target': target_pk})
+        # Then: The source is valid with the serializer
+        if not source.is_valid():
+            self.fail("Expected OneToOnePKTargetSerializer to be valid but had errors: {}".format(source.errors))
+        # Then: Saving the serializer creates a new object
+        new_source = source.save()
+        # Then: The new object has the same pk as the target object
+        self.assertEqual(new_source.pk, target_pk)
+
+    def test_one_to_one_when_primary_key_no_duplicates(self):
+        # When: Creating a Source pointing at the id of the second Target
+        target_pk = self.target.id
+        data = {'name': 'source-1', 'target': target_pk}
+        source = OneToOnePKSourceSerializer(data=data)
+        # Then: The source is valid with the serializer
+        self.assertTrue(source.is_valid())
+        # Then: Saving the serializer creates a new object
+        new_source = source.save()
+        # Then: The new object has the same pk as the target object
+        self.assertEqual(new_source.pk, target_pk)
+        # When: Trying to create a second object
+        second_source = OneToOnePKSourceSerializer(data=data)
+        self.assertFalse(second_source.is_valid())
+        expected = {'target': [u'one to one pk source with this target already exists.']}
+        self.assertDictEqual(second_source.errors, expected)
+
+    def test_one_to_one_when_primary_key_does_not_exist(self):
+        # Given: a target PK that does not exist
+        target_pk = self.target.pk + self.alt_target.pk
+        source = OneToOnePKSourceSerializer(data={'name': 'source-2', 'target': target_pk})
+        # Then: The source is not valid with the serializer
+        self.assertFalse(source.is_valid())
+        self.assertIn("Invalid pk", source.errors['target'][0])
+        self.assertIn("object does not exist", source.errors['target'][0])

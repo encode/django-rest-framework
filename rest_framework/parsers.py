@@ -6,6 +6,7 @@ on the request, such as form content or json encoded data.
 """
 from __future__ import unicode_literals
 
+import codecs
 import json
 
 from django.conf import settings
@@ -61,8 +62,8 @@ class JSONParser(BaseParser):
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
 
         try:
-            data = stream.read().decode(encoding)
-            return json.loads(data)
+            decoded_stream = codecs.getreader(encoding)(stream)
+            return json.load(decoded_stream)
         except ValueError as exc:
             raise ParseError('JSON parse error - %s' % six.text_type(exc))
 

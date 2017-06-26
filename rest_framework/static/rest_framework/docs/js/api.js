@@ -102,7 +102,7 @@ $(function () {
       var entry = entries[i]
       var paramKey = entry[0]
       var paramValue = entry[1]
-      var $elem = $form.find('[name=' + paramKey + ']')
+      var $elem = $form.find('[name="' + paramKey + '"]')
       var dataType = $elem.data('type') || 'string'
 
       if (dataType === 'integer' && paramValue) {

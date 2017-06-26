@@ -107,6 +107,8 @@ add a schema to your API, depending on exactly what you need.
 The simplest way to include a schema in your project is to use the
 `get_schema_view()` function.
 
+    from rest_framework.schemas import get_schema_view
+
     schema_view = get_schema_view(title="Server Monitoring API")
 
     urlpatterns = [
@@ -161,6 +163,7 @@ ROOT_URLCONF setting.
 
 May be used to pass the set of renderer classes that can be used to render the API root endpoint.
 
+    from rest_framework.schemas import get_schema_view
     from rest_framework.renderers import CoreJSONRenderer
     from my_custom_package import APIBlueprintRenderer
 
@@ -184,6 +187,12 @@ to be exposed in the schema:
         url='https://www.example.org/api/',
         patterns=schema_url_patterns,
     )
+
+#### `generator_class`
+
+May be used to specify a `SchemaGenerator` subclass to be passed to the
+`SchemaView`.
+
 
 
 ## Using an explicit schema view
