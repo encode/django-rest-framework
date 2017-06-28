@@ -74,7 +74,8 @@ class RegularFieldsModel(models.Model):
 
 
 COLOR_CHOICES = (('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'))
-DECIMAL_CHOICES = (('low', decimal.Decimal('0.1')), ('medium', decimal.Decimal('0.5')), ('high', decimal.Decimal('0.9')))
+DECIMAL_CHOICES = (
+('low', decimal.Decimal('0.1')), ('medium', decimal.Decimal('0.5')), ('high', decimal.Decimal('0.9')))
 
 
 class FieldOptionsModel(models.Model):
@@ -88,7 +89,8 @@ class FieldOptionsModel(models.Model):
 
 
 class ChoicesModel(models.Model):
-    choices_field_with_nonstandard_args = models.DecimalField(max_digits=3, decimal_places=1, choices=DECIMAL_CHOICES, verbose_name='A label')
+    choices_field_with_nonstandard_args = models.DecimalField(max_digits=3, decimal_places=1, choices=DECIMAL_CHOICES,
+                                                              verbose_name='A label')
 
 
 class Issue3674ParentModel(models.Model):
@@ -133,6 +135,7 @@ class TestModelSerializer(TestCase):
         Test that trying to use ModelSerializer with Abstract Models
         throws a ValueError exception.
         """
+
         class AbstractModel(models.Model):
             afield = models.CharField(max_length=255)
 
@@ -158,6 +161,7 @@ class TestRegularFieldMappings(TestCase):
         """
         Model fields should map to their equivalent serializer fields.
         """
+
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RegularFieldsModel
@@ -222,6 +226,7 @@ class TestRegularFieldMappings(TestCase):
         Properties and methods on the model should be allowed as `Meta.fields`
         values, and should map to `ReadOnlyField`.
         """
+
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RegularFieldsModel
@@ -238,6 +243,7 @@ class TestRegularFieldMappings(TestCase):
         """
         Both `pk` and the actual primary key name are valid in `Meta.fields`.
         """
+
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RegularFieldsModel
@@ -254,6 +260,7 @@ class TestRegularFieldMappings(TestCase):
         """
         Ensure `extra_kwargs` are passed to generated fields.
         """
+
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RegularFieldsModel
@@ -271,6 +278,7 @@ class TestRegularFieldMappings(TestCase):
         """
         Ensure `extra_kwargs` are passed to generated fields.
         """
+
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RegularFieldsModel
@@ -289,6 +297,7 @@ class TestRegularFieldMappings(TestCase):
         Field names that do not map to a model field or relationship should
         raise a configuration errror.
         """
+
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RegularFieldsModel
@@ -304,6 +313,7 @@ class TestRegularFieldMappings(TestCase):
         Fields that have been declared on the serializer class must be included
         in the `Meta.fields` if it exists.
         """
+
         class TestSerializer(serializers.ModelSerializer):
             missing = serializers.ReadOnlyField()
 
@@ -324,6 +334,7 @@ class TestRegularFieldMappings(TestCase):
         Fields that have been declared on a parent of the serializer class may
         be excluded from the `Meta.fields` option.
         """
+
         class TestSerializer(serializers.ModelSerializer):
             missing = serializers.ReadOnlyField()
 
@@ -754,10 +765,10 @@ class TestIntegration(TestCase):
         assert instance.foreign_key.pk == new_foreign_key.pk
         assert instance.one_to_one.pk == new_one_to_one.pk
         assert [
-            item.pk for item in instance.many_to_many.all()
-        ] == [
-            item.pk for item in new_many_to_many
-        ]
+                   item.pk for item in instance.many_to_many.all()
+               ] == [
+                   item.pk for item in new_many_to_many
+               ]
         assert list(instance.through.all()) == []
 
         # Representation should be correct.
@@ -802,10 +813,10 @@ class TestIntegration(TestCase):
         assert instance.foreign_key.pk == new_foreign_key.pk
         assert instance.one_to_one.pk == new_one_to_one.pk
         assert [
-            item.pk for item in instance.many_to_many.all()
-        ] == [
-            item.pk for item in new_many_to_many
-        ]
+                   item.pk for item in instance.many_to_many.all()
+               ] == [
+                   item.pk for item in new_many_to_many
+               ]
         assert list(instance.through.all()) == []
 
         # Representation should be correct.
@@ -940,6 +951,7 @@ class TestDecimalFieldMappings(TestCase):
         """
         Test that a `DecimalField` has no `DecimalValidator`.
         """
+
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = DecimalFieldModel
@@ -954,6 +966,7 @@ class TestDecimalFieldMappings(TestCase):
         Test that the `MinValueValidator` is converted to the `min_value`
         argument for the field.
         """
+
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = DecimalFieldModel
@@ -968,6 +981,7 @@ class TestDecimalFieldMappings(TestCase):
         Test that the `MaxValueValidator` is converted to the `max_value`
         argument for the field.
         """
+
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = DecimalFieldModel
@@ -1085,7 +1099,6 @@ class Issue3674Test(TestCase):
         self.assertEqual(unicode_repr(TestChildModelSerializer()), child_expected)
 
     def test_nonID_PK_foreignkey_model_serializer(self):
-
         class TestChildModelSerializer(serializers.ModelSerializer):
             class Meta:
                 model = Issue3674ChildModel
@@ -1136,8 +1149,10 @@ class Test5004UniqueChoiceField(TestCase):
         assert not serializer.is_valid()
         assert serializer.errors == {'name': ['unique choice model with this name already exists.']}
 
+
 class Issue5220Model(models.Model):
     datetime = models.DateTimeField()
+
 
 class Issue5220TestCase(TestCase):
     def test_should_raise_error_for_invalid_input(self):
@@ -1145,9 +1160,9 @@ class Issue5220TestCase(TestCase):
             class Meta:
                 model = Issue5220Model
                 fields = ('__all__')
+
         serializer = TestSerializer(data={
             'datetime': '2017-08-16 22:00-24:00',
         })
 
         assert not serializer.is_valid()
-
