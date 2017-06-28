@@ -1135,3 +1135,19 @@ class Test5004UniqueChoiceField(TestCase):
         serializer = TestUniqueChoiceSerializer(data={'name': 'choice1'})
         assert not serializer.is_valid()
         assert serializer.errors == {'name': ['unique choice model with this name already exists.']}
+
+class Issue5220Model(models.Model):
+    datetime = models.DateTimeField()
+
+class Issue5220TestCase(TestCase):
+    def test_should_raise_error_for_invalid_input(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Issue5220Model
+                fields = ('__all__')
+        serializer = TestSerializer(data={
+            'datetime': '2017-08-16 22:00-24:00',
+        })
+
+        assert not serializer.is_valid()
+
