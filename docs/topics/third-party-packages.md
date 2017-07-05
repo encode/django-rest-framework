@@ -185,6 +185,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-oauth-toolkit][django-oauth-toolkit] - Provides OAuth 2.0 support.
 * [doac][doac] - Provides OAuth 2.0 support.
 * [djangorestframework-jwt][djangorestframework-jwt] - Provides JSON Web Token Authentication support.
+* [djangorestframework-simplejwt][djangorestframework-simplejwt] - An alternative package that provides JSON Web Token Authentication support.
 * [hawkrest][hawkrest] - Provides Hawk HTTP Authorization.
 * [djangorestframework-httpsignature][djangorestframework-httpsignature] - Provides an easy to use HTTP Signature Authentication mechanism.
 * [djoser][djoser] - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.
@@ -284,6 +285,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
 [doac]: https://github.com/Rediker-Software/doac
 [djangorestframework-jwt]: https://github.com/GetBlimp/django-rest-framework-jwt
+[djangorestframework-simplejwt]: https://github.com/davesque/django-rest-framework-simplejwt
 [hawkrest]: https://github.com/kumar303/hawkrest
 [djangorestframework-httpsignature]: https://github.com/etoccalino/django-rest-framework-httpsignature
 [djoser]: https://github.com/sunscrapers/djoser
