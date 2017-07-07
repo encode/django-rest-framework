@@ -1811,6 +1811,7 @@ class TestJSONField(FieldValues):
     ]
     invalid_inputs = [
         ({'a': set()}, ['Value must be valid JSON.']),
+        ({'a': float('inf')}, ['Value must be valid JSON.']),
     ]
     outputs = [
         ({
