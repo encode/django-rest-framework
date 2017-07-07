@@ -31,12 +31,12 @@
             </ul>
 
             <li data-toggle="collapse" data-target="#language-control" class="collapsed">
-                <a><i class="fa fa-code fa-lg"></i> Source Code</a> <span id="selected-language">shell</span>
+                <a><i class="fa fa-code fa-lg"></i> Source Code</a> <span id="selected-language">{{ langs | first }}</span>
             </li>
             <ul class="sub-menu collapse out" id="language-control">
-                <li class="active"><a href="#" data-language="shell">shell</a></li>
-                <li><a href="#" data-language="javascript">javascript</a></li>
-                <li><a href="#" data-language="python">python</a></li>
+            {% for lang in langs %}
+                <li{% if loop.first %} class="active"{% endif %}><a href="#" data-language="{{ lang }}">{{ lang }}</a></li>
+	    {% endfor %}
             </ul>
         </ul>
 
