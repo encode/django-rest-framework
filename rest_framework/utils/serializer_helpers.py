@@ -1,12 +1,12 @@
 from __future__ import unicode_literals
 
 import collections
-import json
 from collections import OrderedDict
 
 from django.utils.encoding import force_text
 
 from rest_framework.compat import unicode_to_repr
+from rest_framework.utils import json
 
 
 class ReturnDict(OrderedDict):

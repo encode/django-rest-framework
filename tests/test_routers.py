@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-import json
 from collections import namedtuple
 
 import pytest
@@ -15,6 +14,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from rest_framework.test import APIRequestFactory
+from rest_framework.utils import json
 
 factory = APIRequestFactory()
 

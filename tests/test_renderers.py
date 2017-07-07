@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import json
 import re
 from collections import MutableMapping, OrderedDict
 
@@ -24,6 +23,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
+from rest_framework.utils import json
 from rest_framework.views import APIView
 
 DUMMYSTATUS = status.HTTP_200_OK
