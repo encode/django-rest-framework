@@ -8,8 +8,10 @@ from rest_framework.schemas import SchemaGenerator, get_schema_view
 
 def get_docs_view(
         title=None, description=None, schema_url=None, public=True,
-        patterns=None, generator_class=SchemaGenerator):
-    renderer_classes = [DocumentationRenderer, CoreJSONRenderer]
+        patterns=None, generator_class=SchemaGenerator,
+        renderer_classes=None):
+    if renderer_classes is None:
+        renderer_classes = [DocumentationRenderer, CoreJSONRenderer]
 
     return get_schema_view(
         title=title,
@@ -40,7 +42,8 @@ def get_schemajs_view(
 
 def include_docs_urls(
         title=None, description=None, schema_url=None, public=True,
-        patterns=None, generator_class=SchemaGenerator):
+        patterns=None, generator_class=SchemaGenerator,
+        renderer_classes=None):
     docs_view = get_docs_view(
         title=title,
         description=description,
@@ -48,6 +51,7 @@ def include_docs_urls(
         public=public,
         patterns=patterns,
         generator_class=generator_class,
+        renderer_classes=renderer_classes
     )
     schema_js_view = get_schemajs_view(
         title=title,
