@@ -9,6 +9,7 @@ import rest_framework.utils.model_meta
 from rest_framework.compat import _resolve_model
 from rest_framework.routers import SimpleRouter
 from rest_framework.serializers import ModelSerializer
+from rest_framework.utils import json
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -177,3 +178,23 @@ class ResolveModelWithPatchedDjangoTests(TestCase):
     def test_blows_up_if_model_does_not_resolve(self):
         with self.assertRaises(ImproperlyConfigured):
             _resolve_model('tests.BasicModel')
+
+
+class JsonFloatTests(TestCase):
+    """
+    Internaly, wrapped json functions should adhere to strict float handling
+    """
+
+    def test_dumps(self):
+        with self.assertRaises(ValueError):
+            json.dumps(float('inf'))
+
+        with self.assertRaises(ValueError):
+            json.dumps(float('nan'))
+
+    def test_loads(self):
+        with self.assertRaises(ValueError):
+            json.loads("Infinity")
+
+        with self.assertRaises(ValueError):
+            json.loads("NaN")
