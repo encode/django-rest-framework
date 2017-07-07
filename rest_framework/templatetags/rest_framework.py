@@ -362,3 +362,17 @@ def break_long_headers(header):
     if len(header) > 160 and ',' in header:
         header = mark_safe('<br> ' + ', <br>'.join(header.split(',')))
     return header
+
+
+@register.filter
+def list_add(lst, item):
+    """
+    Appends a item to a list or a tuple. Original value is not modified.
+
+    Can be only applied to lists or tuples, raises TypeError otherwise.
+    """
+    if isinstance(lst, list):
+        return lst + [item]
+    elif isinstance(lst, tuple):
+        return lst + (item,)
+    raise TypeError("list_add only accepts lists or tuples")

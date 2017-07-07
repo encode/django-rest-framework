@@ -1,0 +1,16 @@
+{% load rest_framework %}
+{% for section_key, section in items %}
+    {% if section_key %}
+        <h{{level}} id="{{ path|list_add:section_key|join:'-'|slugify }}" class="coredocs-section-title">
+            {{ section_key }}
+            <a href="#{{ path|list_add:section_key|join:'-'|slugify }}"><i class="fa fa-link" aria-hidden="true"></i></a>
+        </h{{level}}>
+    {% endif %}
+
+    {% if section.links|items %}
+        {% for link_key, link in section.links|items %}
+            {% include "rest_framework/docs/link.html" with path=path %}
+        {% endfor %}
+    {% endif %}
+    {% include 'rest_framework/docs/_recursive_document.html' with items=section.data|items path=path|list_add:section_key level=level|add:1 %}
+{% endfor %}
