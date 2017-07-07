@@ -7,7 +7,6 @@ on the request, such as form content or json encoded data.
 from __future__ import unicode_literals
 
 import codecs
-import json
 
 from django.conf import settings
 from django.core.files.uploadhandler import StopFutureHandlers
@@ -23,6 +22,7 @@ from django.utils.six.moves.urllib import parse as urlparse
 
 from rest_framework import renderers
 from rest_framework.exceptions import ParseError
+from rest_framework.utils import json
 
 
 class DataAndFiles(object):

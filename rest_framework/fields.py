@@ -5,7 +5,6 @@ import copy
 import datetime
 import decimal
 import inspect
-import json
 import re
 import uuid
 from collections import OrderedDict
@@ -37,7 +36,7 @@ from rest_framework.compat import (
 )
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
-from rest_framework.utils import html, humanize_datetime, representation
+from rest_framework.utils import html, humanize_datetime, json, representation
 
 
 class empty:

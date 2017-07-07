@@ -9,7 +9,6 @@ REST framework also provides an HTML renderer that renders the browsable API.
 from __future__ import unicode_literals
 
 import base64
-import json
 from collections import OrderedDict
 
 from django import forms
@@ -30,7 +29,7 @@ from rest_framework.compat import (
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
 from rest_framework.settings import api_settings
-from rest_framework.utils import encoders
+from rest_framework.utils import encoders, json
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework.utils.field_mapping import ClassLookupDict
 
