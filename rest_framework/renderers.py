@@ -556,7 +556,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                 accepted = self.accepted_media_type
                 context = self.renderer_context.copy()
                 context['indent'] = 4
-                data = {k:v for (k,v) in serializer.data.items()
+                data = {k: v for (k, v) in serializer.data.items()
                         if not isinstance(serializer.fields[k],
                                           serializers.HiddenField)}
                 content = renderer.render(data, accepted, context)
