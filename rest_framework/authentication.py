@@ -140,9 +140,9 @@ class SessionAuthentication(BaseAuthentication):
             raise exceptions.PermissionDenied('CSRF Failed: %s' % reason)
 
 
-class TokenAuthentication(BaseAuthentication):
+class BaseTokenAuthentication(BaseAuthentication):
     """
-    Simple token based authentication.
+    Token based authentication base class.
 
     Clients should authenticate by passing the token key in the "Authorization"
     HTTP header, prepended with the string "Token ".  For example:
@@ -151,20 +151,6 @@ class TokenAuthentication(BaseAuthentication):
     """
 
     keyword = 'Token'
-    model = None
-
-    def get_model(self):
-        if self.model is not None:
-            return self.model
-        from rest_framework.authtoken.models import Token
-        return Token
-
-    """
-    A custom token model may be used, but must have the following properties.
-
-    * key -- The string identifying the token
-    * user -- The user to which the token belongs
-    """
 
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
@@ -185,6 +171,38 @@ class TokenAuthentication(BaseAuthentication):
             msg = _('Invalid token header. Token string should not contain invalid characters.')
             raise exceptions.AuthenticationFailed(msg)
 
+        return self.authenticate_token(request, token)
+
+    def authenticate_token(self, request, token):
+        raise NotImplementedError("`authenticate_token` method must be impemented.")
+
+    def authenticate_header(self, request):
+        return self.keyword
+
+
+class TokenAuthentication(BaseTokenAuthentication):
+    """
+    Simple token based authentication.
+
+    Use token stored in database.
+    """
+
+    model = None
+
+    def get_model(self):
+        if self.model is not None:
+            return self.model
+        from rest_framework.authtoken.models import Token
+        return Token
+
+    """
+    A custom token model may be used, but must have the following properties.
+
+    * key -- The string identifying the token
+    * user -- The user to which the token belongs
+    """
+
+    def authenticate_token(self, request, token):
         return self.authenticate_credentials(token)
 
     def authenticate_credentials(self, key):
@@ -198,6 +216,3 @@ class TokenAuthentication(BaseAuthentication):
             raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
 
         return (token.user, token)
-
-    def authenticate_header(self, request):
-        return self.keyword
