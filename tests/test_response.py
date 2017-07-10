@@ -32,6 +32,7 @@ class MockJsonRenderer(BaseRenderer):
 class MockTextMediaRenderer(BaseRenderer):
     media_type = 'text/html'
 
+
 DUMMYSTATUS = status.HTTP_200_OK
 DUMMYCONTENT = 'dummycontent'
 
