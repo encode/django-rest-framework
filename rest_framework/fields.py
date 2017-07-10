@@ -1112,13 +1112,16 @@ class DateTimeField(Field):
         """
         field_timezone = getattr(self, 'timezone', self.default_timezone())
 
-        if (field_timezone is not None) and not timezone.is_aware(value):
-            try:
-                return timezone.make_aware(value, field_timezone)
-            except InvalidTimeError:
-                self.fail('make_aware', timezone=field_timezone)
-        elif (field_timezone is None) and timezone.is_aware(value):
-            return timezone.make_naive(value, utc)
+        try:
+            if (field_timezone is not None) and not timezone.is_aware(value):
+                try:
+                    return timezone.make_aware(value, field_timezone)
+                except InvalidTimeError:
+                    self.fail('make_aware', timezone=field_timezone)
+            elif (field_timezone is None) and timezone.is_aware(value):
+                return timezone.make_naive(value, utc)
+        except (ValueError):
+            self.fail('date')
         return value
 
     def default_timezone(self):
