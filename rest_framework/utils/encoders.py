@@ -5,7 +5,7 @@ from __future__ import absolute_import, unicode_literals
 
 import datetime
 import decimal
-import json
+import json  # noqa
 import uuid
 
 from django.db.models.query import QuerySet
