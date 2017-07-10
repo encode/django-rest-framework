@@ -5,6 +5,7 @@ import unittest
 import uuid
 from decimal import Decimal
 
+import django
 import pytest
 from django.http import QueryDict
 from django.test import TestCase, override_settings
@@ -1164,6 +1165,11 @@ class TestDateTimeField(FieldValues):
         '': None,
     }
     field = serializers.DateTimeField(default_timezone=utc)
+
+
+if django.VERSION[:2] <= (1, 8):
+    # Doesn't raise an error on earlier versions of Django
+    TestDateTimeField.invalid_inputs.pop('2018-08-16 22:00-24:00')
 
 
 class TestCustomInputFormatDateTimeField(FieldValues):
