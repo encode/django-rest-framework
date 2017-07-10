@@ -358,6 +358,19 @@ class JSONRendererTests(TestCase):
         with self.assertRaises(TypeError):
             JSONRenderer().render(x)
 
+    def test_float_strictness(self):
+        renderer = JSONRenderer()
+
+        # Default to strict
+        for value in [float('inf'), float('-inf'), float('nan')]:
+            with pytest.raises(ValueError):
+                renderer.render(value)
+
+        renderer.strict = False
+        assert renderer.render(float('inf')) == b'Infinity'
+        assert renderer.render(float('-inf')) == b'-Infinity'
+        assert renderer.render(float('nan')) == b'NaN'
+
     def test_without_content_type_args(self):
         """
         Test basic JSON rendering.

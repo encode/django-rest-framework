@@ -61,6 +61,7 @@ class JSONRenderer(BaseRenderer):
     encoder_class = encoders.JSONEncoder
     ensure_ascii = not api_settings.UNICODE_JSON
     compact = api_settings.COMPACT_JSON
+    strict = api_settings.STRICT_JSON
 
     # We don't set a charset because JSON is a binary encoding,
     # that can be encoded as utf-8, utf-16 or utf-32.
@@ -101,7 +102,7 @@ class JSONRenderer(BaseRenderer):
         ret = json.dumps(
             data, cls=self.encoder_class,
             indent=indent, ensure_ascii=self.ensure_ascii,
-            separators=separators
+            allow_nan=not self.strict, separators=separators
         )
 
         # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,
