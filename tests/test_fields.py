@@ -1144,7 +1144,7 @@ class TestDateTimeField(FieldValues):
     valid_inputs = {
         '2001-01-01 13:00': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc),
         '2001-01-01T13:00': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc),
-        '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc)
+        '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc),
         datetime.datetime(2001, 1, 1, 13, 00): datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc),
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc): datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc),
     }
