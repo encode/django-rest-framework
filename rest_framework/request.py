@@ -250,6 +250,10 @@ class Request(object):
             else:
                 self._full_data = self._data
 
+            # copy files refs to the underlying request so that closable
+            # objects are handled appropriately.
+            self._request._files = self._files
+
     def _load_stream(self):
         """
         Return the content body of the request, as a stream.
