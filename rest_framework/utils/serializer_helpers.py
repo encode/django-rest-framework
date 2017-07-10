@@ -88,7 +88,7 @@ class JSONBoundField(BoundField):
         value = self.value
         try:
             value = json.dumps(self.value, sort_keys=True, indent=4)
-        except TypeError:
+        except (TypeError, ValueError):
             pass
         return self.__class__(self._field, value, self.errors, self._prefix)
 
