@@ -645,6 +645,48 @@ class SearchFilterM2MTests(TestCase):
             )
 
 
+class Blog(models.Model):
+    name = models.CharField(max_length=20)
+
+
+class Entry(models.Model):
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    headline = models.CharField(max_length=120)
+    pub_date = models.DateField(null=True)
+
+
+class BlogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Blog
+        fields = '__all__'
+
+
+class SearchFilterToManyTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        b1 = Blog.objects.create(name='Blog 1')
+        b2 = Blog.objects.create(name='Blog 2')
+
+        Entry.objects.create(blog=b1, headline='Something about Lennon', pub_date=datetime.date(1979, 1, 1))
+        Entry.objects.create(blog=b1, headline='Another thing about Lennon', pub_date=datetime.date(1979, 6, 1))
+
+        Entry.objects.create(blog=b2, headline='Something unrelated', pub_date=datetime.date(1979, 1, 1))
+        Entry.objects.create(blog=b2, headline='Retrospective on Lennon', pub_date=datetime.date(1990, 6, 1))
+
+    def test_multiple_filter_conditions(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = Blog.objects.all()
+            serializer_class = BlogSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('=name', 'entry__headline', '=entry__pub_date__year')
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'Lennon,1979'})
+        response = view(request)
+        assert len(response.data) == 1
+
+
 class OrderingFilterModel(models.Model):
     title = models.CharField(max_length=20, verbose_name='verbose title')
     text = models.CharField(max_length=100)
