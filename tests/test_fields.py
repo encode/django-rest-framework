@@ -1152,6 +1152,7 @@ class TestDateTimeField(FieldValues):
     invalid_inputs = {
         'abc': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].'],
         '2001-99-99T99:00': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].'],
+        '2018-08-16 22:00-24:00': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].'],
         datetime.date(2001, 1, 1): ['Expected a datetime but got a date.'],
     }
     outputs = {
