@@ -315,6 +315,41 @@ class HyperlinkedRelatedField(RelatedField):
         kwargs = {self.lookup_url_kwarg: lookup_value}
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
 
+    def lookup_parameters(self, data):
+        request = self.context.get('request', None)
+        try:
+            http_prefix = data.startswith(('http:', 'https:'))
+        except AttributeError:
+            self.fail('incorrect_type', data_type=type(data).__name__)
+
+        if http_prefix:
+            # If needed convert absolute URLs to relative path
+            data = urlparse.urlparse(data).path
+            prefix = get_script_prefix()
+            if data.startswith(prefix):
+                data = '/' + data[len(prefix):]
+
+        data = uri_to_iri(data)
+
+        try:
+            match = resolve(data)
+        except Resolver404:
+            self.fail('no_match')
+
+        try:
+            expected_viewname = request.versioning_scheme.get_versioned_viewname(
+                self.view_name, request
+            )
+        except AttributeError:
+            expected_viewname = self.view_name
+
+        if match.view_name != expected_viewname:
+            self.fail('incorrect_match')
+
+        lookup_value = match.kwargs[self.lookup_url_kwarg]
+        lookup_kwargs = {self.lookup_field: lookup_value}
+        return lookup_kwargs
+
     def to_internal_value(self, data):
         request = self.context.get('request', None)
         try:
@@ -461,7 +496,8 @@ class ManyRelatedField(Field):
     default_empty_html = []
     default_error_messages = {
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
-        'empty': _('This list may not be empty.')
+        'empty': _('This list may not be empty.'),
+        'invalid_values': _('Submitted values invalid')
     }
     html_cutoff = None
     html_cutoff_text = None
@@ -500,6 +536,44 @@ class ManyRelatedField(Field):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
+
+        # Guard: exit early if no-op
+        if len(data) == 0:
+            return []
+
+        # What would a single lookup for HyperlinkedRelatedField look like?
+        if isinstance(self.child_relation, HyperlinkedRelatedField):
+
+            # Get Lookup parameters
+            lookups = [self.child_relation.lookup_parameters(item) for item in data]
+            if None in lookups:
+                self.fail('invalid_values')
+
+            # 1. Can we just ask for this directly as self.child_relation.lookup_field for all types?
+            lookup_field = list(lookups[0])[0]
+            lookup_values = [item[lookup_field] for item in lookups]
+            lookup_parameters = {
+                lookup_field + '__in': lookup_values
+            }
+
+            # Do the lookup
+            objects = list(self.child_relation.get_queryset().filter(**lookup_parameters))
+
+            # Check we got the result we wanted
+            # This didn't work as types didn't match: set([1, 3]) - set(['1', '3']) == set([1, 3])
+            #
+            #   missing_primary_keys = set(getattr(o, lookup_field) for o in objects) - set(lookup_values)
+            #   if missing_primary_keys:
+            #       self.fail('missing_ids', ids_not_found=list(missing_primary_keys))
+            #
+            # Is there an obvious way to cast to the type of the field?
+            #
+            # So... (Is this sufficient?)
+            if len(set(getattr(o, lookup_field) for o in objects)) != len(set(lookup_values)):
+                self.fail('invalid_values')
+
+            return objects
+        # END
 
         return [
             self.child_relation.to_internal_value(item)
