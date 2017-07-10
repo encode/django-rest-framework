@@ -362,6 +362,14 @@ The default style is to return minified responses, in line with [Heroku's API de
 
 Default: `True`
 
+#### STRICT_JSON
+
+When set to `True`, JSON rendering and parsing will only observe syntactically valid JSON, raising an exception for the extended float values (`nan`, `inf`, `-inf`) accepted by Python's `json` module. This is the recommended setting, as these values are not generally supported. e.g., neither Javascript's `JSON.Parse` nor PostgreSQL's JSON data type accept these values.
+
+When set to `False`, JSON rendering and parsing will be permissive. However, these values are still invalid and will need to be specially handled in your code.
+
+Default: `True`
+
 #### COERCE_DECIMAL_TO_STRING
 
 When returning decimal objects in API representations that do not support a native decimal type, it is normally best to return the value as a string. This avoids the loss of precision that occurs with binary floating point implementations.
