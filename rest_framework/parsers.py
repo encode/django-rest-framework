@@ -22,6 +22,7 @@ from django.utils.six.moves.urllib import parse as urlparse
 
 from rest_framework import renderers
 from rest_framework.exceptions import ParseError
+from rest_framework.settings import api_settings
 from rest_framework.utils import json
 
 
@@ -53,6 +54,7 @@ class JSONParser(BaseParser):
     """
     media_type = 'application/json'
     renderer_class = renderers.JSONRenderer
+    strict = api_settings.STRICT_JSON
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
@@ -63,7 +65,8 @@ class JSONParser(BaseParser):
 
         try:
             decoded_stream = codecs.getreader(encoding)(stream)
-            return json.load(decoded_stream)
+            parse_constant = json.strict_constant if self.strict else None
+            return json.load(decoded_stream, parse_constant=parse_constant)
         except ValueError as exc:
             raise ParseError('JSON parse error - %s' % six.text_type(exc))
 

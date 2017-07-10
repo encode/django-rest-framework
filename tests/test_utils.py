@@ -198,3 +198,10 @@ class JsonFloatTests(TestCase):
 
         with self.assertRaises(ValueError):
             json.loads("NaN")
+
+
+@override_settings(STRICT_JSON=False)
+class NonStrictJsonFloatTests(JsonFloatTests):
+    """
+    'STRICT_JSON = False' should not somehow affect internal json behavior
+    """
