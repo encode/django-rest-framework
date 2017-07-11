@@ -110,6 +110,40 @@ To set these attributes you should override the `PageNumberPagination` class, an
 
 ---
 
+## LinkHeaderPagination
+
+This pagination style accepts a single page number in the request query parameters. The response uses an HTTP header called `Link` to provide the URLs for the next, previous, first, and last pages as described in [Github's Developer Documentation][github-link-pagination]. If you are using Python's [Requests][requests] library to make the request, this header is automatically parsed for you as described [here][requests-link-header].
+
+**Request**:
+
+    GET https://api.example.org/accounts/?page=4
+
+**Response**:
+
+    HTTP 200 OK
+    Link: <https://api.example.org/accounts/>; rel="first", <https://api.example.org/accounts/?page=3>; rel="prev", <https://api.example.org/accounts/?page=5>; rel="next", <https://api.example.org/accounts/?page=11>; rel="last"
+
+    [
+       …
+    ]
+
+#### Setup
+
+To enable the `LinkHeaderPagination` style globally, use the following configuration, modifying the `PAGE_SIZE` as desired:
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LinkHeaderPagination',
+        'PAGE_SIZE': 100
+    }
+
+On `GenericAPIView` subclasses you may also set the `pagination_class` attribute to select `LinkHeaderPagination` on a per-view basis.
+
+#### Configuration
+
+The configuration is the same as for `PageNumberPagination` described above.
+
+---
+
 ## LimitOffsetPagination
 
 This pagination style mirrors the syntax used when looking up multiple database records. The client includes both a "limit" and an
@@ -242,29 +276,6 @@ We'd then need to setup the custom class in our configuration:
 
 Note that if you care about how the ordering of keys is displayed in responses in the browsable API you might choose to use an `OrderedDict` when constructing the body of paginated responses, but this is optional.
 
-## Header based pagination
-
-Let's modify the built-in `PageNumberPagination` style, so that instead of include the pagination links in the body of the response, we'll instead include a `Link` header, in a [similar style to the GitHub API][github-link-pagination].
-
-    class LinkHeaderPagination(pagination.PageNumberPagination):
-        def get_paginated_response(self, data):
-            next_url = self.get_next_link()
-            previous_url = self.get_previous_link()
-
-            if next_url is not None and previous_url is not None:
-                link = '<{next_url}>; rel="next", <{previous_url}>; rel="prev"'
-            elif next_url is not None:
-                link = '<{next_url}>; rel="next"'
-            elif previous_url is not None:
-                link = '<{previous_url}>; rel="prev"'
-            else:
-                link = ''
-
-            link = link.format(next_url=next_url, previous_url=previous_url)
-            headers = {'Link': link} if link else {}
-
-            return Response(data, headers=headers)
-
 ## Using your custom pagination class
 
 To have your custom pagination class be used by default, use the `DEFAULT_PAGINATION_CLASS` setting:
@@ -335,3 +346,5 @@ The [`drf-proxy-pagination` package][drf-proxy-pagination] includes a `ProxyPagi
 [paginate-by-max-mixin]: http://chibisov.github.io/drf-extensions/docs/#paginatebymaxmixin
 [drf-proxy-pagination]: https://github.com/tuffnatty/drf-proxy-pagination
 [disqus-cursor-api]: http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api
+[requests]: http://docs.python-requests.org
+[requests-link-header]: http://docs.python-requests.org/en/master/user/advanced/#link-headers
