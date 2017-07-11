@@ -1,3 +1,10 @@
+"""
+Wrapper for the builtin json module that ensures compliance with the JSON spec.
+
+REST framework should always import this wrapper module in order to maintain
+spec-compliant encoding/decoding. Support for non-standard features should be
+handled by users at the renderer and parser layer.
+"""
 
 from __future__ import absolute_import
 
