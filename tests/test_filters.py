@@ -5,6 +5,7 @@ import unittest
 import warnings
 from decimal import Decimal
 
+import django
 import pytest
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
@@ -643,6 +644,51 @@ class SearchFilterM2MTests(TestCase):
                 SearchFilterModelM2M._meta,
                 ["%stitle" % prefix, "%sattributes__label" % prefix]
             )
+
+
+class Blog(models.Model):
+    name = models.CharField(max_length=20)
+
+
+class Entry(models.Model):
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    headline = models.CharField(max_length=120)
+    pub_date = models.DateField(null=True)
+
+
+class BlogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Blog
+        fields = '__all__'
+
+
+class SearchFilterToManyTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        b1 = Blog.objects.create(name='Blog 1')
+        b2 = Blog.objects.create(name='Blog 2')
+
+        # Multiple entries on Lennon published in 1979 - distinct should deduplicate
+        Entry.objects.create(blog=b1, headline='Something about Lennon', pub_date=datetime.date(1979, 1, 1))
+        Entry.objects.create(blog=b1, headline='Another thing about Lennon', pub_date=datetime.date(1979, 6, 1))
+
+        # Entry on Lennon *and* a separate entry in 1979 - should not match
+        Entry.objects.create(blog=b2, headline='Something unrelated', pub_date=datetime.date(1979, 1, 1))
+        Entry.objects.create(blog=b2, headline='Retrospective on Lennon', pub_date=datetime.date(1990, 6, 1))
+
+    @unittest.skipIf(django.VERSION < (1, 9), "Django 1.8 does not support transforms")
+    def test_multiple_filter_conditions(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = Blog.objects.all()
+            serializer_class = BlogSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('=name', 'entry__headline', '=entry__pub_date__year')
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'Lennon,1979'})
+        response = view(request)
+        assert len(response.data) == 1
 
 
 class OrderingFilterModel(models.Model):
