@@ -5,6 +5,7 @@ import unittest
 import uuid
 from decimal import Decimal
 
+import django
 import pytest
 from django.http import QueryDict
 from django.test import TestCase, override_settings
@@ -704,6 +705,17 @@ class TestSlugField(FieldValues):
     outputs = {}
     field = serializers.SlugField()
 
+    def test_allow_unicode_true(self):
+        field = serializers.SlugField(allow_unicode=True)
+
+        validation_error = False
+        try:
+            field.run_validation(u'slug-99-\u0420')
+        except serializers.ValidationError:
+            validation_error = True
+
+        assert not validation_error
+
 
 class TestURLField(FieldValues):
     """
@@ -1165,12 +1177,11 @@ class TestDateTimeField(FieldValues):
         '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc),
         datetime.datetime(2001, 1, 1, 13, 00): datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc),
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc): datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc),
-        # Django 1.4 does not support timezone string parsing.
-        '2001-01-01T13:00Z': datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc)
     }
     invalid_inputs = {
         'abc': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].'],
         '2001-99-99T99:00': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].'],
+        '2018-08-16 22:00-24:00': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].'],
         datetime.date(2001, 1, 1): ['Expected a datetime but got a date.'],
     }
     outputs = {
@@ -1182,6 +1193,11 @@ class TestDateTimeField(FieldValues):
         '': None,
     }
     field = serializers.DateTimeField(default_timezone=utc)
+
+
+if django.VERSION[:2] <= (1, 8):
+    # Doesn't raise an error on earlier versions of Django
+    TestDateTimeField.invalid_inputs.pop('2018-08-16 22:00-24:00')
 
 
 class TestCustomInputFormatDateTimeField(FieldValues):

@@ -793,13 +793,17 @@ class RegexField(CharField):
 
 class SlugField(CharField):
     default_error_messages = {
-        'invalid': _('Enter a valid "slug" consisting of letters, numbers, underscores or hyphens.')
+        'invalid': _('Enter a valid "slug" consisting of letters, numbers, underscores or hyphens.'),
+        'invalid_unicode': _('Enter a valid "slug" consisting of Unicode letters, numbers, underscores, or hyphens.')
     }
 
-    def __init__(self, **kwargs):
+    def __init__(self, allow_unicode=False, **kwargs):
         super(SlugField, self).__init__(**kwargs)
-        slug_regex = re.compile(r'^[-a-zA-Z0-9_]+$')
-        validator = RegexValidator(slug_regex, message=self.error_messages['invalid'])
+        self.allow_unicode = allow_unicode
+        if self.allow_unicode:
+            validator = RegexValidator(re.compile(r'^[-\w]+\Z', re.UNICODE), message=self.error_messages['invalid_unicode'])
+        else:
+            validator = RegexValidator(re.compile(r'^[-a-zA-Z0-9_]+$'), message=self.error_messages['invalid'])
         self.validators.append(validator)
 
 
@@ -1148,18 +1152,16 @@ class DateTimeField(Field):
             if input_format.lower() == ISO_8601:
                 try:
                     parsed = parse_datetime(value)
-                except (ValueError, TypeError):
-                    pass
-                else:
                     if parsed is not None:
                         return self.enforce_timezone(parsed)
+                except (ValueError, TypeError):
+                    pass
             else:
                 try:
                     parsed = self.datetime_parser(value, input_format)
+                    return self.enforce_timezone(parsed)
                 except (ValueError, TypeError):
                     pass
-                else:
-                    return self.enforce_timezone(parsed)
 
         humanized_format = humanize_datetime.datetime_formats(input_formats)
         self.fail('invalid', format=humanized_format)
