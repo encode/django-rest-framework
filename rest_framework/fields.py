@@ -25,7 +25,9 @@ from django.utils.dateparse import (
 )
 from django.utils.duration import duration_string
 from django.utils.encoding import is_protected_type, smart_text
-from django.utils.formats import localize_input, sanitize_separators
+from django.utils.formats import (
+    localize_input, number_format, sanitize_separators
+)
 from django.utils.functional import cached_property
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.timezone import utc
@@ -882,107 +884,28 @@ class IPAddressField(CharField):
 
 # Number types...
 
-class IntegerField(Field):
-    default_error_messages = {
-        'invalid': _('A valid integer is required.'),
-        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
-        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
-        'max_string_length': _('String value too large.')
-    }
-    MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
-    re_decimal = re.compile(r'\.0*\s*$')  # allow e.g. '1.0' as an int, but not '1.2'
 
-    def __init__(self, **kwargs):
-        self.max_value = kwargs.pop('max_value', None)
-        self.min_value = kwargs.pop('min_value', None)
-        super(IntegerField, self).__init__(**kwargs)
-        if self.max_value is not None:
-            message = self.error_messages['max_value'].format(max_value=self.max_value)
-            self.validators.append(MaxValueValidator(self.max_value, message=message))
-        if self.min_value is not None:
-            message = self.error_messages['min_value'].format(min_value=self.min_value)
-            self.validators.append(MinValueValidator(self.min_value, message=message))
+class NumberField(Field):
 
-    def to_internal_value(self, data):
-        if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
-            self.fail('max_string_length')
-
-        try:
-            data = int(self.re_decimal.sub('', str(data)))
-        except (ValueError, TypeError):
-            self.fail('invalid')
-        return data
-
-    def to_representation(self, value):
-        return int(value)
-
-
-class FloatField(Field):
     default_error_messages = {
         'invalid': _('A valid number is required.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
         'max_string_length': _('String value too large.')
     }
+
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
     def __init__(self, **kwargs):
         self.max_value = kwargs.pop('max_value', None)
         self.min_value = kwargs.pop('min_value', None)
-        super(FloatField, self).__init__(**kwargs)
-        if self.max_value is not None:
-            message = self.error_messages['max_value'].format(max_value=self.max_value)
-            self.validators.append(MaxValueValidator(self.max_value, message=message))
-        if self.min_value is not None:
-            message = self.error_messages['min_value'].format(min_value=self.min_value)
-            self.validators.append(MinValueValidator(self.min_value, message=message))
+        self.localize = kwargs.pop('localize', api_settings.LOCALIZE_NUMBER_FIELDS)
 
-    def to_internal_value(self, data):
+        super(NumberField, self).__init__(**kwargs)
 
-        if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
-            self.fail('max_string_length')
-
-        try:
-            return float(data)
-        except (TypeError, ValueError):
-            self.fail('invalid')
-
-    def to_representation(self, value):
-        return float(value)
-
-
-class DecimalField(Field):
-    default_error_messages = {
-        'invalid': _('A valid number is required.'),
-        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
-        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
-        'max_digits': _('Ensure that there are no more than {max_digits} digits in total.'),
-        'max_decimal_places': _('Ensure that there are no more than {max_decimal_places} decimal places.'),
-        'max_whole_digits': _('Ensure that there are no more than {max_whole_digits} digits before the decimal point.'),
-        'max_string_length': _('String value too large.')
-    }
-    MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
-
-    def __init__(self, max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None,
-                 localize=False, **kwargs):
-        self.max_digits = max_digits
-        self.decimal_places = decimal_places
-        self.localize = localize
-        if coerce_to_string is not None:
-            self.coerce_to_string = coerce_to_string
         if self.localize:
             self.coerce_to_string = True
 
-        self.max_value = max_value
-        self.min_value = min_value
-
-        if self.max_digits is not None and self.decimal_places is not None:
-            self.max_whole_digits = self.max_digits - self.decimal_places
-        else:
-            self.max_whole_digits = None
-
-        super(DecimalField, self).__init__(**kwargs)
-
         if self.max_value is not None:
             message = self.error_messages['max_value'].format(max_value=self.max_value)
             self.validators.append(MaxValueValidator(self.max_value, message=message))
@@ -991,10 +914,8 @@ class DecimalField(Field):
             self.validators.append(MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, data):
-        """
-        Validate that the input is a decimal number and return a Decimal
-        instance.
-        """
+        if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
+            self.fail('max_string_length')
 
         data = smart_text(data).strip()
 
@@ -1004,6 +925,92 @@ class DecimalField(Field):
         if len(data) > self.MAX_STRING_LENGTH:
             self.fail('max_string_length')
 
+        return data
+
+    def to_representation(self, value):
+        return super(NumberField, self).to_representation(value)
+
+
+class IntegerField(NumberField):
+    default_error_messages = NumberField.default_error_messages.copy()
+    default_error_messages.update({
+        'invalid': _('A valid integer is required.'),
+    })
+
+    re_decimal = re.compile(r'\.0*\s*$')  # allow e.g. '1.0' as an int, but not '1.2'
+
+    def __init__(self, **kwargs):
+        self.coerce_to_string = kwargs.pop('coerce_to_string', api_settings.COERCE_INTEGER_TO_STRING)
+        super(IntegerField, self).__init__(**kwargs)
+
+    def to_internal_value(self, data):
+
+        data = super(IntegerField, self).to_internal_value(data)
+
+        try:
+            data = int(self.re_decimal.sub('', str(data)))
+        except (ValueError, TypeError):
+            self.fail('invalid')
+        return data
+
+    def to_representation(self, value):
+        if self.localize:
+            return number_format(value)
+        if self.coerce_to_string:
+            return str(int(value))
+        return int(value)
+
+
+class FloatField(NumberField):
+
+    def __init__(self, **kwargs):
+        self.coerce_to_string = kwargs.pop('coerce_to_string', api_settings.COERCE_FLOAT_TO_STRING)
+        super(FloatField, self).__init__(**kwargs)
+
+    def to_internal_value(self, data):
+
+        data = super(FloatField, self).to_internal_value(data)
+
+        try:
+            return float(data)
+        except (TypeError, ValueError):
+            self.fail('invalid')
+
+    def to_representation(self, value):
+        if self.localize:
+            return number_format(value)
+        if self.coerce_to_string:
+            return str(float(value))
+        return float(value)
+
+
+class DecimalField(NumberField):
+    default_error_messages = NumberField.default_error_messages.copy()
+    default_error_messages.update({
+        'max_digits': _('Ensure that there are no more than {max_digits} digits in total.'),
+        'max_decimal_places': _('Ensure that there are no more than {max_decimal_places} decimal places.'),
+        'max_whole_digits': _('Ensure that there are no more than {max_whole_digits} digits before the decimal point.'),
+    })
+
+    def __init__(self, max_digits, decimal_places, **kwargs):
+        self.coerce_to_string = kwargs.pop('coerce_to_string', api_settings.COERCE_DECIMAL_TO_STRING)
+        super(DecimalField, self).__init__(**kwargs)
+
+        self.max_digits = max_digits
+        self.decimal_places = decimal_places
+
+        if self.max_digits is not None and self.decimal_places is not None:
+            self.max_whole_digits = self.max_digits - self.decimal_places
+        else:
+            self.max_whole_digits = None
+
+    def to_internal_value(self, data):
+        """
+        Validate that the input is a decimal number and return a Decimal
+        instance.
+        """
+
+        data = super(DecimalField, self).to_internal_value(data)
         try:
             value = decimal.Decimal(data)
         except decimal.DecimalException:
@@ -1056,14 +1063,13 @@ class DecimalField(Field):
         return value
 
     def to_representation(self, value):
-        coerce_to_string = getattr(self, 'coerce_to_string', api_settings.COERCE_DECIMAL_TO_STRING)
 
         if not isinstance(value, decimal.Decimal):
             value = decimal.Decimal(six.text_type(value).strip())
 
         quantized = self.quantize(value)
 
-        if not coerce_to_string:
+        if not self.coerce_to_string:
             return quantized
         if self.localize:
             return localize_input(quantized)

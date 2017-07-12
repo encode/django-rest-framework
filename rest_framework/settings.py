@@ -111,7 +111,12 @@ DEFAULTS = {
     'UNICODE_JSON': True,
     'COMPACT_JSON': True,
     'COERCE_DECIMAL_TO_STRING': True,
+    'COERCE_FLOAT_TO_STRING': False,
+    'COERCE_INTEGER_TO_STRING': False,
     'UPLOADED_FILES_USE_URL': True,
+
+    # Number fields localization
+    'LOCALIZE_NUMBER_FIELDS': False,
 
     # Browseable API
     'HTML_SELECT_CUTOFF': 1000,
