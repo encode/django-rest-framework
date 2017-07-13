@@ -61,6 +61,19 @@ class ForeignKeySource(RESTFrameworkModel):
                                on_delete=models.CASCADE)
 
 
+class ForeignKeyInUniquenessConstraintSource(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+    target = models.ForeignKey(ForeignKeyTarget,
+                               related_name='sources_with_uniqueness',
+                               help_text='Target',
+                               verbose_name='Target',
+                               default=1,
+                               on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('name', 'target')
+
+
 # Nullable ForeignKey
 class NullableForeignKeySource(RESTFrameworkModel):
     name = models.CharField(max_length=100)

@@ -909,8 +909,14 @@ class ModelSerializer(Serializer):
         info = model_meta.get_field_info(ModelClass)
         many_to_many = {}
         for field_name, relation_info in info.relations.items():
-            if relation_info.to_many and (field_name in validated_data):
-                many_to_many[field_name] = validated_data.pop(field_name)
+            if field_name in validated_data:
+                if relation_info.to_many:
+                    many_to_many[field_name] = validated_data.pop(field_name)
+                elif not isinstance(
+                        validated_data[field_name],
+                        relation_info.related_model):
+                    validated_data[relation_info.model_field.attname] = \
+                        validated_data.pop(field_name)
 
         try:
             instance = ModelClass.objects.create(**validated_data)
@@ -1368,7 +1374,7 @@ class ModelSerializer(Serializer):
             elif getattr(unique_constraint_field, 'auto_now', None):
                 default = timezone.now
             elif unique_constraint_field.has_default():
-                default = unique_constraint_field.default
+                default = unique_constraint_field.get_default()
             else:
                 default = empty
 
