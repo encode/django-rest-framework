@@ -182,13 +182,6 @@ except ImportError:
     coreschema = None
 
 
-# django-filter is optional
-try:
-    import django_filters
-except ImportError:
-    django_filters = None
-
-
 # django-crispy-forms is optional
 try:
     import crispy_forms
