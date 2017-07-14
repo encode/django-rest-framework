@@ -24,15 +24,6 @@ class BasicModel(RESTFrameworkModel):
     )
 
 
-class BaseFilterableItem(RESTFrameworkModel):
-    text = models.CharField(max_length=100)
-
-
-class FilterableItem(BaseFilterableItem):
-    decimal = models.DecimalField(max_digits=4, decimal_places=2)
-    date = models.DateField()
-
-
 # Models for relations tests
 # ManyToMany
 class ManyToManyTarget(RESTFrameworkModel):
