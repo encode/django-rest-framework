@@ -31,7 +31,7 @@ def _positive_int(integer_string, strict=False, cutoff=None):
     if ret < 0 or (ret == 0 and strict):
         raise ValueError()
     if cutoff:
-        ret = min(ret, cutoff)
+        return min(ret, cutoff)
     return ret
 
 
@@ -95,7 +95,7 @@ def _get_displayed_page_numbers(current, final):
     # Now sort the page numbers and drop anything outside the limits.
     included = [
         idx for idx in sorted(list(included))
-        if idx > 0 and idx <= final
+        if 0 < idx <= final
     ]
 
     # Finally insert any `...` breaks
