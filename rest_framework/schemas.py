@@ -454,13 +454,28 @@ class SchemaGenerator(object):
         if self.url and path.startswith('/'):
             path = path[1:]
 
+        title = self.get_title(view)
+
         return coreapi.Link(
+            title=title,
             url=urlparse.urljoin(self.url, path),
             action=method.lower(),
             encoding=encoding,
             fields=fields,
             description=description
         )
+
+    def get_title(self, view):
+        """
+        Determine a title from a view instance.
+
+        If the 'title' attribute is not set on the view, then an empty title is returned.
+        """
+        title = ""
+        if hasattr(view, "title"):
+            title = view.title
+
+        return title
 
     def get_description(self, path, method, view):
         """
