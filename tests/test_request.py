@@ -3,6 +3,9 @@ Tests for content parsing, and form-overloaded content parsing.
 """
 from __future__ import unicode_literals
 
+import os.path
+import tempfile
+
 from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -120,9 +123,37 @@ class MockView(APIView):
 
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+class FileUploadView(APIView):
+    def post(self, request):
+        filenames = [file.temporary_file_path() for file in request.FILES.values()]
+
+        for filename in filenames:
+            assert os.path.exists(filename)
+
+        return Response(status=status.HTTP_200_OK, data=filenames)
+
+
 urlpatterns = [
     url(r'^$', MockView.as_view()),
+    url(r'^upload/$', FileUploadView.as_view())
 ]
+
+
+@override_settings(
+    ROOT_URLCONF='tests.test_request',
+    FILE_UPLOAD_HANDLERS=['django.core.files.uploadhandler.TemporaryFileUploadHandler'])
+class FileUploadTests(TestCase):
+
+    def test_fileuploads_closed_at_request_end(self):
+        with tempfile.NamedTemporaryFile() as f:
+            response = self.client.post('/upload/', {'file': f})
+
+        # sanity check that file was processed
+        assert len(response.data) == 1
+
+        for file in response.data:
+            assert not os.path.exists(file)
 
 
 @override_settings(ROOT_URLCONF='tests.test_request')

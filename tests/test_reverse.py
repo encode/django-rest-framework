@@ -13,6 +13,7 @@ factory = APIRequestFactory()
 def null_view(request):
     pass
 
+
 urlpatterns = [
     url(r'^view$', null_view, name='view'),
 ]

@@ -246,6 +246,7 @@ class ObjectPermissionInstanceView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [ViewObjectPermissions]
 
+
 object_permissions_view = ObjectPermissionInstanceView.as_view()
 
 
@@ -254,6 +255,7 @@ class ObjectPermissionListView(generics.ListAPIView):
     serializer_class = BasicPermSerializer
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [ViewObjectPermissions]
+
 
 object_permissions_list_view = ObjectPermissionListView.as_view()
 
@@ -442,6 +444,7 @@ class DeniedObjectView(PermissionInstanceView):
 
 class DeniedObjectViewWithDetail(PermissionInstanceView):
     permission_classes = (BasicObjectPermWithDetail,)
+
 
 denied_view = DeniedView.as_view()
 
