@@ -471,11 +471,7 @@ class SchemaGenerator(object):
 
         If the 'title' attribute is not set on the view, then an empty title is returned.
         """
-        title = ""
-        if hasattr(view, "title"):
-            title = view.title
-
-        return title
+        return getattr(view, 'title', '')
 
     def get_description(self, path, method, view):
         """
