@@ -82,7 +82,7 @@ For example, when forcibly authenticating using a token, you might do something 
 
     user = User.objects.get(username='olivia')
     request = factory.get('/accounts/django-superstars/')
-    force_authenticate(request, user=user, token=user.token)
+    force_authenticate(request, user=user, token=user.auth_token)
 
 ---
 
