@@ -129,8 +129,8 @@ class ValidationError(APIException):
         if code is None:
             code = self.default_code
 
-        # For validation failures, we may collect may errors together, so the
-        # details should always be coerced to a list if not already.
+        # For validation failures, we may collect many errors together,
+        # so the details should always be coerced to a list if not already.
         if not isinstance(detail, dict) and not isinstance(detail, list):
             detail = [detail]
 
