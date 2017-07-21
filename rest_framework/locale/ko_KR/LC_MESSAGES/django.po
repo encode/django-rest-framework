@@ -117,7 +117,7 @@ msgstr "자격 인증데이터(authentication credentials)가 제공되지 않�
 
 #: exceptions.py:99
 msgid "You do not have permission to perform this action."
-msgstr "이 작업을 "
+msgstr "이 작업을 수행할 권한(permission)이 없습니다."
 
 #: exceptions.py:104 views.py:81
 msgid "Not found."
@@ -247,7 +247,7 @@ msgstr "Time의 포멧이 잘못되었습니다. 이 형식들 중 한가지를 
 
 #: fields.py:1232
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Duration의 포멧이 잘못 되었습니다. 이 형식들 중 한가지를 사용하세요: {format}."
 
 #: fields.py:1251 fields.py:1300
 msgid "\"{input}\" is not a valid choice."
