@@ -680,7 +680,6 @@ class TestRelationalFieldMappings(TestCase):
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
 
-
 class DisplayValueTargetModel(models.Model):
     name = models.CharField(max_length=100)
 
