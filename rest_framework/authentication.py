@@ -6,12 +6,13 @@ from __future__ import unicode_literals
 import base64
 import binascii
 
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
 from django.utils.six import text_type
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import HTTP_HEADER_ENCODING, exceptions
+from rest_framework.compat import authenticate
 
 
 def get_authorization_header(request):
@@ -83,17 +84,18 @@ class BasicAuthentication(BaseAuthentication):
             raise exceptions.AuthenticationFailed(msg)
 
         userid, password = auth_parts[0], auth_parts[2]
-        return self.authenticate_credentials(userid, password)
+        return self.authenticate_credentials(userid, password, request)
 
-    def authenticate_credentials(self, userid, password):
+    def authenticate_credentials(self, userid, password, request=None):
         """
-        Authenticate the userid and password against username and password.
+        Authenticate the userid and password against username and password
+        with optional request for context.
         """
         credentials = {
             get_user_model().USERNAME_FIELD: userid,
             'password': password
         }
-        user = authenticate(**credentials)
+        user = authenticate(request=request, **credentials)
 
         if user is None:
             raise exceptions.AuthenticationFailed(_('Invalid username/password.'))

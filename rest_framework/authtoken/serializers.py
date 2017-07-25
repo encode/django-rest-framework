@@ -1,7 +1,7 @@
-from django.contrib.auth import authenticate
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
+from rest_framework.compat import authenticate
 
 
 class AuthTokenSerializer(serializers.Serializer):
@@ -17,7 +17,8 @@ class AuthTokenSerializer(serializers.Serializer):
         password = attrs.get('password')
 
         if username and password:
-            user = authenticate(username=username, password=password)
+            user = authenticate(request=self.context.get('request'),
+                                username=username, password=password)
 
             if user:
                 # From Django 1.10 onwards the `authenticate` call simply
