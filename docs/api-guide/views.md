@@ -19,6 +19,7 @@ REST framework provides an `APIView` class, which subclasses Django's `View` cla
 Using the `APIView` class is pretty much the same as using a regular `View` class, as usual, the incoming request is dispatched to an appropriate handler method such as `.get()` or `.post()`.  Additionally, a number of attributes may be set on the class that control various aspects of the API policy.
 
 For example:
+
     from rest_framework.views import APIView
     from rest_framework.response import Response
     from rest_framework import authentication, permissions
