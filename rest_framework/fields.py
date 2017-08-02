@@ -577,6 +577,8 @@ class Field(object):
         """
         A helper method that simply raises a validation error.
         """
+        if hasattr(api_settings, 'global_error_messages'):
+            self.error_messages.update(api_settings['global_error_messages'])
         try:
             msg = self.error_messages[key]
         except KeyError:
