@@ -434,9 +434,9 @@ Requires either the `Pillow` package or `PIL` package.  The `Pillow` package is 
 
 A field class that validates a list of objects.
 
-**Signature**: `ListField(child, min_length=None, max_length=None)`
+**Signature**: `ListField(child=None, min_length=None, max_length=None)`
 
-- `child` - A field instance that should be used for validating the objects in the list. If this argument is not provided then objects in the list will not be validated.
+- `child` - A field instance that should be used for validating the objects in the list. If this argument is not provided or is `None then objects in the list will not be validated.
 - `min_length` - Validates that the list contains no fewer than this number of elements.
 - `max_length` - Validates that the list contains no more than this number of elements.
 
@@ -457,9 +457,9 @@ We can now reuse our custom `StringListField` class throughout our application, 
 
 A field class that validates a dictionary of objects. The keys in `DictField` are always assumed to be string values.
 
-**Signature**: `DictField(child)`
+**Signature**: `DictField(child=None)`
 
-- `child` - A field instance that should be used for validating the values in the dictionary. If this argument is not provided then values in the mapping will not be validated.
+- `child` - A field instance that should be used for validating the values in the dictionary. If this argument is not provided or is `None` then values in the mapping will not be validated.
 
 For example, to create a field that validates a mapping of strings to strings, you would write something like this:
 

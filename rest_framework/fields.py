@@ -1522,7 +1522,10 @@ class ListField(Field):
     }
 
     def __init__(self, *args, **kwargs):
-        self.child = kwargs.pop('child', copy.deepcopy(self.child))
+        child = kwargs.pop('child')
+        if child is None:
+            child = copy.deepcopy(self.child)
+        self.child = child
         self.allow_empty = kwargs.pop('allow_empty', True)
         self.max_length = kwargs.pop('max_length', None)
         self.min_length = kwargs.pop('min_length', None)
@@ -1583,7 +1586,10 @@ class DictField(Field):
     }
 
     def __init__(self, *args, **kwargs):
-        self.child = kwargs.pop('child', copy.deepcopy(self.child))
+        child = kwargs.pop('child')
+        if child is None:
+            child = copy.deepcopy(self.child)
+        self.child = child
 
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         assert self.child.source is None, (
