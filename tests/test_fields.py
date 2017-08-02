@@ -1734,6 +1734,13 @@ class TestUnvalidatedListField(FieldValues):
     field = serializers.ListField()
 
 
+class TestUnvalidatedListFieldWithChildNone(TestUnvalidatedListField):
+    """
+        Values for `ListField` with `child=None`.
+    """
+    field = serializers.ListField(child=None)
+
+
 class TestDictField(FieldValues):
     """
     Values for `ListField` with CharField as child.
@@ -1797,6 +1804,13 @@ class TestUnvalidatedDictField(FieldValues):
         ({'a': 1, 'b': [4, 5, 6]}, {'a': 1, 'b': [4, 5, 6]}),
     ]
     field = serializers.DictField()
+
+
+class TestUnvalidatedDictFieldWithChildNone(TestUnvalidatedDictField):
+    """
+        Values for `ListField` with `child=None`.
+    """
+    field = serializers.DictField(child=None)
 
 
 class TestJSONField(FieldValues):

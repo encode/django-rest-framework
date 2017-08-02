@@ -1522,7 +1522,7 @@ class ListField(Field):
     }
 
     def __init__(self, *args, **kwargs):
-        child = kwargs.pop('child')
+        child = kwargs.pop('child', None)
         if child is None:
             child = copy.deepcopy(self.child)
         self.child = child
@@ -1586,7 +1586,7 @@ class DictField(Field):
     }
 
     def __init__(self, *args, **kwargs):
-        child = kwargs.pop('child')
+        child = kwargs.pop('child', None)
         if child is None:
             child = copy.deepcopy(self.child)
         self.child = child
