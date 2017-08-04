@@ -16,9 +16,8 @@ from rest_framework import (
     HTTP_HEADER_ENCODING, exceptions, permissions, renderers, status
 )
 from rest_framework.authentication import (
-    BaseAuthentication, BasicAuthentication, SessionAuthentication,
-    TokenAuthentication,
-    RemoteUserAuthentication)
+    BaseAuthentication, BasicAuthentication, RemoteUserAuthentication, SessionAuthentication,
+    TokenAuthentication)
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.compat import is_authenticated
