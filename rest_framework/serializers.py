@@ -563,10 +563,10 @@ class ListSerializer(BaseSerializer):
         assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         super(ListSerializer, self).__init__(*args, **kwargs)
-        self.child.bind(field_name='', parent=self)
 
     def bind(self, field_name, parent):
         super(ListSerializer, self).bind(field_name, parent)
+        self.child.bind(field_name='', parent=self)
         self.partial = self.parent.partial
 
     def get_initial(self):
