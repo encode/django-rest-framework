@@ -502,6 +502,16 @@ class TestCreateOnlyDefault:
         assert serializer.validated_data['context_set'] == 'success'
 
 
+class Test5087Regression:
+    def test_parent_binding(self):
+        parent = serializers.Serializer()
+        field = serializers.CharField()
+
+        assert field.root is field
+        field.bind('name', parent)
+        assert field.root is parent
+
+
 # Tests for field input and output values.
 # ----------------------------------------
 
