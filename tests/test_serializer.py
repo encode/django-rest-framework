@@ -469,6 +469,22 @@ class TestSerializerValidationWithCompiledRegexField:
         assert serializer.errors == {}
 
 
+class Test2505Regression:
+    def test_serializer_context(self):
+        class NestedSerializer(serializers.Serializer):
+            def __init__(self, *args, **kwargs):
+                super(NestedSerializer, self).__init__(*args, **kwargs)
+                # .context should not cache
+                self.context
+
+        class ParentSerializer(serializers.Serializer):
+            nested = NestedSerializer()
+
+        serializer = ParentSerializer(data={}, context={'foo': 'bar'})
+        assert serializer.context == {'foo': 'bar'}
+        assert serializer.fields['nested'].context == {'foo': 'bar'}
+
+
 class Test4606Regression:
     def setup(self):
         class ExampleSerializer(serializers.Serializer):

@@ -26,7 +26,6 @@ from django.utils.dateparse import (
 from django.utils.duration import duration_string
 from django.utils.encoding import is_protected_type, smart_text
 from django.utils.formats import localize_input, sanitize_separators
-from django.utils.functional import cached_property
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.timezone import utc
 from django.utils.translation import ugettext_lazy as _
@@ -586,7 +585,7 @@ class Field(object):
         message_string = msg.format(**kwargs)
         raise ValidationError(message_string, code=key)
 
-    @cached_property
+    @property
     def root(self):
         """
         Returns the top-level serializer for this field.
@@ -596,7 +595,7 @@ class Field(object):
             root = root.parent
         return root
 
-    @cached_property
+    @property
     def context(self):
         """
         Returns the context as passed to the root serializer on initialization.
