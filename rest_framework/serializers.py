@@ -60,7 +60,7 @@ from rest_framework.fields import (  # NOQA # isort:skip
     SerializerMethodField, SlugField, TimeField, URLField, UUIDField,
 )
 from rest_framework.relations import (  # NOQA # isort:skip
-    HyperlinkedIdentityField, HyperlinkedRelatedField, ManyRelatedField,
+    HyperlinkedIdentityField, HyperlinkedRelatedField, QueryParameterHyperlinkedIdentityField, ManyRelatedField,
     PrimaryKeyRelatedField, RelatedField, SlugRelatedField, StringRelatedField,
 )
 
