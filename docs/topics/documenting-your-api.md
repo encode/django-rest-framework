@@ -42,7 +42,7 @@ For example:
     class UserList(generics.ListAPIView):
         """
         Return a list of all the existing users.
-        """"
+        """
 
 If a view supports multiple methods, you should split your documentation using `method:` style delimiters.
 
