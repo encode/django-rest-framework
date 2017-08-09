@@ -469,7 +469,10 @@ class Serializer(BaseSerializer):
             except SkipField:
                 pass
             else:
-                set_value(ret, field.source_attrs, validated_value)
+                if field.source_attrs != [] or field.source == "*":
+                    set_value(ret, field.source_attrs, validated_value)
+                else:
+                    set_value(ret, [field.field_name, ], primitive_value)
 
         if errors:
             raise ValidationError(errors)
