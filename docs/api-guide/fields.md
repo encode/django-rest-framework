@@ -641,7 +641,7 @@ The `.fail()` method is a shortcut for raising `ValidationError` that takes a me
 
         return Color(red, green, blue)
 
-This style keeps you error messages more cleanly separated from your code, and should be preferred.
+This style keeps your error messages cleaner and more separated from your code, and should be preferred.
 
 # Third party packages
 
