@@ -239,6 +239,28 @@ If you're using an AJAX style API with SessionAuthentication, you'll need to mak
 
 CSRF validation in REST framework works slightly differently to standard Django due to the need to support both session and non-session based authentication to the same views. This means that only authenticated requests require CSRF tokens, and anonymous requests may be sent without CSRF tokens. This behaviour is not suitable for login views, which should always have CSRF validation applied.
 
+
+## RemoteUserAuthentication
+
+This authentication scheme allows you to delegate authentication to your web server, which sets the `REMOTE_USER`
+environment variable.
+
+To use it, you must have `django.contrib.auth.backends.RemoteUserBackend` (or a subclass) in your
+`AUTHENTICATION_BACKENDS` setting. By default, `RemoteUserBackend` creates `User` objects for usernames that don't
+already exist. To change this and other behaviour, consult the
+[Django documentation](https://docs.djangoproject.com/en/stable/howto/auth-remote-user/).
+
+If successfully authenticated, `RemoteUserAuthentication` provides the following credentials:
+
+* `request.user` will be a Django `User` instance.
+* `request.auth` will be `None`.
+
+Consult your web server's documentation for information about configuring an authentication method, e.g.:
+
+* [Apache Authentication How-To](https://httpd.apache.org/docs/2.4/howto/auth.html)
+* [NGINX (Restricting Access)](https://www.nginx.com/resources/admin-guide/#restricting_access)
+
+
 # Custom authentication
 
 To implement a custom authentication scheme, subclass `BaseAuthentication` and override the `.authenticate(self, request)` method.  The method should return a two-tuple of `(user, auth)` if authentication succeeds, or `None` otherwise.
