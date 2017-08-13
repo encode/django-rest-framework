@@ -222,6 +222,21 @@ It is also possible to create Tokens manually through admin interface. In case y
     TokenAdmin.raw_id_fields = ('user',)
 
 
+#### Using Django manage.py command
+
+Since version 3.6.4 it's possible to generate a user token using the following command:
+
+    ./manage.py drf_create_token <username>
+
+this command will return the API token for the given user, creating it if it doesn't exist:
+
+    Generated token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b for user user1
+
+In case you want to regenerate the token (for example if it has been compromised or leaked) you can pass an additional parameter:
+
+    ./manage.py drf_create_token -r <username>
+
+
 ## SessionAuthentication
 
 This authentication scheme uses Django's default session backend for authentication.  Session authentication is appropriate for AJAX clients that are running in the same session context as your website.
