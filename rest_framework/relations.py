@@ -12,7 +12,7 @@ from django.utils.encoding import (
 )
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
-
+from django.utils.http import urlencode
 from rest_framework.compat import (
     NoReverseMatch, Resolver404, get_script_prefix, resolve
 )
@@ -417,6 +417,16 @@ class HyperlinkedIdentityField(HyperlinkedRelatedField):
         # to run the 'only get the pk for this relationship' code.
         return False
 
+class QueryParameterHyperlinkedIdentityField(HyperlinkedIdentityField):
+    def __init__(self, query_params, **kwargs):
+        super(QueryParameterHyperlinkedIdentityField, self).__init__(**kwargs)
+        self.query_params = query_params
+
+    def get_url(self, obj, view_name, request, format):
+        url = super(QueryParameterHyperlinkedIdentityField, self).get_url(obj, view_name, request, format)
+        if len(self.query_params) > 0:
+            url += "?"+urlencode({k: getattr(obj, v) for k,v in self.query_params.items()})
+        return url
 
 class SlugRelatedField(RelatedField):
     """
