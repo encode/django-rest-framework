@@ -20,7 +20,7 @@
 </a></h2>
 {% endif %}
 
-    {% for link_key, link in section.links|items %}
+    {% for link_key, link in section|schema_links|items %}
         {% include "rest_framework/docs/link.html" %}
     {% endfor %}
 {% endfor %}

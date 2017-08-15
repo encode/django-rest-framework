@@ -245,6 +245,29 @@ def items(value):
 
 
 @register.filter
+def schema_links(section, sec_key=None):
+    """
+    Recursively find every link in a schema, even nested.
+    """
+    NESTED_FORMAT = '%s > %s'
+    links = section.links
+    if section.data:
+        data = section.data.items()
+        for sub_section_key, sub_section in data:
+            new_links = schema_links(sub_section, sec_key=sub_section_key)
+            links.update(new_links)
+
+    if sec_key is not None:
+        new_links = OrderedDict()
+        for link_key, link in links.items():
+            new_key = NESTED_FORMAT % (sec_key, link_key)
+            new_links.update({new_key: link})
+        return new_links
+
+    return links
+
+
+@register.filter
 def add_nested_class(value):
     if isinstance(value, dict):
         return 'class=nested'
