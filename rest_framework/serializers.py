@@ -74,7 +74,7 @@ from rest_framework.relations import Hyperlink, PKOnlyObject  # NOQA # isort:ski
 # rather than the parent serializer.
 LIST_SERIALIZER_KWARGS = (
     'read_only', 'write_only', 'required', 'default', 'initial', 'source',
-    'label', 'help_text', 'style', 'error_messages', 'allow_empty',
+    'label', 'help_text', 'schema', 'style', 'error_messages', 'allow_empty',
     'instance', 'data', 'partial', 'context', 'allow_null'
 )
 
@@ -1174,7 +1174,7 @@ class ModelSerializer(Serializer):
             valid_kwargs = set((
                 'read_only', 'write_only',
                 'required', 'default', 'initial', 'source',
-                'label', 'help_text', 'style',
+                'label', 'help_text', 'schema', 'style',
                 'error_messages', 'validators', 'allow_null', 'allow_blank',
                 'choices'
             ))
