@@ -639,6 +639,46 @@ class TestRelationalFieldMappings(TestCase):
         """)
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
+    def test_view_url_custom_view_name(self):
+        class TestSerializer(serializers.HyperlinkedModelSerializer):
+            class Meta:
+                model = RelationalModel
+                fields = ('url', )
+                view_name = 'custom_view_name'
+
+        expected = dedent("""
+            TestSerializer():
+                url = HyperlinkedIdentityField(view_name='custom_view_name')
+        """)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
+
+    def test_view_url_namespaced(self):
+        class TestSerializer(serializers.HyperlinkedModelSerializer):
+            class Meta:
+                model = RelationalModel
+                fields = ('url', )
+                namespace = 'api'
+
+        expected = dedent("""
+            TestSerializer():
+                url = HyperlinkedIdentityField(view_name='api:relationalmodel-detail')
+        """)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
+
+    def test_view_url_namespaced_custom_view_name(self):
+        class TestSerializer(serializers.HyperlinkedModelSerializer):
+            class Meta:
+                model = RelationalModel
+                fields = ('url', )
+                view_name = 'custom_view_name'
+                namespace = 'api'
+
+        expected = dedent("""
+            TestSerializer():
+                url = HyperlinkedIdentityField(view_name='api:custom_view_name')
+        """)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
+
 
 class DisplayValueTargetModel(models.Model):
     name = models.CharField(max_length=100)
