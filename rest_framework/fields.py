@@ -25,7 +25,9 @@ from django.utils.dateparse import (
 )
 from django.utils.duration import duration_string
 from django.utils.encoding import is_protected_type, smart_text
-from django.utils.formats import localize_input, number_format, sanitize_separators
+from django.utils.formats import (
+    localize_input, number_format, sanitize_separators
+)
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.timezone import utc
 from django.utils.translation import ugettext_lazy as _
@@ -942,13 +944,15 @@ class FloatField(Field):
 
     def to_internal_value(self, data):
 
-        data = smart_text(data).strip()
+        if isinstance(data, six.text_type):
 
-        if self.localize:
-            data = sanitize_separators(data)
+            data = smart_text(data).strip()
 
-        if len(data) > self.MAX_STRING_LENGTH:
-            self.fail('max_string_length')
+            if len(data) > self.MAX_STRING_LENGTH:
+                self.fail('max_string_length')
+
+            if self.localize:
+                data = sanitize_separators(data)
 
         try:
             return float(data)
