@@ -944,7 +944,7 @@ class FloatField(Field):
 
     def to_internal_value(self, data):
 
-        if isinstance(data, six.text_type):
+        if isinstance(data, six.string_types):
 
             data = smart_text(data).strip()
 
