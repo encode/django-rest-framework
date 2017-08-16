@@ -31,7 +31,7 @@ def _positive_int(integer_string, strict=False, cutoff=None):
     if ret < 0 or (ret == 0 and strict):
         raise ValueError()
     if cutoff:
-        ret = min(ret, cutoff)
+        return min(ret, cutoff)
     return ret
 
 
@@ -95,7 +95,7 @@ def _get_displayed_page_numbers(current, final):
     # Now sort the page numbers and drop anything outside the limits.
     included = [
         idx for idx in sorted(list(included))
-        if idx > 0 and idx <= final
+        if 0 < idx <= final
     ]
 
     # Finally insert any `...` breaks
@@ -473,7 +473,7 @@ class CursorPagination(BasePagination):
     """
     The cursor pagination implementation is necessarily complex.
     For an overview of the position/offset style we use, see this post:
-    http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api
+    http://cra.mr/2011/03/08/building-cursors-for-the-disqus-api
     """
     cursor_query_param = 'cursor'
     cursor_query_description = _('The pagination cursor value.')

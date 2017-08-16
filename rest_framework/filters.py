@@ -140,12 +140,14 @@ class SearchFilter(BaseFilterBackend):
         ]
 
         base = queryset
+        conditions = []
         for search_term in search_terms:
             queries = [
                 models.Q(**{orm_lookup: search_term})
                 for orm_lookup in orm_lookups
             ]
-            queryset = queryset.filter(reduce(operator.or_, queries))
+            conditions.append(reduce(operator.or_, queries))
+        queryset = queryset.filter(reduce(operator.and_, conditions))
 
         if self.must_call_distinct(queryset, search_fields):
             # Filtering against a many-to-many field requires us to

@@ -201,3 +201,24 @@ class TokenAuthentication(BaseAuthentication):
 
     def authenticate_header(self, request):
         return self.keyword
+
+
+class RemoteUserAuthentication(BaseAuthentication):
+    """
+    REMOTE_USER authentication.
+
+    To use this, set up your web server to perform authentication, which will
+    set the REMOTE_USER environment variable. You will need to have
+    'django.contrib.auth.backends.RemoteUserBackend in your
+    AUTHENTICATION_BACKENDS setting
+    """
+
+    # Name of request header to grab username from.  This will be the key as
+    # used in the request.META dictionary, i.e. the normalization of headers to
+    # all uppercase and the addition of "HTTP_" prefix apply.
+    header = "REMOTE_USER"
+
+    def authenticate(self, request):
+        user = authenticate(remote_user=request.META.get(self.header))
+        if user and user.is_active:
+            return (user, None)
