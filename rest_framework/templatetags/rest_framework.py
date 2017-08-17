@@ -249,7 +249,7 @@ def schema_links(section, sec_key=None):
     """
     Recursively find every link in a schema, even nested.
     """
-    NESTED_FORMAT = '%s > %s'
+    NESTED_FORMAT = '%s > %s'  # this format is used in docs/js/api.js:normalizeKeys
     links = section.links
     if section.data:
         data = section.data.items()
