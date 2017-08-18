@@ -142,7 +142,7 @@ def to_choices_dict(choices):
 
     to_choices_dict([1]) -> {1: 1}
     to_choices_dict([(1, '1st'), (2, '2nd')]) -> {1: '1st', 2: '2nd'}
-    to_choices_dict([('Group', ((1, '1st'), 2))]) -> {'Group': {1: '1st', 2: '2nd'}}
+    to_choices_dict([('Group', ((1, '1st'), 2))]) -> {'Group': {1: '1st', 2: '2'}}
     """
     # Allow single, paired or grouped choices style:
     # choices = [1, 2, 3]
