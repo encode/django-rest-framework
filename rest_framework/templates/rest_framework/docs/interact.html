@@ -1,7 +1,7 @@
 {% load rest_framework %}
 
 <!-- Modal -->
-<div class="modal fade api-modal" id="{{ section_key }}_{{ link_key }}_modal" tabindex="-1" role="dialog" aria-labelledby="api explorer modal">
+<div class="modal fade api-modal" id="{{ section_key }}_{%if sub_section_key%}{{sub_section_key}}_{%endif%}{{ link_key }}_modal" tabindex="-1" role="dialog" aria-labelledby="api explorer modal">
 <div class="modal-dialog modal-lg" role="document">
   <div class="modal-content">
     <div class="modal-header">
@@ -16,7 +16,7 @@
 
     </div>
 
-    <form data-key='["{{ section_key }}", "{{ link_key }}"]' class="api-interaction">
+    <form data-key='["{{ section_key }}", {%if sub_section_key%}"{{sub_section_key}}", {%endif%}"{{ link_key }}"]' class="api-interaction">
     <div class="modal-body">
       <div class="row">
         <div class="col-lg-6 request">
