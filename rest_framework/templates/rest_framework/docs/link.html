@@ -6,11 +6,11 @@
         class="btn btn-sm btn-success"
         style="float: right; margin-top: 20px"
         data-toggle="modal"
-        data-target="#{{ section_key }}_{{ link_key }}_modal">
+        data-target="#{{ section_key }}_{{ link_key|slugify }}_modal">
         <i class="fa fa-exchange"></i> Interact
     </button>
 
-    <h3 id="{{ section_key }}-{{ link_key }}" class="coredocs-link-title">{{ link.title|default:link_key }} <a href="#{{ section_key }}-{{ link_key }}"><i class="fa fa-link" aria-hidden="true"></i>
+    <h3 id="{{ section_key }}-{{ link_key|slugify }}" class="coredocs-link-title">{{ link.title|default:link_key }} <a href="#{{ section_key }}-{{ link_key|slugify }}"><i class="fa fa-link" aria-hidden="true"></i>
 </a></h3>
 
     <div class="meta">
