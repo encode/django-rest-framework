@@ -3,15 +3,16 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Bashar Al-Abdulhadi, 2016
+# aymen chaieb <chaieb.aymen1992@gmail.com>, 2017
+# Bashar Al-Abdulhadi, 2016-2017
 # Eyad Toma <d.eyad.t@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-12 16:13+0100\n"
-"PO-Revision-Date: 2016-07-12 15:14+0000\n"
-"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"PO-Revision-Date: 2017-08-15 17:08+0000\n"
+"Last-Translator: aymen chaieb <chaieb.aymen1992@gmail.com>\n"
 "Language-Team: Arabic (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -54,7 +55,7 @@ msgstr ""
 
 #: authentication.py:195
 msgid "Invalid token."
-msgstr "رمز غير صحيح"
+msgstr "رمز غير صحيح."
 
 #: authtoken/apps.py:7
 msgid "Auth Token"
@@ -316,15 +317,15 @@ msgstr "أرسل"
 
 #: filters.py:336
 msgid "ascending"
-msgstr ""
+msgstr "تصاعدي"
 
 #: filters.py:337
 msgid "descending"
-msgstr ""
+msgstr "تنازلي"
 
 #: pagination.py:193
 msgid "Invalid page."
-msgstr "صفحة غير صحيحة"
+msgstr "صفحة غير صحيحة."
 
 #: pagination.py:427
 msgid "Invalid cursor"
@@ -382,13 +383,13 @@ msgstr "الترتيب"
 
 #: templates/rest_framework/filters/search.html:2
 msgid "Search"
-msgstr "البحث"
+msgstr "بحث"
 
 #: templates/rest_framework/horizontal/radio.html:2
 #: templates/rest_framework/inline/radio.html:2
 #: templates/rest_framework/vertical/radio.html:2
 msgid "None"
-msgstr ""
+msgstr "لا شيء"
 
 #: templates/rest_framework/horizontal/select_multiple.html:2
 #: templates/rest_framework/inline/select_multiple.html:2
@@ -398,7 +399,7 @@ msgstr ""
 
 #: validators.py:43
 msgid "This field must be unique."
-msgstr ""
+msgstr "هذا الحقل يجب أن يكون وحيد"
 
 #: validators.py:97
 msgid "The fields {field_names} must make a unique set."
@@ -438,4 +439,4 @@ msgstr ""
 
 #: views.py:88
 msgid "Permission denied."
-msgstr ""
+msgstr "حق غير مصرح به"
