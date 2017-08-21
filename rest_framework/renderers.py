@@ -99,10 +99,17 @@ class JSONRenderer(BaseRenderer):
         else:
             separators = INDENT_SEPARATORS
 
-        ret = json.dumps(
-            data, cls=self.encoder_class,
-            indent=indent, ensure_ascii=self.ensure_ascii,
-            separators=separators
+        if type(data) is dict:
+            ret = json.dumps(
+                data, cls=self.encoder_class,
+                indent=indent, ensure_ascii=self.ensure_ascii,
+                separators=separators, sort_keys=True
+            )
+        else:
+            ret = json.dumps(
+                data, cls=self.encoder_class,
+                indent=indent, ensure_ascii=self.ensure_ascii,
+                separators=separators
         )
 
         # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,
