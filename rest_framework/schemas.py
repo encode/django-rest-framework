@@ -30,7 +30,7 @@ def field_to_schema(field):
     title = force_text(field.label) if field.label else ''
     description = force_text(field.help_text) if field.help_text else ''
 
-    if isinstance(field, serializers.ListSerializer):
+    if isinstance(field, (serializers.ListSerializer, serializers.ListField)):
         child_schema = field_to_schema(field.child)
         return coreschema.Array(
             items=child_schema,

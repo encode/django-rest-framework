@@ -39,6 +39,11 @@ class ExampleSerializer(serializers.Serializer):
     hidden = serializers.HiddenField(default='hello')
 
 
+class AnotherSerializerWithListFields(serializers.Serializer):
+    a = serializers.ListField(child=serializers.IntegerField())
+    b = serializers.ListSerializer(child=serializers.CharField())
+
+
 class AnotherSerializer(serializers.Serializer):
     c = serializers.CharField(required=True)
     d = serializers.CharField(required=False)
@@ -54,6 +59,13 @@ class ExampleViewSet(ModelViewSet):
     def custom_action(self, request, pk):
         """
         A description of custom action.
+        """
+        return super(ExampleSerializer, self).retrieve(self, request)
+
+    @detail_route(methods=['post'], serializer_class=AnotherSerializerWithListFields)
+    def custom_action_with_list_fields(self, request, pk):
+        """
+        A custom action using both list field and list serializer in the serializer.
         """
         return super(ExampleSerializer, self).retrieve(self, request)
 
@@ -172,6 +184,17 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
                             coreapi.Field('c', required=True, location='form', schema=coreschema.String(title='C')),
                             coreapi.Field('d', required=False, location='form', schema=coreschema.String(title='D')),
+                        ]
+                    ),
+                    'custom_action_with_list_fields': coreapi.Link(
+                        url='/example/{id}/custom_action_with_list_fields/',
+                        action='post',
+                        encoding='application/json',
+                        description='A custom action using both list field and list serializer in the serializer.',
+                        fields=[
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                            coreapi.Field('a', required=True, location='form', schema=coreschema.Array(title='A', items=coreschema.Integer())),
+                            coreapi.Field('b', required=True, location='form', schema=coreschema.Array(title='B', items=coreschema.String())),
                         ]
                     ),
                     'custom_list_action': coreapi.Link(
