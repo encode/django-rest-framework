@@ -67,6 +67,7 @@ You can determine your currently installed version using `pip freeze`:
 * Revert "Cached the field's root and context property" [#5313][gh5313]
 * Fix introspection of list field in schema. [#5326][gh5326]
 * Fix interactive docs for multiple nested and extra methods. [#5334][gh5334]
+* Fix/remove undefined template var "schema" [#5346][gh5346]
 
 ### 3.6.3
 
@@ -1391,6 +1392,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5117]: https://github.com/encode/django-rest-framework/issues/5117
 
 <!-- 3.6.4 -->
+[gh5346]: https://github.com/encode/django-rest-framework/issues/5346
 [gh5334]: https://github.com/encode/django-rest-framework/issues/5334
 [gh5326]: https://github.com/encode/django-rest-framework/issues/5326
 [gh5313]: https://github.com/encode/django-rest-framework/issues/5313
