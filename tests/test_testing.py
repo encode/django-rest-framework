@@ -274,3 +274,12 @@ class TestAPIRequestFactory(TestCase):
         assert dict(request.GET) == {'demo': ['testé']}
         request = factory.get('/view/', {'demo': 'testé'})
         assert dict(request.GET) == {'demo': ['testé']}
+
+    def test_empty_request_content_type(self):
+        factory = APIRequestFactory()
+        request = factory.post(
+            '/post-view/',
+            data=None,
+            content_type='application/json',
+        )
+        assert request.content_type == 'application/json'
