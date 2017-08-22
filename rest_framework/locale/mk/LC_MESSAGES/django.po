@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Filip Dimitrovski <filipdimitrovski22@gmail.com>, 2015
+# Filip Dimitrovski <filipdimitrovski22@gmail.com>, 2015-2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-12 16:13+0100\n"
-"PO-Revision-Date: 2016-07-12 15:14+0000\n"
-"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"PO-Revision-Date: 2017-08-03 14:58+0000\n"
+"Last-Translator: Filip Dimitrovski <filipdimitrovski22@gmail.com>\n"
 "Language-Team: Macedonian (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/mk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -57,7 +57,7 @@ msgstr "Невалиден токен."
 
 #: authtoken/apps.py:7
 msgid "Auth Token"
-msgstr ""
+msgstr "Автентикациски токен"
 
 #: authtoken/models.py:15
 msgid "Key"
@@ -65,7 +65,7 @@ msgstr ""
 
 #: authtoken/models.py:18
 msgid "User"
-msgstr ""
+msgstr "Корисник"
 
 #: authtoken/models.py:20
 msgid "Created"
@@ -73,19 +73,19 @@ msgstr ""
 
 #: authtoken/models.py:29
 msgid "Token"
-msgstr ""
+msgstr "Токен"
 
 #: authtoken/models.py:30
 msgid "Tokens"
-msgstr ""
+msgstr "Токени"
 
 #: authtoken/serializers.py:8
 msgid "Username"
-msgstr ""
+msgstr "Корисничко име"
 
 #: authtoken/serializers.py:9
 msgid "Password"
-msgstr ""
+msgstr "Лозинка"
 
 #: authtoken/serializers.py:20
 msgid "User account is disabled."
@@ -184,11 +184,11 @@ msgstr "Внесете валиден URL."
 
 #: fields.py:760
 msgid "\"{value}\" is not a valid UUID."
-msgstr ""
+msgstr "\"{value}\" не е валиден UUID."
 
 #: fields.py:796
 msgid "Enter a valid IPv4 or IPv6 address."
-msgstr ""
+msgstr "Внеси валидна IPv4 или IPv6 адреса."
 
 #: fields.py:821
 msgid "A valid integer is required."
@@ -255,11 +255,11 @@ msgstr "„{input}“ не е валиден избор."
 
 #: fields.py:1254 relations.py:71 relations.py:441
 msgid "More than {count} items..."
-msgstr ""
+msgstr "Повеќе од {count} ставки..."
 
 #: fields.py:1301 fields.py:1448 relations.py:437 serializers.py:524
 msgid "Expected a list of items but got type \"{input_type}\"."
-msgstr "Очекувана беше листа, а внесено беше „{input_type}“."
+msgstr "Очекувана беше листа од ставки, а внесено беше „{input_type}“."
 
 #: fields.py:1302
 msgid "This selection may not be empty."
@@ -299,35 +299,35 @@ msgstr "Качете (upload-ирајте) валидна слика. Фајло
 
 #: fields.py:1449 relations.py:438 serializers.py:525
 msgid "This list may not be empty."
-msgstr ""
+msgstr "Оваа листа не смее да биде празна."
 
 #: fields.py:1502
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Очекуван беше dictionary од ставки, a внесен беше тип \"{input_type}\"."
 
 #: fields.py:1549
 msgid "Value must be valid JSON."
-msgstr ""
+msgstr "Вредноста мора да биде валиден JSON."
 
 #: filters.py:36 templates/rest_framework/filters/django_filter.html:5
 msgid "Submit"
-msgstr ""
+msgstr "Испрати"
 
 #: filters.py:336
 msgid "ascending"
-msgstr ""
+msgstr "растечки"
 
 #: filters.py:337
 msgid "descending"
-msgstr ""
+msgstr "опаѓачки"
 
 #: pagination.py:193
 msgid "Invalid page."
-msgstr ""
+msgstr "Невалидна вредност за страна."
 
 #: pagination.py:427
 msgid "Invalid cursor"
-msgstr ""
+msgstr "Невалиден покажувач (cursor)"
 
 #: relations.py:207
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
@@ -368,32 +368,32 @@ msgstr "Невалидни податоци. Очекуван беше dictionar
 #: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:128
 msgid "Filters"
-msgstr ""
+msgstr "Филтри"
 
 #: templates/rest_framework/filters/django_filter.html:2
 #: templates/rest_framework/filters/django_filter_crispyforms.html:4
 msgid "Field filters"
-msgstr ""
+msgstr "Филтри на полиња"
 
 #: templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
-msgstr ""
+msgstr "Подредување"
 
 #: templates/rest_framework/filters/search.html:2
 msgid "Search"
-msgstr ""
+msgstr "Пребарај"
 
 #: templates/rest_framework/horizontal/radio.html:2
 #: templates/rest_framework/inline/radio.html:2
 #: templates/rest_framework/vertical/radio.html:2
 msgid "None"
-msgstr ""
+msgstr "Ништо"
 
 #: templates/rest_framework/horizontal/select_multiple.html:2
 #: templates/rest_framework/inline/select_multiple.html:2
 #: templates/rest_framework/vertical/select_multiple.html:2
 msgid "No items to select."
-msgstr ""
+msgstr "Нема ставки за избирање."
 
 #: validators.py:43
 msgid "This field must be unique."
@@ -425,7 +425,7 @@ msgstr "Невалидна верзија во URL патеката."
 
 #: versioning.py:115
 msgid "Invalid version in URL path. Does not match any version namespace."
-msgstr ""
+msgstr "Верзијата во URL патеката не е валидна. Не се согласува со ниеден version namespace (именски простор за верзии)."
 
 #: versioning.py:147
 msgid "Invalid version in hostname."
@@ -437,4 +437,4 @@ msgstr "Невалидна верзија во query параметарот."
 
 #: views.py:88
 msgid "Permission denied."
-msgstr ""
+msgstr "Барањето не е дозволено."

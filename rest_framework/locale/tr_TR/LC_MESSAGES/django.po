@@ -3,13 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Yusuf (Josè) Luis <alagunajs@gmail.com>, 2015-2016
+# José Luis <alagunajs@gmail.com>, 2015-2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-12 16:13+0100\n"
-"PO-Revision-Date: 2016-07-12 15:14+0000\n"
+"PO-Revision-Date: 2017-08-03 14:58+0000\n"
 "Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
 "Language-Team: Turkish (Turkey) (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/tr_TR/)\n"
 "MIME-Version: 1.0\n"

@@ -4,16 +4,17 @@
 # 
 # Translators:
 # Hans van Luttikhuizen <hansvanluttikhuizen@me.com>, 2016
-# mikedingjan <mike@mikedingjan.nl>, 2015
-# mikedingjan <mike@mikedingjan.nl>, 2015
+# Mike Dingjan <mike@mikedingjan.nl>, 2015
+# Mike Dingjan <mike@mikedingjan.nl>, 2017
+# Mike Dingjan <mike@mikedingjan.nl>, 2015
 # Hans van Luttikhuizen <hansvanluttikhuizen@me.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-12 16:13+0100\n"
-"PO-Revision-Date: 2016-07-12 15:14+0000\n"
-"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"PO-Revision-Date: 2017-08-03 14:58+0000\n"
+"Last-Translator: Mike Dingjan <mike@mikedingjan.nl>\n"
 "Language-Team: Dutch (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -318,11 +319,11 @@ msgstr "Verzenden"
 
 #: filters.py:336
 msgid "ascending"
-msgstr ""
+msgstr "oplopend"
 
 #: filters.py:337
 msgid "descending"
-msgstr ""
+msgstr "aflopend"
 
 #: pagination.py:193
 msgid "Invalid page."
@@ -428,7 +429,7 @@ msgstr "Ongeldige versie in URL-pad."
 
 #: versioning.py:115
 msgid "Invalid version in URL path. Does not match any version namespace."
-msgstr ""
+msgstr "Ongeldige versie in het URL pad, komt niet overeen met een geldige versie namespace"
 
 #: versioning.py:147
 msgid "Invalid version in hostname."
