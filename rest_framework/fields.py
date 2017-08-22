@@ -309,7 +309,7 @@ class Field(object):
 
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=empty, source=None,
-                 label=None, help_text=None, style=None,
+                 label=None, help_text=None, schema=None, style=None,
                  error_messages=None, validators=None, allow_null=False):
         self._creation_counter = Field._creation_counter
         Field._creation_counter += 1
@@ -341,6 +341,9 @@ class Field(object):
 
         if validators is not None:
             self.validators = validators[:]
+
+        if schema is not None:
+            self.schema = schema
 
         # These are set up by `.bind()` when the field is added to a serializer.
         self.field_name = None

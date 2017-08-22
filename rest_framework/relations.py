@@ -75,7 +75,7 @@ class PKOnlyObject(object):
 # rather than the parent serializer.
 MANY_RELATION_KWARGS = (
     'read_only', 'write_only', 'required', 'default', 'initial', 'source',
-    'label', 'help_text', 'style', 'error_messages', 'allow_empty',
+    'label', 'help_text', 'schema', 'style', 'error_messages', 'allow_empty',
     'html_cutoff', 'html_cutoff_text'
 )
 

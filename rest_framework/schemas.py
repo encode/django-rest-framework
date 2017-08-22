@@ -27,6 +27,9 @@ header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
 
 
 def field_to_schema(field):
+    if hasattr(field, 'schema'):
+        return field.schema
+
     title = force_text(field.label) if field.label else ''
     description = force_text(field.help_text) if field.help_text else ''
 
