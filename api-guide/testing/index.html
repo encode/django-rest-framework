@@ -570,7 +570,7 @@ response = view(request)
 <p>For example, when forcibly authenticating using a token, you might do something like the following:</p>
 <pre><code>user = User.objects.get(username='olivia')
 request = factory.get('/accounts/django-superstars/')
-force_authenticate(request, user=user, token=user.token)
+force_authenticate(request, user=user, token=user.auth_token)
 </code></pre>
 <hr />
 <p><strong>Note</strong>: When using <code>APIRequestFactory</code>, the object that is returned is Django's standard <code>HttpRequest</code>, and not REST framework's <code>Request</code> object, which is only generated once the view is called.</p>

@@ -623,7 +623,7 @@ class UserListView(generics.ListAPIView):
 <pre><code>class ProductList(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend,)
     filter_fields = ('category', 'in_stock')
 </code></pre>
 <p>This will automatically create a <code>FilterSet</code> class for the given fields, and will allow you to make requests such as:</p>

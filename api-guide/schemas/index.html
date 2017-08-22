@@ -557,7 +557,9 @@ add a schema to your API, depending on exactly what you need.</p>
 <h2 id="the-get_schema_view-shortcut"><a class="toclink" href="#the-get_schema_view-shortcut">The get_schema_view shortcut</a></h2>
 <p>The simplest way to include a schema in your project is to use the
 <code>get_schema_view()</code> function.</p>
-<pre><code>schema_view = get_schema_view(title="Server Monitoring API")
+<pre><code>from rest_framework.schemas import get_schema_view
+
+schema_view = get_schema_view(title="Server Monitoring API")
 
 urlpatterns = [
     url('^$', schema_view),
@@ -601,7 +603,8 @@ ROOT_URLCONF setting.</p>
 </code></pre>
 <h4 id="renderer_classes"><a class="toclink" href="#renderer_classes"><code>renderer_classes</code></a></h4>
 <p>May be used to pass the set of renderer classes that can be used to render the API root endpoint.</p>
-<pre><code>from rest_framework.renderers import CoreJSONRenderer
+<pre><code>from rest_framework.schemas import get_schema_view
+from rest_framework.renderers import CoreJSONRenderer
 from my_custom_package import APIBlueprintRenderer
 
 schema_view = get_schema_view(
@@ -623,6 +626,9 @@ schema_view = get_schema_view(
     patterns=schema_url_patterns,
 )
 </code></pre>
+<h4 id="generator_class"><a class="toclink" href="#generator_class"><code>generator_class</code></a></h4>
+<p>May be used to specify a <code>SchemaGenerator</code> subclass to be passed to the
+<code>SchemaView</code>.</p>
 <h2 id="using-an-explicit-schema-view"><a class="toclink" href="#using-an-explicit-schema-view">Using an explicit schema view</a></h2>
 <p>If you need a little more control than the <code>get_schema_view()</code> shortcut gives you,
 then you can use the <code>SchemaGenerator</code> class directly to auto-generate the

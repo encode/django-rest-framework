@@ -419,10 +419,6 @@
                     </li>
                   
                     <li>
-                      <a href="#header-based-pagination">Header based pagination</a>
-                    </li>
-                  
-                    <li>
                       <a href="#using-your-custom-pagination-class">Using your custom pagination class</a>
                     </li>
                   
@@ -452,6 +448,10 @@
                   
                     <li>
                       <a href="#drf-proxy-pagination">drf-proxy-pagination</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#link-header-pagination">link-header-pagination</a>
                     </li>
                   
                 
@@ -661,27 +661,6 @@ class StandardResultsSetPagination(PageNumberPagination):
 }
 </code></pre>
 <p>Note that if you care about how the ordering of keys is displayed in responses in the browsable API you might choose to use an <code>OrderedDict</code> when constructing the body of paginated responses, but this is optional.</p>
-<h2 id="header-based-pagination"><a class="toclink" href="#header-based-pagination">Header based pagination</a></h2>
-<p>Let's modify the built-in <code>PageNumberPagination</code> style, so that instead of include the pagination links in the body of the response, we'll instead include a <code>Link</code> header, in a <a href="https://developer.github.com/guides/traversing-with-pagination/">similar style to the GitHub API</a>.</p>
-<pre><code>class LinkHeaderPagination(pagination.PageNumberPagination):
-    def get_paginated_response(self, data):
-        next_url = self.get_next_link()
-        previous_url = self.get_previous_link()
-
-        if next_url is not None and previous_url is not None:
-            link = '&lt;{next_url}&gt;; rel="next", &lt;{previous_url}&gt;; rel="prev"'
-        elif next_url is not None:
-            link = '&lt;{next_url}&gt;; rel="next"'
-        elif previous_url is not None:
-            link = '&lt;{previous_url}&gt;; rel="prev"'
-        else:
-            link = ''
-
-        link = link.format(next_url=next_url, previous_url=previous_url)
-        headers = {'Link': link} if link else {}
-
-        return Response(data, headers=headers)
-</code></pre>
 <h2 id="using-your-custom-pagination-class"><a class="toclink" href="#using-your-custom-pagination-class">Using your custom pagination class</a></h2>
 <p>To have your custom pagination class be used by default, use the <code>DEFAULT_PAGINATION_CLASS</code> setting:</p>
 <pre><code>REST_FRAMEWORK = {
@@ -719,6 +698,8 @@ that REST framework provides, by implementing a <code>get_schema_fields()</code>
 <p>The <a href="http://chibisov.github.io/drf-extensions/docs/"><code>DRF-extensions</code> package</a> includes a <a href="http://chibisov.github.io/drf-extensions/docs/#paginatebymaxmixin"><code>PaginateByMaxMixin</code> mixin class</a> that allows your API clients to specify <code>?page_size=max</code> to obtain the maximum allowed page size.</p>
 <h2 id="drf-proxy-pagination"><a class="toclink" href="#drf-proxy-pagination">drf-proxy-pagination</a></h2>
 <p>The <a href="https://github.com/tuffnatty/drf-proxy-pagination"><code>drf-proxy-pagination</code> package</a> includes a <code>ProxyPagination</code> class which allows to choose pagination class with a query parameter.</p>
+<h2 id="link-header-pagination"><a class="toclink" href="#link-header-pagination">link-header-pagination</a></h2>
+<p>The <a href="https://github.com/tbeadle/django-rest-framework-link-header-pagination"><code>django-rest-framework-link-header-pagination</code> package</a> includes a <code>LinkHeaderPagination</code> class which provides pagination via an HTTP <code>Link</code> header as desribed in <a href="../github-link-pagination">Github's developer documentation</a>.</p>
             
 
           </div> <!--/span-->

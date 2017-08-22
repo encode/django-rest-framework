@@ -790,7 +790,7 @@ const schema = window.schema
 </code></pre>
 <h2 id="instantiating-a-client"><a class="toclink" href="#instantiating-a-client">Instantiating a client</a></h2>
 <p>In order to interact with the API you'll need a client instance.</p>
-<pre><code>var client = coreapi.Client()
+<pre><code>var client = new coreapi.Client()
 </code></pre>
 <p>Typically you'll also want to provide some authentication credentials when
 instantiating the client.</p>
@@ -802,7 +802,7 @@ the user to login, and then instantiate a client using session authentication:</
     csrfCookieName: 'csrftoken',
     csrfHeaderName: 'X-CSRFToken'
 })
-let client = coreapi.Client({auth: auth})
+let client = new coreapi.Client({auth: auth})
 </code></pre>
 <p>The authentication scheme will handle including a CSRF header in any outgoing
 requests for unsafe HTTP methods.</p>
@@ -813,7 +813,7 @@ requests for unsafe HTTP methods.</p>
     scheme: 'JWT'
     token: '&lt;token&gt;'
 })
-let client = coreapi.Client({auth: auth})
+let client = new coreapi.Client({auth: auth})
 </code></pre>
 <p>When using TokenAuthentication you'll probably need to implement a login flow
 using the CoreAPI client.</p>
@@ -821,7 +821,7 @@ using the CoreAPI client.</p>
 request to an "obtain token" endpoint</p>
 <p>For example, using the "Django REST framework JWT" package</p>
 <pre><code>// Setup some globally accessible state
-window.client = coreapi.Client()
+window.client = new coreapi.Client()
 window.loggedIn = false
 
 function loginUser(username, password) {
@@ -846,7 +846,7 @@ function loginUser(username, password) {
     username: '&lt;username&gt;',
     password: '&lt;password&gt;'
 })
-let client = coreapi.Client({auth: auth})
+let client = new coreapi.Client({auth: auth})
 </code></pre>
 <h2 id="using-the-client"><a class="toclink" href="#using-the-client">Using the client</a></h2>
 <p>Making requests:</p>

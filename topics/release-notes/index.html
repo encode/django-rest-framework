@@ -470,6 +470,34 @@
 </code></pre>
 <hr />
 <h2 id="36x-series"><a class="toclink" href="#36x-series">3.6.x series</a></h2>
+<h3 id="364"><a class="toclink" href="#364">3.6.4</a></h3>
+<p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.4+Release%22">21st August 2017</a></p>
+<ul>
+<li>Ignore any invalidly formed query parameters for OrderingFilter. <a href="https://github.com/encode/django-rest-framework/issues/5131">#5131</a></li>
+<li>Improve memory footprint when reading large JSON requests. <a href="https://github.com/encode/django-rest-framework/issues/5147">#5147</a></li>
+<li>Fix schema generation for pagination. <a href="https://github.com/encode/django-rest-framework/issues/5161">#5161</a></li>
+<li>Fix exception when <code>HTML_CUTOFF</code> is set to <code>None</code>. <a href="https://github.com/encode/django-rest-framework/issues/5174">#5174</a></li>
+<li>Fix browsable API not supporting <code>multipart/form-data</code> correctly. <a href="https://github.com/encode/django-rest-framework/issues/5176">#5176</a></li>
+<li>Fixed <code>test_hyperlinked_related_lookup_url_encoded_exists</code>. <a href="https://github.com/encode/django-rest-framework/issues/5179">#5179</a></li>
+<li>Make sure max_length is in FileField kwargs. <a href="https://github.com/encode/django-rest-framework/issues/5186">#5186</a></li>
+<li>Fix <code>list_route</code> &amp; <code>detail_route</code> with kwargs contains curly bracket in <code>url_path</code> <a href="https://github.com/encode/django-rest-framework/issues/5187">#5187</a></li>
+<li>Add Django manage command to create a DRF user Token. <a href="https://github.com/encode/django-rest-framework/issues/5188">#5188</a></li>
+<li>Ensure API documentation templates do not check for user authentication <a href="https://github.com/encode/django-rest-framework/issues/5162">#5162</a></li>
+<li>Fix special case where OneToOneField is also primary key. <a href="https://github.com/encode/django-rest-framework/issues/5192">#5192</a></li>
+<li>Added aria-label and a new region for accessibility purposes in base.html <a href="https://github.com/encode/django-rest-framework/issues/5196">#5196</a></li>
+<li>Quote nested API parameters in api.js. <a href="https://github.com/encode/django-rest-framework/issues/5214">#5214</a></li>
+<li>Set ViewSet args/kwargs/request before dispatch. <a href="https://github.com/encode/django-rest-framework/issues/5229">#5229</a></li>
+<li>Added unicode support to SlugField. <a href="https://github.com/encode/django-rest-framework/issues/5231">#5231</a></li>
+<li>Fix HiddenField appears in Raw Data form initial content. <a href="https://github.com/encode/django-rest-framework/issues/5259">#5259</a></li>
+<li>Raise validation error on invalid timezone parsing. <a href="https://github.com/encode/django-rest-framework/issues/5261">#5261</a></li>
+<li>Fix SearchFilter to-many behavior/performance. <a href="https://github.com/encode/django-rest-framework/issues/5264">#5264</a></li>
+<li>Simplified chained comparisons and minor code fixes. <a href="https://github.com/encode/django-rest-framework/issues/5276">#5276</a></li>
+<li>RemoteUserAuthentication, docs, and tests. <a href="https://github.com/encode/django-rest-framework/issues/5306">#5306</a></li>
+<li>Revert "Cached the field's root and context property" <a href="https://github.com/encode/django-rest-framework/issues/5313">#5313</a></li>
+<li>Fix introspection of list field in schema. <a href="https://github.com/encode/django-rest-framework/issues/5326">#5326</a></li>
+<li>Fix interactive docs for multiple nested and extra methods. <a href="https://github.com/encode/django-rest-framework/issues/5334">#5334</a></li>
+<li>Fix/remove undefined template var "schema" <a href="https://github.com/encode/django-rest-framework/issues/5346">#5346</a></li>
+</ul>
 <h3 id="363"><a class="toclink" href="#363">3.6.3</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.3+Release%22">12th May 2017</a></p>
 <ul>
@@ -1095,6 +1123,8 @@
 <!-- 3.6.2 -->
 
 <!-- 3.6.3 -->
+
+<!-- 3.6.4 -->
             
 
           </div> <!--/span-->

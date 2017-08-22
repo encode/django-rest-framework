@@ -416,6 +416,10 @@
                       <a href="#sessionauthentication">SessionAuthentication</a>
                     </li>
                   
+                    <li>
+                      <a href="#remoteuserauthentication">RemoteUserAuthentication</a>
+                    </li>
+                  
                 
                   <li class="main">
                     <a href="#custom-authentication">Custom authentication</a>
@@ -662,6 +666,16 @@ and include them using the <code>throttle_classes</code> attribute.</p>
 
 TokenAdmin.raw_id_fields = ('user',)
 </code></pre>
+<h4 id="using-django-managepy-command"><a class="toclink" href="#using-django-managepy-command">Using Django manage.py command</a></h4>
+<p>Since version 3.6.4 it's possible to generate a user token using the following command:</p>
+<pre><code>./manage.py drf_create_token &lt;username&gt;
+</code></pre>
+<p>this command will return the API token for the given user, creating it if it doesn't exist:</p>
+<pre><code>Generated token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b for user user1
+</code></pre>
+<p>In case you want to regenerate the token (for example if it has been compromised or leaked) you can pass an additional parameter:</p>
+<pre><code>./manage.py drf_create_token -r &lt;username&gt;
+</code></pre>
 <h2 id="sessionauthentication"><a class="toclink" href="#sessionauthentication">SessionAuthentication</a></h2>
 <p>This authentication scheme uses Django's default session backend for authentication.  Session authentication is appropriate for AJAX clients that are running in the same session context as your website.</p>
 <p>If successfully authenticated, <code>SessionAuthentication</code> provides the following credentials.</p>
@@ -673,6 +687,23 @@ TokenAdmin.raw_id_fields = ('user',)
 <p>If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as <code>PUT</code>, <code>PATCH</code>, <code>POST</code> or <code>DELETE</code> requests.  See the <a href="https://docs.djangoproject.com/en/stable/ref/csrf/#ajax">Django CSRF documentation</a> for more details.</p>
 <p><strong>Warning</strong>: Always use Django's standard login view when creating login pages. This will ensure your login views are properly protected.</p>
 <p>CSRF validation in REST framework works slightly differently to standard Django due to the need to support both session and non-session based authentication to the same views. This means that only authenticated requests require CSRF tokens, and anonymous requests may be sent without CSRF tokens. This behaviour is not suitable for login views, which should always have CSRF validation applied.</p>
+<h2 id="remoteuserauthentication"><a class="toclink" href="#remoteuserauthentication">RemoteUserAuthentication</a></h2>
+<p>This authentication scheme allows you to delegate authentication to your web server, which sets the <code>REMOTE_USER</code>
+environment variable.</p>
+<p>To use it, you must have <code>django.contrib.auth.backends.RemoteUserBackend</code> (or a subclass) in your
+<code>AUTHENTICATION_BACKENDS</code> setting. By default, <code>RemoteUserBackend</code> creates <code>User</code> objects for usernames that don't
+already exist. To change this and other behaviour, consult the
+<a href="https://docs.djangoproject.com/en/stable/howto/auth-remote-user/">Django documentation</a>.</p>
+<p>If successfully authenticated, <code>RemoteUserAuthentication</code> provides the following credentials:</p>
+<ul>
+<li><code>request.user</code> will be a Django <code>User</code> instance.</li>
+<li><code>request.auth</code> will be <code>None</code>.</li>
+</ul>
+<p>Consult your web server's documentation for information about configuring an authentication method, e.g.:</p>
+<ul>
+<li><a href="https://httpd.apache.org/docs/2.4/howto/auth.html">Apache Authentication How-To</a></li>
+<li><a href="https://www.nginx.com/resources/admin-guide/#restricting_access">NGINX (Restricting Access)</a></li>
+</ul>
 <h1 id="custom-authentication"><a class="toclink" href="#custom-authentication">Custom authentication</a></h1>
 <p>To implement a custom authentication scheme, subclass <code>BaseAuthentication</code> and override the <code>.authenticate(self, request)</code> method.  The method should return a two-tuple of <code>(user, auth)</code> if authentication succeeds, or <code>None</code> otherwise.</p>
 <p>In some circumstances instead of returning <code>None</code>, you may want to raise an <code>AuthenticationFailed</code> exception from the <code>.authenticate()</code> method.</p>
@@ -719,7 +750,7 @@ class ExampleAuthentication(authentication.BaseAuthentication):
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
     )
 }
 </code></pre>
@@ -737,7 +768,7 @@ REST_FRAMEWORK = {
 <h2 id="django-oauth2-consumer"><a class="toclink" href="#django-oauth2-consumer">Django OAuth2 Consumer</a></h2>
 <p>The <a href="https://github.com/Rediker-Software/doac">Django OAuth2 Consumer</a> library from <a href="https://github.com/Rediker-Software">Rediker Software</a> is another package that provides <a href="https://github.com/Rediker-Software/doac/blob/master/docs/integrations.md#">OAuth 2.0 support for REST framework</a>.  The package includes token scoping permissions on tokens, which allows finer-grained access to your API.</p>
 <h2 id="json-web-token-authentication"><a class="toclink" href="#json-web-token-authentication">JSON Web Token Authentication</a></h2>
-<p>JSON Web Token is a fairly new standard which can be used for token-based authentication. Unlike the built-in TokenAuthentication scheme, JWT Authentication doesn't need to use a database to validate a token. <a href="https://github.com/GetBlimp">Blimp</a> maintains the <a href="https://github.com/GetBlimp/django-rest-framework-jwt">djangorestframework-jwt</a> package which provides a JWT Authentication class as well as a mechanism for clients to obtain a JWT given the username and password.</p>
+<p>JSON Web Token is a fairly new standard which can be used for token-based authentication. Unlike the built-in TokenAuthentication scheme, JWT Authentication doesn't need to use a database to validate a token. <a href="https://github.com/GetBlimp">Blimp</a> maintains the <a href="https://github.com/GetBlimp/django-rest-framework-jwt">djangorestframework-jwt</a> package which provides a JWT Authentication class as well as a mechanism for clients to obtain a JWT given the username and password. An alternative package for JWT authentication is <a href="https://github.com/davesque/django-rest-framework-simplejwt">djangorestframework-simplejwt</a> which provides different features as well as a pluggable token blacklist app.</p>
 <h2 id="hawk-http-authentication"><a class="toclink" href="#hawk-http-authentication">Hawk HTTP Authentication</a></h2>
 <p>The <a href="https://hawkrest.readthedocs.io/en/latest/">HawkREST</a> library builds on the <a href="https://mohawk.readthedocs.io/en/latest/">Mohawk</a> library to let you work with <a href="https://github.com/hueniverse/hawk">Hawk</a> signed requests and responses in your API. <a href="https://github.com/hueniverse/hawk">Hawk</a> lets two parties securely communicate with each other using messages signed by a shared key. It is based on <a href="http://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05">HTTP MAC access authentication</a> (which was based on parts of <a href="http://oauth.net/core/1.0a">OAuth 1.0</a>).</p>
 <h2 id="http-signature-authentication"><a class="toclink" href="#http-signature-authentication">HTTP Signature Authentication</a></h2>

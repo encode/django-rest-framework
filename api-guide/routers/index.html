@@ -617,7 +617,7 @@ This behavior can be modified by setting the <code>trailing_slash</code> argumen
 <pre><code>router = DefaultRouter(trailing_slash=False)
 </code></pre>
 <h1 id="custom-routers"><a class="toclink" href="#custom-routers">Custom Routers</a></h1>
-<p>Implementing a custom router isn't something you'd need to do very often, but it can be useful if you have specific requirements about how the your URLs for your API are structured.  Doing so allows you to encapsulate the URL structure in a reusable way that ensures you don't have to write your URL patterns explicitly for each new view.</p>
+<p>Implementing a custom router isn't something you'd need to do very often, but it can be useful if you have specific requirements about how the URLs for your API are structured.  Doing so allows you to encapsulate the URL structure in a reusable way that ensures you don't have to write your URL patterns explicitly for each new view.</p>
 <p>The simplest way to implement a custom router is to subclass one of the existing router classes.  The <code>.routes</code> attribute is used to template the URL patterns that will be mapped to each viewset. The <code>.routes</code> attribute is a list of <code>Route</code> named tuples.</p>
 <p>The arguments to the <code>Route</code> named tuple are:</p>
 <p><strong>url</strong>: A string representing the URL to be routed.  May include the following format strings:</p>
