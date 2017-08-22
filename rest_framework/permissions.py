@@ -123,7 +123,7 @@ class DjangoModelPermissions(BasePermission):
         if hasattr(view, 'get_queryset'):
             queryset = view.get_queryset()
             assert queryset is not None, (
-                'Return of {}.get_queryset() was None'.format(view.__class__.__name__)
+                '{}.get_queryset() returned None'.format(view.__class__.__name__)
             )
         else:
             queryset = getattr(view, 'queryset', None)
