@@ -269,17 +269,37 @@ class APIViewSchemaDescriptor(object):
 
     def get_link(self, path, method, generator):
         """
-        Generate `coreapi.Link` for view.
+        Generate `coreapi.Link` for self.view, path and method.
 
         This is the main _public_ access point.
         """
+        # TODO: make `view` a property: move this check to getter.
         assert self.view is not None, "Schema generation REQUIRES a view instance. (Hint: you accessed `schema` from the view CLASS rather than an instance.)"
         view = self.view
 
         # TEMP: now we proxy back to the generator
-        link = generator.get_link(path, method, view)
+        fields = generator.get_path_fields(path, method, view)
+        fields += generator.get_serializer_fields(path, method, view)
+        fields += generator.get_pagination_fields(path, method, view)
+        fields += generator.get_filter_fields(path, method, view)
 
-        return link
+        if fields and any([field.location in ('form', 'body') for field in fields]):
+            encoding = generator.get_encoding(path, method, view)
+        else:
+            encoding = None
+
+        description = generator.get_description(path, method, view)
+
+        if generator.url and path.startswith('/'):
+            path = path[1:]
+
+        return coreapi.Link(
+            url=urlparse.urljoin(generator.url, path),
+            action=method.lower(),
+            encoding=encoding,
+            fields=fields,
+            description=description
+        )
 
 # TODO: Where should this live?
 #   - We import APIView here. So we can't import the descriptor into `views`
@@ -373,7 +393,7 @@ class SchemaGenerator(object):
         for path, method, view in view_endpoints:
             if not self.has_view_permissions(path, method, view):
                 continue
-            link = self.get_link_proxy(path, method, view)
+            link = view.schema.get_link(path, method, self)
             subpath = path[len(prefix):]
             keys = self.get_keys(subpath, method, view)
             insert_into(links, keys, link)
@@ -466,46 +486,6 @@ class SchemaGenerator(object):
         return path.replace('{pk}', '{%s}' % field_name)
 
     # Methods for generating each individual `Link` instance...
-    def get_link_proxy(self, path, method, view):
-        """
-        Proxy to view's descriptor for link
-
-        TEMPORARY NAME at least.
-        """
-        schema = view.schema
-
-        # To begin we pass generator — we still need its methods.
-        link = schema.get_link(path, method, self)
-
-        return link
-
-    def get_link(self, path, method, view):
-        """
-        Return a `coreapi.Link` instance for the given endpoint.
-        """
-        fields = self.get_path_fields(path, method, view)
-        fields += self.get_serializer_fields(path, method, view)
-        fields += self.get_pagination_fields(path, method, view)
-        fields += self.get_filter_fields(path, method, view)
-
-        if fields and any([field.location in ('form', 'body') for field in fields]):
-            encoding = self.get_encoding(path, method, view)
-        else:
-            encoding = None
-
-        description = self.get_description(path, method, view)
-
-        if self.url and path.startswith('/'):
-            path = path[1:]
-
-        return coreapi.Link(
-            url=urlparse.urljoin(self.url, path),
-            action=method.lower(),
-            encoding=encoding,
-            fields=fields,
-            description=description
-        )
-
     def get_description(self, path, method, view):
         """
         Determine a link description.
