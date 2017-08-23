@@ -288,7 +288,7 @@ class APIViewSchemaDescriptor(object):
         else:
             encoding = None
 
-        description = self.get_description(path, method, generator)
+        description = self.get_description(path, method)
 
         if generator.url and path.startswith('/'):
             path = path[1:]
@@ -301,7 +301,7 @@ class APIViewSchemaDescriptor(object):
             description=description
         )
 
-    def get_description(self, path, method, generator):
+    def get_description(self, path, method):
         """
         Determine a link description.
 
@@ -328,12 +328,16 @@ class APIViewSchemaDescriptor(object):
             else:
                 sections[current_section] += '\n' + line
 
+        # TODO: coerce_method_names is used both here and by SchemaGenerator in
+        #   get_keys. It is read straight from the setting (i.e. it's not dynamic.)
+        #   ???: Can it be a module level constant (or callable)?
+        coerce_method_names = api_settings.SCHEMA_COERCE_METHOD_NAMES
         header = getattr(view, 'action', method.lower())
         if header in sections:
             return sections[header].strip()
-        if header in generator.coerce_method_names:
-            if generator.coerce_method_names[header] in sections:
-                return sections[generator.coerce_method_names[header]].strip()
+        if header in coerce_method_names:
+            if coerce_method_names[header] in sections:
+                return sections[coerce_method_names[header]].strip()
         return sections[''].strip()
 
 
