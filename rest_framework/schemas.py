@@ -280,9 +280,9 @@ class APIViewSchemaDescriptor(object):
         fields = self.get_path_fields(path, method)
         fields += self.get_serializer_fields(path, method)
         fields += self.get_pagination_fields(path, method)
+        fields += self.get_filter_fields(path, method)
 
         # TEMP: now we proxy back to the generator
-        fields += generator.get_filter_fields(path, method, view)
 
         if fields and any([field.location in ('form', 'body') for field in fields]):
             encoding = generator.get_encoding(path, method, view)
@@ -442,6 +442,19 @@ class APIViewSchemaDescriptor(object):
         paginator = view.pagination_class()
         return paginator.get_schema_fields(view)
 
+    def get_filter_fields(self, path, method):
+        view = self.view
+
+        if not is_list_view(path, method, view):
+            return []
+
+        if not getattr(view, 'filter_backends', None):
+            return []
+
+        fields = []
+        for filter_backend in view.filter_backends:
+            fields += filter_backend().get_schema_fields(view)
+        return fields
 
 # TODO: Where should this live?
 #   - We import APIView here. So we can't import the descriptor into `views`
@@ -649,18 +662,6 @@ class SchemaGenerator(object):
                 return 'application/octet-stream'
 
         return None
-
-    def get_filter_fields(self, path, method, view):
-        if not is_list_view(path, method, view):
-            return []
-
-        if not getattr(view, 'filter_backends', None):
-            return []
-
-        fields = []
-        for filter_backend in view.filter_backends:
-            fields += filter_backend().get_schema_fields(view)
-        return fields
 
     # Method for generating the link layout....
 
