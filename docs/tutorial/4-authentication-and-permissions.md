@@ -47,6 +47,8 @@ Normally we'd create a database migration in order to do that, but for the purpo
     rm -r snippets/migrations
     python manage.py makemigrations snippets
     python manage.py migrate
+    
+Note: If you're using PostgreSQL, you should drop your database with the `DROP DATABASE your_db_name` SQL command instead of deleting the db.sqlite3 file.
 
 You might also want to create a few different users, to use for testing the API.  The quickest way to do this will be with the `createsuperuser` command.
 
