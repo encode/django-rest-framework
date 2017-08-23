@@ -267,11 +267,17 @@ class APIViewSchemaDescriptor(object):
         self.view = instance
         return self
 
-    def get_link(self, path, method, generator):
+    def get_link(self, path, method, base_url):
         """
         Generate `coreapi.Link` for self.view, path and method.
 
         This is the main _public_ access point.
+
+        Parameters:
+
+        * path: Route path for view from URLConf.
+        * method: The HTTP request method.
+        * base_url: The project "mount point" as given to SchemaGenerator
         """
         # TODO: make `view` a property: move this check to getter.
         assert self.view is not None, "Schema generation REQUIRES a view instance. (Hint: you accessed `schema` from the view CLASS rather than an instance.)"
@@ -289,11 +295,11 @@ class APIViewSchemaDescriptor(object):
 
         description = self.get_description(path, method)
 
-        if generator.url and path.startswith('/'):
+        if base_url and path.startswith('/'):
             path = path[1:]
 
         return coreapi.Link(
-            url=urlparse.urljoin(generator.url, path),
+            url=urlparse.urljoin(base_url, path),
             action=method.lower(),
             encoding=encoding,
             fields=fields,
@@ -481,6 +487,7 @@ class APIViewSchemaDescriptor(object):
 #   - We import APIView here. So we can't import the descriptor into `views`
 #   - APIView is only used by SchemaView.
 #       - ???: Make `schemas` a package and move SchemaView to `schema.views`
+#       - That way the schema attribute could be set in the class definition.
 APIView.schema = APIViewSchemaDescriptor()
 
 
@@ -569,7 +576,7 @@ class SchemaGenerator(object):
         for path, method, view in view_endpoints:
             if not self.has_view_permissions(path, method, view):
                 continue
-            link = view.schema.get_link(path, method, self)
+            link = view.schema.get_link(path, method, base_url=self.url)
             subpath = path[len(prefix):]
             keys = self.get_keys(subpath, method, view)
             insert_into(links, keys, link)
