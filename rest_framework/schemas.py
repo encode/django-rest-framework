@@ -279,9 +279,9 @@ class APIViewSchemaDescriptor(object):
 
         fields = self.get_path_fields(path, method)
         fields += self.get_serializer_fields(path, method)
+        fields += self.get_pagination_fields(path, method)
 
         # TEMP: now we proxy back to the generator
-        fields += generator.get_pagination_fields(path, method, view)
         fields += generator.get_filter_fields(path, method, view)
 
         if fields and any([field.location in ('form', 'body') for field in fields]):
@@ -428,6 +428,19 @@ class APIViewSchemaDescriptor(object):
             fields.append(field)
 
         return fields
+
+    def get_pagination_fields(self, path, method):
+        view = self.view
+
+        if not is_list_view(path, method, view):
+            return []
+
+        pagination = getattr(view, 'pagination_class', None)
+        if not pagination:
+            return []
+
+        paginator = view.pagination_class()
+        return paginator.get_schema_fields(view)
 
 
 # TODO: Where should this live?
@@ -636,17 +649,6 @@ class SchemaGenerator(object):
                 return 'application/octet-stream'
 
         return None
-
-    def get_pagination_fields(self, path, method, view):
-        if not is_list_view(path, method, view):
-            return []
-
-        pagination = getattr(view, 'pagination_class', None)
-        if not pagination:
-            return []
-
-        paginator = view.pagination_class()
-        return paginator.get_schema_fields(view)
 
     def get_filter_fields(self, path, method, view):
         if not is_list_view(path, method, view):
