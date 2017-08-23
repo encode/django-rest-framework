@@ -263,9 +263,22 @@ class APIViewSchemaDescriptor(object):
     Responsible for per-view instrospection and schema generation.
     """
     def __get__(self, instance, owner):
-        # ???: Is this TOO simple? (Option is to return a new instance each time.)
         self.view = instance
         return self
+
+    @property
+    def view(self):
+        """View property."""
+        assert self._view is not None, "Schema generation REQUIRES a view instance. (Hint: you accessed `schema` from the view class rather than an instance.)"
+        return self._view
+
+    @view.setter
+    def view(self, value):
+        self._view = value
+
+    @view.deleter
+    def view(self):
+        self._view = None
 
     def get_link(self, path, method, base_url):
         """
@@ -279,10 +292,6 @@ class APIViewSchemaDescriptor(object):
         * method: The HTTP request method.
         * base_url: The project "mount point" as given to SchemaGenerator
         """
-        # TODO: make `view` a property: move this check to getter.
-        assert self.view is not None, "Schema generation REQUIRES a view instance. (Hint: you accessed `schema` from the view CLASS rather than an instance.)"
-        view = self.view
-
         fields = self.get_path_fields(path, method)
         fields += self.get_serializer_fields(path, method)
         fields += self.get_pagination_fields(path, method)
