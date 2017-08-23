@@ -282,10 +282,8 @@ class APIViewSchemaDescriptor(object):
         fields += self.get_pagination_fields(path, method)
         fields += self.get_filter_fields(path, method)
 
-        # TEMP: now we proxy back to the generator
-
         if fields and any([field.location in ('form', 'body') for field in fields]):
-            encoding = generator.get_encoding(path, method, view)
+            encoding = self.get_encoding(path, method)
         else:
             encoding = None
 
@@ -455,6 +453,29 @@ class APIViewSchemaDescriptor(object):
         for filter_backend in view.filter_backends:
             fields += filter_backend().get_schema_fields(view)
         return fields
+
+    def get_encoding(self, path, method):
+        """
+        Return the 'encoding' parameter to use for a given endpoint.
+        """
+        view = self.view
+
+        # Core API supports the following request encodings over HTTP...
+        supported_media_types = set((
+            'application/json',
+            'application/x-www-form-urlencoded',
+            'multipart/form-data',
+        ))
+        parser_classes = getattr(view, 'parser_classes', [])
+        for parser_class in parser_classes:
+            media_type = getattr(parser_class, 'media_type', None)
+            if media_type in supported_media_types:
+                return media_type
+            # Raw binary uploads are supported with "application/octet-stream"
+            if media_type == '*/*':
+                return 'application/octet-stream'
+
+        return None
 
 # TODO: Where should this live?
 #   - We import APIView here. So we can't import the descriptor into `views`
@@ -639,29 +660,6 @@ class SchemaGenerator(object):
         else:
             field_name = 'id'
         return path.replace('{pk}', '{%s}' % field_name)
-
-    # Methods for generating each individual `Link` instance...
-
-    def get_encoding(self, path, method, view):
-        """
-        Return the 'encoding' parameter to use for a given endpoint.
-        """
-        # Core API supports the following request encodings over HTTP...
-        supported_media_types = set((
-            'application/json',
-            'application/x-www-form-urlencoded',
-            'multipart/form-data',
-        ))
-        parser_classes = getattr(view, 'parser_classes', [])
-        for parser_class in parser_classes:
-            media_type = getattr(parser_class, 'media_type', None)
-            if media_type in supported_media_types:
-                return media_type
-            # Raw binary uploads are supported with "application/octet-stream"
-            if media_type == '*/*':
-                return 'application/octet-stream'
-
-        return None
 
     # Method for generating the link layout....
 
