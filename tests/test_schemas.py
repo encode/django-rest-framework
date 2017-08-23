@@ -1,5 +1,6 @@
 import unittest
 
+import pytest
 from django.conf.urls import include, url
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
@@ -10,7 +11,9 @@ from rest_framework.compat import coreapi, coreschema
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.request import Request
 from rest_framework.routers import DefaultRouter
-from rest_framework.schemas import SchemaGenerator, get_schema_view
+from rest_framework.schemas import (
+    APIViewSchemaDescriptor, SchemaGenerator, get_schema_view
+)
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -496,3 +499,16 @@ class Test4605Regression(TestCase):
             '/auth/convert-token/'
         ])
         assert prefix == '/'
+
+
+class TestDescriptor(TestCase):
+
+    def test_apiview_schema_descriptor(self):
+        view = APIView()
+        assert hasattr(view, 'schema')
+        assert isinstance(view.schema, APIViewSchemaDescriptor)
+
+    def test_get_link_requires_instance(self):
+        descriptor = APIView.schema  # Accessed from class
+        with pytest.raises(AssertionError):
+            descriptor.get_link(None, None, None)  # ???: Do the dummy arguments require a tighter assert?

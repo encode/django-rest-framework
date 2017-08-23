@@ -256,6 +256,38 @@ class EndpointInspector(object):
         ]
 
 
+class APIViewSchemaDescriptor(object):
+    """
+    Descriptor class on APIView.
+
+    Responsible for per-view instrospection and schema generation.
+    """
+    def __get__(self, instance, owner):
+        # ???: Is this TOO simple? (Option is to return a new instance each time.)
+        self.view = instance
+        return self
+
+    def get_link(self, path, method, generator):
+        """
+        Generate `coreapi.Link` for view.
+
+        This is the main _public_ access point.
+        """
+        assert self.view is not None, "Schema generation REQUIRES a view instance. (Hint: you accessed `schema` from the view CLASS rather than an instance.)"
+        view = self.view
+
+        # TEMP: now we proxy back to the generator
+        link = generator.get_link(path, method, view)
+
+        return link
+
+# TODO: Where should this live?
+#   - We import APIView here. So we can't import the descriptor into `views`
+#   - APIView is only used by SchemaView.
+#       - ???: Make `schemas` a package and move SchemaView to `schema.views`
+APIView.schema = APIViewSchemaDescriptor()
+
+
 class SchemaGenerator(object):
     # Map HTTP methods onto actions.
     default_mapping = {
@@ -341,7 +373,7 @@ class SchemaGenerator(object):
         for path, method, view in view_endpoints:
             if not self.has_view_permissions(path, method, view):
                 continue
-            link = self.get_link(path, method, view)
+            link = self.get_link_proxy(path, method, view)
             subpath = path[len(prefix):]
             keys = self.get_keys(subpath, method, view)
             insert_into(links, keys, link)
@@ -434,6 +466,18 @@ class SchemaGenerator(object):
         return path.replace('{pk}', '{%s}' % field_name)
 
     # Methods for generating each individual `Link` instance...
+    def get_link_proxy(self, path, method, view):
+        """
+        Proxy to view's descriptor for link
+
+        TEMPORARY NAME at least.
+        """
+        schema = view.schema
+
+        # To begin we pass generator — we still need its methods.
+        link = schema.get_link(path, method, self)
+
+        return link
 
     def get_link(self, path, method, view):
         """
