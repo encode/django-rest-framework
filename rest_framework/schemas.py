@@ -288,7 +288,7 @@ class APIViewSchemaDescriptor(object):
         else:
             encoding = None
 
-        description = generator.get_description(path, method, view)
+        description = self.get_description(path, method, generator)
 
         if generator.url and path.startswith('/'):
             path = path[1:]
@@ -300,6 +300,42 @@ class APIViewSchemaDescriptor(object):
             fields=fields,
             description=description
         )
+
+    def get_description(self, path, method, generator):
+        """
+        Determine a link description.
+
+        This will be based on the method docstring if one exists,
+        or else the class docstring.
+        """
+        view = self.view
+
+        method_name = getattr(view, 'action', method.lower())
+        method_docstring = getattr(view, method_name, None).__doc__
+        if method_docstring:
+            # An explicit docstring on the method or action.
+            return formatting.dedent(smart_text(method_docstring))
+
+        description = view.get_view_description()
+        lines = [line.strip() for line in description.splitlines()]
+        current_section = ''
+        sections = {'': ''}
+
+        for line in lines:
+            if header_regex.match(line):
+                current_section, seperator, lead = line.partition(':')
+                sections[current_section] = lead.strip()
+            else:
+                sections[current_section] += '\n' + line
+
+        header = getattr(view, 'action', method.lower())
+        if header in sections:
+            return sections[header].strip()
+        if header in generator.coerce_method_names:
+            if generator.coerce_method_names[header] in sections:
+                return sections[generator.coerce_method_names[header]].strip()
+        return sections[''].strip()
+
 
 # TODO: Where should this live?
 #   - We import APIView here. So we can't import the descriptor into `views`
@@ -486,38 +522,6 @@ class SchemaGenerator(object):
         return path.replace('{pk}', '{%s}' % field_name)
 
     # Methods for generating each individual `Link` instance...
-    def get_description(self, path, method, view):
-        """
-        Determine a link description.
-
-        This will be based on the method docstring if one exists,
-        or else the class docstring.
-        """
-        method_name = getattr(view, 'action', method.lower())
-        method_docstring = getattr(view, method_name, None).__doc__
-        if method_docstring:
-            # An explicit docstring on the method or action.
-            return formatting.dedent(smart_text(method_docstring))
-
-        description = view.get_view_description()
-        lines = [line.strip() for line in description.splitlines()]
-        current_section = ''
-        sections = {'': ''}
-
-        for line in lines:
-            if header_regex.match(line):
-                current_section, seperator, lead = line.partition(':')
-                sections[current_section] = lead.strip()
-            else:
-                sections[current_section] += '\n' + line
-
-        header = getattr(view, 'action', method.lower())
-        if header in sections:
-            return sections[header].strip()
-        if header in self.coerce_method_names:
-            if self.coerce_method_names[header] in sections:
-                return sections[self.coerce_method_names[header]].strip()
-        return sections[''].strip()
 
     def get_encoding(self, path, method, view):
         """
