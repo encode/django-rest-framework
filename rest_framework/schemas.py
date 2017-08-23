@@ -277,8 +277,8 @@ class APIViewSchemaDescriptor(object):
         assert self.view is not None, "Schema generation REQUIRES a view instance. (Hint: you accessed `schema` from the view CLASS rather than an instance.)"
         view = self.view
 
+        fields = self.get_path_fields(path, method)
         # TEMP: now we proxy back to the generator
-        fields = generator.get_path_fields(path, method, view)
         fields += generator.get_serializer_fields(path, method, view)
         fields += generator.get_pagination_fields(path, method, view)
         fields += generator.get_filter_fields(path, method, view)
@@ -339,6 +339,50 @@ class APIViewSchemaDescriptor(object):
             if coerce_method_names[header] in sections:
                 return sections[coerce_method_names[header]].strip()
         return sections[''].strip()
+
+    def get_path_fields(self, path, method):
+        """
+        Return a list of `coreapi.Field` instances corresponding to any
+        templated path variables.
+        """
+        view = self.view
+        model = getattr(getattr(view, 'queryset', None), 'model', None)
+        fields = []
+
+        for variable in uritemplate.variables(path):
+            title = ''
+            description = ''
+            schema_cls = coreschema.String
+            kwargs = {}
+            if model is not None:
+                # Attempt to infer a field description if possible.
+                try:
+                    model_field = model._meta.get_field(variable)
+                except:
+                    model_field = None
+
+                if model_field is not None and model_field.verbose_name:
+                    title = force_text(model_field.verbose_name)
+
+                if model_field is not None and model_field.help_text:
+                    description = force_text(model_field.help_text)
+                elif model_field is not None and model_field.primary_key:
+                    description = get_pk_description(model, model_field)
+
+                if hasattr(view, 'lookup_value_regex') and view.lookup_field == variable:
+                    kwargs['pattern'] = view.lookup_value_regex
+                elif isinstance(model_field, models.AutoField):
+                    schema_cls = coreschema.Integer
+
+            field = coreapi.Field(
+                name=variable,
+                location='path',
+                required=True,
+                schema=schema_cls(title=title, description=description, **kwargs)
+            )
+            fields.append(field)
+
+        return fields
 
 
 # TODO: Where should this live?
@@ -547,49 +591,6 @@ class SchemaGenerator(object):
                 return 'application/octet-stream'
 
         return None
-
-    def get_path_fields(self, path, method, view):
-        """
-        Return a list of `coreapi.Field` instances corresponding to any
-        templated path variables.
-        """
-        model = getattr(getattr(view, 'queryset', None), 'model', None)
-        fields = []
-
-        for variable in uritemplate.variables(path):
-            title = ''
-            description = ''
-            schema_cls = coreschema.String
-            kwargs = {}
-            if model is not None:
-                # Attempt to infer a field description if possible.
-                try:
-                    model_field = model._meta.get_field(variable)
-                except:
-                    model_field = None
-
-                if model_field is not None and model_field.verbose_name:
-                    title = force_text(model_field.verbose_name)
-
-                if model_field is not None and model_field.help_text:
-                    description = force_text(model_field.help_text)
-                elif model_field is not None and model_field.primary_key:
-                    description = get_pk_description(model, model_field)
-
-                if hasattr(view, 'lookup_value_regex') and view.lookup_field == variable:
-                    kwargs['pattern'] = view.lookup_value_regex
-                elif isinstance(model_field, models.AutoField):
-                    schema_cls = coreschema.Integer
-
-            field = coreapi.Field(
-                name=variable,
-                location='path',
-                required=True,
-                schema=schema_cls(title=title, description=description, **kwargs)
-            )
-            fields.append(field)
-
-        return fields
 
     def get_serializer_fields(self, path, method, view):
         """
