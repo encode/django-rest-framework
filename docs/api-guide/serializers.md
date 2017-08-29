@@ -1180,4 +1180,4 @@ The [drf-writable-nested][drf-writable-nested] package provides writable nested 
 [drf-base64]: https://bitbucket.org/levit_scs/drf_base64
 [drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
 [djangorestframework-queryfields]: http://djangorestframework-queryfields.readthedocs.io/
-[drf-writable-nested]: http://github.com/Brogency/drf-writable-nested
+[drf-writable-nested]: http://github.com/beda-software/drf-writable-nested
