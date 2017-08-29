@@ -500,6 +500,18 @@ class APIViewSchemaDescriptor(object):
 APIView.schema = APIViewSchemaDescriptor()
 
 
+class ManualSchema(APIViewSchemaDescriptor):
+    """
+    Overrides get_link to return manually specified schema.
+    """
+    def __init__(self, link):
+        assert isinstance(link, coreapi.Link)
+        self._link = link
+
+    def get_link(self, *args):
+        return self._link
+
+
 class SchemaGenerator(object):
     # Map HTTP methods onto actions.
     default_mapping = {

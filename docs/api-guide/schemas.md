@@ -463,6 +463,21 @@ Return a list of `coreapi.Link()` instances, as returned by the `get_schema_fiel
 
 Return a list of `coreapi.Link()` instances, as returned by the `get_schema_fields()` method of any filter classes used by the view.
 
+
+## ManualSchema
+
+`APIViewSchemaDescriptor` subclass for specifying a manual schema.
+
+    class MyView(APIView):
+      schema = ManualSchema(coreapi.Link(
+        url='/example/',
+        action='get',
+        fields=[]
+      ))
+
+The `ManualSchema` constructor takes a single parameter `link`,
+the `coreapi.Link` instance for the view.
+
 ---
 
 ## Core API

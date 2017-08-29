@@ -12,7 +12,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.request import Request
 from rest_framework.routers import DefaultRouter
 from rest_framework.schemas import (
-    APIViewSchemaDescriptor, SchemaGenerator, get_schema_view
+    APIViewSchemaDescriptor, ManualSchema, SchemaGenerator, get_schema_view
 )
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
@@ -512,3 +512,18 @@ class TestDescriptor(TestCase):
         descriptor = APIView.schema  # Accessed from class
         with pytest.raises(AssertionError):
             descriptor.get_link(None, None, None)  # ???: Do the dummy arguments require a tighter assert?
+
+    def test_view_with_manual_schema(self):
+
+        expected = coreapi.Link(
+            url='/example/',
+            action='get',
+            fields=[]
+        )
+
+        class CustomView(APIView):
+            schema = ManualSchema(expected)
+
+        view = CustomView()
+        link = view.schema.get_link()
+        assert link == expected
