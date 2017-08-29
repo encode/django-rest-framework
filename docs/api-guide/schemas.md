@@ -372,8 +372,8 @@ to the Open API ("Swagger") format:
 
 ## SchemaGenerator
 
-A class that deals with introspecting your API views, which can be used to
-generate a schema.
+A class that walks a list of routed URL patterns, requests the schema for each view,
+and collates the resulting CoreAPI Document.
 
 Typically you'll instantiate `SchemaGenerator` with a single argument, like so:
 
@@ -406,36 +406,60 @@ Return a nested dictionary containing all the links that should be included in t
 This is a good point to override if you want to modify the resulting structure of the generated schema,
 as you can build a new dictionary with a different layout.
 
-### get_link(self, path, method, view)
+
+## APIViewSchemaDescriptor
+
+A class that deals with introspection of individual views for schema generation.
+
+`APIViewSchemaDescriptor` is attached to `APIView` via the `schema` attribute.
+
+Typically you will subclass `APIViewSchemaDescriptor` to customise schema generation
+and then set your subclass on your view.
+
+
+    class CustomViewSchema(APIViewSchemaDescriptor):
+        """
+        Overrides `get_link()` to provide Custom Behavior X
+        """
+
+        def get_link(self, path, method, base_url):
+            link = super().get_link(path, method, base_url)
+            # Do something to customize link here...
+            return link
+
+    class MyView(APIView):
+      schema = CustomViewSchema()
+
+### get_link(self, path, method, base_url)
 
 Returns a `coreapi.Link` instance corresponding to the given view.
 
 You can override this if you need to provide custom behaviors for particular views.
 
-### get_description(self, path, method, view)
+### get_description(self, path, method)
 
 Returns a string to use as the link description. By default this is based on the
 view docstring as described in the "Schemas as Documentation" section above.
 
-### get_encoding(self, path, method, view)
+### get_encoding(self, path, method)
 
 Returns a string to indicate the encoding for any request body, when interacting
 with the given view. Eg. `'application/json'`. May return a blank string for views
 that do not expect a request body.
 
-### get_path_fields(self, path, method, view):
+### get_path_fields(self, path, method):
 
 Return a list of `coreapi.Link()` instances. One for each path parameter in the URL.
 
-### get_serializer_fields(self, path, method, view)
+### get_serializer_fields(self, path, method)
 
 Return a list of `coreapi.Link()` instances. One for each field in the serializer class used by the view.
 
-### get_pagination_fields(self, path, method, view
+### get_pagination_fields(self, path, method)
 
 Return a list of `coreapi.Link()` instances, as returned by the `get_schema_fields()` method on any pagination class used by the view.
 
-### get_filter_fields(self, path, method, view)
+### get_filter_fields(self, path, method)
 
 Return a list of `coreapi.Link()` instances, as returned by the `get_schema_fields()` method of any filter classes used by the view.
 
