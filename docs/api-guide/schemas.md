@@ -164,8 +164,7 @@ appropriate Core API `Link` object for the view, request method and path:
     auto_schema = view.schema
     coreapi_link = auto_schema.get_link(...)
 
-
-(Aside: In compiling the schema, `SchemaGenerator` calls `view.schema.get_link()` for
+(In compiling the schema, `SchemaGenerator` calls `view.schema.get_link()` for
 each view, allowed method and path.)
 
 To customise the `Link` generation you may:
@@ -178,9 +177,9 @@ To customise the `Link` generation you may:
         class CustomView(APIView):
             ...
             schema = AutoSchema(
-                manual_fields= {
-                    "extra_field": coreapi.Field(...)
-                }
+                manual_fields=[
+                    coreapi.Field("extra_field", ...),
+                ]
             )
 
     This allows extension for the most common case without subclassing.
@@ -512,9 +511,22 @@ A class that deals with introspection of individual views for schema generation.
 
 `AutoSchema` is attached to `APIView` via the `schema` attribute.
 
-Typically you will subclass `AutoSchema` to customise schema generation
-and then set your subclass on your view.
+The `AutoSchema` constructor takes a single keyword argument  `manual_fields`.
 
+**`manual_fields`**: a `list` of `coreapi.Field` instances that will be added to
+the generated fields. Generated fields with a matching `name` will be overwritten.
+
+    class CustomView(APIView):
+        schema = AutoSchema(manual_fields=[
+            coreapi.Field(
+                "my_extra_field",
+                required=True,
+                location="path",
+                schema=coreschema.String()
+            ),
+        ])
+
+For more advanced customisation subclass `AutoSchema` to customise schema generation.
 
     class CustomViewSchema(AutoSchema):
         """
@@ -529,10 +541,13 @@ and then set your subclass on your view.
     class MyView(APIView):
       schema = CustomViewSchema()
 
+The following methods are available to override.
+
 ### get_link(self, path, method, base_url)
 
 Returns a `coreapi.Link` instance corresponding to the given view.
 
+This is the main entry point.
 You can override this if you need to provide custom behaviors for particular views.
 
 ### get_description(self, path, method)
@@ -565,7 +580,7 @@ Return a list of `coreapi.Link()` instances, as returned by the `get_schema_fiel
 
 ## ManualSchema
 
-`APIViewSchemaDescriptor` subclass for specifying a manual schema.
+Allows specifying a manual schema for a view:
 
     class MyView(APIView):
       schema = ManualSchema(coreapi.Link(

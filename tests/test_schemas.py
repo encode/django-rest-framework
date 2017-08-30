@@ -513,6 +513,25 @@ class TestDescriptor(TestCase):
         with pytest.raises(AssertionError):
             descriptor.get_link(None, None, None)  # ???: Do the dummy arguments require a tighter assert?
 
+    def test_manual_fields(self):
+
+        class CustomView(APIView):
+            schema = AutoSchema(manual_fields=[
+                coreapi.Field(
+                    "my_extra_field",
+                    required=True,
+                    location="path",
+                    schema=coreschema.String()
+                ),
+            ])
+
+        view = CustomView()
+        link = view.schema.get_link('/a/url/{id}/', 'GET', '')
+        fields = link.fields
+
+        assert len(fields) == 2
+        assert "my_extra_field" in [f.name for f in fields]
+
     def test_view_with_manual_schema(self):
 
         expected = coreapi.Link(

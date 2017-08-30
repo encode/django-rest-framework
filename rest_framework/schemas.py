@@ -301,11 +301,27 @@ class AutoSchema(ViewInspector):
 
     Responsible for per-view instrospection and schema generation.
     """
+    def __init__(self, manual_fields=None):
+        """
+        Parameters:
+
+        * `manual_fields`: list of `coreapi.Field` instances that
+            will be added to auto-generated fields, overwriting on `Field.name`
+        """
+
+        self._manual_fields = manual_fields
+
     def get_link(self, path, method, base_url):
         fields = self.get_path_fields(path, method)
         fields += self.get_serializer_fields(path, method)
         fields += self.get_pagination_fields(path, method)
         fields += self.get_filter_fields(path, method)
+
+        if self._manual_fields is not None:
+            by_name = {f.name: f for f in fields}
+            for f in self._manual_fields:
+                by_name[f.name] = f
+            fields = list(by_name.values())
 
         if fields and any([field.location in ('form', 'body') for field in fields]):
             encoding = self.get_encoding(path, method)
