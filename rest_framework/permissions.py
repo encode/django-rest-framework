@@ -120,6 +120,14 @@ class DjangoModelPermissions(BasePermission):
         if getattr(view, '_ignore_model_permissions', False):
             return True
 
+        # For `.get_queryset` to assume that anonymous check was passed
+        # when `authenticated_users_only` is `True`.
+        if (
+            not request.user or
+            (not is_authenticated(request.user) and self.authenticated_users_only)
+        ):
+            return False
+
         if hasattr(view, 'get_queryset'):
             queryset = view.get_queryset()
             assert queryset is not None, (
@@ -135,11 +143,7 @@ class DjangoModelPermissions(BasePermission):
 
         perms = self.get_required_permissions(request.method, queryset.model)
 
-        return (
-            request.user and
-            (is_authenticated(request.user) or not self.authenticated_users_only) and
-            request.user.has_perms(perms)
-        )
+        return request.user.has_perms(perms)
 
 
 class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
