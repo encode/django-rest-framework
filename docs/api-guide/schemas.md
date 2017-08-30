@@ -10,7 +10,14 @@ API schemas are a useful tool that allow for a range of use cases, including
 generating reference documentation, or driving dynamic client libraries that
 can interact with your API.
 
-## Representing schemas internally
+## Install Core API
+
+You'll need to install the `coreapi` package in order to add schema support
+for REST framework.
+
+    pip install coreapi
+
+## Internal schema representation
 
 REST framework uses [Core API][coreapi] in order to model schema information in
 a format-independent representation. This information can then be rendered
@@ -68,9 +75,34 @@ has to be rendered into the actual bytes that are used in the response.
 REST framework includes a renderer class for handling this media type, which
 is available as `renderers.CoreJSONRenderer`.
 
+### Alternate schema formats
+
 Other schema formats such as [Open API][open-api] ("Swagger"),
-[JSON HyperSchema][json-hyperschema], or [API Blueprint][api-blueprint] can
-also be supported by implementing a custom renderer class.
+[JSON HyperSchema][json-hyperschema], or [API Blueprint][api-blueprint] can also
+be supported by implementing a custom renderer class that handles converting a
+`Document` instance into a bytestring representation.
+
+If there is a Core API codec package that supports encoding into the format you
+want to use then implementing the renderer class can be done by using the codec.
+
+#### Example
+
+For example, the `openapi_codec` package provides support for encoding or decoding
+to the Open API ("Swagger") format:
+
+    from rest_framework import renderers
+    from openapi_codec import OpenAPICodec
+
+    class SwaggerRenderer(renderers.BaseRenderer):
+        media_type = 'application/openapi+json'
+        format = 'swagger'
+
+        def render(self, data, media_type=None, renderer_context=None):
+            codec = OpenAPICodec()
+            return codec.dump(data)
+
+
+
 
 ## Schemas vs Hypermedia
 
@@ -89,18 +121,111 @@ document, detailing both the current state and the available interactions.
 Further information and support on building Hypermedia APIs with REST framework
 is planned for a future version.
 
+
 ---
 
-# Adding a schema
-
-You'll need to install the `coreapi` package in order to add schema support
-for REST framework.
-
-    pip install coreapi
+# Creating a schema
 
 REST framework includes functionality for auto-generating a schema,
-or allows you to specify one explicitly. There are a few different ways to
-add a schema to your API, depending on exactly what you need.
+or allows you to specify one explicitly.
+
+## Manual Schema Specification
+
+To manually specify a schema you create a Core API `Document`, similar to the
+example above.
+
+    schema = coreapi.Document(
+        title='Flight Search API',
+        content={
+            ...
+        }
+    )
+
+
+## Automatic Schema Generation
+
+Automatic schema generation is provided by the `SchemaGenerator` class.
+
+`SchemaGenerator` processes a list of routed URL pattterns and compiles the
+appropriately structured Core API Document.
+
+Basic usage is just to provide the title for your schema and call
+`get_schema()`:
+
+    generator = schemas.SchemaGenerator(title='Flight Search API')
+    schema = generator.get_schema()
+
+### Per-View Schema Customisation
+
+By default, view introspection is performed by an `AutoSchema` instance
+accessible via the `schema` attribute on `APIView`. This provides the
+appropriate Core API `Link` object for the view, request method and path:
+
+    auto_schema = view.schema
+    coreapi_link = auto_schema.get_link(...)
+
+
+(Aside: In compiling the schema, `SchemaGenerator` calls `view.schema.get_link()` for
+each view, allowed method and path.)
+
+To customise the `Link` generation you may:
+
+* Instantiate `AutoSchema` on your view with the `manual_fields` kwarg:
+
+        from rest_framework.views import APIView
+        from rest_framework.schemas import AutoSchema
+
+        class CustomView(APIView):
+            ...
+            schema = AutoSchema(
+                manual_fields= {
+                    "extra_field": coreapi.Field(...)
+                }
+            )
+
+    This allows extension for the most common case without subclassing.
+
+* Provide an `AutoSchema` subclass with more complex customisation:
+
+        from rest_framework.views import APIView
+        from rest_framework.schemas import AutoSchema
+
+        class CustomSchema(AutoSchema):
+            def get_link(...):
+                # Implemet custom introspection here (or in other sub-methods)
+
+        class CustomView(APIView):
+            ...
+            schema = CustomSchema()
+
+    This provides complete control over view introspection.
+
+* Instantiate `ManualSchema` on your view, providing the Core API `Link`
+  explicitly:
+
+        from rest_framework.views import APIView
+        from rest_framework.schemas import ManualSchema
+
+        class CustomView(APIView):
+            ...
+            schema = ManualSchema(
+                coreapi.Link(...)
+            )
+
+    This allows manually specifying the schema for some views whilst maintaining
+    automatic generation elsewhere.
+
+---
+
+**Note**: For full details on `SchemaGenerator` plus the `AutoSchema` and
+`ManualSchema` descriptors see the [API Reference below](#api-reference).
+
+---
+
+# Adding a schema view
+
+There are a few different ways to add a schema view to your API, depending on
+exactly what you need.
 
 ## The get_schema_view shortcut
 
@@ -342,32 +467,6 @@ A generic viewset with sections in the class docstring, using multi-line style.
 
 ---
 
-# Alternate schema formats
-
-In order to support an alternate schema format, you need to implement a custom renderer
-class that handles converting a `Document` instance into a bytestring representation.
-
-If there is a Core API codec package that supports encoding into the format you
-want to use then implementing the renderer class can be done by using the codec.
-
-## Example
-
-For example, the `openapi_codec` package provides support for encoding or decoding
-to the Open API ("Swagger") format:
-
-    from rest_framework import renderers
-    from openapi_codec import OpenAPICodec
-
-    class SwaggerRenderer(renderers.BaseRenderer):
-        media_type = 'application/openapi+json'
-        format = 'swagger'
-
-        def render(self, data, media_type=None, renderer_context=None):
-            codec = OpenAPICodec()
-            return codec.dump(data)
-
----
-
 # API Reference
 
 ## SchemaGenerator
@@ -407,17 +506,17 @@ This is a good point to override if you want to modify the resulting structure o
 as you can build a new dictionary with a different layout.
 
 
-## APIViewSchemaDescriptor
+## AutoSchema
 
 A class that deals with introspection of individual views for schema generation.
 
-`APIViewSchemaDescriptor` is attached to `APIView` via the `schema` attribute.
+`AutoSchema` is attached to `APIView` via the `schema` attribute.
 
-Typically you will subclass `APIViewSchemaDescriptor` to customise schema generation
+Typically you will subclass `AutoSchema` to customise schema generation
 and then set your subclass on your view.
 
 
-    class CustomViewSchema(APIViewSchemaDescriptor):
+    class CustomViewSchema(AutoSchema):
         """
         Overrides `get_link()` to provide Custom Behavior X
         """

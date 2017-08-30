@@ -12,7 +12,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.request import Request
 from rest_framework.routers import DefaultRouter
 from rest_framework.schemas import (
-    APIViewSchemaDescriptor, ManualSchema, SchemaGenerator, get_schema_view
+    AutoSchema, ManualSchema, SchemaGenerator, get_schema_view
 )
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
@@ -506,7 +506,7 @@ class TestDescriptor(TestCase):
     def test_apiview_schema_descriptor(self):
         view = APIView()
         assert hasattr(view, 'schema')
-        assert isinstance(view.schema, APIViewSchemaDescriptor)
+        assert isinstance(view.schema, AutoSchema)
 
     def test_get_link_requires_instance(self):
         descriptor = APIView.schema  # Accessed from class

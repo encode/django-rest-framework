@@ -256,11 +256,11 @@ class EndpointInspector(object):
         ]
 
 
-class APIViewSchemaDescriptor(object):
+class ViewInspector(object):
     """
     Descriptor class on APIView.
 
-    Responsible for per-view instrospection and schema generation.
+    Provide subclass for per-view schema generation
     """
     def __get__(self, instance, owner):
         self.view = instance
@@ -292,6 +292,16 @@ class APIViewSchemaDescriptor(object):
         * method: The HTTP request method.
         * base_url: The project "mount point" as given to SchemaGenerator
         """
+        raise NotImplementedError(".get_link() must be overridden.")
+
+
+class AutoSchema(ViewInspector):
+    """
+    Default inspector for APIView
+
+    Responsible for per-view instrospection and schema generation.
+    """
+    def get_link(self, path, method, base_url):
         fields = self.get_path_fields(path, method)
         fields += self.get_serializer_fields(path, method)
         fields += self.get_pagination_fields(path, method)
@@ -497,10 +507,10 @@ class APIViewSchemaDescriptor(object):
 #   - APIView is only used by SchemaView.
 #       - ???: Make `schemas` a package and move SchemaView to `schema.views`
 #       - That way the schema attribute could be set in the class definition.
-APIView.schema = APIViewSchemaDescriptor()
+APIView.schema = AutoSchema()
 
 
-class ManualSchema(APIViewSchemaDescriptor):
+class ManualSchema(ViewInspector):
     """
     Overrides get_link to return manually specified schema.
     """
