@@ -209,6 +209,16 @@ class ModelPermissionsIntegrationTests(TestCase):
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
+    def test_check_auth_before_queryset_call(self):
+        class View(RootView):
+            def get_queryset(_):
+                self.fail('should not reach due to auth check')
+        view = View.as_view()
+
+        request = factory.get('/', HTTP_AUTHORIZATION='')
+        response = view(request)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class BasicPermModel(models.Model):
     text = models.CharField(max_length=100)
