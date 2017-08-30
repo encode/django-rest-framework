@@ -411,6 +411,19 @@ class TestDefaultOutput:
         serializer = self.Serializer(instance)
         assert serializer.data == {'has_default': 'def', 'has_default_callable': 'ghi', 'no_default': 'abc'}
 
+    def test_default_for_source_source(self):
+        """
+        'default="something"' should be used when a traversed attribute is missing from input.
+        """
+        class Serializer(serializers.Serializer):
+            traversed = serializers.CharField(default='x', source='traversed.attr')
+
+        assert Serializer({}).data == {'traversed': 'x'}
+        assert Serializer({'traversed': {}}).data == {'traversed': 'x'}
+        assert Serializer({'traversed': None}).data == {'traversed': 'x'}
+
+        assert Serializer({'traversed': {'attr': 'abc'}}).data == {'traversed': 'abc'}
+
 
 class TestCacheSerializerData:
     def test_cache_serializer_data(self):
