@@ -201,11 +201,11 @@ class ModelPermissionsIntegrationTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_calling_method_not_allowed(self):
-        request = factory.generic('METHOD_NOT_ALLOWED', '/')
+        request = factory.generic('METHOD_NOT_ALLOWED', '/', HTTP_AUTHORIZATION=self.permitted_credentials)
         response = root_view(request)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-        request = factory.generic('METHOD_NOT_ALLOWED', '/1')
+        request = factory.generic('METHOD_NOT_ALLOWED', '/1', HTTP_AUTHORIZATION=self.permitted_credentials)
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -396,7 +396,7 @@ class ObjectPermissionsIntegrationTests(TestCase):
         self.assertListEqual(response.data, [])
 
     def test_cannot_method_not_allowed(self):
-        request = factory.generic('METHOD_NOT_ALLOWED', '/')
+        request = factory.generic('METHOD_NOT_ALLOWED', '/', HTTP_AUTHORIZATION=self.credentials['readonly'])
         response = object_permissions_list_view(request)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
