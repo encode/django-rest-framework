@@ -303,7 +303,7 @@ class Request(object):
             stream = None
 
         if stream is None or media_type is None:
-            if media_type and not is_form_media_type(media_type):
+            if media_type and is_form_media_type(media_type):
                 empty_data = QueryDict('', encoding=self._request._encoding)
             else:
                 empty_data = {}

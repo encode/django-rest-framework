@@ -282,4 +282,4 @@ class TestAPIRequestFactory(TestCase):
             data=None,
             content_type='application/json',
         )
-        assert request.content_type == 'application/json'
+        assert request.META['CONTENT_TYPE'] == 'application/json'
