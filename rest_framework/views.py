@@ -81,14 +81,18 @@ def exception_handler(exc, context):
 
     elif isinstance(exc, Http404):
         msg = _('Not found.')
-        data = {'detail': six.text_type(msg)}
+        data = {'detail': {'non_field_errors': [{
+            'message': six.text_type(msg),
+            'code': 'not_found'}]}}
 
         set_rollback()
         return Response(data, status=status.HTTP_404_NOT_FOUND)
 
     elif isinstance(exc, PermissionDenied):
         msg = _('Permission denied.')
-        data = {'detail': six.text_type(msg)}
+        data = {'detail': {'non_field_errors': [{
+            'message': six.text_type(msg),
+            'code': 'permission_denied'}]}}
 
         set_rollback()
         return Response(data, status=status.HTTP_403_FORBIDDEN)
