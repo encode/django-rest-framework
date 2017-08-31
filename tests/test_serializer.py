@@ -411,7 +411,7 @@ class TestDefaultOutput:
         serializer = self.Serializer(instance)
         assert serializer.data == {'has_default': 'def', 'has_default_callable': 'ghi', 'no_default': 'abc'}
 
-    def test_default_for_source_source(self):
+    def test_default_for_dotted_source(self):
         """
         'default="something"' should be used when a traversed attribute is missing from input.
         """
