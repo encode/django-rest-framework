@@ -93,9 +93,6 @@ def get_attribute(instance, attrs):
     Also accepts either attribute lookup on objects or dictionary lookups.
     """
     for attr in attrs:
-        if instance is None:
-            # Break out early if we get `None` at any point in a nested lookup.
-            return None
         try:
             if isinstance(instance, collections.Mapping):
                 instance = instance[attr]
