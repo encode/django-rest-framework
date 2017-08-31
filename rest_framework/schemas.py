@@ -476,7 +476,7 @@ class SchemaGenerator(object):
             return formatting.dedent(smart_text(method_docstring))
 
         description = view.get_view_description()
-        lines = [line.strip() for line in description.splitlines()]
+        lines = [line for line in description.splitlines()]
         current_section = ''
         sections = {'': ''}
 
