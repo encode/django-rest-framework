@@ -81,7 +81,7 @@ def exception_handler(exc, context):
 
     elif isinstance(exc, Http404):
         msg = _('Not found.')
-        data = {'detail': {'non_field_errors': [{
+        data = {'detail': {api_settings.NON_FIELD_ERRORS_KEY: [{
             'message': six.text_type(msg),
             'code': 'not_found'}]}}
 
@@ -90,7 +90,7 @@ def exception_handler(exc, context):
 
     elif isinstance(exc, PermissionDenied):
         msg = _('Permission denied.')
-        data = {'detail': {'non_field_errors': [{
+        data = {'detail': {api_settings.NON_FIELD_ERRORS_KEY: [{
             'message': six.text_type(msg),
             'code': 'permission_denied'}]}}
 
