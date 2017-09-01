@@ -986,6 +986,7 @@ class ModelSerializer(Serializer):
         depth = getattr(self.Meta, 'depth', 0)
 
         if depth is not None:
+            assert isinstance(depth, int), "'depth' should be integer variable."
             assert depth >= 0, "'depth' may not be negative."
             assert depth <= 10, "'depth' may not be greater than 10."
 
