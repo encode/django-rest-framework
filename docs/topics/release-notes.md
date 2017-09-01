@@ -40,6 +40,10 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.6.x series
 
+### 3.6.5
+
+* Fix `DjangoModelPermissions` to ensure user authentication before calling the view's `get_queryset()` method. As a side effect, this changes the order of the HTTP method permissions and authentication checks, and 405 responses will only be returned when authenticated. If you want to replicate the old behavior, see the PR for details. [#5376][gh5376]
+
 ### 3.6.4
 
 **Date**: [21st August 2017][3.6.4-milestone]
@@ -1417,5 +1421,5 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5147]: https://github.com/encode/django-rest-framework/issues/5147
 [gh5131]: https://github.com/encode/django-rest-framework/issues/5131
 
-
-
+<!-- 3.6.5 -->
+[gh5376]: https://github.com/encode/django-rest-framework/issues/5376
