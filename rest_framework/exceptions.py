@@ -64,7 +64,7 @@ def _get_full_details(detail):
 
 class ErrorDetail(six.text_type):
     """
-    A string-like object that can additionally
+    A string-like object that can additionally have a code.
     """
     code = None
 
