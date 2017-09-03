@@ -662,58 +662,57 @@ class BooleanField(Field):
     }
 
     def __init__(self, **kwargs):
-        assert 'allow_null' not in kwargs, '`allow_null` is not a valid option. Use `NullBooleanField` instead.'
+        kwargs = self._validate_and_update_kwargs(kwargs)
         super(BooleanField, self).__init__(**kwargs)
 
-    def to_internal_value(self, data):
-        try:
-            if data in self.TRUE_VALUES:
-                return True
-            elif data in self.FALSE_VALUES:
-                return False
-        except TypeError:  # Input is an unhashable type
-            pass
-        self.fail('invalid', input=data)
+    def _validate_and_update_kwargs(self, kwargs):
+        assert 'allow_null' not in kwargs, '`allow_null` is not a valid option. Use `NullBooleanField` instead.'
+        return kwargs
 
-    def to_representation(self, value):
-        if value in self.TRUE_VALUES:
-            return True
-        elif value in self.FALSE_VALUES:
-            return False
-        return bool(value)
-
-
-class NullBooleanField(Field):
-    default_error_messages = {
-        'invalid': _('"{input}" is not a valid boolean.')
-    }
-    initial = None
-    TRUE_VALUES = {'t', 'T', 'true', 'True', 'TRUE', '1', 1, True}
-    FALSE_VALUES = {'f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False}
-    NULL_VALUES = {'n', 'N', 'null', 'Null', 'NULL', '', None}
-
-    def __init__(self, **kwargs):
-        assert 'allow_null' not in kwargs, '`allow_null` is not a valid option.'
-        kwargs['allow_null'] = True
-        super(NullBooleanField, self).__init__(**kwargs)
-
-    def to_internal_value(self, data):
+    def _to_internal(self, data):
         if data in self.TRUE_VALUES:
             return True
         elif data in self.FALSE_VALUES:
             return False
-        elif data in self.NULL_VALUES:
-            return None
+        self.fail('invalid', input=data)
+
+    def to_internal_value(self, data):
+        if isinstance(data, collections.Hashable):
+            return self._to_internal(data)
         self.fail('invalid', input=data)
 
     def to_representation(self, value):
-        if value in self.NULL_VALUES:
-            return None
         if value in self.TRUE_VALUES:
             return True
         elif value in self.FALSE_VALUES:
             return False
         return bool(value)
+
+
+class NullBooleanField(BooleanField):
+    initial = None
+    default_empty_html = empty
+    NULL_VALUES = {
+        'n', 'N',
+        'null', 'Null', 'NULL',
+        '',
+        None
+    }
+
+    def _validate_and_update_kwargs(self, kwargs):
+        assert 'allow_null' not in kwargs, '`allow_null` is not a valid option.'
+        kwargs['allow_null'] = True
+        return kwargs
+
+    def _to_internal(self, data):
+        if data in self.NULL_VALUES:
+            return None
+        return super(NullBooleanField, self)._to_internal(data)
+
+    def to_representation(self, value):
+        if value in self.NULL_VALUES:
+            return None
+        return super(NullBooleanField, self).to_representation(value)
 
 
 # String types...
