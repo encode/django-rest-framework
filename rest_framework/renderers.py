@@ -579,7 +579,8 @@ class BrowsableAPIRenderer(BaseRenderer):
                 _content = forms.CharField(
                     label='Content',
                     widget=forms.Textarea(attrs={'data-override': 'content'}),
-                    initial=content
+                    initial=content,
+                    required=False
                 )
 
             return GenericContentForm()
