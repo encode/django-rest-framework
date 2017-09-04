@@ -558,6 +558,7 @@ class TestBooleanField(FieldValues):
     valid_inputs = {
         'true': True,
         'false': False,
+        'on': True,
         '1': True,
         '0': False,
         1: True,
@@ -572,6 +573,7 @@ class TestBooleanField(FieldValues):
     outputs = {
         'true': True,
         'false': False,
+        'on': True,
         '1': True,
         '0': False,
         1: True,
@@ -602,6 +604,7 @@ class TestNullBooleanField(FieldValues):
     valid_inputs = {
         'true': True,
         'false': False,
+        'on': True,
         'null': None,
         True: True,
         False: False,
@@ -613,6 +616,7 @@ class TestNullBooleanField(FieldValues):
     outputs = {
         'true': True,
         'false': False,
+        'on': True,
         'null': None,
         True: True,
         False: False,
