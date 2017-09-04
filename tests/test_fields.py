@@ -587,7 +587,7 @@ class TestBooleanField(FieldValues):
             [],
             {},
         )
-        field = serializers.BooleanField()
+        field = self.field
         for input_value in inputs:
             with pytest.raises(serializers.ValidationError) as exc_info:
                 field.run_validation(input_value)
@@ -595,7 +595,7 @@ class TestBooleanField(FieldValues):
             assert exc_info.value.detail == expected
 
 
-class TestNullBooleanField(FieldValues):
+class TestNullBooleanField(TestBooleanField):
     """
     Valid and invalid values for `BooleanField`.
     """
