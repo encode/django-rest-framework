@@ -108,6 +108,7 @@ class BaseSerializer(Field):
     .errors - Not available.
     .data - Available.
     """
+    default_list_serializer_class = ListSerializer
 
     def __init__(self, instance=None, data=empty, **kwargs):
         self.instance = instance
@@ -154,7 +155,7 @@ class BaseSerializer(Field):
             if key in LIST_SERIALIZER_KWARGS
         })
         meta = getattr(cls, 'Meta', None)
-        list_serializer_class = getattr(meta, 'list_serializer_class', ListSerializer)
+        list_serializer_class = getattr(meta, 'list_serializer_class', cls.default_list_serializer_class)
         return list_serializer_class(*args, **list_kwargs)
 
     def to_internal_value(self, data):
