@@ -1136,13 +1136,13 @@ class Test5004UniqueChoiceField(TestCase):
         assert not serializer.is_valid()
         assert serializer.errors == {'name': ['unique choice model with this name already exists.']}
 
+
 class TestFieldSource(TestCase):
-    
     def test_named_field_source(self):
         class TestSerializer(serializers.ModelSerializer):
 
             class Meta:
-                model = RegularFieldsModel 
+                model = RegularFieldsModel
                 fields = ('number_field',)
                 extra_kwargs = {
                     'number_field': {
@@ -1156,4 +1156,3 @@ class TestFieldSource(TestCase):
         """)
         self.maxDiff = None
         self.assertEqual(unicode_repr(TestSerializer()), expected)
-
