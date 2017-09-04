@@ -1010,7 +1010,9 @@ class ModelSerializer(Serializer):
                 continue
 
             extra_field_kwargs = extra_kwargs.get(field_name, {})
-            source = extra_field_kwargs.get('source', '*') != '*' or field_name
+            source = extra_field_kwargs.get('source', '*')
+            if source == '*':
+                source = field_name
 
             # Determine the serializer field class and keyword arguments.
             field_class, field_kwargs = self.build_field(
