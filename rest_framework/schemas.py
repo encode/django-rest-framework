@@ -368,9 +368,7 @@ class AutoSchema(ViewInspector):
             else:
                 sections[current_section] += '\n' + line
 
-        # TODO: coerce_method_names is used both here and by SchemaGenerator in
-        #   get_keys. It is read straight from the setting (i.e. it's not dynamic.)
-        #   ???: Can it be a module level constant (or callable)?
+        # TODO: SCHEMA_COERCE_METHOD_NAMES appears here and in `SchemaGenerator.get_keys`
         coerce_method_names = api_settings.SCHEMA_COERCE_METHOD_NAMES
         header = getattr(view, 'action', method.lower())
         if header in sections:
@@ -518,11 +516,14 @@ class AutoSchema(ViewInspector):
 
         return None
 
-# TODO: Where should this live?
-#   - We import APIView here. So we can't import the descriptor into `views`
-#   - APIView is only used by SchemaView.
-#       - ???: Make `schemas` a package and move SchemaView to `schema.views`
-#       - That way the schema attribute could be set in the class definition.
+# Note: With `AutoSchema` defined we attach it to APIView.
+#   * We do this here to avoid the dependency cycle from SchemaView needing
+#     APIView (below).
+#   * This requires importing _something_ from `rest_framework.schemas` or
+#     `rest_framework.documentation` before `APIView.schema will be available.
+#       * ???: When would `APIView.schema` be needed and that NOT be the case?
+#   * The alternative is to import AutoSchema to `views`, make `schemas` a
+#     package, and move SchemaView to `schema.views`, importing APIView there.
 APIView.schema = AutoSchema()
 
 
