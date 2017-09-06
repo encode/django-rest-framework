@@ -79,7 +79,7 @@ def endpoint_ordering(endpoint):
     return (path, method_priority)
 
 
-class EndpointInspector(object):
+class EndpointEnumerator(object):
     """
     A class to determine the available API endpoints that a project exposes.
     """
@@ -172,7 +172,7 @@ class SchemaGenerator(object):
         'patch': 'partial_update',
         'delete': 'destroy',
     }
-    endpoint_inspector_cls = EndpointInspector
+    endpoint_inspector_cls = EndpointEnumerator
 
     # Map the method names we use for viewset actions onto external schema names.
     # These give us names that are more suitable for the external representation.

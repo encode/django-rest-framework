@@ -1,3 +1,14 @@
+# We expose a minimal "public" API directly from `schemas`. This covers the
+# basic use-cases:
+#
+#     from rest_framework.schemas import (
+#         AutoSchema,
+#         ManualSchema,
+#         get_schema_view,
+#         SchemaGenerator,
+#     )
+#
+# Other access should target the submodules directly
 from .generators import SchemaGenerator
 from .inspectors import AutoSchema, ManualSchema  # noqa
 
