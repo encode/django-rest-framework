@@ -195,7 +195,7 @@ decorator. For example:
     from rest_framework.schemas import AutoSchema
 
     class CustomAutoSchema(AutoSchema):
-        def get_link(*args):
+        def get_link(self, path, method, base_url):
             # override view introspection here...
 
     @api_view(['GET'])
