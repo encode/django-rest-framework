@@ -14,9 +14,8 @@ from rest_framework.compat import (
 from rest_framework.request import clone_request
 from rest_framework.settings import api_settings
 from rest_framework.utils.model_meta import _get_pk
-from rest_framework.views import APIView
 
-from . import is_list_view
+from .utils import is_list_view
 
 
 def common_path(paths):
@@ -40,6 +39,8 @@ def is_api_view(callback):
     """
     Return `True` if the given view callback is a REST framework view/viewset.
     """
+    # Avoid import cycle on APIView
+    from rest_framework.views import APIView
     cls = getattr(callback, 'cls', None)
     return (cls is not None) and issubclass(cls, APIView)
 

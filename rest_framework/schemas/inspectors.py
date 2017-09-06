@@ -10,7 +10,7 @@ from rest_framework.compat import coreapi, coreschema, uritemplate, urlparse
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 
-from . import is_list_view
+from .utils import is_list_view
 
 header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
 

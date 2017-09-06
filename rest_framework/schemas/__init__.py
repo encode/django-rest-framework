@@ -1,19 +1,21 @@
-# The API we expose
-# from .views import get_schema_view
+from .generators import SchemaGenerator
+from .inspectors import AutoSchema, ManualSchema  # noqa
 
 
-# Shared function. TODO: move to utils.
-def is_list_view(path, method, view):
+def get_schema_view(
+        title=None, url=None, description=None, urlconf=None, renderer_classes=None,
+        public=False, patterns=None, generator_class=SchemaGenerator):
     """
-    Return True if the given path/method appears to represent a list view.
+    Return a schema view.
     """
-    if hasattr(view, 'action'):
-        # Viewsets have an explicitly defined action, which we can inspect.
-        return view.action == 'list'
-
-    if method.lower() != 'get':
-        return False
-    path_components = path.strip('/').split('/')
-    if path_components and '{' in path_components[-1]:
-        return False
-    return True
+    # Avoid import cycle on APIView
+    from .views import SchemaView
+    generator = generator_class(
+        title=title, url=url, description=description,
+        urlconf=urlconf, patterns=patterns,
+    )
+    return SchemaView.as_view(
+        renderer_classes=renderer_classes,
+        schema_generator=generator,
+        public=public,
+    )
