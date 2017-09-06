@@ -263,6 +263,21 @@ class ViewInspector(object):
     Provide subclass for per-view schema generation
     """
     def __get__(self, instance, owner):
+        """
+        Enables `ViewInspector` as a Python _Descriptor_.
+
+        This is how `view.schema` knows about `view`.
+
+        `__get__` is called when the descriptor is accessed on the owner.
+        (That will be when view.schema is called in our case.)
+
+        `owner` is always the owner class. (An APIView, or subclass for us.)
+        `instance` is the view instance or `None` if accessed from the class,
+        rather than an instance.
+
+        See: https://docs.python.org/3/howto/descriptor.html for info on
+        descriptor usage.
+        """
         self.view = instance
         return self
 
