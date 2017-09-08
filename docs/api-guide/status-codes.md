@@ -6,7 +6,7 @@ source: status.py
 >
 > &mdash; [RFC 2324][rfc2324], Hyper Text Coffee Pot Control Protocol
 
-Using bare status codes in your responses isn't recommended.  REST framework includes a set of named constants that you can use to make more code more obvious and readable.
+Using bare status codes in your responses isn't recommended.  REST framework includes a set of named constants that you can use to make your code more obvious and readable.
 
     from rest_framework import status
     from rest_framework.response import Response
