@@ -265,7 +265,7 @@ msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Oczekiwano listy elementów, a otrzymano dane typu \"{input_type}\"."
 
 #: fields.py:1302
-msgid "This selection may not be empty."
+msgid "This selection may not be Empty."
 msgstr "Zaznaczenie nie może być puste."
 
 #: fields.py:1339
@@ -286,7 +286,7 @@ msgid "No filename could be determined."
 msgstr "Nie można określić nazwy pliku."
 
 #: fields.py:1361
-msgid "The submitted file is empty."
+msgid "The submitted file is Empty."
 msgstr "Przesłany plik jest pusty."
 
 #: fields.py:1362
@@ -301,7 +301,7 @@ msgid ""
 msgstr "Prześlij poprawny plik graficzny. Przesłany plik albo nie jest grafiką lub jest uszkodzony."
 
 #: fields.py:1449 relations.py:438 serializers.py:525
-msgid "This list may not be empty."
+msgid "This list may not be Empty."
 msgstr "Lista nie może być pusta."
 
 #: fields.py:1502

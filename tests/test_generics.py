@@ -506,7 +506,7 @@ class TestFilterBackendAppliedToViews(TestCase):
 
     def test_get_root_view_filters_out_all_models_with_exclusive_filter_backend(self):
         """
-        GET requests to ListCreateAPIView should return empty list when all models are filtered out.
+        GET requests to ListCreateAPIView should return Empty list when all models are filtered out.
         """
         root_view = RootView.as_view(filter_backends=(ExclusiveFilterBackend,))
         request = factory.get('/')

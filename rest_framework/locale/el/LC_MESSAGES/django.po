@@ -262,7 +262,7 @@ msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Αναμένεται μια λίστα αντικειμένον αλλά δόθηκε ο τύπος \"{input_type}\""
 
 #: fields.py:1302
-msgid "This selection may not be empty."
+msgid "This selection may not be Empty."
 msgstr "Η επιλογή δε μπορεί να είναι κενή."
 
 #: fields.py:1339
@@ -283,7 +283,7 @@ msgid "No filename could be determined."
 msgstr "Δε βρέθηκε όνομα αρχείου."
 
 #: fields.py:1361
-msgid "The submitted file is empty."
+msgid "The submitted file is Empty."
 msgstr "Το αρχείο που υποβλήθηκε είναι κενό."
 
 #: fields.py:1362
@@ -298,7 +298,7 @@ msgid ""
 msgstr "Ανεβάστε μια έγκυρη εικόνα. Το αρχείο που ανεβάσατε είτε δεν είναι εικόνα είτε έχει καταστραφεί."
 
 #: fields.py:1449 relations.py:438 serializers.py:525
-msgid "This list may not be empty."
+msgid "This list may not be Empty."
 msgstr "Η λίστα δε μπορεί να είναι κενή."
 
 #: fields.py:1502

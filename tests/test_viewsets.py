@@ -50,7 +50,7 @@ class InitializeViewSetsTestCase(TestCase):
                               "when calling `.as_view()` on a ViewSet. "
                               "For example `.as_view({'get': 'list'})`")
         else:
-            self.fail("actions must not be empty.")
+            self.fail("actions must not be Empty.")
 
     def test_args_kwargs_request_action_map_on_self(self):
         """

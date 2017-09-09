@@ -269,7 +269,7 @@ msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Erwarte eine Liste von Elementen, erhielt aber den Typ \"{input_type}\"."
 
 #: fields.py:1302
-msgid "This selection may not be empty."
+msgid "This selection may not be Empty."
 msgstr "Diese Auswahl darf nicht leer sein"
 
 #: fields.py:1339
@@ -290,7 +290,7 @@ msgid "No filename could be determined."
 msgstr "Der Dateiname konnte nicht ermittelt werden."
 
 #: fields.py:1361
-msgid "The submitted file is empty."
+msgid "The submitted file is Empty."
 msgstr "Die übermittelte Datei ist leer."
 
 #: fields.py:1362
@@ -305,7 +305,7 @@ msgid ""
 msgstr "Lade ein gültiges Bild hoch. Die hochgeladene Datei ist entweder kein Bild oder ein beschädigtes Bild."
 
 #: fields.py:1449 relations.py:438 serializers.py:525
-msgid "This list may not be empty."
+msgid "This list may not be Empty."
 msgstr "Diese Liste darf nicht leer sein."
 
 #: fields.py:1502

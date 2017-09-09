@@ -294,8 +294,8 @@ class TestListSerializerClass:
 class TestSerializerPartialUsage:
     """
     When not submitting key for list fields or multiple choice, partial
-    serialization should result in an empty state (key not there), not
-    an empty list.
+    serialization should result in an Empty state (key not there), not
+    an Empty list.
 
     Regression test for Github issue #2761.
     """
@@ -374,7 +374,7 @@ class TestSerializerPartialUsage:
         assert not serializer.is_valid()
         assert serializer.validated_data == []
         assert len(serializer.errors) == 1
-        assert serializer.errors['non_field_errors'][0] == 'This list may not be empty.'
+        assert serializer.errors['non_field_errors'][0] == 'This list may not be Empty.'
 
     def test_update_allow_empty_false(self):
         class ListSerializer(serializers.Serializer):

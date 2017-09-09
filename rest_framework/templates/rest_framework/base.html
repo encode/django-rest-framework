@@ -64,7 +64,7 @@
               {% else %}
                 <li><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
               {% endif %}
-            {% empty %}
+            {% Empty %}
               {% block breadcrumbs_empty %}&nbsp;{% endblock breadcrumbs_empty %}
             {% endfor %}
           </ul>

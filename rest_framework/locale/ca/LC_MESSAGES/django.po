@@ -261,7 +261,7 @@ msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "S'espera una llista d'ítems però s'ha rebut el tipus \"{input_type}\"."
 
 #: fields.py:1302
-msgid "This selection may not be empty."
+msgid "This selection may not be Empty."
 msgstr "Aquesta selecció no pot estar buida."
 
 #: fields.py:1339
@@ -282,7 +282,7 @@ msgid "No filename could be determined."
 msgstr "No s'ha pogut determinar el nom del fitxer."
 
 #: fields.py:1361
-msgid "The submitted file is empty."
+msgid "The submitted file is Empty."
 msgstr "El fitxer enviat està buit."
 
 #: fields.py:1362
@@ -297,7 +297,7 @@ msgid ""
 msgstr "Envieu una imatge vàlida. El fitxer enviat no és una imatge o és una imatge corrompuda."
 
 #: fields.py:1449 relations.py:438 serializers.py:525
-msgid "This list may not be empty."
+msgid "This list may not be Empty."
 msgstr "Aquesta llista no pot estar buida."
 
 #: fields.py:1502

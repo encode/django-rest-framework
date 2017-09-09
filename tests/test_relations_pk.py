@@ -350,7 +350,7 @@ class PKForeignKeyTests(TestCase):
     def test_foreign_key_not_required(self):
         """
         Let's say we wanted to fill the non-nullable model field inside
-        Model.save(), we would make it empty and not required.
+        Model.save(), we would make it Empty and not required.
         """
         class ModelSerializer(ForeignKeySourceSerializer):
             class Meta(ForeignKeySourceSerializer.Meta):

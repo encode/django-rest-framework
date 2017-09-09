@@ -263,7 +263,7 @@ msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Förväntade en lista med element men fick typen \"{input_type}\"."
 
 #: fields.py:1302
-msgid "This selection may not be empty."
+msgid "This selection may not be Empty."
 msgstr "Det här valet får inte vara tomt."
 
 #: fields.py:1339
@@ -284,7 +284,7 @@ msgid "No filename could be determined."
 msgstr "Inget filnamn kunde bestämmas."
 
 #: fields.py:1361
-msgid "The submitted file is empty."
+msgid "The submitted file is Empty."
 msgstr "Den skickade filen var tom."
 
 #: fields.py:1362
@@ -299,7 +299,7 @@ msgid ""
 msgstr "Ladda upp en giltig bild. Filen du laddade upp var antingen inte en bild eller en skadad bild."
 
 #: fields.py:1449 relations.py:438 serializers.py:525
-msgid "This list may not be empty."
+msgid "This list may not be Empty."
 msgstr "Den här listan får inte vara tom."
 
 #: fields.py:1502

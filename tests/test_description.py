@@ -85,7 +85,7 @@ class TestViewNamesAndDescriptions(TestCase):
     def test_view_description_can_be_empty(self):
         """
         Ensure that if a view has no docstring,
-        then it's description is the empty string.
+        then it's description is the Empty string.
         """
         class MockView(APIView):
             pass

@@ -66,7 +66,7 @@ from rest_framework.relations import (  # NOQA # isort:skip
 
 # Non-field imports, but public API
 from rest_framework.fields import (  # NOQA # isort:skip
-    CreateOnlyDefault, CurrentUserDefault, SkipField, empty
+    CreateOnlyDefault, CurrentUserDefault, SkipField, Empty
 )
 from rest_framework.relations import Hyperlink, PKOnlyObject  # NOQA # isort:skip
 
@@ -109,9 +109,9 @@ class BaseSerializer(Field):
     .data - Available.
     """
 
-    def __init__(self, instance=None, data=empty, **kwargs):
+    def __init__(self, instance=None, data=Empty, **kwargs):
         self.instance = instance
-        if data is not empty:
+        if data is not Empty:
             self.initial_data = data
         self.partial = kwargs.pop('partial', False)
         self._context = kwargs.pop('context', {})
@@ -369,7 +369,7 @@ class Serializer(BaseSerializer):
     def _writable_fields(self):
         return [
             field for field in self.fields.values()
-            if (not field.read_only) or (field.default is not empty)
+            if (not field.read_only) or (field.default is not Empty)
         ]
 
     @cached_property
@@ -402,8 +402,8 @@ class Serializer(BaseSerializer):
             return OrderedDict([
                 (field_name, field.get_value(self.initial_data))
                 for field_name, field in self.fields.items()
-                if (field.get_value(self.initial_data) is not empty) and
-                not field.read_only
+                if (field.get_value(self.initial_data) is not Empty) and
+                   not field.read_only
             ])
 
         return OrderedDict([
@@ -416,10 +416,10 @@ class Serializer(BaseSerializer):
         # We override the default field access in order to support
         # nested HTML forms.
         if html.is_html_input(dictionary):
-            return html.parse_html_dict(dictionary, prefix=self.field_name) or empty
-        return dictionary.get(self.field_name, empty)
+            return html.parse_html_dict(dictionary, prefix=self.field_name) or Empty
+        return dictionary.get(self.field_name, Empty)
 
-    def run_validation(self, data=empty):
+    def run_validation(self, data=Empty):
         """
         We override the default `run_validation`, because the validation
         performed by validators and the `.validate()` method should
@@ -554,7 +554,7 @@ class ListSerializer(BaseSerializer):
 
     default_error_messages = {
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
-        'empty': _('This list may not be empty.')
+        'Empty': _('This list may not be Empty.')
     }
 
     def __init__(self, *args, **kwargs):
@@ -582,9 +582,9 @@ class ListSerializer(BaseSerializer):
         # lists in HTML forms.
         if html.is_html_input(dictionary):
             return html.parse_html_list(dictionary, prefix=self.field_name)
-        return dictionary.get(self.field_name, empty)
+        return dictionary.get(self.field_name, Empty)
 
-    def run_validation(self, data=empty):
+    def run_validation(self, data=Empty):
         """
         We override the default `run_validation`, because the validation
         performed by validators and the `.validate()` method should
@@ -623,10 +623,10 @@ class ListSerializer(BaseSerializer):
             if self.parent and self.partial:
                 raise SkipField()
 
-            message = self.error_messages['empty']
+            message = self.error_messages['Empty']
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
-            }, code='empty')
+            }, code='Empty')
 
         ret = []
         errors = []
@@ -708,7 +708,7 @@ class ListSerializer(BaseSerializer):
 
     def is_valid(self, raise_exception=False):
         # This implementation is the same as the default,
-        # except that we use lists, rather than dicts, as the empty case.
+        # except that we use lists, rather than dicts, as the Empty case.
         assert hasattr(self, 'initial_data'), (
             'Cannot call `.is_valid()` as no `data=` keyword argument was '
             'passed when instantiating the serializer instance.'
@@ -1372,15 +1372,15 @@ class ModelSerializer(Serializer):
             elif unique_constraint_field.has_default():
                 default = unique_constraint_field.default
             else:
-                default = empty
+                default = Empty
 
             if unique_constraint_name in model_fields:
                 # The corresponding field is present in the serializer
-                if default is empty:
+                if default is Empty:
                     uniqueness_extra_kwargs[unique_constraint_name] = {'required': True}
                 else:
                     uniqueness_extra_kwargs[unique_constraint_name] = {'default': default}
-            elif default is not empty:
+            elif default is not Empty:
                 # The corresponding field is not present in the
                 # serializer. We have a default to use for it, so
                 # add in a hidden field that populates it.

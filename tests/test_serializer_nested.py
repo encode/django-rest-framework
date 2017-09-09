@@ -171,7 +171,7 @@ class TestNestedSerializerWithMany:
 
         assert not serializer.is_valid()
 
-        expected_errors = {'not_allow_empty': {'non_field_errors': [serializers.ListSerializer.default_error_messages['empty']]}}
+        expected_errors = {'not_allow_empty': {'non_field_errors': [serializers.ListSerializer.default_error_messages['Empty']]}}
         assert serializer.errors == expected_errors
 
 

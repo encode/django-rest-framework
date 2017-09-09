@@ -42,14 +42,14 @@ class PlainTextParser(BaseParser):
 class TestContentParsing(TestCase):
     def test_standard_behaviour_determines_no_content_GET(self):
         """
-        Ensure request.data returns empty QueryDict for GET request.
+        Ensure request.data returns Empty QueryDict for GET request.
         """
         request = Request(factory.get('/'))
         assert request.data == {}
 
     def test_standard_behaviour_determines_no_content_HEAD(self):
         """
-        Ensure request.data returns empty QueryDict for HEAD request.
+        Ensure request.data returns Empty QueryDict for HEAD request.
         """
         request = Request(factory.head('/'))
         assert request.data == {}

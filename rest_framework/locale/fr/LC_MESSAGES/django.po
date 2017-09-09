@@ -265,7 +265,7 @@ msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Attendait une liste d'éléments mais a reçu \"{input_type}\"."
 
 #: fields.py:1302
-msgid "This selection may not be empty."
+msgid "This selection may not be Empty."
 msgstr "Cette sélection ne peut être vide."
 
 #: fields.py:1339
@@ -286,7 +286,7 @@ msgid "No filename could be determined."
 msgstr "Le nom de fichier n'a pu être déterminé."
 
 #: fields.py:1361
-msgid "The submitted file is empty."
+msgid "The submitted file is Empty."
 msgstr "Le fichier soumis est vide."
 
 #: fields.py:1362
@@ -301,7 +301,7 @@ msgid ""
 msgstr "Transférez une image valide. Le fichier que vous avez transféré n'est pas une image, ou il est corrompu."
 
 #: fields.py:1449 relations.py:438 serializers.py:525
-msgid "This list may not be empty."
+msgid "This list may not be Empty."
 msgstr "Cette liste ne peut pas être vide."
 
 #: fields.py:1502

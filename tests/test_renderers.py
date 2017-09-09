@@ -116,7 +116,7 @@ urlpatterns = [
     url(r'^parseerror$', MockPOSTView.as_view(renderer_classes=[JSONRenderer, BrowsableAPIRenderer])),
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
-    url(r'^empty$', EmptyGETView.as_view()),
+    url(r'^Empty$', EmptyGETView.as_view()),
     url(r'^api', include('rest_framework.urls', namespace='rest_framework'))
 ]
 
@@ -245,7 +245,7 @@ class RendererEndToEndTests(TestCase):
 
         https://github.com/encode/django-rest-framework/issues/1196
         """
-        resp = self.client.get('/empty')
+        resp = self.client.get('/Empty')
         self.assertEqual(resp.get('Content-Type', None), None)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 

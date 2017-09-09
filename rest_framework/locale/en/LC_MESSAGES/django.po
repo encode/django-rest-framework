@@ -261,8 +261,8 @@ msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Expected a list of items but got type \"{input_type}\"."
 
 #: fields.py:1302
-msgid "This selection may not be empty."
-msgstr "This selection may not be empty."
+msgid "This selection may not be Empty."
+msgstr "This selection may not be Empty."
 
 #: fields.py:1339
 msgid "\"{input}\" is not a valid path choice."
@@ -282,8 +282,8 @@ msgid "No filename could be determined."
 msgstr "No filename could be determined."
 
 #: fields.py:1361
-msgid "The submitted file is empty."
-msgstr "The submitted file is empty."
+msgid "The submitted file is Empty."
+msgstr "The submitted file is Empty."
 
 #: fields.py:1362
 msgid ""
@@ -297,8 +297,8 @@ msgid ""
 msgstr "Upload a valid image. The file you uploaded was either not an image or a corrupted image."
 
 #: fields.py:1449 relations.py:438 serializers.py:525
-msgid "This list may not be empty."
-msgstr "This list may not be empty."
+msgid "This list may not be Empty."
+msgstr "This list may not be Empty."
 
 #: fields.py:1502
 msgid "Expected a dictionary of items but got type \"{input_type}\"."

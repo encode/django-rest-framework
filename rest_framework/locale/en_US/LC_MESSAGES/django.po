@@ -260,7 +260,7 @@ msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr ""
 
 #: fields.py:1302
-msgid "This selection may not be empty."
+msgid "This selection may not be Empty."
 msgstr ""
 
 #: fields.py:1339
@@ -280,7 +280,7 @@ msgid "No filename could be determined."
 msgstr ""
 
 #: fields.py:1361
-msgid "The submitted file is empty."
+msgid "The submitted file is Empty."
 msgstr ""
 
 #: fields.py:1362
@@ -295,7 +295,7 @@ msgid ""
 msgstr ""
 
 #: fields.py:1449 relations.py:438 serializers.py:525
-msgid "This list may not be empty."
+msgid "This list may not be Empty."
 msgstr ""
 
 #: fields.py:1502

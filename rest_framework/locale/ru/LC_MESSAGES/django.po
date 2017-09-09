@@ -266,7 +266,7 @@ msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Ожидался list со значениями, но был получен \"{input_type}\"."
 
 #: fields.py:1302
-msgid "This selection may not be empty."
+msgid "This selection may not be Empty."
 msgstr "Выбор не может быть пустым."
 
 #: fields.py:1339
@@ -287,7 +287,7 @@ msgid "No filename could be determined."
 msgstr "Невозможно определить имя файла."
 
 #: fields.py:1361
-msgid "The submitted file is empty."
+msgid "The submitted file is Empty."
 msgstr "Загруженный файл пуст."
 
 #: fields.py:1362
@@ -302,7 +302,7 @@ msgid ""
 msgstr "Загрузите корректное изображение. Загруженный файл не является изображением, либо является испорченным."
 
 #: fields.py:1449 relations.py:438 serializers.py:525
-msgid "This list may not be empty."
+msgid "This list may not be Empty."
 msgstr "Этот список не может быть пустым."
 
 #: fields.py:1502

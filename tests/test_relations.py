@@ -8,7 +8,7 @@ from django.test import override_settings
 from django.utils.datastructures import MultiValueDict
 
 from rest_framework import relations, serializers
-from rest_framework.fields import empty
+from rest_framework.fields import Empty
 from rest_framework.test import APISimpleTestCase
 
 from .utils import (
@@ -290,12 +290,12 @@ class TestManyRelatedField(APISimpleTestCase):
 
     def test_get_value_regular_dictionary_full(self):
         assert 'bar' == self.field.get_value({'foo': 'bar'})
-        assert empty == self.field.get_value({'baz': 'bar'})
+        assert Empty == self.field.get_value({'baz': 'bar'})
 
     def test_get_value_regular_dictionary_partial(self):
         setattr(self.field.root, 'partial', True)
         assert 'bar' == self.field.get_value({'foo': 'bar'})
-        assert empty == self.field.get_value({'baz': 'bar'})
+        assert Empty == self.field.get_value({'baz': 'bar'})
 
     def test_get_value_multi_dictionary_full(self):
         mvd = MultiValueDict({'foo': ['bar1', 'bar2']})
@@ -310,7 +310,7 @@ class TestManyRelatedField(APISimpleTestCase):
         assert ['bar1', 'bar2'] == self.field.get_value(mvd)
 
         mvd = MultiValueDict({'baz': ['bar1', 'bar2']})
-        assert empty == self.field.get_value(mvd)
+        assert Empty == self.field.get_value(mvd)
 
 
 class TestHyperlink:
