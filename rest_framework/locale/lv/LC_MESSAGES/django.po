@@ -262,7 +262,7 @@ msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Tika gaidīts saraksts ar ierakstiem, bet tika saņemts \"{input_type}\" tips."
 
 #: fields.py:1302
-msgid "This selection may not be empty."
+msgid "This selection may not be Empty."
 msgstr "Šī daļa nevar būt tukša."
 
 #: fields.py:1339
@@ -283,7 +283,7 @@ msgid "No filename could be determined."
 msgstr "Faila nosaukums nevar tikt noteikts."
 
 #: fields.py:1361
-msgid "The submitted file is empty."
+msgid "The submitted file is Empty."
 msgstr "Pievienotais fails ir tukšs."
 
 #: fields.py:1362
@@ -298,7 +298,7 @@ msgid ""
 msgstr "Augšupielādē derīgu attēlu. Pievienotā datne nebija attēls vai bojāts attēls."
 
 #: fields.py:1449 relations.py:438 serializers.py:525
-msgid "This list may not be empty."
+msgid "This list may not be Empty."
 msgstr "Šis saraksts nevar būt tukšs."
 
 #: fields.py:1502

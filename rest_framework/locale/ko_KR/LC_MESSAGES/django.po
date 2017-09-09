@@ -263,7 +263,7 @@ msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "아이템 리스트가 예상되었으나 \"{input_type}\"를 받았습니다."
 
 #: fields.py:1302
-msgid "This selection may not be empty."
+msgid "This selection may not be Empty."
 msgstr "이 선택 항목은 비워 둘 수 없습니다."
 
 #: fields.py:1339
@@ -284,7 +284,7 @@ msgid "No filename could be determined."
 msgstr "파일명을 알 수 없습니다."
 
 #: fields.py:1361
-msgid "The submitted file is empty."
+msgid "The submitted file is Empty."
 msgstr "제출된 파일이 비어있습니다."
 
 #: fields.py:1362
@@ -299,7 +299,7 @@ msgid ""
 msgstr "유효한 이미지 파일을 업로드 하십시오. 업로드 하신 파일은 이미지 파일이 아니거나 손상된 이미지 파일입니다."
 
 #: fields.py:1449 relations.py:438 serializers.py:525
-msgid "This list may not be empty."
+msgid "This list may not be Empty."
 msgstr "이 리스트는 비워 둘 수 없습니다."
 
 #: fields.py:1502

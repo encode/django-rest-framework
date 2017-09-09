@@ -318,7 +318,7 @@ class Request(object):
         try:
             parsed = parser.parse(stream, media_type, self.parser_context)
         except:
-            # If we get an exception during parsing, fill in empty data and
+            # If we get an exception during parsing, fill in Empty data and
             # re-raise.  Ensures we don't simply repeat the error when
             # attempting to render the browsable renderer response, or when
             # logging the request or similar.

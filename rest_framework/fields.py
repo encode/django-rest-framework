@@ -40,7 +40,7 @@ from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, representation
 
 
-class empty:
+class Empty:
     """
     This class is used to represent no data being provided for a given input
     or output value.
@@ -301,11 +301,11 @@ class Field(object):
         'null': _('This field may not be null.')
     }
     default_validators = []
-    default_empty_html = empty
+    default_empty_html = Empty
     initial = None
 
     def __init__(self, read_only=False, write_only=False,
-                 required=None, default=empty, initial=empty, source=None,
+                 required=None, default=Empty, initial=Empty, source=None,
                  label=None, help_text=None, style=None,
                  error_messages=None, validators=None, allow_null=False):
         self._creation_counter = Field._creation_counter
@@ -313,12 +313,12 @@ class Field(object):
 
         # If `required` is unset, then use `True` unless a default is provided.
         if required is None:
-            required = default is empty and not read_only
+            required = default is Empty and not read_only
 
         # Some combinations of keyword arguments do not make sense.
         assert not (read_only and write_only), NOT_READ_ONLY_WRITE_ONLY
         assert not (read_only and required), NOT_READ_ONLY_REQUIRED
-        assert not (required and default is not empty), NOT_REQUIRED_DEFAULT
+        assert not (required and default is not Empty), NOT_REQUIRED_DEFAULT
         assert not (read_only and self.__class__ == Field), USE_READONLYFIELD
 
         self.read_only = read_only
@@ -326,14 +326,14 @@ class Field(object):
         self.required = required
         self.default = default
         self.source = source
-        self.initial = self.initial if (initial is empty) else initial
+        self.initial = self.initial if (initial is Empty) else initial
         self.label = label
         self.help_text = help_text
         self.style = {} if style is None else style
         self.allow_null = allow_null
 
-        if self.default_empty_html is not empty:
-            if default is not empty:
+        if self.default_empty_html is not Empty:
+            if default is not Empty:
                 self.default_empty_html = default
 
         if validators is not None:
@@ -414,11 +414,11 @@ class Field(object):
         that should be validated and transformed to a native value.
         """
         if html.is_html_input(dictionary):
-            # HTML forms will represent empty fields as '', and cannot
+            # HTML forms will represent Empty fields as '', and cannot
             # represent None or False values directly.
             if self.field_name not in dictionary:
                 if getattr(self.root, 'partial', False):
-                    return empty
+                    return Empty
                 return self.default_empty_html
             ret = dictionary[self.field_name]
             if ret == '' and self.allow_null:
@@ -428,9 +428,9 @@ class Field(object):
             elif ret == '' and not self.required:
                 # If the field is blank, and emptiness is valid then
                 # determine if we should use emptiness instead.
-                return '' if getattr(self, 'allow_blank', False) else empty
+                return '' if getattr(self, 'allow_blank', False) else Empty
             return ret
-        return dictionary.get(self.field_name, empty)
+        return dictionary.get(self.field_name, Empty)
 
     def get_attribute(self, instance):
         """
@@ -440,7 +440,7 @@ class Field(object):
         try:
             return get_attribute(instance, self.source_attrs)
         except (KeyError, AttributeError) as exc:
-            if self.default is not empty:
+            if self.default is not Empty:
                 return self.get_default()
             if not self.required:
                 raise SkipField()
@@ -468,7 +468,7 @@ class Field(object):
         raise `SkipField`, indicating that no value should be set in the
         validated data for this field.
         """
-        if self.default is empty or getattr(self.root, 'partial', False):
+        if self.default is Empty or getattr(self.root, 'partial', False):
             # No default, or this is a partial update.
             raise SkipField()
         if callable(self.default):
@@ -479,19 +479,19 @@ class Field(object):
 
     def validate_empty_values(self, data):
         """
-        Validate empty values, and either:
+        Validate Empty values, and either:
 
         * Raise `ValidationError`, indicating invalid data.
         * Raise `SkipField`, indicating that the field should be ignored.
-        * Return (True, data), indicating an empty value that should be
+        * Return (True, data), indicating an Empty value that should be
           returned without any further validation being applied.
-        * Return (False, data), indicating a non-empty value, that should
+        * Return (False, data), indicating a non-Empty value, that should
           have validation applied as normal.
         """
         if self.read_only:
             return (True, self.get_default())
 
-        if data is empty:
+        if data is Empty:
             if getattr(self.root, 'partial', False):
                 raise SkipField()
             if self.required:
@@ -505,11 +505,11 @@ class Field(object):
 
         return (False, data)
 
-    def run_validation(self, data=empty):
+    def run_validation(self, data=Empty):
         """
         Validate a simple representation and return the internal value.
 
-        The provided data may be `empty` if no representation was included
+        The provided data may be `Empty` if no representation was included
         in the input.
 
         May raise `SkipField` if the field should not be included in the
@@ -757,8 +757,8 @@ class CharField(Field):
             message = self.error_messages['min_length'].format(min_length=self.min_length)
             self.validators.append(MinLengthValidator(self.min_length, message=message))
 
-    def run_validation(self, data=empty):
-        # Test for the empty string here so that it does not get validated,
+    def run_validation(self, data=Empty):
+        # Test for the Empty string here so that it does not get validated,
         # and so that subclasses do not need to handle it explicitly
         # inside the `to_internal_value()` method.
         if data == '' or (self.trim_whitespace and six.text_type(data).strip() == ''):
@@ -1109,8 +1109,8 @@ class DateTimeField(Field):
     }
     datetime_parser = datetime.datetime.strptime
 
-    def __init__(self, format=empty, input_formats=None, default_timezone=None, *args, **kwargs):
-        if format is not empty:
+    def __init__(self, format=Empty, input_formats=None, default_timezone=None, *args, **kwargs):
+        if format is not Empty:
             self.format = format
         if input_formats is not None:
             self.input_formats = input_formats
@@ -1188,8 +1188,8 @@ class DateField(Field):
     }
     datetime_parser = datetime.datetime.strptime
 
-    def __init__(self, format=empty, input_formats=None, *args, **kwargs):
-        if format is not empty:
+    def __init__(self, format=Empty, input_formats=None, *args, **kwargs):
+        if format is not Empty:
             self.format = format
         if input_formats is not None:
             self.input_formats = input_formats
@@ -1254,8 +1254,8 @@ class TimeField(Field):
     }
     datetime_parser = datetime.datetime.strptime
 
-    def __init__(self, format=empty, input_formats=None, *args, **kwargs):
-        if format is not empty:
+    def __init__(self, format=Empty, input_formats=None, *args, **kwargs):
+        if format is not Empty:
             self.format = format
         if input_formats is not None:
             self.input_formats = input_formats
@@ -1382,7 +1382,7 @@ class MultipleChoiceField(ChoiceField):
     default_error_messages = {
         'invalid_choice': _('"{input}" is not a valid choice.'),
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
-        'empty': _('This selection may not be empty.')
+        'Empty': _('This selection may not be Empty.')
     }
     default_empty_html = []
 
@@ -1393,18 +1393,18 @@ class MultipleChoiceField(ChoiceField):
     def get_value(self, dictionary):
         if self.field_name not in dictionary:
             if getattr(self.root, 'partial', False):
-                return empty
+                return Empty
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
             return dictionary.getlist(self.field_name)
-        return dictionary.get(self.field_name, empty)
+        return dictionary.get(self.field_name, Empty)
 
     def to_internal_value(self, data):
         if isinstance(data, type('')) or not hasattr(data, '__iter__'):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
-            self.fail('empty')
+            self.fail('Empty')
 
         return {
             super(MultipleChoiceField, self).to_internal_value(item)
@@ -1441,7 +1441,7 @@ class FileField(Field):
         'required': _('No file was submitted.'),
         'invalid': _('The submitted data was not a file. Check the encoding type on the form.'),
         'no_name': _('No filename could be determined.'),
-        'empty': _('The submitted file is empty.'),
+        'Empty': _('The submitted file is Empty.'),
         'max_length': _('Ensure this filename has at most {max_length} characters (it has {length}).'),
     }
 
@@ -1463,7 +1463,7 @@ class FileField(Field):
         if not file_name:
             self.fail('no_name')
         if not self.allow_empty_file and not file_size:
-            self.fail('empty')
+            self.fail('Empty')
         if self.max_length and len(file_name) > self.max_length:
             self.fail('max_length', max_length=self.max_length, length=len(file_name))
 
@@ -1529,7 +1529,7 @@ class ListField(Field):
     initial = []
     default_error_messages = {
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
-        'empty': _('This list may not be empty.'),
+        'Empty': _('This list may not be Empty.'),
         'min_length': _('Ensure this field has at least {min_length} elements.'),
         'max_length': _('Ensure this field has no more than {max_length} elements.')
     }
@@ -1558,7 +1558,7 @@ class ListField(Field):
     def get_value(self, dictionary):
         if self.field_name not in dictionary:
             if getattr(self.root, 'partial', False):
-                return empty
+                return Empty
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
@@ -1567,7 +1567,7 @@ class ListField(Field):
                 # Support QueryDict lists in HTML input.
                 return val
             return html.parse_html_list(dictionary, prefix=self.field_name)
-        return dictionary.get(self.field_name, empty)
+        return dictionary.get(self.field_name, Empty)
 
     def to_internal_value(self, data):
         """
@@ -1578,7 +1578,7 @@ class ListField(Field):
         if isinstance(data, type('')) or isinstance(data, collections.Mapping) or not hasattr(data, '__iter__'):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
-            self.fail('empty')
+            self.fail('Empty')
         return [self.child.run_validation(item) for item in data]
 
     def to_representation(self, data):
@@ -1612,7 +1612,7 @@ class DictField(Field):
         # dictionaries in HTML forms.
         if html.is_html_input(dictionary):
             return html.parse_html_dict(dictionary, prefix=self.field_name)
-        return dictionary.get(self.field_name, empty)
+        return dictionary.get(self.field_name, Empty)
 
     def to_internal_value(self, data):
         """
@@ -1656,7 +1656,7 @@ class JSONField(Field):
                     ret.is_json_string = True
                     return ret
             return JSONString(dictionary[self.field_name])
-        return dictionary.get(self.field_name, empty)
+        return dictionary.get(self.field_name, Empty)
 
     def to_internal_value(self, data):
         try:
@@ -1719,7 +1719,7 @@ class HiddenField(Field):
     def get_value(self, dictionary):
         # We always use the default value for `HiddenField`.
         # User input is never provided or accepted.
-        return empty
+        return Empty
 
     def to_internal_value(self, data):
         return data

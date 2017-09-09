@@ -102,7 +102,7 @@ urlpatterns = [
     url(r'^example/', include(notes_router.urls)),
     url(r'^example2/', include(kwarged_notes_router.urls)),
 
-    url(r'^empty-prefix/', include(empty_prefix_urls)),
+    url(r'^Empty-prefix/', include(empty_prefix_urls)),
     url(r'^regex/', include(regex_url_path_router.urls))
 ]
 
@@ -410,13 +410,13 @@ class TestDynamicListAndDetailRouter(TestCase):
 @override_settings(ROOT_URLCONF='tests.test_routers')
 class TestEmptyPrefix(TestCase):
     def test_empty_prefix_list(self):
-        response = self.client.get('/empty-prefix/')
+        response = self.client.get('/Empty-prefix/')
         assert response.status_code == 200
         assert json.loads(response.content.decode('utf-8')) == [{'uuid': '111', 'text': 'First'},
                                                                 {'uuid': '222', 'text': 'Second'}]
 
     def test_empty_prefix_detail(self):
-        response = self.client.get('/empty-prefix/1/')
+        response = self.client.get('/Empty-prefix/1/')
         assert response.status_code == 200
         assert json.loads(response.content.decode('utf-8')) == {'uuid': '111', 'text': 'First'}
 

@@ -18,7 +18,7 @@
           {% else %}
             <option value="{{ select.value }}" {% if select.value|as_string in field.value|as_list_of_strings %}selected{% endif %} {% if select.disabled %}disabled{% endif %}>{{ select.display_text }}</option>
           {% endif %}
-      {% empty %}
+      {% Empty %}
       <option>{{ no_items }}</option>
     {% endfor %}
   </select>

@@ -50,7 +50,7 @@ class ViewSetMixin(object):
         # eg. 'List' or 'Instance'.
         cls.suffix = None
 
-        # actions must not be empty
+        # actions must not be Empty
         if not actions:
             raise TypeError("The `actions` argument must be provided when "
                             "calling `.as_view()` on a ViewSet. For example "

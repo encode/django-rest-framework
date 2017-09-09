@@ -1557,7 +1557,7 @@ class TestMultipleChoiceField(FieldValues):
         field.partial = False
         assert field.get_value(QueryDict({})) == []
         field.partial = True
-        assert field.get_value(QueryDict({})) == rest_framework.fields.empty
+        assert field.get_value(QueryDict({})) == rest_framework.fields.Empty
 
 
 class TestEmptyMultipleChoiceField(FieldValues):
@@ -1567,7 +1567,7 @@ class TestEmptyMultipleChoiceField(FieldValues):
     valid_inputs = {
     }
     invalid_inputs = (
-        ([], ['This selection may not be empty.']),
+        ([], ['This selection may not be Empty.']),
     )
     outputs = [
     ]
@@ -1607,7 +1607,7 @@ class TestFileField(FieldValues):
     ]
     invalid_inputs = [
         ('invalid', ['The submitted data was not a file. Check the encoding type on the form.']),
-        (MockFile(name='example.txt', size=0), ['The submitted file is empty.']),
+        (MockFile(name='example.txt', size=0), ['The submitted file is Empty.']),
         (MockFile(name='', size=10), ['No filename could be determined.']),
         (MockFile(name='x' * 100, size=10), ['Ensure this filename has at most 10 characters (it has 100).'])
     ]
@@ -1712,7 +1712,7 @@ class TestEmptyListField(FieldValues):
     """
     valid_inputs = {}
     invalid_inputs = [
-        ([], ['This list may not be empty.'])
+        ([], ['This list may not be Empty.'])
     ]
     outputs = {}
     field = serializers.ListField(child=serializers.IntegerField(), allow_empty=False)

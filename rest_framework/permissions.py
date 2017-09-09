@@ -32,7 +32,7 @@ class BasePermission(object):
 class AllowAny(BasePermission):
     """
     Allow any access.
-    This isn't strictly required, since you could use an empty
+    This isn't strictly required, since you could use an Empty
     permission_classes list, but it's useful because it makes the intention
     more explicit.
     """

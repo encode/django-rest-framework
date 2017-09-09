@@ -17,7 +17,7 @@ from rest_framework.compat import (
     NoReverseMatch, Resolver404, get_script_prefix, resolve
 )
 from rest_framework.fields import (
-    Field, empty, get_attribute, is_simple_callable, iter_options
+    Field, Empty, get_attribute, is_simple_callable, iter_options
 )
 from rest_framework.reverse import reverse
 from rest_framework.settings import api_settings
@@ -140,8 +140,8 @@ class RelatedField(Field):
                 list_kwargs[key] = kwargs[key]
         return ManyRelatedField(**list_kwargs)
 
-    def run_validation(self, data=empty):
-        # We force empty strings to None values for relational fields.
+    def run_validation(self, data=Empty):
+        # We force Empty strings to None values for relational fields.
         if data == '':
             data = None
         return super(RelatedField, self).run_validation(data)
@@ -384,7 +384,7 @@ class HyperlinkedRelatedField(RelatedField):
                 '`lookup_field` attribute on this field.'
             )
             if value in ('', None):
-                value_string = {'': 'the empty string', None: 'None'}[value]
+                value_string = {'': 'the Empty string', None: 'None'}[value]
                 msg += (
                     " WARNING: The value of the field on the model instance "
                     "was %s, which may be why it didn't match any "
@@ -461,7 +461,7 @@ class ManyRelatedField(Field):
     default_empty_html = []
     default_error_messages = {
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
-        'empty': _('This list may not be empty.')
+        'Empty': _('This list may not be Empty.')
     }
     html_cutoff = None
     html_cutoff_text = None
@@ -490,16 +490,16 @@ class ManyRelatedField(Field):
             # Don't return [] if the update is partial
             if self.field_name not in dictionary:
                 if getattr(self.root, 'partial', False):
-                    return empty
+                    return Empty
             return dictionary.getlist(self.field_name)
 
-        return dictionary.get(self.field_name, empty)
+        return dictionary.get(self.field_name, Empty)
 
     def to_internal_value(self, data):
         if isinstance(data, type('')) or not hasattr(data, '__iter__'):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
-            self.fail('empty')
+            self.fail('Empty')
 
         return [
             self.child_relation.to_internal_value(item)

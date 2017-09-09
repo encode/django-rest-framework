@@ -229,7 +229,7 @@ class APIRequestFactory(DjangoRequestFactory):
 
     def generic(self, method, path, data='',
                 content_type='application/octet-stream', secure=False, **extra):
-        # Include the CONTENT_TYPE, regardless of whether or not data is empty.
+        # Include the CONTENT_TYPE, regardless of whether or not data is Empty.
         if content_type is not None:
             extra['CONTENT_TYPE'] = str(content_type)
 
