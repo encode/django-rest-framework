@@ -19,7 +19,7 @@ class Response(SimpleTemplateResponse):
     arbitrary media types.
     """
 
-    def __init__(self, data=None, status=None,
+    def __init__(self, data=None, status=None, renderer=None,
                  template_name=None, headers=None,
                  exception=False, content_type=None):
         """
@@ -43,6 +43,7 @@ class Response(SimpleTemplateResponse):
         self.template_name = template_name
         self.exception = exception
         self.content_type = content_type
+        self.renderer = renderer
 
         if headers:
             for name, value in six.iteritems(headers):
@@ -50,7 +51,7 @@ class Response(SimpleTemplateResponse):
 
     @property
     def rendered_content(self):
-        renderer = getattr(self, 'accepted_renderer', None)
+        renderer = getattr(self, 'accepted_renderer', self.renderer)
         accepted_media_type = getattr(self, 'accepted_media_type', None)
         context = getattr(self, 'renderer_context', None)
 
