@@ -127,12 +127,13 @@ def get_field_kwargs(field_name, model_field):
     else:
         # Ensure that max_value is passed explicitly as a keyword arg,
         # rather than as a validator.
-        max_value = next((
-            validator.limit_value for validator in validator_kwarg
+        max_value, messsage = next((
+            (validator.limit_value, validator.message) for validator in validator_kwarg
             if isinstance(validator, validators.MaxValueValidator)
-        ), None)
+        ), (None, None))
         if max_value is not None and isinstance(model_field, NUMERIC_FIELD_TYPES):
             kwargs['max_value'] = max_value
+            kwargs['error_messages'] = {'max_value': messsage}
             validator_kwarg = [
                 validator for validator in validator_kwarg
                 if not isinstance(validator, validators.MaxValueValidator)
@@ -140,12 +141,13 @@ def get_field_kwargs(field_name, model_field):
 
         # Ensure that min_value is passed explicitly as a keyword arg,
         # rather than as a validator.
-        min_value = next((
-            validator.limit_value for validator in validator_kwarg
+        min_value, messsage = next((
+            (validator.limit_value, validator.message) for validator in validator_kwarg
             if isinstance(validator, validators.MinValueValidator)
-        ), None)
+        ), (None, None))
         if min_value is not None and isinstance(model_field, NUMERIC_FIELD_TYPES):
             kwargs['min_value'] = min_value
+            kwargs['error_messages'] = {**kwargs['error_messages'], **{'min_value': messsage}}
             validator_kwarg = [
                 validator for validator in validator_kwarg
                 if not isinstance(validator, validators.MinValueValidator)
