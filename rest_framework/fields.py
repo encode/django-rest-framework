@@ -1125,7 +1125,9 @@ class DateTimeField(Field):
         """
         field_timezone = getattr(self, 'timezone', self.default_timezone())
 
-        if (field_timezone is not None) and not timezone.is_aware(value):
+        if field_timezone is not None:
+            if timezone.is_aware(value):
+                return value.astimezone(field_timezone)
             try:
                 return timezone.make_aware(value, field_timezone)
             except InvalidTimeError:
@@ -1135,7 +1137,7 @@ class DateTimeField(Field):
         return value
 
     def default_timezone(self):
-        return timezone.get_default_timezone() if settings.USE_TZ else None
+        return timezone.get_current_timezone() if settings.USE_TZ else None
 
     def to_internal_value(self, value):
         input_formats = getattr(self, 'input_formats', api_settings.DATETIME_INPUT_FORMATS)
@@ -1174,6 +1176,7 @@ class DateTimeField(Field):
             return value
 
         if output_format.lower() == ISO_8601:
+            value = self.enforce_timezone(value)
             value = value.isoformat()
             if value.endswith('+00:00'):
                 value = value[:-6] + 'Z'
