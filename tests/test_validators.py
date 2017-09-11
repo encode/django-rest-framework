@@ -1,6 +1,7 @@
 import datetime
 
 import pytest
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import DataError, models
 from django.test import TestCase
 
@@ -36,7 +37,7 @@ class RelatedModel(models.Model):
 
 class RelatedModelSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username',
-        validators=[UniqueValidator(queryset=UniquenessModel.objects.all(), lookup='iexact')])  # NOQA
+                                     validators=[UniqueValidator(queryset=UniquenessModel.objects.all(), lookup='iexact')])  # NOQA
 
     class Meta:
         model = RelatedModel
@@ -245,10 +246,12 @@ class TestUniquenessTogetherValidation(TestCase):
         When model fields are not included in a serializer, then uniqueness
         validators should not be added for that field.
         """
+
         class ExcludedFieldSerializer(serializers.ModelSerializer):
             class Meta:
                 model = UniquenessTogetherModel
                 fields = ('id', 'race_name',)
+
         serializer = ExcludedFieldSerializer()
         expected = dedent("""
             ExcludedFieldSerializer():
@@ -262,6 +265,7 @@ class TestUniquenessTogetherValidation(TestCase):
         When serializer fields are read only, then uniqueness
         validators should not be added for that field.
         """
+
         class ReadOnlyFieldSerializer(serializers.ModelSerializer):
             class Meta:
                 model = UniquenessTogetherModel
@@ -281,6 +285,7 @@ class TestUniquenessTogetherValidation(TestCase):
         """
         Ensure validators can be explicitly removed..
         """
+
         class NoValidatorsSerializer(serializers.ModelSerializer):
             class Meta:
                 model = UniquenessTogetherModel
@@ -329,6 +334,7 @@ class TestUniquenessTogetherValidation(TestCase):
         filter_queryset should add value from existing instance attribute
         if it is not provided in attributes dict
         """
+
         class MockQueryset(object):
             def filter(self, **kwargs):
                 self.called_with = kwargs
@@ -411,6 +417,7 @@ class TestUniquenessForDateValidation(TestCase):
             'published': datetime.date(2000, 1, 1)
         }
 
+
 # Tests for `UniqueForMonthValidator`
 # ----------------------------------
 
@@ -427,7 +434,6 @@ class UniqueForMonthSerializer(serializers.ModelSerializer):
 
 
 class UniqueForMonthTests(TestCase):
-
     def setUp(self):
         self.instance = UniqueForMonthModel.objects.create(
             slug='existing', published='2017-01-01'
@@ -450,6 +456,7 @@ class UniqueForMonthTests(TestCase):
             'published': datetime.date(2017, 2, 1)
         }
 
+
 # Tests for `UniqueForYearValidator`
 # ----------------------------------
 
@@ -466,7 +473,6 @@ class UniqueForYearSerializer(serializers.ModelSerializer):
 
 
 class UniqueForYearTests(TestCase):
-
     def setUp(self):
         self.instance = UniqueForYearModel.objects.create(
             slug='existing', published='2017-01-01'
@@ -532,23 +538,25 @@ class TestHiddenFieldUniquenessForDateValidation(TestCase):
 
 
 class ValidatorsTests(TestCase):
-
     def test_qs_exists_handles_type_error(self):
         class TypeErrorQueryset(object):
             def exists(self):
                 raise TypeError
+
         assert qs_exists(TypeErrorQueryset()) is False
 
     def test_qs_exists_handles_value_error(self):
         class ValueErrorQueryset(object):
             def exists(self):
                 raise ValueError
+
         assert qs_exists(ValueErrorQueryset()) is False
 
     def test_qs_exists_handles_data_error(self):
         class DataErrorQueryset(object):
             def exists(self):
                 raise DataError
+
         assert qs_exists(DataErrorQueryset()) is False
 
     def test_validator_raises_error_if_not_all_fields_are_provided(self):
@@ -563,3 +571,30 @@ class ValidatorsTests(TestCase):
                                            date_field='bar')
         with pytest.raises(NotImplementedError):
             validator.filter_queryset(attrs=None, queryset=None)
+
+
+class ItemModel(models.Model):
+    price = models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(limit_value=0, message='Price has to be >= 0.'),
+                                                                             MaxValueValidator(limit_value=10, message='Price has to be <= 10.')])
+
+
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ItemModel
+        fields = '__all__'
+
+
+class ValidatorMessageTests(TestCase):
+    def test_min_value_validator_message_is_copied_from_model(self):
+        data = {'price': -1}
+        s = ItemSerializer(data=data, partial=True)
+        s.is_valid()
+
+        assert s.errors['price'] == ['Price has to be >= 0.']
+
+    def test_max_value_validator_message_is_copied_from_model(self):
+        data = {'price': 11}
+        s = ItemSerializer(data=data, partial=True)
+        s.is_valid()
+
+        assert s.errors['price'] == ['Price has to be <= 10.']
