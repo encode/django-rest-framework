@@ -1173,7 +1173,7 @@ class TestDateTimeField(FieldValues):
         datetime.date(2001, 1, 1): ['Expected a datetime but got a date.'],
     }
     outputs = {
-        datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00',
+        datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00Z',
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc): '2001-01-01T13:00:00Z',
         '2001-01-01T00:00:00': '2001-01-01T00:00:00',
         six.text_type('2016-01-10T00:00:00'): '2016-01-10T00:00:00',
@@ -1235,7 +1235,10 @@ class TestNaiveDateTimeField(FieldValues):
         '2001-01-01 13:00': datetime.datetime(2001, 1, 1, 13, 00),
     }
     invalid_inputs = {}
-    outputs = {}
+    outputs = {
+        datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00',
+        datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc): '2001-01-01T13:00:00',
+    }
     field = serializers.DateTimeField(default_timezone=None)
 
 
