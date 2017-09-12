@@ -31,15 +31,16 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        username = options['username']
+        usernames = options['username']
         reset_token = options['reset_token']
 
-        try:
-            token = self.create_user_token(username, reset_token)
-        except UserModel.DoesNotExist:
-            raise CommandError(
-                'Cannot create the Token: user {0} does not exist'.format(
-                    username)
-            )
-        self.stdout.write(
-            'Generated token {0} for user {1}'.format(token.key, username))
+        for username in usernames:
+            try:
+                token = self.create_user_token(username, reset_token)
+            except UserModel.DoesNotExist:
+                raise CommandError(
+                    'Cannot create the Token: user {0} does not exist'.format(
+                        username)
+                )
+            self.stdout.write(
+                'Generated token {0} for user {1}'.format(token.key, username))

@@ -1,7 +1,9 @@
 import pytest
 from django.contrib.admin import site
 from django.contrib.auth.models import User
+from django.core.management import call_command
 from django.test import TestCase
+from django.utils.six import StringIO
 
 from rest_framework.authtoken.admin import TokenAdmin
 from rest_framework.authtoken.management.commands.drf_create_token import \
@@ -68,3 +70,11 @@ class AuthTokenCommandTests(TestCase):
         second_token_key = Token.objects.first().key
 
         assert first_token_key == second_token_key
+
+    def test_command_output(self):
+        out = StringIO()
+        call_command('drf_create_token', self.user.username, stdout=out)
+        token_saved = Token.objects.first()
+        self.assertIn('Generated token', out.getvalue())
+        self.assertIn(self.user.username, out.getvalue())
+        self.assertIn(token_saved.key, out.getvalue())
