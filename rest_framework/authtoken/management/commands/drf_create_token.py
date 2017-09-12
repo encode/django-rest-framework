@@ -19,7 +19,7 @@ class Command(BaseCommand):
         return token[0]
 
     def add_arguments(self, parser):
-        parser.add_argument('username', type=str, nargs='+')
+        parser.add_argument('username', type=str)
 
         parser.add_argument(
             '-r',
@@ -31,16 +31,15 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        usernames = options['username']
+        username = options['username']
         reset_token = options['reset_token']
 
-        for username in usernames:
-            try:
-                token = self.create_user_token(username, reset_token)
-            except UserModel.DoesNotExist:
-                raise CommandError(
-                    'Cannot create the Token: user {0} does not exist'.format(
-                        username)
-                )
-            self.stdout.write(
-                'Generated token {0} for user {1}'.format(token.key, username))
+        try:
+            token = self.create_user_token(username, reset_token)
+        except UserModel.DoesNotExist:
+            raise CommandError(
+                'Cannot create the Token: user {0} does not exist'.format(
+                    username)
+            )
+        self.stdout.write(
+            'Generated token {0} for user {1}'.format(token.key, username))
