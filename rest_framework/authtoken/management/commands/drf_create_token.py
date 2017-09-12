@@ -19,7 +19,7 @@ class Command(BaseCommand):
         return token[0]
 
     def add_arguments(self, parser):
-        parser.add_argument('username', type=str, nargs='+')
+        parser.add_argument('username', type=str)
 
         parser.add_argument(
             '-r',
