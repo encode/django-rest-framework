@@ -251,5 +251,36 @@ To create a base viewset class that provides `create`, `list` and `retrieve` ope
 
 By creating your own base `ViewSet` classes, you can provide common behavior that can be reused in multiple viewsets across your API.
 
+---
+
+# Third party packages
+
+The following third party packages are also available.
+
+## Django Efficient Rest
+
+The [Django-Efficient-Rest][Django-Efficient-Rest] Implements a new type of ViewSets that works with Models like the default one and advanced Services like switching user accounts or connecting to a social network
+
+Checkout this example were we check if a username is avaliable or not:
+
+    class api_auth(service):
+        class Meta:
+            methods = ["POST"]
+            requires_action = True
+            requires_auth = False
+
+        def post_username(self):
+            username = self.getInputJson()["username"]
+
+            try:
+                user = User.objects.get(username=username)
+                return status.HTTP_409_CONFLICT
+            except ObjectDoesNotExist:
+                return status.HTTP_202_ACCEPTED
+
+To learn more read our documentation here [Django-Efficient-Rest-Wiki][Django-Efficient-Rest-Wiki]
+
 [cite]: http://guides.rubyonrails.org/routing.html
 [routers]: routers.md
+[Django-Efficient-Rest]: https://github.com/G4brym/Django-Efficient-Rest
+[Django-Efficient-Rest-Wiki]: https://github.com/G4brym/Django-Efficient-Rest/wiki

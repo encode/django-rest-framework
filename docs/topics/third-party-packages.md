@@ -222,6 +222,10 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-bulk][djangorestframework-bulk] - Implements generic view mixins as well as some common concrete generic views to allow to apply bulk operations via API requests.
 * [django-rest-multiple-models][django-rest-multiple-models] - Provides a generic view (and mixin) for sending multiple serialized models and/or querysets via a single API request.
 
+### ViewSets
+
+* [Django-Efficient-Rest][Django-Efficient-Rest] - Implements a new type of ViewSets that works with Models like the default one and advanced Services like switching user accounts or connecting to a social network
+
 ### Routers
 
 * [drf-nested-routers][drf-nested-routers] - Provides routers and relationship fields for working with nested resources.
@@ -335,3 +339,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [djangorestframework-queryfields]: https://github.com/wimglenn/djangorestframework-queryfields
 [drfpasswordless]: https://github.com/aaronn/django-rest-framework-passwordless
 [djangorest-alchemy]: https://github.com/dealertrack/djangorest-alchemy
+[Django-Efficient-Rest]: https://github.com/G4brym/Django-Efficient-Rest
