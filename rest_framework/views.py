@@ -112,8 +112,6 @@ class APIView(View):
     # Allow dependency injection of other settings to make testing easier.
     settings = api_settings
 
-    # Mark the view as being included or excluded from schema generation.
-    exclude_from_schema = False
     schema = AutoSchema()
 
     @classmethod

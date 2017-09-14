@@ -8,7 +8,9 @@ from django.test import TestCase, override_settings
 
 from rest_framework import filters, pagination, permissions, serializers
 from rest_framework.compat import coreapi, coreschema
-from rest_framework.decorators import detail_route, list_route, api_view, schema
+from rest_framework.decorators import (
+    api_view, detail_route, list_route, schema
+)
 from rest_framework.request import Request
 from rest_framework.routers import DefaultRouter
 from rest_framework.schemas import (
@@ -618,13 +620,14 @@ def test_docstring_is_not_stripped_by_get_description():
 
 # Views for SchemaGenerationExclusionTests
 class ExcludedAPIView(APIView):
-    exclude_from_schema = True
+    schema = None
 
     def get(self, request, *args, **kwargs):
         pass
 
 
-@api_view(['GET'], exclude_from_schema=True)
+@api_view(['GET'])
+@schema(None)
 def excluded_fbv(request):
     pass
 
@@ -670,15 +673,13 @@ class SchemaGenerationExclusionTests(TestCase):
         path, method, callback = endpoints[0]
         assert path == '/included-fbv/'
 
-
     def test_should_include_endpoint_excludes_correctly(self):
         """This is the specific method that should handle the exclusion"""
         inspector = EndpointEnumerator(self.patterns)
 
-        pairs = [
-            (inspector.get_path_from_regex(pattern.regex.pattern), pattern.callback)
-                for pattern in self.patterns
-        ]
+        # Not pretty. Mimics internals of EndpointEnumerator to put should_include_endpoint under test
+        pairs = [(inspector.get_path_from_regex(pattern.regex.pattern), pattern.callback)
+                 for pattern in self.patterns]
 
         should_include = [
             inspector.should_include_endpoint(*pair) for pair in pairs

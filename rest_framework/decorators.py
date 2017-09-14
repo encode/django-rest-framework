@@ -75,7 +75,12 @@ def api_view(http_method_names=None, exclude_from_schema=False):
         WrappedAPIView.schema = getattr(func, 'schema',
                                         APIView.schema)
 
-        WrappedAPIView.exclude_from_schema = exclude_from_schema
+        if exclude_from_schema:
+            # This won't catch an explicit `exclude_from_schema=False`
+            #   but it should be good enough.
+            # TODO: DeprecationWarning
+            WrappedAPIView.exclude_from_schema = exclude_from_schema
+
         return WrappedAPIView.as_view()
     return decorator
 

@@ -148,7 +148,12 @@ class EndpointEnumerator(object):
         if not is_api_view(callback):
             return False  # Ignore anything except REST framework views.
 
-        if getattr(callback.cls, 'exclude_from_schema', False):
+        if hasattr(callback.cls, 'exclude_from_schema'):
+            # TODO: deprecation warning
+            if getattr(callback.cls, 'exclude_from_schema', False):
+                return False
+
+        if callback.cls.schema is None:
             return False
 
         if path.endswith('.{format}') or path.endswith('.{format}/'):

@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 
 class SchemaView(APIView):
     _ignore_model_permissions = True
-    exclude_from_schema = True
+    schema = None  # exclude from schema
     renderer_classes = None
     schema_generator = None
     public = False
