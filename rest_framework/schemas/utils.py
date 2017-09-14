@@ -1,3 +1,8 @@
+"""
+utils.py        # Shared helper functions
+
+See schemas.__init__.py for package overview.
+"""
 
 
 def is_list_view(path, method, view):

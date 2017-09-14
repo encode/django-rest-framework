@@ -1,3 +1,8 @@
+"""
+inspectors.py   # Per-endpoint view introspection
+
+See schemas.__init__.py for package overview.
+"""
 import re
 from collections import OrderedDict
 

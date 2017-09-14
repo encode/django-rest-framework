@@ -1,3 +1,8 @@
+"""
+generators.py   # Top-down schema generation
+
+See schemas.__init__.py for package overview.
+"""
 from collections import OrderedDict
 from importlib import import_module
 
