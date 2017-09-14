@@ -695,14 +695,14 @@ class SchemaGenerationExclusionTests(TestCase):
             def view(request):
                 pass
 
-        class OldFashjonedExcludedView(APIView):
+        class OldFashionedExcludedView(APIView):
             exclude_from_schema = True
 
             def get(self, request, *args, **kwargs):
                 pass
 
         patterns = [
-            url('^excluded-old-fashioned/$', OldFashjonedExcludedView.as_view()),
+            url('^excluded-old-fashioned/$', OldFashionedExcludedView.as_view()),
         ]
 
         inspector = EndpointEnumerator(patterns)
