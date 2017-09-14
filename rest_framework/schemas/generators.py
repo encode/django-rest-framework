@@ -148,6 +148,9 @@ class EndpointEnumerator(object):
         if not is_api_view(callback):
             return False  # Ignore anything except REST framework views.
 
+        if getattr(callback.cls, 'exclude_from_schema', False):
+            return False
+
         if path.endswith('.{format}') or path.endswith('.{format}/'):
             return False  # Ignore .json style URLs.
 
@@ -239,8 +242,6 @@ class SchemaGenerator(object):
         view_endpoints = []
         for path, method, callback in self.endpoints:
             view = self.create_view(callback, method, request)
-            if getattr(view, 'exclude_from_schema', False):
-                continue
             path = self.coerce_path(path, method, view)
             paths.append(path)
             view_endpoints.append((path, method, view))
