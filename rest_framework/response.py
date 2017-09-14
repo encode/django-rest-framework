@@ -88,8 +88,6 @@ class Response(SimpleTemplateResponse):
         Returns reason text corresponding to our HTTP response status code.
         Provided for convenience.
         """
-        # TODO: Deprecate and use a template tag instead
-        # TODO: Status code text for RFC 6585 status codes
         return responses.get(self.status_code, '')
 
     def __getstate__(self):
