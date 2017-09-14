@@ -1,5 +1,6 @@
 import unittest
 
+import pytest
 from django.conf.urls import include, url
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
@@ -10,7 +11,9 @@ from rest_framework.compat import coreapi, coreschema
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.request import Request
 from rest_framework.routers import DefaultRouter
-from rest_framework.schemas import SchemaGenerator, get_schema_view
+from rest_framework.schemas import (
+    AutoSchema, ManualSchema, SchemaGenerator, get_schema_view
+)
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -496,3 +499,81 @@ class Test4605Regression(TestCase):
             '/auth/convert-token/'
         ])
         assert prefix == '/'
+
+
+class TestDescriptor(TestCase):
+
+    def test_apiview_schema_descriptor(self):
+        view = APIView()
+        assert hasattr(view, 'schema')
+        assert isinstance(view.schema, AutoSchema)
+
+    def test_get_link_requires_instance(self):
+        descriptor = APIView.schema  # Accessed from class
+        with pytest.raises(AssertionError):
+            descriptor.get_link(None, None, None)  # ???: Do the dummy arguments require a tighter assert?
+
+    def test_manual_fields(self):
+
+        class CustomView(APIView):
+            schema = AutoSchema(manual_fields=[
+                coreapi.Field(
+                    "my_extra_field",
+                    required=True,
+                    location="path",
+                    schema=coreschema.String()
+                ),
+            ])
+
+        view = CustomView()
+        link = view.schema.get_link('/a/url/{id}/', 'GET', '')
+        fields = link.fields
+
+        assert len(fields) == 2
+        assert "my_extra_field" in [f.name for f in fields]
+
+    def test_view_with_manual_schema(self):
+
+        path = '/example'
+        method = 'get'
+        base_url = None
+
+        fields = [
+            coreapi.Field(
+                "first_field",
+                required=True,
+                location="path",
+                schema=coreschema.String()
+            ),
+            coreapi.Field(
+                "second_field",
+                required=True,
+                location="path",
+                schema=coreschema.String()
+            ),
+            coreapi.Field(
+                "third_field",
+                required=True,
+                location="path",
+                schema=coreschema.String()
+            ),
+        ]
+        description = "A test endpoint"
+
+        class CustomView(APIView):
+            """
+            ManualSchema takes list of fields for endpoint.
+            - Provides url and action, which are always dynamic
+            """
+            schema = ManualSchema(fields, description)
+
+        expected = coreapi.Link(
+            url=path,
+            action=method,
+            fields=fields,
+            description=description
+        )
+
+        view = CustomView()
+        link = view.schema.get_link(path, method, base_url)
+        assert link == expected

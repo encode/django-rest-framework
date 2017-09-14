@@ -1,86 +1,26 @@
-import re
+"""
+generators.py   # Top-down schema generation
+
+See schemas.__init__.py for package overview.
+"""
 from collections import OrderedDict
 from importlib import import_module
 
 from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
 from django.core.exceptions import PermissionDenied
-from django.db import models
 from django.http import Http404
 from django.utils import six
-from django.utils.encoding import force_text, smart_text
-from django.utils.translation import ugettext_lazy as _
 
-from rest_framework import exceptions, renderers, serializers
+from rest_framework import exceptions
 from rest_framework.compat import (
-    RegexURLPattern, RegexURLResolver, coreapi, coreschema, uritemplate,
-    urlparse
+    RegexURLPattern, RegexURLResolver, coreapi, coreschema
 )
 from rest_framework.request import clone_request
-from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.utils import formatting
 from rest_framework.utils.model_meta import _get_pk
-from rest_framework.views import APIView
 
-header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
-
-
-def field_to_schema(field):
-    title = force_text(field.label) if field.label else ''
-    description = force_text(field.help_text) if field.help_text else ''
-
-    if isinstance(field, (serializers.ListSerializer, serializers.ListField)):
-        child_schema = field_to_schema(field.child)
-        return coreschema.Array(
-            items=child_schema,
-            title=title,
-            description=description
-        )
-    elif isinstance(field, serializers.Serializer):
-        return coreschema.Object(
-            properties=OrderedDict([
-                (key, field_to_schema(value))
-                for key, value
-                in field.fields.items()
-            ]),
-            title=title,
-            description=description
-        )
-    elif isinstance(field, serializers.ManyRelatedField):
-        return coreschema.Array(
-            items=coreschema.String(),
-            title=title,
-            description=description
-        )
-    elif isinstance(field, serializers.RelatedField):
-        return coreschema.String(title=title, description=description)
-    elif isinstance(field, serializers.MultipleChoiceField):
-        return coreschema.Array(
-            items=coreschema.Enum(enum=list(field.choices.keys())),
-            title=title,
-            description=description
-        )
-    elif isinstance(field, serializers.ChoiceField):
-        return coreschema.Enum(
-            enum=list(field.choices.keys()),
-            title=title,
-            description=description
-        )
-    elif isinstance(field, serializers.BooleanField):
-        return coreschema.Boolean(title=title, description=description)
-    elif isinstance(field, (serializers.DecimalField, serializers.FloatField)):
-        return coreschema.Number(title=title, description=description)
-    elif isinstance(field, serializers.IntegerField):
-        return coreschema.Integer(title=title, description=description)
-
-    if field.style.get('base_template') == 'textarea.html':
-        return coreschema.String(
-            title=title,
-            description=description,
-            format='textarea'
-        )
-    return coreschema.String(title=title, description=description)
+from .utils import is_list_view
 
 
 def common_path(paths):
@@ -104,6 +44,8 @@ def is_api_view(callback):
     """
     Return `True` if the given view callback is a REST framework view/viewset.
     """
+    # Avoid import cycle on APIView
+    from rest_framework.views import APIView
     cls = getattr(callback, 'cls', None)
     return (cls is not None) and issubclass(cls, APIView)
 
@@ -130,22 +72,6 @@ def is_custom_action(action):
     ])
 
 
-def is_list_view(path, method, view):
-    """
-    Return True if the given path/method appears to represent a list view.
-    """
-    if hasattr(view, 'action'):
-        # Viewsets have an explicitly defined action, which we can inspect.
-        return view.action == 'list'
-
-    if method.lower() != 'get':
-        return False
-    path_components = path.strip('/').split('/')
-    if path_components and '{' in path_components[-1]:
-        return False
-    return True
-
-
 def endpoint_ordering(endpoint):
     path, method, callback = endpoint
     method_priority = {
@@ -158,21 +84,7 @@ def endpoint_ordering(endpoint):
     return (path, method_priority)
 
 
-def get_pk_description(model, model_field):
-    if isinstance(model_field, models.AutoField):
-        value_type = _('unique integer value')
-    elif isinstance(model_field, models.UUIDField):
-        value_type = _('UUID string')
-    else:
-        value_type = _('unique value')
-
-    return _('A {value_type} identifying this {name}.').format(
-        value_type=value_type,
-        name=model._meta.verbose_name,
-    )
-
-
-class EndpointInspector(object):
+class EndpointEnumerator(object):
     """
     A class to determine the available API endpoints that a project exposes.
     """
@@ -265,7 +177,7 @@ class SchemaGenerator(object):
         'patch': 'partial_update',
         'delete': 'destroy',
     }
-    endpoint_inspector_cls = EndpointInspector
+    endpoint_inspector_cls = EndpointEnumerator
 
     # Map the method names we use for viewset actions onto external schema names.
     # These give us names that are more suitable for the external representation.
@@ -341,7 +253,7 @@ class SchemaGenerator(object):
         for path, method, view in view_endpoints:
             if not self.has_view_permissions(path, method, view):
                 continue
-            link = self.get_link(path, method, view)
+            link = view.schema.get_link(path, method, base_url=self.url)
             subpath = path[len(prefix):]
             keys = self.get_keys(subpath, method, view)
             insert_into(links, keys, link)
@@ -433,197 +345,6 @@ class SchemaGenerator(object):
             field_name = 'id'
         return path.replace('{pk}', '{%s}' % field_name)
 
-    # Methods for generating each individual `Link` instance...
-
-    def get_link(self, path, method, view):
-        """
-        Return a `coreapi.Link` instance for the given endpoint.
-        """
-        fields = self.get_path_fields(path, method, view)
-        fields += self.get_serializer_fields(path, method, view)
-        fields += self.get_pagination_fields(path, method, view)
-        fields += self.get_filter_fields(path, method, view)
-
-        if fields and any([field.location in ('form', 'body') for field in fields]):
-            encoding = self.get_encoding(path, method, view)
-        else:
-            encoding = None
-
-        description = self.get_description(path, method, view)
-
-        if self.url and path.startswith('/'):
-            path = path[1:]
-
-        return coreapi.Link(
-            url=urlparse.urljoin(self.url, path),
-            action=method.lower(),
-            encoding=encoding,
-            fields=fields,
-            description=description
-        )
-
-    def get_description(self, path, method, view):
-        """
-        Determine a link description.
-
-        This will be based on the method docstring if one exists,
-        or else the class docstring.
-        """
-        method_name = getattr(view, 'action', method.lower())
-        method_docstring = getattr(view, method_name, None).__doc__
-        if method_docstring:
-            # An explicit docstring on the method or action.
-            return formatting.dedent(smart_text(method_docstring))
-
-        description = view.get_view_description()
-        lines = [line.strip() for line in description.splitlines()]
-        current_section = ''
-        sections = {'': ''}
-
-        for line in lines:
-            if header_regex.match(line):
-                current_section, seperator, lead = line.partition(':')
-                sections[current_section] = lead.strip()
-            else:
-                sections[current_section] += '\n' + line
-
-        header = getattr(view, 'action', method.lower())
-        if header in sections:
-            return sections[header].strip()
-        if header in self.coerce_method_names:
-            if self.coerce_method_names[header] in sections:
-                return sections[self.coerce_method_names[header]].strip()
-        return sections[''].strip()
-
-    def get_encoding(self, path, method, view):
-        """
-        Return the 'encoding' parameter to use for a given endpoint.
-        """
-        # Core API supports the following request encodings over HTTP...
-        supported_media_types = set((
-            'application/json',
-            'application/x-www-form-urlencoded',
-            'multipart/form-data',
-        ))
-        parser_classes = getattr(view, 'parser_classes', [])
-        for parser_class in parser_classes:
-            media_type = getattr(parser_class, 'media_type', None)
-            if media_type in supported_media_types:
-                return media_type
-            # Raw binary uploads are supported with "application/octet-stream"
-            if media_type == '*/*':
-                return 'application/octet-stream'
-
-        return None
-
-    def get_path_fields(self, path, method, view):
-        """
-        Return a list of `coreapi.Field` instances corresponding to any
-        templated path variables.
-        """
-        model = getattr(getattr(view, 'queryset', None), 'model', None)
-        fields = []
-
-        for variable in uritemplate.variables(path):
-            title = ''
-            description = ''
-            schema_cls = coreschema.String
-            kwargs = {}
-            if model is not None:
-                # Attempt to infer a field description if possible.
-                try:
-                    model_field = model._meta.get_field(variable)
-                except:
-                    model_field = None
-
-                if model_field is not None and model_field.verbose_name:
-                    title = force_text(model_field.verbose_name)
-
-                if model_field is not None and model_field.help_text:
-                    description = force_text(model_field.help_text)
-                elif model_field is not None and model_field.primary_key:
-                    description = get_pk_description(model, model_field)
-
-                if hasattr(view, 'lookup_value_regex') and view.lookup_field == variable:
-                    kwargs['pattern'] = view.lookup_value_regex
-                elif isinstance(model_field, models.AutoField):
-                    schema_cls = coreschema.Integer
-
-            field = coreapi.Field(
-                name=variable,
-                location='path',
-                required=True,
-                schema=schema_cls(title=title, description=description, **kwargs)
-            )
-            fields.append(field)
-
-        return fields
-
-    def get_serializer_fields(self, path, method, view):
-        """
-        Return a list of `coreapi.Field` instances corresponding to any
-        request body input, as determined by the serializer class.
-        """
-        if method not in ('PUT', 'PATCH', 'POST'):
-            return []
-
-        if not hasattr(view, 'get_serializer'):
-            return []
-
-        serializer = view.get_serializer()
-
-        if isinstance(serializer, serializers.ListSerializer):
-            return [
-                coreapi.Field(
-                    name='data',
-                    location='body',
-                    required=True,
-                    schema=coreschema.Array()
-                )
-            ]
-
-        if not isinstance(serializer, serializers.Serializer):
-            return []
-
-        fields = []
-        for field in serializer.fields.values():
-            if field.read_only or isinstance(field, serializers.HiddenField):
-                continue
-
-            required = field.required and method != 'PATCH'
-            field = coreapi.Field(
-                name=field.field_name,
-                location='form',
-                required=required,
-                schema=field_to_schema(field)
-            )
-            fields.append(field)
-
-        return fields
-
-    def get_pagination_fields(self, path, method, view):
-        if not is_list_view(path, method, view):
-            return []
-
-        pagination = getattr(view, 'pagination_class', None)
-        if not pagination:
-            return []
-
-        paginator = view.pagination_class()
-        return paginator.get_schema_fields(view)
-
-    def get_filter_fields(self, path, method, view):
-        if not is_list_view(path, method, view):
-            return []
-
-        if not getattr(view, 'filter_backends', None):
-            return []
-
-        fields = []
-        for filter_backend in view.filter_backends:
-            fields += filter_backend().get_schema_fields(view)
-        return fields
-
     # Method for generating the link layout....
 
     def get_keys(self, subpath, method, view):
@@ -669,45 +390,3 @@ class SchemaGenerator(object):
 
         # Default action, eg "/users/", "/users/{pk}/"
         return named_path_components + [action]
-
-
-class SchemaView(APIView):
-    _ignore_model_permissions = True
-    exclude_from_schema = True
-    renderer_classes = None
-    schema_generator = None
-    public = False
-
-    def __init__(self, *args, **kwargs):
-        super(SchemaView, self).__init__(*args, **kwargs)
-        if self.renderer_classes is None:
-            if renderers.BrowsableAPIRenderer in api_settings.DEFAULT_RENDERER_CLASSES:
-                self.renderer_classes = [
-                    renderers.CoreJSONRenderer,
-                    renderers.BrowsableAPIRenderer,
-                ]
-            else:
-                self.renderer_classes = [renderers.CoreJSONRenderer]
-
-    def get(self, request, *args, **kwargs):
-        schema = self.schema_generator.get_schema(request, self.public)
-        if schema is None:
-            raise exceptions.PermissionDenied()
-        return Response(schema)
-
-
-def get_schema_view(
-        title=None, url=None, description=None, urlconf=None, renderer_classes=None,
-        public=False, patterns=None, generator_class=SchemaGenerator):
-    """
-    Return a schema view.
-    """
-    generator = generator_class(
-        title=title, url=url, description=description,
-        urlconf=urlconf, patterns=patterns,
-    )
-    return SchemaView.as_view(
-        renderer_classes=renderer_classes,
-        schema_generator=generator,
-        public=public,
-    )

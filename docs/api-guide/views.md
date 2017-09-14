@@ -184,6 +184,28 @@ The available decorators are:
 
 Each of these decorators takes a single argument which must be a list or tuple of classes.
 
+
+## View schema decorator
+
+To override the default schema generation for function based views you may use
+the `@schema` decorator. This must come *after* (below) the `@api_view`
+decorator. For example:
+
+    from rest_framework.decorators import api_view, schema
+    from rest_framework.schemas import AutoSchema
+
+    class CustomAutoSchema(AutoSchema):
+        def get_link(self, path, method, base_url):
+            # override view introspection here...
+
+    @api_view(['GET'])
+    @schema(CustomAutoSchema())
+    def view(request):
+        return Response({"message": "Hello for today! See you tomorrow!"})
+
+This decorator takes a single `AutoSchema` instance, an `AutoSchema` subclass
+instance or `ManualSchema` instance as described in the [Schemas documentation][schemas],
+
 [cite]: http://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html
 [cite2]: http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html
 [settings]: settings.md

@@ -26,7 +26,8 @@ from rest_framework import views
 from rest_framework.compat import NoReverseMatch
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.schemas import SchemaGenerator, SchemaView
+from rest_framework.schemas import SchemaGenerator
+from rest_framework.schemas.views import SchemaView
 from rest_framework.settings import api_settings
 from rest_framework.urlpatterns import format_suffix_patterns
 

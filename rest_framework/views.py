@@ -19,6 +19,7 @@ from rest_framework import exceptions, status
 from rest_framework.compat import set_rollback
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.schemas import AutoSchema
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 
@@ -113,6 +114,7 @@ class APIView(View):
 
     # Mark the view as being included or excluded from schema generation.
     exclude_from_schema = False
+    schema = AutoSchema()
 
     @classmethod
     def as_view(cls, **initkwargs):

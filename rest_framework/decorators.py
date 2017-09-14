@@ -72,6 +72,9 @@ def api_view(http_method_names=None, exclude_from_schema=False):
         WrappedAPIView.permission_classes = getattr(func, 'permission_classes',
                                                     APIView.permission_classes)
 
+        WrappedAPIView.schema = getattr(func, 'schema',
+                                        APIView.schema)
+
         WrappedAPIView.exclude_from_schema = exclude_from_schema
         return WrappedAPIView.as_view()
     return decorator
@@ -108,6 +111,13 @@ def throttle_classes(throttle_classes):
 def permission_classes(permission_classes):
     def decorator(func):
         func.permission_classes = permission_classes
+        return func
+    return decorator
+
+
+def schema(view_inspector):
+    def decorator(func):
+        func.schema = view_inspector
         return func
     return decorator
 
