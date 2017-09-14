@@ -577,3 +577,46 @@ class TestDescriptor(TestCase):
         view = CustomView()
         link = view.schema.get_link(path, method, base_url)
         assert link == expected
+
+
+
+class ExampleDocstringAPIView(APIView):
+    """
+=== title
+
+ * item a
+   * item a-a
+   * item a-b
+ * item b
+
+ - item 1
+ - item 2
+
+    code block begin
+    code
+    code
+    code
+    code block end
+
+the end
+"""
+
+    def get(self, *args, **kwargs):
+        pass
+
+    def post(self, request, *args, **kwargs):
+        pass
+
+
+class TestDocstringIsNotStrippedByGetDescription(TestCase):
+    def setUp(self):
+        self.patterns = [
+            url('^example/?$', ExampleDocstringAPIView.as_view()),
+        ]
+
+    def test_docstring(self):
+        view = ExampleDocstringAPIView()
+        schema = view.schema
+        descr = schema.get_description('example', 'get')
+        # the first and last character are '\n' correctly removed by get_description
+        assert descr == ExampleDocstringAPIView.__doc__[1:][:-1]
