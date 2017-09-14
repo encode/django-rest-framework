@@ -15,6 +15,7 @@ from rest_framework.schemas import (
     AutoSchema, ManualSchema, SchemaGenerator, get_schema_view
 )
 from rest_framework.test import APIClient, APIRequestFactory
+from rest_framework.utils import formatting
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
@@ -577,3 +578,38 @@ class TestDescriptor(TestCase):
         view = CustomView()
         link = view.schema.get_link(path, method, base_url)
         assert link == expected
+
+
+def test_docstring_is_not_stripped_by_get_description():
+    class ExampleDocstringAPIView(APIView):
+        """
+        === title
+
+         * item a
+           * item a-a
+           * item a-b
+         * item b
+
+         - item 1
+         - item 2
+
+            code block begin
+            code
+            code
+            code
+            code block end
+
+        the end
+        """
+
+        def get(self, *args, **kwargs):
+            pass
+
+        def post(self, request, *args, **kwargs):
+            pass
+
+    view = ExampleDocstringAPIView()
+    schema = view.schema
+    descr = schema.get_description('example', 'get')
+    # the first and last character are '\n' correctly removed by get_description
+    assert descr == formatting.dedent(ExampleDocstringAPIView.__doc__[1:][:-1])
