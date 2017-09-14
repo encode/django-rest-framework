@@ -239,6 +239,9 @@ class EndpointInspector(object):
         if path.endswith('.{format}') or path.endswith('.{format}/'):
             return False  # Ignore .json style URLs.
 
+        if path.endswith('.*'):
+            return False  # Ignore wildcard URLs.
+
         return True
 
     def get_allowed_methods(self, callback):
