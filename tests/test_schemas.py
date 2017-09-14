@@ -641,9 +641,9 @@ def included_fbv(request):
 class SchemaGenerationExclusionTests(TestCase):
     def setUp(self):
         self.patterns = [
-            url('^excluded-cbv/?$', ExcludedAPIView.as_view()),
-            url('^excluded-fbv/?$', excluded_fbv),
-            url('^included-fbv/?$', included_fbv),
+            url('^excluded-cbv/$', ExcludedAPIView.as_view()),
+            url('^excluded-fbv/$', excluded_fbv),
+            url('^included-fbv/$', included_fbv),
         ]
 
     def test_schema_generator_excludes_correctly(self):
@@ -690,4 +690,21 @@ class SchemaGenerationExclusionTests(TestCase):
         assert should_include == expected
 
     def test_deprecations(self):
-        pass
+        with pytest.warns(PendingDeprecationWarning):
+            @api_view(["GET"], exclude_from_schema=True)
+            def view(request):
+                pass
+
+        class OldFashjonedExcludedView(APIView):
+            exclude_from_schema = True
+
+            def get(self, request, *args, **kwargs):
+                pass
+
+        patterns = [
+            url('^excluded-old-fashioned/$', OldFashjonedExcludedView.as_view()),
+        ]
+
+        inspector = EndpointEnumerator(patterns)
+        with pytest.warns(PendingDeprecationWarning):
+            inspector.get_api_endpoints()
