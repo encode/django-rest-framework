@@ -66,11 +66,45 @@ def form_for_link(link):
     return mark_safe(coreschema.render_to_form(schema))
 
 
+from markdown.preprocessors import Preprocessor
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import get_lexer_by_name, TextLexer
+from pygments import highlight
+import pygments
+import re
+
+# starting from this blogpost and modified to support current markdown extensions API
+# https://zerokspot.com/weblog/2008/06/18/syntax-highlighting-in-markdown-with-pygments/
+class CodeBlockPreprocessor(Preprocessor):
+    pattern = re.compile(
+        r'^\s*@@ (.+?) @@\s*(.+?)^\s*@@', re.M|re.S)
+
+    formatter = HtmlFormatter()
+
+    def run(self, lines):
+        def repl(m):
+            try:
+                lexer = get_lexer_by_name(m.group(1))
+            except (ValueError, NameError):
+                lexer = TextLexer()
+            code = m.group(2).replace('\t','    ')
+            code = pygments.highlight(code, lexer, self.formatter)
+            code = code.replace('\n\n', '\n&nbsp;\n').replace('\n', '<br />').replace('\\@','@')
+            return '\n\n%s\n\n' % code
+        # import ipdb ; ipdb.set_trace()
+        ret = self.pattern.sub(repl, "\n".join(lines))
+        return ret.split("\n")
+
+
 @register.simple_tag
 def render_markdown(markdown_text):
     if not markdown:
         return markdown_text
-    return mark_safe(markdown.markdown(markdown_text))
+    md = markdown.Markdown()
+    md.preprocessors.add('highlight', CodeBlockPreprocessor(), "_begin")
+
+    a = md.convert(markdown_text)
+    return mark_safe(md.convert(markdown_text))
 
 
 @register.simple_tag
