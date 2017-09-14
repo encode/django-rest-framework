@@ -364,11 +364,31 @@ class AutoSchema(ViewInspector):
 
 class ManualSchema(ViewInspector):
     """
-    Overrides get_link to return manually specified schema.
+    Allows providing a list of coreapi.Fields,
+    plus an optional description.
     """
-    def __init__(self, link):
-        assert isinstance(link, coreapi.Link)
-        self._link = link
+    def __init__(self, fields, description=''):
+        """
+        Parameters:
 
-    def get_link(self, *args):
+        * `fields`: list of `coreapi.Field` instances.
+        * `descripton`: String description for view. Optional.
+        """
+        assert all(isinstance(f, coreapi.Field) for f in fields), "`fields` must be a list of coreapi.Field instances"
+        self._fields = fields
+        self._description = description
+
+    def get_link(self, path, method, base_url):
+
+        if base_url and path.startswith('/'):
+            path = path[1:]
+
+        return coreapi.Link(
+            url=urlparse.urljoin(base_url, path),
+            action=method.lower(),
+            encoding=None,
+            fields=self._fields,
+            description=self._description
+        )
+
         return self._link

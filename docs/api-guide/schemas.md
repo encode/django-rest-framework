@@ -199,17 +199,28 @@ To customise the `Link` generation you may:
 
     This provides complete control over view introspection.
 
-* Instantiate `ManualSchema` on your view, providing the Core API `Link`
-  explicitly:
+* Instantiate `ManualSchema` on your view, providing the Core API `Fields` for
+  the view explicitly:
 
         from rest_framework.views import APIView
         from rest_framework.schemas import ManualSchema
 
         class CustomView(APIView):
             ...
-            schema = ManualSchema(
-                coreapi.Link(...)
-            )
+            schema = ManualSchema(fields=[
+                coreapi.Field(
+                    "first_field",
+                    required=True,
+                    location="path",
+                    schema=coreschema.String()
+                ),
+                coreapi.Field(
+                    "second_field",
+                    required=True,
+                    location="path",
+                    schema=coreschema.String()
+                ),
+            ])
 
     This allows manually specifying the schema for some views whilst maintaining
     automatic generation elsewhere.
@@ -580,17 +591,31 @@ Return a list of `coreapi.Link()` instances, as returned by the `get_schema_fiel
 
 ## ManualSchema
 
-Allows specifying a manual schema for a view:
+Allows manually providing a list of `coreapi.Field` instances for the schema,
+plus an optional description.
 
     class MyView(APIView):
-      schema = ManualSchema(coreapi.Link(
-        url='/example/',
-        action='get',
-        fields=[]
-      ))
+      schema = ManualSchema(fields=[
+            coreapi.Field(
+                "first_field",
+                required=True,
+                location="path",
+                schema=coreschema.String()
+            ),
+            coreapi.Field(
+                "second_field",
+                required=True,
+                location="path",
+                schema=coreschema.String()
+            ),
+        ]
+      )
 
-The `ManualSchema` constructor takes a single parameter `link`,
-the `coreapi.Link` instance for the view.
+The `ManualSchema` constructor takes two arguments:
+
+**`fields`**: A list of `coreapi.Field` instances. Required.
+
+**`description`**: A string description. Optional.
 
 ---
 

@@ -534,15 +534,46 @@ class TestDescriptor(TestCase):
 
     def test_view_with_manual_schema(self):
 
-        expected = coreapi.Link(
-            url='/example/',
-            action='get',
-            fields=[]
-        )
+        path = '/example'
+        method = 'get'
+        base_url = None
+
+        fields = [
+            coreapi.Field(
+                "first_field",
+                required=True,
+                location="path",
+                schema=coreschema.String()
+            ),
+            coreapi.Field(
+                "second_field",
+                required=True,
+                location="path",
+                schema=coreschema.String()
+            ),
+            coreapi.Field(
+                "third_field",
+                required=True,
+                location="path",
+                schema=coreschema.String()
+            ),
+        ]
+        description = "A test endpoint"
 
         class CustomView(APIView):
-            schema = ManualSchema(expected)
+            """
+            ManualSchema takes list of fields for endpoint.
+            - Provides url and action, which are always dynamic
+            """
+            schema = ManualSchema(fields, description)
+
+        expected = coreapi.Link(
+            url=path,
+            action=method,
+            fields=fields,
+            description=description
+        )
 
         view = CustomView()
-        link = view.schema.get_link()
+        link = view.schema.get_link(path, method, base_url)
         assert link == expected
