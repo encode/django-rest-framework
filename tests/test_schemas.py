@@ -717,6 +717,6 @@ class SchemaGenerationExclusionTests(TestCase):
 
         assert len(record) == 1
         assert str(record[0].message) == (
-            "The `OldFashionedExcludedView.exclude_from_schema` is "
+            "The `OldFashionedExcludedView.exclude_from_schema` attribute is "
             "pending deprecation. Set `schema = None` instead."
         )
