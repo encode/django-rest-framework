@@ -690,10 +690,16 @@ class SchemaGenerationExclusionTests(TestCase):
         assert should_include == expected
 
     def test_deprecations(self):
-        with pytest.warns(PendingDeprecationWarning):
+        with pytest.warns(PendingDeprecationWarning) as record:
             @api_view(["GET"], exclude_from_schema=True)
             def view(request):
                 pass
+
+        assert len(record) == 1
+        assert str(record[0].message) == (
+            "The `exclude_from_schema` argument to `api_view` is pending "
+            "deprecation. Use the `schema` decorator instead, passing `None`."
+        )
 
         class OldFashionedExcludedView(APIView):
             exclude_from_schema = True
@@ -706,5 +712,11 @@ class SchemaGenerationExclusionTests(TestCase):
         ]
 
         inspector = EndpointEnumerator(patterns)
-        with pytest.warns(PendingDeprecationWarning):
+        with pytest.warns(PendingDeprecationWarning) as record:
             inspector.get_api_endpoints()
+
+        assert len(record) == 1
+        assert str(record[0].message) == (
+            "The `OldFashionedExcludedView.exclude_from_schema` is "
+            "pending deprecation. Set `schema = None` instead."
+        )

@@ -150,8 +150,8 @@ class EndpointEnumerator(object):
             return False  # Ignore anything except REST framework views.
 
         if hasattr(callback.cls, 'exclude_from_schema'):
-            fmt = ("{}. The `APIView.exclude_from_schema` is pending deprecation. "
-                   "Set `schema = None` instead")
+            fmt = ("The `{}.exclude_from_schema` is pending deprecation. "
+                   "Set `schema = None` instead.")
             msg = fmt.format(callback.cls.__name__)
             warnings.warn(msg, PendingDeprecationWarning)
             if getattr(callback.cls, 'exclude_from_schema', False):
