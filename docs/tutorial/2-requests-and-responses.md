@@ -133,7 +133,7 @@ We can get a list of all of the snippets, as before.
     ...
     [
       {
-        "id": 1,
+        "pk": 1,
         "title": "",
         "code": "foo = \"bar\"\n",
         "linenos": false,
@@ -141,7 +141,7 @@ We can get a list of all of the snippets, as before.
         "style": "friendly"
       },
       {
-        "id": 2,
+        "pk": 2,
         "title": "",
         "code": "print \"hello, world\"\n",
         "linenos": false,
@@ -166,7 +166,7 @@ Similarly, we can control the format of the request that we send, using the `Con
     http --form POST http://127.0.0.1:8000/snippets/ code="print 123"
 
     {
-      "id": 3,
+      "pk": 3,
       "title": "",
       "code": "print 123",
       "linenos": false,
@@ -178,7 +178,7 @@ Similarly, we can control the format of the request that we send, using the `Con
     http --json POST http://127.0.0.1:8000/snippets/ code="print 456"
 
     {
-        "id": 4,
+        "pk": 4,
         "title": "",
         "code": "print 456",
         "linenos": false,

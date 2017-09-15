@@ -63,7 +63,7 @@ Now that we've got some users to work with, we'd better add representations of t
 
         class Meta:
             model = User
-            fields = ('id', 'username', 'snippets')
+            fields = ('pk', 'username', 'snippets')
 
 Because `'snippets'` is a *reverse* relationship on the User model, it will not be included by default when using the `ModelSerializer` class, so we needed to add an explicit field for it.
 
@@ -209,7 +209,7 @@ We can make a successful request by including the username and password of one o
     http -a tom:password123 POST http://127.0.0.1:8000/snippets/ code="print 789"
 
     {
-        "id": 1,
+        "pk": 1,
         "owner": "tom",
         "title": "foo",
         "code": "print 789",

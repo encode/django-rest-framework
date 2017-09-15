@@ -121,7 +121,7 @@ Let's try listing the existing snippets, using the command line client:
     [
         {
             "url": "http://127.0.0.1:8000/snippets/1/",
-            "id": 1,
+            "pk": 1,
             "highlight": "http://127.0.0.1:8000/snippets/1/highlight/",
             "owner": "lucy",
             "title": "Example",
@@ -180,7 +180,7 @@ snippet:
     $ coreapi action snippets create --param title="Example" --param code="print('hello, world')"
     {
         "url": "http://127.0.0.1:8000/snippets/7/",
-        "id": 7,
+        "pk": 7,
         "highlight": "http://127.0.0.1:8000/snippets/7/highlight/",
         "owner": "lucy",
         "title": "Example",

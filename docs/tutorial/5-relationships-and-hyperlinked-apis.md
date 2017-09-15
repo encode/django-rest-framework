@@ -67,7 +67,7 @@ In this case we'd like to use a hyperlinked style between entities.  In order to
 
 The `HyperlinkedModelSerializer` has the following differences from `ModelSerializer`:
 
-* It does not include the `id` field by default.
+* It does not include the `pk` field by default.
 * It includes a `url` field, using `HyperlinkedIdentityField`.
 * Relationships use `HyperlinkedRelatedField`,
   instead of `PrimaryKeyRelatedField`.
@@ -80,7 +80,7 @@ We can easily re-write our existing serializers to use hyperlinking. In your `sn
 
         class Meta:
             model = Snippet
-            fields = ('url', 'id', 'highlight', 'owner',
+            fields = ('url', 'pk', 'highlight', 'owner',
                       'title', 'code', 'linenos', 'language', 'style')
 
 
@@ -89,7 +89,7 @@ We can easily re-write our existing serializers to use hyperlinking. In your `sn
 
         class Meta:
             model = User
-            fields = ('url', 'id', 'username', 'snippets')
+            fields = ('url', 'pk', 'username', 'snippets')
 
 Notice that we've also added a new `'highlight'` field.  This field is of the same type as the `url` field, except that it points to the `'snippet-highlight'` url pattern, instead of the `'snippet-detail'` url pattern.
 
