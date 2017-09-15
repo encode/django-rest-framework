@@ -90,7 +90,7 @@ The first thing we need to get started on our Web API is to provide a way of ser
 
 
     class SnippetSerializer(serializers.Serializer):
-        id = serializers.IntegerField(read_only=True)
+        pk = serializers.IntegerField(read_only=True)
         title = serializers.CharField(required=False, allow_blank=True, max_length=100)
         code = serializers.CharField(style={'base_template': 'textarea.html'})
         linenos = serializers.BooleanField(required=False)
@@ -146,13 +146,13 @@ We've now got a few snippet instances to play with.  Let's take a look at serial
 
     serializer = SnippetSerializer(snippet)
     serializer.data
-    # {'id': 2, 'title': u'', 'code': u'print "hello, world"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}
+    # {'pk': 2, 'title': u'', 'code': u'print "hello, world"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}
 
 At this point we've translated the model instance into Python native datatypes.  To finalize the serialization process we render the data into `json`.
 
     content = JSONRenderer().render(serializer.data)
     content
-    # '{"id": 2, "title": "", "code": "print \\"hello, world\\"\\n", "linenos": false, "language": "python", "style": "friendly"}'
+    # '{"pk": 2, "title": "", "code": "print \\"hello, world\\"\\n", "linenos": false, "language": "python", "style": "friendly"}'
 
 Deserialization is similar.  First we parse a stream into Python native datatypes...
 
@@ -177,7 +177,7 @@ We can also serialize querysets instead of model instances.  To do so we simply 
 
     serializer = SnippetSerializer(Snippet.objects.all(), many=True)
     serializer.data
-    # [OrderedDict([('id', 1), ('title', u''), ('code', u'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', u''), ('code', u'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', u''), ('code', u'print "hello, world"'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
+    # [OrderedDict([('pk', 1), ('title', u''), ('code', u'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('pk', 2), ('title', u''), ('code', u'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('pk', 3), ('title', u''), ('code', u'print "hello, world"'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
 
 ## Using ModelSerializers
 
@@ -191,7 +191,7 @@ Open the file `snippets/serializers.py` again, and replace the `SnippetSerialize
     class SnippetSerializer(serializers.ModelSerializer):
         class Meta:
             model = Snippet
-            fields = ('id', 'title', 'code', 'linenos', 'language', 'style')
+            fields = ('pk', 'title', 'code', 'linenos', 'language', 'style')
 
 One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing its representation. Open the Django shell with `python manage.py shell`, then try the following:
 
@@ -199,7 +199,7 @@ One nice property that serializers have is that you can inspect all the fields i
     serializer = SnippetSerializer()
     print(repr(serializer))
     # SnippetSerializer():
-    #    id = IntegerField(label='ID', read_only=True)
+    #    pk = IntegerField(label='PK', read_only=True)
     #    title = CharField(allow_blank=True, max_length=100, required=False)
     #    code = CharField(style={'base_template': 'textarea.html'})
     #    linenos = BooleanField(required=False)
@@ -330,7 +330,7 @@ Finally, we can get a list of all of the snippets:
     ...
     [
       {
-        "id": 1,
+        "pk": 1,
         "title": "",
         "code": "foo = \"bar\"\n",
         "linenos": false,
@@ -338,7 +338,7 @@ Finally, we can get a list of all of the snippets:
         "style": "friendly"
       },
       {
-        "id": 2,
+        "pk": 2,
         "title": "",
         "code": "print \"hello, world\"\n",
         "linenos": false,
@@ -347,14 +347,14 @@ Finally, we can get a list of all of the snippets:
       }
     ]
 
-Or we can get a particular snippet by referencing its id:
+Or we can get a particular snippet by referencing its pk:
 
     http http://127.0.0.1:8000/snippets/2/
 
     HTTP/1.1 200 OK
     ...
     {
-      "id": 2,
+      "pk": 2,
       "title": "",
       "code": "print \"hello, world\"\n",
       "linenos": false,
