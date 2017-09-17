@@ -1425,6 +1425,19 @@ class TestChoiceField(FieldValues):
 
         assert items[9].value == 'boolean'
 
+    def test_edit_choices(self):
+        field = serializers.ChoiceField(
+            allow_null=True,
+            choices=[
+                1, 2,
+            ]
+        )
+        field.choices = [1]
+        assert field.run_validation(1) is 1
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation(2)
+        assert exc_info.value.detail == ['"2" is not a valid choice.']
+
 
 class TestChoiceFieldWithType(FieldValues):
     """
