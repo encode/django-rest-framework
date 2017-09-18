@@ -15,6 +15,7 @@ There are a wide range of resources available for learning and using Django REST
 
 ## Tutorials
 
+* [Beginning Django - A Fabulous Guide for Django Beginners][beginning-django-overiq]
 * [Beginner's Guide to the Django REST Framework][beginners-guide-to-the-django-rest-framework]
 * [Django REST Framework - An Introduction][drf-an-intro]
 * [Django REST Framework Tutorial][drf-tutorial]
@@ -75,6 +76,7 @@ There are a wide range of resources available for learning and using Django REST
 Want your Django REST Framework talk/tutorial/article to be added to our website? Or know of a resource that's not yet included here? Please [submit a pull request][submit-pr] or [email us][anna-email]!
 
 
+[beginning-django-overiq]: https://overiq.com/django/1.10/intro-to-django
 [beginners-guide-to-the-django-rest-framework]: http://code.tutsplus.com/tutorials/beginners-guide-to-the-django-rest-framework--cms-19786
 [getting-started-with-django-rest-framework-and-angularjs]: http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html
 [end-to-end-web-app-with-django-rest-framework-angularjs]: http://mourafiq.com/2013/07/01/end-to-end-web-app-with-django-angular-1.html
