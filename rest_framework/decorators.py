@@ -9,6 +9,7 @@ used to annotate methods on viewsets that should be included by routers.
 from __future__ import unicode_literals
 
 import types
+import warnings
 
 from django.utils import six
 
@@ -75,7 +76,14 @@ def api_view(http_method_names=None, exclude_from_schema=False):
         WrappedAPIView.schema = getattr(func, 'schema',
                                         APIView.schema)
 
-        WrappedAPIView.exclude_from_schema = exclude_from_schema
+        if exclude_from_schema:
+            warnings.warn(
+                "The `exclude_from_schema` argument to `api_view` is pending deprecation. "
+                "Use the `schema` decorator instead, passing `None`.",
+                PendingDeprecationWarning
+            )
+            WrappedAPIView.exclude_from_schema = exclude_from_schema
+
         return WrappedAPIView.as_view()
     return decorator
 

@@ -225,6 +225,12 @@ To customise the `Link` generation you may:
     This allows manually specifying the schema for some views whilst maintaining
     automatic generation elsewhere.
 
+You may disable schema generation for a view by setting `schema` to `None`:
+
+        class CustomView(APIView):
+            ...
+            schema = None  # Will not appear in schema
+
 ---
 
 **Note**: For full details on `SchemaGenerator` plus the `AutoSchema` and

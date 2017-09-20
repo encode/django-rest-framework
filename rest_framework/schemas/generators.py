@@ -3,6 +3,7 @@ generators.py   # Top-down schema generation
 
 See schemas.__init__.py for package overview.
 """
+import warnings
 from collections import OrderedDict
 from importlib import import_module
 
@@ -148,6 +149,17 @@ class EndpointEnumerator(object):
         if not is_api_view(callback):
             return False  # Ignore anything except REST framework views.
 
+        if hasattr(callback.cls, 'exclude_from_schema'):
+            fmt = ("The `{}.exclude_from_schema` attribute is pending deprecation. "
+                   "Set `schema = None` instead.")
+            msg = fmt.format(callback.cls.__name__)
+            warnings.warn(msg, PendingDeprecationWarning)
+            if getattr(callback.cls, 'exclude_from_schema', False):
+                return False
+
+        if callback.cls.schema is None:
+            return False
+
         if path.endswith('.{format}') or path.endswith('.{format}/'):
             return False  # Ignore .json style URLs.
 
@@ -239,8 +251,6 @@ class SchemaGenerator(object):
         view_endpoints = []
         for path, method, callback in self.endpoints:
             view = self.create_view(callback, method, request)
-            if getattr(view, 'exclude_from_schema', False):
-                continue
             path = self.coerce_path(path, method, view)
             paths.append(path)
             view_endpoints.append((path, method, view))
