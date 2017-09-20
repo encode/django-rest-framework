@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
+
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 from uuid import uuid4
 
 import pytest
 from django.test import TestCase
+from django.utils import six
 from django.utils.timezone import utc
 
 from rest_framework.compat import coreapi
@@ -92,3 +95,28 @@ class JSONEncoderTests(TestCase):
         """
         foo = MockList()
         assert self.encoder.default(foo) == [1, 2, 3]
+
+    def test_encode_float(self):
+        """
+        Tests encoding floats with special values
+        """
+
+        f = [3.141592653, float('inf'), float('-inf'), float('nan')]
+        assert self.encoder.encode(f) == '[3.141592653, "Infinity", "-Infinity", "NaN"]'
+
+        encoder = JSONEncoder(allow_nan=False)
+        try:
+            encoder.encode(f)
+        except ValueError:
+            pass
+        else:
+            assert False
+
+    def test_encode_string(self):
+        """
+        Tests encoding string
+        """
+
+        if six.PY2:
+            encoder2 = JSONEncoder(encoding='latin_1', check_circular=False)
+            assert encoder2.encode(['foo☺']) == '["foo\\u00e2\\u0098\\u00ba"]'
