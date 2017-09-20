@@ -10,11 +10,16 @@ import pytest
 from django.http import QueryDict
 from django.test import TestCase, override_settings
 from django.utils import six
-from django.utils.timezone import utc
+from django.utils.timezone import activate, deactivate, utc
 
 import rest_framework
 from rest_framework import compat, serializers
 from rest_framework.fields import is_simple_callable
+
+try:
+    import pytz
+except ImportError:
+    pytz = None
 
 try:
     import typings
@@ -1168,7 +1173,7 @@ class TestDateTimeField(FieldValues):
         datetime.date(2001, 1, 1): ['Expected a datetime but got a date.'],
     }
     outputs = {
-        datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00',
+        datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00Z',
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc): '2001-01-01T13:00:00Z',
         '2001-01-01T00:00:00': '2001-01-01T00:00:00',
         six.text_type('2016-01-10T00:00:00'): '2016-01-10T00:00:00',
@@ -1230,8 +1235,57 @@ class TestNaiveDateTimeField(FieldValues):
         '2001-01-01 13:00': datetime.datetime(2001, 1, 1, 13, 00),
     }
     invalid_inputs = {}
-    outputs = {}
+    outputs = {
+        datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00',
+        datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc): '2001-01-01T13:00:00',
+    }
     field = serializers.DateTimeField(default_timezone=None)
+
+
+@pytest.mark.skipif(pytz is None, reason='pytz not installed')
+class TestTZWithDateTimeField(FieldValues):
+    """
+    Valid and invalid values for `DateTimeField` when not using UTC as the timezone.
+    """
+    @classmethod
+    def setup_class(cls):
+        # use class setup method, as class-level attribute will still be evaluated even if test is skipped
+        kolkata = pytz.timezone('Asia/Kolkata')
+
+        cls.valid_inputs = {
+            '2016-12-19T10:00:00': kolkata.localize(datetime.datetime(2016, 12, 19, 10)),
+            '2016-12-19T10:00:00+05:30': kolkata.localize(datetime.datetime(2016, 12, 19, 10)),
+            datetime.datetime(2016, 12, 19, 10): kolkata.localize(datetime.datetime(2016, 12, 19, 10)),
+        }
+        cls.invalid_inputs = {}
+        cls.outputs = {
+            datetime.datetime(2016, 12, 19, 10): '2016-12-19T10:00:00+05:30',
+            datetime.datetime(2016, 12, 19, 4, 30, tzinfo=utc): '2016-12-19T10:00:00+05:30',
+        }
+        cls.field = serializers.DateTimeField(default_timezone=kolkata)
+
+
+@pytest.mark.skipif(pytz is None, reason='pytz not installed')
+@override_settings(TIME_ZONE='UTC', USE_TZ=True)
+class TestDefaultTZDateTimeField(TestCase):
+    """
+    Test the current/default timezone handling in `DateTimeField`.
+    """
+
+    @classmethod
+    def setup_class(cls):
+        cls.field = serializers.DateTimeField()
+        cls.kolkata = pytz.timezone('Asia/Kolkata')
+
+    def test_default_timezone(self):
+        assert self.field.default_timezone() == utc
+
+    def test_current_timezone(self):
+        assert self.field.default_timezone() == utc
+        activate(self.kolkata)
+        assert self.field.default_timezone() == self.kolkata
+        deactivate()
+        assert self.field.default_timezone() == utc
 
 
 class TestNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
