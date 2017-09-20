@@ -50,12 +50,16 @@ You can determine your currently installed version using `pip freeze`:
 
     **Possible backwards compatibility break** if you were relying on datetime strings being UTC. Have client interpret datetimes or [set default or active timezone (docs)][djangodocs-set-timezone] to UTC if needed.
 
+* Removed DjangoFilterBackend inline with deprecation policy. Use `django_filters.rest_framework.FilterSet` and/or `django_filters.rest_framework.DjangoFilterBackend` instead. [#5273][gh5273]
+
+
 <!-- 3.7.0 -->
 [gh5376]: https://github.com/encode/django-rest-framework/issues/5376
 [gh5422]: https://github.com/encode/django-rest-framework/issues/5422
 [gh5408]: https://github.com/encode/django-rest-framework/issues/5408
 [gh3732]: https://github.com/encode/django-rest-framework/issues/3732
 [djangodocs-set-timezone]: https://docs.djangoproject.com/en/1.11/topics/i18n/timezones/#default-time-zone-and-current-time-zone
+[gh5273]: https://github.com/encode/django-rest-framework/issues/5273
 
 
 ## 3.6.x series
