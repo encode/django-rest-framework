@@ -1337,17 +1337,9 @@ class ChoiceField(Field):
     html_cutoff_text = _('More than {count} items...')
 
     def __init__(self, choices, **kwargs):
-        self.grouped_choices = to_choices_dict(choices)
-        self.choices = flatten_choices_dict(self.grouped_choices)
+        self.choices = choices
         self.html_cutoff = kwargs.pop('html_cutoff', self.html_cutoff)
         self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
-
-        # Map the string representation of choices to the underlying value.
-        # Allows us to deal with eg. integer choices while supporting either
-        # integer or string input, but still get the correct datatype out.
-        self.choice_strings_to_values = {
-            six.text_type(key): key for key in self.choices.keys()
-        }
 
         self.allow_blank = kwargs.pop('allow_blank', False)
 
@@ -1376,6 +1368,22 @@ class ChoiceField(Field):
             cutoff=self.html_cutoff,
             cutoff_text=self.html_cutoff_text
         )
+
+    def _get_choices(self):
+        return self._choices
+
+    def _set_choices(self, choices):
+        self.grouped_choices = to_choices_dict(choices)
+        self._choices = flatten_choices_dict(self.grouped_choices)
+
+        # Map the string representation of choices to the underlying value.
+        # Allows us to deal with eg. integer choices while supporting either
+        # integer or string input, but still get the correct datatype out.
+        self.choice_strings_to_values = {
+            six.text_type(key): key for key in self.choices.keys()
+        }
+
+    choices = property(_get_choices, _set_choices)
 
 
 class MultipleChoiceField(ChoiceField):
