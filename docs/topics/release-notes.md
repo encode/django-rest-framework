@@ -44,7 +44,11 @@ You can determine your currently installed version using `pip freeze`:
 
 * Fix `DjangoModelPermissions` to ensure user authentication before calling the view's `get_queryset()` method. As a side effect, this changes the order of the HTTP method permissions and authentication checks, and 405 responses will only be returned when authenticated. If you want to replicate the old behavior, see the PR for details. [#5376][gh5376]
 * Deprecated `exclude_from_schema` on `APIView` and `api_view` decorator. Set `schema = None` or `@schema(None)` as appropriate. [#5422][gh5422]
+* Timezone-aware `DateTimeField`s now respect active or default) `timezone` during serialization, instead of always using UTC.
 
+    Resolves inconsistency whereby instances were serialised with supplied datetime for `create` but UTC for `retrieve`. [#3732][gh3732]
+
+    **Possible backwards compatibility break** if you were relying on datetime strings being UTC. Have client interpret datetimes or [set default or active timezone (docs)][djangodocs-set-timezone] to UTC if needed.
 
 ### 3.6.4
 
@@ -1426,3 +1430,6 @@ For older release notes, [please see the version 2.x documentation][old-release-
 <!-- 3.6.5 -->
 [gh5376]: https://github.com/encode/django-rest-framework/issues/5376
 [gh5422]: https://github.com/encode/django-rest-framework/issues/5422
+[gh5408]: https://github.com/encode/django-rest-framework/issues/5408
+[gh3732]: https://github.com/encode/django-rest-framework/issues/3732
+[djangodocs-set-timezone]: https://docs.djangoproject.com/en/1.11/topics/i18n/timezones/#default-time-zone-and-current-time-zone
