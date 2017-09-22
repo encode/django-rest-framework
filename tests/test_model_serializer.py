@@ -214,6 +214,9 @@ class TestRegularFieldMappings(TestCase):
             expected = expected.replace(
                 "('red', 'Red'), ('blue', 'Blue'), ('green', 'Green')",
                 "(u'red', u'Red'), (u'blue', u'Blue'), (u'green', u'Green')"
+            ).replace(
+                "{'max_value': 'Ensure this value is less than or equal to %(limit_value)s.', 'min_value': 'Ensure this value is greater than or equal to %(limit_value)s.'}",
+                {'max_value': u'Ensure this value is less than or equal to %(limit_value)s.', 'min_value': u'Ensure this value is greater than or equal to %(limit_value)s.'}
             )
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
