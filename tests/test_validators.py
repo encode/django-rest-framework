@@ -1,7 +1,7 @@
 import datetime
 
 import pytest
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, URLValidator, EmailValidator, MinLengthValidator, MaxLengthValidator
 from django.db import DataError, models
 from django.test import TestCase
 
@@ -591,3 +591,63 @@ class ValidatorMessageTests(TestCase):
         s.is_valid()
 
         assert s.errors['price'] == ['Price has to be <= 10.']
+
+    def test_url_validator_message_is_copied_from_model(self):
+        class BlogModel(models.Model):
+            url = models.URLField(validators=[URLValidator(message='This URL is not valid.')])
+
+        class BlogSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlogModel
+                fields = '__all__'
+
+        data = {'url': 'broken url'}
+        s = BlogSerializer(data=data)
+        s.is_valid()
+
+        assert s.errors['url'] == ['This URL is not valid.']
+
+    def test_email_validator_message_is_copied_from_model(self):
+        class UserModel(models.Model):
+            email = models.EmailField(validators=[EmailValidator(message='Please enter a valid email.')])
+
+        class UserSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UserModel
+                fields = '__all__'
+
+        data = {'email': 'invalid email'}
+        s = UserSerializer(data=data)
+        s.is_valid()
+
+        assert s.errors['email'] == ['Please enter a valid email.']
+
+    def test_min_length_validator_message_is_copied_from_model(self):
+        class Review(models.Model):
+            text = models.CharField(max_length=100, validators=[MinLengthValidator(limit_value=5, message='This is too short.')])
+
+        class ReviewSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Review
+                fields = '__all__'
+
+        data = {'text': 'Hi'}
+        s = ReviewSerializer(data=data)
+        s.is_valid()
+
+        assert s.errors['text'] == ['This is too short.']
+
+    def test_max_length_validator_message_is_copied_from_model(self):
+        # Added this test because was expecting is_valid() to be false but it is not.
+        # Will investigate further
+        class Post(models.Model):
+            text = models.CharField(max_length=100, validators=[MaxLengthValidator(limit_value=1, message='This is too long.')])
+
+        class PostSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Post
+                fields = '__all__'
+
+        data = {'text': 'A very long text'}
+        s = PostSerializer(data=data)
+        assert not s.is_valid()
