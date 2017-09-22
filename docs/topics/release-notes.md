@@ -51,6 +51,7 @@ You can determine your currently installed version using `pip freeze`:
     **Possible backwards compatibility break** if you were relying on datetime strings being UTC. Have client interpret datetimes or [set default or active timezone (docs)][djangodocs-set-timezone] to UTC if needed.
 
 * Removed DjangoFilterBackend inline with deprecation policy. Use `django_filters.rest_framework.FilterSet` and/or `django_filters.rest_framework.DjangoFilterBackend` instead. [#5273][gh5273]
+* Don't strip microseconds from `time` when encoding. Makes consistent with `datetime`. **BC Change**: Previously only milliseconds were encoded. [#5440][gh5440]
 
 
 <!-- 3.7.0 -->
@@ -60,6 +61,7 @@ You can determine your currently installed version using `pip freeze`:
 [gh3732]: https://github.com/encode/django-rest-framework/issues/3732
 [djangodocs-set-timezone]: https://docs.djangoproject.com/en/1.11/topics/i18n/timezones/#default-time-zone-and-current-time-zone
 [gh5273]: https://github.com/encode/django-rest-framework/issues/5273
+[gh5440]: https://github.com/encode/django-rest-framework/issues/5440
 
 
 ## 3.6.x series
