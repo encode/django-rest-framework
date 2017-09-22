@@ -37,8 +37,6 @@ class JSONEncoder(json.JSONEncoder):
             if timezone and timezone.is_aware(obj):
                 raise ValueError("JSON can't represent timezone-aware times.")
             representation = obj.isoformat()
-            if obj.microsecond:
-                representation = representation[:12]
             return representation
         elif isinstance(obj, datetime.timedelta):
             return six.text_type(total_seconds(obj))
