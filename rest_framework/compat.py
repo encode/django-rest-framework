@@ -20,11 +20,13 @@ from django.views.generic import View
 
 try:
     from django.urls import (
-        NoReverseMatch, RegexURLPattern, RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+        NoReverseMatch, URLResolver, ResolverMatch, Resolver404,
+        get_script_prefix, reverse, reverse_lazy, resolve, URLPattern
     )
 except ImportError:
     from django.core.urlresolvers import (  # Will be removed in Django 2.0
-        NoReverseMatch, RegexURLPattern, RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+        NoReverseMatch, RegexURLPattern, RegexURLResolver, ResolverMatch,
+        Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
     )
 
 
