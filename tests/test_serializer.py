@@ -360,12 +360,17 @@ class TestNotRequiredOutput:
         """
         'required=False' should allow an object attribute to be missing in output.
         """
-        class ExampleSerializer(serializers.Serializer):
-            omitted = serializers.CharField(required=False)
-            included = serializers.CharField()
+        class MyModel(models.Model):
+            omitted = models.CharField(max_length=10, blank=True)
+            included = models.CharField(max_length=10)
+
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = MyModel
+                exclude = ('id', )
 
             def create(self, validated_data):
-                return MockObject(**validated_data)
+                return self.Meta.model(**validated_data)
 
         serializer = ExampleSerializer(data={'included': 'abc'})
         serializer.is_valid()

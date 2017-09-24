@@ -170,7 +170,7 @@ class PKManyToManyTests(TestCase):
 
         serializer = ManyToManySourceSerializer(source)
 
-        expected = {'id': None, 'name': 'source-unsaved', 'targets': []}
+        expected = {'name': 'source-unsaved', 'targets': []}
         # no query if source hasn't been created yet
         with self.assertNumQueries(0):
             assert serializer.data == expected
@@ -330,7 +330,7 @@ class PKForeignKeyTests(TestCase):
 
     def test_foreign_key_with_unsaved(self):
         source = ForeignKeySource(name='source-unsaved')
-        expected = {'id': None, 'name': 'source-unsaved', 'target': None}
+        expected = {'name': 'source-unsaved', 'target': None}
 
         serializer = ForeignKeySourceSerializer(source)
 

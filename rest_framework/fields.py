@@ -11,12 +11,14 @@ import uuid
 from collections import OrderedDict
 
 from django.conf import settings
+from django.contrib.contenttypes import fields as ct_fields
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import FieldDoesNotExist, ObjectDoesNotExist
 from django.core.validators import (
     EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
     MinValueValidator, RegexValidator, URLValidator, ip_address_validators
 )
+from django.db import models
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
@@ -85,7 +87,7 @@ else:
         return len_args <= len_defaults
 
 
-def get_attribute(instance, attrs):
+def get_attribute(instance, attrs, exc_on_model_default=False):
     """
     Similar to Python's built in `getattr(instance, attr)`,
     but takes a list of nested attributes, instead of a single attribute.
@@ -96,6 +98,33 @@ def get_attribute(instance, attrs):
         try:
             if isinstance(instance, collections.Mapping):
                 instance = instance[attr]
+            elif exc_on_model_default and isinstance(instance, models.Model):
+                # Lookup the model field default
+                try:
+                    field = instance._meta.get_field(attr)
+                except FieldDoesNotExist:
+                    field = None
+                else:
+                    if isinstance(field, ct_fields.GenericForeignKey):
+                        # For generic relations, use the foreign key as the
+                        # default
+                        field = instance._meta.get_field(field.fk_field)
+                    elif not hasattr(field, 'get_default') and hasattr(
+                            field, 'target_field'):
+                        # Some relationship fields don't have their own
+                        # `get_default()`
+                        field = field.target_field
+                value = getattr(instance, attr)
+                if field is not None:
+                    default = field.get_default()
+                    if default is not empty and value == default:
+                        # Support skipping model fields.  They always return
+                        # at least the field default so there's no
+                        # AttributeError unless we force it.
+                        raise AttributeError(
+                            '{0!r} object has no attribute {1!r}'.format(
+                                instance, attr))
+                instance = value
             else:
                 instance = getattr(instance, attr)
         except ObjectDoesNotExist:
@@ -438,7 +467,9 @@ class Field(object):
         that should be used for this field.
         """
         try:
-            return get_attribute(instance, self.source_attrs)
+            return get_attribute(
+                instance, self.source_attrs, exc_on_model_default=(
+                    self.default is not empty or not self.required))
         except (KeyError, AttributeError) as exc:
             if self.default is not empty:
                 return self.get_default()
