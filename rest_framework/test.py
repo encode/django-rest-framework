@@ -4,6 +4,7 @@
 # to make it harder for the user to import the wrong thing without realizing.
 from __future__ import unicode_literals
 
+import copy
 import io
 
 from django.conf import settings
@@ -22,7 +23,7 @@ from rest_framework.settings import api_settings
 
 
 def force_authenticate(request, user=None, token=None):
-    request._force_auth_user = user
+    request._force_auth_user = copy.deepcopy(user)
     request._force_auth_token = token
 
 
@@ -277,7 +278,7 @@ class APIClient(APIRequestFactory, DjangoClient):
         Forcibly authenticates outgoing requests with the given
         user and/or token.
         """
-        self.handler._force_user = user
+        self.handler._force_user = copy.deepcopy(user)
         self.handler._force_token = token
         if user is None:
             self.logout()  # Also clear any possible session info if required
