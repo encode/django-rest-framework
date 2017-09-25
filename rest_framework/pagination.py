@@ -5,7 +5,6 @@ be used for paginated responses.
 """
 from __future__ import unicode_literals
 
-import warnings
 from base64 import b64decode, b64encode
 from collections import OrderedDict, namedtuple
 
@@ -146,17 +145,6 @@ PAGE_BREAK = PageLink(url=None, number=None, is_active=False, is_break=True)
 
 class BasePagination(object):
     display_page_controls = False
-
-    def __init__(self, *args, **kwargs):
-        # Use of default page size setting requires a default Paginator class
-        if api_settings.PAGE_SIZE and not api_settings.DEFAULT_PAGINATION_CLASS:
-            warnings.warn(
-                "A valid paginator class must be specified with `DEFAULT_PAGINATION_CLASS` "
-                "when using the `PAGE_SIZE` default pagination setting."
-                "Defaulting the setting to specifies `PageNumberPagination` "
-                "is deprecated as pagination is  disabled by default.",
-                DeprecationWarning
-            )
 
     def paginate_queryset(self, queryset, request, view=None):  # pragma: no cover
         raise NotImplementedError('paginate_queryset() must be implemented.')
