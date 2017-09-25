@@ -334,6 +334,15 @@ to be exposed in the schema:
 May be used to specify a `SchemaGenerator` subclass to be passed to the
 `SchemaView`.
 
+#### `authentication_classes`
+
+May be used to specify the list of authentication classes that will apply to the schema endpoint.
+Defaults to `settings.DEFAULT_AUTHENTICATION_CLASSES`
+
+#### `permission_classes`
+
+May be used to specify the list of permission classes that will apply to the schema endpoint.
+Defaults to `settings.DEFAULT_PERMISSION_CLASSES`
 
 
 ## Using an explicit schema view
