@@ -292,8 +292,8 @@ class AutoSchema(ViewInspector):
             serializer = None
             warnings.warn('{}.get_serializer() raised an exception during '
                           'schema generation. Serializer fields will not be '
-                          'generated for {} {}.'.format(
-                              type(view), method, path))
+                          'generated for {} {}.'
+                          .format(view.__class__.__name__, method, path))
 
         if isinstance(serializer, serializers.ListSerializer):
             return [
