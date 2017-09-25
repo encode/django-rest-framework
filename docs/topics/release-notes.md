@@ -53,6 +53,7 @@ You can determine your currently installed version using `pip freeze`:
 * Removed DjangoFilterBackend inline with deprecation policy. Use `django_filters.rest_framework.FilterSet` and/or `django_filters.rest_framework.DjangoFilterBackend` instead. [#5273][gh5273]
 * Don't strip microseconds from `time` when encoding. Makes consistent with `datetime`. **BC Change**: Previously only milliseconds were encoded. [#5440][gh5440]
 * Added `STRICT_JSON` setting (default `True`) to raise exception for the extended float values (`nan`, `inf`, `-inf`) accepted by Python's `json` module. **BC Change**: Previously these values would converted to corresponding strings. Set `STRICT_JSON` to `False` to restore the previous behaviour. [#5265][gh5265]
+* Add support for `page_size` parameter in CursorPaginator class [#5250][gh5250]
 
 
 
@@ -65,6 +66,7 @@ You can determine your currently installed version using `pip freeze`:
 [gh5273]: https://github.com/encode/django-rest-framework/issues/5273
 [gh5440]: https://github.com/encode/django-rest-framework/issues/5440
 [gh5265]: https://github.com/encode/django-rest-framework/issues/5265
+[gh5250]: https://github.com/encode/django-rest-framework/issues/5250
 
 
 ## 3.6.x series
