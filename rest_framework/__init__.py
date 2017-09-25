@@ -6,7 +6,6 @@ ______ _____ _____ _____    __
 | |\ \| |___/\__/ / | |   | | | | | (_| | | | | | |  __/\ V  V / (_) | |  |   <
 \_| \_\____/\____/  \_/   |_| |_|  \__,_|_| |_| |_|\___| \_/\_/ \___/|_|  |_|\_|
 """
-from .checks import *  # NOQA
 
 __title__ = 'Django REST framework'
 __version__ = '3.6.3'
@@ -22,3 +21,5 @@ HTTP_HEADER_ENCODING = 'iso-8859-1'
 
 # Default datetime input and output formats
 ISO_8601 = 'iso-8601'
+
+default_app_config = 'rest_framework.apps.RestFrameworkConfig'
