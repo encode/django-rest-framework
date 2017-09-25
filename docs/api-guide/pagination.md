@@ -28,7 +28,7 @@ The pagination style may be set globally, using the `DEFAULT_PAGINATION_CLASS` a
         'PAGE_SIZE': 100
     }
 
-Note that you need to set both the pagination class, and the page size that should be used.  The `DEFAULT_PAGINATION_CLASS` is set to `None` and disabled by default.
+Note that you need to set both the pagination class, and the page size that should be used.  Both `DEFAULT_PAGINATION_CLASS` and `PAGE_SIZE` are `None` by default.
 
 You can also set the pagination class on an individual view by using the `pagination_class` attribute. Typically you'll want to use the same pagination style throughout your API, although you might want to vary individual aspects of the pagination, such as default or maximum page size, on a per-view basis.
 
