@@ -4,13 +4,14 @@ inspectors.py   # Per-endpoint view introspection
 See schemas.__init__.py for package overview.
 """
 import re
+import warnings
 from collections import OrderedDict
 
 from django.db import models
 from django.utils.encoding import force_text, smart_text
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework import serializers
+from rest_framework import exceptions, serializers
 from rest_framework.compat import coreapi, coreschema, uritemplate, urlparse
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
@@ -285,7 +286,14 @@ class AutoSchema(ViewInspector):
         if not hasattr(view, 'get_serializer'):
             return []
 
-        serializer = view.get_serializer()
+        try:
+            serializer = view.get_serializer()
+        except exceptions.APIException:
+            serializer = None
+            warnings.warn('{}.get_serializer() raised an exception during '
+                          'schema generation. Serializer fields will not be '
+                          'generated for {} {}.'.format(
+                              type(view), method, path))
 
         if isinstance(serializer, serializers.ListSerializer):
             return [
