@@ -156,6 +156,24 @@ class SearchFilterTests(TestCase):
 
         reload_module(filters)
 
+    def test_subclass_defines_own_field_source(self):
+        class CustomSearchFilter(filters.SearchFilter):
+            search_filter_fields_source = 'my_search_fields'
+
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (CustomSearchFilter,)
+            my_search_fields = ('$title', '$text')
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'cd'})
+        response = view(request)
+        assert response.data == [
+            {'id': 2, 'title': 'zz', 'text': 'bcd'},
+            {'id': 3, 'title': 'zzz', 'text': 'cde'}
+        ]
+
 
 class AttributeModel(models.Model):
     label = models.CharField(max_length=32)

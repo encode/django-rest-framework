@@ -42,6 +42,7 @@ class BaseFilterBackend(object):
 class SearchFilter(BaseFilterBackend):
     # The URL query parameter used for the search.
     search_param = api_settings.SEARCH_PARAM
+    search_filter_fields_source = 'search_fields'
     template = 'rest_framework/filters/search.html'
     lookup_prefixes = {
         '^': 'istartswith',
@@ -89,7 +90,7 @@ class SearchFilter(BaseFilterBackend):
         return False
 
     def filter_queryset(self, request, queryset, view):
-        search_fields = getattr(view, 'search_fields', None)
+        search_fields = getattr(view, self.search_filter_fields_source, None)
         search_terms = self.get_search_terms(request)
 
         if not search_fields or not search_terms:
@@ -119,7 +120,7 @@ class SearchFilter(BaseFilterBackend):
         return queryset
 
     def to_html(self, request, queryset, view):
-        if not getattr(view, 'search_fields', None):
+        if not getattr(view, self.search_filter_fields_source, None):
             return ''
 
         term = self.get_search_terms(request)
