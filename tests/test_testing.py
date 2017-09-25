@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework.test import (
     APIClient, APIRequestFactory, force_authenticate
 )
+from tests.models import Hat
 
 
 @api_view(['GET', 'POST'])
@@ -49,11 +50,26 @@ def post_view(request):
     return Response(serializer.validated_data)
 
 
+@api_view(['GET'])
+def get_my_hat(request):
+    if hasattr(request.user, 'hat'):
+        return Response({
+            'id': request.user.hat.id,
+            'some_key': request.user.hat.some_key,
+        })
+    else:
+        return Response(
+            {},
+            status=404,
+        )
+
+
 urlpatterns = [
     url(r'^view/$', view),
     url(r'^session-view/$', session_view),
     url(r'^redirect-view/$', redirect_view),
-    url(r'^post-view/$', post_view)
+    url(r'^post-view/$', post_view),
+    url(r'^my_hat/$', get_my_hat),
 ]
 
 
@@ -202,6 +218,60 @@ class TestAPITestClient(TestCase):
         )
         assert response.status_code == 200
         assert response.data == {"flag": True}
+
+    def test_get_my_hat_with_force_authenticate(self):
+        user = User.objects.create_user('example', 'example@example.com', 'password')
+        self.client.force_authenticate(user)
+
+        response = self.client.get('/my_hat/')
+        self.assertEqual(response.status_code, 404)
+
+        hat = Hat.objects.create(user=user, some_key='some_value')
+        response = self.client.get('/my_hat/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {'id': hat.id, 'some_key': 'some_value'})
+
+        another_user = User.objects.create_user('another_example', 'another_example@example.com', 'password')
+        hat.user = another_user
+        hat.save()
+        response = self.client.get('/my_hat/')
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_my_hat_with_django_force_login(self):
+        user = User.objects.create_user('example', 'example@example.com', 'password')
+        self.client.force_login(user)
+
+        response = self.client.get('/my_hat/')
+        self.assertEqual(response.status_code, 404)
+
+        hat = Hat.objects.create(user=user, some_key='some_value')
+        response = self.client.get('/my_hat/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {'id': hat.id, 'some_key': 'some_value'})
+
+        another_user = User.objects.create_user('another_example', 'another_example@example.com', 'password')
+        hat.user = another_user
+        hat.save()
+        response = self.client.get('/my_hat/')
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_my_hat_with_login(self):
+        user = User.objects.create_user('example', 'example@example.com', 'password')
+        self.client.login(username='example', password='password')
+
+        response = self.client.get('/my_hat/')
+        self.assertEqual(response.status_code, 404)
+
+        hat = Hat.objects.create(user=user, some_key='some_value')
+        response = self.client.get('/my_hat/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {'id': hat.id, 'some_key': 'some_value'})
+
+        another_user = User.objects.create_user('another_example', 'another_example@example.com', 'password')
+        hat.user = another_user
+        hat.save()
+        response = self.client.get('/my_hat/')
+        self.assertEqual(response.status_code, 404)
 
 
 class TestAPIRequestFactory(TestCase):
