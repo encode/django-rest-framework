@@ -51,9 +51,14 @@ You can determine your currently installed version using `pip freeze`:
     **Possible backwards compatibility break** if you were relying on datetime strings being UTC. Have client interpret datetimes or [set default or active timezone (docs)][djangodocs-set-timezone] to UTC if needed.
 
 * Removed DjangoFilterBackend inline with deprecation policy. Use `django_filters.rest_framework.FilterSet` and/or `django_filters.rest_framework.DjangoFilterBackend` instead. [#5273][gh5273]
-* Don't strip microseconds from `time` when encoding. Makes consistent with `datetime`. **BC Change**: Previously only milliseconds were encoded. [#5440][gh5440]
-* Added `STRICT_JSON` setting (default `True`) to raise exception for the extended float values (`nan`, `inf`, `-inf`) accepted by Python's `json` module. **BC Change**: Previously these values would converted to corresponding strings. Set `STRICT_JSON` to `False` to restore the previous behaviour. [#5265][gh5265]
+* Don't strip microseconds from `time` when encoding. Makes consistent with `datetime`.
+    **BC Change**: Previously only milliseconds were encoded. [#5440][gh5440]
+* Added `STRICT_JSON` setting (default `True`) to raise exception for the extended float values (`nan`, `inf`, `-inf`) accepted by Python's `json` module.
+    **BC Change**: Previously these values would converted to corresponding strings. Set `STRICT_JSON` to `False` to restore the previous behaviour. [#5265][gh5265]
 * Add support for `page_size` parameter in CursorPaginator class [#5250][gh5250]
+* Make `DEFAULT_PAGINATION_CLASS` `None` by default.
+    **BC Change**: If your were **just** setting `PAGE_SIZE` to enable pagination you will need to add `DEFAULT_PAGINATION_CLASS`.
+    The previous default was `rest_framework.pagination.PageNumberPagination`. There is a system check warning to catch this case. You may silence that if you are setting pagination class on a per-view basis. [#5170][gh5170]
 
 
 
@@ -67,6 +72,7 @@ You can determine your currently installed version using `pip freeze`:
 [gh5440]: https://github.com/encode/django-rest-framework/issues/5440
 [gh5265]: https://github.com/encode/django-rest-framework/issues/5265
 [gh5250]: https://github.com/encode/django-rest-framework/issues/5250
+[gh5170]: https://github.com/encode/django-rest-framework/issues/5170
 
 
 ## 3.6.x series
