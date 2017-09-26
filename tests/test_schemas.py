@@ -139,7 +139,8 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     )
                 }
@@ -179,7 +180,8 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'custom_action': coreapi.Link(
@@ -225,7 +227,8 @@ class TestRouterGeneratedSchema(TestCase):
                         fields=[
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
                             coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description=('A field description'))),
-                            coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
+                            coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B')),
+                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'partial_update': coreapi.Link(
@@ -235,14 +238,16 @@ class TestRouterGeneratedSchema(TestCase):
                         fields=[
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
                             coreapi.Field('a', required=False, location='form', schema=coreschema.String(title='A', description='A field description')),
-                            coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
+                            coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B')),
+                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'delete': coreapi.Link(
                         url='/example/{id}/',
                         action='delete',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     )
                 }
@@ -450,7 +455,8 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
                         url='/example1/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     )
                 }
