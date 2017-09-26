@@ -61,6 +61,7 @@ You can determine your currently installed version using `pip freeze`:
     The previous default was `rest_framework.pagination.PageNumberPagination`. There is a system check warning to catch this case. You may silence that if you are setting pagination class on a per-view basis. [#5170][gh5170]
 * Catch `APIException` from `get_serializer_fields` in schema generation. [#5443][gh5443]
 * Allow custom authentication and permission classes when using `include_docs_urls` [#5448][gh5448]
+* Defer translated string evaluation on validators. [#5452][gh5452]
 
 
 
@@ -77,6 +78,7 @@ You can determine your currently installed version using `pip freeze`:
 [gh5170]: https://github.com/encode/django-rest-framework/issues/5170
 [gh5443]: https://github.com/encode/django-rest-framework/issues/5443
 [gh5448]: https://github.com/encode/django-rest-framework/issues/5448
+[gh5452]: https://github.com/encode/django-rest-framework/issues/5452
 
 
 ## 3.6.x series
