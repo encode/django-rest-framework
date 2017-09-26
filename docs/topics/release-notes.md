@@ -60,6 +60,8 @@ You can determine your currently installed version using `pip freeze`:
     **BC Change**: If your were **just** setting `PAGE_SIZE` to enable pagination you will need to add `DEFAULT_PAGINATION_CLASS`.
     The previous default was `rest_framework.pagination.PageNumberPagination`. There is a system check warning to catch this case. You may silence that if you are setting pagination class on a per-view basis. [#5170][gh5170]
 * Catch `APIException` from `get_serializer_fields` in schema generation. [#5443][gh5443]
+* Allow custom authentication and permission classes when using `include_docs_urls` [#5448][gh5448]
+
 
 
 <!-- 3.7.0 -->
@@ -74,6 +76,7 @@ You can determine your currently installed version using `pip freeze`:
 [gh5250]: https://github.com/encode/django-rest-framework/issues/5250
 [gh5170]: https://github.com/encode/django-rest-framework/issues/5170
 [gh5443]: https://github.com/encode/django-rest-framework/issues/5443
+[gh5448]: https://github.com/encode/django-rest-framework/issues/5448
 
 
 ## 3.6.x series
