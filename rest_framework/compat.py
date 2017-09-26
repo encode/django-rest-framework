@@ -11,12 +11,17 @@ import inspect
 import django
 from django.apps import apps
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ValidationError
+from django.core.validators import \
+    MaxLengthValidator as DjangoMaxLengthValidator
+from django.core.validators import MaxValueValidator as DjangoMaxValueValidator
+from django.core.validators import \
+    MinLengthValidator as DjangoMinLengthValidator
+from django.core.validators import MinValueValidator as DjangoMinValueValidator
 from django.db import connection, models, transaction
 from django.template import Context, RequestContext, Template
 from django.utils import six
 from django.views.generic import View
-
 
 try:
     from django.urls import (
@@ -293,6 +298,28 @@ try:
 except ImportError:
     DecimalValidator = None
 
+class CustomValidatorMessage(object):
+    """
+    We need to avoid evaluation of `lazy` translated `message` in `django.core.validators.BaseValidator.__init__`.
+    https://github.com/django/django/blob/75ed5900321d170debef4ac452b8b3cf8a1c2384/django/core/validators.py#L297
+    
+    Ref: https://github.com/encode/django-rest-framework/pull/5452
+    """
+    def __init__(self, *args, **kwargs):
+        self.message = kwargs.pop('message', self.message)
+        super(CustomValidatorMessage, self).__init__(*args, **kwargs)
+
+class MinValueValidator(CustomValidatorMessage, DjangoMinValueValidator):
+    pass
+
+class MaxValueValidator(CustomValidatorMessage, DjangoMaxValueValidator):
+    pass
+
+class MinLengthValidator(CustomValidatorMessage, DjangoMinLengthValidator):
+    pass
+
+class MaxLengthValidator(CustomValidatorMessage, DjangoMaxLengthValidator):
+    pass
 
 def set_rollback():
     if hasattr(transaction, 'set_rollback'):
