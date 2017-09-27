@@ -64,9 +64,14 @@ You can determine your currently installed version using `pip freeze`:
 * Defer translated string evaluation on validators. [#5452][gh5452]
 * Added default value for 'detail' param into 'ValidationError' exception [#5342][gh5342]
 * Adjust schema get_filter_fields rules to match framework [#5454][gh5454]
+* Updated test matrix to add Django 2.0 and drop Django 1.8 & 1.9
+    **BC Change**: This removes Django 1.8 and Django 1.9 from Django REST Framework supported versions. [#5457][gh5457]
+* Fixed a deprecation warning in serializers.ModelField [#5058][gh5058]
 
 
 <!-- 3.7.0 -->
+[gh5058]: https://github.com/encode/django-rest-framework/issues/5058
+[gh5457]: https://github.com/encode/django-rest-framework/issues/5457
 [gh5376]: https://github.com/encode/django-rest-framework/issues/5376
 [gh5422]: https://github.com/encode/django-rest-framework/issues/5422
 [gh5408]: https://github.com/encode/django-rest-framework/issues/5408
