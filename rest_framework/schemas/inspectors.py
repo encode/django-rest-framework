@@ -337,18 +337,33 @@ class AutoSchema(ViewInspector):
         paginator = view.pagination_class()
         return paginator.get_schema_fields(view)
 
+    def _allows_filters(self, path, method):
+        """
+        Determine whether to include filter Fields in schema.
+
+        Default implementation looks for ModelViewSet or GenericAPIView
+        actions/methods that cause filtering on the default implementation.
+
+        Override to adjust behaviour for your view.
+
+        Note: Introduced in v3.7: Initially "private" (i.e. with leading underscore)
+            to allow changes based on user experience.
+        """
+        if getattr(self.view, 'filter_backends', None) is None:
+            return False
+
+        if hasattr(self.view, 'action'):
+            return self.view.action in ["list", "retrieve", "update", "partial_update", "destroy"]
+
+        return method.lower in ["get", "put", "patch", "delete"]
+
     def get_filter_fields(self, path, method):
-        view = self.view
-
-        if not is_list_view(path, method, view):
-            return []
-
-        if not getattr(view, 'filter_backends', None):
+        if not self._allows_filters(path, method):
             return []
 
         fields = []
-        for filter_backend in view.filter_backends:
-            fields += filter_backend().get_schema_fields(view)
+        for filter_backend in self.view.filter_backends:
+            fields += filter_backend().get_schema_fields(self.view)
         return fields
 
     def get_encoding(self, path, method):
