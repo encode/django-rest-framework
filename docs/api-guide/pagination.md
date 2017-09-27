@@ -179,6 +179,10 @@ Proper usage of cursor pagination should have an ordering field that satisfies t
 * Should be an unchanging value, such as a timestamp, slug, or other field that is only set once, on creation.
 * Should be unique, or nearly unique. Millisecond precision timestamps are a good example. This implementation of cursor pagination uses a smart "position plus offset" style that allows it to properly support not-strictly-unique values as the ordering.
 * Should be a non-nullable value that can be coerced to a string.
+* Should not be a float. Precision errors easily lead to incorrect results.
+  Hint: use decimals instead.
+  (If you already have a float field and must paginate on that, an
+  [example `CursorPagination` subclass that uses decimals to limit precision is available here][float_cursor_pagination_example].)
 * The field should have a database index.
 
 Using an ordering field that does not satisfy these constraints will generally still work, but you'll be losing some of the benefits of cursor pagination.
@@ -317,3 +321,4 @@ The [`django-rest-framework-link-header-pagination` package][drf-link-header-pag
 [drf-proxy-pagination]: https://github.com/tuffnatty/drf-proxy-pagination
 [drf-link-header-pagination]: https://github.com/tbeadle/django-rest-framework-link-header-pagination
 [disqus-cursor-api]: http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api
+[float_cursor_pagination_example]: https://gist.github.com/keturn/8bc88525a183fd41c73ffb729b8865be#file-fpcursorpagination-py
