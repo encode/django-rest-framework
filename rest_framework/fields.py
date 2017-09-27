@@ -1831,7 +1831,7 @@ class ModelField(Field):
     def to_internal_value(self, data):
         rel = get_remote_field(self.model_field, default=None)
         if rel is not None:
-            return rel.to._meta.get_field(rel.field_name).to_python(data)
+            return rel.model._meta.get_field(rel.field_name).to_python(data)
         return self.model_field.to_python(data)
 
     def get_attribute(self, obj):
