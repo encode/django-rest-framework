@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 
 from base64 import b64decode, b64encode
 from collections import OrderedDict, namedtuple
+import decimal
 
 from django.core.paginator import Paginator as DjangoPaginator
 from django.core.paginator import InvalidPage
@@ -497,6 +498,9 @@ class CursorPagination(BasePagination):
     # queries, by having a hard cap on the maximum possible size of the offset.
     offset_cutoff = 1000
 
+    __rounding_down = decimal.Context(prec=14, rounding=decimal.ROUND_FLOOR)
+    __rounding_up = decimal.Context(prec=14, rounding=decimal.ROUND_CEILING)
+
     def paginate_queryset(self, queryset, request, view=None):
         self.page_size = self.get_page_size(request)
         if not self.page_size:
@@ -775,6 +779,13 @@ class CursorPagination(BasePagination):
             attr = instance[field_name]
         else:
             attr = getattr(instance, field_name)
+
+        if isinstance(attr, float):
+            if ordering[0][0] == '-':
+                attr = self.__rounding_down.create_decimal_from_float(attr)
+            else:
+                attr = self.__rounding_up.create_decimal_from_float(attr)
+
         return six.text_type(attr)
 
     def get_paginated_response(self, data):

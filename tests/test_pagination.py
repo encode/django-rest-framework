@@ -7,9 +7,9 @@ from django.db import models
 from django.test import TestCase
 
 from rest_framework import (
-    exceptions, filters, generics, pagination, serializers, status
+    exceptions, filters, generics, pagination, serializers, status, viewsets
 )
-from rest_framework.pagination import PAGE_BREAK, PageLink
+from rest_framework.pagination import CursorPagination, PAGE_BREAK, PageLink
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
 
@@ -986,3 +986,46 @@ def test_get_displayed_page_numbers():
     assert displayed_page_numbers(7, 9) == [1, None, 6, 7, 8, 9]
     assert displayed_page_numbers(8, 9) == [1, None, 7, 8, 9]
     assert displayed_page_numbers(9, 9) == [1, None, 7, 8, 9]
+
+
+class ThreeItemCursorPagination(CursorPagination):
+    page_size = 3
+    ordering = 'score'
+
+
+class FloatyModel(models.Model):
+    score = models.FloatField()
+
+
+class PassThroughSerializer(serializers.BaseSerializer):
+    def to_representation(self, item):
+        return item
+
+
+class FloatyViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = FloatyModel.objects.all()
+    pagination_class = ThreeItemCursorPagination
+    serializer_class = PassThroughSerializer
+    page_size = 3
+
+
+class TestCursorPaginationWithFloatingPointPosition(TestCase):
+    def setUp(self):
+        self.view = FloatyViewSet.as_view(actions={'get': 'list'})
+
+    def test_page_boundary_does_not_repeat_elements(self):
+        for i in range(12):
+            FloatyModel.objects.create(score=i/9.0)
+
+        request = factory.get('/')
+        first_response = self.view(request)
+
+        first_page_last_item = first_response.data['results'][-1]
+
+        second_request = factory.get(first_response.data['next'])
+        second_response = self.view(second_request)
+
+        second_page_first_item = second_response.data['results'][0]
+
+        self.assertNotEqual(first_page_last_item.pk, second_page_first_item.pk)
+        self.assertLess(first_page_last_item.score, second_page_first_item.score)
