@@ -63,7 +63,7 @@ You can determine your currently installed version using `pip freeze`:
 * Allow custom authentication and permission classes when using `include_docs_urls` [#5448][gh5448]
 * Defer translated string evaluation on validators. [#5452][gh5452]
 * Added default value for 'detail' param into 'ValidationError' exception [#5342][gh5342]
-
+* Adjust schema get_filter_fields rules to match framework [#5454][gh5454]
 
 
 <!-- 3.7.0 -->
@@ -81,6 +81,7 @@ You can determine your currently installed version using `pip freeze`:
 [gh5448]: https://github.com/encode/django-rest-framework/issues/5448
 [gh5452]: https://github.com/encode/django-rest-framework/issues/5452
 [gh5342]: https://github.com/encode/django-rest-framework/issues/5342
+[gh5454]: https://github.com/encode/django-rest-framework/issues/5454
 
 
 ## 3.6.x series
