@@ -1,8 +1,8 @@
 # Wheel for PyPI installs.
-wheel==0.29.0
+wheel==0.30.0
 
 # Twine for secured PyPI uploads.
-twine==1.6.5
+twine==1.9.1
 
 # Transifex client for managing translation resources.
 transifex-client==0.11
