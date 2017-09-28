@@ -273,6 +273,32 @@ except ImportError:
     def pygments_css(style):
         return None
 
+if markdown is not None and pygments is not None:
+    class CodeBlockPreprocessor(Preprocessor):
+        pattern = re.compile(
+            r'^\s*@@ (.+?) @@\s*(.+?)^\s*@@', re.M|re.S)
+
+        formatter = HtmlFormatter()
+
+        def run(self, lines):
+            def repl(m):
+                try:
+                    lexer = get_lexer_by_name(m.group(1))
+                except (ValueError, NameError):
+                    lexer = TextLexer()
+                code = m.group(2).replace('\t','    ')
+                code = pygments.highlight(code, lexer, self.formatter)
+                code = code.replace('\n\n', '\n&nbsp;\n').replace('\n', '<br />').replace('\\@','@')
+                return '\n\n%s\n\n' % code
+            ret = self.pattern.sub(repl, "\n".join(lines))
+            return ret.split("\n")
+
+    def md_filter_add_syntax_highlight(md):
+        md.preprocessors.add('highlight', CodeBlockPreprocessor(), "_begin")
+        return True
+else:
+    def md_filter_add_syntax_highlight(md):
+        return False
 
 try:
     import pytz
@@ -374,3 +400,4 @@ def include(module, namespace=None, app_name=None):
         return include(module, namespace, app_name)
     else:
         return include((module, app_name), namespace)
+
