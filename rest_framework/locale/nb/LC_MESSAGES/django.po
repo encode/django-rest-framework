@@ -363,7 +363,7 @@ msgstr "Ugyldig verdi."
 
 #: serializers.py:326
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
-msgstr "Ugyldige data. Forventet en dicitonary, men fikk {datatype}."
+msgstr "Ugyldige data. Forventet en dictionary, men fikk {datatype}."
 
 #: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:128
