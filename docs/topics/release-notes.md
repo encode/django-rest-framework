@@ -44,7 +44,7 @@ You can determine your currently installed version using `pip freeze`:
 
 * Fix `DjangoModelPermissions` to ensure user authentication before calling the view's `get_queryset()` method. As a side effect, this changes the order of the HTTP method permissions and authentication checks, and 405 responses will only be returned when authenticated. If you want to replicate the old behavior, see the PR for details. [#5376][gh5376]
 * Deprecated `exclude_from_schema` on `APIView` and `api_view` decorator. Set `schema = None` or `@schema(None)` as appropriate. [#5422][gh5422]
-* Timezone-aware `DateTimeField`s now respect active or default `timezone` during serialization, instead of always using UTC.
+* Timezone-aware `DateTimeField`s now respect active or default `timezone` during serialization, instead of always using UTC. [#5435][gh5435]
 
     Resolves inconsistency whereby instances were serialised with supplied datetime for `create` but UTC for `retrieve`. [#3732][gh3732]
 
@@ -67,9 +67,41 @@ You can determine your currently installed version using `pip freeze`:
 * Updated test matrix to add Django 2.0 and drop Django 1.8 & 1.9
     **BC Change**: This removes Django 1.8 and Django 1.9 from Django REST Framework supported versions. [#5457][gh5457]
 * Fixed a deprecation warning in serializers.ModelField [#5058][gh5058]
+* Added a more explicit error message when `get_queryset` returned `None` [#5348][gh5348]
+* Fix docs for Response `data` description [#5361][gh5361]
+* Fix __pychache__/.pyc excludes when packaging [#5373][gh5373]
+* Fix default value handling for dotted sources [#5375][gh5375]
+* Ensure content_type is set when passing empty body to RequestFactory [#5351][gh5351]
+* Fix ErrorDetail Documentation [#5380][gh5380]
+* Allow optional content in the generic content form [#5372][gh5372]
+* Updated supported values for the NullBooleanField [#5387][gh5387]
+* Fix ModelSerializer custom named fields with source on model [#5388][gh5388]
+* Fixed the MultipleFieldLookupMixin documentation example to properly check for object level permission [#5398][gh5398]
+* Update get_object() example in permissions.md [#5401][gh5401]
+* Fix authtoken managment command [#5415][gh5415]
+* Fix schema generation markdown [#5421][gh5421]
+* Allow `ChoiceField.choices` to be set dynamically [#5426][gh5426]
+* Add the project layout to the quickstart [#5434][gh5434]
+
 
 
 <!-- 3.7.0 -->
+[gh5435]: https://github.com/encode/django-rest-framework/issues/5435
+[gh5434]: https://github.com/encode/django-rest-framework/issues/5434
+[gh5426]: https://github.com/encode/django-rest-framework/issues/5426
+[gh5421]: https://github.com/encode/django-rest-framework/issues/5421
+[gh5415]: https://github.com/encode/django-rest-framework/issues/5415
+[gh5401]: https://github.com/encode/django-rest-framework/issues/5401
+[gh5398]: https://github.com/encode/django-rest-framework/issues/5398
+[gh5388]: https://github.com/encode/django-rest-framework/issues/5388
+[gh5387]: https://github.com/encode/django-rest-framework/issues/5387
+[gh5372]: https://github.com/encode/django-rest-framework/issues/5372
+[gh5380]: https://github.com/encode/django-rest-framework/issues/5380
+[gh5351]: https://github.com/encode/django-rest-framework/issues/5351
+[gh5375]: https://github.com/encode/django-rest-framework/issues/5375
+[gh5373]: https://github.com/encode/django-rest-framework/issues/5373
+[gh5361]: https://github.com/encode/django-rest-framework/issues/5361
+[gh5348]: https://github.com/encode/django-rest-framework/issues/5348
 [gh5058]: https://github.com/encode/django-rest-framework/issues/5058
 [gh5457]: https://github.com/encode/django-rest-framework/issues/5457
 [gh5376]: https://github.com/encode/django-rest-framework/issues/5376
