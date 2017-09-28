@@ -419,7 +419,7 @@ The `SessionAuthentication` class allows session cookies to provide the user
 authentication. You'll want to provide a standard HTML login flow, to allow
 the user to login, and then instantiate a client using session authentication:
 
-    let auth = coreapi.auth.SessionAuthentication({
+    let auth = new coreapi.auth.SessionAuthentication({
         csrfCookieName: 'csrftoken',
         csrfHeaderName: 'X-CSRFToken'
     })
@@ -433,7 +433,7 @@ requests for unsafe HTTP methods.
 The `TokenAuthentication` class can be used to support REST framework's built-in
 `TokenAuthentication`, as well as OAuth and JWT schemes.
 
-    let auth = coreapi.auth.TokenAuthentication({
+    let auth = new coreapi.auth.TokenAuthentication({
         scheme: 'JWT'
         token: '<token>'
     })
@@ -471,7 +471,7 @@ For example, using the "Django REST framework JWT" package
 
 The `BasicAuthentication` class can be used to support HTTP Basic Authentication.
 
-    let auth = coreapi.auth.BasicAuthentication({
+    let auth = new coreapi.auth.BasicAuthentication({
         username: '<username>',
         password: '<password>'
     })

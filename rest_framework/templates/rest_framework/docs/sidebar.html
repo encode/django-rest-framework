@@ -10,8 +10,8 @@
             <li data-toggle="collapse" data-target="#{{ section_key }}-dropdown" class="collapsed">
                 <a><i class="fa fa-dot-circle-o fa-lg"></i> {% if section_key %}{{ section_key }}{% else %}API Endpoints{% endif %} <span class="arrow"></span></a>
                 <ul class="sub-menu {% if section_key %}collapse{% endif %}" id="{{ section_key }}-dropdown">
-                {% for link_key, link in section.links|items %}
-                    <li><a href="#{{ section_key }}-{{ link_key }}">{{ link.title|default:link_key }}</a></li>
+                {% for link_key, link in section|schema_links|items %}
+                    <li><a href="#{{ section_key }}-{{ link_key|slugify }}">{{ link.title|default:link_key }}</a></li>
                 {% endfor %}
                 </ul>
             </li>

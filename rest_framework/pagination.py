@@ -482,6 +482,15 @@ class CursorPagination(BasePagination):
     ordering = '-created'
     template = 'rest_framework/pagination/previous_and_next.html'
 
+    # Client can control the page size using this query parameter.
+    # Default is 'None'. Set to eg 'page_size' to enable usage.
+    page_size_query_param = None
+    page_size_query_description = _('Number of results to return per page.')
+
+    # Set to an integer to limit the maximum page size the client may request.
+    # Only relevant if 'page_size_query_param' has also been set.
+    max_page_size = None
+
     # The offset in the cursor is used in situations where we have a
     # nearly-unique index. (Eg millisecond precision creation timestamps)
     # We guard against malicious users attempting to cause expensive database
@@ -566,6 +575,16 @@ class CursorPagination(BasePagination):
         return self.page
 
     def get_page_size(self, request):
+        if self.page_size_query_param:
+            try:
+                return _positive_int(
+                    request.query_params[self.page_size_query_param],
+                    strict=True,
+                    cutoff=self.max_page_size
+                )
+            except (KeyError, ValueError):
+                pass
+
         return self.page_size
 
     def get_next_link(self):
@@ -779,7 +798,7 @@ class CursorPagination(BasePagination):
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
-        return [
+        fields = [
             coreapi.Field(
                 name=self.cursor_query_param,
                 required=False,
@@ -790,3 +809,16 @@ class CursorPagination(BasePagination):
                 )
             )
         ]
+        if self.page_size_query_param is not None:
+            fields.append(
+                coreapi.Field(
+                    name=self.page_size_query_param,
+                    required=False,
+                    location='query',
+                    schema=coreschema.Integer(
+                        title='Page size',
+                        description=force_text(self.page_size_query_description)
+                    )
+                )
+            )
+        return fields

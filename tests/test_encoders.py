@@ -44,7 +44,7 @@ class JSONEncoderTests(TestCase):
         Tests encoding a timezone
         """
         current_time = datetime.now().time()
-        assert self.encoder.default(current_time) == current_time.isoformat()[:12]
+        assert self.encoder.default(current_time) == current_time.isoformat()
 
     def test_encode_time_tz(self):
         """

@@ -24,6 +24,30 @@ Create a new Django project named `tutorial`, then start a new app called `quick
     django-admin.py startapp quickstart
     cd ..
 
+The project layout should look like:
+
+    $ pwd
+    <some path>/tutorial
+    $ find .
+    .
+    ./manage.py
+    ./tutorial
+    ./tutorial/__init__.py
+    ./tutorial/quickstart
+    ./tutorial/quickstart/__init__.py
+    ./tutorial/quickstart/admin.py
+    ./tutorial/quickstart/apps.py
+    ./tutorial/quickstart/migrations
+    ./tutorial/quickstart/migrations/__init__.py
+    ./tutorial/quickstart/models.py
+    ./tutorial/quickstart/tests.py
+    ./tutorial/quickstart/views.py
+    ./tutorial/settings.py
+    ./tutorial/urls.py
+    ./tutorial/wsgi.py
+
+It may look unusual that the application has been created within the project directory. Using the project's namespace avoids name clashes with external module (topic goes outside the scope of the quickstart).
+
 Now sync your database for the first time:
 
     python manage.py migrate

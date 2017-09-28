@@ -1,12 +1,12 @@
 from __future__ import unicode_literals
 
 import collections
-import json
 from collections import OrderedDict
 
 from django.utils.encoding import force_text
 
 from rest_framework.compat import unicode_to_repr
+from rest_framework.utils import json
 
 
 class ReturnDict(OrderedDict):
@@ -88,7 +88,7 @@ class JSONBoundField(BoundField):
         value = self.value
         try:
             value = json.dumps(self.value, sort_keys=True, indent=4)
-        except TypeError:
+        except (TypeError, ValueError):
             pass
         return self.__class__(self._field, value, self.errors, self._prefix)
 

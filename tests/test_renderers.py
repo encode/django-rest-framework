@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import json
 import re
 from collections import MutableMapping, OrderedDict
 
@@ -24,6 +23,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
+from rest_framework.utils import json
 from rest_framework.views import APIView
 
 DUMMYSTATUS = status.HTTP_200_OK
@@ -357,6 +357,19 @@ class JSONRendererTests(TestCase):
         x.set({'a': 1, 'b': 'string'})
         with self.assertRaises(TypeError):
             JSONRenderer().render(x)
+
+    def test_float_strictness(self):
+        renderer = JSONRenderer()
+
+        # Default to strict
+        for value in [float('inf'), float('-inf'), float('nan')]:
+            with pytest.raises(ValueError):
+                renderer.render(value)
+
+        renderer.strict = False
+        assert renderer.render(float('inf')) == b'Infinity'
+        assert renderer.render(float('-inf')) == b'-Infinity'
+        assert renderer.render(float('nan')) == b'NaN'
 
     def test_without_content_type_args(self):
         """

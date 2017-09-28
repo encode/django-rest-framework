@@ -5,7 +5,6 @@ import copy
 import datetime
 import decimal
 import inspect
-import json
 import re
 import uuid
 from collections import OrderedDict
@@ -14,8 +13,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import (
-    EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, RegexValidator, URLValidator, ip_address_validators
+    EmailValidator, RegexValidator, URLValidator, ip_address_validators
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
@@ -28,18 +26,20 @@ from django.utils.encoding import is_protected_type, smart_text
 from django.utils.formats import (
     localize_input, number_format, sanitize_separators
 )
+from django.utils.functional import lazy
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.timezone import utc
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    InvalidTimeError, get_remote_field, unicode_repr, unicode_to_repr,
-    value_from_object
+    InvalidTimeError, MaxLengthValidator, MaxValueValidator,
+    MinLengthValidator, MinValueValidator, get_remote_field, unicode_repr,
+    unicode_to_repr, value_from_object
 )
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
-from rest_framework.utils import html, humanize_datetime, representation
+from rest_framework.utils import html, humanize_datetime, json, representation
 
 
 class empty:
@@ -95,9 +95,6 @@ def get_attribute(instance, attrs):
     Also accepts either attribute lookup on objects or dictionary lookups.
     """
     for attr in attrs:
-        if instance is None:
-            # Break out early if we get `None` at any point in a nested lookup.
-            return None
         try:
             if isinstance(instance, collections.Mapping):
                 instance = instance[attr]
@@ -144,7 +141,7 @@ def to_choices_dict(choices):
 
     to_choices_dict([1]) -> {1: 1}
     to_choices_dict([(1, '1st'), (2, '2nd')]) -> {1: '1st', 2: '2nd'}
-    to_choices_dict([('Group', ((1, '1st'), 2))]) -> {'Group': {1: '1st', 2: '2nd'}}
+    to_choices_dict([('Group', ((1, '1st'), 2))]) -> {'Group': {1: '1st', 2: '2'}}
     """
     # Allow single, paired or grouped choices style:
     # choices = [1, 2, 3]
@@ -693,8 +690,22 @@ class NullBooleanField(Field):
         'invalid': _('"{input}" is not a valid boolean.')
     }
     initial = None
-    TRUE_VALUES = {'t', 'T', 'true', 'True', 'TRUE', '1', 1, True}
-    FALSE_VALUES = {'f', 'F', 'false', 'False', 'FALSE', '0', 0, 0.0, False}
+    TRUE_VALUES = {
+        't', 'T',
+        'y', 'Y', 'yes', 'YES',
+        'true', 'True', 'TRUE',
+        'on', 'On', 'ON',
+        '1', 1,
+        True
+    }
+    FALSE_VALUES = {
+        'f', 'F',
+        'n', 'N', 'no', 'NO',
+        'false', 'False', 'FALSE',
+        'off', 'Off', 'OFF',
+        '0', 0, 0.0,
+        False
+    }
     NULL_VALUES = {'n', 'N', 'null', 'Null', 'NULL', '', None}
 
     def __init__(self, **kwargs):
@@ -703,12 +714,15 @@ class NullBooleanField(Field):
         super(NullBooleanField, self).__init__(**kwargs)
 
     def to_internal_value(self, data):
-        if data in self.TRUE_VALUES:
-            return True
-        elif data in self.FALSE_VALUES:
-            return False
-        elif data in self.NULL_VALUES:
-            return None
+        try:
+            if data in self.TRUE_VALUES:
+                return True
+            elif data in self.FALSE_VALUES:
+                return False
+            elif data in self.NULL_VALUES:
+                return None
+        except TypeError:  # Input is an unhashable type
+            pass
         self.fail('invalid', input=data)
 
     def to_representation(self, value):
@@ -739,11 +753,17 @@ class CharField(Field):
         self.min_length = kwargs.pop('min_length', None)
         super(CharField, self).__init__(**kwargs)
         if self.max_length is not None:
-            message = self.error_messages['max_length'].format(max_length=self.max_length)
-            self.validators.append(MaxLengthValidator(self.max_length, message=message))
+            message = lazy(
+                self.error_messages['max_length'].format,
+                six.text_type)(max_length=self.max_length)
+            self.validators.append(
+                MaxLengthValidator(self.max_length, message=message))
         if self.min_length is not None:
-            message = self.error_messages['min_length'].format(min_length=self.min_length)
-            self.validators.append(MinLengthValidator(self.min_length, message=message))
+            message = lazy(
+                self.error_messages['min_length'].format,
+                six.text_type)(min_length=self.min_length)
+            self.validators.append(
+                MinLengthValidator(self.min_length, message=message))
 
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,
@@ -898,11 +918,17 @@ class IntegerField(Field):
         self.min_value = kwargs.pop('min_value', None)
         super(IntegerField, self).__init__(**kwargs)
         if self.max_value is not None:
-            message = self.error_messages['max_value'].format(max_value=self.max_value)
-            self.validators.append(MaxValueValidator(self.max_value, message=message))
+            message = lazy(
+                self.error_messages['max_value'].format,
+                six.text_type)(max_value=self.max_value)
+            self.validators.append(
+                MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
-            message = self.error_messages['min_value'].format(min_value=self.min_value)
-            self.validators.append(MinValueValidator(self.min_value, message=message))
+            message = lazy(
+                self.error_messages['min_value'].format,
+                six.text_type)(min_value=self.min_value)
+            self.validators.append(
+                MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, data):
         if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
@@ -936,11 +962,17 @@ class FloatField(Field):
             self.coerce_to_string = True
         super(FloatField, self).__init__(**kwargs)
         if self.max_value is not None:
-            message = self.error_messages['max_value'].format(max_value=self.max_value)
-            self.validators.append(MaxValueValidator(self.max_value, message=message))
+            message = lazy(
+                self.error_messages['max_value'].format,
+                six.text_type)(max_value=self.max_value)
+            self.validators.append(
+                MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
-            message = self.error_messages['min_value'].format(min_value=self.min_value)
-            self.validators.append(MinValueValidator(self.min_value, message=message))
+            message = lazy(
+                self.error_messages['min_value'].format,
+                six.text_type)(min_value=self.min_value)
+            self.validators.append(
+                MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, data):
 
@@ -1000,11 +1032,17 @@ class DecimalField(Field):
         super(DecimalField, self).__init__(**kwargs)
 
         if self.max_value is not None:
-            message = self.error_messages['max_value'].format(max_value=self.max_value)
-            self.validators.append(MaxValueValidator(self.max_value, message=message))
+            message = lazy(
+                self.error_messages['max_value'].format,
+                six.text_type)(max_value=self.max_value)
+            self.validators.append(
+                MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
-            message = self.error_messages['min_value'].format(min_value=self.min_value)
-            self.validators.append(MinValueValidator(self.min_value, message=message))
+            message = lazy(
+                self.error_messages['min_value'].format,
+                six.text_type)(min_value=self.min_value)
+            self.validators.append(
+                MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, data):
         """
@@ -1128,7 +1166,9 @@ class DateTimeField(Field):
         """
         field_timezone = getattr(self, 'timezone', self.default_timezone())
 
-        if (field_timezone is not None) and not timezone.is_aware(value):
+        if field_timezone is not None:
+            if timezone.is_aware(value):
+                return value.astimezone(field_timezone)
             try:
                 return timezone.make_aware(value, field_timezone)
             except InvalidTimeError:
@@ -1138,7 +1178,7 @@ class DateTimeField(Field):
         return value
 
     def default_timezone(self):
-        return timezone.get_default_timezone() if settings.USE_TZ else None
+        return timezone.get_current_timezone() if settings.USE_TZ else None
 
     def to_internal_value(self, value):
         input_formats = getattr(self, 'input_formats', api_settings.DATETIME_INPUT_FORMATS)
@@ -1177,6 +1217,7 @@ class DateTimeField(Field):
             return value
 
         if output_format.lower() == ISO_8601:
+            value = self.enforce_timezone(value)
             value = value.isoformat()
             if value.endswith('+00:00'):
                 value = value[:-6] + 'Z'
@@ -1340,17 +1381,9 @@ class ChoiceField(Field):
     html_cutoff_text = _('More than {count} items...')
 
     def __init__(self, choices, **kwargs):
-        self.grouped_choices = to_choices_dict(choices)
-        self.choices = flatten_choices_dict(self.grouped_choices)
+        self.choices = choices
         self.html_cutoff = kwargs.pop('html_cutoff', self.html_cutoff)
         self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
-
-        # Map the string representation of choices to the underlying value.
-        # Allows us to deal with eg. integer choices while supporting either
-        # integer or string input, but still get the correct datatype out.
-        self.choice_strings_to_values = {
-            six.text_type(key): key for key in self.choices.keys()
-        }
 
         self.allow_blank = kwargs.pop('allow_blank', False)
 
@@ -1379,6 +1412,22 @@ class ChoiceField(Field):
             cutoff=self.html_cutoff,
             cutoff_text=self.html_cutoff_text
         )
+
+    def _get_choices(self):
+        return self._choices
+
+    def _set_choices(self, choices):
+        self.grouped_choices = to_choices_dict(choices)
+        self._choices = flatten_choices_dict(self.grouped_choices)
+
+        # Map the string representation of choices to the underlying value.
+        # Allows us to deal with eg. integer choices while supporting either
+        # integer or string input, but still get the correct datatype out.
+        self.choice_strings_to_values = {
+            six.text_type(key): key for key in self.choices.keys()
+        }
+
+    choices = property(_get_choices, _set_choices)
 
 
 class MultipleChoiceField(ChoiceField):
@@ -1790,13 +1839,16 @@ class ModelField(Field):
         max_length = kwargs.pop('max_length', None)
         super(ModelField, self).__init__(**kwargs)
         if max_length is not None:
-            message = self.error_messages['max_length'].format(max_length=max_length)
-            self.validators.append(MaxLengthValidator(max_length, message=message))
+            message = lazy(
+                self.error_messages['max_length'].format,
+                six.text_type)(max_length=self.max_length)
+            self.validators.append(
+                MaxLengthValidator(self.max_length, message=message))
 
     def to_internal_value(self, data):
         rel = get_remote_field(self.model_field, default=None)
         if rel is not None:
-            return rel.to._meta.get_field(rel.field_name).to_python(data)
+            return rel.model._meta.get_field(rel.field_name).to_python(data)
         return self.model_field.to_python(data)
 
     def get_attribute(self, obj):

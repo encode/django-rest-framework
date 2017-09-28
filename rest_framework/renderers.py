@@ -9,7 +9,6 @@ REST framework also provides an HTML renderer that renders the browsable API.
 from __future__ import unicode_literals
 
 import base64
-import json
 from collections import OrderedDict
 
 from django import forms
@@ -30,7 +29,7 @@ from rest_framework.compat import (
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
 from rest_framework.settings import api_settings
-from rest_framework.utils import encoders
+from rest_framework.utils import encoders, json
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework.utils.field_mapping import ClassLookupDict
 
@@ -62,6 +61,7 @@ class JSONRenderer(BaseRenderer):
     encoder_class = encoders.JSONEncoder
     ensure_ascii = not api_settings.UNICODE_JSON
     compact = api_settings.COMPACT_JSON
+    strict = api_settings.STRICT_JSON
 
     # We don't set a charset because JSON is a binary encoding,
     # that can be encoded as utf-8, utf-16 or utf-32.
@@ -102,7 +102,7 @@ class JSONRenderer(BaseRenderer):
         ret = json.dumps(
             data, cls=self.encoder_class,
             indent=indent, ensure_ascii=self.ensure_ascii,
-            separators=separators
+            allow_nan=not self.strict, separators=separators
         )
 
         # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,
@@ -579,7 +579,8 @@ class BrowsableAPIRenderer(BaseRenderer):
                 _content = forms.CharField(
                     label='Content',
                     widget=forms.Textarea(attrs={'data-override': 'content'}),
-                    initial=content
+                    initial=content,
+                    required=False
                 )
 
             return GenericContentForm()
