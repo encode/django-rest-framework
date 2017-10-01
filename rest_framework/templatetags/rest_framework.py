@@ -12,7 +12,7 @@ from django.utils.safestring import SafeData, mark_safe
 
 from rest_framework.compat import (
     NoReverseMatch, apply_markdown, pygments_highlight, reverse,
-    template_render,
+    template_render
 )
 from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
