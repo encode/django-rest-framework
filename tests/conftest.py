@@ -26,6 +26,9 @@ def pytest_configure():
             {
                 'BACKEND': 'django.template.backends.django.DjangoTemplates',
                 'APP_DIRS': True,
+                'OPTIONS': {
+                    "debug": True,  # We want template errors to raise
+                }
             },
         ],
         MIDDLEWARE=MIDDLEWARE,

@@ -14,9 +14,10 @@ from django.utils import six
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
 
+import coreapi
 from rest_framework import permissions, serializers, status
 from rest_framework.renderers import (
-    AdminRenderer, BaseRenderer, BrowsableAPIRenderer,
+    AdminRenderer, BaseRenderer, BrowsableAPIRenderer, DocumentationRenderer,
     HTMLFormRenderer, JSONRenderer, StaticHTMLRenderer
 )
 from rest_framework.request import Request
@@ -706,3 +707,32 @@ class AdminRendererTests(TestCase):
         response = view(request)
         response.render()
         self.assertInHTML('<tr><th>Iteritems</th><td>a string</td></tr>', str(response.content))
+
+
+class TestDocumentationRenderer(TestCase):
+
+    def test_document_with_link_named_data(self):
+        """
+        Ref #5395: Doc's `document.data` would fail with a Link named "data".
+            As per #4972, use templatetag instead.
+        """
+        document = coreapi.Document(
+            title='Data Endpoint API',
+            url='https://api.example.org/',
+            content={
+                'data': coreapi.Link(
+                    url='/data/',
+                    action='get',
+                    fields=[],
+                    description='Return data.'
+                )
+            }
+        )
+
+        factory = APIRequestFactory()
+        request = factory.get('/')
+
+        renderer = DocumentationRenderer()
+
+        html = renderer.render(document, accepted_media_type="text/html", renderer_context={"request": request})
+        assert '<h1>Data Endpoint API</h1>' in html

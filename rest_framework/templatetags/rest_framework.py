@@ -246,6 +246,20 @@ def items(value):
 
 
 @register.filter
+def data(value):
+    """
+    Simple filter to access `data` attribute of object,
+    specifically coreapi.Document.
+
+    As per `items` filter above, allows accessing `document.data` when
+    Document contains Link keyed-at "data".
+
+    See issue #5395
+    """
+    return value.data
+
+
+@register.filter
 def schema_links(section, sec_key=None):
     """
     Recursively find every link in a schema, even nested.
