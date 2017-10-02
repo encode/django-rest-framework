@@ -11,7 +11,8 @@ from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
 
 from rest_framework.compat import (
-    NoReverseMatch, markdown, pygments_highlight, reverse, template_render
+    NoReverseMatch, apply_markdown, pygments_highlight, reverse,
+    template_render
 )
 from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
@@ -68,9 +69,9 @@ def form_for_link(link):
 
 @register.simple_tag
 def render_markdown(markdown_text):
-    if not markdown:
+    if apply_markdown is None:
         return markdown_text
-    return mark_safe(markdown.markdown(markdown_text))
+    return mark_safe(apply_markdown(markdown_text))
 
 
 @register.simple_tag
