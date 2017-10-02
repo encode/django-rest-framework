@@ -82,10 +82,11 @@ You can determine your currently installed version using `pip freeze`:
 * Fix schema generation markdown [#5421][gh5421]
 * Allow `ChoiceField.choices` to be set dynamically [#5426][gh5426]
 * Add the project layout to the quickstart [#5434][gh5434]
-
+* Reuse 'apply_markdown' function in 'render_markdown' templatetag [#5469][gh5469]
 
 
 <!-- 3.7.0 -->
+[gh5469]: https://github.com/encode/django-rest-framework/issues/5469
 [gh5435]: https://github.com/encode/django-rest-framework/issues/5435
 [gh5434]: https://github.com/encode/django-rest-framework/issues/5434
 [gh5426]: https://github.com/encode/django-rest-framework/issues/5426
