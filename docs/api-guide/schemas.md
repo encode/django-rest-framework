@@ -586,6 +586,7 @@ in [OpenAPI][open-api] format.
 [coreapi]: http://www.coreapi.org/
 [corejson]: http://www.coreapi.org/specification/encoding/#core-json-encoding
 [open-api]: https://openapis.org/
+[drf-openapi]: https://github.com/limdauto/drf_openapi
 [json-hyperschema]: http://json-schema.org/latest/json-schema-hypermedia.html
 [api-blueprint]: https://apiblueprint.org/
 [static-files]: https://docs.djangoproject.com/en/stable/howto/static-files/
