@@ -26,6 +26,7 @@ Here we've used the `ReadOnlyModelViewSet` class to automatically provide the de
 Next we're going to replace the `SnippetList`, `SnippetDetail` and `SnippetHighlight` view classes.  We can remove the three views, and again replace them with a single class.
 
     from rest_framework.decorators import detail_route
+    from rest_framework.response import Response
 
     class SnippetViewSet(viewsets.ModelViewSet):
         """

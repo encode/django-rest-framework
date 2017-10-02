@@ -11,12 +11,17 @@ import inspect
 import django
 from django.apps import apps
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ValidationError
+from django.core.validators import \
+    MaxLengthValidator as DjangoMaxLengthValidator
+from django.core.validators import MaxValueValidator as DjangoMaxValueValidator
+from django.core.validators import \
+    MinLengthValidator as DjangoMinLengthValidator
+from django.core.validators import MinValueValidator as DjangoMinValueValidator
 from django.db import connection, models, transaction
 from django.template import Context, RequestContext, Template
 from django.utils import six
 from django.views.generic import View
-
 
 try:
     from django.urls import (
@@ -182,13 +187,6 @@ except ImportError:
     coreschema = None
 
 
-# django-filter is optional
-try:
-    import django_filters
-except ImportError:
-    django_filters = None
-
-
 # django-crispy-forms is optional
 try:
     import crispy_forms
@@ -246,6 +244,7 @@ try:
         md = markdown.Markdown(
             extensions=extensions, extension_configs=extension_configs
         )
+        md_filter_add_syntax_highlight(md)
         return md.convert(text)
 except ImportError:
     apply_markdown = None
@@ -275,6 +274,38 @@ except ImportError:
     def pygments_css(style):
         return None
 
+if markdown is not None and pygments is not None:
+    # starting from this blogpost and modified to support current markdown extensions API
+    # https://zerokspot.com/weblog/2008/06/18/syntax-highlighting-in-markdown-with-pygments/
+
+    from markdown.preprocessors import Preprocessor
+    import re
+
+    class CodeBlockPreprocessor(Preprocessor):
+        pattern = re.compile(
+            r'^\s*@@ (.+?) @@\s*(.+?)^\s*@@', re.M|re.S)
+
+        formatter = HtmlFormatter()
+
+        def run(self, lines):
+            def repl(m):
+                try:
+                    lexer = get_lexer_by_name(m.group(1))
+                except (ValueError, NameError):
+                    lexer = TextLexer()
+                code = m.group(2).replace('\t','    ')
+                code = pygments.highlight(code, lexer, self.formatter)
+                code = code.replace('\n\n', '\n&nbsp;\n').replace('\n', '<br />').replace('\\@','@')
+                return '\n\n%s\n\n' % code
+            ret = self.pattern.sub(repl, "\n".join(lines))
+            return ret.split("\n")
+
+    def md_filter_add_syntax_highlight(md):
+        md.preprocessors.add('highlight', CodeBlockPreprocessor(), "_begin")
+        return True
+else:
+    def md_filter_add_syntax_highlight(md):
+        return False
 
 try:
     import pytz
@@ -300,6 +331,28 @@ try:
 except ImportError:
     DecimalValidator = None
 
+class CustomValidatorMessage(object):
+    """
+    We need to avoid evaluation of `lazy` translated `message` in `django.core.validators.BaseValidator.__init__`.
+    https://github.com/django/django/blob/75ed5900321d170debef4ac452b8b3cf8a1c2384/django/core/validators.py#L297
+    
+    Ref: https://github.com/encode/django-rest-framework/pull/5452
+    """
+    def __init__(self, *args, **kwargs):
+        self.message = kwargs.pop('message', self.message)
+        super(CustomValidatorMessage, self).__init__(*args, **kwargs)
+
+class MinValueValidator(CustomValidatorMessage, DjangoMinValueValidator):
+    pass
+
+class MaxValueValidator(CustomValidatorMessage, DjangoMaxValueValidator):
+    pass
+
+class MinLengthValidator(CustomValidatorMessage, DjangoMinLengthValidator):
+    pass
+
+class MaxLengthValidator(CustomValidatorMessage, DjangoMaxLengthValidator):
+    pass
 
 def set_rollback():
     if hasattr(transaction, 'set_rollback'):

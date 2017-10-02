@@ -51,7 +51,7 @@ DEFAULTS = {
     'DEFAULT_VERSIONING_CLASS': None,
 
     # Generic view behavior
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': None,
     'DEFAULT_FILTER_BACKENDS': (),
 
     # Throttling
@@ -110,6 +110,7 @@ DEFAULTS = {
     # Encoding
     'UNICODE_JSON': True,
     'COMPACT_JSON': True,
+    'STRICT_JSON': True,
     'COERCE_DECIMAL_TO_STRING': True,
     'UPLOADED_FILES_USE_URL': True,
 

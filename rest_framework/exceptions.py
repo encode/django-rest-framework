@@ -64,7 +64,7 @@ def _get_full_details(detail):
 
 class ErrorDetail(six.text_type):
     """
-    A string-like object that can additionally
+    A string-like object that can additionally have a code.
     """
     code = None
 
@@ -123,7 +123,7 @@ class ValidationError(APIException):
     default_detail = _('Invalid input.')
     default_code = 'invalid'
 
-    def __init__(self, detail, code=None):
+    def __init__(self, detail=None, code=None):
         if detail is None:
             detail = self.default_detail
         if code is None:

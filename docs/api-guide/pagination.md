@@ -21,14 +21,14 @@ Pagination can be turned off by setting the pagination class to `None`.
 
 ## Setting the pagination style
 
-The default pagination style may be set globally, using the `DEFAULT_PAGINATION_CLASS` and `PAGE_SIZE` setting keys. For example, to use the built-in limit/offset pagination, you would do something like this:
+The pagination style may be set globally, using the `DEFAULT_PAGINATION_CLASS` and `PAGE_SIZE` setting keys. For example, to use the built-in limit/offset pagination, you would do something like this:
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
         'PAGE_SIZE': 100
     }
 
-Note that you need to set both the pagination class, and the page size that should be used.
+Note that you need to set both the pagination class, and the page size that should be used.  Both `DEFAULT_PAGINATION_CLASS` and `PAGE_SIZE` are `None` by default.
 
 You can also set the pagination class on an individual view by using the `pagination_class` attribute. Typically you'll want to use the same pagination style throughout your API, although you might want to vary individual aspects of the pagination, such as default or maximum page size, on a per-view basis.
 
@@ -85,7 +85,7 @@ This pagination style accepts a single number page number in the request query p
 
 #### Setup
 
-To enable the `PageNumberPagination` style globally, use the following configuration, modifying the `PAGE_SIZE` as desired:
+To enable the `PageNumberPagination` style globally, use the following configuration, and set the `PAGE_SIZE` as desired:
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -179,6 +179,10 @@ Proper usage of cursor pagination should have an ordering field that satisfies t
 * Should be an unchanging value, such as a timestamp, slug, or other field that is only set once, on creation.
 * Should be unique, or nearly unique. Millisecond precision timestamps are a good example. This implementation of cursor pagination uses a smart "position plus offset" style that allows it to properly support not-strictly-unique values as the ordering.
 * Should be a non-nullable value that can be coerced to a string.
+* Should not be a float. Precision errors easily lead to incorrect results.
+  Hint: use decimals instead.
+  (If you already have a float field and must paginate on that, an
+  [example `CursorPagination` subclass that uses decimals to limit precision is available here][float_cursor_pagination_example].)
 * The field should have a database index.
 
 Using an ordering field that does not satisfy these constraints will generally still work, but you'll be losing some of the benefits of cursor pagination.
@@ -226,8 +230,8 @@ Suppose we want to replace the default pagination output style with a modified f
         def get_paginated_response(self, data):
             return Response({
                 'links': {
-                   'next': self.get_next_link(),
-                   'previous': self.get_previous_link()
+                    'next': self.get_next_link(),
+                    'previous': self.get_previous_link()
                 },
                 'count': self.page.paginator.count,
                 'results': data
@@ -317,3 +321,4 @@ The [`django-rest-framework-link-header-pagination` package][drf-link-header-pag
 [drf-proxy-pagination]: https://github.com/tuffnatty/drf-proxy-pagination
 [drf-link-header-pagination]: https://github.com/tbeadle/django-rest-framework-link-header-pagination
 [disqus-cursor-api]: http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api
+[float_cursor_pagination_example]: https://gist.github.com/keturn/8bc88525a183fd41c73ffb729b8865be#file-fpcursorpagination-py

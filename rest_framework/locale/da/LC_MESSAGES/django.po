@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Mads Jensen <mje@inducks.org>, 2015-2016
+# Mads Jensen <mje@inducks.org>, 2015-2017
 # Mikkel Munch Mortensen <3xm@detfalskested.dk>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-12 16:13+0100\n"
-"PO-Revision-Date: 2016-07-12 15:14+0000\n"
-"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"PO-Revision-Date: 2017-08-03 14:58+0000\n"
+"Last-Translator: Mads Jensen <mje@inducks.org>\n"
 "Language-Team: Danish (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -62,31 +62,31 @@ msgstr ""
 
 #: authtoken/models.py:15
 msgid "Key"
-msgstr ""
+msgstr "Nøgle"
 
 #: authtoken/models.py:18
 msgid "User"
-msgstr ""
+msgstr "Bruger"
 
 #: authtoken/models.py:20
 msgid "Created"
-msgstr ""
+msgstr "Oprettet"
 
 #: authtoken/models.py:29
 msgid "Token"
-msgstr ""
+msgstr "Token"
 
 #: authtoken/models.py:30
 msgid "Tokens"
-msgstr ""
+msgstr "Tokens"
 
 #: authtoken/serializers.py:8
 msgid "Username"
-msgstr ""
+msgstr "Brugernavn"
 
 #: authtoken/serializers.py:9
 msgid "Password"
-msgstr ""
+msgstr "Kodeord"
 
 #: authtoken/serializers.py:20
 msgid "User account is disabled."
@@ -316,15 +316,15 @@ msgstr "Indsend."
 
 #: filters.py:336
 msgid "ascending"
-msgstr ""
+msgstr "stigende"
 
 #: filters.py:337
 msgid "descending"
-msgstr ""
+msgstr "faldende"
 
 #: pagination.py:193
 msgid "Invalid page."
-msgstr ""
+msgstr "Ugyldig side"
 
 #: pagination.py:427
 msgid "Invalid cursor"
@@ -426,7 +426,7 @@ msgstr "Ugyldig version i URL-stien."
 
 #: versioning.py:115
 msgid "Invalid version in URL path. Does not match any version namespace."
-msgstr ""
+msgstr "Ugyldig version in URLen. Den stemmer ikke overens med nogen versionsnumre."
 
 #: versioning.py:147
 msgid "Invalid version in hostname."

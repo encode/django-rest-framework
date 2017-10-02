@@ -44,7 +44,7 @@ This will either raise a `PermissionDenied` or `NotAuthenticated` exception, or 
 For example:
 
     def get_object(self):
-        obj = get_object_or_404(self.get_queryset())
+        obj = get_object_or_404(self.get_queryset(), pk=self.kwargs["pk"])
         self.check_object_permissions(self.request, obj)
         return obj
 

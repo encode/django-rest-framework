@@ -411,6 +411,19 @@ class TestDefaultOutput:
         serializer = self.Serializer(instance)
         assert serializer.data == {'has_default': 'def', 'has_default_callable': 'ghi', 'no_default': 'abc'}
 
+    def test_default_for_dotted_source(self):
+        """
+        'default="something"' should be used when a traversed attribute is missing from input.
+        """
+        class Serializer(serializers.Serializer):
+            traversed = serializers.CharField(default='x', source='traversed.attr')
+
+        assert Serializer({}).data == {'traversed': 'x'}
+        assert Serializer({'traversed': {}}).data == {'traversed': 'x'}
+        assert Serializer({'traversed': None}).data == {'traversed': 'x'}
+
+        assert Serializer({'traversed': {'attr': 'abc'}}).data == {'traversed': 'abc'}
+
 
 class TestCacheSerializerData:
     def test_cache_serializer_data(self):
@@ -467,6 +480,22 @@ class TestSerializerValidationWithCompiledRegexField:
         assert serializer.is_valid()
         assert serializer.validated_data == {'name': '2'}
         assert serializer.errors == {}
+
+
+class Test2505Regression:
+    def test_serializer_context(self):
+        class NestedSerializer(serializers.Serializer):
+            def __init__(self, *args, **kwargs):
+                super(NestedSerializer, self).__init__(*args, **kwargs)
+                # .context should not cache
+                self.context
+
+        class ParentSerializer(serializers.Serializer):
+            nested = NestedSerializer()
+
+        serializer = ParentSerializer(data={}, context={'foo': 'bar'})
+        assert serializer.context == {'foo': 'bar'}
+        assert serializer.fields['nested'].context == {'foo': 'bar'}
 
 
 class Test4606Regression:

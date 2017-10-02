@@ -9,7 +9,7 @@ from django.test import TestCase
 
 from rest_framework import (
     HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
-    status
+    status, views
 )
 from rest_framework.compat import ResolverMatch, guardian, set_many
 from rest_framework.filters import DjangoObjectPermissionsFilter
@@ -201,13 +201,44 @@ class ModelPermissionsIntegrationTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_calling_method_not_allowed(self):
-        request = factory.generic('METHOD_NOT_ALLOWED', '/')
+        request = factory.generic('METHOD_NOT_ALLOWED', '/', HTTP_AUTHORIZATION=self.permitted_credentials)
         response = root_view(request)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-        request = factory.generic('METHOD_NOT_ALLOWED', '/1')
+        request = factory.generic('METHOD_NOT_ALLOWED', '/1', HTTP_AUTHORIZATION=self.permitted_credentials)
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_check_auth_before_queryset_call(self):
+        class View(RootView):
+            def get_queryset(_):
+                self.fail('should not reach due to auth check')
+        view = View.as_view()
+
+        request = factory.get('/', HTTP_AUTHORIZATION='')
+        response = view(request)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_queryset_assertions(self):
+        class View(views.APIView):
+            authentication_classes = [authentication.BasicAuthentication]
+            permission_classes = [permissions.DjangoModelPermissions]
+        view = View.as_view()
+
+        request = factory.get('/', HTTP_AUTHORIZATION=self.permitted_credentials)
+        msg = 'Cannot apply DjangoModelPermissions on a view that does not set `.queryset` or have a `.get_queryset()` method.'
+        with self.assertRaisesMessage(AssertionError, msg):
+            view(request)
+
+        # Faulty `get_queryset()` methods should trigger the above "view does not have a queryset" assertion.
+        class View(RootView):
+            def get_queryset(self):
+                return None
+        view = View.as_view()
+
+        request = factory.get('/', HTTP_AUTHORIZATION=self.permitted_credentials)
+        with self.assertRaisesMessage(AssertionError, 'View.get_queryset() returned None'):
+            view(request)
 
 
 class BasicPermModel(models.Model):
@@ -396,7 +427,7 @@ class ObjectPermissionsIntegrationTests(TestCase):
         self.assertListEqual(response.data, [])
 
     def test_cannot_method_not_allowed(self):
-        request = factory.generic('METHOD_NOT_ALLOWED', '/')
+        request = factory.generic('METHOD_NOT_ALLOWED', '/', HTTP_AUTHORIZATION=self.credentials['readonly'])
         response = object_permissions_list_view(request)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 

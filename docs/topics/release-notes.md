@@ -40,6 +40,45 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.6.x series
 
+### 3.6.5
+
+* Fix `DjangoModelPermissions` to ensure user authentication before calling the view's `get_queryset()` method. As a side effect, this changes the order of the HTTP method permissions and authentication checks, and 405 responses will only be returned when authenticated. If you want to replicate the old behavior, see the PR for details. [#5376][gh5376]
+* Deprecated `exclude_from_schema` on `APIView` and `api_view` decorator. Set `schema = None` or `@schema(None)` as appropriate. [#5422][gh5422]
+* Timezone-aware `DateTimeField`s now respect active or default `timezone` during serialization, instead of always using UTC.
+
+    Resolves inconsistency whereby instances were serialised with supplied datetime for `create` but UTC for `retrieve`. [#3732][gh3732]
+
+    **Possible backwards compatibility break** if you were relying on datetime strings being UTC. Have client interpret datetimes or [set default or active timezone (docs)][djangodocs-set-timezone] to UTC if needed.
+
+### 3.6.4
+
+**Date**: [21st August 2017][3.6.4-milestone]
+
+* Ignore any invalidly formed query parameters for OrderingFilter. [#5131][gh5131]
+* Improve memory footprint when reading large JSON requests. [#5147][gh5147]
+* Fix schema generation for pagination. [#5161][gh5161]
+* Fix exception when `HTML_CUTOFF` is set to `None`. [#5174][gh5174]
+* Fix browsable API not supporting `multipart/form-data` correctly. [#5176][gh5176]
+* Fixed `test_hyperlinked_related_lookup_url_encoded_exists`. [#5179][gh5179]
+* Make sure max_length is in FileField kwargs. [#5186][gh5186]
+* Fix `list_route` & `detail_route` with kwargs contains curly bracket in `url_path` [#5187][gh5187]
+* Add Django manage command to create a DRF user Token. [#5188][gh5188]
+* Ensure API documentation templates do not check for user authentication [#5162][gh5162]
+* Fix special case where OneToOneField is also primary key. [#5192][gh5192]
+* Added aria-label and a new region for accessibility purposes in base.html [#5196][gh5196]
+* Quote nested API parameters in api.js. [#5214][gh5214]
+* Set ViewSet args/kwargs/request before dispatch. [#5229][gh5229]
+* Added unicode support to SlugField. [#5231][gh5231]
+* Fix HiddenField appears in Raw Data form initial content. [#5259][gh5259]
+* Raise validation error on invalid timezone parsing. [#5261][gh5261]
+* Fix SearchFilter to-many behavior/performance. [#5264][gh5264]
+* Simplified chained comparisons and minor code fixes. [#5276][gh5276]
+* RemoteUserAuthentication, docs, and tests. [#5306][gh5306]
+* Revert "Cached the field's root and context property" [#5313][gh5313]
+* Fix introspection of list field in schema. [#5326][gh5326]
+* Fix interactive docs for multiple nested and extra methods. [#5334][gh5334]
+* Fix/remove undefined template var "schema" [#5346][gh5346]
+
 ### 3.6.3
 
 **Date**: [12th May 2017][3.6.3-milestone]
@@ -716,6 +755,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.6.1-milestone]: https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.1+Release%22
 [3.6.2-milestone]: https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.2+Release%22
 [3.6.3-milestone]: https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.3+Release%22
+[3.6.4-milestone]: https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.4+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/encode/django-rest-framework/issues/2013
@@ -1326,8 +1366,8 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh4955]: https://github.com/encode/django-rest-framework/issues/4955
 [gh4956]: https://github.com/encode/django-rest-framework/issues/4956
 [gh4949]: https://github.com/encode/django-rest-framework/issues/4949
-<!-- 3.6.3 -->
 
+<!-- 3.6.3 -->
 [gh5126]: https://github.com/encode/django-rest-framework/issues/5126
 [gh5085]: https://github.com/encode/django-rest-framework/issues/5085
 [gh4437]: https://github.com/encode/django-rest-framework/issues/4437
@@ -1360,3 +1400,36 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh4968]: https://github.com/encode/django-rest-framework/issues/4968
 [gh5089]: https://github.com/encode/django-rest-framework/issues/5089
 [gh5117]: https://github.com/encode/django-rest-framework/issues/5117
+
+<!-- 3.6.4 -->
+[gh5346]: https://github.com/encode/django-rest-framework/issues/5346
+[gh5334]: https://github.com/encode/django-rest-framework/issues/5334
+[gh5326]: https://github.com/encode/django-rest-framework/issues/5326
+[gh5313]: https://github.com/encode/django-rest-framework/issues/5313
+[gh5306]: https://github.com/encode/django-rest-framework/issues/5306
+[gh5276]: https://github.com/encode/django-rest-framework/issues/5276
+[gh5264]: https://github.com/encode/django-rest-framework/issues/5264
+[gh5261]: https://github.com/encode/django-rest-framework/issues/5261
+[gh5259]: https://github.com/encode/django-rest-framework/issues/5259
+[gh5231]: https://github.com/encode/django-rest-framework/issues/5231
+[gh5229]: https://github.com/encode/django-rest-framework/issues/5229
+[gh5214]: https://github.com/encode/django-rest-framework/issues/5214
+[gh5196]: https://github.com/encode/django-rest-framework/issues/5196
+[gh5192]: https://github.com/encode/django-rest-framework/issues/5192
+[gh5162]: https://github.com/encode/django-rest-framework/issues/5162
+[gh5188]: https://github.com/encode/django-rest-framework/issues/5188
+[gh5187]: https://github.com/encode/django-rest-framework/issues/5187
+[gh5186]: https://github.com/encode/django-rest-framework/issues/5186
+[gh5179]: https://github.com/encode/django-rest-framework/issues/5179
+[gh5176]: https://github.com/encode/django-rest-framework/issues/5176
+[gh5174]: https://github.com/encode/django-rest-framework/issues/5174
+[gh5161]: https://github.com/encode/django-rest-framework/issues/5161
+[gh5147]: https://github.com/encode/django-rest-framework/issues/5147
+[gh5131]: https://github.com/encode/django-rest-framework/issues/5131
+
+<!-- 3.6.5 -->
+[gh5376]: https://github.com/encode/django-rest-framework/issues/5376
+[gh5422]: https://github.com/encode/django-rest-framework/issues/5422
+[gh5408]: https://github.com/encode/django-rest-framework/issues/5408
+[gh3732]: https://github.com/encode/django-rest-framework/issues/3732
+[djangodocs-set-timezone]: https://docs.djangoproject.com/en/1.11/topics/i18n/timezones/#default-time-zone-and-current-time-zone

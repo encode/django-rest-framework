@@ -5,7 +5,6 @@ returned by list views.
 from __future__ import unicode_literals
 
 import operator
-import warnings
 from functools import reduce
 
 from django.core.exceptions import ImproperlyConfigured
@@ -18,7 +17,7 @@ from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import (
-    coreapi, coreschema, distinct, django_filters, guardian, template_render
+    coreapi, coreschema, distinct, guardian, template_render
 )
 from rest_framework.settings import api_settings
 
@@ -38,44 +37,6 @@ class BaseFilterBackend(object):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         return []
-
-
-if django_filters:
-    from django_filters.rest_framework.filterset import FilterSet as DFFilterSet
-
-    class FilterSet(DFFilterSet):
-        def __init__(self, *args, **kwargs):
-            warnings.warn(
-                "The built in 'rest_framework.filters.FilterSet' is deprecated. "
-                "You should use 'django_filters.rest_framework.FilterSet' instead.",
-                DeprecationWarning, stacklevel=2
-            )
-            return super(FilterSet, self).__init__(*args, **kwargs)
-
-    DFBase = django_filters.rest_framework.DjangoFilterBackend
-
-else:
-    def FilterSet():
-        assert False, 'django-filter must be installed to use the `FilterSet` class'
-
-    DFBase = BaseFilterBackend
-
-
-class DjangoFilterBackend(DFBase):
-    """
-    A filter backend that uses django-filter.
-    """
-    def __new__(cls, *args, **kwargs):
-        assert django_filters, 'Using DjangoFilterBackend, but django-filter is not installed'
-        assert django_filters.VERSION >= (0, 15, 3), 'django-filter 0.15.3 and above is required'
-
-        warnings.warn(
-            "The built in 'rest_framework.filters.DjangoFilterBackend' is deprecated. "
-            "You should use 'django_filters.rest_framework.DjangoFilterBackend' instead.",
-            DeprecationWarning, stacklevel=2
-        )
-
-        return super(DjangoFilterBackend, cls).__new__(cls, *args, **kwargs)
 
 
 class SearchFilter(BaseFilterBackend):

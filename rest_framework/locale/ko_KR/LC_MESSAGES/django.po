@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Joon Hwan 김준환 <xncbf12@gmail.com>, 2017
 # SUN CHOI <best2378@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-12 16:13+0100\n"
-"PO-Revision-Date: 2016-07-12 15:14+0000\n"
-"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"PO-Revision-Date: 2017-08-03 14:58+0000\n"
+"Last-Translator: Joon Hwan 김준환 <xncbf12@gmail.com>\n"
 "Language-Team: Korean (Korea) (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/ko_KR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -247,7 +248,7 @@ msgstr "Time의 포멧이 잘못되었습니다. 이 형식들 중 한가지를 
 
 #: fields.py:1232
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "Duration의 포멧이 잘못되었습니다. 이 형식들 중 한가지를 사용하세요: {format}."
 
 #: fields.py:1251 fields.py:1300
 msgid "\"{input}\" is not a valid choice."
@@ -263,11 +264,11 @@ msgstr "아이템 리스트가 예상되었으나 \"{input_type}\"를 받았습�
 
 #: fields.py:1302
 msgid "This selection may not be empty."
-msgstr ""
+msgstr "이 선택 항목은 비워 둘 수 없습니다."
 
 #: fields.py:1339
 msgid "\"{input}\" is not a valid path choice."
-msgstr ""
+msgstr "\"{input}\"이 유효하지 않은 경로 선택입니다."
 
 #: fields.py:1358
 msgid "No file was submitted."
@@ -299,7 +300,7 @@ msgstr "유효한 이미지 파일을 업로드 하십시오. 업로드 하신 �
 
 #: fields.py:1449 relations.py:438 serializers.py:525
 msgid "This list may not be empty."
-msgstr ""
+msgstr "이 리스트는 비워 둘 수 없습니다."
 
 #: fields.py:1502
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
@@ -307,7 +308,7 @@ msgstr "아이템 딕셔너리가 예상되었으나 \"{input_type}\" 타입을 
 
 #: fields.py:1549
 msgid "Value must be valid JSON."
-msgstr ""
+msgstr "Value 는 유효한 JSON형식이어야 합니다."
 
 #: filters.py:36 templates/rest_framework/filters/django_filter.html:5
 msgid "Submit"
@@ -315,15 +316,15 @@ msgstr ""
 
 #: filters.py:336
 msgid "ascending"
-msgstr ""
+msgstr "오름차순"
 
 #: filters.py:337
 msgid "descending"
-msgstr ""
+msgstr "내림차순"
 
 #: pagination.py:193
 msgid "Invalid page."
-msgstr ""
+msgstr "페이지가 유효하지 않습니다."
 
 #: pagination.py:427
 msgid "Invalid cursor"
@@ -381,7 +382,7 @@ msgstr ""
 
 #: templates/rest_framework/filters/search.html:2
 msgid "Search"
-msgstr ""
+msgstr "검색"
 
 #: templates/rest_framework/horizontal/radio.html:2
 #: templates/rest_framework/inline/radio.html:2
@@ -401,19 +402,19 @@ msgstr "이 칸은 반드시 고유해야 합니다."
 
 #: validators.py:97
 msgid "The fields {field_names} must make a unique set."
-msgstr ""
+msgstr "{field_names} 필드는 반드시 고유하게 설정해야 합니다."
 
 #: validators.py:245
 msgid "This field must be unique for the \"{date_field}\" date."
-msgstr ""
+msgstr "이 칸은 \"{date_field}\"날짜에 대해 고유해야합니다."
 
 #: validators.py:260
 msgid "This field must be unique for the \"{date_field}\" month."
-msgstr ""
+msgstr "이 칸은 \"{date_field}\" 월에 대해 고유해야합니다."
 
 #: validators.py:273
 msgid "This field must be unique for the \"{date_field}\" year."
-msgstr ""
+msgstr "이 칸은 \"{date_field}\" 년에 대해 고유해야합니다."
 
 #: versioning.py:42
 msgid "Invalid version in \"Accept\" header."
@@ -425,7 +426,7 @@ msgstr "URL path내 버전이 유효하지 않습니다."
 
 #: versioning.py:115
 msgid "Invalid version in URL path. Does not match any version namespace."
-msgstr ""
+msgstr "URL 경로에 유효하지 않은 버전이 있습니다. 버전 네임 스페이스와 일치하지 않습니다."
 
 #: versioning.py:147
 msgid "Invalid version in hostname."
@@ -437,4 +438,4 @@ msgstr "쿼리 파라메터내 버전이 유효하지 않습니다."
 
 #: views.py:88
 msgid "Permission denied."
-msgstr ""
+msgstr "사용 권한이 거부되었습니다."
