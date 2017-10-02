@@ -244,6 +244,7 @@ try:
         md = markdown.Markdown(
             extensions=extensions, extension_configs=extension_configs
         )
+        md_filter_add_syntax_highlight(md)
         return md.convert(text)
 except ImportError:
     apply_markdown = None
@@ -273,6 +274,38 @@ except ImportError:
     def pygments_css(style):
         return None
 
+if markdown is not None and pygments is not None:
+    # starting from this blogpost and modified to support current markdown extensions API
+    # https://zerokspot.com/weblog/2008/06/18/syntax-highlighting-in-markdown-with-pygments/
+
+    from markdown.preprocessors import Preprocessor
+    import re
+
+    class CodeBlockPreprocessor(Preprocessor):
+        pattern = re.compile(
+            r'^\s*@@ (.+?) @@\s*(.+?)^\s*@@', re.M|re.S)
+
+        formatter = HtmlFormatter()
+
+        def run(self, lines):
+            def repl(m):
+                try:
+                    lexer = get_lexer_by_name(m.group(1))
+                except (ValueError, NameError):
+                    lexer = TextLexer()
+                code = m.group(2).replace('\t','    ')
+                code = pygments.highlight(code, lexer, self.formatter)
+                code = code.replace('\n\n', '\n&nbsp;\n').replace('\n', '<br />').replace('\\@','@')
+                return '\n\n%s\n\n' % code
+            ret = self.pattern.sub(repl, "\n".join(lines))
+            return ret.split("\n")
+
+    def md_filter_add_syntax_highlight(md):
+        md.preprocessors.add('highlight', CodeBlockPreprocessor(), "_begin")
+        return True
+else:
+    def md_filter_add_syntax_highlight(md):
+        return False
 
 try:
     import pytz
