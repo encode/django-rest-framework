@@ -75,6 +75,23 @@ When using viewsets, you should use the relevant action names as delimiters.
 
 There are a number of mature third-party packages for providing API documentation.
 
+#### DRF OpenAPI
+
+[DRF OpenAPI][drf-openapi] bridges the gap between OpenAPI specification and tool chain with the schema exposed
+out-of-the-box by Django Rest Framework. Its goals are:
+
+  * To be dropped into any existing DRF project without any code change necessary.
+  * Provide clear disctinction between request schema and response schema.
+  * Provide a versioning mechanism for each schema. Support defining schema by version range syntax, e.g. >1.0, <=2.0
+  * Support multiple response codes, not just 200
+  * All this information should be bound to view methods, not view classes.
+
+It also tries to stay current with the maturing schema generation mechanism provided by DRF.
+
+![Screenshot - DRF OpenAPI][image-drf-openapi]
+
+---
+
 #### DRF Docs
 
 [DRF Docs][drfdocs-repo] allows you to document Web APIs made with Django REST Framework and it is authored by Emmanouil Konstantinidis. It's made to work out of the box and its setup should not take more than a couple of minutes. Complete documentation can be found on the [website][drfdocs-website] while there is also a [demo][drfdocs-demo] available for people to see what it looks like. **Live API Endpoints** allow you to utilize the endpoints from within the documentation in a neat way.
@@ -197,6 +214,8 @@ In this approach, rather than documenting the available API endpoints up front, 
 To implement a hypermedia API you'll need to decide on an appropriate media type for the API, and implement a custom renderer and parser for that media type.  The [REST, Hypermedia & HATEOAS][hypermedia-docs] section of the documentation includes pointers to background reading, as well as links to various hypermedia formats.
 
 [cite]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
+[drf-openapi]: https://github.com/limdauto/drf_openapi/
+[image-drf-openapi]: ../img/drf-openapi.png
 [drfdocs-repo]: https://github.com/ekonstantinidis/django-rest-framework-docs
 [drfdocs-website]: http://www.drfdocs.com/
 [drfdocs-demo]: http://demo.drfdocs.com/
