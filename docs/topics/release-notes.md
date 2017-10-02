@@ -83,9 +83,17 @@ You can determine your currently installed version using `pip freeze`:
 * Allow `ChoiceField.choices` to be set dynamically [#5426][gh5426]
 * Add the project layout to the quickstart [#5434][gh5434]
 * Reuse 'apply_markdown' function in 'render_markdown' templatetag [#5469][gh5469]
+* Added links to `drf-openapi` package in docs [#5470][gh5470]
+* Added docstrings code highlighting with pygments [#5462][gh5462]
+* Fixed documentation rendering for views named `data` [#5472][gh5472]
+* Docs: Clarified 'to_internal_value()' validation behavior [#5466][gh5466]
 
 
 <!-- 3.7.0 -->
+[gh5466]: https://github.com/encode/django-rest-framework/issues/5466
+[gh5472]: https://github.com/encode/django-rest-framework/issues/5472
+[gh5462]: https://github.com/encode/django-rest-framework/issues/5462
+[gh5470]: https://github.com/encode/django-rest-framework/issues/5470
 [gh5469]: https://github.com/encode/django-rest-framework/issues/5469
 [gh5435]: https://github.com/encode/django-rest-framework/issues/5435
 [gh5434]: https://github.com/encode/django-rest-framework/issues/5434
