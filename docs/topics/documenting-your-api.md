@@ -80,7 +80,7 @@ There are a number of mature third-party packages for providing API documentatio
 [DRF OpenAPI][drf-openapi] bridges the gap between OpenAPI specification and tool chain with the schema exposed
 out-of-the-box by Django Rest Framework. Its goals are:
 
-  * Can be dropped into any existing DRF project without any code change necessary.
+  * To be dropped into any existing DRF project without any code change necessary.
   * Provide clear disctinction between request schema and response schema.
   * Provide a versioning mechanism for each schema. Support defining schema by version range syntax, e.g. >1.0, <=2.0
   * Support multiple response codes, not just 200
