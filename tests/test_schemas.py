@@ -6,7 +6,9 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.test import TestCase, override_settings
 
-from rest_framework import filters, pagination, permissions, serializers
+from rest_framework import (
+    filters, generics, pagination, permissions, serializers
+)
 from rest_framework.compat import coreapi, coreschema
 from rest_framework.decorators import (
     api_view, detail_route, list_route, schema
@@ -21,6 +23,8 @@ from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.utils import formatting
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
+
+from .models import BasicModel
 
 factory = APIRequestFactory()
 
@@ -728,10 +732,20 @@ class SchemaGenerationExclusionTests(TestCase):
         )
 
 
-
 @api_view(["GET"])
 def simple_fbv(request):
     pass
+
+
+class BasicModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BasicModel
+        fields = "__all__"
+
+
+class NamingCollisionView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicModelSerializer
 
 
 class NamingCollisionViewSet(GenericViewSet):
@@ -761,6 +775,21 @@ class TestURLNamingCollisions(TestCase):
         patterns = [
             url(r'^test', simple_fbv),
             url(r'^test/list/', simple_fbv),
+        ]
+
+        generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
+        schema = generator.get_schema()
+
+    def test_manually_routing_generic_view(self):
+        patterns = [
+            url(r'^test', NamingCollisionView.as_view()),
+            url(r'^test/retrieve/', NamingCollisionView.as_view()),
+            url(r'^test/update/', NamingCollisionView.as_view()),
+
+            # Fails with method names:
+            url(r'^test/get/', NamingCollisionView.as_view()),
+            url(r'^test/put/', NamingCollisionView.as_view()),
+            url(r'^test/delete/', NamingCollisionView.as_view()),
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
