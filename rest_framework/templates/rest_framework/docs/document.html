@@ -13,8 +13,8 @@
     {% if 'javascript' in langs %}{% include "rest_framework/docs/langs/javascript-intro.html" %}{% endif %}
 </div>
 </div>
-{% if document.data %}
-{% for section_key, section in document.data|items %}
+{% if document|data %}
+{% for section_key, section in document|data|items %}
 {% if section_key %}
     <h2 id="{{ section_key }}" class="coredocs-section-title">{{ section_key }} <a href="#{{ section_key }}"><i class="fa fa-link" aria-hidden="true"></i>
 </a></h2>

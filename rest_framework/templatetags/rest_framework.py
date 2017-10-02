@@ -11,7 +11,8 @@ from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
 
 from rest_framework.compat import (
-    NoReverseMatch, markdown, pygments_highlight, reverse, template_render
+    NoReverseMatch, apply_markdown, pygments_highlight, reverse,
+    template_render
 )
 from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
@@ -68,9 +69,9 @@ def form_for_link(link):
 
 @register.simple_tag
 def render_markdown(markdown_text):
-    if not markdown:
+    if apply_markdown is None:
         return markdown_text
-    return mark_safe(markdown.markdown(markdown_text))
+    return mark_safe(apply_markdown(markdown_text))
 
 
 @register.simple_tag
@@ -242,6 +243,20 @@ def items(value):
     Also see: https://stackoverflow.com/questions/15416662/django-template-loop-over-dictionary-items-with-items-as-key
     """
     return value.items()
+
+
+@register.filter
+def data(value):
+    """
+    Simple filter to access `data` attribute of object,
+    specifically coreapi.Document.
+
+    As per `items` filter above, allows accessing `document.data` when
+    Document contains Link keyed-at "data".
+
+    See issue #5395
+    """
+    return value.data
 
 
 @register.filter
