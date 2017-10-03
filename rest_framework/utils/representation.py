@@ -10,13 +10,18 @@ from django.db import models
 from django.utils.encoding import force_text
 from django.utils.functional import Promise
 
-from rest_framework.compat import get_names_and_managers, unicode_repr
+from rest_framework.compat import unicode_repr
 
 
 def manager_repr(value):
     model = value.model
     opts = model._meta
-    for manager_name, manager_instance in get_names_and_managers(opts):
+    names_and_managers = [
+        (manager.name, manager)
+        for manager
+        in opts.managers
+    ]
+    for manager_name, manager_instance in names_and_managers:
         if manager_instance == value:
             return '%s.%s.all()' % (model._meta.object_name, manager_name)
     return repr(value)
