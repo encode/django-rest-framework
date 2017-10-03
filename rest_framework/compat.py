@@ -79,25 +79,6 @@ def distinct(queryset, base):
 
 
 # TODO: Remove
-# Obtaining manager instances and names from model options differs after 1.10.
-def get_names_and_managers(options):
-    if django.VERSION >= (1, 10):
-        # Django 1.10 onwards provides a `.managers` property on the Options.
-        return [
-            (manager.name, manager)
-            for manager
-            in options.managers
-        ]
-    # For Django 1.8 and 1.9, use the three-tuple information provided
-    # by .concrete_managers and .abstract_managers
-    return [
-        (manager_info[1], manager_info[2])
-        for manager_info
-        in (options.concrete_managers + options.abstract_managers)
-    ]
-
-
-# TODO: Remove
 # field.rel is deprecated from 1.9 onwards
 def get_remote_field(field, **kwargs):
     if 'default' in kwargs:
