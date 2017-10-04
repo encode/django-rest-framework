@@ -34,6 +34,27 @@ This will include two different views:
   * `/docs/` - The documentation page itself.
   * `/docs/schema.js` - A JavaScript resource that exposes the API schema.
 
+---
+
+**Note**: By default `include_docs_urls` configures the underlying `SchemaView` to generate _public_ schemas.
+This means that views will not be instantiated with a `request` instance. i.e. Inside the view `self.request` will be `None`.
+
+To be compatible with this behaviour methods (such as `get_serializer` or `get_serializer_class` etc.) which inspect `self.request` or, particularly, `self.request.user` may need to be adjusted to handle this case.
+
+You may ensure views are given a `request` instance by calling `include_docs_urls` with `public=False`:
+
+    from rest_framework.documentation import include_docs_urls
+
+    urlpatterns = [
+        ...
+        # Generate schema with valid `request` instance:
+        url(r'^docs/', include_docs_urls(title='My API title', public=False))
+    ]
+
+
+---
+
+
 ### Documenting your views
 
 You can document your views by including docstrings that describe each of the available actions.
@@ -68,6 +89,46 @@ When using viewsets, you should use the relevant action names as delimiters.
         create:
         Create a new user instance.
         """
+
+
+### `documentation` API Reference
+
+The `rest_framework.documentation` module provides three helper functions to help configure the interactive API documentation, `include_docs_url` (usage shown above), `get_docs_view` and `get_schemajs_view`.
+
+ `include_docs_url` employs `get_docs_view` and `get_schemajs_view` to generate the url patterns for the documentation page and JavaScript resource that exposes the API schema respectively. They expose the following options for customisation. (`get_docs_view` and `get_schemajs_view` ultimately call `rest_frameworks.schemas.get_schema_view()`, see the Schemas docs for more options there.)
+
+#### `include_docs_url`
+
+* `title`: Default `None`. May be used to provide a descriptive title for the schema definition.
+* `description`: Default `None`. May be used to provide a description for the schema definition.
+* `schema_url`: Default `None`. May be used to pass a canonical base URL for the schema.
+* `public`: Default `True`. Should the schema be considered _public_? If `True` schema is generated without a `request` instance being passed to views.
+* `patterns`: Default `None`. A list of URLs to inspect when generating the schema. If `None` project's URL conf will be used.
+* `generator_class`: Default `rest_framework.schemas.SchemaGenerator`. May be used to specify a `SchemaGenerator` subclass to be passed to the `SchemaView`.
+* `authentication_classes`: Default `api_settings.DEFAULT_AUTHENTICATION_CLASSES`. May be used to pass custom authentication classes to the `SchemaView`.
+* `permission_classes`: Default `api_settings.DEFAULT_PERMISSION_CLASSES` May be used to pass custom permission classes to the `SchemaView`.
+
+#### `get_docs_view`
+
+* `title`: Default `None`. May be used to provide a descriptive title for the schema definition.
+* `description`: Default `None`. May be used to provide a description for the schema definition.
+* `schema_url`: Default `None`. May be used to pass a canonical base URL for the schema.
+* `public`: Default `True`. If `True` schema is generated without a `request` instance being passed to views.
+* `patterns`: Default `None`. A list of URLs to inspect when generating the schema. If `None` project's URL conf will be used.
+* `generator_class`: Default `rest_framework.schemas.SchemaGenerator`. May be used to specify a `SchemaGenerator` subclass to be passed to the `SchemaView`.
+* `authentication_classes`: Default `api_settings.DEFAULT_AUTHENTICATION_CLASSES`. May be used to pass custom authentication classes to the `SchemaView`.
+* `permission_classes`: Default `api_settings.DEFAULT_PERMISSION_CLASSES` May be used to pass custom permission classes to the `SchemaView`.
+
+#### `get_schemajs_view`
+
+* `title`: Default `None`. May be used to provide a descriptive title for the schema definition.
+* `description`: Default `None`. May be used to provide a description for the schema definition.
+* `schema_url`: Default `None`. May be used to pass a canonical base URL for the schema.
+* `public`: Default `True`. If `True` schema is generated without a `request` instance being passed to views.
+* `patterns`: Default `None`. A list of URLs to inspect when generating the schema. If `None` project's URL conf will be used.
+* `generator_class`: Default `rest_framework.schemas.SchemaGenerator`. May be used to specify a `SchemaGenerator` subclass to be passed to the `SchemaView`.
+* `authentication_classes`: Default `api_settings.DEFAULT_AUTHENTICATION_CLASSES`. May be used to pass custom authentication classes to the `SchemaView`.
+* `permission_classes`: Default `api_settings.DEFAULT_PERMISSION_CLASSES` May be used to pass custom permission classes to the `SchemaView`.
 
 ---
 
@@ -230,4 +291,4 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [image-django-rest-swagger]: ../img/django-rest-swagger.png
 [image-apiary]: ../img/apiary.png
 [image-self-describing-api]: ../img/self-describing.png
-[schemas-examples]: ../api-guide/schemas/#examples
+[schemas-examples]: ../api-guide/schemas/#example
