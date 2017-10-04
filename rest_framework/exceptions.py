@@ -92,7 +92,7 @@ class APIException(Exception):
         self.detail = _get_error_details(detail, code)
 
     def __str__(self):
-        return self.detail
+        return six.text_type(self.detail)
 
     def get_codes(self):
         """
@@ -135,9 +135,6 @@ class ValidationError(APIException):
             detail = [detail]
 
         self.detail = _get_error_details(detail, code)
-
-    def __str__(self):
-        return six.text_type(self.detail)
 
 
 class ParseError(APIException):
