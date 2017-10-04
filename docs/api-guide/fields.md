@@ -250,9 +250,9 @@ A floating point representation.
 
 Corresponds to `django.db.models.fields.FloatField`.
 
-**Signature**: `FloatField(coerce_to_string=None, max_value=None, min_value=None, localize=False)`
+**Signature**: `FloatField(coerce_to_string=False, max_value=None, min_value=None, localize=False)`
 
-- `coerce_to_string` Set to `True` if string values should be returned for the representation, or `False` if `float` objects should be returned. Defaults to `False`. Note that setting `localize` will force the value to `True`.
+- `coerce_to_string` Set to `True` if string values should be returned for the representation, or `False` if `float` objects should be returned. Defaults to `False`.
 - `max_value` Validate that the number provided is no greater than this value.
 - `min_value` Validate that the number provided is no less than this value.
 - `localize` Set to `True` to enable localization of input and output based on the current locale. This will also force `coerce_to_string` to `True`. Defaults to `False`. Note that data formatting is enabled if you have set `USE_L10N=True` in your settings file.
