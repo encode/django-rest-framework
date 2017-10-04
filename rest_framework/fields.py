@@ -957,9 +957,7 @@ class FloatField(Field):
         self.max_value = kwargs.pop('max_value', None)
         self.min_value = kwargs.pop('min_value', None)
         self.localize = kwargs.pop('localize', False)
-        self.coerce_to_string = kwargs.pop('coerce_to_string', None)
-        if self.localize:
-            self.coerce_to_string = True
+        self.coerce_to_string = kwargs.pop('coerce_to_string', False)
         super(FloatField, self).__init__(**kwargs)
         if self.max_value is not None:
             message = lazy(
