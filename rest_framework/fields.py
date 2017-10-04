@@ -33,7 +33,7 @@ from rest_framework import ISO_8601
 from rest_framework.compat import (
     InvalidTimeError, MaxLengthValidator, MaxValueValidator,
     MinLengthValidator, MinValueValidator, get_remote_field, unicode_repr,
-    unicode_to_repr, value_from_object
+    unicode_to_repr
 )
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
@@ -1840,7 +1840,7 @@ class ModelField(Field):
         return obj
 
     def to_representation(self, obj):
-        value = value_from_object(self.model_field, obj)
+        value = self.model_field.value_from_object(obj)
         if is_protected_type(value):
             return value
         return self.model_field.value_to_string(obj)

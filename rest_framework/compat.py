@@ -115,12 +115,6 @@ def _resolve_model(obj):
     raise ValueError("{0} is not a Django model".format(obj))
 
 
-# TODO: Remove
-def value_from_object(field, obj):
-    if django.VERSION < (1, 9):
-        return field._get_val_from_obj(obj)
-    return field.value_from_object(obj)
-
 
 # TODO: Remove
 # contrib.postgres only supported from 1.8 onwards.
