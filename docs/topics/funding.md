@@ -37,21 +37,25 @@ if (window.location.hostname == "www.django-rest-framework.org") {
     min-height: 255px;
     position: relative;
     top: 37px;
-    margin-bottom: 20px}
+    margin-bottom: 20px
+}
 .quantity {
-    text-align: center}
+    text-align: center
+}
 .dollar {
     font-size: 19px;
     position: relative;
     top: -18px;
 }
 .price {
-    font-size: 49px;}
+    font-size: 49px;
+}
 .period {
     font-size: 17px;
     position: relative;
     top: -8px;
-    margin-left: 4px;}
+    margin-left: 4px;
+}
 .plan-name {
     text-align: center;
     font-size: 20px;
@@ -61,9 +65,11 @@ if (window.location.hostname == "www.django-rest-framework.org") {
     padding-bottom: 15px;
     width: 90%;
     margin: 0 auto;
-    margin-top: 8px;}
+    margin-top: 8px;
+}
 .specs {
-    margin-top: 20px;    min-height: 130px;
+    margin-top: 20px;
+    min-height: 130px;
 }
 .specs.freelancer {
     min-height: 0px;
@@ -73,14 +79,18 @@ if (window.location.hostname == "www.django-rest-framework.org") {
     color: #474747;
     text-align: center;
     font-weight: 300;
-    margin-bottom: 13px;}
+    margin-bottom: 13px;
+}
 .variable {
     color: #1FBEE7;
-    font-weight: 400;}
+    font-weight: 400;
+}
 form.signup {
-    margin-top: 35px}
+    margin-top: 35px
+}
 .clear-promo {
-    padding-top: 30px}
+    padding-top: 30px
+}
 #main-content h1:first-of-type {
     margin: 0 0 50px;
     font-size: 60px;
@@ -329,7 +339,7 @@ For further enquires please contact <a href=mailto:funding@django-rest-framework
 
 ## Accountability
 
-In an effort to keep the project as transparent as possible, we are releasing [monthly progress reports](http://www.encode.io/reports/july-2017) and regularly include financial reports and cost breakdowns.
+In an effort to keep the project as transparent as possible, we are releasing [monthly progress reports](http://www.encode.io/reports/september-2017) and regularly include financial reports and cost breakdowns.
 
 <!-- Begin MailChimp Signup Form -->
 <link href="//cdn-images.mailchimp.com/embedcode/classic-10_7.css" rel="stylesheet" type="text/css">
