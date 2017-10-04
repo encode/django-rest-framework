@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 from django.http import Http404
 
 from rest_framework import exceptions
-from rest_framework.compat import is_authenticated
 
 SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
 
@@ -47,7 +46,7 @@ class IsAuthenticated(BasePermission):
     """
 
     def has_permission(self, request, view):
-        return request.user and is_authenticated(request.user)
+        return request.user and request.user.is_authenticated
 
 
 class IsAdminUser(BasePermission):
@@ -68,7 +67,7 @@ class IsAuthenticatedOrReadOnly(BasePermission):
         return (
             request.method in SAFE_METHODS or
             request.user and
-            is_authenticated(request.user)
+            request.user.is_authenticated
         )
 
 
@@ -136,7 +135,7 @@ class DjangoModelPermissions(BasePermission):
             return True
 
         if not request.user or (
-           not is_authenticated(request.user) and self.authenticated_users_only):
+           not request.user.is_authenticated and self.authenticated_users_only):
             return False
 
         queryset = self._queryset(view)

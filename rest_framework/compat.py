@@ -116,13 +116,6 @@ def _resolve_model(obj):
 
 
 # TODO: Remove
-def is_authenticated(user):
-    if django.VERSION < (1, 10):
-        return user.is_authenticated()
-    return user.is_authenticated
-
-
-# TODO: Remove
 def is_anonymous(user):
     if django.VERSION < (1, 10):
         return user.is_anonymous()
