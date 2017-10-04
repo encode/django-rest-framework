@@ -116,13 +116,6 @@ def _resolve_model(obj):
 
 
 # TODO: Remove
-def get_related_model(field):
-    if django.VERSION < (1, 9):
-        return _resolve_model(field.rel.to)
-    return field.remote_field.model
-
-
-# TODO: Remove
 def value_from_object(field, obj):
     if django.VERSION < (1, 9):
         return field._get_val_from_obj(obj)

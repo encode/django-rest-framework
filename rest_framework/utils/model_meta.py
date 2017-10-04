@@ -7,7 +7,7 @@ Usage: `get_field_info(model)` returns a `FieldInfo` instance.
 """
 from collections import OrderedDict, namedtuple
 
-from rest_framework.compat import get_related_model, get_remote_field
+from rest_framework.compat import get_remote_field
 
 FieldInfo = namedtuple('FieldResult', [
     'pk',  # Model field instance
@@ -53,7 +53,7 @@ def _get_pk(opts):
 
     while rel and rel.parent_link:
         # If model is a child via multi-table inheritance, use parent's pk.
-        pk = get_related_model(pk)._meta.pk
+        pk = pk.remote_field.model._meta.pk
         rel = get_remote_field(pk)
 
     return pk
@@ -79,7 +79,7 @@ def _get_forward_relationships(opts):
     for field in [field for field in opts.fields if field.serialize and get_remote_field(field)]:
         forward_relations[field.name] = RelationInfo(
             model_field=field,
-            related_model=get_related_model(field),
+            related_model=field.remote_field.model,
             to_many=False,
             to_field=_get_to_field(field),
             has_through_model=False,
@@ -90,7 +90,7 @@ def _get_forward_relationships(opts):
     for field in [field for field in opts.many_to_many if field.serialize]:
         forward_relations[field.name] = RelationInfo(
             model_field=field,
-            related_model=get_related_model(field),
+            related_model=field.remote_field.model,
             to_many=True,
             # manytomany do not have to_fields
             to_field=None,
