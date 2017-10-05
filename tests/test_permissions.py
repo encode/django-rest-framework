@@ -11,7 +11,7 @@ from rest_framework import (
     HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
     status, views
 )
-from rest_framework.compat import ResolverMatch, guardian, set_many
+from rest_framework.compat import ResolverMatch, guardian
 from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
@@ -73,13 +73,14 @@ class ModelPermissionsIntegrationTests(TestCase):
     def setUp(self):
         User.objects.create_user('disallowed', 'disallowed@example.com', 'password')
         user = User.objects.create_user('permitted', 'permitted@example.com', 'password')
-        set_many(user, 'user_permissions', [
+        user.user_permissions.set([
             Permission.objects.get(codename='add_basicmodel'),
             Permission.objects.get(codename='change_basicmodel'),
             Permission.objects.get(codename='delete_basicmodel')
         ])
+
         user = User.objects.create_user('updateonly', 'updateonly@example.com', 'password')
-        set_many(user, 'user_permissions', [
+        user.user_permissions.set([
             Permission.objects.get(codename='change_basicmodel'),
         ])
 
