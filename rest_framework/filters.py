@@ -16,9 +16,7 @@ from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import (
-    coreapi, coreschema, distinct, guardian, template_render
-)
+from rest_framework.compat import coreapi, coreschema, distinct, guardian
 from rest_framework.settings import api_settings
 
 
@@ -129,7 +127,7 @@ class SearchFilter(BaseFilterBackend):
             'term': term
         }
         template = loader.get_template(self.template)
-        return template_render(template, context)
+        return template.render(context)
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
@@ -260,7 +258,7 @@ class OrderingFilter(BaseFilterBackend):
     def to_html(self, request, queryset, view):
         template = loader.get_template(self.template)
         context = self.get_template_context(request, queryset, view)
-        return template_render(template, context)
+        return template.render(context)
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'

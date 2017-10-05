@@ -78,36 +78,6 @@ def distinct(queryset, base):
     return queryset.distinct()
 
 
-# Obtaining manager instances and names from model options differs after 1.10.
-def get_names_and_managers(options):
-    if django.VERSION >= (1, 10):
-        # Django 1.10 onwards provides a `.managers` property on the Options.
-        return [
-            (manager.name, manager)
-            for manager
-            in options.managers
-        ]
-    # For Django 1.8 and 1.9, use the three-tuple information provided
-    # by .concrete_managers and .abstract_managers
-    return [
-        (manager_info[1], manager_info[2])
-        for manager_info
-        in (options.concrete_managers + options.abstract_managers)
-    ]
-
-
-# field.rel is deprecated from 1.9 onwards
-def get_remote_field(field, **kwargs):
-    if 'default' in kwargs:
-        if django.VERSION < (1, 9):
-            return getattr(field, 'rel', kwargs['default'])
-        return getattr(field, 'remote_field', kwargs['default'])
-
-    if django.VERSION < (1, 9):
-        return field.rel
-    return field.remote_field
-
-
 def _resolve_model(obj):
     """
     Resolve supplied `obj` to a Django model class.
@@ -132,42 +102,11 @@ def _resolve_model(obj):
     raise ValueError("{0} is not a Django model".format(obj))
 
 
-def is_authenticated(user):
-    if django.VERSION < (1, 10):
-        return user.is_authenticated()
-    return user.is_authenticated
-
-
-def is_anonymous(user):
-    if django.VERSION < (1, 10):
-        return user.is_anonymous()
-    return user.is_anonymous
-
-
-def get_related_model(field):
-    if django.VERSION < (1, 9):
-        return _resolve_model(field.rel.to)
-    return field.remote_field.model
-
-
-def value_from_object(field, obj):
-    if django.VERSION < (1, 9):
-        return field._get_val_from_obj(obj)
-    return field.value_from_object(obj)
-
-
-# contrib.postgres only supported from 1.8 onwards.
+# django.contrib.postgres requires psycopg2
 try:
     from django.contrib.postgres import fields as postgres_fields
 except ImportError:
     postgres_fields = None
-
-
-# JSONField is only supported from 1.9 onwards
-try:
-    from django.contrib.postgres.fields import JSONField
-except ImportError:
-    JSONField = None
 
 
 # coreapi is optional (Note that uritemplate is a dependency of coreapi)
@@ -325,17 +264,12 @@ else:
     LONG_SEPARATORS = (b', ', b': ')
     INDENT_SEPARATORS = (b',', b': ')
 
-try:
-    # DecimalValidator is unavailable in Django < 1.9
-    from django.core.validators import DecimalValidator
-except ImportError:
-    DecimalValidator = None
 
 class CustomValidatorMessage(object):
     """
     We need to avoid evaluation of `lazy` translated `message` in `django.core.validators.BaseValidator.__init__`.
     https://github.com/django/django/blob/75ed5900321d170debef4ac452b8b3cf8a1c2384/django/core/validators.py#L297
-    
+
     Ref: https://github.com/encode/django-rest-framework/pull/5452
     """
     def __init__(self, *args, **kwargs):
@@ -369,44 +303,6 @@ def set_rollback():
     else:
         # transaction not managed
         pass
-
-
-def template_render(template, context=None, request=None):
-    """
-    Passing Context or RequestContext to Template.render is deprecated in 1.9+,
-    see https://github.com/django/django/pull/3883 and
-    https://github.com/django/django/blob/1.9/django/template/backends/django.py#L82-L84
-
-    :param template: Template instance
-    :param context: dict
-    :param request: Request instance
-    :return: rendered template as SafeText instance
-    """
-    if isinstance(template, Template):
-        if request:
-            context = RequestContext(request, context)
-        else:
-            context = Context(context)
-        return template.render(context)
-    # backends template, e.g. django.template.backends.django.Template
-    else:
-        return template.render(context, request=request)
-
-
-def set_many(instance, field, value):
-    if django.VERSION < (1, 10):
-        setattr(instance, field, value)
-    else:
-        field = getattr(instance, field)
-        field.set(value)
-
-
-def include(module, namespace=None, app_name=None):
-    from django.conf.urls import include
-    if django.VERSION < (1,9):
-        return include(module, namespace, app_name)
-    else:
-        return include((module, app_name), namespace)
 
 
 def authenticate(request=None, **credentials):

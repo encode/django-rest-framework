@@ -32,8 +32,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import ISO_8601
 from rest_framework.compat import (
     InvalidTimeError, MaxLengthValidator, MaxValueValidator,
-    MinLengthValidator, MinValueValidator, get_remote_field, unicode_repr,
-    unicode_to_repr, value_from_object
+    MinLengthValidator, MinValueValidator, unicode_repr, unicode_to_repr
 )
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
@@ -1829,7 +1828,7 @@ class ModelField(Field):
                 MaxLengthValidator(self.max_length, message=message))
 
     def to_internal_value(self, data):
-        rel = get_remote_field(self.model_field, default=None)
+        rel = self.model_field.remote_field
         if rel is not None:
             return rel.model._meta.get_field(rel.field_name).to_python(data)
         return self.model_field.to_python(data)
@@ -1840,7 +1839,7 @@ class ModelField(Field):
         return obj
 
     def to_representation(self, obj):
-        value = value_from_object(self.model_field, obj)
+        value = self.model_field.value_from_object(obj)
         if is_protected_type(value):
             return value
         return self.model_field.value_to_string(obj)

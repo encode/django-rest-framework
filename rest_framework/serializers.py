@@ -27,8 +27,7 @@ from django.utils import six, timezone
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import JSONField as ModelJSONField
-from rest_framework.compat import postgres_fields, set_many, unicode_to_repr
+from rest_framework.compat import postgres_fields, unicode_to_repr
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.fields import get_error_detail, set_value
 from rest_framework.settings import api_settings
@@ -861,8 +860,6 @@ class ModelSerializer(Serializer):
     }
     if ModelDurationField is not None:
         serializer_field_mapping[ModelDurationField] = DurationField
-    if ModelJSONField is not None:
-        serializer_field_mapping[ModelJSONField] = JSONField
     serializer_related_field = PrimaryKeyRelatedField
     serializer_related_to_field = SlugRelatedField
     serializer_url_field = HyperlinkedIdentityField
@@ -935,7 +932,8 @@ class ModelSerializer(Serializer):
         # Save many-to-many relationships after the instance is created.
         if many_to_many:
             for field_name, value in many_to_many.items():
-                set_many(instance, field_name, value)
+                field = getattr(instance, field_name)
+                field.set(value)
 
         return instance
 
@@ -949,7 +947,8 @@ class ModelSerializer(Serializer):
         # have an instance pk for the relationships to be associated with.
         for attr, value in validated_data.items():
             if attr in info.relations and info.relations[attr].to_many:
-                set_many(instance, attr, value)
+                field = getattr(instance, attr)
+                field.set(value)
             else:
                 setattr(instance, attr, value)
         instance.save()
@@ -1532,6 +1531,7 @@ if postgres_fields:
 
     ModelSerializer.serializer_field_mapping[postgres_fields.HStoreField] = CharMappingField
     ModelSerializer.serializer_field_mapping[postgres_fields.ArrayField] = ListField
+    ModelSerializer.serializer_field_mapping[postgres_fields.JSONField] = JSONField
 
 
 class HyperlinkedModelSerializer(ModelSerializer):

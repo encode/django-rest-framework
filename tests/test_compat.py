@@ -22,20 +22,6 @@ class CompatTests(TestCase):
         expected = (timedelta.days * 86400.0) + float(timedelta.seconds) + (timedelta.microseconds / 1000000.0)
         assert compat.total_seconds(timedelta) == expected
 
-    def test_get_remote_field_with_old_django_version(self):
-        class MockField(object):
-            rel = 'example_rel'
-        compat.django.VERSION = (1, 8)
-        assert compat.get_remote_field(MockField(), default='default_value') == 'example_rel'
-        assert compat.get_remote_field(object(), default='default_value') == 'default_value'
-
-    def test_get_remote_field_with_new_django_version(self):
-        class MockField(object):
-            remote_field = 'example_remote_field'
-        compat.django.VERSION = (1, 10)
-        assert compat.get_remote_field(MockField(), default='default_value') == 'example_remote_field'
-        assert compat.get_remote_field(object(), default='default_value') == 'default_value'
-
     def test_set_rollback_for_transaction_in_managed_mode(self):
         class MockTransaction(object):
             called_rollback = False

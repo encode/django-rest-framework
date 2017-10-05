@@ -11,8 +11,7 @@ from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
 
 from rest_framework.compat import (
-    NoReverseMatch, apply_markdown, pygments_highlight, reverse,
-    template_render
+    NoReverseMatch, apply_markdown, pygments_highlight, reverse
 )
 from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
@@ -216,11 +215,11 @@ def format_value(value):
         else:
             template = loader.get_template('rest_framework/admin/simple_list_value.html')
         context = {'value': value}
-        return template_render(template, context)
+        return template.render(context)
     elif isinstance(value, dict):
         template = loader.get_template('rest_framework/admin/dict_value.html')
         context = {'value': value}
-        return template_render(template, context)
+        return template.render(context)
     elif isinstance(value, six.string_types):
         if (
             (value.startswith('http:') or value.startswith('https:')) and not

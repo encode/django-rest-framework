@@ -7,8 +7,6 @@ Usage: `get_field_info(model)` returns a `FieldInfo` instance.
 """
 from collections import OrderedDict, namedtuple
 
-from rest_framework.compat import get_related_model, get_remote_field
-
 FieldInfo = namedtuple('FieldResult', [
     'pk',  # Model field instance
     'fields',  # Dict of field name -> model field instance
@@ -49,19 +47,19 @@ def get_field_info(model):
 
 def _get_pk(opts):
     pk = opts.pk
-    rel = get_remote_field(pk)
+    rel = pk.remote_field
 
     while rel and rel.parent_link:
         # If model is a child via multi-table inheritance, use parent's pk.
-        pk = get_related_model(pk)._meta.pk
-        rel = get_remote_field(pk)
+        pk = pk.remote_field.model._meta.pk
+        rel = pk.remote_field
 
     return pk
 
 
 def _get_fields(opts):
     fields = OrderedDict()
-    for field in [field for field in opts.fields if field.serialize and not get_remote_field(field)]:
+    for field in [field for field in opts.fields if field.serialize and not field.remote_field]:
         fields[field.name] = field
 
     return fields
@@ -76,10 +74,10 @@ def _get_forward_relationships(opts):
     Returns an `OrderedDict` of field names to `RelationInfo`.
     """
     forward_relations = OrderedDict()
-    for field in [field for field in opts.fields if field.serialize and get_remote_field(field)]:
+    for field in [field for field in opts.fields if field.serialize and field.remote_field]:
         forward_relations[field.name] = RelationInfo(
             model_field=field,
-            related_model=get_related_model(field),
+            related_model=field.remote_field.model,
             to_many=False,
             to_field=_get_to_field(field),
             has_through_model=False,
@@ -90,12 +88,12 @@ def _get_forward_relationships(opts):
     for field in [field for field in opts.many_to_many if field.serialize]:
         forward_relations[field.name] = RelationInfo(
             model_field=field,
-            related_model=get_related_model(field),
+            related_model=field.remote_field.model,
             to_many=True,
             # manytomany do not have to_fields
             to_field=None,
             has_through_model=(
-                not get_remote_field(field).through._meta.auto_created
+                not field.remote_field.through._meta.auto_created
             ),
             reverse=False
         )
@@ -119,7 +117,7 @@ def _get_reverse_relationships(opts):
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
             related_model=related,
-            to_many=get_remote_field(relation.field).multiple,
+            to_many=relation.field.remote_field.multiple,
             to_field=_get_to_field(relation.field),
             has_through_model=False,
             reverse=True
@@ -137,8 +135,8 @@ def _get_reverse_relationships(opts):
             # manytomany do not have to_fields
             to_field=None,
             has_through_model=(
-                (getattr(get_remote_field(relation.field), 'through', None) is not None) and
-                not get_remote_field(relation.field).through._meta.auto_created
+                (getattr(relation.field.remote_field, 'through', None) is not None) and
+                not relation.field.remote_field.through._meta.auto_created
             ),
             reverse=True
         )
