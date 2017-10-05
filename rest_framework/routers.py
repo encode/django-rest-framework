@@ -16,7 +16,6 @@ For example, you might have a `urls.py` that looks something like this:
 from __future__ import unicode_literals
 
 import itertools
-import warnings
 from collections import OrderedDict, namedtuple
 
 from django.conf.urls import url
@@ -330,40 +329,11 @@ class DefaultRouter(SimpleRouter):
     SchemaGenerator = SchemaGenerator
 
     def __init__(self, *args, **kwargs):
-        if 'schema_title' in kwargs:
-            warnings.warn(
-                "Including a schema directly via a router is now deprecated. "
-                "Use `get_schema_view()` instead.",
-                DeprecationWarning, stacklevel=2
-            )
-        if 'schema_renderers' in kwargs:
-            assert 'schema_title' in kwargs, 'Missing "schema_title" argument.'
-        if 'schema_url' in kwargs:
-            assert 'schema_title' in kwargs, 'Missing "schema_title" argument.'
-        self.schema_title = kwargs.pop('schema_title', None)
-        self.schema_url = kwargs.pop('schema_url', None)
-        self.schema_renderers = kwargs.pop('schema_renderers', self.default_schema_renderers)
-
         if 'root_renderers' in kwargs:
             self.root_renderers = kwargs.pop('root_renderers')
         else:
             self.root_renderers = list(api_settings.DEFAULT_RENDERER_CLASSES)
         super(DefaultRouter, self).__init__(*args, **kwargs)
-
-    def get_schema_root_view(self, api_urls=None):
-        """
-        Return a schema root view.
-        """
-        schema_generator = self.SchemaGenerator(
-            title=self.schema_title,
-            url=self.schema_url,
-            patterns=api_urls
-        )
-
-        return self.APISchemaView.as_view(
-            renderer_classes=self.schema_renderers,
-            schema_generator=schema_generator,
-        )
 
     def get_api_root_view(self, api_urls=None):
         """
@@ -384,10 +354,7 @@ class DefaultRouter(SimpleRouter):
         urls = super(DefaultRouter, self).get_urls()
 
         if self.include_root_view:
-            if self.schema_title:
-                view = self.get_schema_root_view(api_urls=urls)
-            else:
-                view = self.get_api_root_view(api_urls=urls)
+            view = self.get_api_root_view(api_urls=urls)
             root_url = url(r'^$', view, name=self.root_view_name)
             urls.append(root_url)
 
