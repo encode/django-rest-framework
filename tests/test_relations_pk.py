@@ -5,8 +5,9 @@ from django.utils import six
 
 from rest_framework import serializers
 from tests.models import (
-    ForeignKeySource, ForeignKeyTarget, ManyToManySource, ManyToManyTarget,
-    NullableForeignKeySource, NullableOneToOneSource, NullableUUIDForeignKeySource,
+    ForeignKeyInUniquenessConstraintSource, ForeignKeySource, ForeignKeyTarget,
+    ManyToManySource, ManyToManyTarget, NullableForeignKeySource,
+    NullableOneToOneSource, NullableUUIDForeignKeySource,
     OneToOnePKSource, OneToOneTarget, UUIDForeignKeyTarget
 )
 
@@ -34,6 +35,12 @@ class ForeignKeyTargetSerializer(serializers.ModelSerializer):
 class ForeignKeySourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForeignKeySource
+        fields = ('id', 'name', 'target')
+
+
+class ForeignKeyUniquenessSourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ForeignKeyInUniquenessConstraintSource
         fields = ('id', 'name', 'target')
 
 
@@ -358,6 +365,35 @@ class PKForeignKeyTests(TestCase):
         serializer = ModelSerializer(data={'name': 'test'})
         serializer.is_valid(raise_exception=True)
         assert 'target' not in serializer.validated_data
+
+
+class PKForeignKeyInUniquenessConstraintTests(TestCase):
+    def test_use_default_value_for_fk(self):
+        default_val = ForeignKeyInUniquenessConstraintSource._meta.get_field(
+            'target'
+        ).default
+        target = ForeignKeyTarget.objects.create(pk=default_val)
+        serializer = ForeignKeyUniquenessSourceSerializer(
+            data={'name': 'source-1'}
+        )
+        assert serializer.is_valid()
+        serializer.save()
+        source = ForeignKeyInUniquenessConstraintSource.objects.get(
+            name='source-1',
+        )
+        assert source.target == target
+
+    def test_provide_value_for_fk(self):
+        target = ForeignKeyTarget.objects.create(pk=10)
+        serializer = ForeignKeyUniquenessSourceSerializer(
+            data={'name': 'source-2', 'target': target.pk}
+        )
+        assert serializer.is_valid()
+        serializer.save()
+        source = ForeignKeyInUniquenessConstraintSource.objects.get(
+            name='source-2',
+        )
+        assert source.target == target
 
 
 class PKNullableForeignKeyTests(TestCase):
