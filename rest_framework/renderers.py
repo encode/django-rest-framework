@@ -16,7 +16,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Page
 from django.http.multipartparser import parse_header
-from django.template import Template, loader
+from django.template import engines, loader
 from django.test.client import encode_multipart
 from django.utils import six
 from django.utils.html import mark_safe
@@ -24,7 +24,7 @@ from django.utils.html import mark_safe
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
     INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi,
-    pygments_css, template_render
+    pygments_css
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
@@ -173,7 +173,7 @@ class TemplateHTMLRenderer(BaseRenderer):
             context = self.resolve_context(data, request, response)
         else:
             context = self.get_template_context(data, renderer_context)
-        return template_render(template, context, request=request)
+        return template.render(context, request=request)
 
     def resolve_template(self, template_names):
         return loader.select_template(template_names)
@@ -206,8 +206,9 @@ class TemplateHTMLRenderer(BaseRenderer):
             return self.resolve_template(template_names)
         except Exception:
             # Fall back to using eg '404 Not Found'
-            return Template('%d %s' % (response.status_code,
-                                       response.status_text.title()))
+            body = '%d %s' % (response.status_code, response.status_text.title())
+            template = engines['django'].from_string(body)
+            return template
 
 
 # Note, subclass TemplateHTMLRenderer simply for the exception behavior
@@ -239,7 +240,7 @@ class StaticHTMLRenderer(TemplateHTMLRenderer):
                 context = self.resolve_context(data, request, response)
             else:
                 context = self.get_template_context(data, renderer_context)
-            return template_render(template, context, request=request)
+            return template.render(context, request=request)
 
         return data
 
@@ -347,7 +348,7 @@ class HTMLFormRenderer(BaseRenderer):
 
         template = loader.get_template(template_name)
         context = {'field': field, 'style': style}
-        return template_render(template, context)
+        return template.render(context)
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -368,7 +369,7 @@ class HTMLFormRenderer(BaseRenderer):
             'form': form,
             'style': style
         }
-        return template_render(template, context)
+        return template.render(context)
 
 
 class BrowsableAPIRenderer(BaseRenderer):
@@ -625,7 +626,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         template = loader.get_template(self.filter_template)
         context = {'elements': elements}
-        return template_render(template, context)
+        return template.render(context)
 
     def get_context(self, data, accepted_media_type, renderer_context):
         """
@@ -705,7 +706,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         template = loader.get_template(self.template)
         context = self.get_context(data, accepted_media_type, renderer_context)
-        ret = template_render(template, context, request=renderer_context['request'])
+        ret = template.render(context, request=renderer_context['request'])
 
         # Munge DELETE Response code to allow us to return content
         # (Do this *after* we've rendered the template so that we include
@@ -741,7 +742,7 @@ class AdminRenderer(BrowsableAPIRenderer):
 
         template = loader.get_template(self.template)
         context = self.get_context(data, accepted_media_type, renderer_context)
-        ret = template_render(template, context, request=renderer_context['request'])
+        ret = template.render(context, request=renderer_context['request'])
 
         # Creation and deletion should use redirects in the admin style.
         if response.status_code == status.HTTP_201_CREATED and 'Location' in response:
@@ -819,7 +820,7 @@ class DocumentationRenderer(BaseRenderer):
     def render(self, data, accepted_media_type=None, renderer_context=None):
         template = loader.get_template(self.template)
         context = self.get_context(data, renderer_context['request'])
-        return template_render(template, context, request=renderer_context['request'])
+        return template.render(context, request=renderer_context['request'])
 
 
 class SchemaJSRenderer(BaseRenderer):
@@ -835,7 +836,7 @@ class SchemaJSRenderer(BaseRenderer):
         template = loader.get_template(self.template)
         context = {'schema': mark_safe(schema)}
         request = renderer_context['request']
-        return template_render(template, context, request=request)
+        return template.render(context, request=request)
 
 
 class MultiPartRenderer(BaseRenderer):

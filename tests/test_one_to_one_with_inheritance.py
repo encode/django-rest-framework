@@ -5,8 +5,6 @@ from django.test import TestCase
 
 from rest_framework import serializers
 from tests.models import RESTFrameworkModel
-
-
 # Models
 from tests.test_multitable_inheritance import ChildModel
 

@@ -7,7 +7,6 @@ Usage: `get_field_info(model)` returns a `FieldInfo` instance.
 """
 from collections import OrderedDict, namedtuple
 
-
 FieldInfo = namedtuple('FieldResult', [
     'pk',  # Model field instance
     'fields',  # Dict of field name -> model field instance

@@ -19,6 +19,7 @@ REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
 from __future__ import unicode_literals
+
 from importlib import import_module
 
 from django.conf import settings

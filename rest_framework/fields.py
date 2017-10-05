@@ -32,8 +32,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import ISO_8601
 from rest_framework.compat import (
     InvalidTimeError, MaxLengthValidator, MaxValueValidator,
-    MinLengthValidator, MinValueValidator, unicode_repr,
-    unicode_to_repr
+    MinLengthValidator, MinValueValidator, unicode_repr, unicode_to_repr
 )
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings

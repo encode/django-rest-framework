@@ -5,7 +5,7 @@ import pytest
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import Http404
-from django.template import Template, TemplateDoesNotExist
+from django.template import TemplateDoesNotExist, engines
 from django.test import TestCase, override_settings
 from django.utils import six
 
@@ -60,12 +60,12 @@ class TemplateHTMLRendererTests(TestCase):
 
         def get_template(template_name, dirs=None):
             if template_name == 'example.html':
-                return Template("example: {{ object }}")
+                return engines['django'].from_string("example: {{ object }}")
             raise TemplateDoesNotExist(template_name)
 
         def select_template(template_name_list, dirs=None, using=None):
             if template_name_list == ['example.html']:
-                return Template("example: {{ object }}")
+                return engines['django'].from_string("example: {{ object }}")
             raise TemplateDoesNotExist(template_name_list[0])
 
         django.template.loader.get_template = get_template
@@ -139,9 +139,9 @@ class TemplateHTMLRendererExceptionTests(TestCase):
 
         def get_template(template_name):
             if template_name == '404.html':
-                return Template("404: {{ detail }}")
+                return engines['django'].from_string("404: {{ detail }}")
             if template_name == '403.html':
-                return Template("403: {{ detail }}")
+                return engines['django'].from_string("403: {{ detail }}")
             raise TemplateDoesNotExist(template_name)
 
         django.template.loader.get_template = get_template

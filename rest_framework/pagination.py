@@ -16,7 +16,7 @@ from django.utils.encoding import force_text
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import coreapi, coreschema, template_render
+from rest_framework.compat import coreapi, coreschema
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -285,7 +285,7 @@ class PageNumberPagination(BasePagination):
     def to_html(self):
         template = loader.get_template(self.template)
         context = self.get_html_context()
-        return template_render(template, context)
+        return template.render(context)
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
@@ -442,7 +442,7 @@ class LimitOffsetPagination(BasePagination):
     def to_html(self):
         template = loader.get_template(self.template)
         context = self.get_html_context()
-        return template_render(template, context)
+        return template.render(context)
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
@@ -793,7 +793,7 @@ class CursorPagination(BasePagination):
     def to_html(self):
         template = loader.get_template(self.template)
         context = self.get_html_context()
-        return template_render(template, context)
+        return template.render(context)
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
