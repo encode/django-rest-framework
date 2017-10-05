@@ -115,21 +115,11 @@ def _resolve_model(obj):
     raise ValueError("{0} is not a Django model".format(obj))
 
 
-
-# TODO: Remove
-# contrib.postgres only supported from 1.8 onwards.
+# django.contrib.postgres requires psycopg2
 try:
     from django.contrib.postgres import fields as postgres_fields
 except ImportError:
     postgres_fields = None
-
-
-# TODO: Remove
-# JSONField is only supported from 1.9 onwards
-try:
-    from django.contrib.postgres.fields import JSONField
-except ImportError:
-    JSONField = None
 
 
 # coreapi is optional (Note that uritemplate is a dependency of coreapi)
@@ -298,7 +288,7 @@ class CustomValidatorMessage(object):
     """
     We need to avoid evaluation of `lazy` translated `message` in `django.core.validators.BaseValidator.__init__`.
     https://github.com/django/django/blob/75ed5900321d170debef4ac452b8b3cf8a1c2384/django/core/validators.py#L297
-    
+
     Ref: https://github.com/encode/django-rest-framework/pull/5452
     """
     def __init__(self, *args, **kwargs):
