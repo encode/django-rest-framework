@@ -78,19 +78,6 @@ def distinct(queryset, base):
     return queryset.distinct()
 
 
-# TODO: Remove
-# field.rel is deprecated from 1.9 onwards
-def get_remote_field(field, **kwargs):
-    if 'default' in kwargs:
-        if django.VERSION < (1, 9):
-            return getattr(field, 'rel', kwargs['default'])
-        return getattr(field, 'remote_field', kwargs['default'])
-
-    if django.VERSION < (1, 9):
-        return field.rel
-    return field.remote_field
-
-
 def _resolve_model(obj):
     """
     Resolve supplied `obj` to a Django model class.
