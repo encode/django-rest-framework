@@ -115,15 +115,6 @@ def _resolve_model(obj):
     raise ValueError("{0} is not a Django model".format(obj))
 
 
-
-# TODO: Remove
-# contrib.postgres only supported from 1.8 onwards.
-try:
-    from django.contrib.postgres import fields as postgres_fields
-except ImportError:
-    postgres_fields = None
-
-
 # TODO: Remove
 # JSONField is only supported from 1.9 onwards
 try:
