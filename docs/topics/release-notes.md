@@ -96,6 +96,7 @@ You can determine your currently installed version using `pip freeze`:
 * Update coreapi JS to 0.1.1 [#5479][gh5479]
 * Have `is_list_view` recognise RetrieveModel… views [#5480][gh5480]
 * Remove Django 1.8 & 1.9 compatibility code [#5481][gh5481]
+* Remove deprecated schema code from DefaultRouter [#5482][gh5482]
 
 
 ## 3.6.x series
@@ -1524,3 +1525,4 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5452]: https://github.com/encode/django-rest-framework/issues/5452
 [gh5342]: https://github.com/encode/django-rest-framework/issues/5342
 [gh5454]: https://github.com/encode/django-rest-framework/issues/5454
+[gh5482]: https://github.com/encode/django-rest-framework/issues/5482
