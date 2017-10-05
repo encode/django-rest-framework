@@ -1,9 +1,8 @@
 import pytest
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.test import override_settings
 
 from rest_framework import serializers, status, versioning
-from rest_framework.compat import include
 from rest_framework.decorators import APIView
 from rest_framework.relations import PKOnlyObject
 from rest_framework.response import Response

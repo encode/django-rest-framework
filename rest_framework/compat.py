@@ -305,15 +305,6 @@ def set_rollback():
         pass
 
 
-# TODO: Remove
-def include(module, namespace=None, app_name=None):
-    from django.conf.urls import include
-    if django.VERSION < (1,9):
-        return include(module, namespace, app_name)
-    else:
-        return include((module, app_name), namespace)
-
-
 def authenticate(request=None, **credentials):
     from django.contrib.auth import authenticate
     if django.VERSION < (1, 11):
