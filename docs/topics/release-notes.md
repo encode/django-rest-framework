@@ -87,9 +87,23 @@ You can determine your currently installed version using `pip freeze`:
 * Added docstrings code highlighting with pygments [#5462][gh5462]
 * Fixed documentation rendering for views named `data` [#5472][gh5472]
 * Docs: Clarified 'to_internal_value()' validation behavior [#5466][gh5466]
+* Fix missing six.text_type() call on APIException.__str__ [#5476][gh5476]
+* Document documentation.py [#5478][gh5478]
+* Fix naming collisions in Schema Generation [#5464][gh5464]
+* Call Django's authenticate function with the request object [#5295][gh5295]
+* Update coreapi JS to 0.1.1 [#5479][gh5479]
+* Have `is_list_view` recognise RetrieveModel… views [#5480][gh5480]
+* Remove Django 1.8 & 1.9 compatibility code [#5481][gh5481]
 
 
 <!-- 3.7.0 -->
+[gh5481]: https://github.com/encode/django-rest-framework/issues/5481
+[gh5480]: https://github.com/encode/django-rest-framework/issues/5480
+[gh5479]: https://github.com/encode/django-rest-framework/issues/5479
+[gh5295]: https://github.com/encode/django-rest-framework/issues/5295
+[gh5464]: https://github.com/encode/django-rest-framework/issues/5464
+[gh5478]: https://github.com/encode/django-rest-framework/issues/5478
+[gh5476]: https://github.com/encode/django-rest-framework/issues/5476
 [gh5466]: https://github.com/encode/django-rest-framework/issues/5466
 [gh5472]: https://github.com/encode/django-rest-framework/issues/5472
 [gh5462]: https://github.com/encode/django-rest-framework/issues/5462
