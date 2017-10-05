@@ -115,14 +115,6 @@ def _resolve_model(obj):
     raise ValueError("{0} is not a Django model".format(obj))
 
 
-# TODO: Remove
-# JSONField is only supported from 1.9 onwards
-try:
-    from django.contrib.postgres.fields import JSONField
-except ImportError:
-    JSONField = None
-
-
 # coreapi is optional (Note that uritemplate is a dependency of coreapi)
 try:
     import coreapi

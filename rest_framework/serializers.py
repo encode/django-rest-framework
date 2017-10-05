@@ -27,7 +27,6 @@ from django.utils import six, timezone
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import JSONField as ModelJSONField
 from rest_framework.compat import set_many, unicode_to_repr
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.fields import get_error_detail, set_value
@@ -50,6 +49,11 @@ try:
     from django.contrib.postgres import fields as postgres_fields
 except ImportError:
     postgres_fields = None
+
+try:
+    from django.contrib.postgres.fields import JSONField as ModelJSONField
+except ImportError:
+    ModelJSONField = None
 
 
 # Note: We do the following so that users of the framework can use this style:

@@ -8,8 +8,13 @@ from django.core import validators
 from django.db import models
 from django.utils.text import capfirst
 
-from rest_framework.compat import DecimalValidator, JSONField
+from rest_framework.compat import DecimalValidator
 from rest_framework.validators import UniqueValidator
+
+try:
+    from django.contrib.postgres.fields import JSONField
+except ImportError:
+    JSONField = None
 
 NUMERIC_FIELD_TYPES = (
     models.IntegerField, models.FloatField, models.DecimalField
