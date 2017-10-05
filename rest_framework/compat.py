@@ -407,3 +407,11 @@ def include(module, namespace=None, app_name=None):
         return include(module, namespace, app_name)
     else:
         return include((module, app_name), namespace)
+
+
+def authenticate(request=None, **credentials):
+    from django.contrib.auth import authenticate
+    if django.VERSION < (1, 11):
+        return authenticate(**credentials)
+    else:
+        return authenticate(request=request, **credentials)
