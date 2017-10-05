@@ -6,13 +6,15 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.test import TestCase, override_settings
 
-from rest_framework import filters, pagination, permissions, serializers
+from rest_framework import (
+    filters, generics, pagination, permissions, serializers
+)
 from rest_framework.compat import coreapi, coreschema
 from rest_framework.decorators import (
     api_view, detail_route, list_route, schema
 )
 from rest_framework.request import Request
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import DefaultRouter, SimpleRouter
 from rest_framework.schemas import (
     AutoSchema, ManualSchema, SchemaGenerator, get_schema_view
 )
@@ -20,7 +22,9 @@ from rest_framework.schemas.generators import EndpointEnumerator
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.utils import formatting
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
+
+from .models import BasicModel
 
 factory = APIRequestFactory()
 
@@ -726,3 +730,81 @@ class SchemaGenerationExclusionTests(TestCase):
             "The `OldFashionedExcludedView.exclude_from_schema` attribute is "
             "pending deprecation. Set `schema = None` instead."
         )
+
+
+@api_view(["GET"])
+def simple_fbv(request):
+    pass
+
+
+class BasicModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BasicModel
+        fields = "__all__"
+
+
+class NamingCollisionView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicModelSerializer
+
+
+class NamingCollisionViewSet(GenericViewSet):
+    """
+    Example via: https://stackoverflow.com/questions/43778668/django-rest-framwork-occured-typeerror-link-object-does-not-support-item-ass/
+    """
+    permision_class = ()
+
+    @list_route()
+    def detail(self, request):
+        return {}
+
+    @list_route(url_path='detail/export')
+    def detail_export(self, request):
+        return {}
+
+
+naming_collisions_router = SimpleRouter()
+naming_collisions_router.register(r'collision', NamingCollisionViewSet, base_name="collision")
+
+
+class TestURLNamingCollisions(TestCase):
+    """
+    Ref: https://github.com/encode/django-rest-framework/issues/4704
+    """
+    def test_manually_routing_nested_routes(self):
+        patterns = [
+            url(r'^test', simple_fbv),
+            url(r'^test/list/', simple_fbv),
+        ]
+
+        generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
+
+        with pytest.raises(ValueError):
+            generator.get_schema()
+
+    def test_manually_routing_generic_view(self):
+        patterns = [
+            url(r'^test', NamingCollisionView.as_view()),
+            url(r'^test/retrieve/', NamingCollisionView.as_view()),
+            url(r'^test/update/', NamingCollisionView.as_view()),
+
+            # Fails with method names:
+            url(r'^test/get/', NamingCollisionView.as_view()),
+            url(r'^test/put/', NamingCollisionView.as_view()),
+            url(r'^test/delete/', NamingCollisionView.as_view()),
+        ]
+
+        generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
+
+        with pytest.raises(ValueError):
+            generator.get_schema()
+
+    def test_from_router(self):
+        patterns = [
+            url(r'from-router', include(naming_collisions_router.urls)),
+        ]
+
+        generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
+
+        with pytest.raises(ValueError):
+            generator.get_schema()

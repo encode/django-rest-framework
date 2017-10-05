@@ -51,6 +51,19 @@ def is_api_view(callback):
     return (cls is not None) and issubclass(cls, APIView)
 
 
+INSERT_INTO_COLLISION_FMT = """
+Schema Naming Collision.
+
+coreapi.Link for URL path {value_url} cannot be inserted into schema.
+Position conflicts with coreapi.Link for URL path {target_url}.
+
+Attemped to insert link with keys: {keys}.
+
+Adjust URLs to avoid naming collision or override `SchemaGenerator.get_keys()`
+to customise schema structure.
+"""
+
+
 def insert_into(target, keys, value):
     """
     Nested dictionary insertion.
@@ -64,7 +77,15 @@ def insert_into(target, keys, value):
         if key not in target:
             target[key] = {}
         target = target[key]
-    target[keys[-1]] = value
+    try:
+        target[keys[-1]] = value
+    except TypeError:
+        msg = INSERT_INTO_COLLISION_FMT.format(
+            value_url=value.url,
+            target_url=target.url,
+            keys=keys
+        )
+        raise ValueError(msg)
 
 
 def is_custom_action(action):
