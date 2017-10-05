@@ -392,11 +392,11 @@ Once the API documentation URLs are installed, you'll be able to include both th
     <!--
         Load the CoreAPI library and the API schema.
 
-        /static/rest_framework/js/coreapi-0.1.0.js
+        /static/rest_framework/js/coreapi-0.1.1.js
         /docs/schema.js
     -->
     {% load staticfiles %}
-    <script src="{% static 'rest_framework/js/coreapi-0.1.0.js' %}"></script>
+    <script src="{% static 'rest_framework/js/coreapi-0.1.1.js' %}"></script>
     <script src="{% url 'api-docs:schema-js' %}"></script>
 
 The `coreapi` library, and the `schema` object will now both be available on the `window` instance.
