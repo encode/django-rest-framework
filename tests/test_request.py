@@ -16,7 +16,6 @@ from django.utils import six
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.compat import is_anonymous
 from rest_framework.parsers import BaseParser, FormParser, MultiPartParser
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -201,9 +200,9 @@ class TestUserSetter(TestCase):
 
     def test_user_can_logout(self):
         self.request.user = self.user
-        self.assertFalse(is_anonymous(self.request.user))
+        self.assertFalse(self.request.user.is_anonymous)
         logout(self.request)
-        self.assertTrue(is_anonymous(self.request.user))
+        self.assertTrue(self.request.user.is_anonymous)
 
     def test_logged_in_user_is_set_on_wrapped_request(self):
         login(self.request, self.user)

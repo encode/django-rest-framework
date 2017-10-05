@@ -78,24 +78,7 @@ def distinct(queryset, base):
     return queryset.distinct()
 
 
-# Obtaining manager instances and names from model options differs after 1.10.
-def get_names_and_managers(options):
-    if django.VERSION >= (1, 10):
-        # Django 1.10 onwards provides a `.managers` property on the Options.
-        return [
-            (manager.name, manager)
-            for manager
-            in options.managers
-        ]
-    # For Django 1.8 and 1.9, use the three-tuple information provided
-    # by .concrete_managers and .abstract_managers
-    return [
-        (manager_info[1], manager_info[2])
-        for manager_info
-        in (options.concrete_managers + options.abstract_managers)
-    ]
-
-
+# TODO: Remove
 # field.rel is deprecated from 1.9 onwards
 def get_remote_field(field, **kwargs):
     if 'default' in kwargs:
@@ -130,44 +113,6 @@ def _resolve_model(obj):
     elif inspect.isclass(obj) and issubclass(obj, models.Model):
         return obj
     raise ValueError("{0} is not a Django model".format(obj))
-
-
-def is_authenticated(user):
-    if django.VERSION < (1, 10):
-        return user.is_authenticated()
-    return user.is_authenticated
-
-
-def is_anonymous(user):
-    if django.VERSION < (1, 10):
-        return user.is_anonymous()
-    return user.is_anonymous
-
-
-def get_related_model(field):
-    if django.VERSION < (1, 9):
-        return _resolve_model(field.rel.to)
-    return field.remote_field.model
-
-
-def value_from_object(field, obj):
-    if django.VERSION < (1, 9):
-        return field._get_val_from_obj(obj)
-    return field.value_from_object(obj)
-
-
-# contrib.postgres only supported from 1.8 onwards.
-try:
-    from django.contrib.postgres import fields as postgres_fields
-except ImportError:
-    postgres_fields = None
-
-
-# JSONField is only supported from 1.9 onwards
-try:
-    from django.contrib.postgres.fields import JSONField
-except ImportError:
-    JSONField = None
 
 
 # coreapi is optional (Note that uritemplate is a dependency of coreapi)
@@ -325,11 +270,6 @@ else:
     LONG_SEPARATORS = (b', ', b': ')
     INDENT_SEPARATORS = (b',', b': ')
 
-try:
-    # DecimalValidator is unavailable in Django < 1.9
-    from django.core.validators import DecimalValidator
-except ImportError:
-    DecimalValidator = None
 
 class CustomValidatorMessage(object):
     """
@@ -371,6 +311,7 @@ def set_rollback():
         pass
 
 
+# TODO: Remove
 def template_render(template, context=None, request=None):
     """
     Passing Context or RequestContext to Template.render is deprecated in 1.9+,
@@ -393,6 +334,7 @@ def template_render(template, context=None, request=None):
         return template.render(context, request=request)
 
 
+# TODO: Remove
 def set_many(instance, field, value):
     if django.VERSION < (1, 10):
         setattr(instance, field, value)
@@ -401,6 +343,7 @@ def set_many(instance, field, value):
         field.set(value)
 
 
+# TODO: Remove
 def include(module, namespace=None, app_name=None):
     from django.conf.urls import include
     if django.VERSION < (1,9):
