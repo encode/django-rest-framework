@@ -778,7 +778,9 @@ class TestURLNamingCollisions(TestCase):
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
-        schema = generator.get_schema()
+
+        with pytest.raises(ValueError):
+            generator.get_schema()
 
     def test_manually_routing_generic_view(self):
         patterns = [
@@ -793,7 +795,9 @@ class TestURLNamingCollisions(TestCase):
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
-        schema = generator.get_schema()
+
+        with pytest.raises(ValueError):
+            generator.get_schema()
 
     def test_from_router(self):
         patterns = [
@@ -801,4 +805,6 @@ class TestURLNamingCollisions(TestCase):
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
-        schema = generator.get_schema()
+
+        with pytest.raises(ValueError):
+            generator.get_schema()
