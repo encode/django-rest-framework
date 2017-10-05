@@ -42,6 +42,8 @@ You can determine your currently installed version using `pip freeze`:
 
 ### 3.7.0
 
+**Date**: [6th October 2017][3.7.0-milestone]
+
 * Fix `DjangoModelPermissions` to ensure user authentication before calling the view's `get_queryset()` method. As a side effect, this changes the order of the HTTP method permissions and authentication checks, and 405 responses will only be returned when authenticated. If you want to replicate the old behavior, see the PR for details. [#5376][gh5376]
 * Deprecated `exclude_from_schema` on `APIView` and `api_view` decorator. Set `schema = None` or `@schema(None)` as appropriate. [#5422][gh5422]
 * Timezone-aware `DateTimeField`s now respect active or default `timezone` during serialization, instead of always using UTC. [#5435][gh5435]
@@ -94,54 +96,6 @@ You can determine your currently installed version using `pip freeze`:
 * Update coreapi JS to 0.1.1 [#5479][gh5479]
 * Have `is_list_view` recognise RetrieveModel… views [#5480][gh5480]
 * Remove Django 1.8 & 1.9 compatibility code [#5481][gh5481]
-
-
-<!-- 3.7.0 -->
-[gh5481]: https://github.com/encode/django-rest-framework/issues/5481
-[gh5480]: https://github.com/encode/django-rest-framework/issues/5480
-[gh5479]: https://github.com/encode/django-rest-framework/issues/5479
-[gh5295]: https://github.com/encode/django-rest-framework/issues/5295
-[gh5464]: https://github.com/encode/django-rest-framework/issues/5464
-[gh5478]: https://github.com/encode/django-rest-framework/issues/5478
-[gh5476]: https://github.com/encode/django-rest-framework/issues/5476
-[gh5466]: https://github.com/encode/django-rest-framework/issues/5466
-[gh5472]: https://github.com/encode/django-rest-framework/issues/5472
-[gh5462]: https://github.com/encode/django-rest-framework/issues/5462
-[gh5470]: https://github.com/encode/django-rest-framework/issues/5470
-[gh5469]: https://github.com/encode/django-rest-framework/issues/5469
-[gh5435]: https://github.com/encode/django-rest-framework/issues/5435
-[gh5434]: https://github.com/encode/django-rest-framework/issues/5434
-[gh5426]: https://github.com/encode/django-rest-framework/issues/5426
-[gh5421]: https://github.com/encode/django-rest-framework/issues/5421
-[gh5415]: https://github.com/encode/django-rest-framework/issues/5415
-[gh5401]: https://github.com/encode/django-rest-framework/issues/5401
-[gh5398]: https://github.com/encode/django-rest-framework/issues/5398
-[gh5388]: https://github.com/encode/django-rest-framework/issues/5388
-[gh5387]: https://github.com/encode/django-rest-framework/issues/5387
-[gh5372]: https://github.com/encode/django-rest-framework/issues/5372
-[gh5380]: https://github.com/encode/django-rest-framework/issues/5380
-[gh5351]: https://github.com/encode/django-rest-framework/issues/5351
-[gh5375]: https://github.com/encode/django-rest-framework/issues/5375
-[gh5373]: https://github.com/encode/django-rest-framework/issues/5373
-[gh5361]: https://github.com/encode/django-rest-framework/issues/5361
-[gh5348]: https://github.com/encode/django-rest-framework/issues/5348
-[gh5058]: https://github.com/encode/django-rest-framework/issues/5058
-[gh5457]: https://github.com/encode/django-rest-framework/issues/5457
-[gh5376]: https://github.com/encode/django-rest-framework/issues/5376
-[gh5422]: https://github.com/encode/django-rest-framework/issues/5422
-[gh5408]: https://github.com/encode/django-rest-framework/issues/5408
-[gh3732]: https://github.com/encode/django-rest-framework/issues/3732
-[djangodocs-set-timezone]: https://docs.djangoproject.com/en/1.11/topics/i18n/timezones/#default-time-zone-and-current-time-zone
-[gh5273]: https://github.com/encode/django-rest-framework/issues/5273
-[gh5440]: https://github.com/encode/django-rest-framework/issues/5440
-[gh5265]: https://github.com/encode/django-rest-framework/issues/5265
-[gh5250]: https://github.com/encode/django-rest-framework/issues/5250
-[gh5170]: https://github.com/encode/django-rest-framework/issues/5170
-[gh5443]: https://github.com/encode/django-rest-framework/issues/5443
-[gh5448]: https://github.com/encode/django-rest-framework/issues/5448
-[gh5452]: https://github.com/encode/django-rest-framework/issues/5452
-[gh5342]: https://github.com/encode/django-rest-framework/issues/5342
-[gh5454]: https://github.com/encode/django-rest-framework/issues/5454
 
 
 ## 3.6.x series
@@ -852,6 +806,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.6.2-milestone]: https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.2+Release%22
 [3.6.3-milestone]: https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.3+Release%22
 [3.6.4-milestone]: https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.4+Release%22
+[3.7.0-milestone]: https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.7.0+Release%22
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/encode/django-rest-framework/issues/2013
@@ -1523,3 +1478,49 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5147]: https://github.com/encode/django-rest-framework/issues/5147
 [gh5131]: https://github.com/encode/django-rest-framework/issues/5131
 
+<!-- 3.7.0 -->
+[gh5481]: https://github.com/encode/django-rest-framework/issues/5481
+[gh5480]: https://github.com/encode/django-rest-framework/issues/5480
+[gh5479]: https://github.com/encode/django-rest-framework/issues/5479
+[gh5295]: https://github.com/encode/django-rest-framework/issues/5295
+[gh5464]: https://github.com/encode/django-rest-framework/issues/5464
+[gh5478]: https://github.com/encode/django-rest-framework/issues/5478
+[gh5476]: https://github.com/encode/django-rest-framework/issues/5476
+[gh5466]: https://github.com/encode/django-rest-framework/issues/5466
+[gh5472]: https://github.com/encode/django-rest-framework/issues/5472
+[gh5462]: https://github.com/encode/django-rest-framework/issues/5462
+[gh5470]: https://github.com/encode/django-rest-framework/issues/5470
+[gh5469]: https://github.com/encode/django-rest-framework/issues/5469
+[gh5435]: https://github.com/encode/django-rest-framework/issues/5435
+[gh5434]: https://github.com/encode/django-rest-framework/issues/5434
+[gh5426]: https://github.com/encode/django-rest-framework/issues/5426
+[gh5421]: https://github.com/encode/django-rest-framework/issues/5421
+[gh5415]: https://github.com/encode/django-rest-framework/issues/5415
+[gh5401]: https://github.com/encode/django-rest-framework/issues/5401
+[gh5398]: https://github.com/encode/django-rest-framework/issues/5398
+[gh5388]: https://github.com/encode/django-rest-framework/issues/5388
+[gh5387]: https://github.com/encode/django-rest-framework/issues/5387
+[gh5372]: https://github.com/encode/django-rest-framework/issues/5372
+[gh5380]: https://github.com/encode/django-rest-framework/issues/5380
+[gh5351]: https://github.com/encode/django-rest-framework/issues/5351
+[gh5375]: https://github.com/encode/django-rest-framework/issues/5375
+[gh5373]: https://github.com/encode/django-rest-framework/issues/5373
+[gh5361]: https://github.com/encode/django-rest-framework/issues/5361
+[gh5348]: https://github.com/encode/django-rest-framework/issues/5348
+[gh5058]: https://github.com/encode/django-rest-framework/issues/5058
+[gh5457]: https://github.com/encode/django-rest-framework/issues/5457
+[gh5376]: https://github.com/encode/django-rest-framework/issues/5376
+[gh5422]: https://github.com/encode/django-rest-framework/issues/5422
+[gh5408]: https://github.com/encode/django-rest-framework/issues/5408
+[gh3732]: https://github.com/encode/django-rest-framework/issues/3732
+[djangodocs-set-timezone]: https://docs.djangoproject.com/en/1.11/topics/i18n/timezones/#default-time-zone-and-current-time-zone
+[gh5273]: https://github.com/encode/django-rest-framework/issues/5273
+[gh5440]: https://github.com/encode/django-rest-framework/issues/5440
+[gh5265]: https://github.com/encode/django-rest-framework/issues/5265
+[gh5250]: https://github.com/encode/django-rest-framework/issues/5250
+[gh5170]: https://github.com/encode/django-rest-framework/issues/5170
+[gh5443]: https://github.com/encode/django-rest-framework/issues/5443
+[gh5448]: https://github.com/encode/django-rest-framework/issues/5448
+[gh5452]: https://github.com/encode/django-rest-framework/issues/5452
+[gh5342]: https://github.com/encode/django-rest-framework/issues/5342
+[gh5454]: https://github.com/encode/django-rest-framework/issues/5454
