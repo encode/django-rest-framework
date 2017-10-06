@@ -87,7 +87,7 @@ continued development by **[signing up for a paid plan][funding]**.
 REST framework requires the following:
 
 * Python (2.7, 3.2, 3.3, 3.4, 3.5, 3.6)
-* Django (1.8, 1.9, 1.10, 1.11)
+* Django (1.10, 1.11, 2.0 alpha)
 
 The following packages are optional:
 
@@ -247,6 +247,7 @@ General guides to using REST framework.
 * [3.4 Announcement][3.4-announcement]
 * [3.5 Announcement][3.5-announcement]
 * [3.6 Announcement][3.6-announcement]
+* [3.7 Announcement][3.7-announcement]
 * [Kickstarter Announcement][kickstarter-announcement]
 * [Mozilla Grant][mozilla-grant]
 * [Funding][funding]
@@ -377,6 +378,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [3.4-announcement]: topics/3.4-announcement.md
 [3.5-announcement]: topics/3.5-announcement.md
 [3.6-announcement]: topics/3.6-announcement.md
+[3.7-announcement]: topics/3.7-announcement.md
 [kickstarter-announcement]: topics/kickstarter-announcement.md
 [mozilla-grant]: topics/mozilla-grant.md
 [funding]: topics/funding.md

@@ -155,7 +155,7 @@ Basic usage is just to provide the title for your schema and call
     generator = schemas.SchemaGenerator(title='Flight Search API')
     schema = generator.get_schema()
 
-### Per-View Schema Customisation
+## Per-View Schema Customisation
 
 By default, view introspection is performed by an `AutoSchema` instance
 accessible via the `schema` attribute on `APIView`. This provides the
@@ -191,7 +191,7 @@ To customise the `Link` generation you may:
 
         class CustomSchema(AutoSchema):
             def get_link(...):
-                # Implemet custom introspection here (or in other sub-methods)
+                # Implement custom introspection here (or in other sub-methods)
 
         class CustomView(APIView):
             ...
@@ -784,3 +784,4 @@ in [OpenAPI][open-api] format.
 [api-blueprint]: https://apiblueprint.org/
 [static-files]: https://docs.djangoproject.com/en/stable/howto/static-files/
 [named-arguments]: https://docs.djangoproject.com/en/stable/topics/http/urls/#named-groups
+ 
