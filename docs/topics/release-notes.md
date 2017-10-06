@@ -71,7 +71,7 @@ You can determine your currently installed version using `pip freeze`:
 * Fixed a deprecation warning in serializers.ModelField [#5058][gh5058]
 * Added a more explicit error message when `get_queryset` returned `None` [#5348][gh5348]
 * Fix docs for Response `data` description [#5361][gh5361]
-* Fix __pychache__/.pyc excludes when packaging [#5373][gh5373]
+* Fix __pycache__/.pyc excludes when packaging [#5373][gh5373]
 * Fix default value handling for dotted sources [#5375][gh5375]
 * Ensure content_type is set when passing empty body to RequestFactory [#5351][gh5351]
 * Fix ErrorDetail Documentation [#5380][gh5380]
@@ -80,7 +80,7 @@ You can determine your currently installed version using `pip freeze`:
 * Fix ModelSerializer custom named fields with source on model [#5388][gh5388]
 * Fixed the MultipleFieldLookupMixin documentation example to properly check for object level permission [#5398][gh5398]
 * Update get_object() example in permissions.md [#5401][gh5401]
-* Fix authtoken managment command [#5415][gh5415]
+* Fix authtoken management command [#5415][gh5415]
 * Fix schema generation markdown [#5421][gh5421]
 * Allow `ChoiceField.choices` to be set dynamically [#5426][gh5426]
 * Add the project layout to the quickstart [#5434][gh5434]
@@ -163,7 +163,7 @@ You can determine your currently installed version using `pip freeze`:
 
 * Support for Safari & IE in API docs. ([#4959][gh4959], [#4961][gh4961])
 * Add missing `mark_safe` in API docs template tags. ([#4952][gh4952], [#4953][gh4953])
-* Add missing glyicon fonts. ([#4950][gh4950], [#4951][gh4951])
+* Add missing glyphicon fonts. ([#4950][gh4950], [#4951][gh4951])
 * Fix One-to-one fields in API docs. ([#4955][gh4955], [#4956][gh4956])
 * Test clean ups. ([#4949][gh4949])
 
@@ -171,7 +171,7 @@ You can determine your currently installed version using `pip freeze`:
 
 **Date**: [9th March 2017][3.6.1-milestone]
 
-* Ensure `markdown` dependancy is optional. ([#4947][gh4947])
+* Ensure `markdown` dependency is optional. ([#4947][gh4947])
 
 ### 3.6.0
 
@@ -296,7 +296,7 @@ See the [release announcement][3.6-release].
 
 **Date**: [5th August 2016][3.4.3-milestone]
 
-* Include fallaback for users of older TemplateHTMLRenderer internal API. ([#4361][gh4361])
+* Include fallback for users of older TemplateHTMLRenderer internal API. ([#4361][gh4361])
 
 ### 3.4.2
 
@@ -395,7 +395,7 @@ See the [release announcement][3.6-release].
 * ListSerializer doesn't handle unique_together constraints. ([#3970][gh3970])
 * Add missing migration file. ([#3968][gh3968])
 * `OrderingFilter` should call `get_serializer_class()` to determine default fields. ([#3964][gh3964])
-* Remove old django checks from tests and compat. ([#3953][gh3953])
+* Remove old Django checks from tests and compat. ([#3953][gh3953])
 * Support callable as the value of `initial` for any `serializer.Field`. ([#3943][gh3943])
 * Prevented unnecessary distinct() call in SearchFilter. ([#3938][gh3938])
 * Fix None UUID ForeignKey serialization. ([#3936][gh3936])
@@ -579,7 +579,7 @@ See the [release announcement][3.6-release].
 * Fix behavior of `allow_blank=False` when used with `trim_whitespace=True`. ([#2712][gh2712])
 * Fix issue with some field combinations incorrectly mapping to an invalid `allow_blank` argument. ([#3011][gh3011])
 * Fix for output representations with prefetches and modified querysets. ([#2704][gh2704], [#2727][gh2727])
-* Fix assertion error when CursorPagination is provided with certains invalid query parameters. (#2920)[gh2920].
+* Fix assertion error when CursorPagination is provided with certain invalid query parameters. (#2920)[gh2920].
 * Fix `UnicodeDecodeError` when invalid characters included in header with `TokenAuthentication`. ([#2928][gh2928])
 * Fix transaction rollbacks with `@non_atomic_requests` decorator. ([#3016][gh3016])
 * Fix duplicate results issue with Oracle databases using `SearchFilter`. ([#2935][gh2935])
@@ -619,7 +619,7 @@ See the [release announcement][3.6-release].
 * Use default reason phrases from HTTP standard. ([#2764][gh2764], [#2763][gh2763])
 * Raise error when `ModelSerializer` used with abstract model. ([#2757][gh2757], [#2630][gh2630])
 * Handle reversal of non-API view_name in `HyperLinkedRelatedField` ([#2724][gh2724], [#2711][gh2711])
-* Dont require pk strictly for related fields. ([#2745][gh2745], [#2754][gh2754])
+* Don't require pk strictly for related fields. ([#2745][gh2745], [#2754][gh2754])
 * Metadata detects null boolean field type. ([#2762][gh2762])
 * Proper handling of depth in nested serializers. ([#2798][gh2798])
 * Display viewset without paginator. ([#2807][gh2807])
