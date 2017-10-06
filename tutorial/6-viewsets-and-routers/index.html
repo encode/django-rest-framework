@@ -319,6 +319,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -432,6 +436,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 <p>Here we've used the <code>ReadOnlyModelViewSet</code> class to automatically provide the default 'read-only' operations.  We're still setting the <code>queryset</code> and <code>serializer_class</code> attributes exactly as we did when we were using regular views, but we no longer need to provide the same information to two separate classes.</p>
 <p>Next we're going to replace the <code>SnippetList</code>, <code>SnippetDetail</code> and <code>SnippetHighlight</code> view classes.  We can remove the three views, and again replace them with a single class.</p>
 <pre><code>from rest_framework.decorators import detail_route
+from rest_framework.response import Response
 
 class SnippetViewSet(viewsets.ModelViewSet):
     """

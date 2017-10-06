@@ -319,6 +319,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -490,13 +494,13 @@
 <p>Pagination is only performed automatically if you're using the generic views or viewsets. If you're using a regular <code>APIView</code>, you'll need to call into the pagination API yourself to ensure you return a paginated response. See the source code for the <code>mixins.ListModelMixin</code> and <code>generics.GenericAPIView</code> classes for an example.</p>
 <p>Pagination can be turned off by setting the pagination class to <code>None</code>.</p>
 <h2 id="setting-the-pagination-style"><a class="toclink" href="#setting-the-pagination-style">Setting the pagination style</a></h2>
-<p>The default pagination style may be set globally, using the <code>DEFAULT_PAGINATION_CLASS</code> and <code>PAGE_SIZE</code> setting keys. For example, to use the built-in limit/offset pagination, you would do something like this:</p>
+<p>The pagination style may be set globally, using the <code>DEFAULT_PAGINATION_CLASS</code> and <code>PAGE_SIZE</code> setting keys. For example, to use the built-in limit/offset pagination, you would do something like this:</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100
 }
 </code></pre>
-<p>Note that you need to set both the pagination class, and the page size that should be used.</p>
+<p>Note that you need to set both the pagination class, and the page size that should be used.  Both <code>DEFAULT_PAGINATION_CLASS</code> and <code>PAGE_SIZE</code> are <code>None</code> by default.</p>
 <p>You can also set the pagination class on an individual view by using the <code>pagination_class</code> attribute. Typically you'll want to use the same pagination style throughout your API, although you might want to vary individual aspects of the pagination, such as default or maximum page size, on a per-view basis.</p>
 <h2 id="modifying-the-pagination-style"><a class="toclink" href="#modifying-the-pagination-style">Modifying the pagination style</a></h2>
 <p>If you want to modify particular aspects of the pagination style, you'll want to override one of the pagination classes, and set the attributes that you want to change.</p>
@@ -540,7 +544,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 }
 </code></pre>
 <h4 id="setup"><a class="toclink" href="#setup">Setup</a></h4>
-<p>To enable the <code>PageNumberPagination</code> style globally, use the following configuration, modifying the <code>PAGE_SIZE</code> as desired:</p>
+<p>To enable the <code>PageNumberPagination</code> style globally, use the following configuration, and set the <code>PAGE_SIZE</code> as desired:</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100
@@ -612,6 +616,10 @@ class StandardResultsSetPagination(PageNumberPagination):
 <li>Should be an unchanging value, such as a timestamp, slug, or other field that is only set once, on creation.</li>
 <li>Should be unique, or nearly unique. Millisecond precision timestamps are a good example. This implementation of cursor pagination uses a smart "position plus offset" style that allows it to properly support not-strictly-unique values as the ordering.</li>
 <li>Should be a non-nullable value that can be coerced to a string.</li>
+<li>Should not be a float. Precision errors easily lead to incorrect results.
+  Hint: use decimals instead.
+  (If you already have a float field and must paginate on that, an
+  <a href="https://gist.github.com/keturn/8bc88525a183fd41c73ffb729b8865be#file-fpcursorpagination-py">example <code>CursorPagination</code> subclass that uses decimals to limit precision is available here</a>.)</li>
 <li>The field should have a database index.</li>
 </ul>
 <p>Using an ordering field that does not satisfy these constraints will generally still work, but you'll be losing some of the benefits of cursor pagination.</p>
@@ -647,8 +655,8 @@ class StandardResultsSetPagination(PageNumberPagination):
     def get_paginated_response(self, data):
         return Response({
             'links': {
-               'next': self.get_next_link(),
-               'previous': self.get_previous_link()
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link()
             },
             'count': self.page.paginator.count,
             'results': data

@@ -319,6 +319,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -514,7 +518,7 @@ or if you override the <code>get_object</code> method on a generic view, then yo
 <p>This will either raise a <code>PermissionDenied</code> or <code>NotAuthenticated</code> exception, or simply return if the view has the appropriate permissions.</p>
 <p>For example:</p>
 <pre><code>def get_object(self):
-    obj = get_object_or_404(self.get_queryset())
+    obj = get_object_or_404(self.get_queryset(), pk=self.kwargs["pk"])
     self.check_object_permissions(self.request, obj)
     return obj
 </code></pre>

@@ -4,11 +4,11 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <title>Project management - Django REST framework</title>
+  <title>3.7 Announcement - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/topics/project-management/" />
+  <link rel="canonical" href="http://www.django-rest-framework.org/topics/3.7-announcement/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Project management">
+  <meta name="description" content="Django, API, REST, 3.7 Announcement">
   <meta name="author" content="Tom Christie">
 
   <!-- Le styles -->
@@ -58,10 +58,10 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../jobs/">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../kickstarter-announcement/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../contributing/">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3.6-announcement/">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
@@ -282,8 +282,8 @@
                     <a href="../contributing/">Contributing to REST framework</a>
                   </li>
                   
-                  <li class="active" >
-                    <a href="./">Project management</a>
+                  <li >
+                    <a href="../project-management/">Project management</a>
                   </li>
                   
                   <li >
@@ -318,8 +318,8 @@
                     <a href="../3.6-announcement/">3.6 Announcement</a>
                   </li>
                   
-                  <li >
-                    <a href="../3.7-announcement/">3.7 Announcement</a>
+                  <li class="active" >
+                    <a href="./">3.7 Announcement</a>
                   </li>
                   
                   <li >
@@ -382,28 +382,32 @@
 
                 
                   <li class="main">
-                    <a href="#project-management">Project management</a>
+                    <a href="#django-rest-framework-37">Django REST framework 3.7</a>
                   </li>
 
                   
                     <li>
-                      <a href="#maintenance-team">Maintenance team</a>
+                      <a href="#funding">Funding</a>
                     </li>
                   
                     <li>
-                      <a href="#release-process">Release process</a>
+                      <a href="#customizing-api-docs-schema-generation">Customizing API docs &amp; schema generation.</a>
                     </li>
                   
                     <li>
-                      <a href="#translations">Translations</a>
+                      <a href="#django-20-support">Django 2.0 support</a>
                     </li>
                   
                     <li>
-                      <a href="#project-requirements">Project requirements</a>
+                      <a href="#minor-fixes-and-improvements">Minor fixes and improvements</a>
                     </li>
                   
                     <li>
-                      <a href="#project-ownership">Project ownership</a>
+                      <a href="#deprecations">Deprecations</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#whats-next">What's next</a>
                     </li>
                   
                 
@@ -421,167 +425,95 @@
             
               
 
-              <h1 id="project-management"><a class="toclink" href="#project-management">Project management</a></h1>
-<blockquote>
-<p>"No one can whistle a symphony; it takes a whole orchestra to play it"</p>
-<p>&mdash; Halford E. Luccock</p>
-</blockquote>
-<p>This document outlines our project management processes for REST framework.</p>
-<p>The aim is to ensure that the project has a high
-<a href="http://en.wikipedia.org/wiki/Bus_factor">"bus factor"</a>, and can continue to remain well supported for the foreseeable future. Suggestions for improvements to our process are welcome.</p>
+              <style>
+.promo li a {
+    float: left;
+    width: 130px;
+    height: 20px;
+    text-align: center;
+    margin: 10px 30px;
+    padding: 150px 0 0 0;
+    background-position: 0 50%;
+    background-size: 130px auto;
+    background-repeat: no-repeat;
+    font-size: 120%;
+    color: black;
+}
+.promo li {
+    list-style: none;
+}
+</style>
+
+<h1 id="django-rest-framework-37"><a class="toclink" href="#django-rest-framework-37">Django REST framework 3.7</a></h1>
+<p>The 3.7 release focuses on improvements to schema generation and the interactive API documentation.</p>
+<p>This release has been made possible by <a href="https://www.bayer.com/">Bayer</a> who have sponsored the release.</p>
+<p><a href="https://www.bayer.com/"><img src="/img/bayer.png"/></a></p>
 <hr />
-<h2 id="maintenance-team"><a class="toclink" href="#maintenance-team">Maintenance team</a></h2>
-<p>We have a quarterly maintenance cycle where new members may join the maintenance team. We currently cap the size of the team at 5 members, and may encourage folks to step out of the team for a cycle to allow new members to participate.</p>
-<h4 id="current-team"><a class="toclink" href="#current-team">Current team</a></h4>
-<p>The <a href="https://github.com/encode/django-rest-framework/issues/2190">maintenance team for Q4 2015</a>:</p>
-<ul>
-<li><a href="https://github.com/encode/">@tomchristie</a></li>
-<li><a href="https://github.com/xordoquy/">@xordoquy</a> (Release manager.)</li>
-<li><a href="https://github.com/carltongibson/">@carltongibson</a></li>
-<li><a href="https://github.com/kevin-brown/">@kevin-brown</a></li>
-<li><a href="https://github.com/jpadilla/">@jpadilla</a></li>
+<h2 id="funding"><a class="toclink" href="#funding">Funding</a></h2>
+<p>If you use REST framework commercially and would like to see this work continue, we strongly encourage you to invest in its continued development by
+<strong><a href="../funding/">signing up for a paid&nbsp;plan</a></strong>.</p>
+<ul class="premium-promo promo">
+    <li><a href="http://jobs.rover.com/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rover_130x130.png)">Rover.com</a></li>
+    <li><a href="https://getsentry.com/welcome/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/sentry130.png)">Sentry</a></li>
+    <li><a href="https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/stream-130.png)">Stream</a></li>
+    <li><a href="https://hello.machinalis.co.uk/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/Machinalis130.png)">Machinalis</a></li>
+    <li><a href="https://rollbar.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rollbar.png)">Rollbar</a></li>
 </ul>
-<h4 id="maintenance-cycles"><a class="toclink" href="#maintenance-cycles">Maintenance cycles</a></h4>
-<p>Each maintenance cycle is initiated by an issue being opened with the <code>Process</code> label.</p>
-<ul>
-<li>To be considered for a maintainer role simply comment against the issue.</li>
-<li>Existing members must explicitly opt-in to the next cycle by check-marking their name.</li>
-<li>The final decision on the incoming team will be made by <code>@tomchristie</code>.</li>
-</ul>
-<p>Members of the maintenance team will be added as collaborators to the repository.</p>
-<p>The following template should be used for the description of the issue, and serves as the formal process for selecting the team.</p>
-<pre><code>This issue is for determining the maintenance team for the *** period.
 
-Please see the [Project management](http://www.django-rest-framework.org/topics/project-management/) section of our documentation for more details.
+<div style="clear: both; padding-bottom: 20px;"></div>
 
----
-
-#### Renewing existing members.
-
-The following people are the current maintenance team. Please checkmark your name if you wish to continue to have write permission on the repository for the *** period.
-
-- [ ] @***
-- [ ] @***
-- [ ] @***
-- [ ] @***
-- [ ] @***
-
----
-
-#### New members.
-
-If you wish to be considered for this or a future date, please comment against this or subsequent issues.
-
-To modify this process for future maintenance cycles make a pull request to the [project management](http://www.django-rest-framework.org/topics/project-management/) documentation.
-</code></pre>
-<h4 id="responsibilities-of-team-members"><a class="toclink" href="#responsibilities-of-team-members">Responsibilities of team members</a></h4>
-<p>Team members have the following responsibilities.</p>
-<ul>
-<li>Close invalid or resolved tickets.</li>
-<li>Add triage labels and milestones to tickets.</li>
-<li>Merge finalized pull requests.</li>
-<li>Build and deploy the documentation, using <code>mkdocs gh-deploy</code>.</li>
-<li>Build and update the included translation packs.</li>
-</ul>
-<p>Further notes for maintainers:</p>
-<ul>
-<li>Code changes should come in the form of a pull request - do not push directly to master.</li>
-<li>Maintainers should typically not merge their own pull requests.</li>
-<li>Each issue/pull request should have exactly one label once triaged.</li>
-<li>Search for un-triaged issues with <a href="https://github.com/encode/django-rest-framework/issues?q=is%3Aopen+no%3Alabel">is:open no:label</a>.</li>
-</ul>
-<p>It should be noted that participating actively in the REST framework project clearly <strong>does not require being part of the maintenance team</strong>. Almost every import part of issue triage and project improvement can be actively worked on regardless of your collaborator status on the repository.</p>
+<p><em>As well as our release sponsor, we'd like to say thanks in particular our premium backers, <a href="http://jobs.rover.com/">Rover</a>, <a href="https://getsentry.com/welcome/">Sentry</a>, <a href="https://getstream.io/?utm_source=drf&amp;utm_medium=banner&amp;utm_campaign=drf">Stream</a>, <a href="https://hello.machinalis.co.uk/">Machinalis</a>, and <a href="https://rollbar.com">Rollbar</a>.</em></p>
 <hr />
-<h2 id="release-process"><a class="toclink" href="#release-process">Release process</a></h2>
-<p>The release manager is selected on every quarterly maintenance cycle.</p>
-<ul>
-<li>The manager should be selected by <code>@tomchristie</code>.</li>
-<li>The manager will then have the maintainer role added to PyPI package.</li>
-<li>The previous manager will then have the maintainer role removed from the PyPI package.</li>
-</ul>
-<p>Our PyPI releases will be handled by either the current release manager, or by <code>@tomchristie</code>. Every release should have an open issue tagged with the <code>Release</code> label and marked against the appropriate milestone.</p>
-<p>The following template should be used for the description of the issue, and serves as a release checklist.</p>
-<pre><code>Release manager is @***.
-Pull request is #***.
+<h2 id="customizing-api-docs-schema-generation"><a class="toclink" href="#customizing-api-docs-schema-generation">Customizing API docs &amp; schema generation.</a></h2>
+<p>The schema generation introduced in 3.5 and the related API docs generation in 3.6 are both hugely powerful features, however they've been somewhat limited in cases where the view introspection isn't able to correctly identify the schema for a particular view.</p>
+<p>In order to try to address this we're now adding the ability for per-view customization of the API schema. The interface that we're adding for this allows either basic manual overrides over which fields should be included on a view, or for more complex programmatic overriding of the schema generation. We believe this release comprehensively addresses some of the existing shortcomings of the schema features.</p>
+<p>Let's take a quick look at using the new functionality...</p>
+<p>The <code>APIView</code> class has a <code>schema</code> attribute, that is used to control how the Schema for that particular view is generated. The default behaviour is to use the <code>AutoSchema</code> class.</p>
+<pre><code>from rest_framework.views import APIView
+from rest_framework.schemas import AutoSchema
 
-During development cycle:
-
-- [ ] Upload the new content to be translated to [transifex](http://www.django-rest-framework.org/topics/project-management/#translations).
-
-
-Checklist:
-
-- [ ] Create pull request for [release notes](https://github.com/encode/django-rest-framework/blob/master/docs/topics/release-notes.md) based on the [*.*.* milestone](https://github.com/encode/django-rest-framework/milestones/***).
-- [ ] Update the translations from [transifex](http://www.django-rest-framework.org/topics/project-management/#translations).
-- [ ] Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/encode/django-rest-framework/blob/master/rest_framework/__init__.py).
-- [ ] Confirm with @tomchristie that release is finalized and ready to go.
-- [ ] Ensure that release date is included in pull request.
-- [ ] Merge the release pull request.
-- [ ] Push the package to PyPI with `./setup.py publish`.
-- [ ] Tag the release, with `git tag -a *.*.* -m 'version *.*.*'; git push --tags`.
-- [ ] Deploy the documentation with `mkdocs gh-deploy`.
-- [ ] Make a release announcement on the [discussion group](https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework).
-- [ ] Make a release announcement on twitter.
-- [ ] Close the milestone on GitHub.
-
-To modify this process for future releases make a pull request to the [project management](http://www.django-rest-framework.org/topics/project-management/) documentation.
+class CustomView(APIView):
+    schema = AutoSchema()  # Included for demonstration only. This is the default behavior.
 </code></pre>
-<p>When pushing the release to PyPI ensure that your environment has been installed from our development <code>requirement.txt</code>, so that documentation and PyPI installs are consistently being built against a pinned set of packages.</p>
+<p>We can remove a view from the API schema and docs, like so:</p>
+<pre><code>class CustomView(APIView):
+    schema = None
+</code></pre>
+<p>If we want to mostly use the default behavior, but additionally include some additional fields on a particular view, we can now do so easily...</p>
+<pre><code>class CustomView(APIView):
+    schema = AutoSchema(manual_fields=[
+        coreapi.Field('search', location='query')
+    ])
+</code></pre>
+<p>To ignore the automatic generation for a particular view, and instead specify the schema explicitly, we use the <code>ManualSchema</code> class instead...</p>
+<pre><code>class CustomView(APIView):
+    schema = ManualSchema(fields=[...])
+</code></pre>
+<p>For more advanced behaviors you can subclass <code>AutoSchema</code> to provide for customized schema generation, and apply that to particular views.</p>
+<pre><code>class CustomView(APIView):
+    schema = CustomizedSchemaGeneration()
+</code></pre>
+<p>For full details on the new functionality, please see the <a href="../../api-guide/schemas/">Schema Documentation</a>.</p>
 <hr />
-<h2 id="translations"><a class="toclink" href="#translations">Translations</a></h2>
-<p>The maintenance team are responsible for managing the translation packs include in REST framework. Translating the source strings into multiple languages is managed through the <a href="https://www.transifex.com/projects/p/django-rest-framework/">transifex service</a>.</p>
-<h3 id="managing-transifex"><a class="toclink" href="#managing-transifex">Managing Transifex</a></h3>
-<p>The <a href="https://pypi.python.org/pypi/transifex-client">official Transifex client</a> is used to upload and download translations to Transifex. The client is installed using pip:</p>
-<pre><code>pip install transifex-client
-</code></pre>
-<p>To use it you'll need a login to Transifex which has a password, and you'll need to have administrative access to the Transifex project. You'll need to create a <code>~/.transifexrc</code> file which contains your credentials.</p>
-<pre><code>[https://www.transifex.com]
-username = ***
-token = ***
-password = ***
-hostname = https://www.transifex.com
-</code></pre>
-<h3 id="upload-new-source-files"><a class="toclink" href="#upload-new-source-files">Upload new source files</a></h3>
-<p>When any user visible strings are changed, they should be uploaded to Transifex so that the translators can start to translate them. To do this, just run:</p>
-<pre><code># 1. Update the source django.po file, which is the US English version.
-cd rest_framework
-django-admin.py makemessages -l en_US
-# 2. Push the source django.po file to Transifex.
-cd ..
-tx push -s
-</code></pre>
-<p>When pushing source files, Transifex will update the source strings of a resource to match those from the new source file.</p>
-<p>Here's how differences between the old and new source files will be handled:</p>
-<ul>
-<li>New strings will be added.</li>
-<li>Modified strings will be added as well.</li>
-<li>Strings which do not exist in the new source file will be removed from the database, along with their translations. If that source strings gets re-added later then <a href="http://docs.transifex.com/guides/tm#let-tm-automatically-populate-translations">Transifex Translation Memory</a> will automatically include the translation string.</li>
-</ul>
-<h3 id="download-translations"><a class="toclink" href="#download-translations">Download translations</a></h3>
-<p>When a translator has finished translating their work needs to be downloaded from Transifex into the REST framework repository. To do this, run:</p>
-<pre><code># 3. Pull the translated django.po files from Transifex.
-tx pull -a --minimum-perc 10
-cd rest_framework
-# 4. Compile the binary .mo files for all supported languages.
-django-admin.py compilemessages
-</code></pre>
+<h2 id="django-20-support"><a class="toclink" href="#django-20-support">Django 2.0 support</a></h2>
+<p>REST framework 3.7 supports Django versions 1.10, 1.11, and 2.0 alpha.</p>
 <hr />
-<h2 id="project-requirements"><a class="toclink" href="#project-requirements">Project requirements</a></h2>
-<p>All our test requirements are pinned to exact versions, in order to ensure that our test runs are reproducible. We maintain the requirements in the <code>requirements</code> directory. The requirements files are referenced from the <code>tox.ini</code> configuration file, ensuring we have a single source of truth for package versions used in testing.</p>
-<p>Package upgrades should generally be treated as isolated pull requests. You can check if there are any packages available at a newer version, by using the <code>pip list --outdated</code>.</p>
+<h2 id="minor-fixes-and-improvements"><a class="toclink" href="#minor-fixes-and-improvements">Minor fixes and improvements</a></h2>
+<p>There are a large number of minor fixes and improvements in this release. See the <a href="../release-notes/">release notes</a> page for a complete listing.</p>
+<p>The number of <a href="https://github.com/encode/django-rest-framework/issues">open tickets against the project</a> currently at its lowest number in quite some time, and we're continuing to focus on reducing these to a manageable amount.</p>
 <hr />
-<h2 id="project-ownership"><a class="toclink" href="#project-ownership">Project ownership</a></h2>
-<p>The PyPI package is owned by <code>@tomchristie</code>. As a backup <code>@j4mie</code> also has ownership of the package.</p>
-<p>If <code>@tomchristie</code> ceases to participate in the project then <code>@j4mie</code> has responsibility for handing over ownership duties.</p>
-<h4 id="outstanding-management-ownership-issues"><a class="toclink" href="#outstanding-management-ownership-issues">Outstanding management &amp; ownership issues</a></h4>
-<p>The following issues still need to be addressed:</p>
-<ul>
-<li><a href="https://github.com/encode/django-rest-framework/issues/2162">Consider moving the repo into a proper GitHub organization</a>.</li>
-<li>Ensure <code>@jamie</code> has back-up access to the <code>django-rest-framework.org</code> domain setup and admin.</li>
-<li>Document ownership of the <a href="http://restframework.herokuapp.com/">live example</a> API.</li>
-<li>Document ownership of the <a href="https://groups.google.com/forum/#!forum/django-rest-framework">mailing list</a> and IRC channel.</li>
-<li>Document ownership and management of the security mailing list.</li>
-</ul>
+<h2 id="deprecations"><a class="toclink" href="#deprecations">Deprecations</a></h2>
+<h3 id="exclude_from_schema"><a class="toclink" href="#exclude_from_schema"><code>exclude_from_schema</code></a></h3>
+<p>Both <code>APIView.exclude_from_schema</code> and the <code>exclude_from_schema</code> argument to the <code>@api_view</code> decorator and now <code>PendingDeprecation</code>. They will be moved to deprecated in the 3.8 release, and removed entirely in 3.9.</p>
+<p>For <code>APIView</code> you should instead set a <code>schema = None</code> attribute on the view class.</p>
+<p>For function based views the <code>@schema</code> decorator can be used to exclude the view from the schema, by using <code>@schema(None)</code>.</p>
+<h3 id="djangofilterbackend"><a class="toclink" href="#djangofilterbackend"><code>DjangoFilterBackend</code></a></h3>
+<p>The <code>DjangoFilterBackend</code> was moved to pending deprecation in 3.5, and deprecated in 3.6. It has now been removed from the core framework.</p>
+<p>The functionality remains fully available, but is instead provided in the <code>django-filter</code> package.</p>
+<hr />
+<h2 id="whats-next"><a class="toclink" href="#whats-next">What's next</a></h2>
+<p>We're still planning to work on improving real-time support for REST framework by providing documentation on integrating with Django channels, as well adding support for more easily adding WebSocket support to existing HTTP endpoints.</p>
+<p>This will likely be timed so that any REST framework development here ties in with similar work on <a href="https://github.com/encode/apistar">API Star</a>.</p>
             
 
           </div> <!--/span-->

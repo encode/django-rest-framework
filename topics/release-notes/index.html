@@ -319,6 +319,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -392,6 +396,10 @@
                   
                     <li>
                       <a href="#upgrading">Upgrading</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#37x-series">3.7.x series</a>
                     </li>
                   
                     <li>
@@ -469,6 +477,65 @@
 <pre><code>pip freeze | grep djangorestframework
 </code></pre>
 <hr />
+<h2 id="37x-series"><a class="toclink" href="#37x-series">3.7.x series</a></h2>
+<h3 id="370"><a class="toclink" href="#370">3.7.0</a></h3>
+<p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.7.0+Release%22">6th October 2017</a></p>
+<ul>
+<li>Fix <code>DjangoModelPermissions</code> to ensure user authentication before calling the view's <code>get_queryset()</code> method. As a side effect, this changes the order of the HTTP method permissions and authentication checks, and 405 responses will only be returned when authenticated. If you want to replicate the old behavior, see the PR for details. <a href="https://github.com/encode/django-rest-framework/issues/5376">#5376</a></li>
+<li>Deprecated <code>exclude_from_schema</code> on <code>APIView</code> and <code>api_view</code> decorator. Set <code>schema = None</code> or <code>@schema(None)</code> as appropriate. <a href="https://github.com/encode/django-rest-framework/issues/5422">#5422</a></li>
+<li>
+<p>Timezone-aware <code>DateTimeField</code>s now respect active or default <code>timezone</code> during serialization, instead of always using UTC. <a href="https://github.com/encode/django-rest-framework/issues/5435">#5435</a></p>
+<p>Resolves inconsistency whereby instances were serialised with supplied datetime for <code>create</code> but UTC for <code>retrieve</code>. <a href="https://github.com/encode/django-rest-framework/issues/3732">#3732</a></p>
+<p><strong>Possible backwards compatibility break</strong> if you were relying on datetime strings being UTC. Have client interpret datetimes or <a href="https://docs.djangoproject.com/en/1.11/topics/i18n/timezones/#default-time-zone-and-current-time-zone">set default or active timezone (docs)</a> to UTC if needed.</p>
+</li>
+<li>
+<p>Removed DjangoFilterBackend inline with deprecation policy. Use <code>django_filters.rest_framework.FilterSet</code> and/or <code>django_filters.rest_framework.DjangoFilterBackend</code> instead. <a href="https://github.com/encode/django-rest-framework/issues/5273">#5273</a></p>
+</li>
+<li>Don't strip microseconds from <code>time</code> when encoding. Makes consistent with <code>datetime</code>.
+    <strong>BC Change</strong>: Previously only milliseconds were encoded. <a href="https://github.com/encode/django-rest-framework/issues/5440">#5440</a></li>
+<li>Added <code>STRICT_JSON</code> setting (default <code>True</code>) to raise exception for the extended float values (<code>nan</code>, <code>inf</code>, <code>-inf</code>) accepted by Python's <code>json</code> module.
+    <strong>BC Change</strong>: Previously these values would converted to corresponding strings. Set <code>STRICT_JSON</code> to <code>False</code> to restore the previous behaviour. <a href="https://github.com/encode/django-rest-framework/issues/5265">#5265</a></li>
+<li>Add support for <code>page_size</code> parameter in CursorPaginator class <a href="https://github.com/encode/django-rest-framework/issues/5250">#5250</a></li>
+<li>Make <code>DEFAULT_PAGINATION_CLASS</code> <code>None</code> by default.
+    <strong>BC Change</strong>: If your were <strong>just</strong> setting <code>PAGE_SIZE</code> to enable pagination you will need to add <code>DEFAULT_PAGINATION_CLASS</code>.
+    The previous default was <code>rest_framework.pagination.PageNumberPagination</code>. There is a system check warning to catch this case. You may silence that if you are setting pagination class on a per-view basis. <a href="https://github.com/encode/django-rest-framework/issues/5170">#5170</a></li>
+<li>Catch <code>APIException</code> from <code>get_serializer_fields</code> in schema generation. <a href="https://github.com/encode/django-rest-framework/issues/5443">#5443</a></li>
+<li>Allow custom authentication and permission classes when using <code>include_docs_urls</code> <a href="https://github.com/encode/django-rest-framework/issues/5448">#5448</a></li>
+<li>Defer translated string evaluation on validators. <a href="https://github.com/encode/django-rest-framework/issues/5452">#5452</a></li>
+<li>Added default value for 'detail' param into 'ValidationError' exception <a href="https://github.com/encode/django-rest-framework/issues/5342">#5342</a></li>
+<li>Adjust schema get_filter_fields rules to match framework <a href="https://github.com/encode/django-rest-framework/issues/5454">#5454</a></li>
+<li>Updated test matrix to add Django 2.0 and drop Django 1.8 &amp; 1.9
+    <strong>BC Change</strong>: This removes Django 1.8 and Django 1.9 from Django REST Framework supported versions. <a href="https://github.com/encode/django-rest-framework/issues/5457">#5457</a></li>
+<li>Fixed a deprecation warning in serializers.ModelField <a href="https://github.com/encode/django-rest-framework/issues/5058">#5058</a></li>
+<li>Added a more explicit error message when <code>get_queryset</code> returned <code>None</code> <a href="https://github.com/encode/django-rest-framework/issues/5348">#5348</a></li>
+<li>Fix docs for Response <code>data</code> description <a href="https://github.com/encode/django-rest-framework/issues/5361">#5361</a></li>
+<li>Fix <strong>pychache</strong>/.pyc excludes when packaging <a href="https://github.com/encode/django-rest-framework/issues/5373">#5373</a></li>
+<li>Fix default value handling for dotted sources <a href="https://github.com/encode/django-rest-framework/issues/5375">#5375</a></li>
+<li>Ensure content_type is set when passing empty body to RequestFactory <a href="https://github.com/encode/django-rest-framework/issues/5351">#5351</a></li>
+<li>Fix ErrorDetail Documentation <a href="https://github.com/encode/django-rest-framework/issues/5380">#5380</a></li>
+<li>Allow optional content in the generic content form <a href="https://github.com/encode/django-rest-framework/issues/5372">#5372</a></li>
+<li>Updated supported values for the NullBooleanField <a href="https://github.com/encode/django-rest-framework/issues/5387">#5387</a></li>
+<li>Fix ModelSerializer custom named fields with source on model <a href="https://github.com/encode/django-rest-framework/issues/5388">#5388</a></li>
+<li>Fixed the MultipleFieldLookupMixin documentation example to properly check for object level permission <a href="https://github.com/encode/django-rest-framework/issues/5398">#5398</a></li>
+<li>Update get_object() example in permissions.md <a href="https://github.com/encode/django-rest-framework/issues/5401">#5401</a></li>
+<li>Fix authtoken managment command <a href="https://github.com/encode/django-rest-framework/issues/5415">#5415</a></li>
+<li>Fix schema generation markdown <a href="https://github.com/encode/django-rest-framework/issues/5421">#5421</a></li>
+<li>Allow <code>ChoiceField.choices</code> to be set dynamically <a href="https://github.com/encode/django-rest-framework/issues/5426">#5426</a></li>
+<li>Add the project layout to the quickstart <a href="https://github.com/encode/django-rest-framework/issues/5434">#5434</a></li>
+<li>Reuse 'apply_markdown' function in 'render_markdown' templatetag <a href="https://github.com/encode/django-rest-framework/issues/5469">#5469</a></li>
+<li>Added links to <code>drf-openapi</code> package in docs <a href="https://github.com/encode/django-rest-framework/issues/5470">#5470</a></li>
+<li>Added docstrings code highlighting with pygments <a href="https://github.com/encode/django-rest-framework/issues/5462">#5462</a></li>
+<li>Fixed documentation rendering for views named <code>data</code> <a href="https://github.com/encode/django-rest-framework/issues/5472">#5472</a></li>
+<li>Docs: Clarified 'to_internal_value()' validation behavior <a href="https://github.com/encode/django-rest-framework/issues/5466">#5466</a></li>
+<li>Fix missing six.text_type() call on APIException.<strong>str</strong> <a href="https://github.com/encode/django-rest-framework/issues/5476">#5476</a></li>
+<li>Document documentation.py <a href="https://github.com/encode/django-rest-framework/issues/5478">#5478</a></li>
+<li>Fix naming collisions in Schema Generation <a href="https://github.com/encode/django-rest-framework/issues/5464">#5464</a></li>
+<li>Call Django's authenticate function with the request object <a href="https://github.com/encode/django-rest-framework/issues/5295">#5295</a></li>
+<li>Update coreapi JS to 0.1.1 <a href="https://github.com/encode/django-rest-framework/issues/5479">#5479</a></li>
+<li>Have <code>is_list_view</code> recognise RetrieveModel… views <a href="https://github.com/encode/django-rest-framework/issues/5480">#5480</a></li>
+<li>Remove Django 1.8 &amp; 1.9 compatibility code <a href="https://github.com/encode/django-rest-framework/issues/5481">#5481</a></li>
+<li>Remove deprecated schema code from DefaultRouter <a href="https://github.com/encode/django-rest-framework/issues/5482">#5482</a></li>
+</ul>
 <h2 id="36x-series"><a class="toclink" href="#36x-series">3.6.x series</a></h2>
 <h3 id="364"><a class="toclink" href="#364">3.6.4</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.4+Release%22">21st August 2017</a></p>
@@ -1125,6 +1192,8 @@
 <!-- 3.6.3 -->
 
 <!-- 3.6.4 -->
+
+<!-- 3.7.0 -->
             
 
           </div> <!--/span-->

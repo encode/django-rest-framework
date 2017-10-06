@@ -319,6 +319,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -744,7 +748,9 @@ class UserList(generics.ListCreateAPIView):
         for field in self.lookup_fields:
             if self.kwargs[field]: # Ignore empty fields.
                 filter[field] = self.kwargs[field]
-        return get_object_or_404(queryset, **filter)  # Lookup the object
+        obj = get_object_or_404(queryset, **filter)  # Lookup the object
+        self.check_object_permissions(self.request, obj)
+        return obj
 </code></pre>
 <p>You can then simply apply this mixin to a view or viewset anytime you need to apply the custom behavior.</p>
 <pre><code>class RetrieveUserView(MultipleFieldLookupMixin, generics.RetrieveAPIView):

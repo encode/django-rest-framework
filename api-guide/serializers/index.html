@@ -319,6 +319,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -1380,7 +1384,7 @@ def all_high_scores(request):
 <hr />
 <h1 id="advanced-serializer-usage"><a class="toclink" href="#advanced-serializer-usage">Advanced serializer usage</a></h1>
 <h2 id="overriding-serialization-and-deserialization-behavior"><a class="toclink" href="#overriding-serialization-and-deserialization-behavior">Overriding serialization and deserialization behavior</a></h2>
-<p>If you need to alter the serialization, deserialization or validation of a serializer class you can do so by overriding the <code>.to_representation()</code> or <code>.to_internal_value()</code> methods.</p>
+<p>If you need to alter the serialization or deserialization behavior of a serializer class, you can do so by overriding the <code>.to_representation()</code> or <code>.to_internal_value()</code> methods.</p>
 <p>Some reasons this might be useful include...</p>
 <ul>
 <li>Adding new behavior for new serializer base classes.</li>
@@ -1392,7 +1396,7 @@ def all_high_scores(request):
 <p>Takes the object instance that requires serialization, and should return a primitive representation. Typically this means returning a structure of built-in Python datatypes. The exact types that can be handled will depend on the render classes you have configured for your API.</p>
 <h4 id="to_internal_valueself-data"><a class="toclink" href="#to_internal_valueself-data"><code>.to_internal_value(self, data)</code></a></h4>
 <p>Takes the unvalidated incoming data as input and should return the validated data that will be made available as <code>serializer.validated_data</code>. The return value will also be passed to the <code>.create()</code> or <code>.update()</code> methods if <code>.save()</code> is called on the serializer class.</p>
-<p>If any of the validation fails, then the method should raise a <code>serializers.ValidationError(errors)</code>. Typically the <code>errors</code> argument here will be a dictionary mapping field names to error messages.</p>
+<p>If any of the validation fails, then the method should raise a <code>serializers.ValidationError(errors)</code>. The <code>errors</code> argument should be a dictionary mapping field names (or <code>settings.NON_FIELD_ERRORS_KEY</code>) to a list of error messages. If you don't need to alter deserialization behavior and instead want to provide object-level validation, it's recommended that you intead override the <a href="#object-level-validation"><code>.validate()</code></a> method.</p>
 <p>The <code>data</code> argument passed to this method will normally be the value of <code>request.data</code>, so the datatype it provides will depend on the parser classes you have configured for your API.</p>
 <h2 id="serializer-inheritance"><a class="toclink" href="#serializer-inheritance">Serializer Inheritance</a></h2>
 <p>Similar to Django forms, you can extend and reuse serializers through inheritance. This allows you to declare a common set of fields or methods on a parent class that can then be used in a number of serializers. For example,</p>
@@ -1495,9 +1499,9 @@ blacklisted and child serializers can be optionally expanded.</p>
 <h2 id="drf-base64"><a class="toclink" href="#drf-base64">DRF-Base64</a></h2>
 <p><a href="https://bitbucket.org/levit_scs/drf_base64">DRF-Base64</a> provides a set of field and model serializers that handles the upload of base64-encoded files.</p>
 <h2 id="queryfields"><a class="toclink" href="#queryfields">QueryFields</a></h2>
-<p><a href="http://djangorestframework-queryfields.readthedocs.io/">djangorestframework-queryfields</a> allows API clients to specify which fields will be sent in the response via inclusion/exclusion query parameters.  </p>
+<p><a href="http://djangorestframework-queryfields.readthedocs.io/">djangorestframework-queryfields</a> allows API clients to specify which fields will be sent in the response via inclusion/exclusion query parameters.</p>
 <h2 id="drf-writable-nested"><a class="toclink" href="#drf-writable-nested">DRF Writable Nested</a></h2>
-<p>The <a href="http://github.com/Brogency/drf-writable-nested">drf-writable-nested</a> package provides writable nested model serializer which allows to create/update models with nested related data.</p>
+<p>The <a href="http://github.com/beda-software/drf-writable-nested">drf-writable-nested</a> package provides writable nested model serializer which allows to create/update models with nested related data.</p>
             
 
           </div> <!--/span-->

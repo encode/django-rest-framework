@@ -319,6 +319,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -443,6 +447,28 @@ cd tutorial
 django-admin.py startapp quickstart
 cd ..
 </code></pre>
+<p>The project layout should look like:</p>
+<pre><code>$ pwd
+&lt;some path&gt;/tutorial
+$ find .
+.
+./manage.py
+./tutorial
+./tutorial/__init__.py
+./tutorial/quickstart
+./tutorial/quickstart/__init__.py
+./tutorial/quickstart/admin.py
+./tutorial/quickstart/apps.py
+./tutorial/quickstart/migrations
+./tutorial/quickstart/migrations/__init__.py
+./tutorial/quickstart/models.py
+./tutorial/quickstart/tests.py
+./tutorial/quickstart/views.py
+./tutorial/settings.py
+./tutorial/urls.py
+./tutorial/wsgi.py
+</code></pre>
+<p>It may look unusual that the application has been created within the project directory. Using the project's namespace avoids name clashes with external module (topic goes outside the scope of the quickstart).</p>
 <p>Now sync your database for the first time:</p>
 <pre><code>python manage.py migrate
 </code></pre>

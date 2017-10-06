@@ -319,6 +319,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -383,7 +387,11 @@
 
                   
                     <li>
-                      <a href="#representing-schemas-internally">Representing schemas internally</a>
+                      <a href="#install-core-api">Install Core API</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#internal-schema-representation">Internal schema representation</a>
                     </li>
                   
                     <li>
@@ -396,7 +404,25 @@
                   
                 
                   <li class="main">
-                    <a href="#adding-a-schema">Adding a schema</a>
+                    <a href="#creating-a-schema">Creating a schema</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#manual-schema-specification">Manual Schema Specification</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#automatic-schema-generation">Automatic Schema Generation</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#per-view-schema-customisation">Per-View Schema Customisation</a>
+                    </li>
+                  
+                
+                  <li class="main">
+                    <a href="#adding-a-schema-view">Adding a schema view</a>
                   </li>
 
                   
@@ -428,16 +454,6 @@
                   
                 
                   <li class="main">
-                    <a href="#alternate-schema-formats">Alternate schema formats</a>
-                  </li>
-
-                  
-                    <li>
-                      <a href="#example">Example</a>
-                    </li>
-                  
-                
-                  <li class="main">
                     <a href="#api-reference">API Reference</a>
                   </li>
 
@@ -447,7 +463,25 @@
                     </li>
                   
                     <li>
+                      <a href="#autoschema">AutoSchema</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#manualschema">ManualSchema</a>
+                    </li>
+                  
+                    <li>
                       <a href="#core-api">Core API</a>
+                    </li>
+                  
+                
+                  <li class="main">
+                    <a href="#third-party-packages">Third party packages</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#drf-openapi">DRF OpenAPI</a>
                     </li>
                   
                 
@@ -479,7 +513,12 @@
 <p>API schemas are a useful tool that allow for a range of use cases, including
 generating reference documentation, or driving dynamic client libraries that
 can interact with your API.</p>
-<h2 id="representing-schemas-internally"><a class="toclink" href="#representing-schemas-internally">Representing schemas internally</a></h2>
+<h2 id="install-core-api"><a class="toclink" href="#install-core-api">Install Core API</a></h2>
+<p>You'll need to install the <code>coreapi</code> package in order to add schema support
+for REST framework.</p>
+<pre><code>pip install coreapi
+</code></pre>
+<h2 id="internal-schema-representation"><a class="toclink" href="#internal-schema-representation">Internal schema representation</a></h2>
 <p>REST framework uses <a href="http://www.coreapi.org/">Core API</a> in order to model schema information in
 a format-independent representation. This information can then be rendered
 into various different schema formats, or used to generate API documentation.</p>
@@ -530,9 +569,27 @@ has to be rendered into the actual bytes that are used in the response.</p>
 <p><a href="http://www.coreapi.org/specification/encoding/#core-json-encoding">Core JSON</a> is designed as a canonical format for use with Core API.
 REST framework includes a renderer class for handling this media type, which
 is available as <code>renderers.CoreJSONRenderer</code>.</p>
+<h3 id="alternate-schema-formats"><a class="toclink" href="#alternate-schema-formats">Alternate schema formats</a></h3>
 <p>Other schema formats such as <a href="https://openapis.org/">Open API</a> ("Swagger"),
-<a href="http://json-schema.org/latest/json-schema-hypermedia.html">JSON HyperSchema</a>, or <a href="https://apiblueprint.org/">API Blueprint</a> can
-also be supported by implementing a custom renderer class.</p>
+<a href="http://json-schema.org/latest/json-schema-hypermedia.html">JSON HyperSchema</a>, or <a href="https://apiblueprint.org/">API Blueprint</a> can also
+be supported by implementing a custom renderer class that handles converting a
+<code>Document</code> instance into a bytestring representation.</p>
+<p>If there is a Core API codec package that supports encoding into the format you
+want to use then implementing the renderer class can be done by using the codec.</p>
+<h4 id="example"><a class="toclink" href="#example">Example</a></h4>
+<p>For example, the <code>openapi_codec</code> package provides support for encoding or decoding
+to the Open API ("Swagger") format:</p>
+<pre><code>from rest_framework import renderers
+from openapi_codec import OpenAPICodec
+
+class SwaggerRenderer(renderers.BaseRenderer):
+    media_type = 'application/openapi+json'
+    format = 'swagger'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        codec = OpenAPICodec()
+        return codec.dump(data)
+</code></pre>
 <h2 id="schemas-vs-hypermedia"><a class="toclink" href="#schemas-vs-hypermedia">Schemas vs Hypermedia</a></h2>
 <p>It's worth pointing out here that Core API can also be used to model hypermedia
 responses, which present an alternative interaction style to API schemas.</p>
@@ -546,14 +603,108 @@ document, detailing both the current state and the available interactions.</p>
 <p>Further information and support on building Hypermedia APIs with REST framework
 is planned for a future version.</p>
 <hr />
-<h1 id="adding-a-schema"><a class="toclink" href="#adding-a-schema">Adding a schema</a></h1>
-<p>You'll need to install the <code>coreapi</code> package in order to add schema support
-for REST framework.</p>
-<pre><code>pip install coreapi
-</code></pre>
+<h1 id="creating-a-schema"><a class="toclink" href="#creating-a-schema">Creating a schema</a></h1>
 <p>REST framework includes functionality for auto-generating a schema,
-or allows you to specify one explicitly. There are a few different ways to
-add a schema to your API, depending on exactly what you need.</p>
+or allows you to specify one explicitly.</p>
+<h2 id="manual-schema-specification"><a class="toclink" href="#manual-schema-specification">Manual Schema Specification</a></h2>
+<p>To manually specify a schema you create a Core API <code>Document</code>, similar to the
+example above.</p>
+<pre><code>schema = coreapi.Document(
+    title='Flight Search API',
+    content={
+        ...
+    }
+)
+</code></pre>
+<h2 id="automatic-schema-generation"><a class="toclink" href="#automatic-schema-generation">Automatic Schema Generation</a></h2>
+<p>Automatic schema generation is provided by the <code>SchemaGenerator</code> class.</p>
+<p><code>SchemaGenerator</code> processes a list of routed URL pattterns and compiles the
+appropriately structured Core API Document.</p>
+<p>Basic usage is just to provide the title for your schema and call
+<code>get_schema()</code>:</p>
+<pre><code>generator = schemas.SchemaGenerator(title='Flight Search API')
+schema = generator.get_schema()
+</code></pre>
+<h2 id="per-view-schema-customisation"><a class="toclink" href="#per-view-schema-customisation">Per-View Schema Customisation</a></h2>
+<p>By default, view introspection is performed by an <code>AutoSchema</code> instance
+accessible via the <code>schema</code> attribute on <code>APIView</code>. This provides the
+appropriate Core API <code>Link</code> object for the view, request method and path:</p>
+<pre><code>auto_schema = view.schema
+coreapi_link = auto_schema.get_link(...)
+</code></pre>
+<p>(In compiling the schema, <code>SchemaGenerator</code> calls <code>view.schema.get_link()</code> for
+each view, allowed method and path.)</p>
+<p>To customise the <code>Link</code> generation you may:</p>
+<ul>
+<li>
+<p>Instantiate <code>AutoSchema</code> on your view with the <code>manual_fields</code> kwarg:</p>
+<pre><code>from rest_framework.views import APIView
+from rest_framework.schemas import AutoSchema
+
+class CustomView(APIView):
+    ...
+    schema = AutoSchema(
+        manual_fields=[
+            coreapi.Field("extra_field", ...),
+        ]
+    )
+</code></pre>
+<p>This allows extension for the most common case without subclassing.</p>
+</li>
+<li>
+<p>Provide an <code>AutoSchema</code> subclass with more complex customisation:</p>
+<pre><code>from rest_framework.views import APIView
+from rest_framework.schemas import AutoSchema
+
+class CustomSchema(AutoSchema):
+    def get_link(...):
+        # Implement custom introspection here (or in other sub-methods)
+
+class CustomView(APIView):
+    ...
+    schema = CustomSchema()
+</code></pre>
+<p>This provides complete control over view introspection.</p>
+</li>
+<li>
+<p>Instantiate <code>ManualSchema</code> on your view, providing the Core API <code>Fields</code> for
+  the view explicitly:</p>
+<pre><code>from rest_framework.views import APIView
+from rest_framework.schemas import ManualSchema
+
+class CustomView(APIView):
+    ...
+    schema = ManualSchema(fields=[
+        coreapi.Field(
+            "first_field",
+            required=True,
+            location="path",
+            schema=coreschema.String()
+        ),
+        coreapi.Field(
+            "second_field",
+            required=True,
+            location="path",
+            schema=coreschema.String()
+        ),
+    ])
+</code></pre>
+<p>This allows manually specifying the schema for some views whilst maintaining
+automatic generation elsewhere.</p>
+</li>
+</ul>
+<p>You may disable schema generation for a view by setting <code>schema</code> to <code>None</code>:</p>
+<pre><code>    class CustomView(APIView):
+        ...
+        schema = None  # Will not appear in schema
+</code></pre>
+<hr />
+<p><strong>Note</strong>: For full details on <code>SchemaGenerator</code> plus the <code>AutoSchema</code> and
+<code>ManualSchema</code> descriptors see the <a href="#api-reference">API Reference below</a>.</p>
+<hr />
+<h1 id="adding-a-schema-view"><a class="toclink" href="#adding-a-schema-view">Adding a schema view</a></h1>
+<p>There are a few different ways to add a schema view to your API, depending on
+exactly what you need.</p>
 <h2 id="the-get_schema_view-shortcut"><a class="toclink" href="#the-get_schema_view-shortcut">The get_schema_view shortcut</a></h2>
 <p>The simplest way to include a schema in your project is to use the
 <code>get_schema_view()</code> function.</p>
@@ -629,6 +780,12 @@ schema_view = get_schema_view(
 <h4 id="generator_class"><a class="toclink" href="#generator_class"><code>generator_class</code></a></h4>
 <p>May be used to specify a <code>SchemaGenerator</code> subclass to be passed to the
 <code>SchemaView</code>.</p>
+<h4 id="authentication_classes"><a class="toclink" href="#authentication_classes"><code>authentication_classes</code></a></h4>
+<p>May be used to specify the list of authentication classes that will apply to the schema endpoint.
+Defaults to <code>settings.DEFAULT_AUTHENTICATION_CLASSES</code></p>
+<h4 id="permission_classes"><a class="toclink" href="#permission_classes"><code>permission_classes</code></a></h4>
+<p>May be used to specify the list of permission classes that will apply to the schema endpoint.
+Defaults to <code>settings.DEFAULT_PERMISSION_CLASSES</code></p>
 <h2 id="using-an-explicit-schema-view"><a class="toclink" href="#using-an-explicit-schema-view">Using an explicit schema view</a></h2>
 <p>If you need a little more control than the <code>get_schema_view()</code> shortcut gives you,
 then you can use the <code>SchemaGenerator</code> class directly to auto-generate the
@@ -754,30 +911,10 @@ populate descriptions in the schema document.</p>
     serializer_class = UserSerializer
 </code></pre>
 <hr />
-<h1 id="alternate-schema-formats"><a class="toclink" href="#alternate-schema-formats">Alternate schema formats</a></h1>
-<p>In order to support an alternate schema format, you need to implement a custom renderer
-class that handles converting a <code>Document</code> instance into a bytestring representation.</p>
-<p>If there is a Core API codec package that supports encoding into the format you
-want to use then implementing the renderer class can be done by using the codec.</p>
-<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
-<p>For example, the <code>openapi_codec</code> package provides support for encoding or decoding
-to the Open API ("Swagger") format:</p>
-<pre><code>from rest_framework import renderers
-from openapi_codec import OpenAPICodec
-
-class SwaggerRenderer(renderers.BaseRenderer):
-    media_type = 'application/openapi+json'
-    format = 'swagger'
-
-    def render(self, data, media_type=None, renderer_context=None):
-        codec = OpenAPICodec()
-        return codec.dump(data)
-</code></pre>
-<hr />
 <h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
 <h2 id="schemagenerator"><a class="toclink" href="#schemagenerator">SchemaGenerator</a></h2>
-<p>A class that deals with introspecting your API views, which can be used to
-generate a schema.</p>
+<p>A class that walks a list of routed URL patterns, requests the schema for each view,
+and collates the resulting CoreAPI Document.</p>
 <p>Typically you'll instantiate <code>SchemaGenerator</code> with a single argument, like so:</p>
 <pre><code>generator = SchemaGenerator(title='Stock Prices API')
 </code></pre>
@@ -802,24 +939,79 @@ permissions to the resulting schema generation.</p>
 <p>Return a nested dictionary containing all the links that should be included in the API schema.</p>
 <p>This is a good point to override if you want to modify the resulting structure of the generated schema,
 as you can build a new dictionary with a different layout.</p>
-<h3 id="get_linkself-path-method-view"><a class="toclink" href="#get_linkself-path-method-view">get_link(self, path, method, view)</a></h3>
+<h2 id="autoschema"><a class="toclink" href="#autoschema">AutoSchema</a></h2>
+<p>A class that deals with introspection of individual views for schema generation.</p>
+<p><code>AutoSchema</code> is attached to <code>APIView</code> via the <code>schema</code> attribute.</p>
+<p>The <code>AutoSchema</code> constructor takes a single keyword argument  <code>manual_fields</code>.</p>
+<p><strong><code>manual_fields</code></strong>: a <code>list</code> of <code>coreapi.Field</code> instances that will be added to
+the generated fields. Generated fields with a matching <code>name</code> will be overwritten.</p>
+<pre><code>class CustomView(APIView):
+    schema = AutoSchema(manual_fields=[
+        coreapi.Field(
+            "my_extra_field",
+            required=True,
+            location="path",
+            schema=coreschema.String()
+        ),
+    ])
+</code></pre>
+<p>For more advanced customisation subclass <code>AutoSchema</code> to customise schema generation.</p>
+<pre><code>class CustomViewSchema(AutoSchema):
+    """
+    Overrides `get_link()` to provide Custom Behavior X
+    """
+
+    def get_link(self, path, method, base_url):
+        link = super().get_link(path, method, base_url)
+        # Do something to customize link here...
+        return link
+
+class MyView(APIView):
+  schema = CustomViewSchema()
+</code></pre>
+<p>The following methods are available to override.</p>
+<h3 id="get_linkself-path-method-base_url"><a class="toclink" href="#get_linkself-path-method-base_url">get_link(self, path, method, base_url)</a></h3>
 <p>Returns a <code>coreapi.Link</code> instance corresponding to the given view.</p>
-<p>You can override this if you need to provide custom behaviors for particular views.</p>
-<h3 id="get_descriptionself-path-method-view"><a class="toclink" href="#get_descriptionself-path-method-view">get_description(self, path, method, view)</a></h3>
+<p>This is the main entry point.
+You can override this if you need to provide custom behaviors for particular views.</p>
+<h3 id="get_descriptionself-path-method"><a class="toclink" href="#get_descriptionself-path-method">get_description(self, path, method)</a></h3>
 <p>Returns a string to use as the link description. By default this is based on the
 view docstring as described in the "Schemas as Documentation" section above.</p>
-<h3 id="get_encodingself-path-method-view"><a class="toclink" href="#get_encodingself-path-method-view">get_encoding(self, path, method, view)</a></h3>
+<h3 id="get_encodingself-path-method"><a class="toclink" href="#get_encodingself-path-method">get_encoding(self, path, method)</a></h3>
 <p>Returns a string to indicate the encoding for any request body, when interacting
 with the given view. Eg. <code>'application/json'</code>. May return a blank string for views
 that do not expect a request body.</p>
-<h3 id="get_path_fieldsself-path-method-view"><a class="toclink" href="#get_path_fieldsself-path-method-view">get_path_fields(self, path, method, view):</a></h3>
+<h3 id="get_path_fieldsself-path-method"><a class="toclink" href="#get_path_fieldsself-path-method">get_path_fields(self, path, method):</a></h3>
 <p>Return a list of <code>coreapi.Link()</code> instances. One for each path parameter in the URL.</p>
-<h3 id="get_serializer_fieldsself-path-method-view"><a class="toclink" href="#get_serializer_fieldsself-path-method-view">get_serializer_fields(self, path, method, view)</a></h3>
+<h3 id="get_serializer_fieldsself-path-method"><a class="toclink" href="#get_serializer_fieldsself-path-method">get_serializer_fields(self, path, method)</a></h3>
 <p>Return a list of <code>coreapi.Link()</code> instances. One for each field in the serializer class used by the view.</p>
-<h3 id="get_pagination_fieldsself-path-method-view"><a class="toclink" href="#get_pagination_fieldsself-path-method-view">get_pagination_fields(self, path, method, view</a></h3>
+<h3 id="get_pagination_fieldsself-path-method"><a class="toclink" href="#get_pagination_fieldsself-path-method">get_pagination_fields(self, path, method)</a></h3>
 <p>Return a list of <code>coreapi.Link()</code> instances, as returned by the <code>get_schema_fields()</code> method on any pagination class used by the view.</p>
-<h3 id="get_filter_fieldsself-path-method-view"><a class="toclink" href="#get_filter_fieldsself-path-method-view">get_filter_fields(self, path, method, view)</a></h3>
+<h3 id="get_filter_fieldsself-path-method"><a class="toclink" href="#get_filter_fieldsself-path-method">get_filter_fields(self, path, method)</a></h3>
 <p>Return a list of <code>coreapi.Link()</code> instances, as returned by the <code>get_schema_fields()</code> method of any filter classes used by the view.</p>
+<h2 id="manualschema"><a class="toclink" href="#manualschema">ManualSchema</a></h2>
+<p>Allows manually providing a list of <code>coreapi.Field</code> instances for the schema,
+plus an optional description.</p>
+<pre><code>class MyView(APIView):
+  schema = ManualSchema(fields=[
+        coreapi.Field(
+            "first_field",
+            required=True,
+            location="path",
+            schema=coreschema.String()
+        ),
+        coreapi.Field(
+            "second_field",
+            required=True,
+            location="path",
+            schema=coreschema.String()
+        ),
+    ]
+  )
+</code></pre>
+<p>The <code>ManualSchema</code> constructor takes two arguments:</p>
+<p><strong><code>fields</code></strong>: A list of <code>coreapi.Field</code> instances. Required.</p>
+<p><strong><code>description</code></strong>: A string description. Optional.</p>
 <hr />
 <h2 id="core-api"><a class="toclink" href="#core-api">Core API</a></h2>
 <p>This documentation gives a brief overview of the components within the <code>coreapi</code>
@@ -898,6 +1090,11 @@ only if one or more <code>location="form"</code> fields is included on the <code
 Valid only if a <code>location="body"</code> field is included on the <code>Link</code>.</p>
 <h4 id="description_1"><a class="toclink" href="#description_1"><code>description</code></a></h4>
 <p>A short description of the meaning and intended usage of the input field.</p>
+<hr />
+<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
+<h2 id="drf-openapi"><a class="toclink" href="#drf-openapi">DRF OpenAPI</a></h2>
+<p><a href="https://github.com/limdauto/drf_openapi">DRF OpenAPI</a> renders the schema generated by Django Rest Framework
+in <a href="https://openapis.org/">OpenAPI</a> format.</p>
             
 
           </div> <!--/span-->

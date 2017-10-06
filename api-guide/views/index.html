@@ -319,6 +319,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -410,6 +414,10 @@
                   
                     <li>
                       <a href="#api-policy-decorators">API policy decorators</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#view-schema-decorator">View schema decorator</a>
                     </li>
                   
                 
@@ -521,7 +529,7 @@ This method is used to enforce permissions and throttling, and perform content n
 </blockquote>
 <p>REST framework also allows you to work with regular function based views.  It provides a set of simple decorators that wrap your function based views to ensure they receive an instance of <code>Request</code> (rather than the usual Django <code>HttpRequest</code>) and allows them to return a <code>Response</code> (instead of a Django <code>HttpResponse</code>), and allow you to configure how the request is processed.</p>
 <h2 id="api_view"><a class="toclink" href="#api_view">@api_view()</a></h2>
-<p><strong>Signature:</strong> <code>@api_view(http_method_names=['GET'], exclude_from_schema=False)</code></p>
+<p><strong>Signature:</strong> <code>@api_view(http_method_names=['GET'])</code></p>
 <p>The core of this functionality is the <code>api_view</code> decorator, which takes a list of HTTP methods that your view should respond to. For example, this is how you would write a very simple view that just manually returns some data:</p>
 <pre><code>from rest_framework.decorators import api_view
 
@@ -536,12 +544,6 @@ def hello_world(request):
     if request.method == 'POST':
         return Response({"message": "Got some data!", "data": request.data})
     return Response({"message": "Hello, world!"})
-</code></pre>
-<p>You can also mark an API view as being omitted from any <a href="../schemas/">auto-generated schema</a>,
-using the <code>exclude_from_schema</code> argument.:</p>
-<pre><code>@api_view(['GET'], exclude_from_schema=True)
-def api_docs(request):
-    ...
 </code></pre>
 <h2 id="api-policy-decorators"><a class="toclink" href="#api-policy-decorators">API policy decorators</a></h2>
 <p>To override the default settings, REST framework provides a set of additional decorators which can be added to your views.  These must come <em>after</em> (below) the <code>@api_view</code> decorator.  For example, to create a view that uses a <a href="../throttling/">throttle</a> to ensure it can only be called once per day by a particular user, use the <code>@throttle_classes</code> decorator, passing a list of throttle classes:</p>
@@ -566,6 +568,30 @@ def view(request):
 <li><code>@permission_classes(...)</code></li>
 </ul>
 <p>Each of these decorators takes a single argument which must be a list or tuple of classes.</p>
+<h2 id="view-schema-decorator"><a class="toclink" href="#view-schema-decorator">View schema decorator</a></h2>
+<p>To override the default schema generation for function based views you may use
+the <code>@schema</code> decorator. This must come <em>after</em> (below) the <code>@api_view</code>
+decorator. For example:</p>
+<pre><code>from rest_framework.decorators import api_view, schema
+from rest_framework.schemas import AutoSchema
+
+class CustomAutoSchema(AutoSchema):
+    def get_link(self, path, method, base_url):
+        # override view introspection here...
+
+@api_view(['GET'])
+@schema(CustomAutoSchema())
+def view(request):
+    return Response({"message": "Hello for today! See you tomorrow!"})
+</code></pre>
+<p>This decorator takes a single <code>AutoSchema</code> instance, an <code>AutoSchema</code> subclass
+instance or <code>ManualSchema</code> instance as described in the <a href="../schemas/">Schemas documentation</a>.
+You may pass <code>None</code> in order to exclude the view from schema generation.</p>
+<pre><code>@api_view(['GET'])
+@schema(None)
+def view(request):
+    return Response({"message": "Will not appear in schema!"})
+</code></pre>
             
 
           </div> <!--/span-->

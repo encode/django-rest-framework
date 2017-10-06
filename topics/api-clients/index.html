@@ -319,6 +319,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -777,11 +781,11 @@ urlpatterns = [
 <pre><code>&lt;!--
     Load the CoreAPI library and the API schema.
 
-    /static/rest_framework/js/coreapi-0.1.0.js
+    /static/rest_framework/js/coreapi-0.1.1.js
     /docs/schema.js
 --&gt;
 {% load staticfiles %}
-&lt;script src="{% static 'rest_framework/js/coreapi-0.1.0.js' %}"&gt;&lt;/script&gt;
+&lt;script src="{% static 'rest_framework/js/coreapi-0.1.1.js' %}"&gt;&lt;/script&gt;
 &lt;script src="{% url 'api-docs:schema-js' %}"&gt;&lt;/script&gt;
 </code></pre>
 <p>The <code>coreapi</code> library, and the <code>schema</code> object will now both be available on the <code>window</code> instance.</p>
@@ -798,7 +802,7 @@ instantiating the client.</p>
 <p>The <code>SessionAuthentication</code> class allows session cookies to provide the user
 authentication. You'll want to provide a standard HTML login flow, to allow
 the user to login, and then instantiate a client using session authentication:</p>
-<pre><code>let auth = coreapi.auth.SessionAuthentication({
+<pre><code>let auth = new coreapi.auth.SessionAuthentication({
     csrfCookieName: 'csrftoken',
     csrfHeaderName: 'X-CSRFToken'
 })
@@ -809,7 +813,7 @@ requests for unsafe HTTP methods.</p>
 <h4 id="token-authentication_1"><a class="toclink" href="#token-authentication_1">Token authentication</a></h4>
 <p>The <code>TokenAuthentication</code> class can be used to support REST framework's built-in
 <code>TokenAuthentication</code>, as well as OAuth and JWT schemes.</p>
-<pre><code>let auth = coreapi.auth.TokenAuthentication({
+<pre><code>let auth = new coreapi.auth.TokenAuthentication({
     scheme: 'JWT'
     token: '&lt;token&gt;'
 })
@@ -842,7 +846,7 @@ function loginUser(username, password) {
 </code></pre>
 <h4 id="basic-authentication_1"><a class="toclink" href="#basic-authentication_1">Basic authentication</a></h4>
 <p>The <code>BasicAuthentication</code> class can be used to support HTTP Basic Authentication.</p>
-<pre><code>let auth = coreapi.auth.BasicAuthentication({
+<pre><code>let auth = new coreapi.auth.BasicAuthentication({
     username: '&lt;username&gt;',
     password: '&lt;password&gt;'
 })

@@ -319,6 +319,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -671,6 +675,10 @@ internally in the codebase.</p>
 <pre><code>{"is_admin": false, "email": "jane@example"}
 </code></pre>
 <p>The default style is to return minified responses, in line with <a href="https://github.com/interagent/http-api-design#keep-json-minified-in-all-responses">Heroku's API design guidelines</a>.</p>
+<p>Default: <code>True</code></p>
+<h4 id="strict_json"><a class="toclink" href="#strict_json">STRICT_JSON</a></h4>
+<p>When set to <code>True</code>, JSON rendering and parsing will only observe syntactically valid JSON, raising an exception for the extended float values (<code>nan</code>, <code>inf</code>, <code>-inf</code>) accepted by Python's <code>json</code> module. This is the recommended setting, as these values are not generally supported. e.g., neither Javascript's <code>JSON.Parse</code> nor PostgreSQL's JSON data type accept these values.</p>
+<p>When set to <code>False</code>, JSON rendering and parsing will be permissive. However, these values are still invalid and will need to be specially handled in your code.</p>
 <p>Default: <code>True</code></p>
 <h4 id="coerce_decimal_to_string"><a class="toclink" href="#coerce_decimal_to_string">COERCE_DECIMAL_TO_STRING</a></h4>
 <p>When returning decimal objects in API representations that do not support a native decimal type, it is normally best to return the value as a string. This avoids the loss of precision that occurs with binary floating point implementations.</p>

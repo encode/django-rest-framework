@@ -319,6 +319,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
@@ -464,7 +468,7 @@ from snippets.serializers import SnippetSerializer
 @api_view(['GET', 'POST'])
 def snippet_list(request):
     """
-    List all snippets, or create a new snippet.
+    List all code snippets, or create a new snippet.
     """
     if request.method == 'GET':
         snippets = Snippet.objects.all()
@@ -483,7 +487,7 @@ def snippet_list(request):
 <pre><code>@api_view(['GET', 'PUT', 'DELETE'])
 def snippet_detail(request, pk):
     """
-    Retrieve, update or delete a snippet instance.
+    Retrieve, update or delete a code snippet.
     """
     try:
         snippet = Snippet.objects.get(pk=pk)
