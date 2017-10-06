@@ -457,7 +457,7 @@ request.data  # Handles arbitrary data.  Works for 'POST', 'PUT' and 'PATCH' met
 <p>The wrappers also provide behaviour such as returning <code>405 Method Not Allowed</code> responses when appropriate, and handling any <code>ParseError</code> exception that occurs when accessing <code>request.data</code> with malformed input.</p>
 <h2 id="pulling-it-all-together"><a class="toclink" href="#pulling-it-all-together">Pulling it all together</a></h2>
 <p>Okay, let's go ahead and start using these new components to write a few views.</p>
-<p>We don't need our <code>JSONResponse</code> class in <code>views.py</code> anymore, so go ahead and delete that.  Once that's done we can start refactoring our views slightly.</p>
+<p>We don't need our <code>JSONResponse</code> class in <code>views.py</code> any more, so go ahead and delete that.  Once that's done we can start refactoring our views slightly.</p>
 <pre><code>from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
