@@ -112,8 +112,8 @@ def distribute_links(obj, parent=None, parent_key='root'):
         key = get_unique_key(parent, parent_key)
         parent[key] = link
 
-    for key, value in obj.items():
-        distribute_links(value, obj, key)
+    for key in list(obj.keys()):
+        distribute_links(obj[key], obj, key)
 
 
 def is_custom_action(action):
