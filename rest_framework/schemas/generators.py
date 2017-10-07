@@ -64,6 +64,12 @@ to customise schema structure.
 """
 
 
+class LinkNode(OrderedDict):
+    def __init__(self):
+        self.links = []
+        super(LinkNode, self).__init__()
+
+
 def insert_into(target, keys, value):
     """
     Nested dictionary insertion.
@@ -71,14 +77,15 @@ def insert_into(target, keys, value):
     >>> example = {}
     >>> insert_into(example, ['a', 'b', 'c'], 123)
     >>> example
-    {'a': {'b': {'c': 123}}}
+    LinkNode({'a': LinkNode({'b': LinkNode({'c': LinkNode(links=[123])}}})))
     """
-    for key in keys[:-1]:
+    for key in keys:
         if key not in target:
-            target[key] = {}
+            target[key] = LinkNode()
         target = target[key]
+
     try:
-        target[keys[-1]] = value
+        target.links.append(value)
     except TypeError:
         msg = INSERT_INTO_COLLISION_FMT.format(
             value_url=value.url,
@@ -86,6 +93,27 @@ def insert_into(target, keys, value):
             keys=keys
         )
         raise ValueError(msg)
+
+
+def get_unique_key(obj, base_key):
+    i = 0
+    while True:
+        key = '{}_{}'.format(base_key, i)
+        if key not in obj:
+            return key
+        i += 1
+
+
+def distribute_links(obj, parent=None, parent_key='root'):
+    if parent is None:
+        parent = obj
+
+    for link in obj.links:
+        key = get_unique_key(parent, parent_key)
+        parent[key] = link
+
+    for key, value in obj.items():
+        distribute_links(value, obj, key)
 
 
 def is_custom_action(action):
@@ -255,6 +283,7 @@ class SchemaGenerator(object):
         if not url and request is not None:
             url = request.build_absolute_uri()
 
+        distribute_links(links)
         return coreapi.Document(
             title=self.title, description=self.description,
             url=url, content=links
@@ -265,7 +294,7 @@ class SchemaGenerator(object):
         Return a dictionary containing all the links that should be
         included in the API schema.
         """
-        links = OrderedDict()
+        links = LinkNode()
 
         # Generate (path, method, view) given (path, method, callback).
         paths = []
@@ -288,6 +317,7 @@ class SchemaGenerator(object):
             subpath = path[len(prefix):]
             keys = self.get_keys(subpath, method, view)
             insert_into(links, keys, link)
+
         return links
 
     # Methods used when we generate a view instance from the raw callback...

@@ -19,7 +19,6 @@ from rest_framework.schemas import (
     AutoSchema, ManualSchema, SchemaGenerator, get_schema_view
 )
 from rest_framework.schemas.generators import EndpointEnumerator
-from rest_framework.schemas.utils import is_list_view
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.utils import formatting
 from rest_framework.views import APIView
@@ -121,7 +120,8 @@ class TestRouterGeneratedSchema(TestCase):
             title='Example API',
             content={
                 'example': {
-                    'list': coreapi.Link(
+                    'list': {},
+                    'list_0': coreapi.Link(
                         url='/example/',
                         action='get',
                         fields=[
@@ -130,17 +130,20 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
-                    'custom_list_action': coreapi.Link(
+                    'custom_list_action': {},
+                    'custom_list_action_0': coreapi.Link(
                         url='/example/custom_list_action/',
                         action='get'
                     ),
                     'custom_list_action_multiple_methods': {
-                        'read': coreapi.Link(
+                        'read': {},
+                        'read_0': coreapi.Link(
                             url='/example/custom_list_action_multiple_methods/',
                             action='get'
                         )
                     },
-                    'read': coreapi.Link(
+                    'read': {},
+                    'read_0': coreapi.Link(
                         url='/example/{id}/',
                         action='get',
                         fields=[
@@ -151,6 +154,7 @@ class TestRouterGeneratedSchema(TestCase):
                 }
             }
         )
+
         assert response.data == expected
 
     def test_authenticated_request(self):
@@ -163,7 +167,8 @@ class TestRouterGeneratedSchema(TestCase):
             title='Example API',
             content={
                 'example': {
-                    'list': coreapi.Link(
+                    'list': {},
+                    'list_0': coreapi.Link(
                         url='/example/',
                         action='get',
                         fields=[
@@ -172,7 +177,8 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
-                    'create': coreapi.Link(
+                    'create': {},
+                    'create_0': coreapi.Link(
                         url='/example/',
                         action='post',
                         encoding='application/json',
@@ -181,7 +187,8 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
                         ]
                     ),
-                    'read': coreapi.Link(
+                    'read': {},
+                    'read_0': coreapi.Link(
                         url='/example/{id}/',
                         action='get',
                         fields=[
@@ -189,7 +196,8 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
-                    'custom_action': coreapi.Link(
+                    'custom_action': {},
+                    'custom_action_0': coreapi.Link(
                         url='/example/{id}/custom_action/',
                         action='post',
                         encoding='application/json',
@@ -200,7 +208,8 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('d', required=False, location='form', schema=coreschema.String(title='D')),
                         ]
                     ),
-                    'custom_action_with_list_fields': coreapi.Link(
+                    'custom_action_with_list_fields': {},
+                    'custom_action_with_list_fields_0': coreapi.Link(
                         url='/example/{id}/custom_action_with_list_fields/',
                         action='post',
                         encoding='application/json',
@@ -211,21 +220,25 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('b', required=True, location='form', schema=coreschema.Array(title='B', items=coreschema.String())),
                         ]
                     ),
-                    'custom_list_action': coreapi.Link(
+                    'custom_list_action': {},
+                    'custom_list_action_0': coreapi.Link(
                         url='/example/custom_list_action/',
                         action='get'
                     ),
                     'custom_list_action_multiple_methods': {
-                        'read': coreapi.Link(
+                        'read': {},
+                        'read_0': coreapi.Link(
                             url='/example/custom_list_action_multiple_methods/',
                             action='get'
                         ),
-                        'create': coreapi.Link(
+                        'create': {},
+                        'create_0': coreapi.Link(
                             url='/example/custom_list_action_multiple_methods/',
                             action='post'
                         )
                     },
-                    'update': coreapi.Link(
+                    'update': {},
+                    'update_0': coreapi.Link(
                         url='/example/{id}/',
                         action='put',
                         encoding='application/json',
@@ -236,7 +249,8 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
-                    'partial_update': coreapi.Link(
+                    'partial_update': {},
+                    'partial_update_0': coreapi.Link(
                         url='/example/{id}/',
                         action='patch',
                         encoding='application/json',
@@ -247,7 +261,8 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
-                    'delete': coreapi.Link(
+                    'delete': {},
+                    'delete_0': coreapi.Link(
                         url='/example/{id}/',
                         action='delete',
                         fields=[
@@ -329,17 +344,20 @@ class TestSchemaGenerator(TestCase):
             title='Example API',
             content={
                 'example': {
-                    'create': coreapi.Link(
+                    'create': {},
+                    'create_0': coreapi.Link(
                         url='/example/',
                         action='post',
                         fields=[]
                     ),
-                    'list': coreapi.Link(
+                    'list': {},
+                    'list_0': coreapi.Link(
                         url='/example/',
                         action='get',
                         fields=[]
                     ),
-                    'read': coreapi.Link(
+                    'read': {},
+                    'read_0': coreapi.Link(
                         url='/example/{id}/',
                         action='get',
                         fields=[
@@ -347,7 +365,8 @@ class TestSchemaGenerator(TestCase):
                         ]
                     ),
                     'sub': {
-                        'list': coreapi.Link(
+                        'list': {},
+                        'list_0': coreapi.Link(
                             url='/example/{id}/sub/',
                             action='get',
                             fields=[
@@ -382,17 +401,20 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
             title='Example API',
             content={
                 'example': {
-                    'create': coreapi.Link(
+                    'create': {},
+                    'create_0': coreapi.Link(
                         url='/api/v1/example/',
                         action='post',
                         fields=[]
                     ),
-                    'list': coreapi.Link(
+                    'list': {},
+                    'list_0': coreapi.Link(
                         url='/api/v1/example/',
                         action='get',
                         fields=[]
                     ),
-                    'read': coreapi.Link(
+                    'read': {},
+                    'read_0': coreapi.Link(
                         url='/api/v1/example/{id}/',
                         action='get',
                         fields=[
@@ -400,7 +422,8 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
                         ]
                     ),
                     'sub': {
-                        'list': coreapi.Link(
+                        'list': {},
+                        'list_0': coreapi.Link(
                             url='/api/v1/example/{id}/sub/',
                             action='get',
                             fields=[
@@ -437,7 +460,8 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
             title='Example API',
             content={
                 'example1': {
-                    'list': coreapi.Link(
+                    'list': {},
+                    'list_0': coreapi.Link(
                         url='/example1/',
                         action='get',
                         fields=[
@@ -446,17 +470,20 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
                             coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
-                    'custom_list_action': coreapi.Link(
+                    'custom_list_action': {},
+                    'custom_list_action_0': coreapi.Link(
                         url='/example1/custom_list_action/',
                         action='get'
                     ),
                     'custom_list_action_multiple_methods': {
-                        'read': coreapi.Link(
+                        'read': {},
+                        'read_0': coreapi.Link(
                             url='/example1/custom_list_action_multiple_methods/',
                             action='get'
                         )
                     },
-                    'read': coreapi.Link(
+                    'read': {},
+                    'read_0': coreapi.Link(
                         url='/example1/{id}/',
                         action='get',
                         fields=[
@@ -494,7 +521,8 @@ class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
             title='Example API',
             content={
                 'example': {
-                    'list': coreapi.Link(
+                    'list': {},
+                    'list_0': coreapi.Link(
                         url='/example/',
                         action='get',
                         fields=[]
@@ -666,7 +694,8 @@ class SchemaGenerationExclusionTests(TestCase):
             title='Exclusions',
             content={
                 'included-fbv': {
-                    'list': coreapi.Link(url='/included-fbv/', action='get')
+                    'list': {},
+                    'list_0': coreapi.Link(url='/included-fbv/', action='get')
                 }
             }
         )
@@ -749,6 +778,10 @@ class NamingCollisionView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = BasicModelSerializer
 
 
+class BasicNamingCollisionView(generics.RetrieveAPIView):
+    queryset = BasicModel.objects.all()
+
+
 class NamingCollisionViewSet(GenericViewSet):
     """
     Example via: https://stackoverflow.com/questions/43778668/django-rest-framwork-occured-typeerror-link-object-does-not-support-item-ass/
@@ -779,9 +812,31 @@ class TestURLNamingCollisions(TestCase):
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
+        schema = generator.get_schema()
 
-        with pytest.raises(ValueError):
-            generator.get_schema()
+        expected = coreapi.Document(
+            url='',
+            title='Naming Colisions',
+            content={
+                'test': {
+                    'list': {
+                        'list': {},
+                        'list_0': coreapi.Link(url='/test/list/', action='get')
+                    },
+                    'list_0': coreapi.Link(url='/test', action='get')
+                }
+            }
+        )
+
+        assert expected == schema
+
+    def _verify_cbv_links(self, loc, url, methods=None, number=0):
+        if methods is None:
+            methods = ('read', 'update', 'partial_update', 'delete')
+
+        for method in methods:
+            key = '{}_{}'.format(method, number)
+            assert loc[key].url == url
 
     def test_manually_routing_generic_view(self):
         patterns = [
@@ -797,8 +852,14 @@ class TestURLNamingCollisions(TestCase):
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
 
-        with pytest.raises(ValueError):
-            generator.get_schema()
+        schema = generator.get_schema()
+
+        self._verify_cbv_links(schema['test']['delete'], '/test/delete/')
+        self._verify_cbv_links(schema['test']['put'], '/test/put/')
+        self._verify_cbv_links(schema['test']['get'], '/test/get/')
+        self._verify_cbv_links(schema['test']['update'], '/test/update/')
+        self._verify_cbv_links(schema['test']['retrieve'], '/test/retrieve/')
+        self._verify_cbv_links(schema['test'], '/test')
 
     def test_from_router(self):
         patterns = [
@@ -806,18 +867,52 @@ class TestURLNamingCollisions(TestCase):
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
+        schema = generator.get_schema()
+        desc = schema['detail_0'].description  # not important here
 
-        with pytest.raises(ValueError):
-            generator.get_schema()
+        expected = coreapi.Document(
+            url='',
+            title='Naming Colisions',
+            content={
+                'detail': {
+                    'detail_export': {},
+                    'detail_export_0': coreapi.Link(
+                        url='/from-routercollision/detail/export/',
+                        action='get',
+                        description=desc)
+                },
+                'detail_0': coreapi.Link(
+                    url='/from-routercollision/detail/',
+                    action='get',
+                    description=desc
+                )
+            }
+        )
 
+        assert schema == expected
 
-def test_is_list_view_recognises_retrieve_view_subclasses():
-    class TestView(generics.RetrieveAPIView):
-        pass
+    def test_url_under_same_key_not_replaced(self):
+        patterns = [
+            url(r'example/(?P<pk>\d+)/$', BasicNamingCollisionView.as_view()),
+            url(r'example/(?P<slug>\w+)/$', BasicNamingCollisionView.as_view()),
+        ]
 
-    path = '/looks/like/a/list/view/'
-    method = 'get'
-    view = TestView()
+        generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
+        schema = generator.get_schema()
 
-    is_list = is_list_view(path, method, view)
-    assert not is_list, "RetrieveAPIView subclasses should not be classified as list views."
+        assert schema['example']['read'] == {}
+        assert schema['example']['read_0'].url == '/example/{id}/'
+        assert schema['example']['read_1'].url == '/example/{slug}/'
+
+    def test_url_under_same_key_not_replaced_another(self):
+
+        patterns = [
+            url(r'^test/list/', simple_fbv),
+            url(r'^test/(?P<pk>\d+)/list/', simple_fbv),
+        ]
+
+        generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
+        schema = generator.get_schema()
+
+        assert schema['test']['list']['list_0'].url == '/test/list/'
+        assert schema['test']['list']['list_1'].url == '/test/{id}/list/'
