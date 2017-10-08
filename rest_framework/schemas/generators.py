@@ -4,7 +4,7 @@ generators.py   # Top-down schema generation
 See schemas.__init__.py for package overview.
 """
 import warnings
-from collections import OrderedDict, Counter
+from collections import Counter, OrderedDict
 from importlib import import_module
 
 from django.conf import settings
