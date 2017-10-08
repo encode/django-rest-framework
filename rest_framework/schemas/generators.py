@@ -4,7 +4,7 @@ generators.py   # Top-down schema generation
 See schemas.__init__.py for package overview.
 """
 import warnings
-from collections import OrderedDict
+from collections import OrderedDict, Counter
 from importlib import import_module
 
 from django.conf import settings
@@ -67,7 +67,13 @@ to customise schema structure.
 class LinkNode(OrderedDict):
     def __init__(self):
         self.links = []
+        self.methods_counter = Counter()
         super(LinkNode, self).__init__()
+
+    def get_next_key(self, method):
+        current_val = self.methods_counter[method]
+        self.methods_counter[method] += 1
+        return '{}_{}'.format(method, current_val)
 
 
 def insert_into(target, keys, value):
@@ -95,25 +101,13 @@ def insert_into(target, keys, value):
         raise ValueError(msg)
 
 
-def get_unique_key(obj, base_key):
-    i = 0
-    while True:
-        key = '{}_{}'.format(base_key, i)
-        if key not in obj:
-            return key
-        i += 1
-
-
-def distribute_links(obj, parent=None, parent_key='root'):
-    if parent is None:
-        parent = obj
+def distribute_links(obj):
+    for key, value in obj.items():
+        distribute_links(value)
 
     for link in obj.links:
-        key = get_unique_key(parent, parent_key)
-        parent[key] = link
-
-    for key in list(obj.keys()):
-        distribute_links(obj[key], obj, key)
+        key = obj.get_next_key(str(link.action))
+        obj[key] = link
 
 
 def is_custom_action(action):
@@ -438,16 +432,8 @@ class SchemaGenerator(object):
 
         if is_custom_action(action):
             # Custom action, eg "/users/{pk}/activate/", "/users/active/"
-            if len(view.action_map) > 1:
-                action = self.default_mapping[method.lower()]
-                if action in self.coerce_method_names:
-                    action = self.coerce_method_names[action]
-                return named_path_components + [action]
-            else:
-                return named_path_components[:-1] + [action]
-
-        if action in self.coerce_method_names:
-            action = self.coerce_method_names[action]
+            if len(view.action_map) == 1:
+                return named_path_components[:-1]
 
         # Default action, eg "/users/", "/users/{pk}/"
-        return named_path_components + [action]
+        return named_path_components
