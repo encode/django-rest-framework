@@ -106,7 +106,7 @@ def distribute_links(obj):
         distribute_links(value)
 
     for link in obj.links:
-        key = obj.get_next_key(str(link.action))
+        key = obj.get_next_key(link.action)
         obj[key] = link
 
 
