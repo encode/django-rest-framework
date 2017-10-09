@@ -71,9 +71,13 @@ class LinkNode(OrderedDict):
         super(LinkNode, self).__init__()
 
     def get_next_key(self, method):
-        current_val = self.methods_counter[method]
-        self.methods_counter[method] += 1
-        return '{}_{}'.format(method, current_val)
+        while True:
+            current_val = self.methods_counter[method]
+            self.methods_counter[method] += 1
+
+            key = '{}_{}'.format(method, current_val)
+            if key not in self:
+                return key
 
 
 def insert_into(target, keys, value):
