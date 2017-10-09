@@ -822,9 +822,7 @@ Here's an example of how you might choose to implement multiple updates:
         # We need to identify elements in the list using their primary key,
         # so use a writable field here, rather than the default which would be read-only.
         id = serializers.IntegerField()
-
         ...
-        id = serializers.IntegerField(required=False)
 
         class Meta:
             list_serializer_class = BookListSerializer
