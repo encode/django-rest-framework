@@ -61,7 +61,7 @@ Note that setting a `default` value implies that the field is not required. Incl
 
 ### `source`
 
-The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `URLField(source='get_absolute_url')`, or may use dotted notation to traverse attributes, such as `EmailField(source='user.email')`.
+The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `URLField(source='get_absolute_url')`, or may use dotted notation to traverse attributes, such as `EmailField(source='user.email')`. When serializing fields with dotted notation, it may be necessary to provide a `default` value if any object is not present or is empty during attribute traversal.
 
 The value `source='*'` has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.
 
