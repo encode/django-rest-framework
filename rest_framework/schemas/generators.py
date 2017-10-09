@@ -70,12 +70,15 @@ class LinkNode(OrderedDict):
         self.methods_counter = Counter()
         super(LinkNode, self).__init__()
 
-    def get_next_key(self, method):
-        while True:
-            current_val = self.methods_counter[method]
-            self.methods_counter[method] += 1
+    def get_available_key(self, preferred_key):
+        if preferred_key not in self:
+            return preferred_key
 
-            key = '{}_{}'.format(method, current_val)
+        while True:
+            current_val = self.methods_counter[preferred_key]
+            self.methods_counter[preferred_key] += 1
+
+            key = '{}_{}'.format(preferred_key, current_val)
             if key not in self:
                 return key
 
@@ -89,13 +92,13 @@ def insert_into(target, keys, value):
     >>> example
     LinkNode({'a': LinkNode({'b': LinkNode({'c': LinkNode(links=[123])}}})))
     """
-    for key in keys:
+    for key in keys[:-1]:
         if key not in target:
             target[key] = LinkNode()
         target = target[key]
 
     try:
-        target.links.append(value)
+        target.links.append((keys[-1], value))
     except TypeError:
         msg = INSERT_INTO_COLLISION_FMT.format(
             value_url=value.url,
@@ -109,8 +112,8 @@ def distribute_links(obj):
     for key, value in obj.items():
         distribute_links(value)
 
-    for link in obj.links:
-        key = obj.get_next_key(link.action)
+    for preferred_key, link in obj.links:
+        key = obj.get_available_key(preferred_key)
         obj[key] = link
 
 
@@ -436,8 +439,16 @@ class SchemaGenerator(object):
 
         if is_custom_action(action):
             # Custom action, eg "/users/{pk}/activate/", "/users/active/"
-            if len(view.action_map) == 1:
-                return named_path_components[:-1]
+            if len(view.action_map) > 1:
+                action = self.default_mapping[method.lower()]
+                if action in self.coerce_method_names:
+                    action = self.coerce_method_names[action]
+                return named_path_components + [action]
+            else:
+                return named_path_components[:-1] + [action]
+
+        if action in self.coerce_method_names:
+            action = self.coerce_method_names[action]
 
         # Default action, eg "/users/", "/users/{pk}/"
-        return named_path_components
+        return named_path_components + [action]
