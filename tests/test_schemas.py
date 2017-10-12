@@ -19,6 +19,7 @@ from rest_framework.schemas import (
     AutoSchema, ManualSchema, SchemaGenerator, get_schema_view
 )
 from rest_framework.schemas.generators import EndpointEnumerator
+from rest_framework.schemas.utils import is_list_view
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.utils import formatting
 from rest_framework.views import APIView
@@ -888,3 +889,15 @@ class TestURLNamingCollisions(TestCase):
 
         assert schema['test']['list']['list'].url == '/test/list/'
         assert schema['test']['list']['list_0'].url == '/test/{id}/list/'
+
+
+def test_is_list_view_recognises_retrieve_view_subclasses():
+    class TestView(generics.RetrieveAPIView):
+        pass
+
+    path = '/looks/like/a/list/view/'
+    method = 'get'
+    view = TestView()
+
+    is_list = is_list_view(path, method, view)
+    assert not is_list, "RetrieveAPIView subclasses should not be classified as list views."
