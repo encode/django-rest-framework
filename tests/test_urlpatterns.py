@@ -5,7 +5,7 @@ from collections import namedtuple
 from django.conf.urls import include, url
 from django.test import TestCase
 
-from rest_framework.compat import make_url_resolver, Resolver404
+from rest_framework.compat import Resolver404, make_url_resolver
 from rest_framework.test import APIRequestFactory
 from rest_framework.urlpatterns import format_suffix_patterns
 
