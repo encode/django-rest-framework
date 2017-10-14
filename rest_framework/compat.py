@@ -25,12 +25,33 @@ from django.views.generic import View
 
 try:
     from django.urls import (
-        NoReverseMatch, RegexURLPattern, RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+        NoReverseMatch, URLPattern as RegexURLPattern, URLResolver as RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
     )
+
 except ImportError:
     from django.core.urlresolvers import (  # Will be removed in Django 2.0
         NoReverseMatch, RegexURLPattern, RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
     )
+
+
+def get_regex_pattern(urlpattern):
+    if hasattr(urlpattern, 'pattern'):
+        # Django 2.0
+        return urlpattern.pattern.regex.pattern
+    else:
+        # Django < 2.0
+        return urlpattern.regex.pattern
+
+
+def make_url_resolver(regex, urlpatterns):
+    try:
+        # Django 2.0
+        from django.urls.resolvers import RegexPattern
+        return RegexURLResolver(RegexPattern(regex), urlpatterns)
+
+    except ImportError:
+        # Django < 2.0
+        return RegexURLResolver(regex, urlpatterns)
 
 
 try:
