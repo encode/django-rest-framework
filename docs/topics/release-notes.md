@@ -97,7 +97,8 @@ You can determine your currently installed version using `pip freeze`:
 * Have `is_list_view` recognise RetrieveModel… views [#5480][gh5480]
 * Remove Django 1.8 & 1.9 compatibility code [#5481][gh5481]
 * Remove deprecated schema code from DefaultRouter [#5482][gh5482]
-
+* Refactor schema generation to allow per-view customisation.
+    **BC Change**: `SchemaGenerator.get_serializer_fields` has been refactored as `AutoSchema.get_serializer_fields` and drops the `view` argument [#5354][gh5354]
 
 ## 3.6.x series
 
