@@ -9,7 +9,7 @@ from django.test import TestCase, override_settings
 from rest_framework import (
     filters, generics, pagination, permissions, serializers
 )
-from rest_framework.compat import coreapi, coreschema
+from rest_framework.compat import coreapi, coreschema, get_regex_pattern
 from rest_framework.decorators import (
     api_view, detail_route, list_route, schema
 )
@@ -689,7 +689,7 @@ class SchemaGenerationExclusionTests(TestCase):
         inspector = EndpointEnumerator(self.patterns)
 
         # Not pretty. Mimics internals of EndpointEnumerator to put should_include_endpoint under test
-        pairs = [(inspector.get_path_from_regex(pattern.regex.pattern), pattern.callback)
+        pairs = [(inspector.get_path_from_regex(get_regex_pattern(pattern)), pattern.callback)
                  for pattern in self.patterns]
 
         should_include = [
