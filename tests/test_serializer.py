@@ -424,6 +424,31 @@ class TestDefaultOutput:
 
         assert Serializer({'traversed': {'attr': 'abc'}}).data == {'traversed': 'abc'}
 
+    def test_default_for_multiple_dotted_source(self):
+        class Serializer(serializers.Serializer):
+            c = serializers.CharField(default='x', source='a.b.c')
+
+        assert Serializer({}).data == {'c': 'x'}
+        assert Serializer({'a': {}}).data == {'c': 'x'}
+        assert Serializer({'a': None}).data == {'c': 'x'}
+        assert Serializer({'a': {'b': {}}}).data == {'c': 'x'}
+        assert Serializer({'a': {'b': None}}).data == {'c': 'x'}
+
+        assert Serializer({'a': {'b': {'c': 'abc'}}}).data == {'c': 'abc'}
+
+    def test_default_for_nested_serializer(self):
+        class NestedSerializer(serializers.Serializer):
+            a = serializers.CharField(default='1')
+            c = serializers.CharField(default='2', source='b.c')
+
+        class Serializer(serializers.Serializer):
+            nested = NestedSerializer()
+
+        assert Serializer({'nested': None}).data == {'nested': None}
+        assert Serializer({'nested': {}}).data == {'nested': {'a': '1', 'c': '2'}}
+        assert Serializer({'nested': {'a': '3', 'b': {}}}).data == {'nested': {'a': '3', 'c': '2'}}
+        assert Serializer({'nested': {'a': '3', 'b': {'c': '4'}}}).data == {'nested': {'a': '3', 'c': '4'}}
+
 
 class TestCacheSerializerData:
     def test_cache_serializer_data(self):
