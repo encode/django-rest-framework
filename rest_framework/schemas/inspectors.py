@@ -68,6 +68,18 @@ def field_to_schema(field):
         return coreschema.Number(title=title, description=description)
     elif isinstance(field, serializers.IntegerField):
         return coreschema.Integer(title=title, description=description)
+    elif isinstance(field, serializers.DateField):
+        return coreschema.String(
+            title=title,
+            description=description,
+            format='date'
+        )
+    elif isinstance(field, serializers.DateTimeField):
+        return coreschema.String(
+            title=title,
+            description=description,
+            format='date-time'
+        )
 
     if field.style.get('base_template') == 'textarea.html':
         return coreschema.String(
