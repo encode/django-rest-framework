@@ -749,6 +749,10 @@ class NamingCollisionView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = BasicModelSerializer
 
 
+class BasicNamingCollisionView(generics.RetrieveAPIView):
+    queryset = BasicModel.objects.all()
+
+
 class NamingCollisionViewSet(GenericViewSet):
     """
     Example via: https://stackoverflow.com/questions/43778668/django-rest-framwork-occured-typeerror-link-object-does-not-support-item-ass/
@@ -779,9 +783,35 @@ class TestURLNamingCollisions(TestCase):
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
+        schema = generator.get_schema()
 
-        with pytest.raises(ValueError):
-            generator.get_schema()
+        expected = coreapi.Document(
+            url='',
+            title='Naming Colisions',
+            content={
+                'test': {
+                    'list': {
+                        'list': coreapi.Link(url='/test/list/', action='get')
+                    },
+                    'list_0': coreapi.Link(url='/test', action='get')
+                }
+            }
+        )
+
+        assert expected == schema
+
+    def _verify_cbv_links(self, loc, url, methods=None, suffixes=None):
+        if methods is None:
+            methods = ('read', 'update', 'partial_update', 'delete')
+        if suffixes is None:
+            suffixes = (None for m in methods)
+
+        for method, suffix in zip(methods, suffixes):
+            if suffix is not None:
+                key = '{}_{}'.format(method, suffix)
+            else:
+                key = method
+            assert loc[key].url == url
 
     def test_manually_routing_generic_view(self):
         patterns = [
@@ -797,8 +827,14 @@ class TestURLNamingCollisions(TestCase):
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
 
-        with pytest.raises(ValueError):
-            generator.get_schema()
+        schema = generator.get_schema()
+
+        self._verify_cbv_links(schema['test']['delete'], '/test/delete/')
+        self._verify_cbv_links(schema['test']['put'], '/test/put/')
+        self._verify_cbv_links(schema['test']['get'], '/test/get/')
+        self._verify_cbv_links(schema['test']['update'], '/test/update/')
+        self._verify_cbv_links(schema['test']['retrieve'], '/test/retrieve/')
+        self._verify_cbv_links(schema['test'], '/test', suffixes=(None, '0', None, '0'))
 
     def test_from_router(self):
         patterns = [
@@ -806,9 +842,53 @@ class TestURLNamingCollisions(TestCase):
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
+        schema = generator.get_schema()
+        desc = schema['detail_0'].description  # not important here
 
-        with pytest.raises(ValueError):
-            generator.get_schema()
+        expected = coreapi.Document(
+            url='',
+            title='Naming Colisions',
+            content={
+                'detail': {
+                    'detail_export': coreapi.Link(
+                        url='/from-routercollision/detail/export/',
+                        action='get',
+                        description=desc)
+                },
+                'detail_0': coreapi.Link(
+                    url='/from-routercollision/detail/',
+                    action='get',
+                    description=desc
+                )
+            }
+        )
+
+        assert schema == expected
+
+    def test_url_under_same_key_not_replaced(self):
+        patterns = [
+            url(r'example/(?P<pk>\d+)/$', BasicNamingCollisionView.as_view()),
+            url(r'example/(?P<slug>\w+)/$', BasicNamingCollisionView.as_view()),
+        ]
+
+        generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
+        schema = generator.get_schema()
+
+        assert schema['example']['read'].url == '/example/{id}/'
+        assert schema['example']['read_0'].url == '/example/{slug}/'
+
+    def test_url_under_same_key_not_replaced_another(self):
+
+        patterns = [
+            url(r'^test/list/', simple_fbv),
+            url(r'^test/(?P<pk>\d+)/list/', simple_fbv),
+        ]
+
+        generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
+        schema = generator.get_schema()
+
+        assert schema['test']['list']['list'].url == '/test/list/'
+        assert schema['test']['list']['list_0'].url == '/test/{id}/list/'
 
 
 def test_is_list_view_recognises_retrieve_view_subclasses():

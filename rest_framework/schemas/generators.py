@@ -4,7 +4,7 @@ generators.py   # Top-down schema generation
 See schemas.__init__.py for package overview.
 """
 import warnings
-from collections import OrderedDict
+from collections import Counter, OrderedDict
 from importlib import import_module
 
 from django.conf import settings
@@ -64,6 +64,25 @@ to customise schema structure.
 """
 
 
+class LinkNode(OrderedDict):
+    def __init__(self):
+        self.links = []
+        self.methods_counter = Counter()
+        super(LinkNode, self).__init__()
+
+    def get_available_key(self, preferred_key):
+        if preferred_key not in self:
+            return preferred_key
+
+        while True:
+            current_val = self.methods_counter[preferred_key]
+            self.methods_counter[preferred_key] += 1
+
+            key = '{}_{}'.format(preferred_key, current_val)
+            if key not in self:
+                return key
+
+
 def insert_into(target, keys, value):
     """
     Nested dictionary insertion.
@@ -71,14 +90,15 @@ def insert_into(target, keys, value):
     >>> example = {}
     >>> insert_into(example, ['a', 'b', 'c'], 123)
     >>> example
-    {'a': {'b': {'c': 123}}}
+    LinkNode({'a': LinkNode({'b': LinkNode({'c': LinkNode(links=[123])}}})))
     """
     for key in keys[:-1]:
         if key not in target:
-            target[key] = {}
+            target[key] = LinkNode()
         target = target[key]
+
     try:
-        target[keys[-1]] = value
+        target.links.append((keys[-1], value))
     except TypeError:
         msg = INSERT_INTO_COLLISION_FMT.format(
             value_url=value.url,
@@ -86,6 +106,15 @@ def insert_into(target, keys, value):
             keys=keys
         )
         raise ValueError(msg)
+
+
+def distribute_links(obj):
+    for key, value in obj.items():
+        distribute_links(value)
+
+    for preferred_key, link in obj.links:
+        key = obj.get_available_key(preferred_key)
+        obj[key] = link
 
 
 def is_custom_action(action):
@@ -255,6 +284,7 @@ class SchemaGenerator(object):
         if not url and request is not None:
             url = request.build_absolute_uri()
 
+        distribute_links(links)
         return coreapi.Document(
             title=self.title, description=self.description,
             url=url, content=links
@@ -265,7 +295,7 @@ class SchemaGenerator(object):
         Return a dictionary containing all the links that should be
         included in the API schema.
         """
-        links = OrderedDict()
+        links = LinkNode()
 
         # Generate (path, method, view) given (path, method, callback).
         paths = []
@@ -288,6 +318,7 @@ class SchemaGenerator(object):
             subpath = path[len(prefix):]
             keys = self.get_keys(subpath, method, view)
             insert_into(links, keys, link)
+
         return links
 
     # Methods used when we generate a view instance from the raw callback...
