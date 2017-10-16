@@ -644,7 +644,7 @@ Set to false if this field is not required to be present during deserialization.
 <p>When serializing the instance, default will be used if the the object attribute or dictionary key is not present in the instance.</p>
 <p>Note that setting a <code>default</code> value implies that the field is not required. Including both the <code>default</code> and <code>required</code> keyword arguments is invalid and will raise an error.</p>
 <h3 id="source"><a class="toclink" href="#source"><code>source</code></a></h3>
-<p>The name of the attribute that will be used to populate the field.  May be a method that only takes a <code>self</code> argument, such as <code>URLField(source='get_absolute_url')</code>, or may use dotted notation to traverse attributes, such as <code>EmailField(source='user.email')</code>.</p>
+<p>The name of the attribute that will be used to populate the field.  May be a method that only takes a <code>self</code> argument, such as <code>URLField(source='get_absolute_url')</code>, or may use dotted notation to traverse attributes, such as <code>EmailField(source='user.email')</code>. When serializing fields with dotted notation, it may be necessary to provide a <code>default</code> value if any object is not present or is empty during attribute traversal.</p>
 <p>The value <code>source='*'</code> has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.</p>
 <p>Defaults to the name of the field.</p>
 <h3 id="validators"><a class="toclink" href="#validators"><code>validators</code></a></h3>

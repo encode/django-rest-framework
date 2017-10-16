@@ -478,6 +478,14 @@
 </code></pre>
 <hr />
 <h2 id="37x-series"><a class="toclink" href="#37x-series">3.7.x series</a></h2>
+<h3 id="371"><a class="toclink" href="#371">3.7.1</a></h3>
+<p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/58?closed=1">16th October 2017</a></p>
+<ul>
+<li>Fix Interactive documentation always uses false for boolean fields in requests <a href="https://github.com/encode/django-rest-framework/issues/5492">#5492</a></li>
+<li>Improve compatibility with Django 2.0 alpha. <a href="https://github.com/encode/django-rest-framework/issues/5500">#5500</a> <a href="https://github.com/encode/django-rest-framework/issues/5503">#5503</a></li>
+<li>Improved handling of schema naming collisions <a href="https://github.com/encode/django-rest-framework/issues/5486">#5486</a></li>
+<li>Added additional docs and tests around providing a default value for dotted <code>source</code> fields <a href="https://github.com/encode/django-rest-framework/issues/5489">#5489</a></li>
+</ul>
 <h3 id="370"><a class="toclink" href="#370">3.7.0</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.7.0+Release%22">6th October 2017</a></p>
 <ul>
@@ -535,6 +543,8 @@
 <li>Have <code>is_list_view</code> recognise RetrieveModel… views <a href="https://github.com/encode/django-rest-framework/issues/5480">#5480</a></li>
 <li>Remove Django 1.8 &amp; 1.9 compatibility code <a href="https://github.com/encode/django-rest-framework/issues/5481">#5481</a></li>
 <li>Remove deprecated schema code from DefaultRouter <a href="https://github.com/encode/django-rest-framework/issues/5482">#5482</a></li>
+<li>Refactor schema generation to allow per-view customisation.
+    <strong>BC Change</strong>: <code>SchemaGenerator.get_serializer_fields</code> has been refactored as <code>AutoSchema.get_serializer_fields</code> and drops the <code>view</code> argument [#5354][gh5354]</li>
 </ul>
 <h2 id="36x-series"><a class="toclink" href="#36x-series">3.6.x series</a></h2>
 <h3 id="364"><a class="toclink" href="#364">3.6.4</a></h3>
@@ -1194,6 +1204,8 @@
 <!-- 3.6.4 -->
 
 <!-- 3.7.0 -->
+
+<!-- 3.7.1 -->
             
 
           </div> <!--/span-->
