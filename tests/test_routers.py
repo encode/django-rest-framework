@@ -97,7 +97,7 @@ regex_url_path_router.register(r'', RegexUrlPathViewSet, base_name='regex')
 
 urlpatterns = [
     url(r'^non-namespaced/', include(namespaced_router.urls)),
-    url(r'^namespaced/', include(namespaced_router.urls, namespace='example', app_name='example')),
+    url(r'^namespaced/', include((namespaced_router.urls, 'example'), namespace='example')),
     url(r'^example/', include(notes_router.urls)),
     url(r'^example2/', include(kwarged_notes_router.urls)),
 
