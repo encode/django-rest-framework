@@ -40,6 +40,17 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.7.x series
 
+
+### 3.7.1
+
+**Date**: [16th October 2017][3.7.1-milestone]
+
+* Fix Interactive documentation always uses false for boolean fields in requests [#5492][gh5492]
+* Improve compatibility with Django 2.0 alpha. [#5500][gh5500] [#5503][gh5503]
+* Improved handling of schema naming collisions [#5486][gh5486]
+* Added additional docs and tests around providing a default value for dotted `source` fields [#5489][gh5489]
+
+
 ### 3.7.0
 
 **Date**: [6th October 2017][3.7.0-milestone]
@@ -809,6 +820,8 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.6.3-milestone]: https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.3+Release%22
 [3.6.4-milestone]: https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.4+Release%22
 [3.7.0-milestone]: https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.7.0+Release%22
+[3.7.1-milestone]: https://github.com/encode/django-rest-framework/milestone/58?closed=1
+
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/encode/django-rest-framework/issues/2013
@@ -1527,3 +1540,10 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5342]: https://github.com/encode/django-rest-framework/issues/5342
 [gh5454]: https://github.com/encode/django-rest-framework/issues/5454
 [gh5482]: https://github.com/encode/django-rest-framework/issues/5482
+
+<!-- 3.7.1 -->
+[gh5489]: https://github.com/encode/django-rest-framework/issues/5489
+[gh5486]: https://github.com/encode/django-rest-framework/issues/5486
+[gh5503]: https://github.com/encode/django-rest-framework/issues/5503
+[gh5500]: https://github.com/encode/django-rest-framework/issues/5500
+[gh5492]: https://github.com/encode/django-rest-framework/issues/5492
