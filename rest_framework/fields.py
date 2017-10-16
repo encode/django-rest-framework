@@ -4,6 +4,7 @@ import collections
 import copy
 import datetime
 import decimal
+import functools
 import inspect
 import re
 import uuid
@@ -54,7 +55,7 @@ if six.PY3:
         """
         True if the object is a callable that takes no arguments.
         """
-        if not (inspect.isfunction(obj) or inspect.ismethod(obj)):
+        if not (inspect.isfunction(obj) or inspect.ismethod(obj) or isinstance(obj, functools.partial)):
             return False
 
         sig = inspect.signature(obj)

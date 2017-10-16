@@ -76,4 +76,4 @@ def include_docs_urls(
         url(r'^$', docs_view, name='docs-index'),
         url(r'^schema.js$', schema_js_view, name='schema-js')
     ]
-    return include(urls, namespace='api-docs')
+    return include((urls, 'api-docs'), namespace='api-docs')
