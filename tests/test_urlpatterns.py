@@ -5,7 +5,7 @@ from collections import namedtuple
 from django.conf.urls import include, url
 from django.test import TestCase
 
-from rest_framework.compat import RegexURLResolver, Resolver404
+from rest_framework.compat import Resolver404, make_url_resolver
 from rest_framework.test import APIRequestFactory
 from rest_framework.urlpatterns import format_suffix_patterns
 
@@ -28,7 +28,7 @@ class FormatSuffixTests(TestCase):
             urlpatterns = format_suffix_patterns(urlpatterns)
         except Exception:
             self.fail("Failed to apply `format_suffix_patterns` on  the supplied urlpatterns")
-        resolver = RegexURLResolver(r'^/', urlpatterns)
+        resolver = make_url_resolver(r'^/', urlpatterns)
         for test_path in test_paths:
             request = factory.get(test_path.path)
             try:
@@ -43,7 +43,7 @@ class FormatSuffixTests(TestCase):
         urlpatterns = format_suffix_patterns([
             url(r'^test/$', dummy_view),
         ])
-        resolver = RegexURLResolver(r'^/', urlpatterns)
+        resolver = make_url_resolver(r'^/', urlpatterns)
 
         test_paths = [
             (URLTestPath('/test.api', (), {'format': 'api'}), True),
