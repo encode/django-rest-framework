@@ -214,7 +214,7 @@ except ImportError:
 
 try:
     import pygments
-    from pygments.lexers import get_lexer_by_name
+    from pygments.lexers import get_lexer_by_name, TextLexer
     from pygments.formatters import HtmlFormatter
 
     def pygments_highlight(text, lang, style):
