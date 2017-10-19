@@ -26,12 +26,12 @@ indented
 
 # hash style header #
 
-@@ json @@
+``` json
 [{
     "alpha": 1,
     "beta: "this is a string"
 }]
-@@"""
+```"""
 
 # If markdown is installed we also test it's working
 # (and that our wrapped forces '=' to h2 and '-' to h3)
@@ -47,12 +47,12 @@ string&quot;</span><br /><span class="p">}]</span><br /></pre></div>
 <p><br /></p>"""
 
 MARKED_DOWN_NOT_HILITE = """
-<p>@@ json @@
+<p>``` json
 [{
     "alpha": 1,
     "beta: "this is a string"
 }]
-@@</p>"""
+```</p>"""
 
 # We support markdown < 2.1 and markdown >= 2.1
 MARKED_DOWN_lt_21 = """<h2>an example docstring</h2>
@@ -105,13 +105,14 @@ class TestViewNamesAndDescriptions(TestCase):
 
             # hash style header #
 
-            @@ json @@
+            ``` json
             [{
                 "alpha": 1,
                 "beta: "this is a string"
             }]
-            @@"""
+            ```"""
 
+        print("MOCK:\n[%s]" % MockView().get_view_description())
         assert MockView().get_view_description() == DESCRIPTION
 
     def test_view_description_can_be_empty(self):
