@@ -112,7 +112,6 @@ class TestViewNamesAndDescriptions(TestCase):
             }]
             ```"""
 
-        print("MOCK:\n[%s]" % MockView().get_view_description())
         assert MockView().get_view_description() == DESCRIPTION
 
     def test_view_description_can_be_empty(self):
