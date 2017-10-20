@@ -311,10 +311,6 @@ class Field(object):
         self._creation_counter = Field._creation_counter
         Field._creation_counter += 1
 
-        # If `default` is unset, then use `None` when allow_null is `True`.
-        if default is empty and allow_null:
-            default = None
-
         # If `required` is unset, then use `True` unless a default is provided.
         if required is None:
             required = default is empty and not read_only
@@ -446,6 +442,8 @@ class Field(object):
         except (KeyError, AttributeError) as exc:
             if self.default is not empty:
                 return self.get_default()
+            if self.allow_null:
+                return None
             if not self.required:
                 raise SkipField()
             msg = (
