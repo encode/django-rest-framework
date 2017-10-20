@@ -26,12 +26,12 @@ indented
 
 # hash style header #
 
-@@ json @@
+``` json
 [{
     "alpha": 1,
     "beta: "this is a string"
 }]
-@@"""
+```"""
 
 # If markdown is installed we also test it's working
 # (and that our wrapped forces '=' to h2 and '-' to h3)
@@ -47,12 +47,11 @@ string&quot;</span><br /><span class="p">}]</span><br /></pre></div>
 <p><br /></p>"""
 
 MARKED_DOWN_NOT_HILITE = """
-<p>@@ json @@
+<p><code>json
 [{
     "alpha": 1,
     "beta: "this is a string"
-}]
-@@</p>"""
+}]</code></p>"""
 
 # We support markdown < 2.1 and markdown >= 2.1
 MARKED_DOWN_lt_21 = """<h2>an example docstring</h2>
@@ -105,12 +104,12 @@ class TestViewNamesAndDescriptions(TestCase):
 
             # hash style header #
 
-            @@ json @@
+            ``` json
             [{
                 "alpha": 1,
                 "beta: "this is a string"
             }]
-            @@"""
+            ```"""
 
         assert MockView().get_view_description() == DESCRIPTION
 
@@ -150,15 +149,16 @@ class TestViewNamesAndDescriptions(TestCase):
         Ensure markdown to HTML works as expected.
         """
         if apply_markdown:
+            md_applied = apply_markdown(DESCRIPTION)
             gte_21_match = (
-                apply_markdown(DESCRIPTION) == (
+                md_applied == (
                     MARKED_DOWN_gte_21 % MARKED_DOWN_HILITE) or
-                apply_markdown(DESCRIPTION) == (
+                md_applied == (
                     MARKED_DOWN_gte_21 % MARKED_DOWN_NOT_HILITE))
             lt_21_match = (
-                apply_markdown(DESCRIPTION) == (
+                md_applied == (
                     MARKED_DOWN_lt_21 % MARKED_DOWN_HILITE) or
-                apply_markdown(DESCRIPTION) == (
+                md_applied == (
                     MARKED_DOWN_lt_21 % MARKED_DOWN_NOT_HILITE))
             assert gte_21_match or lt_21_match
 

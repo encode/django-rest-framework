@@ -244,7 +244,7 @@ if markdown is not None and pygments is not None:
 
     class CodeBlockPreprocessor(Preprocessor):
         pattern = re.compile(
-            r'^\s*@@ (.+?) @@\s*(.+?)^\s*@@', re.M|re.S)
+            r'^\s*``` *([^\n]+)\n(.+?)^\s*```', re.M|re.S)
 
         formatter = HtmlFormatter()
 
