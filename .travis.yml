@@ -16,23 +16,15 @@ env:
 matrix:
     fast_finish: true
     include:
-      - python: "3.6"
-        env: DJANGO=master
-      - python: "3.6"
-        env: DJANGO=1.11
-      - python: "3.6"
-        env: DJANGO=2.0
-      - python: "2.7"
-        env: TOXENV="lint"
-      - python: "2.7"
-        env: TOXENV="docs"
+      - { python: "3.6", env: DJANGO=master }
+      - { python: "3.6", env: DJANGO=1.11 }
+      - { python: "3.6", env: DJANGO=2.0 }
+      - { python: "2.7", env: TOXENV=lint }
+      - { python: "2.7", env: TOXENV=docs }
     exclude:
-      - python: "2.7"
-        env: DJANGO=master
-      - python: "2.7"
-        env: DJANGO=2.0
-      - python: "3.4"
-        env: DJANGO=master
+      - { python: "2.7", env: DJANGO=master }
+      - { python: "2.7", env: DJANGO=2.0 }
+      - { python: "3.4", env: DJANGO=master }
 
     allow_failures:
       - env: DJANGO=master
