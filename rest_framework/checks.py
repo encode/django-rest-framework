@@ -12,7 +12,10 @@ def pagination_system_check(app_configs, **kwargs):
                 "You have specified a default PAGE_SIZE pagination rest_framework setting,"
                 "without specifying also a DEFAULT_PAGINATION_CLASS.",
                 hint="The default for DEFAULT_PAGINATION_CLASS is None. "
-                     "In previous versions this was PageNumberPagination",
+                     "In previous versions this was PageNumberPagination. "
+                     "If you wish to define PAGE_SIZE globally whilst defining "
+                     "pagination_class on a per-view basis you may silence this check.",
+                id="rest_framework.W001"
             )
         )
     return errors
