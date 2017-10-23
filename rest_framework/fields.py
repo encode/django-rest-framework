@@ -1844,3 +1844,17 @@ class ModelField(Field):
         if is_protected_type(value):
             return value
         return self.model_field.value_to_string(obj)
+
+
+class ExternalModelField(ModelField):
+    """
+    Create a modelfield of an extenral class by accepting the class name as an
+    argument.
+
+    This can help a lot while creating complex nested serializers
+    """
+    def __init__(self, model_name, model_field, **kwargs):
+        super(ExternalModelField, self).__init__(
+            model_field=model_name()._meta.get_field(model_field),
+            **kwargs
+        )
