@@ -86,10 +86,13 @@ class BoundField(object):
 class JSONBoundField(BoundField):
     def as_form_field(self):
         value = self.value
-        try:
-            value = json.dumps(self.value, sort_keys=True, indent=4)
-        except (TypeError, ValueError):
-            pass
+        # When HTML form input is used and the input is not valid
+        # value will be a JSONString, rather than a JSON primitive.
+        if not getattr(value, 'is_json_string', False):
+            try:
+                value = json.dumps(self.value, sort_keys=True, indent=4)
+            except (TypeError, ValueError):
+                pass
         return self.__class__(self._field, value, self.errors, self._prefix)
 
 
