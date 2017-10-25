@@ -312,6 +312,7 @@ class OrderingFilterModel(models.Model):
 
 class OrderingFilterRelatedModel(models.Model):
     related_object = models.ForeignKey(OrderingFilterModel, related_name="relateds", on_delete=models.CASCADE)
+    index = models.SmallIntegerField(help_text="A non-related field to test with", default=0)
 
 
 class OrderingFilterSerializer(serializers.ModelSerializer):
@@ -329,6 +330,7 @@ class OrderingDottedRelatedSerializer(serializers.ModelSerializer):
         fields = (
             'related_text',
             'related_title',
+            'index',
         )
 
 
@@ -497,8 +499,12 @@ class OrderingFilterTests(TestCase):
         ]
 
     def test_ordering_by_dotted_source(self):
-        for obj in OrderingFilterModel.objects.all():
-            OrderingFilterRelatedModel.objects.create(related_object=obj)
+
+        for index, obj in enumerate(OrderingFilterModel.objects.all()):
+            OrderingFilterRelatedModel.objects.create(
+                related_object=obj,
+                index=index
+            )
 
         class OrderingListView(generics.ListAPIView):
             serializer_class = OrderingDottedRelatedSerializer
@@ -509,9 +515,17 @@ class OrderingFilterTests(TestCase):
         request = factory.get('/', {'ordering': 'related_object__text'})
         response = view(request)
         assert response.data == [
-            {'related_title': 'zyx', 'related_text': 'abc'},
-            {'related_title': 'yxw', 'related_text': 'bcd'},
-            {'related_title': 'xwv', 'related_text': 'cde'},
+            {'related_title': 'zyx', 'related_text': 'abc', 'index': 0},
+            {'related_title': 'yxw', 'related_text': 'bcd', 'index': 1},
+            {'related_title': 'xwv', 'related_text': 'cde', 'index': 2},
+        ]
+
+        request = factory.get('/', {'ordering': '-index'})
+        response = view(request)
+        assert response.data == [
+            {'related_title': 'xwv', 'related_text': 'cde', 'index': 2},
+            {'related_title': 'yxw', 'related_text': 'bcd', 'index': 1},
+            {'related_title': 'zyx', 'related_text': 'abc', 'index': 0},
         ]
 
     def test_ordering_with_nonstandard_ordering_param(self):
