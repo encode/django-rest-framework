@@ -199,7 +199,7 @@ class OrderingFilter(BaseFilterBackend):
             raise ImproperlyConfigured(msg % self.__class__.__name__)
 
         return [
-            (field.source or field_name, field.label)
+            (field.source.replace('.', '__') or field_name, field.label)
             for field_name, field in serializer_class(context=context).fields.items()
             if not getattr(field, 'write_only', False) and not field.source == '*'
         ]

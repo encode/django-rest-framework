@@ -312,12 +312,26 @@ class OrderingFilterModel(models.Model):
 
 class OrderingFilterRelatedModel(models.Model):
     related_object = models.ForeignKey(OrderingFilterModel, related_name="relateds", on_delete=models.CASCADE)
+    index = models.SmallIntegerField(help_text="A non-related field to test with", default=0)
 
 
 class OrderingFilterSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderingFilterModel
         fields = '__all__'
+
+
+class OrderingDottedRelatedSerializer(serializers.ModelSerializer):
+    related_text = serializers.CharField(source='related_object.text')
+    related_title = serializers.CharField(source='related_object.title')
+
+    class Meta:
+        model = OrderingFilterRelatedModel
+        fields = (
+            'related_text',
+            'related_title',
+            'index',
+        )
 
 
 class DjangoFilterOrderingModel(models.Model):
@@ -482,6 +496,36 @@ class OrderingFilterTests(TestCase):
             {'id': 1, 'title': 'zyx', 'text': 'abc'},
             {'id': 3, 'title': 'xwv', 'text': 'cde'},
             {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+        ]
+
+    def test_ordering_by_dotted_source(self):
+
+        for index, obj in enumerate(OrderingFilterModel.objects.all()):
+            OrderingFilterRelatedModel.objects.create(
+                related_object=obj,
+                index=index
+            )
+
+        class OrderingListView(generics.ListAPIView):
+            serializer_class = OrderingDottedRelatedSerializer
+            filter_backends = (filters.OrderingFilter,)
+            queryset = OrderingFilterRelatedModel.objects.all()
+
+        view = OrderingListView.as_view()
+        request = factory.get('/', {'ordering': 'related_object__text'})
+        response = view(request)
+        assert response.data == [
+            {'related_title': 'zyx', 'related_text': 'abc', 'index': 0},
+            {'related_title': 'yxw', 'related_text': 'bcd', 'index': 1},
+            {'related_title': 'xwv', 'related_text': 'cde', 'index': 2},
+        ]
+
+        request = factory.get('/', {'ordering': '-index'})
+        response = view(request)
+        assert response.data == [
+            {'related_title': 'xwv', 'related_text': 'cde', 'index': 2},
+            {'related_title': 'yxw', 'related_text': 'bcd', 'index': 1},
+            {'related_title': 'zyx', 'related_text': 'abc', 'index': 0},
         ]
 
     def test_ordering_with_nonstandard_ordering_param(self):
