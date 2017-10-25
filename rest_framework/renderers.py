@@ -323,6 +323,9 @@ class HTMLFormRenderer(BaseRenderer):
         serializers.FilePathField: {
             'base_template': 'select.html',
         },
+        serializers.JSONField: {
+            'base_template': 'textarea.html',
+        },
     })
 
     def render_field(self, field, parent_style):
