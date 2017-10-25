@@ -901,3 +901,53 @@ def test_is_list_view_recognises_retrieve_view_subclasses():
 
     is_list = is_list_view(path, method, view)
     assert not is_list, "RetrieveAPIView subclasses should not be classified as list views."
+
+
+def test_head_and_options_methods_are_excluded():
+    """
+    Regression test for #5528
+    https://github.com/encode/django-rest-framework/issues/5528
+
+    Viewset OPTIONS actions were not being correctly excluded
+
+    Initial cases here shown to be working as expected.
+    """
+
+    @api_view(['options', 'get'])
+    def fbv(request):
+        pass
+
+    inspector = EndpointEnumerator()
+
+    path = '/a/path/'
+    callback = fbv
+
+    assert inspector.should_include_endpoint(path, callback)
+    assert inspector.get_allowed_methods(callback) == ["GET"]
+
+    class AnAPIView(APIView):
+
+        def get(self, request, *args, **kwargs):
+            pass
+
+        def options(self, request, *args, **kwargs):
+            pass
+
+    callback = AnAPIView.as_view()
+
+    assert inspector.should_include_endpoint(path, callback)
+    assert inspector.get_allowed_methods(callback) == ["GET"]
+
+    class AViewSet(ModelViewSet):
+
+        @detail_route(methods=['options', 'get'])
+        def custom_action(self, request, pk):
+            pass
+
+    callback = AViewSet.as_view({
+        "options": "custom_action",
+        "get": "custom_action"
+    })
+
+    assert inspector.should_include_endpoint(path, callback)
+    assert inspector.get_allowed_methods(callback) == ["GET"]

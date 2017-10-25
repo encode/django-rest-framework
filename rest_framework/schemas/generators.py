@@ -222,12 +222,11 @@ class EndpointEnumerator(object):
         if hasattr(callback, 'actions'):
             actions = set(callback.actions.keys())
             http_method_names = set(callback.cls.http_method_names)
-            return [method.upper() for method in actions & http_method_names]
+            methods = [method.upper() for method in actions & http_method_names]
+        else:
+            methods = callback.cls().allowed_methods
 
-        return [
-            method for method in
-            callback.cls().allowed_methods if method not in ('OPTIONS', 'HEAD')
-        ]
+        return [method for method in methods if method not in ('OPTIONS', 'HEAD')]
 
 
 class SchemaGenerator(object):
