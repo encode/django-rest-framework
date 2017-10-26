@@ -990,12 +990,13 @@ class DecimalField(Field):
         'max_digits': _('Ensure that there are no more than {max_digits} digits in total.'),
         'max_decimal_places': _('Ensure that there are no more than {max_decimal_places} decimal places.'),
         'max_whole_digits': _('Ensure that there are no more than {max_whole_digits} digits before the decimal point.'),
-        'max_string_length': _('String value too large.')
+        'max_string_length': _('String value too large.'),
+        'invalid_rounding': _('Invalid rounding option {rounding}. Valid values for rounding are: {valid_roundings}')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
     def __init__(self, max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None,
-                 localize=False, **kwargs):
+                 localize=False, rounding=None, **kwargs):
         self.max_digits = max_digits
         self.decimal_places = decimal_places
         self.localize = localize
@@ -1026,6 +1027,11 @@ class DecimalField(Field):
                 six.text_type)(min_value=self.min_value)
             self.validators.append(
                 MinValueValidator(self.min_value, message=message))
+
+        valid_roundings = [v for k, v in vars(decimal).items() if k.startswith('ROUND_')]
+        if rounding is not None and rounding not in valid_roundings:
+            self.fail('invalid_rounding', rounding=rounding, valid_roundings=valid_roundings)
+        self.rounding = rounding
 
     def to_internal_value(self, data):
         """
@@ -1119,6 +1125,7 @@ class DecimalField(Field):
             context.prec = self.max_digits
         return value.quantize(
             decimal.Decimal('.1') ** self.decimal_places,
+            rounding=self.rounding,
             context=context
         )
 
