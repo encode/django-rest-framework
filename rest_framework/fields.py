@@ -1540,8 +1540,7 @@ class ImageField(FileField):
         file_object = super(ImageField, self).to_internal_value(data)
         django_field = self._DjangoImageField()
         django_field.error_messages = self.error_messages
-        django_field.to_python(file_object)
-        return file_object
+        return django_field.clean(file_object)
 
 
 # Composite field types...
