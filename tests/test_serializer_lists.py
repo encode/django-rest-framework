@@ -138,6 +138,70 @@ class TestListSerializerContainingNestedSerializer:
         assert serializer.is_valid()
         assert serializer.validated_data == expected_output
 
+    def test_validate_initial_data(self):
+        data = [{"field": "value1"}, {"field": "value2"}]
+        expected_initial_data = list(data)
+
+        class AssertingChildSerializer(serializers.Serializer):
+            def validate(self, attrs):
+                assert self.initial_data == expected_initial_data.pop(0)
+                return attrs
+
+        serializer = AssertingChildSerializer(data=list(data), many=True)
+        assert serializer.is_valid()
+        assert len(expected_initial_data) == 0
+
+    def test_create_initial_data(self):
+        data = [{"field": "value1"}, {"field": "value2"}]
+        expected_initial_data = list(data)
+
+        class AssertingChildSerializer(serializers.Serializer):
+            field = serializers.CharField()
+
+            def create(self, validated_data):
+                assert self.initial_data == expected_initial_data.pop(0)
+                return validated_data
+
+        serializer = AssertingChildSerializer(data=data, many=True)
+        assert serializer.is_valid()
+        assert serializer.save() == data
+        assert len(expected_initial_data) == 0
+
+    def test_validate_initial_data_html_input(self):
+        expected_initial_data = [{"field": ["value1"]}, {"field": ["value2"]}]
+
+        class AssertingChildSerializer(serializers.Serializer):
+            def validate(self, attrs):
+                assert self.initial_data == expected_initial_data.pop(0)
+                return attrs
+
+        initial_data = MultiValueDict({
+            "[0]field": ["value1"],
+            "[1]field": ["value2"],
+        })
+        serializer = AssertingChildSerializer(data=initial_data, many=True)
+        assert serializer.is_valid()
+        assert len(expected_initial_data) == 0
+
+    def test_create_initial_data_html_input(self):
+        expected_initial_data = [{"field": ["value1"]}, {"field": ["value2"]}]
+
+        class AssertingChildSerializer(serializers.Serializer):
+            field = serializers.CharField()
+
+            def create(self, validated_data):
+                assert self.initial_data == expected_initial_data.pop(0)
+                return validated_data
+
+        initial_data = MultiValueDict({
+            "[0]field": ["value1"],
+            "[1]field": ["value2"],
+        })
+        serializer = AssertingChildSerializer(data=initial_data, many=True)
+        assert serializer.is_valid()
+        assert serializer.save() == [{"field": "value1"}, {"field": "value2"}]
+        assert len(expected_initial_data) == 0
+
 
 class TestNestedListSerializer:
     """

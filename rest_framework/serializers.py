@@ -631,6 +631,7 @@ class ListSerializer(BaseSerializer):
         errors = []
 
         for item in data:
+            self.child.initial_data = item
             try:
                 validated = self.child.run_validation(item)
             except ValidationError as exc:
@@ -669,9 +670,20 @@ class ListSerializer(BaseSerializer):
         )
 
     def create(self, validated_data):
-        return [
-            self.child.create(attrs) for attrs in validated_data
-        ]
+        ret = []
+        if hasattr(self, 'initial_data'):
+            initial_data = self.initial_data
+            if html.is_html_input(initial_data):
+                initial_data = html.parse_html_list(initial_data)
+        else:
+            initial_data = None
+
+        for i, attrs in enumerate(validated_data):
+            if initial_data is not None:
+                self.child.initial_data = initial_data[i]
+            ret.append(self.child.create(attrs))
+
+        return ret
 
     def save(self, **kwargs):
         """
