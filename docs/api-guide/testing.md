@@ -317,6 +317,11 @@ You can use any of REST framework's test case classes as you would for the regul
             """
             url = reverse('account-list')
             data = {'name': 'DabApps'}
+            
+            # Make an authenticated request
+            user = User.objects.get(username='arlene')
+            self.client.force_authenticate(user=user)
+            
             response = self.client.post(url, data, format='json')
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
             self.assertEqual(Account.objects.count(), 1)
