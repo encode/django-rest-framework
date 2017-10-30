@@ -449,6 +449,14 @@ class TestDefaultOutput:
         assert Serializer({'nested': {'a': '3', 'b': {}}}).data == {'nested': {'a': '3', 'c': '2'}}
         assert Serializer({'nested': {'a': '3', 'b': {'c': '4'}}}).data == {'nested': {'a': '3', 'c': '4'}}
 
+    def test_default_for_allow_null(self):
+        # allow_null=True should imply default=None
+        class Serializer(serializers.Serializer):
+            foo = serializers.CharField()
+            bar = serializers.CharField(source='foo.bar', allow_null=True)
+
+        assert Serializer({'foo': None}).data == {'foo': None, 'bar': None}
+
 
 class TestCacheSerializerData:
     def test_cache_serializer_data(self):
