@@ -1131,7 +1131,8 @@ class DateTimeField(Field):
     default_error_messages = {
         'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}.'),
         'date': _('Expected a datetime but got a date.'),
-        'make_aware': _('Invalid datetime for the timezone "{timezone}".')
+        'make_aware': _('Invalid datetime for the timezone "{timezone}".'),
+        'overflow': _('Datetime value out of range.')
     }
     datetime_parser = datetime.datetime.strptime
 
@@ -1153,7 +1154,10 @@ class DateTimeField(Field):
 
         if field_timezone is not None:
             if timezone.is_aware(value):
-                return value.astimezone(field_timezone)
+                try:
+                    return value.astimezone(field_timezone)
+                except OverflowError:
+                    self.fail('overflow')
             try:
                 return timezone.make_aware(value, field_timezone)
             except InvalidTimeError:
