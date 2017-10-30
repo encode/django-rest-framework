@@ -54,6 +54,7 @@ Or, if you're using the `@api_view` decorator with function based views.
 
     from rest_framework.decorators import api_view
     from rest_framework.decorators import parser_classes
+    from rest_framework.parsers import JSONParser
 
     @api_view(['POST'])
     @parser_classes((JSONParser,))
