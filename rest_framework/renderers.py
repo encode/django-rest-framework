@@ -812,6 +812,7 @@ class DocumentationRenderer(BaseRenderer):
     format = 'html'
     charset = 'utf-8'
     template = 'rest_framework/docs/index.html'
+    error_template = 'rest_framework/docs/error.html'
     code_style = 'emacs'
     languages = ['shell', 'javascript', 'python']
 
@@ -824,9 +825,19 @@ class DocumentationRenderer(BaseRenderer):
         }
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
-        template = loader.get_template(self.template)
-        context = self.get_context(data, renderer_context['request'])
-        return template.render(context, request=renderer_context['request'])
+        if isinstance(data, coreapi.Document):
+            template = loader.get_template(self.template)
+            context = self.get_context(data, renderer_context['request'])
+            return template.render(context, request=renderer_context['request'])
+        else:
+            template = loader.get_template(self.error_template)
+            context = {
+                "data": data,
+                "request": renderer_context['request'],
+                "response": renderer_context['response'],
+                "debug": settings.DEBUG,
+            }
+            return template.render(context, request=renderer_context['request'])
 
 
 class SchemaJSRenderer(BaseRenderer):
