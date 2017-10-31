@@ -1171,6 +1171,7 @@ class TestDateTimeField(FieldValues):
         '2001-99-99T99:00': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].'],
         '2018-08-16 22:00-24:00': ['Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].'],
         datetime.date(2001, 1, 1): ['Expected a datetime but got a date.'],
+        '9999-12-31T21:59:59.99990-03:00': ['Datetime value out of range.'],
     }
     outputs = {
         datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00Z',
