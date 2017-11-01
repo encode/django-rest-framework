@@ -1,7 +1,7 @@
 import pytest
 from django.contrib.admin import site
 from django.contrib.auth.models import User
-from django.core.management import call_command
+from django.core.management import CommandError, call_command
 from django.test import TestCase
 from django.utils.six import StringIO
 
@@ -70,6 +70,11 @@ class AuthTokenCommandTests(TestCase):
         second_token_key = Token.objects.first().key
 
         assert first_token_key == second_token_key
+
+    def test_command_raising_error_for_invalid_user(self):
+        out = StringIO()
+        with pytest.raises(CommandError):
+            call_command('drf_create_token', 'not_existing_user', stdout=out)
 
     def test_command_output(self):
         out = StringIO()
