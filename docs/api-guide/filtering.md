@@ -381,7 +381,7 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [cite]: https://docs.djangoproject.com/en/stable/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter]: https://github.com/alex/django-filter
 [django-filter-docs]: https://django-filter.readthedocs.io/en/latest/index.html
-[django-filter-drf-docs]: https://django-filter.readthedocs.io/en/develop/guide/rest_framework.html
+[django-filter-drf-docs]: https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html
 [guardian]: https://django-guardian.readthedocs.io/
 [view-permissions]: https://django-guardian.readthedocs.io/en/latest/userguide/assign.html
 [view-permissions-blogpost]: http://blog.nyaruka.com/adding-a-view-permission-to-django-models
