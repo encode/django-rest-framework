@@ -41,4 +41,4 @@ class InheritedModelSerializationTests(TestCase):
         child = ChildModel(name1='parent name', name2='child name')
         serializer = DerivedModelSerializer(child)
         self.assertEqual(set(serializer.data.keys()),
-                         set(['name1', 'name2', 'id', 'childassociatedmodel']))
+                         {'name1', 'name2', 'id', 'childassociatedmodel'})

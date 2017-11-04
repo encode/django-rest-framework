@@ -46,7 +46,7 @@ def api_view(http_method_names=None, exclude_from_schema=False):
         assert isinstance(http_method_names, (list, tuple)), \
             '@api_view expected a list of strings, received %s' % type(http_method_names).__name__
 
-        allowed_methods = set(http_method_names) | set(('options',))
+        allowed_methods = set(http_method_names) | {'options'}
         WrappedAPIView.http_method_names = [method.lower() for method in allowed_methods]
 
         def handler(self, *args, **kwargs):

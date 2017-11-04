@@ -316,7 +316,7 @@ class JSONRendererTests(TestCase):
     def test_render_dict_abc_obj(self):
         class Dict(MutableMapping):
             def __init__(self):
-                self._dict = dict()
+                self._dict = {}
 
             def __getitem__(self, key):
                 return self._dict.__getitem__(key)
