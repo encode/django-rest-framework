@@ -676,7 +676,7 @@ class AdminRendererTests(TestCase):
         request = factory.get('/')
         response = view(request)
         response.render()
-        self.assertInHTML('<tr><th>Foo</th><td>a string</td></tr>', str(response.content))
+        self.assertContains(response, '<tr><th>Foo</th><td>a string</td></tr>', html=True)
 
     def test_render_dict_with_items_key(self):
         factory = APIRequestFactory()
@@ -691,7 +691,7 @@ class AdminRendererTests(TestCase):
         request = factory.get('/')
         response = view(request)
         response.render()
-        self.assertInHTML('<tr><th>Items</th><td>a string</td></tr>', str(response.content))
+        self.assertContains(response, '<tr><th>Items</th><td>a string</td></tr>', html=True)
 
     def test_render_dict_with_iteritems_key(self):
         factory = APIRequestFactory()
@@ -706,7 +706,7 @@ class AdminRendererTests(TestCase):
         request = factory.get('/')
         response = view(request)
         response.render()
-        self.assertInHTML('<tr><th>Iteritems</th><td>a string</td></tr>', str(response.content))
+        self.assertContains(response, '<tr><th>Iteritems</th><td>a string</td></tr>', html=True)
 
 
 class TestDocumentationRenderer(TestCase):
