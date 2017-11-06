@@ -14,7 +14,7 @@ from django.utils.timezone import activate, deactivate, utc
 
 import rest_framework
 from rest_framework import compat, serializers
-from rest_framework.fields import is_simple_callable
+from rest_framework.fields import DjangoImageField, is_simple_callable
 
 try:
     import pytz
@@ -1714,15 +1714,24 @@ class TestFieldFieldWithName(FieldValues):
     field = serializers.FileField(use_url=False)
 
 
+def ext_validator(value):
+    if not value.name.endswith('.png'):
+        raise serializers.ValidationError('File extension is not allowed. Allowed extensions is png.')
+
+
 # Stub out mock Django `forms.ImageField` class so we don't *actually*
 # call into it's regular validation, or require PIL for testing.
-class FailImageValidation(object):
+class PassImageValidation(DjangoImageField):
+    default_validators = [ext_validator]
+
     def to_python(self, value):
-        raise serializers.ValidationError(self.error_messages['invalid_image'])
+        return value
 
 
-class PassImageValidation(object):
+class FailImageValidation(PassImageValidation):
     def to_python(self, value):
+        if value.name == 'badimage.png':
+            raise serializers.ValidationError(self.error_messages['invalid_image'])
         return value
 
 
@@ -1732,7 +1741,8 @@ class TestInvalidImageField(FieldValues):
     """
     valid_inputs = {}
     invalid_inputs = [
-        (MockFile(name='example.txt', size=10), ['Upload a valid image. The file you uploaded was either not an image or a corrupted image.'])
+        (MockFile(name='badimage.png', size=10), ['Upload a valid image. The file you uploaded was either not an image or a corrupted image.']),
+        (MockFile(name='goodimage.html', size=10), ['File extension is not allowed. Allowed extensions is png.'])
     ]
     outputs = {}
     field = serializers.ImageField(_DjangoImageField=FailImageValidation)
@@ -1743,7 +1753,7 @@ class TestValidImageField(FieldValues):
     Values for an valid `ImageField`.
     """
     valid_inputs = [
-        (MockFile(name='example.txt', size=10), MockFile(name='example.txt', size=10))
+        (MockFile(name='example.png', size=10), MockFile(name='example.png', size=10))
     ]
     invalid_inputs = {}
     outputs = {}
