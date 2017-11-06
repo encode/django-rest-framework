@@ -522,6 +522,7 @@ class ExampleView(APIView):
 <p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
 <pre><code>from rest_framework.decorators import api_view
 from rest_framework.decorators import parser_classes
+from rest_framework.parsers import JSONParser
 
 @api_view(['POST'])
 @parser_classes((JSONParser,))

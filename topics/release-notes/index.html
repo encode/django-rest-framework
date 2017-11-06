@@ -478,6 +478,37 @@
 </code></pre>
 <hr />
 <h2 id="37x-series"><a class="toclink" href="#37x-series">3.7.x series</a></h2>
+<h3 id="372"><a class="toclink" href="#372">3.7.2</a></h3>
+<p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/59?closed=1">6th Novemember 2017</a></p>
+<ul>
+<li>Fixed Django 2.1 compatibility due to removal of django.contrib.auth.login()/logout() views. <a href="https://github.com/encode/django-rest-framework/issues/5510">#5510</a></li>
+<li>Add missing import for TextLexer. <a href="https://github.com/encode/django-rest-framework/issues/5512">#5512</a></li>
+<li>Adding examples and documentation for caching <a href="https://github.com/encode/django-rest-framework/issues/5514">#5514</a></li>
+<li>Include date and date-time format for schema generation <a href="https://github.com/encode/django-rest-framework/issues/5511">#5511</a></li>
+<li>Use triple backticks for markdown code blocks <a href="https://github.com/encode/django-rest-framework/issues/5513">#5513</a></li>
+<li>Interactive docs - make bottom sidebar items sticky <a href="https://github.com/encode/django-rest-framework/issues/5516">#5516</a></li>
+<li>Clarify pagination system check <a href="https://github.com/encode/django-rest-framework/issues/5524">#5524</a></li>
+<li>Stop JSONBoundField mangling invalid JSON <a href="https://github.com/encode/django-rest-framework/issues/5527">#5527</a></li>
+<li>Have JSONField render as textarea in Browsable API <a href="https://github.com/encode/django-rest-framework/issues/5530">#5530</a></li>
+<li>Schema: Exclude OPTIONS/HEAD for ViewSet actions <a href="https://github.com/encode/django-rest-framework/issues/5532">#5532</a></li>
+<li>Fix ordering for dotted sources <a href="https://github.com/encode/django-rest-framework/issues/5533">#5533</a></li>
+<li>Fix: Fields with <code>allow_null=True</code> should imply a default serialization value <a href="https://github.com/encode/django-rest-framework/issues/5518">#5518</a></li>
+<li>Ensure Location header is strictly a 'str', not subclass. <a href="https://github.com/encode/django-rest-framework/issues/5544">#5544</a></li>
+<li>Add import to example in api-guide/parsers <a href="https://github.com/encode/django-rest-framework/issues/5547">#5547</a></li>
+<li>Catch OverflowError for "out of range" datetimes <a href="https://github.com/encode/django-rest-framework/issues/5546">#5546</a></li>
+<li>Add djangorestframework-rapidjson to third party packages <a href="https://github.com/encode/django-rest-framework/issues/5549">#5549</a></li>
+<li>Increase test coverage for <code>drf_create_token</code> command <a href="https://github.com/encode/django-rest-framework/issues/5550">#5550</a></li>
+<li>Add trove classifier for Python 3.6 support. <a href="https://github.com/encode/django-rest-framework/issues/5555">#5555</a></li>
+<li>Add pip cache support to the Travis CI configuration <a href="https://github.com/encode/django-rest-framework/issues/5556">#5556</a></li>
+<li>Rename [<code>wheel</code>] section to [<code>bdist_wheel</code>] as the former is legacy <a href="https://github.com/encode/django-rest-framework/issues/5557">#5557</a></li>
+<li>Fix invalid escape sequence deprecation warnings <a href="https://github.com/encode/django-rest-framework/issues/5560">#5560</a></li>
+<li>Add interactive docs error template <a href="https://github.com/encode/django-rest-framework/issues/5548">#5548</a></li>
+<li>Add rounding parameter to DecimalField <a href="https://github.com/encode/django-rest-framework/issues/5562">#5562</a></li>
+<li>Fix all BytesWarning caught during tests <a href="https://github.com/encode/django-rest-framework/issues/5561">#5561</a></li>
+<li>Use dict and set literals instead of calls to dict() and set() <a href="https://github.com/encode/django-rest-framework/issues/5559">#5559</a></li>
+<li>Change ImageField validation pattern, use validators from DjangoImageField <a href="https://github.com/encode/django-rest-framework/issues/5539">#5539</a></li>
+<li>Fix processing unicode symbols in query_string by Python 2 <a href="https://github.com/encode/django-rest-framework/issues/5552">#5552</a></li>
+</ul>
 <h3 id="371"><a class="toclink" href="#371">3.7.1</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/58?closed=1">16th October 2017</a></p>
 <ul>
@@ -1206,6 +1237,8 @@
 <!-- 3.7.0 -->
 
 <!-- 3.7.1 -->
+
+<!-- 3.7.2 -->
             
 
           </div> <!--/span-->

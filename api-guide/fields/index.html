@@ -783,6 +783,7 @@ color_channel = serializers.ChoiceField(
 <li><code>max_value</code> Validate that the number provided is no greater than this value.</li>
 <li><code>min_value</code> Validate that the number provided is no less than this value.</li>
 <li><code>localize</code> Set to <code>True</code> to enable localization of input and output based on the current locale. This will also force <code>coerce_to_string</code> to <code>True</code>. Defaults to <code>False</code>. Note that data formatting is enabled if you have set <code>USE_L10N=True</code> in your settings file.</li>
+<li><code>rounding</code> Sets the rounding mode used when quantising to the configured precision. Valid values are <a href="https://docs.python.org/3/library/decimal.html#rounding-modes"><code>decimal</code> module rounding modes</a>. Defaults to <code>None</code>.</li>
 </ul>
 <h4 id="example-usage"><a class="toclink" href="#example-usage">Example usage</a></h4>
 <p>To validate numbers up to 999 with a resolution of 2 decimal places, you would use:</p>
