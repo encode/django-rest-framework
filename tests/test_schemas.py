@@ -313,9 +313,9 @@ class ExampleDetailView(APIView):
 class TestSchemaGenerator(TestCase):
     def setUp(self):
         self.patterns = [
-            url('^example/?$', ExampleListView.as_view()),
-            url('^example/(?P<pk>\d+)/?$', ExampleDetailView.as_view()),
-            url('^example/(?P<pk>\d+)/sub/?$', ExampleDetailView.as_view()),
+            url(r'^example/?$', ExampleListView.as_view()),
+            url(r'^example/(?P<pk>\d+)/?$', ExampleDetailView.as_view()),
+            url(r'^example/(?P<pk>\d+)/sub/?$', ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -365,9 +365,9 @@ class TestSchemaGenerator(TestCase):
 class TestSchemaGeneratorNotAtRoot(TestCase):
     def setUp(self):
         self.patterns = [
-            url('^api/v1/example/?$', ExampleListView.as_view()),
-            url('^api/v1/example/(?P<pk>\d+)/?$', ExampleDetailView.as_view()),
-            url('^api/v1/example/(?P<pk>\d+)/sub/?$', ExampleDetailView.as_view()),
+            url(r'^api/v1/example/?$', ExampleListView.as_view()),
+            url(r'^api/v1/example/(?P<pk>\d+)/?$', ExampleDetailView.as_view()),
+            url(r'^api/v1/example/(?P<pk>\d+)/sub/?$', ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
