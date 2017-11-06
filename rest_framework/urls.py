@@ -14,9 +14,19 @@ and you should make sure your authentication settings include `SessionAuthentica
 """
 from __future__ import unicode_literals
 
+import django
 from django.conf.urls import url
+from django.contrib.auth import views
 
-from rest_framework.compat import login, login_kwargs, logout
+if django.VERSION < (1, 11):
+    login = views.login
+    login_kwargs = {'template_name': 'rest_framework/login.html'}
+    logout = views.logout
+else:
+    login = views.LoginView.as_view(template_name='rest_framework/login.html')
+    login_kwargs = {}
+    logout = views.LogoutView.as_view()
+
 
 app_name = 'rest_framework'
 urlpatterns = [
