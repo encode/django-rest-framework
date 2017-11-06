@@ -269,6 +269,7 @@ Corresponds to `django.db.models.fields.DecimalField`.
 - `max_value` Validate that the number provided is no greater than this value.
 - `min_value` Validate that the number provided is no less than this value.
 - `localize` Set to `True` to enable localization of input and output based on the current locale. This will also force `coerce_to_string` to `True`. Defaults to `False`. Note that data formatting is enabled if you have set `USE_L10N=True` in your settings file.
+- `rounding` Sets the rounding mode used when quantising to the configured precision. Valid values are [`decimal` module rounding modes][python-decimal-rounding-modes]. Defaults to `None`.
 
 #### Example usage
 
@@ -680,3 +681,4 @@ The [django-rest-framework-hstore][django-rest-framework-hstore] package provide
 [django-rest-framework-gis]: https://github.com/djangonauts/django-rest-framework-gis
 [django-rest-framework-hstore]: https://github.com/djangonauts/django-rest-framework-hstore
 [django-hstore]: https://github.com/djangonauts/django-hstore
+[python-decimal-rounding-modes]: https://docs.python.org/3/library/decimal.html#rounding-modes

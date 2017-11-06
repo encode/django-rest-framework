@@ -3,7 +3,7 @@ import os
 import re
 import unittest
 import uuid
-from decimal import Decimal
+from decimal import ROUND_DOWN, ROUND_UP, Decimal
 
 import django
 import pytest
@@ -1092,8 +1092,21 @@ class TestNoDecimalPlaces(FieldValues):
     field = serializers.DecimalField(max_digits=6, decimal_places=None)
 
 
-# Date & time serializers...
+class TestRoundingDecimalField(TestCase):
+    def test_valid_rounding(self):
+        field = serializers.DecimalField(max_digits=4, decimal_places=2, rounding=ROUND_UP)
+        assert field.to_representation(Decimal('1.234')) == '1.24'
 
+        field = serializers.DecimalField(max_digits=4, decimal_places=2, rounding=ROUND_DOWN)
+        assert field.to_representation(Decimal('1.234')) == '1.23'
+
+    def test_invalid_rounding(self):
+        with pytest.raises(AssertionError) as excinfo:
+            serializers.DecimalField(max_digits=1, decimal_places=1, rounding='ROUND_UNKNOWN')
+        assert 'Invalid rounding option' in str(excinfo.value)
+
+
+# Date & time serializers...
 class TestDateField(FieldValues):
     """
     Valid and invalid values for `DateField`.
