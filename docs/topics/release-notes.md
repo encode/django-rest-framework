@@ -41,6 +41,39 @@ You can determine your currently installed version using `pip freeze`:
 ## 3.7.x series
 
 
+### 3.7.2
+
+**Date**: [6th Novemember 2017][3.7.2-milestone]
+
+* Fixed Django 2.1 compatibility due to removal of django.contrib.auth.login()/logout() views. [#5510][gh5510]
+* Add missing import for TextLexer. [#5512][gh5512]
+* Adding examples and documentation for caching [#5514][gh5514]
+* Include date and date-time format for schema generation [#5511][gh5511]
+* Use triple backticks for markdown code blocks [#5513][gh5513]
+* Interactive docs - make bottom sidebar items sticky [#5516][gh5516]
+* Clarify pagination system check [#5524][gh5524]
+* Stop JSONBoundField mangling invalid JSON [#5527][gh5527]
+* Have JSONField render as textarea in Browsable API [#5530][gh5530]
+* Schema: Exclude OPTIONS/HEAD for ViewSet actions [#5532][gh5532]
+* Fix ordering for dotted sources [#5533][gh5533]
+* Fix: Fields with `allow_null=True` should imply a default serialization value [#5518][gh5518]
+* Ensure Location header is strictly a 'str', not subclass. [#5544][gh5544]
+* Add import to example in api-guide/parsers [#5547][gh5547]
+* Catch OverflowError for "out of range" datetimes [#5546][gh5546]
+* Add djangorestframework-rapidjson to third party packages [#5549][gh5549]
+* Increase test coverage for `drf_create_token` command [#5550][gh5550]
+* Add trove classifier for Python 3.6 support. [#5555][gh5555]
+* Add pip cache support to the Travis CI configuration [#5556][gh5556]
+* Rename [`wheel`] section to [`bdist_wheel`] as the former is legacy [#5557][gh5557]
+* Fix invalid escape sequence deprecation warnings [#5560][gh5560]
+* Add interactive docs error template [#5548][gh5548]
+* Add rounding parameter to DecimalField [#5562][gh5562]
+* Fix all BytesWarning caught during tests [#5561][gh5561]
+* Use dict and set literals instead of calls to dict() and set() [#5559][gh5559]
+* Change ImageField validation pattern, use validators from DjangoImageField [#5539][gh5539]
+* Fix processing unicode symbols in query_string by Python 2 [#5552][gh5552]
+
+
 ### 3.7.1
 
 **Date**: [16th October 2017][3.7.1-milestone]
@@ -821,6 +854,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.6.4-milestone]: https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.6.4+Release%22
 [3.7.0-milestone]: https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.7.0+Release%22
 [3.7.1-milestone]: https://github.com/encode/django-rest-framework/milestone/58?closed=1
+[3.7.2-milestone]: https://github.com/encode/django-rest-framework/milestone/59?closed=1
 
 
 <!-- 3.0.1 -->
@@ -1547,3 +1581,32 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5503]: https://github.com/encode/django-rest-framework/issues/5503
 [gh5500]: https://github.com/encode/django-rest-framework/issues/5500
 [gh5492]: https://github.com/encode/django-rest-framework/issues/5492
+
+<!-- 3.7.2 -->
+[gh5552]: https://github.com/encode/django-rest-framework/issues/5552
+[gh5539]: https://github.com/encode/django-rest-framework/issues/5539
+[gh5559]: https://github.com/encode/django-rest-framework/issues/5559
+[gh5561]: https://github.com/encode/django-rest-framework/issues/5561
+[gh5562]: https://github.com/encode/django-rest-framework/issues/5562
+[gh5548]: https://github.com/encode/django-rest-framework/issues/5548
+[gh5560]: https://github.com/encode/django-rest-framework/issues/5560
+[gh5557]: https://github.com/encode/django-rest-framework/issues/5557
+[gh5556]: https://github.com/encode/django-rest-framework/issues/5556
+[gh5555]: https://github.com/encode/django-rest-framework/issues/5555
+[gh5550]: https://github.com/encode/django-rest-framework/issues/5550
+[gh5549]: https://github.com/encode/django-rest-framework/issues/5549
+[gh5546]: https://github.com/encode/django-rest-framework/issues/5546
+[gh5547]: https://github.com/encode/django-rest-framework/issues/5547
+[gh5544]: https://github.com/encode/django-rest-framework/issues/5544
+[gh5518]: https://github.com/encode/django-rest-framework/issues/5518
+[gh5533]: https://github.com/encode/django-rest-framework/issues/5533
+[gh5532]: https://github.com/encode/django-rest-framework/issues/5532
+[gh5530]: https://github.com/encode/django-rest-framework/issues/5530
+[gh5527]: https://github.com/encode/django-rest-framework/issues/5527
+[gh5524]: https://github.com/encode/django-rest-framework/issues/5524
+[gh5516]: https://github.com/encode/django-rest-framework/issues/5516
+[gh5513]: https://github.com/encode/django-rest-framework/issues/5513
+[gh5511]: https://github.com/encode/django-rest-framework/issues/5511
+[gh5514]: https://github.com/encode/django-rest-framework/issues/5514
+[gh5512]: https://github.com/encode/django-rest-framework/issues/5512
+[gh5510]: https://github.com/encode/django-rest-framework/issues/5510

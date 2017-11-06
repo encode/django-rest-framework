@@ -3,16 +3,17 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Andrew Ayoub <andrew.ayoub@connectads.com>, 2017
 # aymen chaieb <chaieb.aymen1992@gmail.com>, 2017
 # Bashar Al-Abdulhadi, 2016-2017
-# Eyad Toma <d.eyad.t@gmail.com>, 2015
+# Eyad Toma <d.eyad.t@gmail.com>, 2015,2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-12 16:13+0100\n"
-"PO-Revision-Date: 2017-08-15 17:08+0000\n"
-"Last-Translator: aymen chaieb <chaieb.aymen1992@gmail.com>\n"
+"PO-Revision-Date: 2017-10-18 09:51+0000\n"
+"Last-Translator: Andrew Ayoub <andrew.ayoub@connectads.com>\n"
 "Language-Team: Arabic (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -127,7 +128,7 @@ msgstr "غير موجود."
 
 #: exceptions.py:109
 msgid "Method \"{method}\" not allowed."
-msgstr ""
+msgstr "طلب غير مسموح به"
 
 #: exceptions.py:120
 msgid "Could not satisfy the request Accept header."
@@ -190,7 +191,7 @@ msgstr ""
 
 #: fields.py:796
 msgid "Enter a valid IPv4 or IPv6 address."
-msgstr ""
+msgstr "برجاء إدخال عنوان IPV4 أو IPV6 صحيح"
 
 #: fields.py:821
 msgid "A valid integer is required."
@@ -206,7 +207,7 @@ msgstr "تأكد ان القيمة أكبر أو تساوي {min_value}."
 
 #: fields.py:824 fields.py:859 fields.py:896
 msgid "String value too large."
-msgstr ""
+msgstr "القيمه اكبر من المسموح"
 
 #: fields.py:856 fields.py:890
 msgid "A valid number is required."
@@ -233,7 +234,7 @@ msgstr "صيغة التاريخ و الوقت غير صحيحة. عليك أن �
 
 #: fields.py:1026
 msgid "Expected a datetime but got a date."
-msgstr ""
+msgstr "متوقع تاريخ و وقت و وجد تاريخ فقط"
 
 #: fields.py:1103
 msgid "Date has wrong format. Use one of these formats instead: {format}."
@@ -241,7 +242,7 @@ msgstr "صيغة التاريخ غير صحيحة. عليك أن تستخدم و
 
 #: fields.py:1104
 msgid "Expected a date but got a datetime."
-msgstr ""
+msgstr "متوقع تاريخ  فقط و وجد تاريخ ووقت"
 
 #: fields.py:1170
 msgid "Time has wrong format. Use one of these formats instead: {format}."
@@ -249,7 +250,7 @@ msgstr "صيغة الوقت غير صحيحة. عليك أن تستخدم واح
 
 #: fields.py:1232
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr ""
+msgstr "صيغة المده غير صحيحه, برجاء إستخدام أحد هذه الصيغ {format}"
 
 #: fields.py:1251 fields.py:1300
 msgid "\"{input}\" is not a valid choice."
@@ -257,7 +258,7 @@ msgstr "\"{input}\" ليست واحدة من الخيارات الصالحة."
 
 #: fields.py:1254 relations.py:71 relations.py:441
 msgid "More than {count} items..."
-msgstr ""
+msgstr "أكثر من {count} عنصر..."
 
 #: fields.py:1301 fields.py:1448 relations.py:437 serializers.py:524
 msgid "Expected a list of items but got type \"{input_type}\"."
@@ -399,7 +400,7 @@ msgstr ""
 
 #: validators.py:43
 msgid "This field must be unique."
-msgstr "هذا الحقل يجب أن يكون وحيد"
+msgstr "هذا الحقل يجب أن يكون فريد"
 
 #: validators.py:97
 msgid "The fields {field_names} must make a unique set."
@@ -439,4 +440,4 @@ msgstr ""
 
 #: views.py:88
 msgid "Permission denied."
-msgstr "حق غير مصرح به"
+msgstr "ليس لديك صلاحية."
