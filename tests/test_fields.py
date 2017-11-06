@@ -1618,15 +1618,15 @@ class TestMultipleChoiceField(FieldValues):
     """
     valid_inputs = {
         (): set(),
-        ('aircon',): set(['aircon']),
-        ('aircon', 'manual'): set(['aircon', 'manual']),
+        ('aircon',): {'aircon'},
+        ('aircon', 'manual'): {'aircon', 'manual'},
     }
     invalid_inputs = {
         'abc': ['Expected a list of items but got type "str".'],
         ('aircon', 'incorrect'): ['"incorrect" is not a valid choice.']
     }
     outputs = [
-        (['aircon', 'manual', 'incorrect'], set(['aircon', 'manual', 'incorrect']))
+        (['aircon', 'manual', 'incorrect'], {'aircon', 'manual', 'incorrect'})
     ]
     field = serializers.MultipleChoiceField(
         choices=[

@@ -118,9 +118,9 @@ def distribute_links(obj):
 
 
 def is_custom_action(action):
-    return action not in set([
+    return action not in {
         'retrieve', 'list', 'create', 'update', 'partial_update', 'destroy'
-    ])
+    }
 
 
 def endpoint_ordering(endpoint):

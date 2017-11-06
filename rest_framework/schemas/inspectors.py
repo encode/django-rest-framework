@@ -385,11 +385,11 @@ class AutoSchema(ViewInspector):
         view = self.view
 
         # Core API supports the following request encodings over HTTP...
-        supported_media_types = set((
+        supported_media_types = {
             'application/json',
             'application/x-www-form-urlencoded',
             'multipart/form-data',
-        ))
+        }
         parser_classes = getattr(view, 'parser_classes', [])
         for parser_class in parser_classes:
             media_type = getattr(parser_class, 'media_type', None)
