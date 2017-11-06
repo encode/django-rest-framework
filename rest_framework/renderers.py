@@ -567,6 +567,8 @@ class BrowsableAPIRenderer(BaseRenderer):
                     if isinstance(field, serializers.HiddenField):
                         data.pop(name, None)
                 content = renderer.render(data, accepted, context)
+                # Renders returns bytes, but CharField expects a str.
+                content = content.decode('utf-8')
             else:
                 content = None
 

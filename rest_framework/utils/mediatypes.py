@@ -83,5 +83,5 @@ class _MediaType(object):
     def __str__(self):
         ret = "%s/%s" % (self.main_type, self.sub_type)
         for key, val in self.params.items():
-            ret += "; %s=%s" % (key, val)
+            ret += "; %s=%s" % (key, val.decode('ascii'))
         return ret
