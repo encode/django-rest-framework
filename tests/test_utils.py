@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from django.conf.urls import url
@@ -11,6 +12,7 @@ from rest_framework.routers import SimpleRouter
 from rest_framework.serializers import ModelSerializer
 from rest_framework.utils import json
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
+from rest_framework.utils.urls import remove_query_param, replace_query_param
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from tests.models import BasicModel
@@ -205,3 +207,66 @@ class NonStrictJsonFloatTests(JsonFloatTests):
     """
     'STRICT_JSON = False' should not somehow affect internal json behavior
     """
+
+
+class UrlsReplaceQueryParamTests(TestCase):
+    """
+    Tests the replace_query_param functionality.
+    """
+    def test_valid_unicode_preserved(self):
+        # Encoded string: '查询'
+        q = '/?q=%E6%9F%A5%E8%AF%A2'
+        new_key = 'page'
+        new_value = 2
+        value = '%E6%9F%A5%E8%AF%A2'
+
+        assert new_key in replace_query_param(q, new_key, new_value)
+        assert value in replace_query_param(q, new_key, new_value)
+
+    def test_valid_unicode_replaced(self):
+        q = '/?page=1'
+        value = '1'
+        new_key = 'q'
+        new_value = '%E6%9F%A5%E8%AF%A2'
+
+        assert new_key in replace_query_param(q, new_key, new_value)
+        assert value in replace_query_param(q, new_key, new_value)
+
+    def test_invalid_unicode(self):
+        # Encoded string: '��<script>alert(313)</script>=1'
+        q = '/e/?%FF%FE%3C%73%63%72%69%70%74%3E%61%6C%65%72%74%28%33%31%33%29%3C%2F%73%63%72%69%70%74%3E=1'
+        key = 'from'
+        value = 'login'
+
+        assert key in replace_query_param(q, key, value)
+
+
+class UrlsRemoveQueryParamTests(TestCase):
+    """
+    Tests the remove_query_param functionality.
+    """
+    def test_valid_unicode_preserved(self):
+        q = '/?q=%E6%9F%A5%E8%AF%A2'
+        new_key = 'page'
+        new_value = 2
+        value = '%E6%9F%A5%E8%AF%A2'
+
+        assert new_key in replace_query_param(q, new_key, new_value)
+        assert value in replace_query_param(q, new_key, new_value)
+
+    def test_valid_unicode_removed(self):
+        q = '/?page=2345&q=%E6%9F%A5%E8%AF%A2'
+        key = 'page'
+        value = '2345'
+        removed_key = 'q'
+
+        assert key in remove_query_param(q, removed_key)
+        assert value in remove_query_param(q, removed_key)
+        assert '%' not in remove_query_param(q, removed_key)
+
+    def test_invalid_unicode(self):
+        q = '/?from=login&page=2&%FF%FE%3C%73%63%72%69%70%74%3E%61%6C%65%72%74%28%33%31%33%29%3C%2F%73%63%72%69%70%74%3E=1'
+        key = 'from'
+        removed_key = 'page'
+
+        assert key in remove_query_param(q, removed_key)
