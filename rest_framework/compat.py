@@ -11,7 +11,6 @@ import inspect
 import django
 from django.apps import apps
 from django.conf import settings
-from django.contrib.auth import views
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.validators import \
     MaxLengthValidator as DjangoMaxLengthValidator
@@ -334,11 +333,3 @@ def authenticate(request=None, **credentials):
     else:
         return authenticate(request=request, **credentials)
 
-if django.VERSION < (1, 11):
-    login = views.login
-    login_kwargs = {'template_name': 'rest_framework/login.html'}
-    logout = views.logout
-else:
-    login = views.LoginView.as_view(template_name='rest_framework/login.html')
-    login_kwargs = {}
-    logout = views.LogoutView.as_view()
