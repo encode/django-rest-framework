@@ -3,7 +3,7 @@ import os
 import re
 import unittest
 import uuid
-from decimal import Decimal
+from decimal import ROUND_DOWN, ROUND_UP, Decimal
 
 import django
 import pytest
@@ -1094,10 +1094,10 @@ class TestNoDecimalPlaces(FieldValues):
 
 class TestRoundingDecimalField(TestCase):
     def test_valid_rounding(self):
-        field = serializers.DecimalField(max_digits=4, decimal_places=2, rounding='ROUND_UP')
+        field = serializers.DecimalField(max_digits=4, decimal_places=2, rounding=ROUND_UP)
         assert field.to_representation(Decimal('1.234')) == '1.24'
 
-        field = serializers.DecimalField(max_digits=4, decimal_places=2, rounding='ROUND_DOWN')
+        field = serializers.DecimalField(max_digits=4, decimal_places=2, rounding=ROUND_DOWN)
         assert field.to_representation(Decimal('1.234')) == '1.23'
 
     def test_invalid_rounding(self):
