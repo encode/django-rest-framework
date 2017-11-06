@@ -41,6 +41,13 @@ You can determine your currently installed version using `pip freeze`:
 ## 3.7.x series
 
 
+### 3.7.3
+
+**Date**: [6th Novemember 2017][3.7.3-milestone]
+
+* Fix `AppRegistryNotReady` error from contrib.auth view imports [#5567][gh5567]
+
+
 ### 3.7.2
 
 **Date**: [6th Novemember 2017][3.7.2-milestone]
@@ -855,6 +862,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.7.0-milestone]: https://github.com/encode/django-rest-framework/issues?q=milestone%3A%223.7.0+Release%22
 [3.7.1-milestone]: https://github.com/encode/django-rest-framework/milestone/58?closed=1
 [3.7.2-milestone]: https://github.com/encode/django-rest-framework/milestone/59?closed=1
+[3.7.3-milestone]: https://github.com/encode/django-rest-framework/milestone/60?closed=1
 
 
 <!-- 3.0.1 -->
@@ -1610,3 +1618,6 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5514]: https://github.com/encode/django-rest-framework/issues/5514
 [gh5512]: https://github.com/encode/django-rest-framework/issues/5512
 [gh5510]: https://github.com/encode/django-rest-framework/issues/5510
+
+<!-- 3.7.3 -->
+[gh5567]: https://github.com/encode/django-rest-framework/issues/5567
