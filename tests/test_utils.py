@@ -213,6 +213,7 @@ class UrlsReplaceQueryParamTests(TestCase):
     Tests the replace_query_param functionality.
     """
     def test_valid_unicode_preserved(self):
+        # Encoded string: '查询'
         q = '/?q=%E6%9F%A5%E8%AF%A2'
         new_key = 'page'
         new_value = 2
@@ -231,6 +232,7 @@ class UrlsReplaceQueryParamTests(TestCase):
         assert value in replace_query_param(q, new_key, new_value)
 
     def test_invalid_unicode(self):
+        # Encoded string: '��<script>alert(313)</script>=1'
         q = '/e/?%FF%FE%3C%73%63%72%69%70%74%3E%61%6C%65%72%74%28%33%31%33%29%3C%2F%73%63%72%69%70%74%3E=1'
         key = 'from'
         value = 'login'
