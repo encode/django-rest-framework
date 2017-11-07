@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Craig Blaszczyk <masterjakul@gmail.com>, 2015
 # Ederson  Mota Pereira <edermp@gmail.com>, 2015
@@ -203,7 +203,7 @@ msgstr "Certifique-se de que este valor seja inferior ou igual a {max_value}."
 
 #: fields.py:823 fields.py:858 fields.py:892
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr "Certifque-se de que este valor seja maior ou igual a {min_value}."
+msgstr "Certifique-se de que este valor seja maior ou igual a {min_value}."
 
 #: fields.py:824 fields.py:859 fields.py:896
 msgid "String value too large."
