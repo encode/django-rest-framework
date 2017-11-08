@@ -1074,6 +1074,11 @@ For example, if you wanted to be able to set which fields should be used by a se
                 # Drop any fields that are not specified in the `fields` argument.
                 allowed = set(fields)
                 existing = set(self.fields.keys())
+		
+                # Catch fields that don't exist
+                non_existing = allowed - existing
+                assert len(non_existing) == 0, 'Invalid fields: {}'.format(non_existing)
+
                 for field_name in existing - allowed:
                     self.fields.pop(field_name)
 
