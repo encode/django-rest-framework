@@ -372,19 +372,23 @@ class Request(object):
         else:
             self.auth = None
 
-    def __getattribute__(self, attr):
+    def __getattr__(self, attr):
         """
         If an attribute does not exist on this instance, then we also attempt
         to proxy it to the underlying HttpRequest object.
         """
         try:
-            return super(Request, self).__getattribute__(attr)
+            return getattr(self._request, attr)
         except AttributeError:
-            info = sys.exc_info()
+            outer_info = sys.exc_info()
+
+            # raise the 'original' AttributeError for the proxying Request object instead of the underlying
+            # HttpRequest object.
             try:
-                return getattr(self._request, attr)
+                self.__getattribute__(attr)
             except AttributeError:
-                six.reraise(info[0], info[1], info[2].tb_next)
+                inner_info = sys.exc_info()
+                six.reraise(inner_info[0], inner_info[1], outer_info[2].tb_next)
 
     @property
     def DATA(self):
