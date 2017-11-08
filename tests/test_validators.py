@@ -1,7 +1,10 @@
 import datetime
 
 import pytest
-from django.core.validators import MinValueValidator, MaxValueValidator, URLValidator, EmailValidator, MinLengthValidator, MaxLengthValidator
+from django.core.validators import (
+    EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MinValueValidator, URLValidator
+)
 from django.db import DataError, models
 from django.test import TestCase
 
