@@ -78,14 +78,6 @@ def unicode_http_header(value):
     return value
 
 
-def total_seconds(timedelta):
-    # TimeDelta.total_seconds() is only available in Python 2.7
-    if hasattr(timedelta, 'total_seconds'):
-        return timedelta.total_seconds()
-    else:
-        return (timedelta.days * 86400.0) + float(timedelta.seconds) + (timedelta.microseconds / 1000000.0)
-
-
 def distinct(queryset, base):
     if settings.DATABASES[queryset.db]["ENGINE"] == "django.db.backends.oracle":
         # distinct analogue for Oracle users

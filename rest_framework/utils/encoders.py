@@ -13,7 +13,7 @@ from django.utils import six, timezone
 from django.utils.encoding import force_text
 from django.utils.functional import Promise
 
-from rest_framework.compat import coreapi, total_seconds
+from rest_framework.compat import coreapi
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -39,7 +39,7 @@ class JSONEncoder(json.JSONEncoder):
             representation = obj.isoformat()
             return representation
         elif isinstance(obj, datetime.timedelta):
-            return six.text_type(total_seconds(obj))
+            return six.text_type(obj.total_seconds())
         elif isinstance(obj, decimal.Decimal):
             # Serializers will coerce decimals to strings by default.
             return float(obj)

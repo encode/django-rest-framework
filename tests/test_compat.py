@@ -13,15 +13,6 @@ class CompatTests(TestCase):
         compat.django.VERSION = self.original_django_version
         compat.transaction = self.original_transaction
 
-    def test_total_seconds(self):
-        class MockTimedelta(object):
-            days = 1
-            seconds = 1
-            microseconds = 100
-        timedelta = MockTimedelta()
-        expected = (timedelta.days * 86400.0) + float(timedelta.seconds) + (timedelta.microseconds / 1000000.0)
-        assert compat.total_seconds(timedelta) == expected
-
     def test_set_rollback_for_transaction_in_managed_mode(self):
         class MockTransaction(object):
             called_rollback = False
