@@ -58,11 +58,11 @@ For example, you can append `router.urls` to a list of existing views…
     router = routers.SimpleRouter()
     router.register(r'users', UserViewSet)
     router.register(r'accounts', AccountViewSet)
-    
+
     urlpatterns = [
         url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
     ]
-    
+
     urlpatterns += router.urls
 
 Alternatively you can use Django's `include` function, like so…
@@ -106,10 +106,10 @@ For example, if you want to change the URL for our custom action to `^users/{pk}
 
     from myapp.permissions import IsAdminOrIsSelf
     from rest_framework.decorators import detail_route
-    
+
     class UserViewSet(ModelViewSet):
         ...
-        
+
         @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf], url_path='change-password')
         def set_password(self, request, pk=None):
             ...
@@ -124,10 +124,10 @@ For example, if you want to change the name of our custom action to `'user-chang
 
     from myapp.permissions import IsAdminOrIsSelf
     from rest_framework.decorators import detail_route
-    
+
     class UserViewSet(ModelViewSet):
         ...
-        
+
         @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf], url_name='change-password')
         def set_password(self, request, pk=None):
             ...

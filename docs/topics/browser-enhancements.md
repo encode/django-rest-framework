@@ -50,7 +50,7 @@ Prior to version 3.3.0 the semi extension header `X-HTTP-Method-Override` was su
 For example:
 
     METHOD_OVERRIDE_HEADER = 'HTTP_X_HTTP_METHOD_OVERRIDE'
- 
+
     class MethodOverrideMiddleware(object):
         def process_view(self, request, callback, callback_args, callback_kwargs):
             if request.method != 'POST':

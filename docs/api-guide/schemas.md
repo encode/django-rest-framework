@@ -784,4 +784,3 @@ in [OpenAPI][open-api] format.
 [api-blueprint]: https://apiblueprint.org/
 [static-files]: https://docs.djangoproject.com/en/stable/howto/static-files/
 [named-arguments]: https://docs.djangoproject.com/en/stable/topics/http/urls/#named-groups
- 

@@ -318,4 +318,3 @@ def authenticate(request=None, **credentials):
         return authenticate(**credentials)
     else:
         return authenticate(request=request, **credentials)
-
