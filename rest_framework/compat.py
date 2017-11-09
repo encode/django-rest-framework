@@ -54,12 +54,6 @@ def make_url_resolver(regex, urlpatterns):
         return RegexURLResolver(regex, urlpatterns)
 
 
-try:
-    import urlparse  # Python 2.x
-except ImportError:
-    import urllib.parse as urlparse
-
-
 def unicode_repr(instance):
     # Get the repr of an instance, but ensure it is a unicode string
     # on both python 3 (already the case) and 2 (not the case).
