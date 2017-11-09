@@ -1,6 +1,6 @@
 # Caching
 
-> A certain woman had a very sharp conciousness but almost no 
+> A certain woman had a very sharp conciousness but almost no
 > memory ... She remembered enough to work, and she worked hard.
 > - Lydia Davis
 
@@ -22,9 +22,9 @@ from rest_framework.views import APIView
 from rest_framework import viewsets
 
 class UserViewSet(viewsets.Viewset):
-    
+
     # Cache requested url for each user for 2 hours
-    @method_decorator(cache_page(60*60*2))  
+    @method_decorator(cache_page(60*60*2))
     @method_decorator(vary_on_cookie)
     def list(self, request, format=None):
         content = {
@@ -35,7 +35,7 @@ class UserViewSet(viewsets.Viewset):
 class PostView(APIView):
 
     # Cache page for the requested url
-    @method_decorator(cache_page(60*60*2))  
+    @method_decorator(cache_page(60*60*2))
     def get(self, request, format=None):
         content = {
             'title': 'Post title',

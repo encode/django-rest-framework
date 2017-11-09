@@ -113,11 +113,11 @@ For example:
 
 Note that if your API doesn't include any object level permissions, you may optionally exclude the `self.check_object_permissions`, and simply return the object from the `get_object_or_404` lookup.
 
-#### `filter_queryset(self, queryset)`       
+#### `filter_queryset(self, queryset)`
 
-Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.   
+Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.
 
-For example:       
+For example:
 
     def filter_queryset(self, queryset):
         filter_backends = (CategoryFilter,)

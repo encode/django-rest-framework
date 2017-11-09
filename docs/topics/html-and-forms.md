@@ -40,7 +40,7 @@ Here's an example of a view that returns a list of "Profile" instances, rendered
         {% endfor %}
     </ul>
     </body></html>
-    
+
 ## Rendering Forms
 
 Serializers may be rendered as forms by using the `render_form` template tag, and including the serializer instance as context to the template.
@@ -77,7 +77,7 @@ The following view demonstrates an example of using a serializer in a template f
     {% load rest_framework %}
 
     <html><body>
-    
+
     <h1>Profile - {{ profile.name }}</h1>
 
     <form action="{% url 'profile-detail' pk=profile.pk %}" method="POST">

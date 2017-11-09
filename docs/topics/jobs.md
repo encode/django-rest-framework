@@ -32,7 +32,7 @@ Wonder how else you can help? One of the best ways you can help Django REST Fram
 [stackoverflow-com]: http://stackoverflow.com/jobs/developer-jobs-using-django
 [upwork-com]: https://www.upwork.com/o/jobs/browse/skill/django-framework/
 [technobjobs-co-uk]: https://www.technojobs.co.uk/django-jobs
-[remoteok-io]: https://remoteok.io/remote-django-jobs  
+[remoteok-io]: https://remoteok.io/remote-django-jobs
 [remotepython-com]: https://www.remotepython.com/jobs/
 [drf-funding]: https://fund.django-rest-framework.org/topics/funding/
 [submit-pr]: https://github.com/encode/django-rest-framework
