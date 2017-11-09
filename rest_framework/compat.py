@@ -17,13 +17,15 @@ from django.utils import six
 from django.views.generic import View
 
 try:
-    from django.urls import (
-        NoReverseMatch, URLPattern as RegexURLPattern, URLResolver as RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+    from django.urls import (  # noqa
+        URLPattern as RegexURLPattern,
+        URLResolver as RegexURLResolver,
     )
-
 except ImportError:
-    from django.core.urlresolvers import (  # Will be removed in Django 2.0
-        NoReverseMatch, RegexURLPattern, RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+    # Will be removed in Django 2.0
+    from django.urls import (  # noqa
+        RegexURLPattern,
+        RegexURLResolver,
     )
 
 

@@ -20,9 +20,9 @@ from collections import OrderedDict, namedtuple
 
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
+from django.urls import NoReverseMatch
 
 from rest_framework import views
-from rest_framework.compat import NoReverseMatch
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.schemas import SchemaGenerator
