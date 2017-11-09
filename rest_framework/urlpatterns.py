@@ -2,14 +2,14 @@ from __future__ import unicode_literals
 
 from django.conf.urls import include, url
 
-from rest_framework.compat import RegexURLResolver, get_regex_pattern
+from rest_framework.compat import URLResolver, get_regex_pattern
 from rest_framework.settings import api_settings
 
 
 def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required):
     ret = []
     for urlpattern in urlpatterns:
-        if isinstance(urlpattern, RegexURLResolver):
+        if isinstance(urlpattern, URLResolver):
             # Set of included URL patterns
             regex = get_regex_pattern(urlpattern)
             namespace = urlpattern.namespace

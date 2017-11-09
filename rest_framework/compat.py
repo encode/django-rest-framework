@@ -18,14 +18,14 @@ from django.views.generic import View
 
 try:
     from django.urls import (  # noqa
-        URLPattern as RegexURLPattern,
-        URLResolver as RegexURLResolver,
+        URLPattern,
+        URLResolver,
     )
 except ImportError:
     # Will be removed in Django 2.0
     from django.urls import (  # noqa
-        RegexURLPattern,
-        RegexURLResolver,
+        RegexURLPattern as URLPattern,
+        RegexURLResolver as URLResolver,
     )
 
 
@@ -42,11 +42,11 @@ def make_url_resolver(regex, urlpatterns):
     try:
         # Django 2.0
         from django.urls.resolvers import RegexPattern
-        return RegexURLResolver(RegexPattern(regex), urlpatterns)
+        return URLResolver(RegexPattern(regex), urlpatterns)
 
     except ImportError:
         # Django < 2.0
-        return RegexURLResolver(regex, urlpatterns)
+        return URLResolver(regex, urlpatterns)
 
 
 def unicode_repr(instance):

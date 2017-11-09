@@ -15,7 +15,7 @@ from django.utils import six
 
 from rest_framework import exceptions
 from rest_framework.compat import (
-    RegexURLPattern, RegexURLResolver, coreapi, coreschema, get_regex_pattern
+    URLPattern, URLResolver, coreapi, coreschema, get_regex_pattern
 )
 from rest_framework.request import clone_request
 from rest_framework.settings import api_settings
@@ -165,7 +165,7 @@ class EndpointEnumerator(object):
 
         for pattern in patterns:
             path_regex = prefix + get_regex_pattern(pattern)
-            if isinstance(pattern, RegexURLPattern):
+            if isinstance(pattern, URLPattern):
                 path = self.get_path_from_regex(path_regex)
                 callback = pattern.callback
                 if self.should_include_endpoint(path, callback):
@@ -173,7 +173,7 @@ class EndpointEnumerator(object):
                         endpoint = (path, method, callback)
                         api_endpoints.append(endpoint)
 
-            elif isinstance(pattern, RegexURLResolver):
+            elif isinstance(pattern, URLResolver):
                 nested_endpoints = self.get_api_endpoints(
                     patterns=pattern.url_patterns,
                     prefix=path_regex
