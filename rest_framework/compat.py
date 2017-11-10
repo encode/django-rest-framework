@@ -248,8 +248,9 @@ else:
     def md_filter_add_syntax_highlight(md):
         return False
 
+# pytz is required from Django 1.11. Remove when dropping Django 1.10 support.    
 try:
-    import pytz  # noqa
+    import pytz  # noqa 
     from pytz.exceptions import InvalidTimeError
 except ImportError:
     InvalidTimeError = Exception
