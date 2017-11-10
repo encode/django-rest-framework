@@ -3,7 +3,6 @@ The `compat` module provides support for backwards compatibility with older
 versions of Django/Python, and compatibility wrappers around optional packages.
 """
 
-# flake8: noqa
 from __future__ import unicode_literals
 
 import inspect
@@ -11,26 +10,22 @@ import inspect
 import django
 from django.apps import apps
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured, ValidationError
-from django.core.validators import \
-    MaxLengthValidator as DjangoMaxLengthValidator
-from django.core.validators import MaxValueValidator as DjangoMaxValueValidator
-from django.core.validators import \
-    MinLengthValidator as DjangoMinLengthValidator
-from django.core.validators import MinValueValidator as DjangoMinValueValidator
+from django.core import validators
+from django.core.exceptions import ImproperlyConfigured
 from django.db import connection, models, transaction
-from django.template import Context, RequestContext, Template
 from django.utils import six
 from django.views.generic import View
 
 try:
-    from django.urls import (
-        NoReverseMatch, URLPattern as RegexURLPattern, URLResolver as RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+    from django.urls import (  # noqa
+        URLPattern,
+        URLResolver,
     )
-
 except ImportError:
-    from django.core.urlresolvers import (  # Will be removed in Django 2.0
-        NoReverseMatch, RegexURLPattern, RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+    # Will be removed in Django 2.0
+    from django.urls import (  # noqa
+        RegexURLPattern as URLPattern,
+        RegexURLResolver as URLResolver,
     )
 
 
@@ -47,11 +42,11 @@ def make_url_resolver(regex, urlpatterns):
     try:
         # Django 2.0
         from django.urls.resolvers import RegexPattern
-        return RegexURLResolver(RegexPattern(regex), urlpatterns)
+        return URLResolver(RegexPattern(regex), urlpatterns)
 
     except ImportError:
         # Django < 2.0
-        return RegexURLResolver(regex, urlpatterns)
+        return URLResolver(regex, urlpatterns)
 
 
 def unicode_repr(instance):
@@ -152,7 +147,7 @@ except ImportError:
 guardian = None
 try:
     if 'guardian' in settings.INSTALLED_APPS:
-        import guardian
+        import guardian  # noqa
 except ImportError:
     pass
 
@@ -229,7 +224,7 @@ if markdown is not None and pygments is not None:
 
     class CodeBlockPreprocessor(Preprocessor):
         pattern = re.compile(
-            r'^\s*``` *([^\n]+)\n(.+?)^\s*```', re.M|re.S)
+            r'^\s*``` *([^\n]+)\n(.+?)^\s*```', re.M | re.S)
 
         formatter = HtmlFormatter()
 
@@ -239,9 +234,9 @@ if markdown is not None and pygments is not None:
                     lexer = get_lexer_by_name(m.group(1))
                 except (ValueError, NameError):
                     lexer = TextLexer()
-                code = m.group(2).replace('\t','    ')
+                code = m.group(2).replace('\t', '    ')
                 code = pygments.highlight(code, lexer, self.formatter)
-                code = code.replace('\n\n', '\n&nbsp;\n').replace('\n', '<br />').replace('\\@','@')
+                code = code.replace('\n\n', '\n&nbsp;\n').replace('\n', '<br />').replace('\\@', '@')
                 return '\n\n%s\n\n' % code
             ret = self.pattern.sub(repl, "\n".join(lines))
             return ret.split("\n")
@@ -253,8 +248,9 @@ else:
     def md_filter_add_syntax_highlight(md):
         return False
 
+# pytz is required from Django 1.11. Remove when dropping Django 1.10 support.
 try:
-    import pytz
+    import pytz  # noqa 
     from pytz.exceptions import InvalidTimeError
 except ImportError:
     InvalidTimeError = Exception
@@ -279,21 +275,27 @@ class CustomValidatorMessage(object):
 
     Ref: https://github.com/encode/django-rest-framework/pull/5452
     """
+
     def __init__(self, *args, **kwargs):
         self.message = kwargs.pop('message', self.message)
         super(CustomValidatorMessage, self).__init__(*args, **kwargs)
 
-class MinValueValidator(CustomValidatorMessage, DjangoMinValueValidator):
+
+class MinValueValidator(CustomValidatorMessage, validators.MinValueValidator):
     pass
 
-class MaxValueValidator(CustomValidatorMessage, DjangoMaxValueValidator):
+
+class MaxValueValidator(CustomValidatorMessage, validators.MaxValueValidator):
     pass
 
-class MinLengthValidator(CustomValidatorMessage, DjangoMinLengthValidator):
+
+class MinLengthValidator(CustomValidatorMessage, validators.MinLengthValidator):
     pass
 
-class MaxLengthValidator(CustomValidatorMessage, DjangoMaxLengthValidator):
+
+class MaxLengthValidator(CustomValidatorMessage, validators.MaxLengthValidator):
     pass
+
 
 def set_rollback():
     if hasattr(transaction, 'set_rollback'):

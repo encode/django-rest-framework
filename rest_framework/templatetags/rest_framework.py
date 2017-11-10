@@ -5,14 +5,12 @@ from collections import OrderedDict
 
 from django import template
 from django.template import loader
+from django.urls import NoReverseMatch, reverse
 from django.utils import six
 from django.utils.encoding import force_text, iri_to_uri
 from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
-
-from rest_framework.compat import (
-    NoReverseMatch, apply_markdown, pygments_highlight, reverse
-)
+from rest_framework.compat import apply_markdown, pygments_highlight
 from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
 
