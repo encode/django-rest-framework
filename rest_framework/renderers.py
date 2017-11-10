@@ -383,6 +383,7 @@ class BrowsableAPIRenderer(BaseRenderer):
     format = 'api'
     template = 'rest_framework/api.html'
     filter_template = 'rest_framework/filters/base.html'
+    code_style = 'emacs'
     charset = 'utf-8'
     form_renderer_class = HTMLFormRenderer
 
@@ -672,6 +673,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         context = {
             'content': self.get_content(renderer, data, accepted_media_type, renderer_context),
+            'code_style': pygments_css(self.code_style),
             'view': view,
             'request': request,
             'response': response,
