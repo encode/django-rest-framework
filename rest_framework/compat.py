@@ -12,7 +12,7 @@ from django.apps import apps
 from django.conf import settings
 from django.core import validators
 from django.core.exceptions import ImproperlyConfigured
-from django.db import connection, models, transaction
+from django.db import models
 from django.utils import six
 from django.views.generic import View
 
@@ -295,12 +295,6 @@ class MinLengthValidator(CustomValidatorMessage, validators.MinLengthValidator):
 
 class MaxLengthValidator(CustomValidatorMessage, validators.MaxLengthValidator):
     pass
-
-
-def set_rollback():
-    if connection.settings_dict.get('ATOMIC_REQUESTS', False):
-        if connection.in_atomic_block:
-            transaction.set_rollback(True)
 
 
 def authenticate(request=None, **credentials):
