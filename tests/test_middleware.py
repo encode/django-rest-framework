@@ -13,22 +13,24 @@ urlpatterns = [
 
 
 class MyMiddleware(object):
+    def __init__(self, get_response):
+        self.get_response = get_response
 
-    def process_response(self, request, response):
+    def __call__(self, request):
+        response = self.get_response(request)
         assert hasattr(request, 'user'), '`user` is not set on request'
-        assert request.user.is_authenticated(), '`user` is not authenticated'
+        assert request.user.is_authenticated, '`user` is not authenticated'
+
         return response
 
 
 @override_settings(ROOT_URLCONF='tests.test_middleware')
 class TestMiddleware(APITestCase):
+
+    @override_settings(MIDDLEWARE=('tests.test_middleware.MyMiddleware',))
     def test_middleware_can_access_user_when_processing_response(self):
         user = User.objects.create_user('john', 'john@example.com', 'password')
         key = 'abcd1234'
         Token.objects.create(key=key, user=user)
 
-        with self.settings(
-            MIDDLEWARE_CLASSES=('tests.test_middleware.MyMiddleware',)
-        ):
-            auth = 'Token ' + key
-            self.client.get('/', HTTP_AUTHORIZATION=auth)
+        self.client.get('/auth', HTTP_AUTHORIZATION='Token %s' % key)
