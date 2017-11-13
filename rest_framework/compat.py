@@ -250,7 +250,7 @@ else:
 
 # pytz is required from Django 1.11. Remove when dropping Django 1.10 support.
 try:
-    import pytz  # noqa 
+    import pytz  # noqa
     from pytz.exceptions import InvalidTimeError
 except ImportError:
     InvalidTimeError = Exception
@@ -298,20 +298,9 @@ class MaxLengthValidator(CustomValidatorMessage, validators.MaxLengthValidator):
 
 
 def set_rollback():
-    if hasattr(transaction, 'set_rollback'):
-        if connection.settings_dict.get('ATOMIC_REQUESTS', False):
-            # If running in >=1.6 then mark a rollback as required,
-            # and allow it to be handled by Django.
-            if connection.in_atomic_block:
-                transaction.set_rollback(True)
-    elif transaction.is_managed():
-        # Otherwise handle it explicitly if in managed mode.
-        if transaction.is_dirty():
-            transaction.rollback()
-        transaction.leave_transaction_management()
-    else:
-        # transaction not managed
-        pass
+    if connection.settings_dict.get('ATOMIC_REQUESTS', False):
+        if connection.in_atomic_block:
+            transaction.set_rollback(True)
 
 
 def authenticate(request=None, **credentials):
