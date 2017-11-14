@@ -1344,7 +1344,8 @@ class SeveralChoicesModel(models.Model):
         max_length=10,
         choices=[('rock', 'Rock'), ('metal', 'Metal'), ('grunge', 'Grunge')],
         blank=True,
-        default='metal'
+        default='metal',
+        error_messages={'invalid_choice': 'The choice %(value)s is invalid. Please choose one of ["rock", "metal", "grunge"]'}
     )
 
 
@@ -1387,6 +1388,13 @@ class SerializerChoiceFields(TestCase):
             serializer.fields['music_genre'].choices,
             BLANK_CHOICE_DASH + [('rock', 'Rock'), ('metal', 'Metal'), ('grunge', 'Grunge')]
         )
+
+    def test_field_propagates_error_messages(self):
+        data = {'color': 'blue', 'music_genre': 'grindcore'}
+        serializer = self.several_choices_serializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        expected_errors = {'music_genre': ['The choice grindcore is invalid. Please choose one of ["rock", "metal", "grunge"]']}
+        self.assertEqual(serializer.errors, expected_errors)
 
 
 # Regression tests for #675

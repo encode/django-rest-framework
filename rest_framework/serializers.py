@@ -901,7 +901,7 @@ class ModelSerializer(Serializer):
             kwargs['help_text'] = model_field.help_text
 
         if model_field.error_messages is not None:
-            kwargs['error_messages'] = model.error_messages
+            kwargs['error_messages'] = model_field.error_messages
 
         # TODO: TypedChoiceField?
         if model_field.flatchoices:  # This ModelField contains choices
