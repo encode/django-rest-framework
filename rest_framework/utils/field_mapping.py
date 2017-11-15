@@ -202,6 +202,9 @@ def get_field_kwargs(field_name, model_field):
                                    isinstance(model_field, models.TextField) or
                                    isinstance(model_field, models.FileField)):
         kwargs['max_length'] = max_length
+        custom_message = model_field.error_messages.get("max_length", None)
+        if custom_message is not None:
+            kwargs.setdefault('error_messages', {}).update(max_length=custom_message)
         validator_kwarg = [
             validator for validator in validator_kwarg
             if not isinstance(validator, validators.MaxLengthValidator)

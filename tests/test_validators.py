@@ -2,8 +2,7 @@ import datetime
 
 import pytest
 from django.core.validators import (
-    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator
+    MaxValueValidator, MinLengthValidator, MinValueValidator
 )
 from django.db import DataError, models
 from django.test import TestCase
@@ -648,10 +647,11 @@ class ValidatorMessageTests(TestCase):
         assert s.errors['text'] == ['This is too short.']
 
     def test_max_length_validator_message_is_copied_from_model(self):
-        # Added this test because was expecting is_valid() to be false but it is not.
-        # Will investigate further
         class Post(models.Model):
-            text = models.CharField(max_length=100, validators=[MaxLengthValidator(limit_value=1, message='This is too long.')])
+            text = models.CharField(
+                max_length=1,
+                error_messages={"max_length": "This is too long"}
+            )
 
         class PostSerializer(serializers.ModelSerializer):
             class Meta:
@@ -661,3 +661,4 @@ class ValidatorMessageTests(TestCase):
         data = {'text': 'A very long text'}
         s = PostSerializer(data=data)
         assert not s.is_valid()
+        assert s.errors['text'] == ['This is too long']
