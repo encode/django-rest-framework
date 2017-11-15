@@ -200,7 +200,7 @@ class TestRegularFieldMappings(TestCase):
         expected = dedent("""
             TestSerializer():
                 id = IntegerField(label='ID', read_only=True)
-                value_limit_field = IntegerField(error_messages={'max_value': 'Ensure this value is less than or equal to %(limit_value)s.', 'min_value': 'Ensure this value is greater than or equal to %(limit_value)s.'}, max_value=10, min_value=1)
+                value_limit_field = IntegerField(error_messages=OrderedDict([('max_value', 'Ensure this value is less than or equal to %(limit_value)s.'), ('min_value', 'Ensure this value is greater than or equal to %(limit_value)s.')]), max_value=10, min_value=1)
                 length_limit_field = CharField(max_length=12, min_length=3)
                 blank_field = CharField(allow_blank=True, max_length=10, required=False)
                 null_field = IntegerField(allow_null=True, required=False)
@@ -218,6 +218,7 @@ class TestRegularFieldMappings(TestCase):
                 "{'max_value': 'Ensure this value is less than or equal to %(limit_value)s.', 'min_value': 'Ensure this value is greater than or equal to %(limit_value)s.'}",
                 "{'max_value': u'Ensure this value is less than or equal to %(limit_value)s.', 'min_value': u'Ensure this value is greater than or equal to %(limit_value)s.'}"
             )
+        self.maxDiff = None
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
     def test_method_field(self):

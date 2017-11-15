@@ -3,6 +3,7 @@ Helper functions for mapping model fields to a dictionary of default
 keyword arguments that should be used for their equivalent serializer fields.
 """
 import inspect
+from collections import OrderedDict
 
 from django.core import validators
 from django.db import models
@@ -130,10 +131,11 @@ def get_field_kwargs(field_name, model_field):
         max_value, message = next((
             (validator.limit_value, validator.message) for validator in validator_kwarg
             if isinstance(validator, validators.MaxValueValidator)
-        ), (None, None))
+        ), (None, ''))
         if max_value is not None and isinstance(model_field, NUMERIC_FIELD_TYPES):
             kwargs['max_value'] = max_value
-            kwargs['error_messages'] = {'max_value': message}
+            if message != '':
+                kwargs.setdefault('error_messages', OrderedDict()).update(max_value=message)
             validator_kwarg = [
                 validator for validator in validator_kwarg
                 if not isinstance(validator, validators.MaxValueValidator)
@@ -144,10 +146,11 @@ def get_field_kwargs(field_name, model_field):
         min_value, message = next((
             (validator.limit_value, validator.message) for validator in validator_kwarg
             if isinstance(validator, validators.MinValueValidator)
-        ), (None, None))
+        ), (None, ''))
         if min_value is not None and isinstance(model_field, NUMERIC_FIELD_TYPES):
             kwargs['min_value'] = min_value
-            kwargs.setdefault('error_messages', {}).update(min_value=message)
+            if message != '':
+                kwargs.setdefault('error_messages', OrderedDict()).update(min_value=message)
             validator_kwarg = [
                 validator for validator in validator_kwarg
                 if not isinstance(validator, validators.MinValueValidator)
@@ -202,9 +205,9 @@ def get_field_kwargs(field_name, model_field):
                                    isinstance(model_field, models.TextField) or
                                    isinstance(model_field, models.FileField)):
         kwargs['max_length'] = max_length
-        custom_message = model_field.error_messages.get("max_length", None)
-        if custom_message is not None:
-            kwargs.setdefault('error_messages', {}).update(max_length=custom_message)
+        custom_message = model_field.error_messages.get("max_length", '')
+        if custom_message != '':
+            kwargs.setdefault('error_messages', OrderedDict()).update(max_length=custom_message)
         validator_kwarg = [
             validator for validator in validator_kwarg
             if not isinstance(validator, validators.MaxLengthValidator)
@@ -215,10 +218,11 @@ def get_field_kwargs(field_name, model_field):
     min_length, message = next((
         (validator.limit_value, validator.message) for validator in validator_kwarg
         if isinstance(validator, validators.MinLengthValidator)
-    ), (None, None))
+    ), (None, ''))
     if min_length is not None and isinstance(model_field, models.CharField):
         kwargs['min_length'] = min_length
-        kwargs.setdefault('error_messages', {}).update(min_length=message)
+        if message != '':
+            kwargs.setdefault('error_messages', OrderedDict()).update(min_length=message)
         validator_kwarg = [
             validator for validator in validator_kwarg
             if not isinstance(validator, validators.MinLengthValidator)
