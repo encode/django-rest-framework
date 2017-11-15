@@ -631,7 +631,10 @@ class ValidatorMessageTests(TestCase):
 
     def test_min_length_validator_message_is_copied_from_model(self):
         class Review(models.Model):
-            text = models.CharField(max_length=100, validators=[MinLengthValidator(limit_value=5, message='This is too short.')])
+            text = models.CharField(
+                max_length=100,
+                validators=[MinLengthValidator(limit_value=5, message='This is too short.')]
+            )
 
         class ReviewSerializer(serializers.ModelSerializer):
             class Meta:

@@ -209,12 +209,13 @@ def get_field_kwargs(field_name, model_field):
 
     # Ensure that min_length is passed explicitly as a keyword arg,
     # rather than as a validator.
-    min_length = next((
-        validator.limit_value for validator in validator_kwarg
+    min_length, message = next((
+        (validator.limit_value, validator.message) for validator in validator_kwarg
         if isinstance(validator, validators.MinLengthValidator)
-    ), None)
+    ), (None, None))
     if min_length is not None and isinstance(model_field, models.CharField):
         kwargs['min_length'] = min_length
+        kwargs.setdefault('error_messages', {}).update(min_length=message)
         validator_kwarg = [
             validator for validator in validator_kwarg
             if not isinstance(validator, validators.MinLengthValidator)
