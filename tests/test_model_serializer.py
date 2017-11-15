@@ -346,22 +346,6 @@ class TestRegularFieldMappings(TestCase):
 
         ExampleSerializer()
 
-    def test_fields_and_exclude_behavior(self):
-        class ImplicitFieldsSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = RegularFieldsModel
-                fields = '__all__'
-
-        class ExplicitFieldsSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = RegularFieldsModel
-                fields = '__all__'
-
-        implicit = ImplicitFieldsSerializer()
-        explicit = ExplicitFieldsSerializer()
-
-        assert implicit.data == explicit.data
-
 
 class TestDurationFieldMapping(TestCase):
     def test_duration_field(self):
