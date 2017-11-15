@@ -325,13 +325,7 @@ class TestRegularFieldMappings(TestCase):
         class TestSerializer(serializers.ModelSerializer):
             missing = serializers.ReadOnlyField()
 
-            class Meta:
-                model = RegularFieldsModel
-                fields = '__all__'
-
         class ChildSerializer(TestSerializer):
-            missing = serializers.ReadOnlyField()
-
             class Meta:
                 model = RegularFieldsModel
                 fields = ('auto_field',)
