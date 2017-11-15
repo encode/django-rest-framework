@@ -2,7 +2,7 @@ import datetime
 
 import pytest
 from django.core.validators import (
-    EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
     MinValueValidator, URLValidator
 )
 from django.db import DataError, models
@@ -612,7 +612,9 @@ class ValidatorMessageTests(TestCase):
 
     def test_email_validator_message_is_copied_from_model(self):
         class UserModel(models.Model):
-            email = models.EmailField(validators=[EmailValidator(message='Please enter a valid email.')])
+            email = models.EmailField(
+                error_messages={"invalid": "Please enter a valid email."}
+            )
 
         class UserSerializer(serializers.ModelSerializer):
             class Meta:

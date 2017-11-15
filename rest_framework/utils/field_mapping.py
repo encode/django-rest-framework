@@ -164,6 +164,9 @@ def get_field_kwargs(field_name, model_field):
         # EmailField does not need to include the validate_email argument,
         # as it is explicitly added in.
         if isinstance(model_field, models.EmailField):
+            custom_message = model_field.error_messages.get("invalid", None)
+            if custom_message is not None:
+                kwargs.setdefault('error_messages', {}).update(invalid=custom_message)
             validator_kwarg = [
                 validator for validator in validator_kwarg
                 if validator is not validators.validate_email
