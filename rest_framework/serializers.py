@@ -1100,6 +1100,9 @@ class ModelSerializer(Serializer):
         fields = self.get_default_field_names(declared_fields, info)
 
         if exclude is not None:
+
+            # make sure all fields are unique
+            fields = set(fields)
             # If `Meta.exclude` is included, then remove those fields.
             for field_name in exclude:
                 assert field_name in fields, (
@@ -1111,6 +1114,8 @@ class ModelSerializer(Serializer):
                     )
                 )
                 fields.remove(field_name)
+
+            fields = list(fields)
 
         return fields
 
