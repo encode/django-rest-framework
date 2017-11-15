@@ -3,7 +3,7 @@ import datetime
 import pytest
 from django.core.validators import (
     MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, URLValidator
+    MinValueValidator
 )
 from django.db import DataError, models
 from django.test import TestCase
@@ -597,7 +597,9 @@ class ValidatorMessageTests(TestCase):
 
     def test_url_validator_message_is_copied_from_model(self):
         class BlogModel(models.Model):
-            url = models.URLField(validators=[URLValidator(message='This URL is not valid.')])
+            url = models.URLField(
+                error_messages={"invalid": "This URL is not valid."}
+            )
 
         class BlogSerializer(serializers.ModelSerializer):
             class Meta:

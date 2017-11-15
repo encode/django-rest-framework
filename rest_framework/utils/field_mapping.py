@@ -156,6 +156,9 @@ def get_field_kwargs(field_name, model_field):
         # URLField does not need to include the URLValidator argument,
         # as it is explicitly added in.
         if isinstance(model_field, models.URLField):
+            custom_message = model_field.error_messages.get("invalid", None)
+            if custom_message is not None:
+                kwargs.setdefault('error_messages', {}).update(invalid=custom_message)
             validator_kwarg = [
                 validator for validator in validator_kwarg
                 if not isinstance(validator, validators.URLValidator)
