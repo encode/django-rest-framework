@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import os.path
 import tempfile
 
+import pytest
 from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.middleware import AuthenticationMiddleware
@@ -217,22 +218,20 @@ class TestUserSetter(TestCase):
         """
         class AuthRaisesAttributeError(object):
             def authenticate(self, request):
-                import rest_framework
-                rest_framework.MISSPELLED_NAME_THAT_DOESNT_EXIST
+                self.MISSPELLED_NAME_THAT_DOESNT_EXIST
 
-        self.request = Request(factory.get('/'), authenticators=(AuthRaisesAttributeError(),))
-        SessionMiddleware().process_request(self.request)
+        request = Request(self.wrapped_request, authenticators=(AuthRaisesAttributeError(),))
 
-        login(self.request, self.user)
-        try:
-            self.request.user
-        except AttributeError as error:
-            assert str(error) in (
-                "'module' object has no attribute 'MISSPELLED_NAME_THAT_DOESNT_EXIST'",  # Python < 3.5
-                "module 'rest_framework' has no attribute 'MISSPELLED_NAME_THAT_DOESNT_EXIST'",  # Python >= 3.5
-            )
-        else:
-            assert False, 'AttributeError not raised'
+        # The middleware processes the underlying Django request, sets anonymous user
+        assert self.wrapped_request.user.is_anonymous
+
+        # The DRF request object does not have a user and should run authenticators
+        expected = r"no attribute 'MISSPELLED_NAME_THAT_DOESNT_EXIST'"
+        with pytest.raises(AttributeError, match=expected):
+            request.user
+
+        with pytest.raises(AttributeError, match=expected):
+            login(request, self.user)
 
 
 class TestAuthSetter(TestCase):
