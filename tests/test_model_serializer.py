@@ -908,7 +908,13 @@ class TestSerializerMetaClass(TestCase):
                 model = MetaClassTestModel
                 exclude = ('text',)
 
-        assert list(ExampleSerializer().fields) == ['id', 'text']
+        expected = (
+            "Cannot both declare the field 'text' and include it in the "
+            "ExampleSerializer 'exclude' option. Remove the field or, if "
+            "inherited from a parent serializer, disable with `text = None`."
+        )
+        with self.assertRaisesMessage(AssertionError, expected):
+            ExampleSerializer().fields
 
 
 class Issue2704TestCase(TestCase):
