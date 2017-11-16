@@ -1,9 +1,7 @@
 from __future__ import unicode_literals
 
 import datetime
-import unittest
 
-import django
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
@@ -291,7 +289,6 @@ class SearchFilterToManyTests(TestCase):
         Entry.objects.create(blog=b2, headline='Something unrelated', pub_date=datetime.date(1979, 1, 1))
         Entry.objects.create(blog=b2, headline='Retrospective on Lennon', pub_date=datetime.date(1990, 6, 1))
 
-    @unittest.skipIf(django.VERSION < (1, 9), "Django 1.8 does not support transforms")
     def test_multiple_filter_conditions(self):
         class SearchListView(generics.ListAPIView):
             queryset = Blog.objects.all()
