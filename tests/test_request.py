@@ -230,6 +230,13 @@ class TestUserSetter(TestCase):
         with pytest.raises(WrappedAttributeError, match=expected):
             request.user
 
+        # python 2 hasattr fails for *any* exception, not just AttributeError
+        if six.PY2:
+            return
+
+        with pytest.raises(WrappedAttributeError, match=expected):
+            hasattr(request, 'user')
+
         with pytest.raises(WrappedAttributeError, match=expected):
             login(request, self.user)
 
