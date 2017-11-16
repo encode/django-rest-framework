@@ -19,7 +19,7 @@ from django.utils import six
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.parsers import BaseParser, FormParser, MultiPartParser
-from rest_framework.request import Request
+from rest_framework.request import Request, WrappedAttributeError
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
@@ -227,10 +227,10 @@ class TestUserSetter(TestCase):
 
         # The DRF request object does not have a user and should run authenticators
         expected = r"no attribute 'MISSPELLED_NAME_THAT_DOESNT_EXIST'"
-        with pytest.raises(AttributeError, match=expected):
+        with pytest.raises(WrappedAttributeError, match=expected):
             request.user
 
-        with pytest.raises(AttributeError, match=expected):
+        with pytest.raises(WrappedAttributeError, match=expected):
             login(request, self.user)
 
 
