@@ -30,7 +30,6 @@ def get_breadcrumbs(url, request=None):
                 # Probably an optional trailing slash.
                 if not seen or seen[-1] != view:
                     c = cls(**initkwargs)
-                    c.suffix = getattr(view, 'suffix', None)
                     name = c.get_view_name()
                     insert_url = preserve_builtin_query_params(prefix + url, request)
                     breadcrumbs_list.insert(0, (name, insert_url))
