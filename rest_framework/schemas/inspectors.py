@@ -293,7 +293,7 @@ class AutoSchema(ViewInspector):
         """
         view = self.view
 
-        if method not in ('PUT', 'PATCH', 'POST'):
+        if method not in ('PUT', 'PATCH', 'POST', 'DELETE'):
             return []
 
         if not hasattr(view, 'get_serializer'):
