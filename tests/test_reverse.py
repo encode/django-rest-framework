@@ -19,11 +19,16 @@ apppatterns = ([
     url(r'^home$', mock_view, name='home'),
 ], 'app')
 
+apipatterns = ([
+    url(r'^root$', mock_view, name='root'),
+], 'rest_framework')
+
 
 urlpatterns = [
     url(r'^view$', mock_view, name='view'),
     url(r'^app2/', include(apppatterns, namespace='app2')),
     url(r'^app1/', include(apppatterns, namespace='app1')),
+    url(r'^api/', include(apipatterns)),
 ]
 
 
@@ -36,7 +41,7 @@ class MockVersioningScheme(object):
         if self.raise_error:
             raise NoReverseMatch()
 
-        return 'http://scheme-reversed/view'
+        return 'http://scheme-reversed/api/root'
 
 
 @override_settings(ROOT_URLCONF='tests.test_reverse')
@@ -44,24 +49,33 @@ class ReverseTests(TestCase):
     """
     Tests for fully qualified URLs when using `reverse`.
     """
+
+    def test_reverse_non_drf_view(self):
+        request = factory.get('/api/root')
+
+        # DRF reverse should not match non-DRF views
+        with self.assertRaises(NoReverseMatch):
+            reverse('view', request=request)
+
     def test_reversed_urls_are_fully_qualified(self):
-        request = factory.get('/view')
-        url = reverse('view', request=request)
-        assert url == 'http://testserver/view'
+        request = factory.get('/api/root')
+
+        url = reverse('root', request=request)
+        assert url == 'http://testserver/api/root'
 
     def test_reverse_with_versioning_scheme(self):
-        request = factory.get('/view')
+        request = factory.get('/api/root')
         request.versioning_scheme = MockVersioningScheme()
 
-        url = reverse('view', request=request)
-        assert url == 'http://scheme-reversed/view'
+        url = reverse('root', request=request)
+        assert url == 'http://scheme-reversed/api/root'
 
     def test_reverse_with_versioning_scheme_fallback_to_default_on_error(self):
-        request = factory.get('/view')
+        request = factory.get('/api/root')
         request.versioning_scheme = MockVersioningScheme(raise_error=True)
 
-        url = reverse('view', request=request)
-        assert url == 'http://testserver/view'
+        url = reverse('root', request=request)
+        assert url == 'http://testserver/api/root'
 
 
 @override_settings(ROOT_URLCONF='tests.test_reverse')
@@ -75,6 +89,10 @@ class NamespaceTests(TestCase):
 
     def request(self, url):
         return self.client.get(url).wsgi_request
+
+    def test_default_namespace(self):
+        url = reverse('root')
+        assert url == '/api/root'
 
     def test_application_namespace(self):
         url = reverse('app:home')
