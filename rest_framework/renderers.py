@@ -852,7 +852,7 @@ class SchemaJSRenderer(BaseRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         codec = coreapi.codecs.CoreJSONCodec()
-        schema = base64.b64encode(codec.encode(data))
+        schema = base64.b64encode(codec.encode(data)).decode('ascii')
 
         template = loader.get_template(self.template)
         context = {'schema': mark_safe(schema)}
