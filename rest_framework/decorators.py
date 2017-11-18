@@ -11,6 +11,7 @@ from __future__ import unicode_literals
 import types
 import warnings
 
+from django.forms.utils import pretty_name
 from django.utils import six
 
 from rest_framework.views import APIView
@@ -130,7 +131,7 @@ def schema(view_inspector):
     return decorator
 
 
-def action(methods=None, detail=None, url_path=None, url_name=None, **kwargs):
+def action(methods=None, detail=None, name=None, url_path=None, url_name=None, **kwargs):
     """
     Mark a ViewSet method as a routable action.
 
@@ -147,9 +148,14 @@ def action(methods=None, detail=None, url_path=None, url_name=None, **kwargs):
     def decorator(func):
         func.bind_to_methods = methods
         func.detail = detail
+        func.name = name if name else pretty_name(func.__name__)
         func.url_path = url_path if url_path else func.__name__
         func.url_name = url_name if url_name else func.__name__.replace('_', '-')
         func.kwargs = kwargs
+        func.kwargs.update({
+            'name': func.name,
+            'description': func.__doc__ or None
+        })
         return func
     return decorator
 

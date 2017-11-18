@@ -175,12 +175,17 @@ class ActionDecoratorTestCase(TestCase):
     def test_defaults(self):
         @action(detail=True)
         def test_action(request):
-            pass
+            """Description"""
 
         assert test_action.bind_to_methods == ['get']
         assert test_action.detail is True
+        assert test_action.name == 'Test action'
         assert test_action.url_path == 'test_action'
         assert test_action.url_name == 'test-action'
+        assert test_action.kwargs == {
+            'name': 'Test action',
+            'description': 'Description',
+        }
 
     def test_detail_required(self):
         with pytest.raises(AssertionError) as excinfo:

@@ -52,7 +52,13 @@ class ViewSetMixin(object):
         instantiated view, we need to totally reimplement `.as_view`,
         and slightly modify the view function that is created and returned.
         """
+        # The name and description initkwargs may be explicitly overridden for
+        # certain route confiugurations. eg, names of extra actions.
+        cls.name = None
+        cls.description = None
+
         # The suffix initkwarg is reserved for displaying the viewset type.
+        # This initkwarg should have no effect if the name is provided.
         # eg. 'List' or 'Instance'.
         cls.suffix = None
 
@@ -78,6 +84,11 @@ class ViewSetMixin(object):
             if not hasattr(cls, key):
                 raise TypeError("%s() received an invalid keyword %r" % (
                     cls.__name__, key))
+
+        # name and suffix are mutually exclusive
+        if 'name' in initkwargs and 'suffix' in initkwargs:
+            raise TypeError("%s() received both `name` and `suffix`, which are "
+                            "mutually exclusive arguments." % (cls.__name__))
 
         def view(request, *args, **kwargs):
             self = cls(**initkwargs)

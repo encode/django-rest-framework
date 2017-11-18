@@ -96,6 +96,16 @@ class InitializeViewSetsTestCase(TestCase):
             "when calling `.as_view()` on a ViewSet. "
             "For example `.as_view({'get': 'list'})`")
 
+    def test_initialize_view_set_with_both_name_and_suffix(self):
+        with pytest.raises(TypeError) as excinfo:
+            BasicViewSet.as_view(name='', suffix='', actions={
+                'get': 'list',
+            })
+
+        assert str(excinfo.value) == (
+            "BasicViewSet() received both `name` and `suffix`, "
+            "which are mutually exclusive arguments.")
+
     def test_args_kwargs_request_action_map_on_self(self):
         """
         Test a view only has args, kwargs, request, action_map
