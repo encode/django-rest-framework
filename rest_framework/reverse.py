@@ -60,10 +60,27 @@ def _reverse(viewname, args=None, kwargs=None, request=None, format=None, **extr
     if format is not None:
         kwargs = kwargs or {}
         kwargs['format'] = format
+    if request:
+        extra.setdefault('current_app', current_app(request))
     url = django_reverse(viewname, args=args, kwargs=kwargs, **extra)
     if request:
         return request.build_absolute_uri(url)
     return url
+
+
+def current_app(request):
+    """
+    Get the current app for the request.
+
+    This code is copied from the URL tag.
+    """
+    try:
+        return request.current_app
+    except AttributeError:
+        try:
+            return request.resolver_match.namespace
+        except AttributeError:
+            return None
 
 
 reverse_lazy = lazy(reverse, six.text_type)
