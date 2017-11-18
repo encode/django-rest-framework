@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 import pytest
 from django.conf.urls import include, url
 from django.db import models
@@ -35,10 +37,10 @@ class ActionViewSet(GenericViewSet):
     queryset = Action.objects.all()
 
     def list(self, request, *args, **kwargs):
-        raise NotImplementedError
+        return Response()
 
     def retrieve(self, request, *args, **kwargs):
-        raise NotImplementedError
+        return Response()
 
     @action(detail=False)
     def list_action(self, request, *args, **kwargs):
@@ -54,6 +56,10 @@ class ActionViewSet(GenericViewSet):
 
     @action(detail=True, url_name='detail-custom')
     def custom_detail_action(self, request, *args, **kwargs):
+        raise NotImplementedError
+
+    @action(detail=True, url_path=r'unresolvable/(?P<arg>\w+)', url_name='unresolvable')
+    def unresolvable_detail_action(self, request, *args, **kwargs):
         raise NotImplementedError
 
 
@@ -121,14 +127,50 @@ class InitializeViewSetsTestCase(TestCase):
             self.assertIn(attribute, dir(view))
 
 
-class GetExtraActionTests(TestCase):
+class GetExtraActionsTests(TestCase):
 
     def test_extra_actions(self):
         view = ActionViewSet()
         actual = [action.__name__ for action in view.get_extra_actions()]
-        expected = ['custom_detail_action', 'custom_list_action', 'detail_action', 'list_action']
+        expected = [
+            'custom_detail_action',
+            'custom_list_action',
+            'detail_action',
+            'list_action',
+            'unresolvable_detail_action',
+        ]
 
         self.assertEqual(actual, expected)
+
+
+@override_settings(ROOT_URLCONF='tests.test_viewsets')
+class GetExtraActionUrlMapTests(TestCase):
+
+    def test_list_view(self):
+        response = self.client.get('/api/actions/')
+        view = response.renderer_context['view']
+
+        expected = OrderedDict([
+            ('Custom list action', 'http://testserver/api/actions/custom_list_action/'),
+            ('List action', 'http://testserver/api/actions/list_action/'),
+        ])
+
+        self.assertEqual(view.get_extra_action_url_map(), expected)
+
+    def test_detail_view(self):
+        response = self.client.get('/api/actions/1/')
+        view = response.renderer_context['view']
+
+        expected = OrderedDict([
+            ('Custom detail action', 'http://testserver/api/actions/1/custom_detail_action/'),
+            ('Detail action', 'http://testserver/api/actions/1/detail_action/'),
+            # "Unresolvable detail action" excluded, since it's not resolvable
+        ])
+
+        self.assertEqual(view.get_extra_action_url_map(), expected)
+
+    def test_uninitialized_view(self):
+        self.assertEqual(ActionViewSet().get_extra_action_url_map(), OrderedDict())
 
 
 @override_settings(ROOT_URLCONF='tests.test_viewsets')

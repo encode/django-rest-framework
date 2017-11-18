@@ -612,6 +612,11 @@ class BrowsableAPIRenderer(BaseRenderer):
     def get_breadcrumbs(self, request):
         return get_breadcrumbs(request.path, request)
 
+    def get_extra_actions(self, view):
+        if hasattr(view, 'get_extra_action_url_map'):
+            return view.get_extra_action_url_map()
+        return None
+
     def get_filter_form(self, data, view, request):
         if not hasattr(view, 'get_queryset') or not hasattr(view, 'filter_backends'):
             return
@@ -697,6 +702,8 @@ class BrowsableAPIRenderer(BaseRenderer):
             'post_form': self.get_rendered_html_form(data, view, 'POST', request),
             'delete_form': self.get_rendered_html_form(data, view, 'DELETE', request),
             'options_form': self.get_rendered_html_form(data, view, 'OPTIONS', request),
+
+            'extra_actions': self.get_extra_actions(view),
 
             'filter_form': self.get_filter_form(data, view, request),
 

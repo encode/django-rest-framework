@@ -110,6 +110,20 @@
               </form>
             {% endif %}
 
+            {% if extra_actions %}
+              <div class="dropdown" style="float: right; margin-right: 10px">
+                <button class="btn btn-default" id="extra-actions-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                  {% trans "Extra Actions" %}
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="extra-actions-menu">
+                  {% for action_name, url in extra_actions|items %}
+                  <li><a href="{{ url }}">{{ action_name }}</a></li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+
             {% if filter_form %}
               <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
                 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
