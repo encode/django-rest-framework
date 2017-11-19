@@ -146,12 +146,16 @@ class TestSimpleRouter(TestCase):
 class TestRootView(URLPatternsTestCase, TestCase):
     urlpatterns = [
         url(r'^non-namespaced/', include(namespaced_router.urls)),
-        url(r'^namespaced/', include((namespaced_router.urls, 'namespaced'), namespace='namespaced')),
+        url(r'^namespaced1/', include((namespaced_router.urls, 'namespaced1'), namespace='namespaced1')),
+        url(r'^namespaced2/', include((namespaced_router.urls, 'namespaced2'), namespace='namespaced2')),
     ]
 
     def test_retrieve_namespaced_root(self):
-        response = self.client.get('/namespaced/')
-        assert response.data == {"example": "http://testserver/namespaced/example/"}
+        response = self.client.get('/namespaced1/')
+        assert response.data == {"example": "http://testserver/namespaced1/example/"}
+
+        response = self.client.get('/namespaced2/')
+        assert response.data == {"example": "http://testserver/namespaced2/example/"}
 
     def test_retrieve_non_namespaced_root(self):
         response = self.client.get('/non-namespaced/')
