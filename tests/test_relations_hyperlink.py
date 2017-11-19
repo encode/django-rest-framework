@@ -18,7 +18,7 @@ def dummy_view(request, pk):
     pass
 
 
-urlpatterns = [
+patterns = [
     url(r'^dummyurl/(?P<pk>[0-9]+)/$', dummy_view, name='dummy-url'),
     url(r'^manytomanysource/(?P<pk>[0-9]+)/$', dummy_view, name='manytomanysource-detail'),
     url(r'^manytomanytarget/(?P<pk>[0-9]+)/$', dummy_view, name='manytomanytarget-detail'),
@@ -27,6 +27,10 @@ urlpatterns = [
     url(r'^nullableforeignkeysource/(?P<pk>[0-9]+)/$', dummy_view, name='nullableforeignkeysource-detail'),
     url(r'^onetoonetarget/(?P<pk>[0-9]+)/$', dummy_view, name='onetoonetarget-detail'),
     url(r'^nullableonetoonesource/(?P<pk>[0-9]+)/$', dummy_view, name='nullableonetoonesource-detail'),
+]
+
+urlpatterns = [
+    url(r'^', include((patterns, 'rest_framework')))
 ]
 
 
@@ -473,15 +477,15 @@ class HyperlinkedNamespaceTests(TestCase):
             assert serializer.data == expected
 
     def test_foreign_key_retrieve_no_namespace(self):
-        patterns = [
-            url(r'^', include(urlpatterns, namespace=None))
+        url_conf = [
+            url(r'^', include((patterns, 'rest_framework'), namespace=None))
         ]
-        with override_settings(ROOT_URLCONF=patterns):
+        with override_settings(ROOT_URLCONF=url_conf):
             self.results()
 
     def test_foreign_key_retrieve_namespace(self):
-        patterns = [
-            url(r'^', include(urlpatterns, namespace='api'))
+        url_conf = [
+            url(r'^', include((patterns, 'rest_framework'), namespace='api'))
         ]
-        with override_settings(ROOT_URLCONF=patterns):
+        with override_settings(ROOT_URLCONF=url_conf):
             self.results()

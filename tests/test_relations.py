@@ -2,7 +2,7 @@ import uuid
 
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.core.exceptions import ImproperlyConfigured
 from django.test import override_settings
 from django.utils.datastructures import MultiValueDict
@@ -146,7 +146,9 @@ class TestProxiedPrimaryKeyRelatedField(APISimpleTestCase):
 
 
 @override_settings(ROOT_URLCONF=[
-    url(r'^example/(?P<name>.+)/$', lambda: None, name='example'),
+    url(r'^', include(
+        ([url(r'^example/(?P<name>.+)/$', lambda: None, name='example')], 'rest_framework')
+    )),
 ])
 class TestHyperlinkedRelatedField(APISimpleTestCase):
     def setUp(self):

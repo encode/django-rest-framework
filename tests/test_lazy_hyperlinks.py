@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.db import models
 from django.test import TestCase, override_settings
 
@@ -28,8 +28,12 @@ def dummy_view(request):
     pass
 
 
-urlpatterns = [
+patterns = [
     url(r'^example/(?P<pk>[0-9]+)/$', dummy_view, name='example-detail'),
+]
+
+urlpatterns = [
+    url(r'^', include((patterns, 'rest_framework')))
 ]
 
 
