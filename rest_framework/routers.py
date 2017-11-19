@@ -101,6 +101,10 @@ class BaseRouter(object):
             self._urls = self.get_urls()
         return self._urls
 
+    @property
+    def urlpatterns(self):
+        return (self.urls, 'rest_framework')
+
 
 class SimpleRouter(BaseRouter):
 
