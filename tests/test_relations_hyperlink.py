@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.test import TestCase, override_settings
 
 from rest_framework import serializers
@@ -449,3 +449,39 @@ class HyperlinkedNullableOneToOneTests(TestCase):
             {'url': 'http://testserver/onetoonetarget/2/', 'name': 'target-2', 'nullable_source': None},
         ]
         assert serializer.data == expected
+
+
+class HyperlinkedNamespaceTests(TestCase):
+    def setUp(self):
+        target = ForeignKeyTarget(name='target-1')
+        target.save()
+        new_target = ForeignKeyTarget(name='target-2')
+        new_target.save()
+        for idx in range(1, 4):
+            source = ForeignKeySource(name='source-%d' % idx, target=target)
+            source.save()
+
+    def results(self):
+        queryset = ForeignKeySource.objects.all()
+        serializer = ForeignKeySourceSerializer(queryset, many=True, context={'request': request})
+        expected = [
+            {'url': 'http://testserver/foreignkeysource/1/', 'name': 'source-1', 'target': 'http://testserver/foreignkeytarget/1/'},
+            {'url': 'http://testserver/foreignkeysource/2/', 'name': 'source-2', 'target': 'http://testserver/foreignkeytarget/1/'},
+            {'url': 'http://testserver/foreignkeysource/3/', 'name': 'source-3', 'target': 'http://testserver/foreignkeytarget/1/'}
+        ]
+        with self.assertNumQueries(1):
+            assert serializer.data == expected
+
+    def test_foreign_key_retrieve_no_namespace(self):
+        patterns = [
+            url(r'^', include(urlpatterns, namespace=None))
+        ]
+        with override_settings(ROOT_URLCONF=patterns):
+            self.results()
+
+    def test_foreign_key_retrieve_namespace(self):
+        patterns = [
+            url(r'^', include(urlpatterns, namespace='api'))
+        ]
+        with override_settings(ROOT_URLCONF=patterns):
+            self.results()
