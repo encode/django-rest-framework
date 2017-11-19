@@ -27,7 +27,7 @@ else:
     logout = views.LogoutView.as_view()
 
 
-app_name = 'rest_framework'
+app_name = 'rest_framework_auth'
 urlpatterns = [
     url(r'^login/$', login, login_kwargs, name='login'),
     url(r'^logout/$', logout, name='logout'),
