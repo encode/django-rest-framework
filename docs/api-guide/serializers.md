@@ -493,6 +493,8 @@ The names in the `fields` and `exclude` attributes will normally map to model fi
 
 Alternatively names in the `fields` options can map to properties or methods which take no arguments that exist on the model class.
 
+Since version 3.3.0, it is **mandatory** to provide one of the attributes `fields` or `exclude`.
+
 ## Specifying nested serialization
 
 The default `ModelSerializer` uses primary keys for relationships, but you can also easily generate nested representations using the `depth` option:
