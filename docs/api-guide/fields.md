@@ -356,8 +356,6 @@ Corresponds to `django.db.models.fields.DurationField`
 The `validated_data` for these fields will contain a `datetime.timedelta` instance.
 The representation is a string following this format `'[DD] [HH:[MM:]]ss[.uuuuuu]'`.
 
-**Note:** This field is only available with Django versions >= 1.8.
-
 **Signature:** `DurationField()`
 
 ---

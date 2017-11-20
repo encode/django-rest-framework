@@ -666,7 +666,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             paginator = None
 
         csrf_cookie_name = settings.CSRF_COOKIE_NAME
-        csrf_header_name = getattr(settings, 'CSRF_HEADER_NAME', 'HTTP_X_CSRFToken')  # Fallback for Django 1.8
+        csrf_header_name = settings.CSRF_HEADER_NAME
         if csrf_header_name.startswith('HTTP_'):
             csrf_header_name = csrf_header_name[5:]
         csrf_header_name = csrf_header_name.replace('_', '-')

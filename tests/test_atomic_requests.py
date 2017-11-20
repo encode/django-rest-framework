@@ -120,13 +120,12 @@ class DBTransactionAPIExceptionTests(TestCase):
         Transaction is rollbacked by our transaction atomic block.
         """
         request = factory.post('/')
-        num_queries = (4 if getattr(connection.features,
-                                    'can_release_savepoints', False) else 3)
+        num_queries = 4 if connection.features.can_release_savepoints else 3
         with self.assertNumQueries(num_queries):
             # 1 - begin savepoint
             # 2 - insert
             # 3 - rollback savepoint
-            # 4 - release savepoint (django>=1.8 only)
+            # 4 - release savepoint
             with transaction.atomic():
                 response = self.view(request)
                 assert transaction.get_rollback()

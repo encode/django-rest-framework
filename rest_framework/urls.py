@@ -6,11 +6,10 @@ your API requires authentication:
 
     urlpatterns = [
         ...
-        url(r'^auth/', include('rest_framework.urls', namespace='rest_framework'))
+        url(r'^auth/', include('rest_framework.urls'))
     ]
 
-In Django versions older than 1.9, the urls must be namespaced as 'rest_framework',
-and you should make sure your authentication settings include `SessionAuthentication`.
+You should make sure your authentication settings include `SessionAuthentication`.
 """
 from __future__ import unicode_literals
 
