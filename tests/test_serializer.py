@@ -515,7 +515,7 @@ class TestSerializerValidationWithCompiledRegexField:
         assert serializer.errors == {}
 
 
-class Test2505Regression:
+class Test2555Regression:
     def test_serializer_context(self):
         class NestedSerializer(serializers.Serializer):
             def __init__(self, *args, **kwargs):
