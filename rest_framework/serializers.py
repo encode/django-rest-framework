@@ -1102,6 +1102,17 @@ class ModelSerializer(Serializer):
         if exclude is not None:
             # If `Meta.exclude` is included, then remove those fields.
             for field_name in exclude:
+                assert field_name not in self._declared_fields, (
+                    "Cannot both declare the field '{field_name}' and include "
+                    "it in the {serializer_class} 'exclude' option. Remove the "
+                    "field or, if inherited from a parent serializer, disable "
+                    "with `{field_name} = None`."
+                    .format(
+                        field_name=field_name,
+                        serializer_class=self.__class__.__name__
+                    )
+                )
+
                 assert field_name in fields, (
                     "The field '{field_name}' was included on serializer "
                     "{serializer_class} in the 'exclude' option, but does "

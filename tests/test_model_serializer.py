@@ -900,6 +900,22 @@ class TestSerializerMetaClass(TestCase):
             "Cannot set both 'fields' and 'exclude' options on serializer ExampleSerializer."
         )
 
+    def test_declared_fields_with_exclude_option(self):
+        class ExampleSerializer(serializers.ModelSerializer):
+            text = serializers.CharField()
+
+            class Meta:
+                model = MetaClassTestModel
+                exclude = ('text',)
+
+        expected = (
+            "Cannot both declare the field 'text' and include it in the "
+            "ExampleSerializer 'exclude' option. Remove the field or, if "
+            "inherited from a parent serializer, disable with `text = None`."
+        )
+        with self.assertRaisesMessage(AssertionError, expected):
+            ExampleSerializer().fields
+
 
 class Issue2704TestCase(TestCase):
     def test_queryset_all(self):
