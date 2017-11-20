@@ -987,8 +987,8 @@ class FloatField(Field):
 class DecimalField(Field):
     default_error_messages = {
         'invalid': _('A valid number is required.'),
-        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
-        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
+        'max_value': _('Ensure this value is less than or equal to %(limit_value)s.'),
+        'min_value': _('Ensure this value is greater than or equal to %(limit_value)s.'),
         'max_digits': _('Ensure that there are no more than {max_digits} digits in total.'),
         'max_decimal_places': _('Ensure that there are no more than {max_decimal_places} decimal places.'),
         'max_whole_digits': _('Ensure that there are no more than {max_whole_digits} digits before the decimal point.'),

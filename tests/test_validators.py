@@ -1,6 +1,9 @@
 import datetime
 
 import pytest
+from django.core.validators import (
+    MaxValueValidator, MinLengthValidator, MinValueValidator
+)
 from django.db import DataError, models
 from django.test import TestCase
 
@@ -563,3 +566,99 @@ class ValidatorsTests(TestCase):
                                            date_field='bar')
         with pytest.raises(NotImplementedError):
             validator.filter_queryset(attrs=None, queryset=None)
+
+
+class ItemModel(models.Model):
+    price = models.DecimalField(decimal_places=2, max_digits=10, validators=[MinValueValidator(limit_value=0, message='Price has to be >= 0.'),
+                                                                             MaxValueValidator(limit_value=10, message='Price has to be <= 10.')])
+
+
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ItemModel
+        fields = '__all__'
+
+
+class ValidatorMessageTests(TestCase):
+    def test_min_value_validator_message_is_copied_from_model(self):
+        data = {'price': -1}
+        s = ItemSerializer(data=data, partial=True)
+        s.is_valid()
+
+        assert s.errors['price'] == ['Price has to be >= 0.']
+
+    def test_max_value_validator_message_is_copied_from_model(self):
+        data = {'price': 11}
+        s = ItemSerializer(data=data, partial=True)
+        s.is_valid()
+
+        assert s.errors['price'] == ['Price has to be <= 10.']
+
+    def test_url_validator_message_is_copied_from_model(self):
+        class BlogModel(models.Model):
+            url = models.URLField(
+                error_messages={"invalid": "This URL is not valid."}
+            )
+
+        class BlogSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlogModel
+                fields = '__all__'
+
+        data = {'url': 'broken url'}
+        s = BlogSerializer(data=data)
+        s.is_valid()
+
+        assert s.errors['url'] == ['This URL is not valid.']
+
+    def test_email_validator_message_is_copied_from_model(self):
+        class UserModel(models.Model):
+            email = models.EmailField(
+                error_messages={"invalid": "Please enter a valid email."}
+            )
+
+        class UserSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UserModel
+                fields = '__all__'
+
+        data = {'email': 'invalid email'}
+        s = UserSerializer(data=data)
+        s.is_valid()
+
+        assert s.errors['email'] == ['Please enter a valid email.']
+
+    def test_min_length_validator_message_is_copied_from_model(self):
+        class Review(models.Model):
+            text = models.CharField(
+                max_length=100,
+                validators=[MinLengthValidator(limit_value=5, message='This is too short.')]
+            )
+
+        class ReviewSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Review
+                fields = '__all__'
+
+        data = {'text': 'Hi'}
+        s = ReviewSerializer(data=data)
+        s.is_valid()
+
+        assert s.errors['text'] == ['This is too short.']
+
+    def test_max_length_validator_message_is_copied_from_model(self):
+        class Post(models.Model):
+            text = models.CharField(
+                max_length=1,
+                error_messages={"max_length": "This is too long"}
+            )
+
+        class PostSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Post
+                fields = '__all__'
+
+        data = {'text': 'A very long text'}
+        s = PostSerializer(data=data)
+        assert not s.is_valid()
+        assert s.errors['text'] == ['This is too long']

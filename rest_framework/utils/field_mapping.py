@@ -3,6 +3,7 @@ Helper functions for mapping model fields to a dictionary of default
 keyword arguments that should be used for their equivalent serializer fields.
 """
 import inspect
+from collections import OrderedDict
 
 from django.core import validators
 from django.db import models
@@ -127,12 +128,14 @@ def get_field_kwargs(field_name, model_field):
     else:
         # Ensure that max_value is passed explicitly as a keyword arg,
         # rather than as a validator.
-        max_value = next((
-            validator.limit_value for validator in validator_kwarg
+        max_value, message = next((
+            (validator.limit_value, validator.message) for validator in validator_kwarg
             if isinstance(validator, validators.MaxValueValidator)
-        ), None)
+        ), (None, ''))
         if max_value is not None and isinstance(model_field, NUMERIC_FIELD_TYPES):
             kwargs['max_value'] = max_value
+            if message != '':
+                kwargs.setdefault('error_messages', OrderedDict()).update(max_value=message)
             validator_kwarg = [
                 validator for validator in validator_kwarg
                 if not isinstance(validator, validators.MaxValueValidator)
@@ -140,12 +143,14 @@ def get_field_kwargs(field_name, model_field):
 
         # Ensure that min_value is passed explicitly as a keyword arg,
         # rather than as a validator.
-        min_value = next((
-            validator.limit_value for validator in validator_kwarg
+        min_value, message = next((
+            (validator.limit_value, validator.message) for validator in validator_kwarg
             if isinstance(validator, validators.MinValueValidator)
-        ), None)
+        ), (None, ''))
         if min_value is not None and isinstance(model_field, NUMERIC_FIELD_TYPES):
             kwargs['min_value'] = min_value
+            if message != '':
+                kwargs.setdefault('error_messages', OrderedDict()).update(min_value=message)
             validator_kwarg = [
                 validator for validator in validator_kwarg
                 if not isinstance(validator, validators.MinValueValidator)
@@ -154,6 +159,9 @@ def get_field_kwargs(field_name, model_field):
         # URLField does not need to include the URLValidator argument,
         # as it is explicitly added in.
         if isinstance(model_field, models.URLField):
+            custom_message = model_field.error_messages.get("invalid", None)
+            if custom_message is not None:
+                kwargs.setdefault('error_messages', {}).update(invalid=custom_message)
             validator_kwarg = [
                 validator for validator in validator_kwarg
                 if not isinstance(validator, validators.URLValidator)
@@ -162,6 +170,9 @@ def get_field_kwargs(field_name, model_field):
         # EmailField does not need to include the validate_email argument,
         # as it is explicitly added in.
         if isinstance(model_field, models.EmailField):
+            custom_message = model_field.error_messages.get("invalid", None)
+            if custom_message is not None:
+                kwargs.setdefault('error_messages', {}).update(invalid=custom_message)
             validator_kwarg = [
                 validator for validator in validator_kwarg
                 if validator is not validators.validate_email
@@ -194,6 +205,9 @@ def get_field_kwargs(field_name, model_field):
                                    isinstance(model_field, models.TextField) or
                                    isinstance(model_field, models.FileField)):
         kwargs['max_length'] = max_length
+        custom_message = model_field.error_messages.get("max_length", '')
+        if custom_message != '':
+            kwargs.setdefault('error_messages', OrderedDict()).update(max_length=custom_message)
         validator_kwarg = [
             validator for validator in validator_kwarg
             if not isinstance(validator, validators.MaxLengthValidator)
@@ -201,12 +215,14 @@ def get_field_kwargs(field_name, model_field):
 
     # Ensure that min_length is passed explicitly as a keyword arg,
     # rather than as a validator.
-    min_length = next((
-        validator.limit_value for validator in validator_kwarg
+    min_length, message = next((
+        (validator.limit_value, validator.message) for validator in validator_kwarg
         if isinstance(validator, validators.MinLengthValidator)
-    ), None)
+    ), (None, ''))
     if min_length is not None and isinstance(model_field, models.CharField):
         kwargs['min_length'] = min_length
+        if message != '':
+            kwargs.setdefault('error_messages', OrderedDict()).update(min_length=message)
         validator_kwarg = [
             validator for validator in validator_kwarg
             if not isinstance(validator, validators.MinLengthValidator)
