@@ -249,3 +249,28 @@ class TestSecure(TestCase):
     def test_default_secure_true(self):
         request = Request(factory.get('/', secure=True))
         assert request.scheme == 'https'
+
+
+class TestWSGIRequestProxy(TestCase):
+    def test_access_inner_property(self):
+        wsgi_request = factory.get('/')
+
+        sentinel = object()
+        wsgi_request.__dict__['inner_property'] = sentinel
+
+        request = Request(wsgi_request)
+
+        assert request.inner_property is sentinel
+
+    def test_access_outer_property(self):
+        wsgi_request = factory.get('/')
+
+        inner_sentinel = object()
+        wsgi_request.__dict__['inner_property'] = inner_sentinel
+
+        request = Request(wsgi_request)
+
+        outer_sentinel = object()
+        request.__dict__['inner_property'] = outer_sentinel
+
+        assert request.inner_property is outer_sentinel
