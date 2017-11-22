@@ -10,8 +10,6 @@ The wrapped request then offers a richer API, in particular :
 """
 from __future__ import unicode_literals
 
-import sys
-
 from django.conf import settings
 from django.http import QueryDict
 from django.http.multipartparser import parse_header
@@ -373,19 +371,15 @@ class Request(object):
         else:
             self.auth = None
 
-    def __getattribute__(self, attr):
+    def __getattr__(self, attr):
         """
         If an attribute does not exist on this instance, then we also attempt
         to proxy it to the underlying HttpRequest object.
         """
         try:
-            return super(Request, self).__getattribute__(attr)
+            return getattr(self._request, attr)
         except AttributeError:
-            info = sys.exc_info()
-            try:
-                return getattr(self._request, attr)
-            except AttributeError:
-                six.reraise(info[0], info[1], info[2].tb_next)
+            return self.__getattribute__(attr)
 
     @property
     def DATA(self):
