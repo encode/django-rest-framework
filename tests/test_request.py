@@ -263,3 +263,12 @@ class TestWSGIRequestProxy(TestCase):
         outer_sentinel = object()
         request.inner_property = outer_sentinel
         assert request.inner_property is outer_sentinel
+
+    def test_exception(self):
+        # ensure the exception message is not for the underlying WSGIRequest
+        wsgi_request = factory.get('/')
+        request = Request(wsgi_request)
+
+        message = "'Request' object has no attribute 'inner_property'"
+        with self.assertRaisesMessage(AttributeError, message):
+            request.inner_property
