@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import re
 from collections import MutableMapping, OrderedDict
 
+import coreapi
 import pytest
 from django.conf.urls import include, url
 from django.core.cache import cache
@@ -14,11 +15,10 @@ from django.utils import six
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
 
-import coreapi
 from rest_framework import permissions, serializers, status
 from rest_framework.renderers import (
     AdminRenderer, BaseRenderer, BrowsableAPIRenderer, DocumentationRenderer,
-    HTMLFormRenderer, JSONRenderer, StaticHTMLRenderer
+    HTMLFormRenderer, JSONRenderer, SchemaJSRenderer, StaticHTMLRenderer
 )
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -736,3 +736,21 @@ class TestDocumentationRenderer(TestCase):
 
         html = renderer.render(document, accepted_media_type="text/html", renderer_context={"request": request})
         assert '<h1>Data Endpoint API</h1>' in html
+
+
+class TestSchemaJSRenderer(TestCase):
+
+    def test_schemajs_output(self):
+        """
+        Test output of the SchemaJS renderer as per #5608. Django 2.0 on Py3 prints binary data as b'xyz' in templates,
+        and the base64 encoding used by SchemaJSRenderer outputs base64 as binary. Test fix.
+        """
+        factory = APIRequestFactory()
+        request = factory.get('/')
+
+        renderer = SchemaJSRenderer()
+
+        output = renderer.render('data', renderer_context={"request": request})
+
+        assert "'ImRhdGEi'" in output
+        assert "'b'ImRhdGEi''" not in output
