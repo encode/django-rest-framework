@@ -123,10 +123,10 @@ class TestModelSerializer(TestCase):
             'non_model_field': 'bar',
         })
         serializer.is_valid()
-        with self.assertRaises(TypeError) as excinfo:
-            serializer.save()
+
         msginitial = 'Got a `TypeError` when calling `OneFieldModel.objects.create()`.'
-        assert str(excinfo.exception).startswith(msginitial)
+        with self.assertRaisesMessage(TypeError, msginitial):
+            serializer.save()
 
     def test_abstract_model(self):
         """
@@ -147,10 +147,10 @@ class TestModelSerializer(TestCase):
         serializer = TestSerializer(data={
             'afield': 'foo',
         })
-        with self.assertRaises(ValueError) as excinfo:
-            serializer.is_valid()
+
         msginitial = 'Cannot use ModelSerializer with Abstract Models.'
-        assert str(excinfo.exception).startswith(msginitial)
+        with self.assertRaisesMessage(ValueError, msginitial):
+            serializer.is_valid()
 
 
 class TestRegularFieldMappings(TestCase):
@@ -294,10 +294,9 @@ class TestRegularFieldMappings(TestCase):
                 model = RegularFieldsModel
                 fields = ('auto_field', 'invalid')
 
-        with self.assertRaises(ImproperlyConfigured) as excinfo:
-            TestSerializer().fields
         expected = 'Field name `invalid` is not valid for model `RegularFieldsModel`.'
-        assert str(excinfo.exception) == expected
+        with self.assertRaisesMessage(ImproperlyConfigured, expected):
+            TestSerializer().fields
 
     def test_missing_field(self):
         """
@@ -311,13 +310,12 @@ class TestRegularFieldMappings(TestCase):
                 model = RegularFieldsModel
                 fields = ('auto_field',)
 
-        with self.assertRaises(AssertionError) as excinfo:
-            TestSerializer().fields
         expected = (
             "The field 'missing' was declared on serializer TestSerializer, "
             "but has not been included in the 'fields' option."
         )
-        assert str(excinfo.exception) == expected
+        with self.assertRaisesMessage(AssertionError, expected):
+            TestSerializer().fields
 
     def test_missing_superclass_field(self):
         """
@@ -327,13 +325,7 @@ class TestRegularFieldMappings(TestCase):
         class TestSerializer(serializers.ModelSerializer):
             missing = serializers.ReadOnlyField()
 
-            class Meta:
-                model = RegularFieldsModel
-                fields = '__all__'
-
         class ChildSerializer(TestSerializer):
-            missing = serializers.ReadOnlyField()
-
             class Meta:
                 model = RegularFieldsModel
                 fields = ('auto_field',)
@@ -347,22 +339,6 @@ class TestRegularFieldMappings(TestCase):
                 fields = '__all__'
 
         ExampleSerializer()
-
-    def test_fields_and_exclude_behavior(self):
-        class ImplicitFieldsSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = RegularFieldsModel
-                fields = '__all__'
-
-        class ExplicitFieldsSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = RegularFieldsModel
-                fields = '__all__'
-
-        implicit = ImplicitFieldsSerializer()
-        explicit = ExplicitFieldsSerializer()
-
-        assert implicit.data == explicit.data
 
 
 class TestDurationFieldMapping(TestCase):
@@ -862,13 +838,9 @@ class TestSerializerMetaClass(TestCase):
                 model = MetaClassTestModel
                 fields = 'text'
 
-        with self.assertRaises(TypeError) as result:
+        msginitial = "The `fields` option must be a list or tuple"
+        with self.assertRaisesMessage(TypeError, msginitial):
             ExampleSerializer().fields
-
-        exception = result.exception
-        assert str(exception).startswith(
-            "The `fields` option must be a list or tuple"
-        )
 
     def test_meta_class_exclude_option(self):
         class ExampleSerializer(serializers.ModelSerializer):
@@ -876,13 +848,9 @@ class TestSerializerMetaClass(TestCase):
                 model = MetaClassTestModel
                 exclude = 'text'
 
-        with self.assertRaises(TypeError) as result:
+        msginitial = "The `exclude` option must be a list or tuple"
+        with self.assertRaisesMessage(TypeError, msginitial):
             ExampleSerializer().fields
-
-        exception = result.exception
-        assert str(exception).startswith(
-            "The `exclude` option must be a list or tuple"
-        )
 
     def test_meta_class_fields_and_exclude_options(self):
         class ExampleSerializer(serializers.ModelSerializer):
@@ -891,14 +859,9 @@ class TestSerializerMetaClass(TestCase):
                 fields = ('text',)
                 exclude = ('text',)
 
-        with self.assertRaises(AssertionError) as result:
+        msginitial = "Cannot set both 'fields' and 'exclude' options on serializer ExampleSerializer."
+        with self.assertRaisesMessage(AssertionError, msginitial):
             ExampleSerializer().fields
-
-        exception = result.exception
-        self.assertEqual(
-            str(exception),
-            "Cannot set both 'fields' and 'exclude' options on serializer ExampleSerializer."
-        )
 
     def test_declared_fields_with_exclude_option(self):
         class ExampleSerializer(serializers.ModelSerializer):
