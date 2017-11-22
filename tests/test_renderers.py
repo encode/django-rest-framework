@@ -751,6 +751,5 @@ class TestSchemaJSRenderer(TestCase):
         renderer = SchemaJSRenderer()
 
         output = renderer.render('data', renderer_context={"request": request})
-
         assert "'ImRhdGEi'" in output
         assert "'b'ImRhdGEi''" not in output
