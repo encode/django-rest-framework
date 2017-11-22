@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 import re
 from collections import MutableMapping, OrderedDict
 
-import coreapi
 import pytest
 from django.conf.urls import include, url
 from django.core.cache import cache
@@ -15,6 +14,7 @@ from django.utils import six
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
 
+import coreapi
 from rest_framework import permissions, serializers, status
 from rest_framework.renderers import (
     AdminRenderer, BaseRenderer, BrowsableAPIRenderer, DocumentationRenderer,
