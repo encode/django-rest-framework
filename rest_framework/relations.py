@@ -406,7 +406,8 @@ class HyperlinkedIdentityField(HyperlinkedRelatedField):
 
     def __init__(self, view_name=None, **kwargs):
         assert view_name is not None, 'The `view_name` argument is required.'
-        kwargs['read_only'] = True
+        if 'read_only' not in kwargs:
+            kwargs['read_only'] = True
         kwargs['source'] = '*'
         super(HyperlinkedIdentityField, self).__init__(view_name, **kwargs)
 
