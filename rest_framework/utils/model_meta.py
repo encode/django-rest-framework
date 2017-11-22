@@ -105,18 +105,13 @@ def _get_reverse_relationships(opts):
     """
     Returns an `OrderedDict` of field names to `RelationInfo`.
     """
-    # Note that we have a hack here to handle internal API differences for
-    # this internal API across Django 1.7 -> Django 1.8.
-    # See: https://code.djangoproject.com/ticket/24208
-
     reverse_relations = OrderedDict()
     all_related_objects = [r for r in opts.related_objects if not r.field.many_to_many]
     for relation in all_related_objects:
         accessor_name = relation.get_accessor_name()
-        related = getattr(relation, 'related_model', relation.model)
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
-            related_model=related,
+            related_model=relation.related_model,
             to_many=relation.field.remote_field.multiple,
             to_field=_get_to_field(relation.field),
             has_through_model=False,
@@ -127,10 +122,9 @@ def _get_reverse_relationships(opts):
     all_related_many_to_many_objects = [r for r in opts.related_objects if r.field.many_to_many]
     for relation in all_related_many_to_many_objects:
         accessor_name = relation.get_accessor_name()
-        related = getattr(relation, 'related_model', relation.model)
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
-            related_model=related,
+            related_model=relation.related_model,
             to_many=True,
             # manytomany do not have to_fields
             to_field=None,

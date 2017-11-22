@@ -142,11 +142,10 @@ Add the following import at the top of the file:
 And, at the end of the file, add a pattern to include the login and logout views for the browsable API.
 
     urlpatterns += [
-        url(r'^api-auth/', include('rest_framework.urls',
-                                   namespace='rest_framework')),
+        url(r'^api-auth/', include('rest_framework.urls'),
     ]
 
-The `r'^api-auth/'` part of pattern can actually be whatever URL you want to use.  The only restriction is that the included urls must use the `'rest_framework'` namespace. In Django 1.9+, REST framework will set the namespace, so you may leave it out.
+The `r'^api-auth/'` part of pattern can actually be whatever URL you want to use.
 
 Now if you open up the browser again and refresh the page you'll see a 'Login' link in the top right of the page.  If you log in as one of the users you created earlier, you'll be able to create code snippets again.
 

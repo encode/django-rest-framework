@@ -368,7 +368,7 @@ class AutoSchema(ViewInspector):
         if hasattr(self.view, 'action'):
             return self.view.action in ["list", "retrieve", "update", "partial_update", "destroy"]
 
-        return method.lower in ["get", "put", "patch", "delete"]
+        return method.lower() in ["get", "put", "patch", "delete"]
 
     def get_filter_fields(self, path, method):
         if not self._allows_filters(path, method):

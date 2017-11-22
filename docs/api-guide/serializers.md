@@ -493,6 +493,8 @@ The names in the `fields` and `exclude` attributes will normally map to model fi
 
 Alternatively names in the `fields` options can map to properties or methods which take no arguments that exist on the model class.
 
+Since version 3.3.0, it is **mandatory** to provide one of the attributes `fields` or `exclude`.
+
 ## Specifying nested serialization
 
 The default `ModelSerializer` uses primary keys for relationships, but you can also easily generate nested representations using the `depth` option:
@@ -1009,7 +1011,7 @@ Takes the object instance that requires serialization, and should return a primi
 
 Takes the unvalidated incoming data as input and should return the validated data that will be made available as `serializer.validated_data`. The return value will also be passed to the `.create()` or `.update()` methods if `.save()` is called on the serializer class.
 
-If any of the validation fails, then the method should raise a `serializers.ValidationError(errors)`. The `errors` argument should be a dictionary mapping field names (or `settings.NON_FIELD_ERRORS_KEY`) to a list of error messages. If you don't need to alter deserialization behavior and instead want to provide object-level validation, it's recommended that you intead override the [`.validate()`](#object-level-validation) method.
+If any of the validation fails, then the method should raise a `serializers.ValidationError(errors)`. The `errors` argument should be a dictionary mapping field names (or `settings.NON_FIELD_ERRORS_KEY`) to a list of error messages. If you don't need to alter deserialization behavior and instead want to provide object-level validation, it's recommended that you instead override the [`.validate()`](#object-level-validation) method.
 
 The `data` argument passed to this method will normally be the value of `request.data`, so the datatype it provides will depend on the parser classes you have configured for your API.
 

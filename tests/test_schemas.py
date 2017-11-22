@@ -951,3 +951,51 @@ def test_head_and_options_methods_are_excluded():
 
     assert inspector.should_include_endpoint(path, callback)
     assert inspector.get_allowed_methods(callback) == ["GET"]
+
+
+class TestAutoSchemaAllowsFilters(object):
+    class MockAPIView(APIView):
+        filter_backends = [filters.OrderingFilter]
+
+    def _test(self, method):
+        view = self.MockAPIView()
+        fields = view.schema.get_filter_fields('', method)
+        field_names = [f.name for f in fields]
+
+        return 'ordering' in field_names
+
+    def test_get(self):
+        assert self._test('get')
+
+    def test_GET(self):
+        assert self._test('GET')
+
+    def test_put(self):
+        assert self._test('put')
+
+    def test_PUT(self):
+        assert self._test('PUT')
+
+    def test_patch(self):
+        assert self._test('patch')
+
+    def test_PATCH(self):
+        assert self._test('PATCH')
+
+    def test_delete(self):
+        assert self._test('delete')
+
+    def test_DELETE(self):
+        assert self._test('DELETE')
+
+    def test_post(self):
+        assert not self._test('post')
+
+    def test_POST(self):
+        assert not self._test('POST')
+
+    def test_foo(self):
+        assert not self._test('foo')
+
+    def test_FOO(self):
+        assert not self._test('FOO')
