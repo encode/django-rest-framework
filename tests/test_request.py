@@ -25,6 +25,18 @@ from rest_framework.views import APIView
 factory = APIRequestFactory()
 
 
+class TestInitializer(TestCase):
+    def test_request_type(self):
+        request = Request(factory.get('/'))
+
+        message = (
+            'The `request` argument must be an instance of '
+            '`django.http.HttpRequest`, not `rest_framework.request.Request`.'
+        )
+        with self.assertRaisesMessage(AssertionError, message):
+            Request(request)
+
+
 class PlainTextParser(BaseParser):
     media_type = 'text/plain'
 
