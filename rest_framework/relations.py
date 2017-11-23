@@ -274,6 +274,7 @@ class HyperlinkedRelatedField(RelatedField):
             self.view_name = view_name
         assert self.view_name is not None, 'The `view_name` argument is required.'
         self.lookup_field = kwargs.pop('lookup_field', self.lookup_field)
+        self.lookup_url_arg = kwargs.pop('lookup_url_arg', False)
         self.lookup_url_kwarg = kwargs.pop('lookup_url_kwarg', self.lookup_field)
         self.format = kwargs.pop('format', None)
 
@@ -310,6 +311,8 @@ class HyperlinkedRelatedField(RelatedField):
             return None
 
         lookup_value = getattr(obj, self.lookup_field)
+        if self.lookup_url_arg:
+            return self.reverse(view_name, args=[lookup_value], request=request, format=format)
         kwargs = {self.lookup_url_kwarg: lookup_value}
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
 
