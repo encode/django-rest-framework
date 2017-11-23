@@ -11,7 +11,7 @@ The wrapped request then offers a richer API, in particular :
 from __future__ import unicode_literals
 
 from django.conf import settings
-from django.http import QueryDict
+from django.http import HttpRequest, QueryDict
 from django.http.multipartparser import parse_header
 from django.http.request import RawPostDataException
 from django.utils import six
@@ -132,6 +132,12 @@ class Request(object):
 
     def __init__(self, request, parsers=None, authenticators=None,
                  negotiator=None, parser_context=None):
+        assert isinstance(request, HttpRequest), (
+            'The `request` argument must be an instance of '
+            '`django.http.HttpRequest`, not `{}.{}`.'
+            .format(request.__class__.__module__, request.__class__.__name__)
+        )
+
         self._request = request
         self.parsers = parsers or ()
         self.authenticators = authenticators or ()
