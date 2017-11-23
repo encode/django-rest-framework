@@ -9,12 +9,11 @@ from rest_framework import (
     exceptions, metadata, serializers, status, versioning, views
 )
 from rest_framework.renderers import BrowsableAPIRenderer
-from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
 
 from .models import BasicModel
 
-request = Request(APIRequestFactory().options('/'))
+request = APIRequestFactory().options('/')
 
 
 class TestMetadata:
