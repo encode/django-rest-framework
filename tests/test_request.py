@@ -6,8 +6,10 @@ from __future__ import unicode_literals
 import os.path
 import tempfile
 
+import pytest
 from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.middleware import AuthenticationMiddleware
 from django.contrib.auth.models import User
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -17,7 +19,7 @@ from django.utils import six
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.parsers import BaseParser, FormParser, MultiPartParser
-from rest_framework.request import Request
+from rest_framework.request import Request, WrappedAttributeError
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
@@ -197,7 +199,8 @@ class TestUserSetter(TestCase):
         # available to login and logout functions
         self.wrapped_request = factory.get('/')
         self.request = Request(self.wrapped_request)
-        SessionMiddleware().process_request(self.request)
+        SessionMiddleware().process_request(self.wrapped_request)
+        AuthenticationMiddleware().process_request(self.wrapped_request)
 
         User.objects.create_user('ringo', 'starr@thebeatles.com', 'yellow')
         self.user = authenticate(username='ringo', password='yellow')
@@ -212,9 +215,9 @@ class TestUserSetter(TestCase):
 
     def test_user_can_logout(self):
         self.request.user = self.user
-        self.assertFalse(self.request.user.is_anonymous)
+        assert not self.request.user.is_anonymous
         logout(self.request)
-        self.assertTrue(self.request.user.is_anonymous)
+        assert self.request.user.is_anonymous
 
     def test_logged_in_user_is_set_on_wrapped_request(self):
         login(self.request, self.user)
@@ -227,22 +230,27 @@ class TestUserSetter(TestCase):
         """
         class AuthRaisesAttributeError(object):
             def authenticate(self, request):
-                import rest_framework
-                rest_framework.MISSPELLED_NAME_THAT_DOESNT_EXIST
+                self.MISSPELLED_NAME_THAT_DOESNT_EXIST
 
-        self.request = Request(factory.get('/'), authenticators=(AuthRaisesAttributeError(),))
-        SessionMiddleware().process_request(self.request)
+        request = Request(self.wrapped_request, authenticators=(AuthRaisesAttributeError(),))
 
-        login(self.request, self.user)
-        try:
-            self.request.user
-        except AttributeError as error:
-            assert str(error) in (
-                "'module' object has no attribute 'MISSPELLED_NAME_THAT_DOESNT_EXIST'",  # Python < 3.5
-                "module 'rest_framework' has no attribute 'MISSPELLED_NAME_THAT_DOESNT_EXIST'",  # Python >= 3.5
-            )
-        else:
-            assert False, 'AttributeError not raised'
+        # The middleware processes the underlying Django request, sets anonymous user
+        assert self.wrapped_request.user.is_anonymous
+
+        # The DRF request object does not have a user and should run authenticators
+        expected = r"no attribute 'MISSPELLED_NAME_THAT_DOESNT_EXIST'"
+        with pytest.raises(WrappedAttributeError, match=expected):
+            request.user
+
+        # python 2 hasattr fails for *any* exception, not just AttributeError
+        if six.PY2:
+            return
+
+        with pytest.raises(WrappedAttributeError, match=expected):
+            hasattr(request, 'user')
+
+        with pytest.raises(WrappedAttributeError, match=expected):
+            login(request, self.user)
 
 
 class TestAuthSetter(TestCase):

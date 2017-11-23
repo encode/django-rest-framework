@@ -291,6 +291,12 @@ You *may* also override the `.authenticate_header(self, request)` method.  If im
 
 If the `.authenticate_header()` method is not overridden, the authentication scheme will return `HTTP 403 Forbidden` responses when an unauthenticated request is denied access.
 
+---
+
+**Note:** When your custom authenticator is invoked by the request object's `.user` or `.auth` properties, you may see an `AttributeError` re-raised as a `WrappedAttributeError`. This is necessary to prevent the original exception from being suppressed by the outer property access. Python will not recognize that the `AttributeError` orginates from your custom authenticator and will instead assume that the request object does not have a `.user` or `.auth` property. These errors should be fixed or otherwise handled by your authenticator.
+
+---
+
 ## Example
 
 The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X_USERNAME'.

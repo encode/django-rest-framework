@@ -10,6 +10,9 @@ The wrapped request then offers a richer API, in particular :
 """
 from __future__ import unicode_literals
 
+import sys
+from contextlib import contextmanager
+
 from django.conf import settings
 from django.http import HttpRequest, QueryDict
 from django.http.multipartparser import parse_header
@@ -57,6 +60,24 @@ class override_method(object):
     def __exit__(self, *args, **kwarg):
         self.view.request = self.request
         self.view.action = self.action
+
+
+class WrappedAttributeError(Exception):
+    pass
+
+
+@contextmanager
+def wrap_attributeerrors():
+    """
+    Used to re-raise AttributeErrors caught during authentication, preventing
+    these errors from otherwise being handled by the attribute access protocol.
+    """
+    try:
+        yield
+    except AttributeError:
+        info = sys.exc_info()
+        exc = WrappedAttributeError(str(info[1]))
+        six.reraise(type(exc), exc, info[2])
 
 
 class Empty(object):
@@ -197,7 +218,8 @@ class Request(object):
         by the authentication classes provided to the request.
         """
         if not hasattr(self, '_user'):
-            self._authenticate()
+            with wrap_attributeerrors():
+                self._authenticate()
         return self._user
 
     @user.setter
@@ -220,7 +242,8 @@ class Request(object):
         request, such as an authentication token.
         """
         if not hasattr(self, '_auth'):
-            self._authenticate()
+            with wrap_attributeerrors():
+                self._authenticate()
         return self._auth
 
     @auth.setter
@@ -239,7 +262,8 @@ class Request(object):
         to authenticate the request, or `None`.
         """
         if not hasattr(self, '_authenticator'):
-            self._authenticate()
+            with wrap_attributeerrors():
+                self._authenticate()
         return self._authenticator
 
     def _load_data_and_files(self):
@@ -322,7 +346,7 @@ class Request(object):
 
         try:
             parsed = parser.parse(stream, media_type, self.parser_context)
-        except:
+        except Exception:
             # If we get an exception during parsing, fill in empty data and
             # re-raise.  Ensures we don't simply repeat the error when
             # attempting to render the browsable renderer response, or when

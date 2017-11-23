@@ -90,6 +90,10 @@ You won't typically need to access this property.
 
 ---
 
+**Note:** You may see a `WrappedAttributeError` raised when calling the `.user` or `.auth` properties. These errors originate from an authenticator as a standard `AttributeError`, however it's necessary that they be re-raised as a different exception type in order to prevent them from being suppressed by the outer property access. Python will not recognize that the `AttributeError` orginates from the authenticator and will instaed assume that the request object does not have a `.user` or `.auth` property. The authenticator will need to be fixed.
+
+---
+
 # Browser enhancements
 
 REST framework supports a few browser enhancements such as browser-based `PUT`, `PATCH` and `DELETE` forms.
