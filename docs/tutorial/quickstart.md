@@ -54,7 +54,7 @@ Now sync your database for the first time:
 
 We'll also create an initial user named `admin` with a password of `password123`. We'll authenticate as that user later in our example.
 
-    python manage.py createsuperuser
+    python manage.py createsuperuser --email admin@example.com --username admin
 
 Once you've set up a database and initial user created and ready to go, open up the app's directory and we'll get coding...
 
