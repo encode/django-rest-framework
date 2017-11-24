@@ -205,11 +205,11 @@ If we try to create a snippet without authenticating, we'll get an error:
 
 We can make a successful request by including the username and password of one of the users we created earlier.
 
-    http -a tom:password123 POST http://127.0.0.1:8000/snippets/ code="print 789"
+    http -a admin:password123 POST http://127.0.0.1:8000/snippets/ code="print 789"
 
     {
         "id": 1,
-        "owner": "tom",
+        "owner": "admin",
         "title": "foo",
         "code": "print 789",
         "linenos": false,
