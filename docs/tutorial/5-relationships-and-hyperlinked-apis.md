@@ -130,12 +130,6 @@ After adding all those names into our URLconf, our final `snippets/urls.py` file
             name='user-detail')
     ])
 
-    # Login and logout views for the browsable API
-    urlpatterns += [
-        url(r'^api-auth/', include('rest_framework.urls',
-                                   namespace='rest_framework')),
-    ]
-
 ## Adding pagination
 
 The list views for users and code snippets could end up returning quite a lot of instances, so really we'd like to make sure we paginate the results, and allow the API client to step through each of the individual pages.
