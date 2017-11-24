@@ -43,7 +43,7 @@ And now we can add a `.save()` method to our model class:
 When that's all done we'll need to update our database tables.
 Normally we'd create a database migration in order to do that, but for the purposes of this tutorial, let's just delete the database and start again.
 
-    rm -f tmp.db db.sqlite3
+    rm -f db.sqlite3
     rm -r snippets/migrations
     python manage.py makemigrations snippets
     python manage.py migrate
