@@ -134,17 +134,12 @@ Finally, we're including default login and logout views for use with the browsab
 
 ## Settings
 
-We'd also like to set a few global settings.  We'd like to turn on pagination, and we want our API to only be accessible to admin users.  The settings module will be in `tutorial/settings.py`
+Add `'rest_framework'` to `INSTALLED_APPS`. The settings module will be in `tutorial/settings.py`
 
     INSTALLED_APPS = (
         ...
         'rest_framework',
     )
-
-    REST_FRAMEWORK = {
-        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-        'PAGE_SIZE': 10
-    }
 
 Okay, we're done.
 
