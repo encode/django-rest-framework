@@ -142,6 +142,7 @@ We'd also like to set a few global settings.  We'd like to turn on pagination, a
     )
 
     REST_FRAMEWORK = {
+        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
         'PAGE_SIZE': 10
     }
 
