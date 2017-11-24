@@ -187,7 +187,7 @@ class AutoSchema(ViewInspector):
             for f in self._manual_fields:
                 
                 try:
-                    if f.method in method:
+                    if method in f.method:
                         by_name[f.name] = f
                 except AttributeError:
                         by_name[f.name] = f
