@@ -171,6 +171,7 @@ class AutoSchema(ViewInspector):
 
         * `manual_fields`: list of `coreapi.Field` instances that
             will be added to auto-generated fields, overwriting on `Field.name`
+            if the link method matches the manual field method.
         """
 
         self._manual_fields = manual_fields
@@ -184,7 +185,14 @@ class AutoSchema(ViewInspector):
         if self._manual_fields is not None:
             by_name = {f.name: f for f in fields}
             for f in self._manual_fields:
-                by_name[f.name] = f
+                
+                try:
+                    if f.method in method:
+                        by_name[f.name] = f
+                except AttributeError:
+                        by_name[f.name] = f
+                        warnings.warn('coreapi.Field has no attribute "method", please update coreapi')
+                
             fields = list(by_name.values())
 
         if fields and any([field.location in ('form', 'body') for field in fields]):
