@@ -61,7 +61,7 @@ The URLs for custom actions by default depend on the method name itself. If you 
 The handler methods only get bound to the actions when we define the URLConf.
 To see what's going on under the hood let's first explicitly create a set of views from our ViewSets.
 
-In the `urls.py` file we bind our `ViewSet` classes into a set of concrete views.
+In the `snippets/urls.py` file we bind our `ViewSet` classes into a set of concrete views.
 
     from snippets.views import SnippetViewSet, UserViewSet, api_root
     from rest_framework import renderers
@@ -103,11 +103,11 @@ Now that we've bound our resources into concrete views, we can register the view
 
 Because we're using `ViewSet` classes rather than `View` classes, we actually don't need to design the URL conf ourselves.  The conventions for wiring up resources into views and urls can be handled automatically, using a `Router` class.  All we need to do is register the appropriate view sets with a router, and let it do the rest.
 
-Here's our re-wired `urls.py` file.
+Here's our re-wired `snippets/urls.py` file.
 
     from django.conf.urls import url, include
-    from snippets import views
     from rest_framework.routers import DefaultRouter
+    from snippets import views
 
     # Create a router and register our viewsets with it.
     router = DefaultRouter()
@@ -115,10 +115,8 @@ Here's our re-wired `urls.py` file.
     router.register(r'users', views.UserViewSet)
 
     # The API URLs are now determined automatically by the router.
-    # Additionally, we include the login URLs for the browsable API.
     urlpatterns = [
-        url(r'^', include(router.urls)),
-        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+        url(r'^', include(router.urls))
     ]
 
 Registering the viewsets with the router is similar to providing a urlpattern.  We include two arguments - the URL prefix for the views, and the viewset itself.
