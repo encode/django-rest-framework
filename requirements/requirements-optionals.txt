@@ -2,6 +2,6 @@
 pytz==2017.2
 markdown==2.6.4
 django-guardian==1.4.9
-django-filter==1.0.4
+django-filter==1.1.0
 coreapi==2.3.1
 coreschema==0.0.4
