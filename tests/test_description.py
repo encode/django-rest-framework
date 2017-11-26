@@ -33,9 +33,9 @@ indented
 }]
 ```"""
 
+
 # If markdown is installed we also test it's working
 # (and that our wrapped forces '=' to h2 and '-' to h3)
-
 MARKED_DOWN_HILITE = """
 <div class="highlight"><pre><span></span><span \
 class="p">[{</span><br />    <span class="nt">&quot;alpha&quot;</span><span\
