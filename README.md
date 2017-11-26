@@ -15,7 +15,7 @@ Full documentation for the project is available at [http://www.django-rest-frame
 
 REST framework is a *collaboratively funded project*. If you use
 REST framework commercially we strongly encourage you to invest in its
-continued development by **[signing up for a paid plan][funding]**.
+continued development by [signing up for a paid plan][funding].
 
 The initial aim is to provide a single full-time position on REST framework.
 *Every single sign-up makes a significant impact towards making that possible.*
@@ -26,7 +26,7 @@ The initial aim is to provide a single full-time position on REST framework.
 [![][machinalis-img]][machinalis-url]
 [![][rollbar-img]][rollbar-url]
 
-*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover][rover-url], [Sentry][sentry-url], [Stream][stream-url], [Machinalis][machinalis-url], and [Rollbar][rollbar-url].*
+Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover][rover-url], [Sentry][sentry-url], [Stream][stream-url], [Machinalis][machinalis-url], and [Rollbar][rollbar-url].
 
 ---
 
@@ -47,6 +47,8 @@ There is a live example API for testing purposes, [available here][sandbox].
 **Below**: *Screenshot from the browsable API*
 
 ![Screenshot][image]
+
+----
 
 # Requirements
 
