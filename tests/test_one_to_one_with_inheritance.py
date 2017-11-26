@@ -10,7 +10,6 @@ from tests.test_multitable_inheritance import ChildModel
 
 
 # Regression test for #4290
-
 class ChildAssociatedModel(RESTFrameworkModel):
     child_model = models.OneToOneField(ChildModel, on_delete=models.CASCADE)
     child_name = models.CharField(max_length=100)
