@@ -260,7 +260,7 @@ class AutoSchema(ViewInspector):
                 # Attempt to infer a field description if possible.
                 try:
                     model_field = model._meta.get_field(variable)
-                except:
+                except Exception:
                     model_field = None
 
                 if model_field is not None and model_field.verbose_name:
