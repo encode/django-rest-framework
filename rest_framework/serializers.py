@@ -384,7 +384,7 @@ class Serializer(BaseSerializer):
         """
         # Every new serializer is created with a clone of the field instances.
         # This allows users to dynamically modify the fields on a serializer
-        # instance without affecting every other serializer class.
+        # instance without affecting every other serializer instance.
         return copy.deepcopy(self._declared_fields)
 
     def get_validators(self):
