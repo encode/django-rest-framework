@@ -9,10 +9,10 @@ from io import open
 from setuptools import setup, find_packages
 
 try:
-    from pypandoc import convert
+    from pypandoc import convert_file
 
     def read_md(f):
-        return convert(f, 'rst')
+        return convert_file(f, 'rst')
 except ImportError:
     print("warning: pypandoc module not found, could not convert Markdown to RST")
 
