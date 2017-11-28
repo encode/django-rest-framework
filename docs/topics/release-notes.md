@@ -43,14 +43,14 @@ You can determine your currently installed version using `pip freeze`:
 
 ### 3.7.3
 
-**Date**: [6th Novemember 2017][3.7.3-milestone]
+**Date**: [6th November 2017][3.7.3-milestone]
 
 * Fix `AppRegistryNotReady` error from contrib.auth view imports [#5567][gh5567]
 
 
 ### 3.7.2
 
-**Date**: [6th Novemember 2017][3.7.2-milestone]
+**Date**: [6th November 2017][3.7.2-milestone]
 
 * Fixed Django 2.1 compatibility due to removal of django.contrib.auth.login()/logout() views. [#5510][gh5510]
 * Add missing import for TextLexer. [#5512][gh5512]
