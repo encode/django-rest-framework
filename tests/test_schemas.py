@@ -7,7 +7,7 @@ from django.http import Http404
 from django.test import TestCase, override_settings
 
 from rest_framework import (
-    filters, generics, pagination, permissions, serializers
+    filters, generics, pagination, permissions, serializers, routers
 )
 from rest_framework.compat import coreapi, coreschema, get_regex_pattern
 from rest_framework.decorators import (
@@ -541,6 +541,33 @@ class TestDescriptor(TestCase):
             ])
 
         view = CustomView()
+        link = view.schema.get_link('/a/url/{id}/', 'GET', '')
+        fields = link.fields
+
+        assert len(fields) == 2
+        assert "my_extra_field" in [f.name for f in fields]
+
+    def test_detail_route(self):
+
+        class AViewSet(GenericViewSet):
+            @detail_route(schema=AutoSchema(manual_fields=[
+                coreapi.Field(
+                    "my_extra_field",
+                    required=True,
+                    location="path",
+                    schema=coreschema.String()
+                ),
+            ]))
+            def a_detail_route(self, request, my_normal_field):
+                pass
+
+        router = routers.SimpleRouter()
+        router.register(r'detail', AViewSet, base_name='detail')
+        routes = router.urls
+
+        callback = routes[0].callback
+        generator = SchemaGenerator()
+        view = generator.create_view(callback, 'GET')
         link = view.schema.get_link('/a/url/{id}/', 'GET', '')
         fields = link.fields
 
