@@ -105,25 +105,6 @@ def get_pk_description(model, model_field):
     )
 
 
-def update_fields(fields, update_with):
-    """
-    Update list of coreapi.Field instances, overwriting on `Field.name`.
-
-    Utility function to handle replacing coreapi.Field fields
-    from a list by name. Used to handle `manual_fields`.
-
-    Parameters:
-
-    * `fields`: list of `coreapi.Field` instances to update
-    * `update_with: list of `coreapi.Field` instances to add or replace.
-    """
-    by_name = {f.name: f for f in fields}
-    for f in update_with:
-        by_name[f.name] = f
-    fields = list(by_name.values())
-    return fields
-
-
 class ViewInspector(object):
     """
     Descriptor class on APIView.
@@ -200,7 +181,8 @@ class AutoSchema(ViewInspector):
         fields += self.get_pagination_fields(path, method)
         fields += self.get_filter_fields(path, method)
 
-        fields = self.update_manual_fields(fields)
+        manual_fields = self.get_manual_fields(path, method)
+        fields = self.update_fields(fields, manual_fields)
 
         if fields and any([field.location in ('form', 'body') for field in fields]):
             encoding = self.get_encoding(path, method)
@@ -394,12 +376,29 @@ class AutoSchema(ViewInspector):
             fields += filter_backend().get_schema_fields(self.view)
         return fields
 
-    def update_manual_fields(self, fields):
+    def get_manual_fields(self, path, method):
+        return self._manual_fields
+
+    @staticmethod
+    def update_fields(fields, update_with):
         """
-        Adjust `fields` with `manual_fields`
+        Update list of coreapi.Field instances, overwriting on `Field.name`.
+
+        Utility function to handle replacing coreapi.Field fields
+        from a list by name. Used to handle `manual_fields`.
+
+        Parameters:
+
+        * `fields`: list of `coreapi.Field` instances to update
+        * `update_with: list of `coreapi.Field` instances to add or replace.
         """
-        if self._manual_fields is not None:
-            fields = update_fields(fields, self._manual_fields)
+        if not update_with:
+            return fields
+
+        by_name = OrderedDict((f.name, f) for f in fields)
+        for f in update_with:
+            by_name[f.name] = f
+        fields = list(by_name.values())
         return fields
 
     def get_encoding(self, path, method):
