@@ -172,7 +172,8 @@ class AutoSchema(ViewInspector):
         * `manual_fields`: list of `coreapi.Field` instances that
             will be added to auto-generated fields, overwriting on `Field.name`
         """
-
+        if manual_fields is None:
+            manual_fields = []
         self._manual_fields = manual_fields
 
     def get_link(self, path, method, base_url):
