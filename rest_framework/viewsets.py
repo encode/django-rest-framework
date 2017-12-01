@@ -46,9 +46,13 @@ class ViewSetMixin(object):
         instantiated view, we need to totally reimplement `.as_view`,
         and slightly modify the view function that is created and returned.
         """
-        # The suffix initkwarg is reserved for identifying the viewset type
+        # The suffix initkwarg is reserved for displaying the viewset type.
         # eg. 'List' or 'Instance'.
         cls.suffix = None
+
+        # Setting a basename allows a view to reverse its action urls. This
+        # value is provided by the router through the initkwargs.
+        cls.basename = None
 
         # actions must not be empty
         if not actions:

@@ -278,7 +278,12 @@ class SimpleRouter(BaseRouter):
                 if not prefix and regex[:2] == '^/':
                     regex = '^' + regex[2:]
 
-                view = viewset.as_view(mapping, **route.initkwargs)
+                initkwargs = route.initkwargs.copy()
+                initkwargs.update({
+                    'basename': basename,
+                })
+
+                view = viewset.as_view(mapping, **initkwargs)
                 name = route.name.format(basename=basename)
                 ret.append(url(regex, view, name=name))
 
