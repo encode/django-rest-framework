@@ -360,7 +360,10 @@ Corresponds to `django.db.models.fields.DurationField`
 The `validated_data` for these fields will contain a `datetime.timedelta` instance.
 The representation is a string following this format `'[DD] [HH:[MM:]]ss[.uuuuuu]'`.
 
-**Signature:** `DurationField()`
+**Signature:** `DurationField(max_value=None, min_value=None)`
+
+- `max_value` Validate that the duration provided is no greater than this value.
+- `min_value` Validate that the duration provided is no less than this value.
 
 ---
 
