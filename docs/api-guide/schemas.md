@@ -603,6 +603,31 @@ Return a list of `coreapi.Link()` instances, as returned by the `get_schema_fiel
 
 Return a list of `coreapi.Link()` instances, as returned by the `get_schema_fields()` method of any filter classes used by the view.
 
+### get_manual_fields(self, path, method)
+
+Return a list of `coreapi.Field()` instances to be added to or replace generated fields. Defaults to (optional) `manual_fields` passed to `AutoSchema` constructor.
+
+May be overridden to customise manual fields by `path` or `method`. For example, a per-method adjustment may look like this:
+
+```python
+def get_manual_fields(self, path, method):
+    """Example adding per-method fields."""
+
+    extra_fields = []
+    if method=='GET':
+        extra_fields = # ... list of extra fields for GET ...
+    if method=='POST':
+        extra_fields = # ... list of extra fields for POST ...
+
+    manual_fields = super().get_manual_fields()
+    return manual_fields + extra_fields
+```
+
+### update_fields(fields, update_with)
+
+Utility `staticmethod`. Encapsulates logic to add or replace fields from a list
+by `Field.name`. May be overridden to adjust replacement criteria.
+
 
 ## ManualSchema
 
