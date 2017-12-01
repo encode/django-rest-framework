@@ -516,7 +516,7 @@ class Test4605Regression(TestCase):
         assert prefix == '/'
 
 
-class TestDescriptor(TestCase):
+class TestAutoSchema(TestCase):
 
     def test_apiview_schema_descriptor(self):
         view = APIView()
@@ -528,7 +528,43 @@ class TestDescriptor(TestCase):
         with pytest.raises(AssertionError):
             descriptor.get_link(None, None, None)  # ???: Do the dummy arguments require a tighter assert?
 
-    def test_manual_fields(self):
+    def test_update_fields(self):
+        """
+        That updating fields by-name helper is correct
+
+        Recall: `update_fields(fields, update_with)`
+        """
+        schema = AutoSchema()
+        fields = []
+
+        # Adds a field...
+        fields = schema.update_fields(fields, [
+            coreapi.Field(
+                "my_field",
+                required=True,
+                location="path",
+                schema=coreschema.String()
+            ),
+        ])
+
+        assert len(fields) == 1
+        assert fields[0].name == "my_field"
+
+        # Replaces a field...
+        fields = schema.update_fields(fields, [
+            coreapi.Field(
+                "my_field",
+                required=False,
+                location="path",
+                schema=coreschema.String()
+            ),
+        ])
+
+        assert len(fields) == 1
+        assert fields[0].required is False
+
+    def test_get_manual_fields(self):
+        """That get_manual_fields is applied during get_link"""
 
         class CustomView(APIView):
             schema = AutoSchema(manual_fields=[
