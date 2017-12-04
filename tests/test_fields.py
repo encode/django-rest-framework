@@ -1834,7 +1834,7 @@ class TestUnvalidatedListField(FieldValues):
 
 class TestDictField(FieldValues):
     """
-    Values for `ListField` with CharField as child.
+    Values for `DictField` with CharField as child.
     """
     valid_inputs = [
         ({'a': 1, 'b': '2', 3: 3}, {'a': '1', 'b': '2', '3': '3'}),
@@ -1868,7 +1868,7 @@ class TestDictField(FieldValues):
 
 class TestDictFieldWithNullChild(FieldValues):
     """
-    Values for `ListField` with allow_null CharField as child.
+    Values for `DictField` with allow_null CharField as child.
     """
     valid_inputs = [
         ({'a': None, 'b': '2', 3: 3}, {'a': None, 'b': '2', '3': '3'}),
@@ -1883,7 +1883,7 @@ class TestDictFieldWithNullChild(FieldValues):
 
 class TestUnvalidatedDictField(FieldValues):
     """
-    Values for `ListField` with no `child` argument.
+    Values for `DictField` with no `child` argument.
     """
     valid_inputs = [
         ({'a': 1, 'b': [4, 5, 6], 1: 123}, {'a': 1, 'b': [4, 5, 6], '1': 123}),
